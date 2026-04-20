@@ -155,70 +155,6 @@ describe("validateAuthorization", () => {
         ),
       );
     });
-
-  });
-
-  describe("mixed rules", () => {
-    it("admits internal token", () => {
-      const ctx = buildCtx(internalAuthData);
-
-      const result = validateAuthorization(ctx, [
-        { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-      ]);
-      const resultAuthData: InternalAuthData | UISessionAuthData =
-        result.authData;
-      // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
-      expect(resultAuthData).toEqual(internalAuthData);
-      expect(result.authData.tokenType).toBe("internal");
-    });
-
-    it("admits ui-session token with matching admin role", () => {
-      const ctx = buildCtx(adminUISessionAuthData);
-
-      const result = validateAuthorization(ctx, [
-        { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-      ]);
-      const resultAuthData: InternalAuthData | UISessionAuthData =
-        result.authData;
-      // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
-      expect(resultAuthData).toEqual(adminUISessionAuthData);
-      expect(
-        result.authData.tokenType === "ui-session" && result.authData.userRoles,
-      ).toContain("administrative");
-    });
-
-    it("throws forbidden (403) when ui-session role does not match mixed rules", () => {
-      const ctx = buildCtx(adminUISessionAuthData);
-
-      expect(() =>
-        validateAuthorization(ctx, [
-          { tokenType: "internal" },
-          { tokenType: "ui-session", userRoles: ["technical"] },
-        ]),
-      ).toThrow(
-        forbiddenError(
-          `Invalid roles ${JSON.stringify(["administrative"])} for this operation`,
-        ),
-      );
-    });
-
-    it("admits ui-session token with matching technical role", () => {
-      const ctx = buildCtx(technicalUISessionAuthData);
-
-      const result = validateAuthorization(ctx, [
-        { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-      ]);
-      const resultAuthData: InternalAuthData | UISessionAuthData =
-        result.authData;
-      // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
-      expect(resultAuthData).toEqual(technicalUISessionAuthData);
-      expect(
-        result.authData.tokenType === "ui-session" && result.authData.userRoles,
-      ).toContain("technical");
-    });
   });
 
   it("returns AuthorizedContext with correlationId and logger", () => {
@@ -228,5 +164,85 @@ describe("validateAuthorization", () => {
 
     expect(result.correlationId).toBe(ctx.correlationId);
     expect(result.logger).toBe(ctx.logger);
+  });
+});
+
+describe("validateAuthorization with mixed rules", () => {
+  it("admits internal token", () => {
+    const ctx = buildCtx(internalAuthData);
+
+    const result = validateAuthorization(ctx, [
+      { tokenType: "internal" },
+      { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+    ]);
+    const resultAuthData: InternalAuthData | UISessionAuthData =
+      result.authData;
+    // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
+    expect(resultAuthData).toEqual(internalAuthData);
+    expect(result.authData.tokenType).toBe("internal");
+  });
+
+  it("admits ui-session token with matching admin role", () => {
+    const ctx = buildCtx(adminUISessionAuthData);
+
+    const result = validateAuthorization(ctx, [
+      { tokenType: "internal" },
+      { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+    ]);
+    const resultAuthData: InternalAuthData | UISessionAuthData =
+      result.authData;
+    // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
+    expect(resultAuthData).toEqual(adminUISessionAuthData);
+    expect(
+      result.authData.tokenType === "ui-session" && result.authData.userRoles,
+    ).toContain("administrative");
+  });
+
+  it("throws forbidden (403) when ui-session role does not match mixed rules", () => {
+    const ctx = buildCtx(adminUISessionAuthData);
+
+    expect(() =>
+      validateAuthorization(ctx, [
+        { tokenType: "internal" },
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]),
+    ).toThrow(
+      forbiddenError(
+        `Invalid roles ${JSON.stringify(["administrative"])} for this operation`,
+      ),
+    );
+  });
+
+  it("admits ui-session token with matching technical role", () => {
+    const ctx = buildCtx(technicalUISessionAuthData);
+
+    const result = validateAuthorization(ctx, [
+      { tokenType: "internal" },
+      { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+    ]);
+    const resultAuthData: InternalAuthData | UISessionAuthData =
+      result.authData;
+    // ^ Type narrowing check: result.authData is InternalAuthData | UISessionAuthData
+    expect(resultAuthData).toEqual(technicalUISessionAuthData);
+    expect(
+      result.authData.tokenType === "ui-session" && result.authData.userRoles,
+    ).toContain("technical");
+  });
+
+  it("admits external-ui-session token alongside internal and ui-session rules", () => {
+    const ctx = buildCtx(externalUISessionAuthData);
+
+    const result = validateAuthorization(ctx, [
+      { tokenType: "internal" },
+      { tokenType: "ui-session", userRoles: ["administrative"] },
+      { scope: "agreement-activation", tokenType: "external-ui-session" },
+    ]);
+    const resultAuthData:
+      | ExternalUISessionAuthData
+      | InternalAuthData
+      | UISessionAuthData = result.authData;
+    // ^ Type narrowing check: result.authData is the union of all three
+    expect(resultAuthData).toEqual(externalUISessionAuthData);
+    expect(result.authData.tokenType).toBe("external-ui-session");
   });
 });
