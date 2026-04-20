@@ -1253,28 +1253,18 @@ components:
     ConsumerKeychainPurpose:
       type: object
       properties:
-        eserviceName:
-          $ref: "#/components/schemas/LocalizedName"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
         id:
           $ref: "#/components/schemas/PurposeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
         producer:
-          type: object
-          properties:
-            knodeId:
-              $ref: "#/components/schemas/KnodeId"
-            name:
-              type: string
-              minLength: 1
-          required:
-            - knodeId
-            - name
-          additionalProperties: false
+          $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/PurposeState"
       required:
-        - eserviceName
+        - eservice
         - id
         - name
         - producer

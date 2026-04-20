@@ -56,7 +56,7 @@ export function LinkedPurposesTable({
             <Cell>
               <span className="body-md-em">{purpose.name.en}</span>
             </Cell>
-            <Cell>{purpose.eserviceName.en}</Cell>
+            <Cell>{purpose.eservice.name.en}</Cell>
             <Cell>
               <KnodeAvatar
                 className="bg-brand-dark text-white"

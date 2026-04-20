@@ -41,10 +41,14 @@ export const toAPI_ConsumerKeychainPurpose = (
   eservice: remoteResourcesManagerApi.EserviceDetails,
   purpose: remoteResourcesManagerApi.Purpose,
 ): API_ConsumerKeychainPurpose => ({
-  eserviceName: eservice.name,
+  eservice: {
+    id: eservice.id,
+    name: eservice.name,
+  },
   id: purpose.id,
   name: purpose.name,
   producer: {
+    id: eservice.producer.id,
     knodeId: eservice.producer.knodeId,
     name: eservice.producer.name,
   },

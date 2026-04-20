@@ -605,13 +605,10 @@ export type ConsumerKeychainOptions = {
 export type PurposeId = string;
 
 export type ConsumerKeychainPurpose = {
-    eserviceName: LocalizedName;
+    eservice: CompactEservice;
     id: PurposeId;
     name: LocalizedPurposeName;
-    producer: {
-        knodeId: KnodeId;
-        name: string;
-    };
+    producer: CompactOrganization;
     state: PurposeState;
 };
 

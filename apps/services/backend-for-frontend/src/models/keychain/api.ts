@@ -5,18 +5,20 @@ import {
   API_UserId,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { API_LocalizedName as API_EserviceLocalizedName } from "@knodia/eservice-models/api";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeName,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
+
+import { API_CompactEservice } from "../eservice/api.ts";
 
 export const API_ConsumerKeychainSeed = z
   .strictObject({
@@ -132,13 +134,10 @@ const API_PurposeId = z.uuid().meta({
 
 export const API_ConsumerKeychainPurpose = z
   .strictObject({
-    eserviceName: API_EserviceLocalizedName,
+    eservice: API_CompactEservice,
     id: API_PurposeId,
     name: API_LocalizedPurposeName,
-    producer: z.strictObject({
-      knodeId: API_KnodeId,
-      name: z.string().min(1),
-    }),
+    producer: API_CompactOrganization,
     state: API_PurposeState,
   })
   .meta({ id: "ConsumerKeychainPurpose" });
