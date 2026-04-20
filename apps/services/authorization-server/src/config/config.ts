@@ -26,10 +26,10 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           .number()
           .int()
           .positive(),
+        CONSUMER_KNODE_URL: z.url(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
         KNODE_ID: KnodeId,
-        KNODE_URL: z.url(),
       })
       .transform((c) => ({
         clientAssertionAcceptedAudiences: c.CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
@@ -37,11 +37,11 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           c.CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS,
         clientAssertionMaxTokenAgeSeconds:
           c.CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS,
+        consumerKnodeUrl: c.CONSUMER_KNODE_URL,
         eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
         knodeId: c.KNODE_ID,
-        knodeUrl: c.KNODE_URL,
       })),
   );
 

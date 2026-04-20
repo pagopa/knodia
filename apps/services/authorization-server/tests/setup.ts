@@ -55,10 +55,10 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
     },
+    consumerKnodeUrl: "http://localhost:0",
     eserviceAccessTokenJwtKid: "test-kid",
     generatedEserviceAccessTokenIssuer: "knodia.org",
     knodeId: producerKnodeId,
-    knodeUrl: "http://localhost:0",
     readmodelDb,
   });
 

@@ -25,24 +25,24 @@ export function buildApp({
   clientAssertionClockToleranceSeconds,
   clientAssertionMaxTokenAgeSeconds,
   config,
+  consumerKnodeUrl,
   eserviceAccessTokenJwtKid,
   generatedEserviceAccessTokenIssuer,
   knodeId,
-  knodeUrl,
   readmodelDb,
 }: {
   clientAssertionAcceptedAudiences: string[];
   clientAssertionClockToleranceSeconds: number;
   clientAssertionMaxTokenAgeSeconds: number;
   config: LoggerConfig;
+  consumerKnodeUrl: string;
   eserviceAccessTokenJwtKid: string;
   generatedEserviceAccessTokenIssuer: string;
   knodeId: KnodeId;
-  knodeUrl: string;
   readmodelDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
-    knodeUrl,
+    consumerKnodeUrl,
   });
   const tokenGenerator = tokenGeneratorBuilder();
 
@@ -99,11 +99,11 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
       config.clientAssertionClockToleranceSeconds,
     clientAssertionMaxTokenAgeSeconds: config.clientAssertionMaxTokenAgeSeconds,
     config,
+    consumerKnodeUrl: config.consumerKnodeUrl,
     eserviceAccessTokenJwtKid: config.eserviceAccessTokenJwtKid,
     generatedEserviceAccessTokenIssuer:
       config.generatedEserviceAccessTokenIssuer,
     knodeId: config.knodeId,
-    knodeUrl: config.knodeUrl,
     readmodelDb,
   });
 
