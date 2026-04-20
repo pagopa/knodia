@@ -599,6 +599,24 @@ export type ConsumerKeychainOptions = {
     results: Array<ConsumerKeychainOption>;
 };
 
+/**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
+export type ConsumerKeychainPurpose = {
+    eservice: CompactEservice;
+    id: PurposeId;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerKeychainPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainPurpose>;
+};
+
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
@@ -1581,6 +1599,54 @@ export type GetConsumerKeychainOptionsResponses = {
 };
 
 export type GetConsumerKeychainOptionsResponse = GetConsumerKeychainOptionsResponses[keyof GetConsumerKeychainOptionsResponses];
+
+export type GetConsumerKeychainPurposesData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes';
+};
+
+export type GetConsumerKeychainPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
+
+export type GetConsumerKeychainPurposesResponses = {
+    /**
+     * Purposes linked to the Consumer Keychain retrieved successfully
+     */
+    200: ConsumerKeychainPurposes;
+};
+
+export type GetConsumerKeychainPurposesResponse = GetConsumerKeychainPurposesResponses[keyof GetConsumerKeychainPurposesResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

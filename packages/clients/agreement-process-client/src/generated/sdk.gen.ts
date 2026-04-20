@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetStatusData, GetStatusResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, ReactivateAgreementByProducerData, ReactivateAgreementByProducerErrors, ReactivateAgreementByProducerResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses, SuspendAgreementByProducerData, SuspendAgreementByProducerErrors, SuspendAgreementByProducerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -58,5 +58,45 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Suspend an Agreement by Consumer
+ */
+export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByConsumerResponses, SuspendAgreementByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/suspendByConsumer',
+    ...options
+});
+
+/**
+ * Suspend an Agreement by Producer
+ */
+export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByProducerResponses, SuspendAgreementByProducerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/suspendByProducer',
+    ...options
+});
+
+/**
+ * Reactivate an Agreement by Consumer
+ */
+export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByConsumerResponses, ReactivateAgreementByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/reactivateByConsumer',
+    ...options
+});
+
+/**
+ * Reactivate an Agreement by Producer
+ */
+export const reactivateAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByProducerResponses, ReactivateAgreementByProducerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/reactivateByProducer',
     ...options
 });
