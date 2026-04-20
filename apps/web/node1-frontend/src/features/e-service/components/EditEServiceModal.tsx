@@ -2,6 +2,7 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getProducerEserviceDetailsQueryKey,
+  getProducerEservicesQueryKey,
   updateProducerEserviceMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { categories } from "@knodia/category-models";
@@ -39,12 +40,21 @@ export function EditEServiceModal({
   } = useMutation({
     ...updateProducerEserviceMutation({ client }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: getProducerEserviceDetailsQueryKey({
-          client,
-          path: { eserviceId: eservice.id },
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: getProducerEserviceDetailsQueryKey({
+            client,
+            path: { eserviceId: eservice.id },
+          }),
         }),
-      });
+        queryClient.invalidateQueries({
+          queryKey: getProducerEservicesQueryKey({
+            client,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            query: undefined!,
+          }),
+        }),
+      ]);
       onClose();
     },
   });
