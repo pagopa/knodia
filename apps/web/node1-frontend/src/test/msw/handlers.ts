@@ -15,11 +15,36 @@ export const handlers = [
   http.get(`${BASE_URL}/consumer/purposes/formSchemas/current`, () =>
     HttpResponse.json({
       schema: {
+        additionalProperties: false,
+        allOf: [
+          {
+            else: { properties: { institutionalPurpose: false } },
+            if: {
+              properties: { purpose: { const: "INSTITUTIONAL" } },
+              required: ["purpose"],
+            },
+            then: { required: ["institutionalPurpose"] },
+          },
+        ],
         properties: {
-          purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
-          purposeDescription: { type: "string" },
+          declarationConfirmGDPR: { const: "true", type: "string" },
+          institutionalPurpose: { maxLength: 2000, type: "string" },
+          personalDataTypes: {
+            default: [],
+            items: {
+              enum: ["WITH_NON_IDENTIFYING_DATA", "WITH_IDENTIFYING_DATA"],
+              type: "string",
+            },
+            type: "array",
+            uniqueItems: true,
+          },
+          purpose: {
+            default: "INSTITUTIONAL",
+            enum: ["INSTITUTIONAL", "OTHER"],
+            type: "string",
+          },
         },
-        required: ["purpose", "purposeDescription"],
+        required: ["purpose", "personalDataTypes", "declarationConfirmGDPR"],
         type: "object",
       },
       uiSchema: {
@@ -27,12 +52,44 @@ export const handlers = [
           {
             elements: [
               {
-                options: { widget: "radio" },
+                label: "Purpose of data access",
+                options: {
+                  optionLabels: {
+                    INSTITUTIONAL: "Institutional",
+                    OTHER: "Other",
+                  },
+                  widget: "radio",
+                },
                 scope: "#/properties/purpose",
                 type: "Control",
               },
+              {
+                label: "Describe your purpose",
+                options: { widget: "textarea" },
+                rule: {
+                  condition: {
+                    schema: { const: "INSTITUTIONAL" },
+                    scope: "#/properties/purpose",
+                  },
+                  effect: "SHOW",
+                },
+                scope: "#/properties/institutionalPurpose",
+                type: "Control",
+              },
+              {
+                label: "Personal data types",
+                options: { widget: "multiselect" },
+                scope: "#/properties/personalDataTypes",
+                type: "Control",
+              },
+              {
+                label: "I confirm GDPR compliance",
+                options: { widget: "checkbox" },
+                scope: "#/properties/declarationConfirmGDPR",
+                type: "Control",
+              },
             ],
-            label: "Test",
+            label: "Purpose",
             type: "Group",
           },
         ],
