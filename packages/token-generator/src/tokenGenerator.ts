@@ -34,6 +34,7 @@ const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
+  audience: string;
   subject: string;
 }
 
@@ -49,13 +50,13 @@ interface EserviceAccessTokenInput extends TokenParams {
 }
 
 interface TokenParams {
-  audience: string | string[];
   issuer: string;
   kid: string;
   secondsDuration: number;
 }
 
 interface UISessionTokenInput extends TokenParams {
+  audience: string;
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
