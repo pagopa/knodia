@@ -17,11 +17,6 @@ import type {
 
 import { forbiddenError, unauthorizedError } from "../models/errors/errors.ts";
 
-export type AuthorizationRule =
-  | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
-  | { tokenType: "internal" }
-  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
-
 type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   // If there's a rule with tokenType "external-ui-session", add ExternalUISessionAuthData
   | (Extract<Rules[number], { tokenType: "external-ui-session" }> extends never
@@ -35,6 +30,11 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
       : UISessionAuthData);
+
+type AuthorizationRule =
+  | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
+  | { tokenType: "internal" }
+  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 /**
   ---- EXAMPLE USAGE: ----

@@ -30,19 +30,19 @@ export const TEST_USER_ID = unsafeBrandUserId(
 export const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
-export const TEST_AGREEMENT_ID = unsafeBrandId<AgreementId>(
+const TEST_AGREEMENT_ID = unsafeBrandId<AgreementId>(
   "30000000-3000-1000-8000-000000000003",
 );
-export const TEST_CONSUMER_ID = unsafeBrandExternalId<OrganizationId>(
+const TEST_CONSUMER_ID = unsafeBrandExternalId<OrganizationId>(
   "40000000-4000-1000-8000-000000000004",
 );
-export const TEST_ESERVICE_ID = unsafeBrandId<EserviceId>(
+const TEST_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "50000000-5000-1000-8000-000000000005",
 );
-export const TEST_PRODUCER_ID = unsafeBrandId<OrganizationId>(
+const TEST_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "60000000-6000-1000-8000-000000000006",
 );
-export const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
+const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
   "70000000-7000-1000-8000-000000000007",
 );
 
