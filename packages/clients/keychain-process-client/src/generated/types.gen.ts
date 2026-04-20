@@ -206,6 +206,10 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
+         * Filter by Consumer Keychain name
+         */
+        name?: string;
+        /**
          * Filter by owner Organization ID
          */
         ownerId?: OrganizationId;

@@ -20,6 +20,7 @@ function createBffDetail(
     },
     categories: [{ code: "birth-place", scheme: "eu-categories" }],
     description: { en: "Test description" },
+    hasRecentlyBeenUpdated: false,
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     identificationRequired: false,
     interfaceDocument: {
@@ -157,7 +158,11 @@ describe("toConsumptionEserviceDetail", () => {
   });
 
   it("passes through agreement when present", () => {
-    const agreement = { id: crypto.randomUUID(), state: "Active" as const };
+    const agreement = {
+      id: crypto.randomUUID(),
+      state: "Active" as const,
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    };
     const result = toConsumptionEserviceDetail(createBffDetail({ agreement }));
 
     expect(result.agreement).toEqual(agreement);
