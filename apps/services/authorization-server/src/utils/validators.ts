@@ -23,29 +23,14 @@ import { ZodError } from "zod";
 import type { API_TokenRequest } from "../models/api.ts";
 
 import { ClientAssertion } from "../models/clientAssertion.ts";
-import { EXPECTED_GRANT_TYPE } from "../models/constants.ts";
 import {
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
   invalidClientAssertionSignature,
-  invalidRequestParameters,
   jsonWebTokenError,
   publicKeyAlgNotMatchingClientAssertionAlg,
   unexpectedClientAssertionSignatureVerificationError,
-  unsupportedGrantType,
 } from "../models/errors.ts";
-import { TokenRequest } from "../models/tokenRequest.ts";
-
-export function validateRequestParameters(request: API_TokenRequest) {
-  if (request.grant_type !== EXPECTED_GRANT_TYPE) {
-    throw unsupportedGrantType(request.grant_type);
-  }
-
-  const parsedTokenRequest = TokenRequest.safeParse(request);
-  if (!parsedTokenRequest.success) {
-    throw invalidRequestParameters(parsedTokenRequest.error);
-  }
-}
 
 export async function verifyClientAssertionSignature(
   {
