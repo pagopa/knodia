@@ -11,7 +11,14 @@ import {
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
+import {
+  API_LocalizedPurposeName,
+  API_PurposeState,
+} from "@knodia/purpose-models/api";
 import z from "zod";
+
+import { API_CompactEservice } from "../eservice/api.ts";
 
 export const API_ConsumerKeychainSeed = z
   .strictObject({
@@ -112,6 +119,40 @@ export const API_GetConsumerKeychainMembersQueryParams =
   API_PaginationQueryParams;
 export type API_GetConsumerKeychainMembersQueryParams = z.infer<
   typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
+export const API_GetConsumerKeychainPurposesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
+  typeof API_GetConsumerKeychainPurposesQueryParams
+>;
+
+const API_PurposeId = z.uuid().meta({
+  description: "Unique identifier of the Purpose",
+  id: "PurposeId",
+});
+
+export const API_ConsumerKeychainPurpose = z
+  .strictObject({
+    eservice: API_CompactEservice,
+    id: API_PurposeId,
+    name: API_LocalizedPurposeName,
+    producer: API_CompactOrganization,
+    state: API_PurposeState,
+  })
+  .meta({ id: "ConsumerKeychainPurpose" });
+export type API_ConsumerKeychainPurpose = z.infer<
+  typeof API_ConsumerKeychainPurpose
+>;
+
+export const API_ConsumerKeychainPurposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerKeychainPurpose),
+  })
+  .meta({ id: "ConsumerKeychainPurposes" });
+export type API_ConsumerKeychainPurposes = z.infer<
+  typeof API_ConsumerKeychainPurposes
 >;
 
 export const API_ConsumerKeychainPatch = z
