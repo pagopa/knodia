@@ -363,7 +363,7 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychainPurpose(
       consumerKeychainId: ConsumerKeychainId,
       purpose: ExternalResource<PurposeId>,
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
       logger.info(
         `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,

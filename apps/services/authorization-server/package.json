@@ -44,7 +44,6 @@
     "jose": "catalog:",
     "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",
-    "zod": "catalog:",
-    "zod-validation-error": "catalog:"
+    "zod": "catalog:"
   }
 }

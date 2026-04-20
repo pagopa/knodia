@@ -155,7 +155,7 @@ export async function verifyClientAssertionSignature(
       error instanceof JWTClaimValidationFailed ||
       error instanceof ZodError
     ) {
-      throw clientAssertionClaimsValidationError(consumerKeychainId, error);
+      throw clientAssertionClaimsValidationError(error);
     } else if (error instanceof JWSSignatureVerificationFailed) {
       throw invalidClientAssertionSignature();
     } else if (error instanceof JWSInvalid) {

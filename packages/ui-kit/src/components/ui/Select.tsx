@@ -9,6 +9,7 @@ import {
   type ListBoxItemProps,
   Popover,
   SelectValue,
+  useLocale,
   type ValidationResult,
 } from "react-aria-components";
 import { tv, type VariantProps } from "tailwind-variants";
@@ -41,6 +42,13 @@ export interface SelectProps<
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   label?: string;
+  /**
+   * How to join labels when 2+ items are selected. Forwarded to
+   * `Intl.ListFormat`. Default `"conjunction"` (joined with "and", matching
+   * React Aria's default). Use `"disjunction"` when selected items represent
+   * alternatives (joined with "or").
+   */
+  selectionListFormatType?: "conjunction" | "disjunction";
 }
 
 interface DropdownItemProps extends ListBoxItemProps {
@@ -60,8 +68,10 @@ export function Select<
   children,
   size,
   isInvalid = false,
+  selectionListFormatType,
   ...props
 }: SelectProps<T, M>) {
+  const { locale } = useLocale();
   return (
     <AriaSelect<T, M>
       {...props}
@@ -83,9 +93,17 @@ export function Select<
         }
       >
         <SelectValue className="flex-1 min-w-0 body-md truncate data-placeholder:text-primary-light-low-contrast">
-          {({ selectedText, defaultChildren }) =>
-            selectedText || defaultChildren
-          }
+          {({ selectedText, defaultChildren, state }) => {
+            if (
+              selectionListFormatType === "disjunction" &&
+              state.selectedItems.length > 1
+            ) {
+              return new Intl.ListFormat(locale, {
+                type: "disjunction",
+              }).format(state.selectedItems.map((item) => item.textValue));
+            }
+            return selectedText || defaultChildren;
+          }}
         </SelectValue>
         <CaretDownIcon
           aria-hidden

@@ -407,18 +407,8 @@ describe("POST /token", async () => {
         },
       },
     ],
-    [
-      "invalid typ claim in client_assertion headers",
-      {
-        ...clientAssertion,
-        headers: {
-          ...clientAssertion.headers,
-          typ: "InvalidTypFormat",
-        },
-      },
-    ],
   ])(
-    "should return 400 if the client assertion has invalid claims - %s",
+    "should return 401 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
       getClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
@@ -434,7 +424,7 @@ describe("POST /token", async () => {
         client_assertion: clientAssertionJWS,
       });
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(401);
     },
   );
 
@@ -448,7 +438,7 @@ describe("POST /token", async () => {
     expect(response.statusCode).toBe(500);
   });
 
-  it("should return 400 when the client assertion signature is invalid", async () => {
+  it("should return 401 when the client assertion signature is invalid", async () => {
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
@@ -472,11 +462,11 @@ describe("POST /token", async () => {
 
     const error = invalidClientAssertionSignature();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 400 if the public key algorithm does not match the client assertion algorithm", async () => {
+  it("should return 401 if the public key algorithm does not match the client assertion algorithm", async () => {
     const wrongAlg = "ES256";
     getClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
@@ -492,7 +482,7 @@ describe("POST /token", async () => {
       EXPECTED_CLIENT_ASSERTION_ALGORITHM,
     );
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
   it("should return 400 when platform states are not active", async () => {

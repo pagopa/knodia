@@ -1,0 +1,19 @@
+meta {
+  name: Suspend Agreement by Consumer
+  type: http
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/suspendByConsumer
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
