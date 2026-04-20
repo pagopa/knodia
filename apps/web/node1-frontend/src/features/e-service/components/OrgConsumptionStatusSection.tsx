@@ -142,30 +142,52 @@ function AgreementStatusBanner({
         </DialogTrigger>
       </>
     ))
-    .with("Suspended", () => (
-      <Banner
-        action={
-          canManageAgreement
-            ? {
-                label: "Archive",
-                // TODO: implement archive agreement action
-              }
-            : undefined
-        }
-        kind="error"
-        prominentAction={
-          canManageAgreement && agreement.suspendedByConsumerAt !== null
-            ? {
-                isDisabled: isReactivatePending,
-                label: "Reactivate",
-                onPress: reactivateAgreement,
-              }
-            : undefined
-        }
-      >
-        Suspended
-      </Banner>
-    ))
+    .with("Suspended", () =>
+      agreement.suspendedByProducerAt !== null &&
+      agreement.suspendedByConsumerAt === null ? (
+        <Banner
+          action={
+            canManageAgreement
+              ? {
+                  label: "Archive",
+                  // TODO: implement archive agreement action
+                }
+              : undefined
+          }
+          kind="error"
+          size="md"
+          title="Suspended by Producer"
+        >
+          You can&apos;t reactivate this Agreement because it was suspended by
+          the Producer. If you believe this is a mistake, contact the Producer
+          to request the reactivation, or archive it and request a new
+          Agreement.
+        </Banner>
+      ) : (
+        <Banner
+          action={
+            canManageAgreement
+              ? {
+                  label: "Archive",
+                  // TODO: implement archive agreement action
+                }
+              : undefined
+          }
+          kind="error"
+          prominentAction={
+            canManageAgreement && agreement.suspendedByConsumerAt !== null
+              ? {
+                  isDisabled: isReactivatePending,
+                  label: "Reactivate",
+                  onPress: reactivateAgreement,
+                }
+              : undefined
+          }
+        >
+          Suspended
+        </Banner>
+      ),
+    )
     .with("Archived", () => {
       console.warn(
         "Unexpected Archived agreement in consumption status section",
