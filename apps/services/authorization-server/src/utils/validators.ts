@@ -1,6 +1,10 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { OrganizationId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { EserviceVersion } from "@knodia/eservice-models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
@@ -26,7 +30,6 @@ import {
 } from "jose/errors";
 import { ZodError } from "zod";
 
-import type { API_TokenRequest } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { ClientAssertion } from "../models/clientAssertion.ts";
@@ -82,9 +85,12 @@ export async function validatePlatformObjects(
 
 export async function verifyClientAssertionSignature(
   {
-    client_assertion: clientAssertionJws,
-    client_id: consumerKeychainId,
-  }: API_TokenRequest,
+    clientAssertionJWS,
+    consumerKeychainId,
+  }: {
+    clientAssertionJWS: string;
+    consumerKeychainId: ConsumerKeychainId;
+  },
   clientAssertionAcceptedAudiences: string[],
   clientAssertionClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
@@ -92,8 +98,8 @@ export async function verifyClientAssertionSignature(
   logger: FastifyBaseLogger,
 ) {
   try {
-    const protectedHeader = decodeProtectedHeader(clientAssertionJws);
-    const payload = decodeJwt(clientAssertionJws);
+    const protectedHeader = decodeProtectedHeader(clientAssertionJWS);
+    const payload = decodeJwt(clientAssertionJWS);
 
     logger.info(
       `Verifying Client Assertion (JTI=${payload.jti}) signature for Consumer Keychain ${consumerKeychainId} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
@@ -127,7 +133,7 @@ export async function verifyClientAssertionSignature(
       pemKey: decodeBase64Pem(publicKey.encodedPem),
     });
 
-    await jwtVerify(clientAssertionJws, verificationKey, {
+    await jwtVerify(clientAssertionJWS, verificationKey, {
       algorithms: [publicKey.algorithm],
       audience: clientAssertionAcceptedAudiences,
       clockTolerance: clientAssertionClockToleranceSeconds,

@@ -4,11 +4,9 @@ import type { FastifyBaseLogger } from "fastify";
 import {
   type ConsumerKeychainId,
   type KnodeId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
-import type { API_TokenRequest } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -34,7 +32,13 @@ export function tokenServiceBuilder({
 }) {
   return {
     async issueToken(
-      requestBody: API_TokenRequest,
+      {
+        clientAssertionJWS,
+        consumerKeychainId,
+      }: {
+        clientAssertionJWS: string;
+        consumerKeychainId: ConsumerKeychainId;
+      },
       clientAssertionAcceptedAudiences: string[],
       clientAssertionClockToleranceSeconds: number,
       clientAssertionMaxTokenAgeSeconds: number,
@@ -43,7 +47,7 @@ export function tokenServiceBuilder({
       // Verify Client Assertion signature and claims
       const { consumerAttributes, purposeId } =
         await verifyClientAssertionSignature(
-          requestBody,
+          { clientAssertionJWS, consumerKeychainId },
           clientAssertionAcceptedAudiences,
           clientAssertionClockToleranceSeconds,
           clientAssertionMaxTokenAgeSeconds,
@@ -51,7 +55,7 @@ export function tokenServiceBuilder({
           logger,
         );
 
-      // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes
+      // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion, purpose } =
         await validatePlatformObjects(
           purposeId,
@@ -60,9 +64,6 @@ export function tokenServiceBuilder({
         );
 
       // Generate the E-service access token
-      const consumerKeychainId = unsafeBrandId<ConsumerKeychainId>(
-        requestBody.client_id,
-      );
       const token = await tokenGenerator.generateEserviceAccessToken({
         audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,

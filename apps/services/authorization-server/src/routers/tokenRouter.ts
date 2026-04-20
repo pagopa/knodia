@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
@@ -38,7 +39,10 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       );
 
       const token = await tokenService.issueToken(
-        req.body,
+        {
+          clientAssertionJWS: req.body.client_assertion,
+          consumerKeychainId: unsafeBrandId(req.body.client_id),
+        },
         clientAssertionAcceptedAudiences,
         clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
