@@ -935,7 +935,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.consumerKeychain],
     },
-    url: "/consumerKeychains/:consumerKeychainId/purpose-link/:purposeId",
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 
   fastify.route({

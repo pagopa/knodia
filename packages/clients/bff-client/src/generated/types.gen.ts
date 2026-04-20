@@ -1695,48 +1695,6 @@ export type LinkPurposeToConsumerKeychainResponses = {
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
-export type GetConsumerKeychainPurposeLinkData = {
-    body?: never;
-    path: {
-        consumerKeychainId: string;
-        purposeId: string;
-    };
-    query: {
-        knodeId: KnodeId;
-    };
-    url: '/consumerKeychains/{consumerKeychainId}/purpose-link/{purposeId}';
-};
-
-export type GetConsumerKeychainPurposeLinkErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Consumer Keychain not found
-     */
-    404: Problem;
-};
-
-export type GetConsumerKeychainPurposeLinkError = GetConsumerKeychainPurposeLinkErrors[keyof GetConsumerKeychainPurposeLinkErrors];
-
-export type GetConsumerKeychainPurposeLinkResponses = {
-    /**
-     * Consumer Keychain purpose link check retrieved successfully
-     */
-    200: ConsumerKeychainPurposeLinkCheckResult;
-};
-
-export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
-
 export type UnlinkPurposeFromConsumerKeychainData = {
     body?: never;
     path: {
@@ -1778,6 +1736,48 @@ export type UnlinkPurposeFromConsumerKeychainResponses = {
 };
 
 export type UnlinkPurposeFromConsumerKeychainResponse = UnlinkPurposeFromConsumerKeychainResponses[keyof UnlinkPurposeFromConsumerKeychainResponses];
+
+export type GetConsumerKeychainPurposeLinkData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+};
+
+export type GetConsumerKeychainPurposeLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainPurposeLinkError = GetConsumerKeychainPurposeLinkErrors[keyof GetConsumerKeychainPurposeLinkErrors];
+
+export type GetConsumerKeychainPurposeLinkResponses = {
+    /**
+     * Consumer Keychain purpose link check retrieved successfully
+     */
+    200: ConsumerKeychainPurposeLinkCheckResult;
+};
+
+export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

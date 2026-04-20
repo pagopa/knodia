@@ -653,6 +653,23 @@ export const linkPurposeToConsumerKeychainMutation = (options?: Partial<Options<
     return mutationOptions;
 };
 
+/**
+ * Unlink a Purpose from a Consumer Keychain
+ */
+export const unlinkPurposeFromConsumerKeychainMutation = (options?: Partial<Options<UnlinkPurposeFromConsumerKeychainData>>): UseMutationOptions<UnlinkPurposeFromConsumerKeychainResponse, AxiosError<UnlinkPurposeFromConsumerKeychainError>, Options<UnlinkPurposeFromConsumerKeychainData>> => {
+    const mutationOptions: UseMutationOptions<UnlinkPurposeFromConsumerKeychainResponse, AxiosError<UnlinkPurposeFromConsumerKeychainError>, Options<UnlinkPurposeFromConsumerKeychainData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await unlinkPurposeFromConsumerKeychain({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const getConsumerKeychainPurposeLinkQueryKey = (options: Options<GetConsumerKeychainPurposeLinkData>) => createQueryKey('getConsumerKeychainPurposeLink', options);
 
 /**
@@ -670,23 +687,6 @@ export const getConsumerKeychainPurposeLinkOptions = (options: Options<GetConsum
     },
     queryKey: getConsumerKeychainPurposeLinkQueryKey(options)
 });
-
-/**
- * Unlink a Purpose from a Consumer Keychain
- */
-export const unlinkPurposeFromConsumerKeychainMutation = (options?: Partial<Options<UnlinkPurposeFromConsumerKeychainData>>): UseMutationOptions<UnlinkPurposeFromConsumerKeychainResponse, AxiosError<UnlinkPurposeFromConsumerKeychainError>, Options<UnlinkPurposeFromConsumerKeychainData>> => {
-    const mutationOptions: UseMutationOptions<UnlinkPurposeFromConsumerKeychainResponse, AxiosError<UnlinkPurposeFromConsumerKeychainError>, Options<UnlinkPurposeFromConsumerKeychainData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await unlinkPurposeFromConsumerKeychain({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
 
 export const getTechnicalUsersQueryKey = (options?: Options<GetTechnicalUsersData>) => createQueryKey('getTechnicalUsers', options);
 

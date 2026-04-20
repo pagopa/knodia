@@ -2954,7 +2954,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/purpose-link/{purposeId}:
+  /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
     get:
       operationId: getConsumerKeychainPurposeLink
       tags:
@@ -3021,7 +3021,6 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
     delete:
       operationId: unlinkPurposeFromConsumerKeychain
       tags:

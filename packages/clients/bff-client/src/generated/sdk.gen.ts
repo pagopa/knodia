@@ -275,19 +275,19 @@ export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = tru
 });
 
 /**
- * Check whether the given Purpose is linked to a Consumer Keychain
+ * Unlink a Purpose from a Consumer Keychain
  */
-export const getConsumerKeychainPurposeLink = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposeLinkData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposeLinkErrors, ThrowOnError>({
-    responseType: 'json',
+export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/consumerKeychains/{consumerKeychainId}/purpose-link/{purposeId}',
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}',
     ...options
 });
 
 /**
- * Unlink a Purpose from a Consumer Keychain
+ * Check whether the given Purpose is linked to a Consumer Keychain
  */
-export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
+export const getConsumerKeychainPurposeLink = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposeLinkData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposeLinkErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}',
     ...options
