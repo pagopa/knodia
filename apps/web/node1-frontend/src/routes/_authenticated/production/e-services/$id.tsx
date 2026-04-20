@@ -31,7 +31,7 @@ function EditAction({
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   return (
-    <>
+    <DialogTrigger>
       <Button
         hierarchy="brand"
         kind="filled"
@@ -45,13 +45,12 @@ function EditAction({
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
       />
-    </>
+    </DialogTrigger>
   );
 }
 
 function RouteComponent() {
   const isAdministrative = useHasRole("administrative");
-  const isTechnical = useHasRole("technical");
   const { id } = Route.useParams();
   const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
 
@@ -69,9 +68,7 @@ function RouteComponent() {
         actions={
           <>
             {isAdministrative && <SuspendAction />}
-            {(isAdministrative || isTechnical) && (
-              <EditAction eservice={eservice} />
-            )}
+            <EditAction eservice={eservice} />
           </>
         }
         copyableId={eservice.id}
