@@ -87,7 +87,7 @@ export function eserviceServiceBuilder(
         }
       }
 
-      assertValidCategories(seed.categories ?? []);
+      assertValidCategories(seed.categories);
 
       const existingInterface =
         await readmodelService.getEserviceVersionInterfaceById(
@@ -285,7 +285,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      assertValidCategories(update.categories ?? []);
+      assertValidCategories(update.categories);
 
       const now = new Date();
 

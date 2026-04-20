@@ -48,8 +48,10 @@ export const assertEserviceVersionIsSuspended = (
   }
 };
 
-export const assertValidCategories = (categories: EserviceCategory[]): void => {
-  for (const cat of categories) {
+export const assertValidCategories = (
+  categories: EserviceCategory[] | undefined,
+): void => {
+  for (const cat of categories ?? []) {
     if (getCategory(cat.scheme, cat.code) === undefined) {
       throw invalidCategory(cat.scheme, cat.code);
     }
