@@ -59,12 +59,11 @@ export const agreementRouter: FastifyPluginAsyncZod<
     });
 
   const pollAgreement = (
-    agreementId: string,
-    response: AxiosResponse<unknown>,
+    response: AxiosResponse<agreementProcessApi.Agreement>,
     headers: KnodiaServiceHeaders,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
-      retrieveAgreementById(agreementId, headers),
+      retrieveAgreementById(response.data.id, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
@@ -86,7 +85,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollAgreement(response.data.id, response, headers);
+      await pollAgreement(response, headers);
 
       res.status(201).send({
         id: response.data.id,
@@ -155,13 +154,15 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       const headers = await getHeaders(correlationId);
 
-      const { data } = await agreementProcessApi.reactivateAgreementByConsumer({
+      const response = await agreementProcessApi.reactivateAgreementByConsumer({
         client: agreementProcessClient,
         headers,
         path: { agreementId: req.params.agreementId },
       });
 
-      res.send(toAPI_Agreement(data));
+      await pollAgreement(response, headers);
+
+      res.send(toAPI_Agreement(response.data));
     },
     method: "POST",
     schema: {
@@ -190,13 +191,15 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       const headers = await getHeaders(correlationId);
 
-      const { data } = await agreementProcessApi.suspendAgreementByConsumer({
+      const response = await agreementProcessApi.suspendAgreementByConsumer({
         client: agreementProcessClient,
         headers,
         path: { agreementId: req.params.agreementId },
       });
 
-      res.send(toAPI_Agreement(data));
+      await pollAgreement(response, headers);
+
+      res.send(toAPI_Agreement(response.data));
     },
     method: "POST",
     schema: {
