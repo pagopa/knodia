@@ -2,6 +2,7 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getProducerEserviceDetailsQueryKey,
+  getProducerEservicesQueryKey,
   reactivateProducerEserviceMutation,
   suspendProducerEserviceMutation,
 } from "@knodia/bff-client/tanstack-query";
@@ -34,15 +35,8 @@ export function EserviceProducerActions({
         }),
       }),
       queryClient.invalidateQueries({
-        predicate: (query) => {
-          const key = query.queryKey.at(0);
-          return (
-            typeof key === "object" &&
-            key !== null &&
-            "_id" in key &&
-            key._id === "getProducerEservices"
-          );
-        },
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        queryKey: getProducerEservicesQueryKey({ client, query: undefined! }),
       }),
     ]);
 
