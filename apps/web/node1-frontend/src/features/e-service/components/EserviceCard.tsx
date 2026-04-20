@@ -43,12 +43,14 @@ export function EserviceCardFooter({
 }
 
 export function EserviceCardHeader({
+  badge,
   description,
   id,
   search,
   title,
   to,
 }: {
+  badge?: React.ReactNode;
   description?: string;
   id: string;
   search?: { knodeId: string };
@@ -67,17 +69,20 @@ export function EserviceCardHeader({
           </p>
         )}
       </div>
-      <ButtonLinkWithPreload
-        aria-label="Go to e-service"
-        hierarchy="neutral"
-        kind="outlined"
-        params={{ id }}
-        search={search}
-        size="icon-md"
-        to={to}
-      >
-        <ArrowRightIcon />
-      </ButtonLinkWithPreload>
+      <div className="flex items-center gap-4">
+        {badge}
+        <ButtonLinkWithPreload
+          aria-label="Go to e-service"
+          hierarchy="neutral"
+          kind="outlined"
+          params={{ id }}
+          search={search}
+          size="icon-md"
+          to={to}
+        >
+          <ArrowRightIcon />
+        </ButtonLinkWithPreload>
+      </div>
     </header>
   );
 }

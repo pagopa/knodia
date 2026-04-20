@@ -134,21 +134,50 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Getting consumer E-service details with ID ${req.params.eserviceId}`,
       );
 
-      const [{ data }, { data: consumerOrg }] = await Promise.all([
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const [
+        { data },
+        { data: consumerOrg },
+        {
+          data: {
+            results: [mostRecentPurpose],
+          },
+        },
+      ] = await Promise.all([
         remoteResourcesManagerApi.getEserviceDetails({
           client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path: { eserviceId: req.params.eserviceId },
           query: { knodeId: req.query.knodeId },
         }),
         organizationProcessApi.getOrganization({
           client: organizationProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path: { organizationId: consumerId },
+        }),
+        // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+        // purposes are ordered by updatedAt DESC in the readmodel,
+        // so the first result is the most recently updated one.
+        remoteResourcesManagerApi.getPurposes({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+          },
         }),
       ]);
 
-      res.send(toAPI_ConsumerEserviceDetails(data, consumerOrg.attributes));
+      res.send(
+        toAPI_ConsumerEserviceDetails(
+          data,
+          consumerOrg.attributes,
+          config.recentUpdateDays,
+          mostRecentPurpose,
+        ),
+      );
     },
     method: "GET",
     schema: {
@@ -253,8 +282,15 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         data.results.map(async (eservice) => {
           // TODO(KN-473): paginate to fetch all active purposes if >50 exist,
           // otherwise consumerKeychains count will be undercounted
-          const { data: activePurposes } =
-            await remoteResourcesManagerApi.getPurposes({
+          const [
+            { data: activePurposes },
+            {
+              data: {
+                results: [mostRecentPurpose],
+              },
+            },
+          ] = await Promise.all([
+            remoteResourcesManagerApi.getPurposes({
               client: remoteResourcesManagerClient,
               headers,
               query: {
@@ -263,7 +299,20 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 offset: 0,
                 state: API_PurposeState.enum.Active,
               },
-            });
+            }),
+            // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+            // purposes are ordered by updatedAt DESC in the readmodel,
+            // so the first result is the most recently updated one.
+            remoteResourcesManagerApi.getPurposes({
+              client: remoteResourcesManagerClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+              },
+            }),
+          ]);
 
           // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
           // otherwise consumerKeychains count will be undercounted
@@ -296,6 +345,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               consumerKeychains,
             },
             eservice,
+            mostRecentPurpose,
             recentUpdateDays: config.recentUpdateDays,
           });
         }),
