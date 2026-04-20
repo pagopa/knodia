@@ -29,14 +29,14 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   agreementAlreadyExists,
   agreementIdMismatch,
-  agreementNotInExpectedState,
+  agreementNotInActivatableState,
   agreementNotInReactivatableState,
   agreementNotInSuspendableState,
+  agreementTokenClaimMismatch,
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
   organizationNotAgreementProducer,
-  resourceClaimMismatch,
 } from "../models/errors.ts";
 import {
   retrieveEserviceLatestVersion,
@@ -214,11 +214,7 @@ export function assertAgreementIsPendingConsumerOperatorIdentification(
     agreement.state !==
     AgreementState.enum.PendingConsumerOperatorIdentification
   ) {
-    throw agreementNotInExpectedState(
-      agreement.id,
-      agreement.state,
-      AgreementState.enum.PendingConsumerOperatorIdentification,
-    );
+    throw agreementNotInActivatableState(agreement.id, agreement.state);
   }
 }
 
@@ -269,7 +265,7 @@ export function assertTokenResourceClaimsMatchAgreement(
 
   for (const { agreementValue, field, tokenValue } of checks) {
     if (tokenValue !== agreementValue) {
-      throw resourceClaimMismatch(
+      throw agreementTokenClaimMismatch(
         agreement.id,
         field,
         tokenValue,

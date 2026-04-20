@@ -28,9 +28,9 @@ const errorCodes = {
   AGREEMENT_NOT_IN_SUSPENDABLE_STATE: "0008",
   AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
-  AGREEMENT_NOT_IN_EXPECTED_STATE: "0011",
+  AGREEMENT_NOT_IN_ACTIVATABLE_STATE: "0011",
   AGREEMENT_ID_MISMATCH: "0012",
-  RESOURCE_CLAIM_MISMATCH: "0013",
+  AGREEMENT_TOKEN_CLAIM_MISMATCH: "0013",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -78,16 +78,15 @@ export function agreementNotFound(id: AgreementId) {
   });
 }
 
-export function agreementNotInExpectedState(
+export function agreementNotInActivatableState(
   agreementId: AgreementId,
-  actualState: AgreementState,
-  expectedState: AgreementState,
+  state: AgreementState,
 ) {
   return createApiError<ErrorCodes>({
-    code: "AGREEMENT_NOT_IN_EXPECTED_STATE",
-    detail: `Agreement ${agreementId} is in state ${actualState}, expected ${expectedState}`,
+    code: "AGREEMENT_NOT_IN_ACTIVATABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be activated (state=${state})`,
     status: HTTP_STATUS_CONFLICT,
-    title: "Agreement Not in Expected State",
+    title: "Agreement Not In Activatable State",
   });
 }
 
@@ -130,6 +129,20 @@ export function agreementNotInSuspendableState({
     detail: `Agreement ${agreementId} cannot be suspended by ${suspendedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
     status: HTTP_STATUS_CONFLICT,
     title: "Agreement Not In Suspendable State",
+  });
+}
+
+export function agreementTokenClaimMismatch(
+  agreementId: AgreementId,
+  field: string,
+  tokenValue: string,
+  agreementValue: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_TOKEN_CLAIM_MISMATCH",
+    detail: `Token claim "${field}" (${tokenValue}) does not match agreement ${agreementId} value (${agreementValue})`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Agreement Token Claim Mismatch",
   });
 }
 
@@ -205,19 +218,5 @@ export function organizationNotAgreementProducer(
     detail: `Organization ${organizationId} is not the producer of Agreement ${agreementId}. Only the producer can perform this operation.`,
     status: HTTP_STATUS_FORBIDDEN,
     title: "Organization is not the Agreement producer",
-  });
-}
-
-export function resourceClaimMismatch(
-  agreementId: AgreementId,
-  field: string,
-  tokenValue: string,
-  agreementValue: string,
-) {
-  return createApiError<ErrorCodes>({
-    code: "RESOURCE_CLAIM_MISMATCH",
-    detail: `Token claim "${field}" (${tokenValue}) does not match agreement ${agreementId} value (${agreementValue})`,
-    status: HTTP_STATUS_FORBIDDEN,
-    title: "Resource Claim Mismatch",
   });
 }
