@@ -1,0 +1,31 @@
+meta {
+  name: 4 - Suspend by Producer
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/suspendByProducer
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Suspended
+  res.body.suspendedByProducerAt: isDefined
+  res.body.suspendedByConsumerAt: isNull
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}

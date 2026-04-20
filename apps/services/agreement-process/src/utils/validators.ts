@@ -6,7 +6,11 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
-import { AgreementState } from "@knodia/agreement-models";
+import {
+  type Agreement,
+  AgreementActor,
+  AgreementState,
+} from "@knodia/agreement-models";
 import {
   type AttributeId,
   hasAllRequiredAttributes,
@@ -16,14 +20,18 @@ import {
   type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { match } from "ts-pattern";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
+  agreementNotInReactivatableState,
+  agreementNotInSuspendableState,
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
+  organizationNotAgreementProducer,
 } from "../models/errors.ts";
 import {
   retrieveEserviceLatestVersion,
@@ -34,6 +42,82 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
   EserviceVersionState.enum.Suspended,
 ];
+
+export function assertAgreementCanBeReactivatedBy(
+  agreement: Agreement,
+  reactivatedBy: AgreementActor,
+): void {
+  if (
+    agreement.state !== AgreementState.enum.Suspended ||
+    getOwnSuspendedAt(agreement, reactivatedBy) === null
+  ) {
+    throw agreementNotInReactivatableState({
+      agreementId: agreement.id,
+      reactivatedBy,
+      state: agreement.state,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  }
+}
+
+export function assertAgreementCanBeSuspendedBy(
+  agreement: Agreement,
+  suspendedBy: AgreementActor,
+): void {
+  const throwNotSuspendable = (): never => {
+    throw agreementNotInSuspendableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+      suspendedBy,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  };
+
+  match(agreement.state)
+    .with(AgreementState.enum.Active, () => undefined)
+    .with(AgreementState.enum.Suspended, () => {
+      if (getOwnSuspendedAt(agreement, suspendedBy) !== null) {
+        throwNotSuspendable();
+      }
+      // Consumer cannot suspend an agreement already suspended by the producer.
+      // Consumer's only action on a producer-suspended agreement is to archive.
+      if (
+        suspendedBy === AgreementActor.enum.Consumer &&
+        agreement.suspendedByProducerAt !== null
+      ) {
+        throwNotSuspendable();
+      }
+    })
+    .with(
+      AgreementState.enum.Archived,
+      AgreementState.enum.PendingConsumerOperatorIdentification,
+      () => {
+        throwNotSuspendable();
+      },
+    )
+    .exhaustive();
+}
+
+export function assertOrganizationIsAgreementProducer(
+  agreement: Agreement,
+  organizationId: OrganizationId,
+): void {
+  if (agreement.producerId !== organizationId) {
+    throw organizationNotAgreementProducer(agreement.id, organizationId);
+  }
+}
+
+function getOwnSuspendedAt(
+  agreement: Agreement,
+  actor: AgreementActor,
+): Date | null {
+  return match(actor)
+    .with(AgreementActor.enum.Producer, () => agreement.suspendedByProducerAt)
+    .with(AgreementActor.enum.Consumer, () => agreement.suspendedByConsumerAt)
+    .exhaustive();
+}
 
 export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
