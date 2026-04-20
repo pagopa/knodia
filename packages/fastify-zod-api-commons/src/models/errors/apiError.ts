@@ -50,16 +50,16 @@ export function createApiErrorFromErrorsList<T>({
   status: number;
   title: string;
 }) {
-  const normalizedErrors: { code: T; detail: string }[] = [];
-  for (const e of errors) {
+  const normalizedErrors = errors.flatMap((e) => {
     if (e instanceof ApiError) {
-      normalizedErrors.push(...e.errors);
+      return e.errors.map((err) => ({ code: err.code, detail: err.detail }));
     } else if (e instanceof Error) {
-      normalizedErrors.push({ code, detail: e.message });
+      return { code, detail: e.message };
     } else {
-      normalizedErrors.push({ code, detail: fromZodIssue(e).message });
+      return { code, detail: fromZodIssue(e).message };
     }
-  }
+  });
+
   return new ApiError({
     errors: normalizedErrors,
     status,
