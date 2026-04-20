@@ -30,10 +30,11 @@ const schema: JsonSchema = {
       enum: ["QUANTITY_0_TO_100", "QUANTITY_101_TO_500"],
       type: "string",
     },
-    description: { maxLength: 2000, type: "string" },
+    description: { maxLength: 2000, minLength: 1, type: "string" },
     knowsDataQuantity: { enum: ["YES", "NO"], type: "string" },
     legalBasis: {
       items: { enum: ["CONSENT", "PUBLIC_INTEREST"], type: "string" },
+      minItems: 1,
       type: "array",
       uniqueItems: true,
     },
@@ -171,6 +172,7 @@ describe("createAjvValidator", () => {
         },
         personalDataTypes: {
           items: { enum: ["GDPR_ART_9", "OTHER"], type: "string" },
+          minItems: 1,
           type: "array",
         },
       },

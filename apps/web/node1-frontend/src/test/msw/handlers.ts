@@ -28,13 +28,18 @@ export const handlers = [
         ],
         properties: {
           declarationConfirmGDPR: { const: "true", type: "string" },
-          institutionalPurpose: { maxLength: 2000, type: "string" },
+          institutionalPurpose: {
+            maxLength: 2000,
+            minLength: 1,
+            type: "string",
+          },
           personalDataTypes: {
             default: [],
             items: {
               enum: ["WITH_NON_IDENTIFYING_DATA", "WITH_IDENTIFYING_DATA"],
               type: "string",
             },
+            minItems: 1,
             type: "array",
             uniqueItems: true,
           },
