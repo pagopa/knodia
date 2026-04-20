@@ -28,6 +28,7 @@ import {
   JWTClaimValidationFailed,
   JWTExpired,
 } from "jose/errors";
+import { match } from "ts-pattern";
 import { ZodError } from "zod";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -185,20 +186,29 @@ function assertPlatformStatesAreActive(
   agreement: Agreement,
   eserviceVersion: Omit<EserviceVersion, "interfaceDocument">,
 ) {
-  const agreementStateError =
-    agreement.state !== "Active"
-      ? agreementNotActive(agreement.id, agreement.state)
-      : undefined;
+  const agreementStateError = match(agreement.state)
+    .with("Active", () => undefined)
+    .with(
+      "Suspended",
+      "Archived",
+      "PendingConsumerOperatorIdentification",
+      (state) => agreementNotActive(agreement.id, state),
+    )
+    .exhaustive();
 
-  const eserviceVersionError =
-    eserviceVersion.state !== "Active"
-      ? eserviceVersionNotActive(eserviceVersion.id, eserviceVersion.state)
-      : undefined;
+  const eserviceVersionError = match(eserviceVersion.state)
+    .with("Active", () => undefined)
+    .with("Suspended", "Archived", (state) =>
+      eserviceVersionNotActive(eserviceVersion.id, state),
+    )
+    .exhaustive();
 
-  const purposeError =
-    purpose.state !== "Active"
-      ? purposeNotActive(purpose.id, purpose.state)
-      : undefined;
+  const purposeError = match(purpose.state)
+    .with("Active", () => undefined)
+    .with("Suspended", "Archived", (state) =>
+      purposeNotActive(purpose.id, state),
+    )
+    .exhaustive();
 
   if (agreementStateError || eserviceVersionError || purposeError) {
     throw platformStatesNotActive([
