@@ -16,6 +16,9 @@ export const AgreementState = z.enum([
 ]);
 export type AgreementState = z.infer<typeof AgreementState>;
 
+export const AgreementActor = z.enum(["Consumer", "Producer"]);
+export type AgreementActor = z.infer<typeof AgreementActor>;
+
 export const Agreement = z.strictObject({
   attributes: z.array(AttributeId).min(1),
   consumer: ExternalResource<OrganizationId>(),
@@ -25,6 +28,8 @@ export const Agreement = z.strictObject({
   id: AgreementId,
   producerId: OrganizationId,
   state: AgreementState,
+  suspendedByConsumerAt: z.coerce.date().nullable(),
+  suspendedByProducerAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date(),
 });
 export type Agreement = z.infer<typeof Agreement>;

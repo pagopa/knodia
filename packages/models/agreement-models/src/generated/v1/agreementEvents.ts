@@ -18,6 +18,22 @@ export interface AgreementCreatedPendingConsumerOperatorIdentificationV1 {
   agreement: AgreementV1 | undefined;
 }
 
+export interface AgreementSuspendedByConsumerV1 {
+  agreement: AgreementV1 | undefined;
+}
+
+export interface AgreementSuspendedByProducerV1 {
+  agreement: AgreementV1 | undefined;
+}
+
+export interface AgreementReactivatedByConsumerV1 {
+  agreement: AgreementV1 | undefined;
+}
+
+export interface AgreementReactivatedByProducerV1 {
+  agreement: AgreementV1 | undefined;
+}
+
 export interface AgreementActivatedByConsumerOperatorV1 {
   agreement: AgreementV1 | undefined;
 }
@@ -144,6 +160,258 @@ export const AgreementCreatedPendingConsumerOperatorIdentificationV1: MessageFns
     object: I,
   ): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
     const message = createBaseAgreementCreatedPendingConsumerOperatorIdentificationV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementSuspendedByConsumerV1(): AgreementSuspendedByConsumerV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementSuspendedByConsumerV1: MessageFns<AgreementSuspendedByConsumerV1> = {
+  encode(message: AgreementSuspendedByConsumerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementSuspendedByConsumerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementSuspendedByConsumerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementSuspendedByConsumerV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementSuspendedByConsumerV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementSuspendedByConsumerV1>, I>>(base?: I): AgreementSuspendedByConsumerV1 {
+    return AgreementSuspendedByConsumerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementSuspendedByConsumerV1>, I>>(
+    object: I,
+  ): AgreementSuspendedByConsumerV1 {
+    const message = createBaseAgreementSuspendedByConsumerV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementSuspendedByProducerV1(): AgreementSuspendedByProducerV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementSuspendedByProducerV1: MessageFns<AgreementSuspendedByProducerV1> = {
+  encode(message: AgreementSuspendedByProducerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementSuspendedByProducerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementSuspendedByProducerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementSuspendedByProducerV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementSuspendedByProducerV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementSuspendedByProducerV1>, I>>(base?: I): AgreementSuspendedByProducerV1 {
+    return AgreementSuspendedByProducerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementSuspendedByProducerV1>, I>>(
+    object: I,
+  ): AgreementSuspendedByProducerV1 {
+    const message = createBaseAgreementSuspendedByProducerV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementReactivatedByConsumerV1(): AgreementReactivatedByConsumerV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementReactivatedByConsumerV1: MessageFns<AgreementReactivatedByConsumerV1> = {
+  encode(message: AgreementReactivatedByConsumerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementReactivatedByConsumerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementReactivatedByConsumerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementReactivatedByConsumerV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementReactivatedByConsumerV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementReactivatedByConsumerV1>, I>>(
+    base?: I,
+  ): AgreementReactivatedByConsumerV1 {
+    return AgreementReactivatedByConsumerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementReactivatedByConsumerV1>, I>>(
+    object: I,
+  ): AgreementReactivatedByConsumerV1 {
+    const message = createBaseAgreementReactivatedByConsumerV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementReactivatedByProducerV1(): AgreementReactivatedByProducerV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementReactivatedByProducerV1: MessageFns<AgreementReactivatedByProducerV1> = {
+  encode(message: AgreementReactivatedByProducerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementReactivatedByProducerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementReactivatedByProducerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementReactivatedByProducerV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementReactivatedByProducerV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementReactivatedByProducerV1>, I>>(
+    base?: I,
+  ): AgreementReactivatedByProducerV1 {
+    return AgreementReactivatedByProducerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementReactivatedByProducerV1>, I>>(
+    object: I,
+  ): AgreementReactivatedByProducerV1 {
+    const message = createBaseAgreementReactivatedByProducerV1();
     message.agreement = (object.agreement !== undefined && object.agreement !== null)
       ? AgreementV1.fromPartial(object.agreement)
       : undefined;

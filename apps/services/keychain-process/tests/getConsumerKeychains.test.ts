@@ -23,11 +23,20 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
+const matchingNamePrefix = "zz-combobox-match";
 const ownerIdFilter = mockConsumerKeychains[0]!.ownerId;
 const alternateOwnerId = mockConsumerKeychains[1]!.ownerId;
 const seededConsumerKeychains = mockConsumerKeychains.map(
   (consumerKeychain, index) => {
-    if ([0, 4, 7].includes(index)) {
+    if ([0, 4].includes(index)) {
+      return {
+        ...consumerKeychain,
+        name: { en: `${matchingNamePrefix}-${index}` },
+        ownerId: ownerIdFilter,
+      };
+    }
+
+    if (index === 7) {
       return {
         ...consumerKeychain,
         ownerId: ownerIdFilter,
@@ -150,6 +159,17 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       },
       testCase: "filter by ownerId, sort by updatedAt desc by default",
       totalCount: 3,
+    },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter((ck) =>
+        ck.name.en.toLowerCase().includes(matchingNamePrefix),
+      ),
+      query: {
+        ...defaultQuery,
+        name: matchingNamePrefix.toUpperCase(),
+      },
+      testCase: "filter by name, case insensitive",
+      totalCount: 2,
     },
     {
       expectedResult: sortedMockConsumerKeychains.filter(

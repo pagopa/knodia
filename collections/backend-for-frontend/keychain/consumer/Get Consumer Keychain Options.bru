@@ -1,0 +1,17 @@
+meta {
+  name: Get Consumer Keychain Options
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumerKeychains/options?q=combobox
+  body: none
+}
+
+params:query {
+  q: combobox
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

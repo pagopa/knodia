@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -7,12 +6,18 @@ import {
   API_CreatedResource,
   API_FileDownload,
 } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { type ConsumerKeychainId, KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
@@ -27,6 +32,10 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 import { type AxiosResponse, isAxiosError } from "axios";
 import { z } from "zod";
 
@@ -35,12 +44,16 @@ import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainMembershipCheckResult,
+  API_ConsumerKeychainOptions,
   API_ConsumerKeychainPatch,
+  API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
+  API_GetConsumerKeychainOptionsQueryParams,
+  API_GetConsumerKeychainPurposesQueryParams,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeys,
@@ -50,9 +63,11 @@ import {
   API_Keychains,
 } from "../../models/keychain/api.ts";
 import {
+  toAPI_ConsumerKeychainPurpose,
   toAPI_Keychain,
   toAPI_KeychainDetails,
   toAPI_KeychainKey,
+  toAPI_KeychainOption,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
@@ -60,11 +75,15 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
   pollingService: PollingService;
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
-> = async (fastify, { keychainProcessClient, pollingService }) => {
+> = async (
+  fastify,
+  { keychainProcessClient, pollingService, remoteResourcesManagerClient },
+) => {
   const retrieveConsumerKeychainById = async (
     consumerKeychainId: string,
     headers: KnodiaServiceHeaders,
@@ -642,6 +661,53 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { ownerId, requestQuery: req.query },
+        `Getting Consumer Keychain options with query parameters for owner ${ownerId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const { data } = await keychainProcessApi.getConsumerKeychains({
+        client: keychainProcessClient,
+        headers,
+        query: {
+          limit: req.query.limit,
+          name: req.query.q,
+          offset: req.query.offset,
+          ownerId,
+        },
+      });
+
+      res.send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_KeychainOption),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve Consumer Keychain options for combobox selection",
+      operationId: "getConsumerKeychainOptions",
+      querystring: API_GetConsumerKeychainOptionsQueryParams,
+      response: {
+        200: API_ConsumerKeychainOptions.meta({
+          description: "Consumer Keychain options retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/options",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: ownerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        { ownerId, requestQuery: req.query },
         `Getting Consumer Keychains with query parameters for owner ${ownerId}`,
       );
 
@@ -702,6 +768,114 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId } = req.params;
+      const { limit, offset } = req.query;
+
+      logger.info(
+        { requestParams: req.params, requestQuery: req.query },
+        `Getting Purposes linked to Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const {
+        data: { pagination, results: linkedPurposes },
+      } = await keychainProcessApi.getConsumerKeychainPurposes({
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId },
+        query: { limit, offset },
+      });
+
+      const purposesMap = await getExternalEntitiesMap({
+        fetchFn: ({ entityIds, knodeId }) =>
+          Promise.all(
+            entityIds.map((purposeId) =>
+              remoteResourcesManagerApi
+                .getPurpose({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { purposeId },
+                  query: { knodeId },
+                })
+                .then((res) => res.data),
+            ),
+          ),
+        getEntityId: ({ purpose }) => purpose.id,
+        getKnodeId: ({ purpose }) => KnodeId.parse(purpose.knodeId),
+        items: linkedPurposes,
+      });
+
+      const eservicesMap = await getExternalEntitiesMap({
+        fetchFn: ({ entityIds, knodeId }) =>
+          Promise.all(
+            entityIds.map((eserviceId) =>
+              remoteResourcesManagerApi
+                .getEserviceDetails({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { eserviceId },
+                  query: { knodeId },
+                })
+                .then((res) => res.data),
+            ),
+          ),
+        getEntityId: (purpose) => purpose.eserviceId,
+        getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
+        items: Array.from(purposesMap.values()).flatMap((p) =>
+          Array.from(p.values()),
+        ),
+      });
+
+      function enrichLinkedPurpose(
+        linkedPurpose: keychainProcessApi.ConsumerKeychainPurpose,
+      ) {
+        const purpose = assertEntityExists(
+          purposesMap
+            .get(linkedPurpose.purpose.knodeId)
+            ?.get(unsafeBrandExternalId(linkedPurpose.purpose.id)),
+          `Purpose with ID ${linkedPurpose.purpose.id} not found`,
+        );
+
+        const eservice = assertEntityExists(
+          eservicesMap
+            .get(purpose.knodeId)
+            ?.get(unsafeBrandExternalId(purpose.eserviceId)),
+          `Eservice with ID ${purpose.eserviceId} not found`,
+        );
+
+        return toAPI_ConsumerKeychainPurpose(eservice, purpose);
+      }
+
+      res.send({
+        pagination,
+        results: linkedPurposes.map(enrichLinkedPurpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve Purposes linked to a Consumer Keychain",
+      operationId: "getConsumerKeychainPurposes",
+      params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainPurposesQueryParams,
+      response: {
+        200: API_ConsumerKeychainPurposes.meta({
+          description:
+            "Purposes linked to the Consumer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes",
   });
 
   fastify.route({

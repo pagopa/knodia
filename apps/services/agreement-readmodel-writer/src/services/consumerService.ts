@@ -5,7 +5,7 @@ import {
   fromAgreementV1,
 } from "@knodia/agreement-models";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 export async function handleAgreementEvent(
   message: AgreementEventEnvelopeV1,
@@ -15,9 +15,17 @@ export async function handleAgreementEvent(
 
   return match(message)
     .with(
-      { type: "AgreementActivatedV1" },
-      { type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" },
-      { type: "AgreementActivatedByConsumerOperatorV1" },
+      {
+        type: P.union(
+          "AgreementActivatedV1",
+          "AgreementActivatedByConsumerOperatorV1",
+          "AgreementCreatedPendingConsumerOperatorIdentificationV1",
+          "AgreementSuspendedByConsumerV1",
+          "AgreementSuspendedByProducerV1",
+          "AgreementReactivatedByConsumerV1",
+          "AgreementReactivatedByProducerV1",
+        ),
+      },
       async (msg) => {
         await writerService.upsertAgreement(
           fromAgreementV1(msg.data.agreement),

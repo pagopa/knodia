@@ -322,6 +322,62 @@ describe("CreateEServiceModal — publish flow", () => {
   });
 });
 
+describe("CreateEServiceModal — multi-select trigger text", () => {
+  it("joins selected attributes within a group with 'or'", async () => {
+    const { user } = renderWizard();
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillDocsStep(user);
+
+    const attrSelect = screen.getByRole("button", { name: /attributes/i });
+
+    await user.click(attrSelect);
+    await waitFor(() => {
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+    });
+
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBeGreaterThanOrEqual(2);
+    await user.click(options[0] as HTMLElement);
+    await user.click(options[1] as HTMLElement);
+
+    await user.keyboard("{Escape}");
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+
+    expect(attrSelect).toHaveAccessibleName(/\bor\b/i);
+    expect(attrSelect).not.toHaveAccessibleName(/\band\b/i);
+  });
+
+  it("joins selected categories on GeneralStep with 'and' (regression guard)", async () => {
+    const { user } = renderWizard();
+
+    const categoriesSelect = screen.getByRole("button", {
+      name: /categories \(optional\)/i,
+    });
+
+    await user.click(categoriesSelect);
+    await waitFor(() => {
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+    });
+
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBeGreaterThanOrEqual(2);
+    await user.click(options[0] as HTMLElement);
+    await user.click(options[1] as HTMLElement);
+
+    await user.keyboard("{Escape}");
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+
+    expect(categoriesSelect).toHaveAccessibleName(/\band\b/i);
+    expect(categoriesSelect).not.toHaveAccessibleName(/\bor\b/i);
+  });
+});
+
 describe("CreateEServiceModal — leave confirmation", () => {
   it("shows modal and calls onClose when confirmed", async () => {
     const { onClose, user } = renderWizard();

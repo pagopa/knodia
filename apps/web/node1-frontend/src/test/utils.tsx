@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-router";
 import { render, type RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { I18nProvider } from "react-aria-components";
 
 import { AuthContext } from "@/contexts/auth";
 
@@ -91,24 +92,26 @@ function createTestWrapper(options: WrapperOptions = {}) {
 
   function TestWrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        <AuthContext.Provider
-          value={{
-            isAuthenticated: true,
-            isLoading: false,
-            login: () => undefined,
-            logout: () => Promise.resolve(),
-            roles,
-            token: "test-token",
-            userId: generateUserId(),
-            username: "test-user",
-          }}
-        >
-          <RouterContextProvider router={router}>
-            {children}
-          </RouterContextProvider>
-        </AuthContext.Provider>
-      </QueryClientProvider>
+      <I18nProvider locale="en-GB">
+        <QueryClientProvider client={queryClient}>
+          <AuthContext.Provider
+            value={{
+              isAuthenticated: true,
+              isLoading: false,
+              login: () => undefined,
+              logout: () => Promise.resolve(),
+              roles,
+              token: "test-token",
+              userId: generateUserId(),
+              username: "test-user",
+            }}
+          >
+            <RouterContextProvider router={router}>
+              {children}
+            </RouterContextProvider>
+          </AuthContext.Provider>
+        </QueryClientProvider>
+      </I18nProvider>
     );
   }
 

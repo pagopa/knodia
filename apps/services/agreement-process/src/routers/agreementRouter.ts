@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { AgreementActor } from "@knodia/agreement-models";
 import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
@@ -197,5 +199,173 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId/activate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.suspendAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Consumer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement by Consumer",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendAgreementByConsumer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement suspended successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/suspendByConsumer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.suspendAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Producer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement by Producer",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendAgreementByProducer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement suspended successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/suspendByProducer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.reactivateAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Consumer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement by Consumer",
+      headers: KnodiaServiceHeaders,
+      operationId: "reactivateAgreementByConsumer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement reactivated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/reactivateByConsumer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.reactivateAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Producer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement by Producer",
+      headers: KnodiaServiceHeaders,
+      operationId: "reactivateAgreementByProducer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement reactivated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/reactivateByProducer",
   });
 };
