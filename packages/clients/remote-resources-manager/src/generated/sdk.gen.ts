@@ -110,7 +110,7 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 /**
  * Reactivate an Agreement
  *
- * Reactivate an Agreement on behalf of the caller organization as its Consumer
+ * Reactivate an Agreement on behalf of its Consumer; the Consumer must be the caller organization
  */
 export const reactivateAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementResponses, ReactivateAgreementErrors, ThrowOnError>({
     responseType: 'json',
@@ -122,7 +122,7 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 /**
  * Suspend an Agreement
  *
- * Suspend an Agreement on behalf of the caller organization as its Consumer
+ * Suspend an Agreement on behalf of its Consumer; the Consumer must be the caller organization
  */
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',

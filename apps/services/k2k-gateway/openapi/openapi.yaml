@@ -1268,7 +1268,8 @@ paths:
       tags:
         - resource
         - agreement
-      description: Reactivate an Agreement on behalf of its Consumer
+      description: Reactivate an Agreement on behalf of its Consumer; the Consumer
+        must belong to the caller Knode
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"
@@ -1315,7 +1316,8 @@ paths:
       tags:
         - resource
         - agreement
-      description: Suspend an Agreement on behalf of its Consumer
+      description: Suspend an Agreement on behalf of its Consumer; the Consumer must
+        belong to the caller Knode
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"

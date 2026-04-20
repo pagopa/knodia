@@ -139,7 +139,7 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
 /**
  * Reactivate an Agreement
  *
- * Reactivate an Agreement on behalf of its Consumer
+ * Reactivate an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode
  */
 export const reactivateAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementResponses, ReactivateAgreementErrors, ThrowOnError>({
     responseType: 'json',
@@ -150,7 +150,7 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 /**
  * Suspend an Agreement
  *
- * Suspend an Agreement on behalf of its Consumer
+ * Suspend an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode
  */
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',

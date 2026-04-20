@@ -1264,8 +1264,8 @@ paths:
       summary: Reactivate an Agreement
       tags:
         - agreement
-      description: Reactivate an Agreement on behalf of the caller organization as its
-        Consumer
+      description: Reactivate an Agreement on behalf of its Consumer; the Consumer
+        must be the caller organization
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1334,7 +1334,8 @@ paths:
       summary: Suspend an Agreement
       tags:
         - agreement
-      description: Suspend an Agreement on behalf of the caller organization as its Consumer
+      description: Suspend an Agreement on behalf of its Consumer; the Consumer must
+        be the caller organization
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
