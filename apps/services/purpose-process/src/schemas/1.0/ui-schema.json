@@ -725,7 +725,7 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/confirmedDoneDpia",
+              "scope": "#/properties/doneDpaPriorConsultation",
               "label": "Has a prior consultation with the Data Protection Authority been carried out?",
               "options": {
                 "widget": "radio",
@@ -763,7 +763,7 @@
                       "schema": { "const": "YES" }
                     },
                     {
-                      "scope": "#/properties/confirmedDoneDpia",
+                      "scope": "#/properties/doneDpaPriorConsultation",
                       "schema": { "const": "NO" }
                     }
                   ]
