@@ -1,0 +1,31 @@
+meta {
+  name: 10 - Reactivate by Producer
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/reactivateByProducer
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Active
+  res.body.suspendedByProducerAt: isNull
+  res.body.suspendedByConsumerAt: isNull
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
