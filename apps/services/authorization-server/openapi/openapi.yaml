@@ -156,12 +156,12 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
+        "401":
+          description: Unauthorized
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

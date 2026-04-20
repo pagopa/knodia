@@ -62,7 +62,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
           description: "Token issued successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
-        404: API_Problem.meta({ description: "Not Found" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
       },
       security: [],
       summary: "Create Token",
