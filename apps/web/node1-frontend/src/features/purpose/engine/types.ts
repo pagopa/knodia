@@ -38,7 +38,7 @@ export interface JsonSchemaIfClause {
   required?: string[];
 }
 
-export interface JsonSchemaProperty {
+interface JsonSchemaProperty {
   const?: string;
   default?: string | string[];
   enum?: string[];
