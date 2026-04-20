@@ -134,7 +134,7 @@ describe("POST /token", async () => {
     return app.inject({
       headers: { "content-type": "application/x-www-form-urlencoded" },
       method: "POST",
-      payload: new URLSearchParams(body).toString(),
+      payload: new URLSearchParams(body as Record<string, string>).toString(),
       url: "/token",
     });
   }

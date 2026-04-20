@@ -9,6 +9,8 @@ import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBu
 import { constants } from "http2";
 import { ZodError } from "zod";
 
+import { EXPECTED_GRANT_TYPE } from "./constants.ts";
+
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
 
@@ -20,6 +22,8 @@ const errorCodes = {
   INVALID_CLIENT_ASSERTION_SIGNATURE: "0004",
   JSON_WEB_TOKEN_ERROR: "0005",
   PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG: "0006",
+  UNSUPPORTED_GRANT_TYPE: "0007",
+  INVALID_REQUEST_PARAMETERS: "0008",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -62,6 +66,15 @@ export function invalidClientAssertionSignature() {
   });
 }
 
+export function invalidRequestParameters(error: ZodError) {
+  return createApiErrorFromErrorsList<ErrorCodes>({
+    code: "INVALID_REQUEST_PARAMETERS",
+    errors: error.issues,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "invalid_request",
+  });
+}
+
 export function jsonWebTokenError(message: string) {
   return createApiError<ErrorCodes>({
     code: "JSON_WEB_TOKEN_ERROR",
@@ -93,5 +106,14 @@ export function unexpectedClientAssertionSignatureVerificationError(
     detail: `An unexpected error occurred during Client Assertion signature verification: ${message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
+  });
+}
+
+export function unsupportedGrantType(grantType: string) {
+  return createApiError<ErrorCodes>({
+    code: "UNSUPPORTED_GRANT_TYPE",
+    detail: `The grant type '${grantType}' is not supported. Only '${EXPECTED_GRANT_TYPE}' is supported.`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "unsupported_grant_type",
   });
 }

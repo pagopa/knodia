@@ -4,7 +4,10 @@ import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { API_TokenRequest } from "../models/api.ts";
 
-import { verifyClientAssertionSignature } from "../utils/validators.ts";
+import {
+  validateRequestParameters,
+  verifyClientAssertionSignature,
+} from "../utils/validators.ts";
 
 export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
@@ -15,6 +18,9 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
       clientAssertionMaxTokenAgeSeconds: number,
       logger: FastifyBaseLogger,
     ) {
+      // Validate request parameters
+      validateRequestParameters(requestBody);
+
       // Verify Client Assertion signature and claims
       await verifyClientAssertionSignature(
         requestBody,
