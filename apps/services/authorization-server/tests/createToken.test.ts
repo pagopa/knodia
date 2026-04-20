@@ -22,7 +22,6 @@ import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
 import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
-  agreementNotActive,
   consumerMissingRequiredAttributes,
   eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
@@ -486,27 +485,131 @@ describe("POST /token", async () => {
     expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
-  it("should return 401 when platform states are not active", async () => {
-    const suspendedAgreement: Agreement = { ...agreement, state: "Suspended" };
-    await Promise.all([
-      agreementWriterService.upsertAgreement(suspendedAgreement, 0),
-      eserviceWriterService.upsertEservice(eservice, 0),
-      purposeWriterService.upsertPurpose(purpose, 0),
-    ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
-      data: mockK2KResponse,
-    });
+  it.each([
+    {
+      agreement: {
+        ...agreement,
+        state: "Suspended",
+      },
+      eserviceVersion,
+      purpose,
+      testCase: "agreement not active",
+    },
+    {
+      agreement,
+      eserviceVersion: {
+        ...eserviceVersion,
+        state: "Suspended",
+      },
+      purpose,
+      testCase: "e-service version not active",
+    },
+    {
+      agreement,
+      eserviceVersion,
+      purpose: {
+        ...purpose,
+        state: "Suspended",
+      },
+      testCase: "purpose not active",
+    },
+    {
+      agreement: {
+        ...agreement,
+        state: "Suspended",
+      },
+      eserviceVersion: {
+        ...eserviceVersion,
+        state: "Suspended",
+      },
+      purpose: {
+        ...purpose,
+        state: "Suspended",
+      },
+      testCase: "all platform objects not active",
+    },
+  ] satisfies {
+    agreement: Agreement;
+    eserviceVersion: EserviceVersion;
+    purpose: Purpose;
+    testCase: string;
+  }[])(
+    "should return 401 when platform states are not active: $testCase (seed #%#)",
+    async ({ agreement, eserviceVersion, purpose }) => {
+      await Promise.all([
+        agreementWriterService.upsertAgreement(agreement, 0),
+        eserviceWriterService.upsertEservice(
+          { ...eservice, versions: [eserviceVersion] },
+          0,
+        ),
+        purposeWriterService.upsertPurpose(purpose, 0),
+      ]);
 
-    const response = await createToken();
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
 
-    const error = platformStatesNotActive([
-      agreementNotActive(suspendedAgreement.id, suspendedAgreement.state),
-    ]);
+      const response = await createToken();
 
-    expect(response.statusCode).toBe(401);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
-  });
+      const error = platformStatesNotActive([]);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
+    },
+  );
+
+  it.each([
+    {
+      agreement: undefined,
+      eserviceVersion,
+      purpose,
+      testCase: "agreement not found",
+    },
+    {
+      agreement,
+      eserviceVersion: undefined,
+      purpose,
+      testCase: "e-service version not found",
+    },
+    {
+      agreement,
+      eserviceVersion,
+      purpose: undefined,
+      testCase: "purpose not found",
+    },
+  ] satisfies {
+    agreement: Agreement | undefined;
+    eserviceVersion: EserviceVersion | undefined;
+    purpose: Purpose | undefined;
+    testCase: string;
+  }[])(
+    "should return 401 when platform objects are not found: $testCase (seed #%#)",
+    async ({ agreement, eserviceVersion, purpose }) => {
+      await Promise.all([
+        agreement
+          ? agreementWriterService.upsertAgreement(agreement, 0)
+          : Promise.resolve(),
+        eserviceVersion
+          ? eserviceWriterService.upsertEservice(
+              { ...eservice, versions: [eserviceVersion] },
+              0,
+            )
+          : Promise.resolve(),
+        purpose
+          ? purposeWriterService.upsertPurpose(purpose, 0)
+          : Promise.resolve(),
+      ]);
+
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
+      const response = await createToken();
+
+      expect(response.statusCode).toBe(401);
+    },
+  );
 
   it("should return 401 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
     await Promise.all([
