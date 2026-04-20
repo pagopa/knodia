@@ -38,18 +38,6 @@ export interface JsonSchemaIfClause {
   required?: string[];
 }
 
-interface JsonSchemaProperty {
-  const?: string;
-  default?: string | string[];
-  enum?: string[];
-  items?: { enum?: string[]; type: "string" };
-  maxLength?: number;
-  minItems?: number;
-  minLength?: number;
-  type: "array" | "string";
-  uniqueItems?: boolean;
-}
-
 export interface LabelElement {
   options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
@@ -98,6 +86,18 @@ interface JsonSchemaConditional {
   else?: { required?: string[] };
   if: JsonSchemaIfClause;
   then: { required?: string[] };
+}
+
+interface JsonSchemaProperty {
+  const?: string;
+  default?: string | string[];
+  enum?: string[];
+  items?: { enum?: string[]; type: "string" };
+  maxLength?: number;
+  minItems?: number;
+  minLength?: number;
+  type: "array" | "string";
+  uniqueItems?: boolean;
 }
 
 interface LayoutElement {
