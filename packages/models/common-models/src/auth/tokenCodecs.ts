@@ -32,11 +32,10 @@ const UserTokenClaims = BaseJwtClaims.extend({
 const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
   consumer: ExternalResource<OrganizationId>,
-  eservice: { id: EserviceId, knodeId: KnodeId },
-  eservice_version: { id: EserviceVersionId, knodeId: KnodeId },
+  eservice: { id: EserviceId, knode_id: KnodeId, version: EserviceVersionId },
   nbf: z.int(),
-  producer: { id: OrganizationId, knodeId: KnodeId },
-  purpose: { id: PurposeId, knodeId: KnodeId },
+  producer: { id: OrganizationId, knode_id: KnodeId },
+  purpose: { id: PurposeId, knode_id: KnodeId },
   sub: ConsumerKeychainId,
 });
 export type EserviceAccessTokenClaims = z.infer<

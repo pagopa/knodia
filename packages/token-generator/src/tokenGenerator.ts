@@ -141,10 +141,10 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         aud: input.audience,
         client_id: input.consumerKeychainId,
         consumer: input.consumer,
-        eservice: { id: input.eserviceId, knodeId: input.producer.knodeId },
-        eservice_version: {
-          id: input.eserviceVersionId,
-          knodeId: input.producer.knodeId,
+        eservice: {
+          id: input.eserviceId,
+          knode_id: input.producer.knodeId,
+          version: input.eserviceVersionId,
         },
         exp: now + input.secondsDuration,
         iat: now,
@@ -152,7 +152,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         jti: randomUUID(),
         nbf: now,
         producer: input.producer,
-        purpose: { id: input.purposeId, knodeId: input.producer.knodeId },
+        purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
       };
 
