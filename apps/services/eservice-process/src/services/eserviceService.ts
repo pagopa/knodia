@@ -273,7 +273,7 @@ export function eserviceServiceBuilder(
 
     async updateEservice(
       eserviceId: EserviceId,
-      seed: API_EservicePatch,
+      update: API_EservicePatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<Eservice>> {
       logger.info(`Updating E-service ${eserviceId}`);
@@ -285,17 +285,15 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      assertValidCategories(seed.categories ?? []);
+      assertValidCategories(update.categories ?? []);
 
       const now = new Date();
 
       const updatedEservice: Eservice = {
         ...eservice,
-        ...(seed.name !== undefined && { name: seed.name }),
-        ...(seed.description !== undefined && {
-          description: seed.description,
-        }),
-        ...(seed.categories !== undefined && { categories: seed.categories }),
+        categories: update.categories ?? eservice.categories,
+        description: update.description ?? eservice.description,
+        name: update.name ?? eservice.name,
         updatedAt: now,
       };
 
