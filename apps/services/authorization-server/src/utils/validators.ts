@@ -40,6 +40,7 @@ import {
   clientAssertionExpired,
   consumerMissingRequiredAttributes,
   eserviceVersionNotActive,
+  eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
   jsonWebTokenError,
   platformStatesNotActive,
@@ -70,6 +71,7 @@ export async function validatePlatformObjects(
     readmodelService,
   );
 
+  assertEserviceVersionUsesBearerToken(eserviceVersion);
   assertPlatformStatesAreActive(purpose, agreement, eserviceVersion);
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
@@ -178,6 +180,14 @@ function assertConsumerAttributesMeetEserviceRequirements(
 ) {
   if (!hasAllRequiredAttributes(consumerAttributes, requiredAttributes)) {
     throw consumerMissingRequiredAttributes(consumer, eserviceVersionId);
+  }
+}
+
+function assertEserviceVersionUsesBearerToken(
+  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
+) {
+  if (eserviceVersion.accessTokenType !== "Bearer") {
+    throw eserviceVersionNotUsingBearerToken(eserviceVersion);
   }
 }
 

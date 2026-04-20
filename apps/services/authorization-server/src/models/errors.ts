@@ -8,7 +8,10 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { EserviceVersionState } from "@knodia/eservice-models";
+import type {
+  EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 import type { PurposeState } from "@knodia/purpose-models";
 
 import {
@@ -39,6 +42,7 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_FOUND: "0012",
   PURPOSE_NOT_FOUND: "0013",
   PLATFORM_STATES_NOT_ACTIVE: "0014",
+  ESERVICE_VERSION_NOT_USING_BEARER_TOKEN: "0015",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -129,6 +133,18 @@ export function eserviceVersionNotFound(
   });
 }
 
+export function eserviceVersionNotUsingBearerToken({
+  accessTokenType,
+  id,
+}: Pick<EserviceVersion, "accessTokenType" | "id">) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_VERSION_NOT_USING_BEARER_TOKEN",
+    detail: `E-service Version with ID ${id} has access token type '${accessTokenType}', but it must be 'Bearer'`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "E-service Version not using Bearer token",
+  });
+}
+
 export function invalidClientAssertionSignature() {
   return createApiError<ErrorCodes>({
     code: "INVALID_CLIENT_ASSERTION_SIGNATURE",
@@ -137,7 +153,6 @@ export function invalidClientAssertionSignature() {
     title: "invalid_client",
   });
 }
-
 export function jsonWebTokenError(message: string) {
   return createApiError<ErrorCodes>({
     code: "JSON_WEB_TOKEN_ERROR",
@@ -146,6 +161,7 @@ export function jsonWebTokenError(message: string) {
     title: "invalid_client",
   });
 }
+
 export function platformStatesNotActive(
   errors: (ApiError<ErrorCodes> | undefined)[],
 ) {

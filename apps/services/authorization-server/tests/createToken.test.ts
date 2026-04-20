@@ -24,6 +24,7 @@ import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts"
 import {
   agreementNotActive,
   consumerMissingRequiredAttributes,
+  eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
@@ -531,6 +532,34 @@ describe("POST /token", async () => {
     const error = consumerMissingRequiredAttributes(
       purpose.consumer,
       eserviceVersion.id,
+    );
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 400 if the E-service version does not use Bearer token", async () => {
+    const eserviceVersionWithWrongTokenType: EserviceVersion = {
+      ...eserviceVersion,
+      accessTokenType: "DPoP",
+    };
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(
+        { ...eservice, versions: [eserviceVersionWithWrongTokenType] },
+        0,
+      ),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await createToken();
+
+    const error = eserviceVersionNotUsingBearerToken(
+      eserviceVersionWithWrongTokenType,
     );
 
     expect(response.statusCode).toBe(400);
