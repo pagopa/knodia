@@ -1,3 +1,5 @@
+import { fromZodIssue, type ZodIssue } from "zod-validation-error";
+
 export class ApiError<T> extends Error {
   public errors: { code: T; detail: string }[];
   public status: number;
@@ -44,12 +46,22 @@ export function createApiErrorFromErrorsList<T>({
   title,
 }: {
   code: T;
-  errors: Error[];
+  errors: ApiError<T>[] | Error[] | ZodIssue[];
   status: number;
   title: string;
 }) {
+  const normalizedErrors: { code: T; detail: string }[] = [];
+  for (const e of errors) {
+    if (e instanceof ApiError) {
+      normalizedErrors.push(...e.errors);
+    } else if (e instanceof Error) {
+      normalizedErrors.push({ code, detail: e.message });
+    } else {
+      normalizedErrors.push({ code, detail: fromZodIssue(e).message });
+    }
+  }
   return new ApiError({
-    errors: errors.map((error) => ({ code, detail: error.message })),
+    errors: normalizedErrors,
     status,
     title,
   });
