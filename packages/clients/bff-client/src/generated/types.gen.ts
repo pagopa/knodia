@@ -903,7 +903,7 @@ export type GetProducerEservicesError = GetProducerEservicesErrors[keyof GetProd
 
 export type GetProducerEservicesResponses = {
     /**
-     * Producer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ProducerEservices;
 };
@@ -975,7 +975,7 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * Producer E-service details retrieved successfully
+     * E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
@@ -1053,7 +1053,7 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * Producer E-service interface document downloaded successfully
+     * E-service interface document downloaded successfully
      */
     200: FileDownload;
 };

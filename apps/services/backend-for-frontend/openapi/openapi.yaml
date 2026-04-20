@@ -1842,11 +1842,11 @@ paths:
           description: Filter by E-service state
       responses:
         "200":
-          description: Producer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEservices"
         "400":
@@ -1878,7 +1878,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve a Producer E-service with all its details
+      description: Retrieve an E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1889,11 +1889,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service details retrieved successfully
+          description: E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-service details retrieved successfully
+                description: E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1932,7 +1932,7 @@ paths:
       operationId: updateProducerEservice
       tags:
         - eservice
-      description: Update a Producer E-service
+      description: Update an E-service
       requestBody:
         required: true
         content:
@@ -1985,11 +1985,10 @@ paths:
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
-      summary: Download producer E-service latest Version Interface
+      summary: Download E-service latest Version Interface
       tags:
         - eservice
-      description: Download the interface document for the latest version of a
-        Producer E-service
+      description: Download the interface document for the latest version of an E-service
       parameters:
         - schema:
             type: string
@@ -2000,11 +1999,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service interface document downloaded successfully
+          description: E-service interface document downloaded successfully
           content:
             application/json: &a1
               schema:
-                description: Producer E-service interface document downloaded successfully
+                description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"

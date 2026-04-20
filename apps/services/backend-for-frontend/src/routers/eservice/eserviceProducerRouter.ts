@@ -176,7 +176,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestQuery: req.query },
-        "Getting Producer E-services with query parameters",
+        "Getting E-services with query parameters",
       );
 
       const { limit, mode, offset, q, sortBy, sortOrder, state } = req.query;
@@ -261,7 +261,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       querystring: API_ProducerEservicesQueryParams,
       response: {
         200: API_ProducerEservices.meta({
-          description: "Producer E-services retrieved successfully",
+          description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -278,7 +278,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Getting Producer E-service with ID ${req.params.eserviceId}`,
+        `Getting E-service with ID ${req.params.eserviceId}`,
       );
 
       const path = { eserviceId: req.params.eserviceId };
@@ -378,12 +378,12 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Producer E-service with all its details",
+      description: "Retrieve an E-service with all its details",
       operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
         200: API_ProducerEserviceDetails.meta({
-          description: "Producer E-service details retrieved successfully",
+          description: "E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -401,7 +401,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestBody: req.body, requestParams: req.params },
-        `Updating Producer E-service with ID ${req.params.eserviceId}`,
+        `Updating E-service with ID ${req.params.eserviceId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -421,7 +421,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_EservicePatch,
       consumes: ["application/merge-patch+json"],
-      description: "Update a Producer E-service",
+      description: "Update an E-service",
       operationId: "updateProducerEservice",
       params: API_EserviceIdPathParam,
       response: {
@@ -444,7 +444,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Downloading interface of Producer E-service with ID ${req.params.eserviceId}`,
+        `Downloading interface of E-service with ID ${req.params.eserviceId}`,
       );
 
       const { data } =
@@ -470,21 +470,20 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Download the interface document for the latest version of a Producer E-service",
+        "Download the interface document for the latest version of an E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/json", "application/yaml", "application/x-yaml"],
       response: {
         200: API_FileDownload.meta({
-          description:
-            "Producer E-service interface document downloaded successfully",
+          description: "E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Download producer E-service latest Version Interface",
+      summary: "Download E-service latest Version Interface",
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/interface",

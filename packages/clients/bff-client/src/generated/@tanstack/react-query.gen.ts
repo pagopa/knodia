@@ -203,7 +203,7 @@ export const createEserviceMutation = (options?: Partial<Options<CreateEserviceD
 export const getProducerEserviceDetailsQueryKey = (options: Options<GetProducerEserviceDetailsData>) => createQueryKey('getProducerEserviceDetails', options);
 
 /**
- * Retrieve a Producer E-service with all its details
+ * Retrieve an E-service with all its details
  */
 export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEserviceDetailsData>) => queryOptions<GetProducerEserviceDetailsResponse, AxiosError<GetProducerEserviceDetailsError>, GetProducerEserviceDetailsResponse, ReturnType<typeof getProducerEserviceDetailsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -219,7 +219,7 @@ export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEs
 });
 
 /**
- * Update a Producer E-service
+ * Update an E-service
  */
 export const updateProducerEserviceMutation = (options?: Partial<Options<UpdateProducerEserviceData>>): UseMutationOptions<UpdateProducerEserviceResponse, AxiosError<UpdateProducerEserviceError>, Options<UpdateProducerEserviceData>> => {
     const mutationOptions: UseMutationOptions<UpdateProducerEserviceResponse, AxiosError<UpdateProducerEserviceError>, Options<UpdateProducerEserviceData>> = {
@@ -238,9 +238,9 @@ export const updateProducerEserviceMutation = (options?: Partial<Options<UpdateP
 export const getProducerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => createQueryKey('getProducerEserviceLatestVersionInterface', options);
 
 /**
- * Download producer E-service latest Version Interface
+ * Download E-service latest Version Interface
  *
- * Download the interface document for the latest version of a Producer E-service
+ * Download the interface document for the latest version of an E-service
  */
 export const getProducerEserviceLatestVersionInterfaceOptions = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => queryOptions<GetProducerEserviceLatestVersionInterfaceResponse, AxiosError<GetProducerEserviceLatestVersionInterfaceError>, GetProducerEserviceLatestVersionInterfaceResponse, ReturnType<typeof getProducerEserviceLatestVersionInterfaceQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

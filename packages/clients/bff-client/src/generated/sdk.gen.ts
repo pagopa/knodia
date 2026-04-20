@@ -79,7 +79,7 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Retrieve a Producer E-service with all its details
+ * Retrieve an E-service with all its details
  */
 export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceDetailsResponses, GetProducerEserviceDetailsErrors, ThrowOnError>({
     responseType: 'json',
@@ -89,7 +89,7 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Update a Producer E-service
+ * Update an E-service
  */
 export const updateProducerEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateProducerEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateProducerEserviceResponses, UpdateProducerEserviceErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -102,9 +102,9 @@ export const updateProducerEservice = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
- * Download producer E-service latest Version Interface
+ * Download E-service latest Version Interface
  *
- * Download the interface document for the latest version of a Producer E-service
+ * Download the interface document for the latest version of an E-service
  */
 export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEserviceLatestVersionInterfaceErrors, ThrowOnError>({
     responseType: 'json',
