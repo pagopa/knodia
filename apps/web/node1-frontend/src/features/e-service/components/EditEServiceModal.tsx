@@ -39,22 +39,20 @@ export function EditEServiceModal({
     mutate: updateEservice,
   } = useMutation({
     ...updateProducerEserviceMutation({ client }),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: getProducerEserviceDetailsQueryKey({
-            client,
-            path: { eserviceId: eservice.id },
-          }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getProducerEserviceDetailsQueryKey({
+          client,
+          path: { eserviceId: eservice.id },
         }),
-        queryClient.invalidateQueries({
-          queryKey: getProducerEservicesQueryKey({
-            client,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            query: undefined!,
-          }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: getProducerEservicesQueryKey({
+          client,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
-      ]);
+      });
       onClose();
     },
   });
