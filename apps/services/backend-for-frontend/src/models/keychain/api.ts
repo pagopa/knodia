@@ -208,6 +208,15 @@ export type API_ConsumerKeychainMembershipCheckResult = z.infer<
   typeof API_ConsumerKeychainMembershipCheckResult
 >;
 
+export const API_ConsumerKeychainPurposeLinkCheckResult = z
+  .strictObject({
+    isLinked: z.boolean(),
+  })
+  .meta({ id: "ConsumerKeychainPurposeLinkCheckResult" });
+export type API_ConsumerKeychainPurposeLinkCheckResult = z.infer<
+  typeof API_ConsumerKeychainPurposeLinkCheckResult
+>;
+
 export const API_ConsumerKeychainMemberPathParams = z
   .strictObject({
     userId: API_UserId,
