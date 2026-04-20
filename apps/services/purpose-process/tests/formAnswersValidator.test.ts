@@ -313,4 +313,14 @@ describe("assertFormAnswersAreValid", () => {
       ).not.toThrow();
     });
   });
+
+  it("should throw for unknown properties (e.g. misspelled field names)", () => {
+    expectValidationErrors(
+      {
+        ...MOCK_PURPOSE_FORM_ANSWERS,
+        legalBasicPublicInterest: "RULE_OF_LAW",
+      },
+      ["must NOT have additional properties"],
+    );
+  });
 });
