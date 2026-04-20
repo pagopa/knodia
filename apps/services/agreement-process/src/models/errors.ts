@@ -1,3 +1,4 @@
+import type { AgreementActor, AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
@@ -24,6 +25,9 @@ const errorCodes = {
   AGREEMENT_NOT_FOUND: "0005",
   ESERVICE_VERSION_NOT_LATEST: "0006",
   CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0007",
+  AGREEMENT_NOT_IN_SUSPENDABLE_STATE: "0008",
+  AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
+  ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -56,6 +60,48 @@ export function agreementNotFound(id: AgreementId) {
     detail: `Agreement with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function agreementNotInReactivatableState({
+  agreementId,
+  reactivatedBy,
+  state,
+  suspendedByConsumerAt,
+  suspendedByProducerAt,
+}: {
+  agreementId: AgreementId;
+  reactivatedBy: AgreementActor;
+  state: AgreementState;
+  suspendedByConsumerAt: Date | null;
+  suspendedByProducerAt: Date | null;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_REACTIVATABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be reactivated by ${reactivatedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not In Reactivatable State",
+  });
+}
+
+export function agreementNotInSuspendableState({
+  agreementId,
+  state,
+  suspendedBy,
+  suspendedByConsumerAt,
+  suspendedByProducerAt,
+}: {
+  agreementId: AgreementId;
+  state: AgreementState;
+  suspendedBy: AgreementActor;
+  suspendedByConsumerAt: Date | null;
+  suspendedByProducerAt: Date | null;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_SUSPENDABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be suspended by ${suspendedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not In Suspendable State",
   });
 }
 
@@ -119,5 +165,17 @@ export function eserviceVersionNotLatest(
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not the latest version. Latest version is ${latestVersionId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Not Latest E-service Version",
+  });
+}
+
+export function organizationNotAgreementProducer(
+  agreementId: AgreementId,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_AGREEMENT_PRODUCER",
+    detail: `Organization ${organizationId} is not the producer of Agreement ${agreementId}. Only the producer can perform this operation.`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization is not the Agreement producer",
   });
 }
