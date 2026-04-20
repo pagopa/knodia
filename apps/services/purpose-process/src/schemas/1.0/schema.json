@@ -10,10 +10,12 @@
     },
     "institutionalPurpose": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "otherPurpose": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "usesPersonalData": {
@@ -45,10 +47,12 @@
         ]
       },
       "uniqueItems": true,
+      "minItems": 1,
       "default": []
     },
     "otherPersonalDataTypes": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "legalBasis": {
@@ -64,10 +68,12 @@
         ]
       },
       "uniqueItems": true,
+      "minItems": 1,
       "default": []
     },
     "legalObligationReference": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "declarationConfirmGDPR": {
@@ -81,14 +87,17 @@
     },
     "ruleOfLawText": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "administrativeActText": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "publicInterestTaskText": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "knowsDataQuantity": {
@@ -119,6 +128,7 @@
     },
     "reasonPolicyNotProvided": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "policyProvidedMedium": {
@@ -128,6 +138,7 @@
     },
     "policyProvidedOnlineLink": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "confirmPrincipleIntegrityAndDiscretion": {
@@ -136,6 +147,7 @@
     },
     "dataProtectionMeasures": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "doneDpia": {
@@ -155,6 +167,7 @@
     },
     "dataRetentionPeriod": {
       "type": "string",
+      "minLength": 1,
       "maxLength": 2000
     },
     "purposePursuit": {

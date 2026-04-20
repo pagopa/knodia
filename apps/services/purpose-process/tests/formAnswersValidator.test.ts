@@ -168,6 +168,32 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
+  describe("non-empty constraints", () => {
+    it("should throw when a required free-text field is an empty string", () => {
+      expectValidationErrors(
+        {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          institutionalPurpose: "",
+        },
+        ["/institutionalPurpose must NOT have fewer than 1 characters"],
+      );
+    });
+
+    it("should throw when a required array field is empty", () => {
+      expectValidationErrors(
+        {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          legalBasis: [],
+          personalDataTypes: [],
+        },
+        [
+          "/legalBasis must NOT have fewer than 1 items",
+          "/personalDataTypes must NOT have fewer than 1 items",
+        ],
+      );
+    });
+  });
+
   describe("else branches (forbidden fields)", () => {
     const nonPersonalDataBranch = {
       institutionalPurpose: "Institutional purpose",
