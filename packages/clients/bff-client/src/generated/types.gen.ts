@@ -1008,10 +1008,6 @@ export type UpdateProducerEserviceErrors = {
      * E-service not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
