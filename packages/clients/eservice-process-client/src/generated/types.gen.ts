@@ -230,7 +230,7 @@ export type EserviceSeed = {
     requiredAttributes: Array<Array<Attribute>>;
 };
 
-export type EserviceUpdateSeed = {
+export type EservicePatch = {
     /**
      * Categories of the E-service
      */
@@ -441,7 +441,7 @@ export type GetEserviceResponses = {
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
 
 export type UpdateEserviceData = {
-    body: EserviceUpdateSeed;
+    body: EservicePatch;
     headers: {
         /**
          * Unique identifier of the request

@@ -23,8 +23,8 @@ import {
 } from "@knodia/eservice-models";
 
 import type {
+  API_EservicePatch,
   API_EserviceSeed,
-  API_EserviceUpdateSeed,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
@@ -273,7 +273,7 @@ export function eserviceServiceBuilder(
 
     async updateEservice(
       eserviceId: EserviceId,
-      seed: API_EserviceUpdateSeed,
+      seed: API_EservicePatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<Eservice>> {
       logger.info(`Updating E-service ${eserviceId}`);

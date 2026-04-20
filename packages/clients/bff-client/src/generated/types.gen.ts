@@ -179,7 +179,7 @@ export type EserviceSeed = {
     requiredAttributes: Array<Array<Attribute>>;
 };
 
-export type EserviceUpdateSeed = {
+export type EservicePatch = {
     /**
      * Categories of the E-service
      */
@@ -983,7 +983,7 @@ export type GetProducerEserviceDetailsResponses = {
 export type GetProducerEserviceDetailsResponse = GetProducerEserviceDetailsResponses[keyof GetProducerEserviceDetailsResponses];
 
 export type UpdateProducerEserviceData = {
-    body: EserviceUpdateSeed;
+    body: EservicePatch;
     path: {
         eserviceId: string;
     };

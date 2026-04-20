@@ -438,7 +438,7 @@ components:
         - name
         - requiredAttributes
       additionalProperties: false
-    EserviceUpdateSeed:
+    EservicePatch:
       type: object
       properties:
         categories:
@@ -770,7 +770,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: "#/components/schemas/EserviceUpdateSeed"
+              $ref: "#/components/schemas/EservicePatch"
       parameters:
         - schema:
             type: string

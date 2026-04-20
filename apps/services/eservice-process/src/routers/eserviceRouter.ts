@@ -16,9 +16,9 @@ import type { EserviceService } from "../services/eserviceService.ts";
 
 import {
   API_Eservice,
+  API_EservicePatch,
   API_Eservices,
   API_EserviceSeed,
-  API_EserviceUpdateSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
   API_GetCatalogEserviceSearchParams,
@@ -172,7 +172,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     },
     method: "PATCH",
     schema: {
-      body: API_EserviceUpdateSeed,
+      body: API_EservicePatch,
       consumes: ["application/merge-patch+json"],
       description: "Update an E-service",
       headers: KnodiaServiceHeaders,

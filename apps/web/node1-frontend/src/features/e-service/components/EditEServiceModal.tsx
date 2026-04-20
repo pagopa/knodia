@@ -56,7 +56,7 @@ export function EditEServiceModal({
       name: eservice.name.en,
     },
     onSubmit: ({ value }) => {
-      const body: bffApi.EserviceUpdateSeed = {
+      const body: bffApi.EservicePatch = {
         categories: value.categories,
         description: { en: value.description },
         name: { en: value.name },

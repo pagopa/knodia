@@ -241,7 +241,7 @@ export const API_EserviceSeed = z
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
-export const API_EserviceUpdateSeed = z
+export const API_EservicePatch = z
   .strictObject({
     categories: z
       .array(API_EserviceCategory)
@@ -250,8 +250,8 @@ export const API_EserviceUpdateSeed = z
     description: API_LocalizedDescription.optional(),
     name: API_LocalizedName.optional(),
   })
-  .meta({ id: "EserviceUpdateSeed" });
-export type API_EserviceUpdateSeed = z.infer<typeof API_EserviceUpdateSeed>;
+  .meta({ id: "EservicePatch" });
+export type API_EservicePatch = z.infer<typeof API_EservicePatch>;
 
 const API_EserviceSearchByKeywords = z.strictObject({
   keywords: z

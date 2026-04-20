@@ -42,8 +42,8 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_EservicePatch,
   API_EserviceSeed,
-  API_EserviceUpdateSeed,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -417,7 +417,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_EserviceUpdateSeed,
+      body: API_EservicePatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Producer E-service",
       operationId: "updateProducerEservice",
