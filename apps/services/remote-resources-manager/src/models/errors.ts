@@ -11,12 +11,14 @@ import { constants } from "http2";
 
 const { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } = constants;
 
+/* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   AGREEMENT_NOT_FOUND: "0001",
-  ORGANIZATION_NOT_AGREEMENT_CONSUMER: "0004",
   ORGANIZATION_NOT_FOUND: "0002",
   PURPOSE_NOT_FOUND: "0003",
+  ORGANIZATION_NOT_AGREEMENT_CONSUMER: "0004",
 } as const;
+/* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 

@@ -166,7 +166,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Reactivate an Agreement on behalf of its Consumer",
+      description:
+        "Reactivate an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
       response: {
@@ -203,7 +204,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Suspend an Agreement on behalf of its Consumer",
+      description:
+        "Suspend an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
       response: {

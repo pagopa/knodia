@@ -75,7 +75,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description:
-        "Reactivate an Agreement on behalf of the caller organization as its Consumer",
+        "Reactivate an Agreement on behalf of its Consumer; the Consumer must be the caller organization",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
@@ -112,7 +112,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description:
-        "Suspend an Agreement on behalf of the caller organization as its Consumer",
+        "Suspend an Agreement on behalf of its Consumer; the Consumer must be the caller organization",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
