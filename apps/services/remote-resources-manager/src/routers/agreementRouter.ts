@@ -52,9 +52,84 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Create an Agreement",
       tags: [apiTags.agreement],
     },
     url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.reactivateAgreement(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Reactivate an Agreement on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "reactivateAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate an Agreement",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.suspendAgreement(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Suspend an Agreement on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "suspendAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend an Agreement",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/suspend",
   });
 
   fastify.route({
@@ -80,6 +155,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "List Agreements",
       tags: [apiTags.agreement],
     },
     url: "/agreements",

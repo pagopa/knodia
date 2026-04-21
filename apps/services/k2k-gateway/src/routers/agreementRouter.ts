@@ -1,5 +1,5 @@
-import type { API_CreatedResource } from "@knodia/common-models/api";
-import type { KnodeId } from "@knodia/common-models/ids";
+/* eslint-disable max-lines-per-function */
+import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -48,7 +48,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
   fastify,
   { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
 ) => {
-  const retrieveAgreement = async (
+  const retrieveAgreementById = async (
     agreementId: string,
     headers: KnodiaServiceHeaders,
   ) =>
@@ -59,26 +59,25 @@ export const agreementRouter: FastifyPluginAsyncZod<
     });
 
   const pollAgreement = (
-    response: AxiosResponse<API_CreatedResource>,
+    response: AxiosResponse<agreementProcessApi.Agreement>,
     headers: KnodiaServiceHeaders,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
-      retrieveAgreement(response.data.id, headers),
+      retrieveAgreementById(response.data.id, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
+
+  const getHeaders = async (correlationId: CorrelationId) =>
+    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
 
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info(
-        { requestBody: req.body },
-        "Creating agreement with body data",
-      );
+      logger.info({ requestBody: req.body }, "Creating Agreement");
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const response = await agreementProcessApi.createAgreement({
         body: toProcessAPI_AgreementSeed(req.body, callerKnodeId),
@@ -107,7 +106,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
-      summary: "Create a new Agreement",
+      summary: "Create an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
@@ -119,8 +118,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       logger.info(`Getting Agreement with ID ${req.params.agreementId}`);
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { data } = await agreementProcessApi.getAgreement({
         client: agreementProcessClient,
@@ -142,9 +140,86 @@ export const agreementRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
+      summary: "Get an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Reactivating Agreement ${req.params.agreementId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const response = await agreementProcessApi.reactivateAgreementByConsumer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      await pollAgreement(response, headers);
+
+      res.send(toAPI_Agreement(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Reactivate an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "reactivateAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate an Agreement",
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Suspending Agreement ${req.params.agreementId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const response = await agreementProcessApi.suspendAgreementByConsumer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      await pollAgreement(response, headers);
+
+      res.send(toAPI_Agreement(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Suspend an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "suspendAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend an Agreement",
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/suspend",
   });
 
   fastify.route({
@@ -156,8 +231,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         "Getting Agreements with query params",
       );
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { consumerId, eserviceId, limit, offset, state } = req.query;
 
@@ -190,6 +264,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      summary: "List Agreements",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
