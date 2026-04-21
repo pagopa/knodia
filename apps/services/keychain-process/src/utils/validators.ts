@@ -11,6 +11,7 @@ import type { ConsumerKeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { UserRole } from "@knodia/common-models/auth";
+import { isX509Certificate } from "@knodia/fastify-zod-api-commons/crypto";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -29,7 +30,6 @@ import {
   getOrganizationGroupName,
   TECHNICAL_ROLE_GROUP_NAME,
 } from "../services/userService.ts";
-import { isX509Certificate } from "./crypto.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,

@@ -1,0 +1,17 @@
+meta {
+  name: Reactivate Agreement
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements/:agreementId/reactivate
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  ~Authorization:
+}

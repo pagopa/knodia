@@ -1,0 +1,29 @@
+meta {
+  name: 11 - Suspend by Consumer (setup reject)
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/suspendByConsumer
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Suspended
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}

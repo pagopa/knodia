@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -19,6 +21,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   assertEntityExists,
@@ -29,14 +32,20 @@ import {
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
 import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
+import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
+import z from "zod";
 
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import {
   API_GetProducerAgreementsQueryParams,
+  type API_ProducerAgreement,
   API_ProducerAgreementDetails,
   API_ProducerAgreements,
 } from "../../models/agreement/api.ts";
@@ -52,11 +61,83 @@ const producerVisibleStates: API_AgreementState[] = [
   API_AgreementState.enum.Suspended,
 ];
 
+const enrichAgreements = async ({
+  agreements,
+  config,
+  eserviceProcessClient,
+  headers,
+  remoteResourcesManagerClient,
+}: {
+  agreements: agreementProcessApi.Agreement[];
+  config: BffProcessConfig;
+  eserviceProcessClient: EserviceProcessClient;
+  headers: ReturnType<typeof getKnodiaServiceHeaders>;
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
+}): Promise<API_ProducerAgreement[]> => {
+  const eserviceIds = new Set(
+    agreements.map((agreement) => agreement.eserviceId),
+  );
+  const [eservicesMap, consumersMap] = await Promise.all([
+    eserviceProcessApi
+      .getEservices({
+        client: eserviceProcessClient,
+        headers,
+        query: {
+          eserviceId: Array.from(eserviceIds),
+          // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
+          limit: eserviceIds.size,
+          offset: 0,
+        },
+      })
+      .then(
+        (res) =>
+          new Map(res.data.results.map((eservice) => [eservice.id, eservice])),
+      ),
+    getExternalEntitiesMap({
+      fetchFn: ({ entityIds }) =>
+        remoteResourcesManagerApi
+          .getOrganizations({
+            client: remoteResourcesManagerClient,
+            headers,
+            query: {
+              knodeId: config.knodeId,
+              // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
+              limit: entityIds.length,
+              offset: 0,
+              organizationId: entityIds,
+            },
+          })
+          .then((res) => res.data.results),
+      getEntityId: (agreement) => agreement.consumer.id,
+      getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
+      items: agreements,
+    }),
+  ]);
+
+  return agreements.map((agreement) =>
+    toAPI_ProducerAgreement({
+      agreement,
+      consumer: assertEntityExists(
+        consumersMap
+          .get(agreement.consumer.knodeId)
+          ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+        `Consumer organization ${agreement.consumer.id} owned by Knode ${agreement.consumer.knodeId} not found for Agreement ${agreement.id}`,
+      ),
+      eservice: assertEntityExists(
+        eservicesMap.get(agreement.eserviceId),
+        `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+      ),
+      recentUpdateDays: config.recentUpdateDays,
+    }),
+  );
+};
+
 interface AgreementProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   organizationProcessClient: OrganizationProcessClient;
+  pollingService: PollingService;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
@@ -69,9 +150,30 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     config,
     eserviceProcessClient,
     organizationProcessClient,
+    pollingService,
     remoteResourcesManagerClient,
   },
 ) => {
+  const retrieveAgreementById = (
+    agreementId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    agreementProcessApi.getAgreement({
+      client: agreementProcessClient,
+      headers,
+      path: { agreementId },
+    });
+
+  const pollAgreement = (
+    response: AxiosResponse<agreementProcessApi.Agreement>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveAgreementById(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -84,10 +186,11 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       );
 
       const { limit, offset } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: {
           limit,
           offset,
@@ -100,65 +203,13 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         res.send({ pagination: data.pagination, results: [] });
         return;
       }
-
-      const eserviceIds = new Set(
-        data.results.map((agreement) => agreement.eserviceId),
-      );
-      const [eservicesMap, consumersMap] = await Promise.all([
-        eserviceProcessApi
-          .getEservices({
-            client: eserviceProcessClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            query: {
-              eserviceId: Array.from(eserviceIds),
-              // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
-              limit: eserviceIds.size,
-              offset: 0,
-            },
-          })
-          .then(
-            (res) =>
-              new Map(
-                res.data.results.map((eservice) => [eservice.id, eservice]),
-              ),
-          ),
-        getExternalEntitiesMap({
-          fetchFn: ({ entityIds }) =>
-            remoteResourcesManagerApi
-              .getOrganizations({
-                client: remoteResourcesManagerClient,
-                headers: getKnodiaServiceHeaders(req, correlationId),
-                query: {
-                  knodeId: config.knodeId,
-                  // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
-                  limit: entityIds.length,
-                  offset: 0,
-                  organizationId: entityIds,
-                },
-              })
-              .then((res) => res.data.results),
-          getEntityId: (agreement) => agreement.consumer.id,
-          getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
-          items: data.results,
-        }),
-      ]);
-
-      const results = data.results.map((agreement) =>
-        toAPI_ProducerAgreement({
-          agreement,
-          consumer: assertEntityExists(
-            consumersMap
-              .get(agreement.consumer.knodeId)
-              ?.get(unsafeBrandExternalId(agreement.consumer.id)),
-            `Consumer organization ${agreement.consumer.id} owned by Knode ${agreement.consumer.knodeId} not found for Agreement ${agreement.id}`,
-          ),
-          eservice: assertEntityExists(
-            eservicesMap.get(agreement.eserviceId),
-            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-          ),
-          recentUpdateDays: config.recentUpdateDays,
-        }),
-      );
+      const results = await enrichAgreements({
+        agreements: data.results,
+        config,
+        eserviceProcessClient,
+        headers,
+        remoteResourcesManagerClient,
+      });
 
       res.send({
         pagination: data.pagination,
@@ -258,5 +309,85 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/producer/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(`Reactivating Producer Agreement ${req.params.agreementId}`);
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await agreementProcessApi.reactivateAgreementByProducer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      await pollAgreement(response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement as Producer",
+      operationId: "reactivateProducerAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/producer/agreements/:agreementId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(`Suspending Producer Agreement ${req.params.agreementId}`);
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await agreementProcessApi.suspendAgreementByProducer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      await pollAgreement(response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement as Producer",
+      operationId: "suspendProducerAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/producer/agreements/:agreementId/suspend",
   });
 };

@@ -1,11 +1,15 @@
-import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
+import type { bffApi } from "@knodia/bff-client";
+
+import { Breadcrumb, Breadcrumbs, Button } from "@knodia/ui-kit/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
+import { EditEServiceModal } from "@/features/e-service/components/EditEServiceModal";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceProducerActions } from "@/features/e-service/components/EserviceProducerActions";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
@@ -20,30 +24,34 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
-function EServiceActions({
-  eserviceId,
-  state,
+function EditAction({
+  eservice,
 }: {
-  eserviceId: string;
-  state: Parameters<typeof EserviceProducerActions>[0]["state"];
+  eservice: bffApi.ProducerEserviceDetails;
 }) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
-    <>
-      <EserviceProducerActions eserviceId={eserviceId} state={state} />
-      <DialogTrigger>
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Edit
-        </Button>
-        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
-          TODO
-        </Modal>
-      </DialogTrigger>
-    </>
+    <DialogTrigger>
+      <Button
+        hierarchy="brand"
+        kind="filled"
+        onClick={() => setIsEditOpen(true)}
+        size="md"
+      >
+        Edit
+      </Button>
+      <EditEServiceModal
+        eservice={eservice}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
+    </DialogTrigger>
   );
 }
 
 function RouteComponent() {
-  const canManageEserviceState = useHasRole("administrative");
+  const isAdministrative = useHasRole("administrative");
   const { id } = Route.useParams();
   const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
 
@@ -59,12 +67,15 @@ function RouteComponent() {
 
       <PageHeader
         actions={
-          canManageEserviceState && (
-            <EServiceActions
-              eserviceId={eservice.id}
-              state={eservice.version.state}
-            />
-          )
+          <>
+            {isAdministrative && (
+              <EserviceProducerActions
+                eserviceId={eservice.id}
+                state={eservice.version.state}
+              />
+            )}
+            <EditAction eservice={eservice} />
+          </>
         }
         copyableId={eservice.id}
         description={eservice.description.en}
