@@ -76,7 +76,6 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
-    state: "ACTIVE",
   };
 
   const buildK2KAgreement = (
