@@ -25,15 +25,8 @@ export function buildApp({
   config: AuthorizationServerConfig;
   readmodelDb: NodePgDatabase;
 }) {
-  const {
-    consumerKnodeUrl,
-    eserviceAccessTokenJwtKid,
-    generatedEserviceAccessTokenIssuer,
-    knodeId,
-  } = config;
-
   const k2kGatewayClient = getK2K2GatewayApiClient({
-    consumerKnodeUrl,
+    consumerKnodeUrl: config.consumerKnodeUrl,
   });
   const tokenGenerator = tokenGeneratorBuilder();
 
@@ -66,10 +59,8 @@ export function buildApp({
   app.register(tokenRouter, {
     config,
     tokenService: tokenServiceBuilder({
-      eserviceAccessTokenJwtKid,
-      generatedEserviceAccessTokenIssuer,
+      config,
       k2kGatewayClient,
-      knodeId,
       readmodelService: readmodelServiceBuilder(readmodelDb),
       tokenGenerator,
     }),

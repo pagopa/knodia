@@ -18,15 +18,17 @@ interface TokenRouterOptions {
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  { config, tokenService },
+  {
+    config: {
+      clientAssertionAcceptedAudiences,
+      clientAssertionClockToleranceSeconds,
+      clientAssertionMaxTokenAgeSeconds,
+    },
+    tokenService,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const {
-        clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
-        clientAssertionMaxTokenAgeSeconds,
-      } = config;
       const { correlationId, logger } = getContextValues(requestContext);
       const { client_assertion_type, client_id, grant_type } = req.body;
 

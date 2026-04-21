@@ -1,12 +1,10 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 import type { FastifyBaseLogger } from "fastify";
 
-import {
-  type ConsumerKeychainId,
-  type KnodeId,
-} from "@knodia/common-models/ids";
+import { type ConsumerKeychainId } from "@knodia/common-models/ids";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
+import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -16,17 +14,17 @@ import {
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;
 export function tokenServiceBuilder({
-  eserviceAccessTokenJwtKid,
-  generatedEserviceAccessTokenIssuer,
+  config: {
+    eserviceAccessTokenJwtKid,
+    generatedEserviceAccessTokenIssuer,
+    knodeId,
+  },
   k2kGatewayClient,
-  knodeId,
   readmodelService,
   tokenGenerator,
 }: {
-  eserviceAccessTokenJwtKid: string;
-  generatedEserviceAccessTokenIssuer: string;
+  config: AuthorizationServerConfig;
   k2kGatewayClient: K2K2GatewayApiClient;
-  knodeId: KnodeId;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
 }) {
