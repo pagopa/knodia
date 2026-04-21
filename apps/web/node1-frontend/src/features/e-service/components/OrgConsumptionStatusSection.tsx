@@ -136,8 +136,9 @@ function AgreementStatusBanner({
               If you suspend it, the Producer won&apos;t be able to reactivate
               the Agreement on your behalf. Are you sure you want to suspend
               this Agreement?
+              <br />
+              You will be able to reactivate it later.
             </p>
-            <p className="body-md">You will be able to reactivate it later.</p>
           </Modal>
         </DialogTrigger>
       </>

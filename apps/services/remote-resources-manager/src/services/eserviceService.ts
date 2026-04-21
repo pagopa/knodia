@@ -142,13 +142,15 @@ export function eserviceServiceBuilder(
               eserviceId: eserviceId.id,
               limit: 1,
               offset: 0,
-              // TODO: include also other non-Archived states
-              state: "ACTIVE",
             },
           }),
         ]);
 
-      const agreement = agreements.results.at(0);
+      // At most one non-archived agreement per (consumer, eservice);
+      // archived is terminal, so treat it as no agreement.
+      const latestAgreement = agreements.results.at(0);
+      const agreement =
+        latestAgreement?.state === "ARCHIVED" ? undefined : latestAgreement;
 
       const { data: producer } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,
