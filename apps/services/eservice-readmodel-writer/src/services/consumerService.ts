@@ -15,6 +15,7 @@ export async function handleEserviceEvent(
 
   return match(message)
     .with(
+      { type: "EserviceUpdatedV1" },
       { type: "EserviceVersionActivatedV1" },
       { type: "EserviceVersionReactivatedV1" },
       { type: "EserviceVersionSuspendedV1" },

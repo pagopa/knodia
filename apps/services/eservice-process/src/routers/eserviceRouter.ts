@@ -16,6 +16,7 @@ import type { EserviceService } from "../services/eserviceService.ts";
 
 import {
   API_Eservice,
+  API_EservicePatch,
   API_Eservices,
   API_EserviceSeed,
   API_EserviceVersion,
@@ -139,6 +140,49 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           headers: MetadataVersionHeader,
           properties: API_Eservice.meta({
             description: "E-service retrieved successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await eserviceService.updateEservice(
+        req.params.eserviceId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Eservice(eservice));
+    },
+    method: "PATCH",
+    schema: {
+      body: API_EservicePatch,
+      consumes: ["application/merge-patch+json"],
+      description: "Update an E-service",
+      headers: KnodiaServiceHeaders,
+      operationId: "updateEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Eservice.meta({
+            description: "E-service updated successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
