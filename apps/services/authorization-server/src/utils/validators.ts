@@ -10,7 +10,7 @@ import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
-import { isAxiosError } from "axios";
+import { AxiosError } from "axios";
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import {
   JWSInvalid,
@@ -18,6 +18,7 @@ import {
   JWTClaimValidationFailed,
   JWTExpired,
 } from "jose/errors";
+import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
 
 import type { API_TokenRequest } from "../models/api.ts";
@@ -94,22 +95,18 @@ export async function verifyClientAssertionSignature(
       purposeId,
     };
   } catch (error) {
-    if (error instanceof JWTExpired) {
-      throw clientAssertionExpired();
-    } else if (
-      error instanceof JWTClaimValidationFailed ||
-      error instanceof ZodError
-    ) {
-      throw clientAssertionClaimsValidationError(error);
-    } else if (error instanceof JWSSignatureVerificationFailed) {
-      throw invalidClientAssertionSignature();
-    } else if (error instanceof JWSInvalid) {
-      throw jsonWebTokenError(error.message);
-    } else if (isAxiosError(error) || error instanceof ApiError) {
-      throw error;
-    } else {
-      throw unexpectedClientAssertionSignatureVerificationError(error);
-    }
+    throw match(error)
+      .with(P.instanceOf(JWTExpired), () => clientAssertionExpired())
+      .with(
+        P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        (e) => clientAssertionClaimsValidationError(e),
+      )
+      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
+        invalidClientAssertionSignature(),
+      )
+      .with(P.instanceOf(JWSInvalid), (e) => jsonWebTokenError(e.message))
+      .with(P.union(P.instanceOf(ApiError), P.instanceOf(AxiosError)), (e) => e)
+      .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
   }
 }
 
