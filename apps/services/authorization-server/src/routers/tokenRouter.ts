@@ -5,28 +5,28 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import type { AuthorizationServerConfig } from "../config/config.ts";
+
 import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
-  clientAssertionAcceptedAudiences: string[];
-  clientAssertionClockToleranceSeconds: number;
-  clientAssertionMaxTokenAgeSeconds: number;
+  config: AuthorizationServerConfig;
   tokenService: TokenService;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  {
-    clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds,
-    tokenService,
-  },
+  { config, tokenService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
+      const {
+        clientAssertionAcceptedAudiences,
+        clientAssertionClockToleranceSeconds,
+        clientAssertionMaxTokenAgeSeconds,
+      } = config;
       const { correlationId, logger } = getContextValues(requestContext);
       const { client_assertion_type, client_id, grant_type } = req.body;
 

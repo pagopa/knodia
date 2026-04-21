@@ -1,5 +1,3 @@
-import type { KnodeId } from "@knodia/common-models/ids";
-import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import formBody from "@fastify/formbody";
@@ -21,26 +19,19 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
-  clientAssertionAcceptedAudiences,
-  clientAssertionClockToleranceSeconds,
-  clientAssertionMaxTokenAgeSeconds,
   config,
-  consumerKnodeUrl,
-  eserviceAccessTokenJwtKid,
-  generatedEserviceAccessTokenIssuer,
-  knodeId,
   readmodelDb,
 }: {
-  clientAssertionAcceptedAudiences: string[];
-  clientAssertionClockToleranceSeconds: number;
-  clientAssertionMaxTokenAgeSeconds: number;
-  config: LoggerConfig;
-  consumerKnodeUrl: string;
-  eserviceAccessTokenJwtKid: string;
-  generatedEserviceAccessTokenIssuer: string;
-  knodeId: KnodeId;
+  config: AuthorizationServerConfig;
   readmodelDb: NodePgDatabase;
 }) {
+  const {
+    consumerKnodeUrl,
+    eserviceAccessTokenJwtKid,
+    generatedEserviceAccessTokenIssuer,
+    knodeId,
+  } = config;
+
   const k2kGatewayClient = getK2K2GatewayApiClient({
     consumerKnodeUrl,
   });
@@ -73,9 +64,7 @@ export function buildApp({
   app.register(formBody);
   app.register(healthRouter);
   app.register(tokenRouter, {
-    clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds,
+    config,
     tokenService: tokenServiceBuilder({
       eserviceAccessTokenJwtKid,
       generatedEserviceAccessTokenIssuer,
@@ -94,16 +83,7 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
     makeReadmodelDrizzleConnection(config);
 
   const app = buildApp({
-    clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds:
-      config.clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds: config.clientAssertionMaxTokenAgeSeconds,
     config,
-    consumerKnodeUrl: config.consumerKnodeUrl,
-    eserviceAccessTokenJwtKid: config.eserviceAccessTokenJwtKid,
-    generatedEserviceAccessTokenIssuer:
-      config.generatedEserviceAccessTokenIssuer,
-    knodeId: config.knodeId,
     readmodelDb,
   });
 
