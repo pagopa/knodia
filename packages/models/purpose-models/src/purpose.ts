@@ -49,6 +49,8 @@ export const Purpose = z.strictObject({
   id: PurposeId,
   name: LocalizedPurposeName,
   state: PurposeState,
+  suspendedByConsumerAt: z.coerce.date().nullable(),
+  suspendedByProducerAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date(),
 });
 export type Purpose = z.infer<typeof Purpose>;

@@ -114,6 +114,8 @@ export function purposeServiceBuilder(
         id: purposeId,
         name,
         state: PurposeState.enum.Active,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: now,
       };
 

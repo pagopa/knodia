@@ -2,55 +2,114 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
+import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
-import { PurposeActivatedV1 } from "../src/generated/v1/purposeEvents.ts";
-import { Purpose } from "../src/purpose.ts";
+import {
+  PurposeActivatedV1,
+  PurposeReactivatedByConsumerV1,
+  PurposeReactivatedByProducerV1,
+  PurposeSuspendedByConsumerV1,
+  PurposeSuspendedByProducerV1,
+} from "../src/generated/v1/purposeEvents.ts";
+import { Purpose, PurposeState } from "../src/purpose.ts";
 import { PurposeEventV1 } from "../src/purposeEvent.ts";
 import { fromPurposeV1 } from "../src/purposeProtobufConverterFromV1.ts";
 import { toPurposeV1 } from "../src/purposeProtobufConverterToV1.ts";
 
 describe("PurposeEventV1 codec", () => {
-  const purpose = {
-    ...zocker(Purpose).generate(),
-    // zocker generates non-JSON-serializable values for Record<string, unknown>;
-    // override with a realistic JSON-safe object
-    formAnswersJson: {
-      checked: true,
-      count: 42,
-      nested: { deep: "value" },
-      options: ["a", "b", "c"],
-      question1: "answer1",
-    },
+  // zocker generates non-JSON-serializable values for Record<string, unknown>;
+  // override formAnswersJson with a realistic JSON-safe object
+  const mockFormAnswers = {
+    checked: true,
+    count: 42,
+    nested: { deep: "value" },
+    options: ["a", "b", "c"],
+    question1: "answer1",
   };
 
-  it("encodes and decodes a PurposeActivatedV1 payload (PurposeEventV1 full codec)", () => {
-    const event: PurposeEventV1 = {
-      data: {
-        purpose: toPurposeV1(purpose),
-      },
-      type: "PurposeActivatedV1",
-    };
-    const encoded = PurposeEventV1.encode(event);
-    expect(encoded).toMatchObject({ type: "PurposeActivatedV1" });
-    expect(encoded.data).toBeInstanceOf(Uint8Array);
+  const purpose: Purpose = {
+    ...zocker(Purpose).generate(),
+    formAnswersJson: mockFormAnswers,
+  };
 
-    const decoded = PurposeEventV1.decode(encoded);
-    expect(fromPurposeV1(decoded.data.purpose!)).toEqual(purpose);
-  });
+  // Suspend/reactivate events carry purposes with non-null suspendedBy*At dates,
+  // ensuring the Date serialization path is always exercised
+  const suspendedPurpose: Purpose = {
+    ...zocker(Purpose).generate(),
+    formAnswersJson: mockFormAnswers,
+    state: PurposeState.enum.Suspended,
+    suspendedByConsumerAt: new Date(),
+    suspendedByProducerAt: new Date(),
+  };
 
-  it("encodes and decodes a PurposeActivatedV1 payload (protobufBinaryCodec-only)", () => {
-    const codec = protobufBinaryCodec(PurposeActivatedV1);
-    const value = {
-      purpose: toPurposeV1(purpose),
-    };
-    const bytes = codec.encode(value);
-    expect(bytes).toBeInstanceOf(Uint8Array);
+  const cases = [
+    {
+      message: PurposeActivatedV1,
+      purpose,
+      type: "PurposeActivatedV1" as const,
+    },
+    {
+      message: PurposeSuspendedByConsumerV1,
+      purpose: suspendedPurpose,
+      type: "PurposeSuspendedByConsumerV1" as const,
+    },
+    {
+      message: PurposeSuspendedByProducerV1,
+      purpose: suspendedPurpose,
+      type: "PurposeSuspendedByProducerV1" as const,
+    },
+    {
+      message: PurposeReactivatedByConsumerV1,
+      purpose: suspendedPurpose,
+      type: "PurposeReactivatedByConsumerV1" as const,
+    },
+    {
+      message: PurposeReactivatedByProducerV1,
+      purpose: suspendedPurpose,
+      type: "PurposeReactivatedByProducerV1" as const,
+    },
+  ] as const;
 
-    const decoded = codec.decode(bytes);
-    expect(fromPurposeV1(decoded.purpose!)).toEqual(purpose);
-  });
+  it.each(cases)(
+    "encodes and decodes a $type payload (PurposeEventV1 full codec)",
+    (caseItem) => {
+      const event = match(caseItem)
+        .with(
+          { type: "PurposeActivatedV1" },
+          { type: "PurposeSuspendedByConsumerV1" },
+          { type: "PurposeSuspendedByProducerV1" },
+          { type: "PurposeReactivatedByConsumerV1" },
+          { type: "PurposeReactivatedByProducerV1" },
+          ({ purpose: p, type }): PurposeEventV1 => ({
+            data: { purpose: toPurposeV1(p) },
+            type,
+          }),
+        )
+        .exhaustive();
+
+      const encoded = PurposeEventV1.encode(event);
+      expect(encoded).toMatchObject({ type: event.type });
+      expect(encoded.data).toBeInstanceOf(Uint8Array);
+
+      const decoded = PurposeEventV1.decode(encoded);
+      expect(fromPurposeV1(decoded.data.purpose!)).toEqual(caseItem.purpose);
+    },
+  );
+
+  it.each(cases)(
+    "encodes and decodes a $type payload (protobufBinaryCodec-only)",
+    ({ message, purpose: originalPurpose }) => {
+      const codec = protobufBinaryCodec(message);
+      const value = { purpose: toPurposeV1(originalPurpose) };
+      const bytes = codec.encode(value);
+      expect(bytes).toBeInstanceOf(Uint8Array);
+
+      const decoded = codec.decode(bytes);
+      expect(fromPurposeV1(decoded.purpose!)).toEqual(originalPurpose);
+    },
+  );
 
   it("decodes a KafkaMessageEnvelope with PurposeEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
