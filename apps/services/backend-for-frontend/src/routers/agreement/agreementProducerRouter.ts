@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -20,6 +21,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   assertEntityExists,
@@ -29,6 +31,10 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -131,6 +137,7 @@ interface AgreementProducerRouterOptions {
   config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   organizationProcessClient: OrganizationProcessClient;
+  pollingService: PollingService;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
@@ -143,9 +150,30 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     config,
     eserviceProcessClient,
     organizationProcessClient,
+    pollingService,
     remoteResourcesManagerClient,
   },
 ) => {
+  const retrieveAgreementById = (
+    agreementId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    agreementProcessApi.getAgreement({
+      client: agreementProcessClient,
+      headers,
+      path: { agreementId },
+    });
+
+  const pollAgreement = (
+    response: AxiosResponse<agreementProcessApi.Agreement>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveAgreementById(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -291,11 +319,15 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(`Reactivating Producer Agreement ${req.params.agreementId}`);
 
-      await agreementProcessApi.reactivateAgreementByProducer({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await agreementProcessApi.reactivateAgreementByProducer({
         client: agreementProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { agreementId: req.params.agreementId },
       });
+
+      await pollAgreement(response, headers);
 
       res.status(204).send();
     },
@@ -327,11 +359,15 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(`Suspending Producer Agreement ${req.params.agreementId}`);
 
-      await agreementProcessApi.suspendAgreementByProducer({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await agreementProcessApi.suspendAgreementByProducer({
         client: agreementProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { agreementId: req.params.agreementId },
       });
+
+      await pollAgreement(response, headers);
 
       res.status(204).send();
     },

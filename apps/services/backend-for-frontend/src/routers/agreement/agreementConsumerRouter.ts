@@ -17,7 +17,7 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
-  API_KnodeIdQueryParams,
+  API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
@@ -164,7 +164,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Reactivate an Agreement as Consumer",
       operationId: "reactivateConsumerAgreement",
       params: API_AgreementIdPathParam,
-      querystring: API_KnodeIdQueryParams,
+      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement reactivated successfully",
@@ -204,7 +204,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Suspend an Agreement as Consumer",
       operationId: "suspendConsumerAgreement",
       params: API_AgreementIdPathParam,
-      querystring: API_KnodeIdQueryParams,
+      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement suspended successfully",

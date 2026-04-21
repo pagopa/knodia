@@ -32,9 +32,11 @@ export const API_AgreementSeed = z
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
-export const API_KnodeIdQueryParams = z.strictObject({
-  knodeId: API_KnodeId,
-});
+export const API_SuspendReactivateConsumerAgreementQueryParams = z.strictObject(
+  {
+    knodeId: API_KnodeId,
+  },
+);
 
 export const API_GetProducerAgreementsQueryParams = API_PaginationQueryParams;
 export type API_GetProducerAgreementsQueryParams = z.infer<
