@@ -86,15 +86,26 @@ export const toAPI_ProducerEserviceDetails = ({
 export const toAPI_ConsumerEserviceDetails = (
   detail: remoteResourcesManagerApi.EserviceDetails,
   consumerAttributes: readonly AttributeId[],
+  recentUpdateDays: number,
+  mostRecentPurpose: remoteResourcesManagerApi.Purpose | undefined,
 ): API_ConsumerEserviceDetails => ({
   accessToken: {
     audience: detail.latestVersion.accessTokenAudience,
     duration: detail.latestVersion.accessTokenDuration,
     type: detail.latestVersion.accessTokenType,
   },
-  agreement: detail.agreement,
+  agreement:
+    detail.agreement !== undefined
+      ? { id: detail.agreement.id, state: detail.agreement.state }
+      : undefined,
   categories: detail.categories,
   description: detail.description,
+  hasRecentlyBeenUpdated:
+    hasRecentlyBeenUpdated(detail, recentUpdateDays) ||
+    (detail.agreement !== undefined &&
+      hasRecentlyBeenUpdated(detail.agreement, recentUpdateDays)) ||
+    (mostRecentPurpose !== undefined &&
+      hasRecentlyBeenUpdated(mostRecentPurpose, recentUpdateDays)),
   id: detail.id,
   identificationRequired: detail.isConsumerOperatorIdentificationRequired,
   interfaceDocument: {
@@ -120,14 +131,26 @@ export const toAPI_ConsumerEserviceDetails = (
   state: detail.latestVersion.state,
 });
 
-export const toAPI_ConsumerEservice = (
-  eservice: remoteResourcesManagerApi.Eservice,
-  recentUpdateDays: number,
-): API_ConsumerEservice => ({
-  agreement: eservice.agreement,
+export const toAPI_ConsumerEservice = ({
+  counters,
+  eservice,
+  mostRecentPurpose,
+  recentUpdateDays,
+}: {
+  counters: { activePurposes: number; consumerKeychains: number };
+  eservice: remoteResourcesManagerApi.Eservice;
+  mostRecentPurpose: remoteResourcesManagerApi.Purpose | undefined;
+  recentUpdateDays: number;
+}): API_ConsumerEservice => ({
+  activePurposes: counters.activePurposes,
+  agreement: { id: eservice.agreement.id, state: eservice.agreement.state },
   categories: eservice.categories,
-  // TODO https://pagopa.atlassian.net/browse/KN-246
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice, recentUpdateDays),
+  consumerKeychains: counters.consumerKeychains,
+  hasRecentlyBeenUpdated:
+    hasRecentlyBeenUpdated(eservice, recentUpdateDays) ||
+    hasRecentlyBeenUpdated(eservice.agreement, recentUpdateDays) ||
+    (mostRecentPurpose !== undefined &&
+      hasRecentlyBeenUpdated(mostRecentPurpose, recentUpdateDays)),
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,

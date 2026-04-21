@@ -42,7 +42,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         eserviceVersionId,
       );
     },
-    async getPurposeById(purposeId: PurposeId) {
+    async getPurpose(purposeId: PurposeId) {
       return await purposeReadmodelService.getPurposeById(purposeId);
     },
   };

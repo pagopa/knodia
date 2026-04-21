@@ -66,7 +66,7 @@ export type CreatedResource = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -376,6 +376,10 @@ export type ConsumerEserviceDetails = {
     agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
+    /**
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
@@ -401,13 +405,21 @@ export type CompactEservice = {
 };
 
 export type ConsumerEservice = {
+    /**
+     * Number of active Purposes for this E-service
+     */
+    activePurposes: number;
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
     /**
-     * Indicates whether the E-service has been recently updated
+     * Number of Consumer Keychains linked to active Purposes of this E-service
+     */
+    consumerKeychains: number;
+    /**
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
@@ -577,6 +589,34 @@ export type KeychainDetails = {
     updatedAt: string;
 };
 
+export type ConsumerKeychainOption = {
+    id: string;
+    name: KeychainLocalizedName;
+};
+
+export type ConsumerKeychainOptions = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainOption>;
+};
+
+/**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
+export type ConsumerKeychainPurpose = {
+    eservice: CompactEservice;
+    id: PurposeId;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerKeychainPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainPurpose>;
+};
+
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
@@ -605,6 +645,10 @@ export type KeychainMemberSeed = {
 
 export type ConsumerKeychainMembershipCheckResult = {
     isMember: boolean;
+};
+
+export type ConsumerKeychainPurposeLinkCheckResult = {
+    isLinked: boolean;
 };
 
 export type User = {
@@ -1159,6 +1203,10 @@ export type GetConsumerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         */
+        purpose?: string;
     };
     url: '/consumerKeychains';
 };
@@ -1510,6 +1558,100 @@ export type GetConsumerKeychainMembershipResponses = {
 
 export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
 
+export type GetConsumerKeychainOptionsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Search text used to filter Consumer Keychains by name
+         */
+        q: string;
+    };
+    url: '/consumerKeychains/options';
+};
+
+export type GetConsumerKeychainOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainOptionsError = GetConsumerKeychainOptionsErrors[keyof GetConsumerKeychainOptionsErrors];
+
+export type GetConsumerKeychainOptionsResponses = {
+    /**
+     * Consumer Keychain options retrieved successfully
+     */
+    200: ConsumerKeychainOptions;
+};
+
+export type GetConsumerKeychainOptionsResponse = GetConsumerKeychainOptionsResponses[keyof GetConsumerKeychainOptionsResponses];
+
+export type GetConsumerKeychainPurposesData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes';
+};
+
+export type GetConsumerKeychainPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
+
+export type GetConsumerKeychainPurposesResponses = {
+    /**
+     * Purposes linked to the Consumer Keychain retrieved successfully
+     */
+    200: ConsumerKeychainPurposes;
+};
+
+export type GetConsumerKeychainPurposesResponse = GetConsumerKeychainPurposesResponses[keyof GetConsumerKeychainPurposesResponses];
+
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;
     path: {
@@ -1594,6 +1736,48 @@ export type UnlinkPurposeFromConsumerKeychainResponses = {
 };
 
 export type UnlinkPurposeFromConsumerKeychainResponse = UnlinkPurposeFromConsumerKeychainResponses[keyof UnlinkPurposeFromConsumerKeychainResponses];
+
+export type GetConsumerKeychainPurposeLinkData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+};
+
+export type GetConsumerKeychainPurposeLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainPurposeLinkError = GetConsumerKeychainPurposeLinkErrors[keyof GetConsumerKeychainPurposeLinkErrors];
+
+export type GetConsumerKeychainPurposeLinkResponses = {
+    /**
+     * Consumer Keychain purpose link check retrieved successfully
+     */
+    200: ConsumerKeychainPurposeLinkCheckResult;
+};
+
+export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

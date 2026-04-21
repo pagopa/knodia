@@ -1,16 +1,15 @@
 import type { TokenGenerator } from "@knodia/token-generator";
+import type { FastifyBaseLogger } from "fastify";
 
-import { type KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+  type ConsumerKeychainId,
+  type KnodeId,
+} from "@knodia/common-models/ids";
+import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
-import type { API_TokenRequest } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
-  validateClientAssertionClaims,
   validatePlatformObjects,
   verifyClientAssertionSignature,
 } from "../utils/validators.ts";
@@ -33,47 +32,42 @@ export function tokenServiceBuilder({
 }) {
   return {
     async issueToken(
-      requestBody: API_TokenRequest,
+      {
+        clientAssertionJWS,
+        consumerKeychainId,
+      }: {
+        clientAssertionJWS: string;
+        consumerKeychainId: ConsumerKeychainId;
+      },
       clientAssertionAcceptedAudiences: string[],
+      clientAssertionClockToleranceSeconds: number,
+      clientAssertionMaxTokenAgeSeconds: number,
+      logger: FastifyBaseLogger,
     ) {
-      // Client assertion claims validation
-      const clientAssertion = validateClientAssertionClaims(
-        requestBody,
-        clientAssertionAcceptedAudiences,
-      );
+      // Verify Client Assertion signature and claims
+      const { consumerAttributes, purposeId } =
+        await verifyClientAssertionSignature(
+          { clientAssertionJWS, consumerKeychainId },
+          clientAssertionAcceptedAudiences,
+          clientAssertionClockToleranceSeconds,
+          clientAssertionMaxTokenAgeSeconds,
+          k2kGatewayClient,
+          logger,
+        );
 
-      // Get access token data from the external Knode through the k2k-gateway API
-      const {
-        data: { consumerAttributes, publicKey },
-      } = await k2kGatewayApi.getClientAssertionVerificationData({
-        body: {
-          keychainId: requestBody.client_id,
-          kid: clientAssertion.header.kid,
-          purposeId: clientAssertion.payload.purposeId,
-        },
-        client: k2kGatewayClient,
-      });
-
-      // Client Assertion signature verification
-      await verifyClientAssertionSignature(
-        requestBody.client_assertion,
-        publicKey,
-        clientAssertion.header.alg,
-      );
-
-      // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes
+      // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion, purpose } =
         await validatePlatformObjects(
-          clientAssertion.payload.purposeId,
+          purposeId,
           consumerAttributes,
           readmodelService,
         );
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
-        audience: eserviceVersion.accessTokenAudience.join(","),
+        audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,
-        consumerKeychainId: unsafeBrandId(requestBody.client_id),
+        consumerKeychainId,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,
@@ -81,7 +75,7 @@ export function tokenServiceBuilder({
         producer: { id: agreement.producerId, knodeId },
         purposeId: purpose.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
-        subject: clientAssertion.payload.sub,
+        subject: consumerKeychainId,
       });
 
       return {

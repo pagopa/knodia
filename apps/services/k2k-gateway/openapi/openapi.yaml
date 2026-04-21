@@ -14,10 +14,10 @@ components:
         code:
           description: Internal code of the error
           example: 123-4567
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: ^[0-9]{3}-[0-9]{4,5}$
           type: string
           minLength: 8
-          maxLength: 8
+          maxLength: 9
         detail:
           description: A human readable explanation specific to this occurrence of the
             problem
@@ -509,6 +509,7 @@ components:
         - ACTIVE
         - SUSPENDED
         - ARCHIVED
+        - PENDING_CONSUMER_OPERATOR_IDENTIFICATION
     Agreement:
       description: Agreement between a Consumer and a Producer for an E-service
       type: object
@@ -1418,6 +1419,13 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
       responses:
         "200":
           description: Purposes retrieved successfully

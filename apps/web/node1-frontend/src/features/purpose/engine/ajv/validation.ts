@@ -1,19 +1,17 @@
 import Ajv from "ajv";
 
-import type {
-  FormValues,
-  JsonSchema,
-  JsonSchemaProperty,
-  ValidateFn,
-} from "../types";
+import type { FormValues, JsonSchema, UISchema, ValidateFn } from "../types";
 
+import { buildControlsByField, stripHiddenOptionValues } from "../optionFilter";
 import { getRequiredFields } from "../requiredFields";
 
 export function createAjvValidator(
   jsonSchema: JsonSchema,
   errorMessages: Record<string, Record<string, string>>,
+  uischema?: UISchema,
 ): ValidateFn {
   const ajv = new Ajv({ allErrors: true });
+  const controlsByField = buildControlsByField(uischema);
   return (values, visibleFields) => {
     const subsetSchema = buildSubsetSchema(jsonSchema, visibleFields, values);
     const validateFn = ajv.compile(subsetSchema);
@@ -21,7 +19,13 @@ export function createAjvValidator(
     const visibleValues: FormValues = {};
     for (const field of visibleFields) {
       const val = values[field];
-      if (val !== undefined) visibleValues[field] = val;
+      if (val === undefined) continue;
+      const cleaned = stripHiddenOptionValues(
+        val,
+        controlsByField[field],
+        values,
+      );
+      if (cleaned !== undefined) visibleValues[field] = cleaned;
     }
 
     if (validateFn(visibleValues)) return {};
@@ -39,7 +43,7 @@ function addInstancePathError(
   },
   errorMessages?: Record<string, Record<string, string>>,
 ): void {
-  const field = err.instancePath.slice(1);
+  const field = err.instancePath.slice(1).split("/")[0];
   if (field && !fieldErrors[field]) {
     const isRequiredProxy =
       (err.keyword === "minLength" || err.keyword === "minItems") &&
@@ -97,10 +101,14 @@ function buildSubsetSchema(
   const properties: Record<string, unknown> = {};
   for (const field of visibleFields) {
     const prop = jsonSchema.properties[field];
-    if (!prop) continue;
-    properties[field] = requiredSet.has(field) ? patchPropNonEmpty(prop) : prop;
+    if (prop) properties[field] = prop;
   }
 
+  // Include allOf if/then/else conditions so AJV can compute conditional
+  // required fields for this step. Filter both `if.properties` and
+  // `if.required` to visible fields — per-step validation only sees the
+  // current page's fields, so cross-page fields in `if.required` would
+  // always fail the `if` and incorrectly trigger `else` branches.
   const allOf = (jsonSchema.allOf ?? [])
     .filter((cond) => {
       const thenFields = cond.then.required ?? [];
@@ -119,6 +127,7 @@ function buildSubsetSchema(
             visibleFields.has(key),
           ),
         ),
+        required: (cond.if.required ?? []).filter((f) => visibleFields.has(f)),
       },
     }))
     .filter((cond) => Object.keys(cond.if.properties ?? {}).length > 0);
@@ -129,18 +138,4 @@ function buildSubsetSchema(
     ...(requiredSet.size > 0 && { required: [...requiredSet] }),
     ...(allOf.length > 0 && { allOf }),
   };
-}
-
-// JSON Schema `required` only checks that a property key exists in the object —
-// it does NOT reject empty strings ("") or empty arrays ([]).
-// Since our form initializes fields with these empty defaults, a required field
-// would pass AJV validation even when the user hasn't filled it in.
-// This function patches required properties so AJV enforces non-empty values:
-// strings get minLength: 1, arrays get minItems: 1.
-function patchPropNonEmpty(prop: JsonSchemaProperty): JsonSchemaProperty {
-  if (prop.type === "array")
-    return { ...prop, minItems: Math.max(1, prop.minItems ?? 0) };
-  if (prop.type === "string" && prop.const === undefined)
-    return { ...prop, minLength: Math.max(1, prop.minLength ?? 0) };
-  return prop;
 }

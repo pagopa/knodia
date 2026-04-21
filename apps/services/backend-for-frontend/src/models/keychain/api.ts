@@ -4,13 +4,21 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
+import {
+  API_LocalizedPurposeName,
+  API_PurposeState,
+} from "@knodia/purpose-models/api";
 import z from "zod";
+
+import { API_CompactEservice } from "../eservice/api.ts";
 
 export const API_ConsumerKeychainSeed = z
   .strictObject({
@@ -49,9 +57,57 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
-export const API_ConsumerKeychainsQueryParams = API_PaginationQueryParams;
+export const API_ConsumerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    purpose: z
+      .string()
+      .refine((value) => {
+        const [knodeId, id, ...rest] = value.split(":");
+
+        return (
+          rest.length === 0 &&
+          API_KnodeId.safeParse(knodeId).success &&
+          z.uuid().safeParse(id).success
+        );
+      })
+      .optional()
+      .meta({
+        description:
+          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+      }),
+  });
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
+>;
+
+export const API_GetConsumerKeychainOptionsQueryParams =
+  API_PaginationQueryParams.extend({
+    q: z.string().meta({
+      description: "Search text used to filter Consumer Keychains by name",
+    }),
+  });
+export type API_GetConsumerKeychainOptionsQueryParams = z.infer<
+  typeof API_GetConsumerKeychainOptionsQueryParams
+>;
+
+export const API_ConsumerKeychainOption = z
+  .strictObject({
+    id: z.uuid(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "ConsumerKeychainOption" });
+export type API_ConsumerKeychainOption = z.infer<
+  typeof API_ConsumerKeychainOption
+>;
+
+export const API_ConsumerKeychainOptions = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerKeychainOption),
+  })
+  .meta({ id: "ConsumerKeychainOptions" });
+export type API_ConsumerKeychainOptions = z.infer<
+  typeof API_ConsumerKeychainOptions
 >;
 
 export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
@@ -63,6 +119,40 @@ export const API_GetConsumerKeychainMembersQueryParams =
   API_PaginationQueryParams;
 export type API_GetConsumerKeychainMembersQueryParams = z.infer<
   typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
+export const API_GetConsumerKeychainPurposesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
+  typeof API_GetConsumerKeychainPurposesQueryParams
+>;
+
+const API_PurposeId = z.uuid().meta({
+  description: "Unique identifier of the Purpose",
+  id: "PurposeId",
+});
+
+export const API_ConsumerKeychainPurpose = z
+  .strictObject({
+    eservice: API_CompactEservice,
+    id: API_PurposeId,
+    name: API_LocalizedPurposeName,
+    producer: API_CompactOrganization,
+    state: API_PurposeState,
+  })
+  .meta({ id: "ConsumerKeychainPurpose" });
+export type API_ConsumerKeychainPurpose = z.infer<
+  typeof API_ConsumerKeychainPurpose
+>;
+
+export const API_ConsumerKeychainPurposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerKeychainPurpose),
+  })
+  .meta({ id: "ConsumerKeychainPurposes" });
+export type API_ConsumerKeychainPurposes = z.infer<
+  typeof API_ConsumerKeychainPurposes
 >;
 
 export const API_ConsumerKeychainPatch = z
@@ -116,6 +206,15 @@ export const API_ConsumerKeychainMembershipCheckResult = z
   .meta({ id: "ConsumerKeychainMembershipCheckResult" });
 export type API_ConsumerKeychainMembershipCheckResult = z.infer<
   typeof API_ConsumerKeychainMembershipCheckResult
+>;
+
+export const API_ConsumerKeychainPurposeLinkCheckResult = z
+  .strictObject({
+    isLinked: z.boolean(),
+  })
+  .meta({ id: "ConsumerKeychainPurposeLinkCheckResult" });
+export type API_ConsumerKeychainPurposeLinkCheckResult = z.infer<
+  typeof API_ConsumerKeychainPurposeLinkCheckResult
 >;
 
 export const API_ConsumerKeychainMemberPathParams = z

@@ -15,15 +15,18 @@ import {
   getMockEserviceVersion,
   getMockPurpose,
 } from "@knodia/test-commons/utils";
+import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
+import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
-  agreementNotActive,
   consumerMissingRequiredAttributes,
+  eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
   platformStatesNotActive,
+  publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
 import {
   agreementWriterService,
@@ -95,18 +98,21 @@ vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateEserviceAccessToken: vi.fn().mockResolvedValue({
       payload: {
-        aud: eserviceVersion.accessTokenAudience.join(","),
+        aud: eserviceVersion.accessTokenAudience,
         client_id: consumerKeychainId,
         consumer: purpose.consumer,
-        eservice: { id: eservice.id, knodeId: producerKnodeId },
-        eservice_version: { id: eserviceVersion.id, knodeId: producerKnodeId },
+        eservice: {
+          id: eservice.id,
+          knode_id: producerKnodeId,
+          version: eserviceVersion.id,
+        },
         exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
         iat: MOCK_NOW_SECONDS,
         iss: "knodia.org",
         jti: generateId(),
         nbf: MOCK_NOW_SECONDS,
-        producer: { id: agreement.producerId, knodeId: producerKnodeId },
-        purpose: { id: purpose.id, knodeId: producerKnodeId },
+        producer: { id: agreement.producerId, knode_id: producerKnodeId },
+        purpose: { id: purpose.id, knode_id: producerKnodeId },
         sub: consumerKeychainId,
       } satisfies EserviceAccessTokenClaims,
       serialized: MOCK_TOKEN,
@@ -157,6 +163,15 @@ describe("POST /token", async () => {
     grant_type: VALID_GRANT_TYPE,
   };
 
+  async function createToken(body: API_TokenRequest = defaultBody) {
+    return app.inject({
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      method: "POST",
+      payload: new URLSearchParams(body).toString(),
+      url: "/token",
+    });
+  }
+
   beforeEach(() => {
     getClientAssertionVerificationDataMock.mockReset();
   });
@@ -172,11 +187,7 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     const responseBody = response.json<API_TokenResponse>();
 
@@ -210,11 +221,7 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await app.inject({
-        method: "POST",
-        payload: body,
-        url: "/token",
-      });
+      const response = await createToken(body as never);
       expect(response.statusCode).toBe(400);
     },
   );
@@ -400,52 +407,38 @@ describe("POST /token", async () => {
         },
       },
     ],
-    [
-      "invalid typ claim in client_assertion headers",
-      {
-        ...clientAssertion,
-        headers: {
-          ...clientAssertion.headers,
-          typ: "InvalidTypFormat",
-        },
-      },
-    ],
   ])(
-    "should return 400 if the client assertion has invalid claims - %s",
+    "should return 401 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
       const clientAssertionJWS = await signClientAssertion({
         clientAssertion,
         keySet,
       });
 
-      const response = await app.inject({
-        method: "POST",
-        payload: {
-          ...defaultBody,
-          client_assertion: clientAssertionJWS,
-        },
-        url: "/token",
+      const response = await createToken({
+        ...defaultBody,
+        client_assertion: clientAssertionJWS,
       });
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(401);
     },
   );
 
   it("should return 500 when the k2k gateway call fails", async () => {
     getClientAssertionVerificationDataMock.mockRejectedValue(
-      new Error("k2k gateway error"),
+      new AxiosError("k2k gateway error"),
     );
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     expect(response.statusCode).toBe(500);
   });
 
-  it("should return 400 when the client assertion signature is invalid", async () => {
+  it("should return 401 when the client assertion signature is invalid", async () => {
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
@@ -465,45 +458,160 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     const error = invalidClientAssertionSignature();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 400 when platform states are not active", async () => {
-    const suspendedAgreement: Agreement = { ...agreement, state: "Suspended" };
-    await Promise.all([
-      agreementWriterService.upsertAgreement(suspendedAgreement, 0),
-      eserviceWriterService.upsertEservice(eservice, 0),
-      purposeWriterService.upsertPurpose(purpose, 0),
-    ]);
-
+  it("should return 401 if the public key algorithm does not match the client assertion algorithm", async () => {
+    const wrongAlg = "ES256";
     getClientAssertionVerificationDataMock.mockResolvedValue({
-      data: mockK2KResponse,
+      data: {
+        ...mockK2KResponse,
+        publicKey: { ...mockK2KResponse.publicKey, algorithm: wrongAlg },
+      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
-    const error = platformStatesNotActive([
-      agreementNotActive(suspendedAgreement.id, suspendedAgreement.state),
-    ]);
+    const error = publicKeyAlgNotMatchingClientAssertionAlg(
+      wrongAlg,
+      EXPECTED_CLIENT_ASSERTION_ALGORITHM,
+    );
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 400 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
+  it.each([
+    {
+      agreement: {
+        ...agreement,
+        state: "Suspended",
+      },
+      eserviceVersion,
+      purpose,
+      testCase: "agreement not active",
+    },
+    {
+      agreement,
+      eserviceVersion: {
+        ...eserviceVersion,
+        state: "Suspended",
+      },
+      purpose,
+      testCase: "e-service version not active",
+    },
+    {
+      agreement,
+      eserviceVersion,
+      purpose: {
+        ...purpose,
+        state: "Suspended",
+      },
+      testCase: "purpose not active",
+    },
+    {
+      agreement: {
+        ...agreement,
+        state: "Suspended",
+      },
+      eserviceVersion: {
+        ...eserviceVersion,
+        state: "Suspended",
+      },
+      purpose: {
+        ...purpose,
+        state: "Suspended",
+      },
+      testCase: "all platform objects not active",
+    },
+  ] satisfies {
+    agreement: Agreement;
+    eserviceVersion: EserviceVersion;
+    purpose: Purpose;
+    testCase: string;
+  }[])(
+    "should return 401 when platform states are not active: $testCase (seed #%#)",
+    async ({ agreement, eserviceVersion, purpose }) => {
+      await Promise.all([
+        agreementWriterService.upsertAgreement(agreement, 0),
+        eserviceWriterService.upsertEservice(
+          { ...eservice, versions: [eserviceVersion] },
+          0,
+        ),
+        purposeWriterService.upsertPurpose(purpose, 0),
+      ]);
+
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
+      const response = await createToken();
+
+      const error = platformStatesNotActive([]);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
+    },
+  );
+
+  it.each([
+    {
+      agreement: undefined,
+      eserviceVersion,
+      purpose,
+      testCase: "agreement not found",
+    },
+    {
+      agreement,
+      eserviceVersion: undefined,
+      purpose,
+      testCase: "e-service version not found",
+    },
+    {
+      agreement,
+      eserviceVersion,
+      purpose: undefined,
+      testCase: "purpose not found",
+    },
+  ] satisfies {
+    agreement: Agreement | undefined;
+    eserviceVersion: EserviceVersion | undefined;
+    purpose: Purpose | undefined;
+    testCase: string;
+  }[])(
+    "should return 401 when platform objects are not found: $testCase (seed #%#)",
+    async ({ agreement, eserviceVersion, purpose }) => {
+      await Promise.all([
+        agreement
+          ? agreementWriterService.upsertAgreement(agreement, 0)
+          : Promise.resolve(),
+        eserviceVersion
+          ? eserviceWriterService.upsertEservice(
+              { ...eservice, versions: [eserviceVersion] },
+              0,
+            )
+          : Promise.resolve(),
+        purpose
+          ? purposeWriterService.upsertPurpose(purpose, 0)
+          : Promise.resolve(),
+      ]);
+
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
+      const response = await createToken();
+
+      expect(response.statusCode).toBe(401);
+    },
+  );
+
+  it("should return 401 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
@@ -522,18 +630,42 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     const error = consumerMissingRequiredAttributes(
       purpose.consumer,
       eserviceVersion.id,
     );
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 401 if the E-service version does not use Bearer token", async () => {
+    const eserviceVersionWithWrongTokenType: EserviceVersion = {
+      ...eserviceVersion,
+      accessTokenType: "DPoP",
+    };
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(
+        { ...eservice, versions: [eserviceVersionWithWrongTokenType] },
+        0,
+      ),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await createToken();
+
+    const error = eserviceVersionNotUsingBearerToken(
+      eserviceVersionWithWrongTokenType,
+    );
+
+    expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 });

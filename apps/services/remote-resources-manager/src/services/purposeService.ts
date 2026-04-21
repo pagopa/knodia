@@ -19,7 +19,10 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { purposeNotFound } from "../models/errors.ts";
-import { toAPI_Purpose } from "../models/purpose/apiConverter.ts";
+import {
+  toAPI_Purpose,
+  toK2KAPI_PurposeState,
+} from "../models/purpose/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -123,7 +126,7 @@ export function purposeServiceBuilder(
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { eserviceId, limit, offset } = requestQuery;
+      const { eserviceId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
       // TODO: when eserviceId is provided, query only the knode that produces
@@ -148,6 +151,7 @@ export function purposeServiceBuilder(
             eserviceId,
             limit: dynamicLimit,
             offset: dynamicOffset,
+            state: state ? toK2KAPI_PurposeState(state) : undefined,
           },
         });
 

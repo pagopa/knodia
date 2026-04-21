@@ -58,6 +58,10 @@ const toK2KAgreementState = (
     .with("Active", () => "ACTIVE" as const)
     .with("Suspended", () => "SUSPENDED" as const)
     .with("Archived", () => "ARCHIVED" as const)
+    .with(
+      "PendingConsumerOperatorIdentification",
+      () => "PENDING_CONSUMER_OPERATOR_IDENTIFICATION" as const,
+    )
     .exhaustive();
 
 export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>

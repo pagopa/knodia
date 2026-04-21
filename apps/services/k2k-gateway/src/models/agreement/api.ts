@@ -42,7 +42,12 @@ export const API_AgreementSeed = z
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
 export const API_AgreementState = z
-  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
+  .enum([
+    "ACTIVE",
+    "SUSPENDED",
+    "ARCHIVED",
+    "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
+  ])
   .meta({
     description: "Describes the states an Agreement can be in",
     id: "AgreementState",

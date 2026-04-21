@@ -6,6 +6,8 @@ import type {
 } from "@knodia/common-models/ids";
 
 import {
+  getConsumerKeychainsOptions,
+  getConsumerKeychainsQueryKey,
   getConsumerPurposeDetailsOptions,
   getConsumerPurposesOptions,
   getProducerPurposeDetailsOptions,
@@ -16,6 +18,7 @@ import { client } from "@/libs/axios";
 
 const PURPOSES_PAGE_LIMIT = 9;
 const PURPOSES_SECTION_LIMIT = 50;
+const PURPOSES_LINKED_KEYCHAINS_LIMIT = 10;
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -54,4 +57,25 @@ export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
   getProducerPurposesOptions({
     client,
     query: { agreementId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
+  });
+
+export const purposeLinkedConsumerKeychainsQuery = (
+  purposeId: string,
+  knodeId: KnodeId,
+  offset: number,
+) =>
+  getConsumerKeychainsOptions({
+    client,
+    query: {
+      limit: PURPOSES_LINKED_KEYCHAINS_LIMIT,
+      offset,
+      purpose: `${knodeId}:${purposeId}`,
+    },
+  });
+
+export const purposeLinkedConsumerKeychainsQueryKey = () =>
+  getConsumerKeychainsQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
   });

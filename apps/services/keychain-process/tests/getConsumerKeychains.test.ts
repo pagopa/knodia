@@ -23,8 +23,39 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
+const matchingNamePrefix = "zz-combobox-match";
+const ownerIdFilter = mockConsumerKeychains[0]!.ownerId;
+const alternateOwnerId = mockConsumerKeychains[1]!.ownerId;
+const seededConsumerKeychains = mockConsumerKeychains.map(
+  (consumerKeychain, index) => {
+    if ([0, 4].includes(index)) {
+      return {
+        ...consumerKeychain,
+        name: { en: `${matchingNamePrefix}-${index}` },
+        ownerId: ownerIdFilter,
+      };
+    }
+
+    if (index === 7) {
+      return {
+        ...consumerKeychain,
+        ownerId: ownerIdFilter,
+      };
+    }
+
+    if (index === 2) {
+      return {
+        ...consumerKeychain,
+        ownerId: alternateOwnerId,
+      };
+    }
+
+    return consumerKeychain;
+  },
+);
+
 const seedConsumerKeychains = async () => {
-  await Promise.all(mockConsumerKeychains.map(seedConsumerKeychain));
+  await Promise.all(seededConsumerKeychains.map(seedConsumerKeychain));
 };
 
 const knodeId: KnodeId = "Orion";
@@ -33,22 +64,22 @@ const purpose1 = getMockPurpose(1);
 const purpose2 = getMockPurpose(2);
 const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
   {
-    consumerKeychainId: mockConsumerKeychains[0]!.id,
+    consumerKeychainId: seededConsumerKeychains[0]!.id,
     linkedAt: new Date(),
     purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
   },
   {
-    consumerKeychainId: mockConsumerKeychains[4]!.id,
+    consumerKeychainId: seededConsumerKeychains[4]!.id,
     linkedAt: new Date(),
     purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
   },
   {
-    consumerKeychainId: mockConsumerKeychains[4]!.id,
+    consumerKeychainId: seededConsumerKeychains[4]!.id,
     linkedAt: new Date(),
     purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId },
   },
   {
-    consumerKeychainId: mockConsumerKeychains[2]!.id,
+    consumerKeychainId: seededConsumerKeychains[2]!.id,
     linkedAt: new Date(),
     purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
   },
@@ -83,17 +114,19 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     limit: "4",
     offset: "0",
   };
-  const sortedMockConsumerKeychains = mockConsumerKeychains.sort((a, b) => {
-    const updatedAtDiff = b.updatedAt.getTime() - a.updatedAt.getTime();
-    return updatedAtDiff !== 0 ? updatedAtDiff : a.id.localeCompare(b.id);
-  });
+  const sortedMockConsumerKeychains = [...seededConsumerKeychains].sort(
+    (a, b) => {
+      const updatedAtDiff = b.updatedAt.getTime() - a.updatedAt.getTime();
+      return updatedAtDiff !== 0 ? updatedAtDiff : a.id.localeCompare(b.id);
+    },
+  );
 
   it.each([
     {
       expectedResult: sortedMockConsumerKeychains.slice(0, 4),
       query: defaultQuery,
       testCase: "pagination only (1st page), sort by updatedAt desc by default",
-      totalCount: mockConsumerKeychains.length,
+      totalCount: seededConsumerKeychains.length,
     },
     {
       expectedResult: sortedMockConsumerKeychains.slice(4, 8),
@@ -102,7 +135,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
         offset: "4",
       },
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
-      totalCount: mockConsumerKeychains.length,
+      totalCount: seededConsumerKeychains.length,
     },
     {
       expectedResult: sortedMockConsumerKeychains.filter((ck) =>
@@ -114,6 +147,42 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       },
       testCase:
         "filter by purpose producer (purposeId, knodeId), sort by updatedAt desc by default",
+      totalCount: 2,
+    },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter(
+        (ck) => ck.ownerId === ownerIdFilter,
+      ),
+      query: {
+        ...defaultQuery,
+        ownerId: ownerIdFilter,
+      },
+      testCase: "filter by ownerId, sort by updatedAt desc by default",
+      totalCount: 3,
+    },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter((ck) =>
+        ck.name.en.toLowerCase().includes(matchingNamePrefix),
+      ),
+      query: {
+        ...defaultQuery,
+        name: matchingNamePrefix.toUpperCase(),
+      },
+      testCase: "filter by name, case insensitive",
+      totalCount: 2,
+    },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter(
+        (ck) =>
+          ck.ownerId === ownerIdFilter &&
+          consumerKeychainIdsWithLinkedPurpose1.has(ck.id),
+      ),
+      query: {
+        ...defaultQuery,
+        ownerId: ownerIdFilter,
+        purpose: `${knodeId}:${purpose1.id}`,
+      },
+      testCase: "filter by ownerId and purpose together",
       totalCount: 2,
     },
   ] satisfies {
@@ -170,6 +239,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
+    { ...defaultQuery, ownerId: "not-a-uuid" },
     {
       ...defaultQuery,
       invalidParam: "invalid",

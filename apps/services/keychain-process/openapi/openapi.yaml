@@ -21,10 +21,10 @@ components:
         code:
           description: Internal code of the error
           example: 123-4567
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: ^[0-9]{3}-[0-9]{4,5}$
           type: string
           minLength: 8
-          maxLength: 8
+          maxLength: 9
         detail:
           description: A human readable explanation specific to this occurrence of the
             problem
@@ -411,6 +411,19 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: name
+          required: false
+          description: Filter by Consumer Keychain name
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: ownerId
+          required: false
+          description: Filter by owner Organization ID
         - schema:
             type: string
           in: query

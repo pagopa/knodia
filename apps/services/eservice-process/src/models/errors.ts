@@ -4,6 +4,7 @@ import type {
   EserviceVersionId,
   OrganizationId,
 } from "@knodia/common-models/ids";
+import type { EserviceVersionState } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -26,6 +27,8 @@ const errorCodes = {
   DUPLICATE_INTERFACE_ID: "0006",
   INCONSISTENT_DAILY_CALLS: "0007",
   ORGANIZATION_NOT_FOUND: "0008",
+  ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0009",
+  NOT_ESERVICE_PRODUCER: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -69,6 +72,19 @@ export function eserviceVersionNotFound(
   });
 }
 
+export function eserviceVersionNotInExpectedStates(
+  eserviceId: EserviceId,
+  eserviceVersionId: EserviceVersionId,
+  allowedStates: EserviceVersionState[],
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATES",
+    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: [${allowedStates.join(", ")}]`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "E-service Version Not in Expected States",
+  });
+}
+
 export function inconsistentDailyCalls() {
   return createApiError<ErrorCodes>({
     code: "INCONSISTENT_DAILY_CALLS",
@@ -107,6 +123,18 @@ export function invalidCategory(scheme: string, code: string) {
     detail: `Invalid category: scheme=${scheme}, code=${code}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid Category",
+  });
+}
+
+export function notEserviceProducer(
+  eserviceId: EserviceId,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "NOT_ESERVICE_PRODUCER",
+    detail: `Operation not allowed: organization ${organizationId} is not the producer of E-service ${eserviceId}. Only the producer of an E-service can perform this operation.`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Caller is not the E-service producer",
   });
 }
 

@@ -385,11 +385,47 @@ describe("POST /purposes (createPurpose)", () => {
       .body({
         ...body,
         formAnswersJson: {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          // legalBasis=PUBLIC_INTEREST requires legalBasisPublicInterest,
+          // which is not provided here
           legalBasis: ["PUBLIC_INTEREST"],
-          // Missing publicInterestReasons and legalBasisPublicInterest
-          personalDataTypes: ["WITH_IDENTIFYING_DATA"],
-          purpose: "INSTITUTIONAL",
-          usesThirdPartyPersonalData: "NO",
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers contain fields forbidden by the active branch", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          // usesThirdPartyNonPersonalData belongs to the usesPersonalData=NO
+          // branch and is forbidden when usesPersonalData=YES
+          usesThirdPartyNonPersonalData: "NO",
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers contain a hidden option value", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          legalBasis: ["PUBLIC_INTEREST"],
+          // PUBLIC_INTEREST_TASK is forbidden when personalDataTypes
+          // contains GDPR_ART_9 (mirrors hideOptions in UI schema)
+          legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+          personalDataTypes: ["GDPR_ART_9"],
+          publicInterestTaskText: "Some reference",
         },
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(400);

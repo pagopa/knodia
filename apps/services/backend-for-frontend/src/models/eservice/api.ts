@@ -378,6 +378,10 @@ export const API_ConsumerEserviceDetails = z
     agreement: API_EserviceAgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated",
+    }),
     id: z.uuid(),
     identificationRequired: z.boolean(),
     interfaceDocument: z
@@ -427,14 +431,23 @@ export type API_GetConsumerEservicesQueryParams = z.infer<
 
 export const API_ConsumerEservice = z
   .strictObject({
+    activePurposes: z.int().min(0).meta({
+      description: "Number of active Purposes for this E-service",
+      format: "int32",
+    }),
     agreement: z.strictObject({
       id: z.uuid(),
       state: API_AgreementState,
     }),
-    // TODO: add purposes and consumerKeychains
     categories: z.array(API_EserviceCategory),
+    consumerKeychains: z.int().min(0).meta({
+      description:
+        "Number of Consumer Keychains linked to active Purposes of this E-service",
+      format: "int32",
+    }),
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description: "Indicates whether the E-service has been recently updated",
+      description:
+        "Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,

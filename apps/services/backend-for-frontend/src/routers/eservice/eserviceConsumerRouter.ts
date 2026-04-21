@@ -11,9 +11,14 @@ import {
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
+  keychainProcessApi,
+  type KeychainProcessClient,
+} from "@knodia/keychain-process-client";
+import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import { API_PurposeState } from "@knodia/purpose-models/api";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -40,6 +45,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceConsumerRouterOptions {
   config: BffProcessConfig;
+  keychainProcessClient: KeychainProcessClient;
   organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -49,7 +55,12 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
-  { config, organizationProcessClient, remoteResourcesManagerClient },
+  {
+    config,
+    keychainProcessClient,
+    organizationProcessClient,
+    remoteResourcesManagerClient,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -123,21 +134,50 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Getting consumer E-service details with ID ${req.params.eserviceId}`,
       );
 
-      const [{ data }, { data: consumerOrg }] = await Promise.all([
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const [
+        { data },
+        { data: consumerOrg },
+        {
+          data: {
+            results: [mostRecentPurpose],
+          },
+        },
+      ] = await Promise.all([
         remoteResourcesManagerApi.getEserviceDetails({
           client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path: { eserviceId: req.params.eserviceId },
           query: { knodeId: req.query.knodeId },
         }),
         organizationProcessApi.getOrganization({
           client: organizationProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path: { organizationId: consumerId },
+        }),
+        // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+        // purposes are ordered by updatedAt DESC in the readmodel,
+        // so the first result is the most recently updated one.
+        remoteResourcesManagerApi.getPurposes({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+          },
         }),
       ]);
 
-      res.send(toAPI_ConsumerEserviceDetails(data, consumerOrg.attributes));
+      res.send(
+        toAPI_ConsumerEserviceDetails(
+          data,
+          consumerOrg.attributes,
+          config.recentUpdateDays,
+          mostRecentPurpose,
+        ),
+      );
     },
     method: "GET",
     schema: {
@@ -215,25 +255,103 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { organizationId } = getUISessionAuthData(authData);
 
       logger.info(
         { requestQuery: req.query },
         `Getting Consumer E-services with query parameters`,
       );
 
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
       const { data } = await remoteResourcesManagerApi.getEservices({
         client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: req.query,
       });
 
-      res.send({
-        pagination: data.pagination,
-        results: data.results.map((eservice) =>
-          toAPI_ConsumerEservice(eservice, config.recentUpdateDays),
-        ),
-      });
+      if (data.results.length === 0) {
+        res.send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
+      const results = await Promise.all(
+        data.results.map(async (eservice) => {
+          // TODO(KN-473): paginate to fetch all active purposes if >50 exist,
+          // otherwise consumerKeychains count will be undercounted
+          const [
+            { data: activePurposes },
+            {
+              data: {
+                results: [mostRecentPurpose],
+              },
+            },
+          ] = await Promise.all([
+            remoteResourcesManagerApi.getPurposes({
+              client: remoteResourcesManagerClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 50,
+                offset: 0,
+                state: API_PurposeState.enum.Active,
+              },
+            }),
+            // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+            // purposes are ordered by updatedAt DESC in the readmodel,
+            // so the first result is the most recently updated one.
+            remoteResourcesManagerApi.getPurposes({
+              client: remoteResourcesManagerClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+              },
+            }),
+          ]);
+
+          // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
+          // otherwise consumerKeychains count will be undercounted
+          const keychainResponses = await Promise.all(
+            activePurposes.results.map((purpose) =>
+              keychainProcessApi.getConsumerKeychains({
+                client: keychainProcessClient,
+                headers,
+                query: {
+                  limit: 50,
+                  offset: 0,
+                  ownerId: organizationId,
+                  purpose: `${purpose.knodeId}:${purpose.id}`,
+                },
+              }),
+            ),
+          );
+
+          const uniqueKeychainIds = new Set(
+            keychainResponses.flatMap((resp) =>
+              resp.data.results.map((k) => k.id),
+            ),
+          );
+
+          const consumerKeychains = uniqueKeychainIds.size;
+
+          return toAPI_ConsumerEservice({
+            counters: {
+              activePurposes: activePurposes.pagination.total,
+              consumerKeychains,
+            },
+            eservice,
+            mostRecentPurpose,
+            recentUpdateDays: config.recentUpdateDays,
+          });
+        }),
+      );
+
+      res.send({ pagination: data.pagination, results });
     },
     method: "GET",
     schema: {

@@ -14,10 +14,10 @@ components:
         code:
           description: Internal code of the error
           example: 123-4567
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: ^[0-9]{3}-[0-9]{4,5}$
           type: string
           minLength: 8
-          maxLength: 8
+          maxLength: 9
         detail:
           description: A human readable explanation specific to this occurrence of the
             problem
@@ -131,11 +131,11 @@ paths:
       summary: Create Token
       tags:
         - token
-      description: Issue a mocked access token
+      description: Issue an E-service access token
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: "#/components/schemas/TokenRequest"
       security: []
@@ -154,6 +154,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

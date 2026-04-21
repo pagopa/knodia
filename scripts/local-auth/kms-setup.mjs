@@ -19,8 +19,14 @@ const kmsClient = new KMSClient({
 
 // KMS key for knodia services (ui-session, internal, etc.)
 // JWKS is written to disk and served by the local-jwks nginx container.
-const KID = "alias/local-knodia-key";
+const kids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
 
+const jwksDir = `${JWKS_OUTPUT_DIR}/knodia/.well-known`;
+mkdirSync(jwksDir, { recursive: true });
+
+const allJwks = [];
+
+for (const KID of kids) { 
   try {
     await kmsClient.send(new DescribeKeyCommand({ KeyId: KID }));
     console.log(`Key "${KID}" already exists.`);
@@ -55,13 +61,12 @@ const KID = "alias/local-knodia-key";
   });
   const jwk = publicKey.export({ format: "jwk" });
 
-  const jwks = {
-    keys: [{ ...jwk, kid: KID, use: "sig", alg: "RS256" }],
-  };
+  allJwks.push({ ...jwk, kid: KID, use: "sig", alg: "RS256" });
+  console.log(`JWK collected for "${KID}"`);
+}
 
-  const jwksDir = `${JWKS_OUTPUT_DIR}/knodia/.well-known`;
-  mkdirSync(jwksDir, { recursive: true });
-  writeFileSync(`${jwksDir}/jwks.json`, JSON.stringify(jwks, null, 2));
-  console.log(`JWKS written for "${KID}"`);
+const jwks = { keys: allJwks };
+writeFileSync(`${jwksDir}/jwks.json`, JSON.stringify(jwks, null, 2));
+console.log(`JWKS written with ${allJwks.length} key(s)`);
 
 console.log("KMS setup complete.");

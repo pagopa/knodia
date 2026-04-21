@@ -21,10 +21,10 @@ components:
         code:
           description: Internal code of the error
           example: 123-4567
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: ^[0-9]{3}-[0-9]{4,5}$
           type: string
           minLength: 8
-          maxLength: 8
+          maxLength: 9
         detail:
           description: A human readable explanation specific to this occurrence of the
             problem
@@ -131,6 +131,7 @@ components:
         - Active
         - Suspended
         - Archived
+        - PendingConsumerOperatorIdentification
     EserviceVersionState:
       type: string
       enum:
@@ -757,6 +758,10 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the E-service, its Agreement, or any of its
+            Purposes have been recently updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -792,6 +797,7 @@ components:
         - accessToken
         - categories
         - description
+        - hasRecentlyBeenUpdated
         - id
         - identificationRequired
         - interfaceDocument
@@ -821,6 +827,12 @@ components:
     ConsumerEservice:
       type: object
       properties:
+        activePurposes:
+          description: Number of active Purposes for this E-service
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         agreement:
           type: object
           properties:
@@ -838,8 +850,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
+        consumerKeychains:
+          description: Number of Consumer Keychains linked to active Purposes of this
+            E-service
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been recently updated
+          description: Indicates whether the E-service, its Agreement, or any of its
+            Purposes have been recently updated
           type: boolean
         id:
           type: string
@@ -860,8 +880,10 @@ components:
         state:
           $ref: "#/components/schemas/EserviceVersionState"
       required:
+        - activePurposes
         - agreement
         - categories
+        - consumerKeychains
         - hasRecentlyBeenUpdated
         - id
         - mode
@@ -1197,6 +1219,70 @@ components:
         - name
         - updatedAt
       additionalProperties: false
+    ConsumerKeychainOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - id
+        - name
+      additionalProperties: false
+    ConsumerKeychainOptions:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainOption"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    PurposeId:
+      description: Unique identifier of the Purpose
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    ConsumerKeychainPurpose:
+      type: object
+      properties:
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          $ref: "#/components/schemas/PurposeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - eservice
+        - id
+        - name
+        - producer
+        - state
+      additionalProperties: false
+    ConsumerKeychainPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     ConsumerKeychainPatch:
       type: object
       properties:
@@ -1265,6 +1351,14 @@ components:
           type: boolean
       required:
         - isMember
+      additionalProperties: false
+    ConsumerKeychainPurposeLinkCheckResult:
+      type: object
+      properties:
+        isLinked:
+          type: boolean
+      required:
+        - isLinked
       additionalProperties: false
     User:
       type: object
@@ -2196,8 +2290,8 @@ paths:
       operationId: getConsumerKeychains
       tags:
         - consumerKeychain
-      description: Retrieve a paginated list of Consumer Keychains for the logged-in
-        user's organization
+      description: Retrieve a paginated list of Consumer Keychains owned by the
+        current user organization
       parameters:
         - schema:
             format: int32
@@ -2216,6 +2310,13 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: purpose
+          required: false
+          description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
+            (e.g. Orion:00000000-0000-0000-0000-000000000000)"
       responses:
         "200":
           description: Consumer Keychains retrieved successfully
@@ -2654,7 +2755,141 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/options:
+    get:
+      operationId: getConsumerKeychainOptions
+      tags:
+        - consumerKeychain
+      description: Retrieve Consumer Keychain options for combobox selection
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: q
+          required: true
+          description: Search text used to filter Consumer Keychains by name
+      responses:
+        "200":
+          description: Consumer Keychain options retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain options retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes:
+    get:
+      operationId: getConsumerKeychainPurposes
+      tags:
+        - consumerKeychain
+      description: Retrieve Purposes linked to a Consumer Keychain
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Purposes linked to the Consumer Keychain retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purposes linked to the Consumer Keychain retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: linkPurposeToConsumerKeychain
       tags:
@@ -2718,6 +2953,72 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
+    get:
+      operationId: getConsumerKeychainPurposeLink
+      tags:
+        - consumerKeychain
+      description: Check whether the given Purpose is linked to a Consumer Keychain
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Consumer Keychain purpose link check retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain purpose link check retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainPurposeLinkCheckResult"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     delete:
       operationId: unlinkPurposeFromConsumerKeychain
       tags:

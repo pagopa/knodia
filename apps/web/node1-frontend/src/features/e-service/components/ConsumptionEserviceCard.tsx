@@ -4,6 +4,7 @@ import { match } from "ts-pattern";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 
 import { CategoryChip } from "./CategoryChip";
 import {
@@ -20,6 +21,9 @@ export function ConsumptionEserviceCard({
   return (
     <EserviceCard>
       <EserviceCardHeader
+        badge={
+          eservice.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
+        }
         id={eservice.id}
         search={{ knodeId: eservice.producer.knodeId }}
         title={eservice.name.en}
@@ -27,8 +31,12 @@ export function ConsumptionEserviceCard({
       />
       <div className="grid grid-cols-3 gap-1.5">
         <AgreementInfoCard state={eservice.agreement.state} />
-        <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
-        <GenericInfoCard label="Keychains">-</GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">
+          {eservice.activePurposes}
+        </GenericInfoCard>
+        <GenericInfoCard label="Keychains">
+          {eservice.consumerKeychains}
+        </GenericInfoCard>
       </div>
       <EserviceCardFooter
         mode={eservice.mode}
@@ -62,6 +70,10 @@ function AgreementInfoCard({ state }: { state: bffApi.AgreementState }) {
       console.warn("Unexpected Archived agreement in consumer e-services list");
       return null;
     })
+    .with("PendingConsumerOperatorIdentification", () => ({
+      bg: "bg-info-light",
+      label: "Action needed",
+    }))
     .exhaustive();
 
   if (!style) return null;

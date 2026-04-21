@@ -101,23 +101,26 @@ const testCases = [
   },
   {
     expectedPayload: {
-      aud: "my-audience",
+      aud: ["my-audience"],
       client_id: consumerKeychainId,
       consumer,
-      eservice: { id: eservice.id, knodeId: producer.knodeId },
-      eservice_version: { id: eserviceVersion.id, knodeId: producer.knodeId },
+      eservice: {
+        id: eservice.id,
+        knode_id: producer.knodeId,
+        version: eserviceVersion.id,
+      },
       exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
       iat: MOCK_NOW_SECONDS,
       iss: "my-issuer",
       jti: expect.any(String),
       nbf: MOCK_NOW_SECONDS,
       producer,
-      purpose: { id: purposeId, knodeId: producer.knodeId },
+      purpose: { id: purposeId, knode_id: producer.knodeId },
       sub: consumerKeychainId,
     } satisfies EserviceAccessTokenClaims,
     generate: () =>
       generator.generateEserviceAccessToken({
-        audience: "my-audience",
+        audience: ["my-audience"],
         consumer,
         consumerKeychainId,
         eserviceId: eservice.id,

@@ -38,7 +38,7 @@ export type Problem = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type AgreementConsumer = {
     id: string;
@@ -213,6 +213,7 @@ export type EserviceDetailsProducer = {
 export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
+    updatedAt: string;
 };
 
 export type EserviceDetails = {
@@ -227,6 +228,7 @@ export type EserviceDetails = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
+    updatedAt: string;
 };
 
 export type EserviceVersion = {
@@ -239,6 +241,7 @@ export type Eservice = {
     agreement: {
         id: string;
         state: AgreementState;
+        updatedAt: string;
     };
     categories: Array<EserviceCategory>;
     id: string;
@@ -684,6 +687,10 @@ export type GetPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: PurposeState;
     };
     url: '/purposes';
 };

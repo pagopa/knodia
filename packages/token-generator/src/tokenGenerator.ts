@@ -34,10 +34,12 @@ const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
+  audience: string;
   subject: string;
 }
 
 interface EserviceAccessTokenInput extends TokenParams {
+  audience: string[];
   consumer: ExternalResource<OrganizationId>;
   consumerKeychainId: ConsumerKeychainId; // access token client_id claim
   eserviceId: EserviceId;
@@ -48,13 +50,13 @@ interface EserviceAccessTokenInput extends TokenParams {
 }
 
 interface TokenParams {
-  audience: string;
   issuer: string;
   kid: string;
   secondsDuration: number;
 }
 
 interface UISessionTokenInput extends TokenParams {
+  audience: string;
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
@@ -140,10 +142,10 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         aud: input.audience,
         client_id: input.consumerKeychainId,
         consumer: input.consumer,
-        eservice: { id: input.eserviceId, knodeId: input.producer.knodeId },
-        eservice_version: {
-          id: input.eserviceVersionId,
-          knodeId: input.producer.knodeId,
+        eservice: {
+          id: input.eserviceId,
+          knode_id: input.producer.knodeId,
+          version: input.eserviceVersionId,
         },
         exp: now + input.secondsDuration,
         iat: now,
@@ -151,7 +153,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         jti: randomUUID(),
         nbf: now,
         producer: input.producer,
-        purpose: { id: input.purposeId, knodeId: input.producer.knodeId },
+        purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
       };
 

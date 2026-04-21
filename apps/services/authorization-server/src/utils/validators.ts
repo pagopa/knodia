@@ -1,165 +1,61 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { Algorithm } from "@knodia/common-models/algorithms";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { EserviceVersion } from "@knodia/eservice-models";
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import type {
+  ConsumerKeychainId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { Purpose } from "@knodia/purpose-models";
+import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
-import { type OrganizationId, type PurposeId } from "@knodia/common-models/ids";
-import { genericError } from "@knodia/fastify-zod-api-commons/models";
-import { createPublicKey } from "crypto";
+import { type Algorithm } from "@knodia/common-models/algorithms";
 import {
-  decodeJwt,
-  decodeProtectedHeader,
-  type JWTPayload,
-  jwtVerify,
-  type ProtectedHeaderParameters,
-} from "jose";
+  EserviceAccessTokenType,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import {
-  JOSEError,
+  createPublicKey,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
+import { ApiError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  type K2K2GatewayApiClient,
+  k2kGatewayApi,
+} from "@knodia/k2k-gateway-client";
+import { AxiosError } from "axios";
+import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
+import {
   JWSInvalid,
   JWSSignatureVerificationFailed,
+  JWTClaimValidationFailed,
   JWTExpired,
-  JWTInvalid,
 } from "jose/errors";
-import z from "zod";
+import { match, P } from "ts-pattern";
+import { ZodError } from "zod";
 
-import type { API_TokenRequest } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { type ClientAssertion } from "../models/clientAssertion.ts";
+import { ClientAssertion } from "../models/clientAssertion.ts";
 import {
   agreementNotActive,
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
   consumerMissingRequiredAttributes,
   eserviceVersionNotActive,
-  invalidClientAssertionFormat,
+  eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
   jsonWebTokenError,
   platformStatesNotActive,
+  publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
 } from "../models/errors.ts";
-import { failedValidation } from "../models/validation.ts";
 import {
   retrieveAgreement,
   retrieveEserviceVersion,
   retrievePurpose,
 } from "./readmodelUtils.ts";
-import {
-  checkAlg,
-  checkAud,
-  checkClientAssertionStrictClaims,
-  checkExp,
-  checkIat,
-  checkIss,
-  checkJti,
-  checkKid,
-  checkPurposeId,
-  checkSub,
-  checkTyp,
-} from "./utils.ts";
-
-export const validateClientAssertionClaims = (
-  {
-    client_assertion: clientAssertionJWS,
-    client_id: consumerKeychainId,
-  }: Pick<API_TokenRequest, "client_assertion" | "client_id">,
-  clientAssertionAcceptedAudiences: string[],
-): ClientAssertion => {
-  let decodedHeader: ProtectedHeaderParameters;
-  let decodedPayload: JWTPayload;
-  try {
-    decodedHeader = decodeProtectedHeader(clientAssertionJWS);
-    decodedPayload = decodeJwt(clientAssertionJWS);
-  } catch (error) {
-    if (error instanceof JWTInvalid) {
-      throw clientAssertionClaimsValidationError(consumerKeychainId, [
-        invalidClientAssertionFormat(error.message),
-      ]);
-    }
-    const message = error instanceof Error ? error.message : "Generic Error";
-    throw clientAssertionClaimsValidationError(consumerKeychainId, [
-      genericError(message),
-    ]);
-  }
-
-  const { data: alg, errors: algErrors } = checkAlg(decodedHeader.alg);
-  const { data: kid, errors: kidErrors } = checkKid(decodedHeader.kid);
-  const { data: typ, errors: typErrors } = checkTyp(decodedHeader.typ);
-
-  const { data: aud, errors: audErrors } = checkAud(
-    decodedPayload.aud,
-    clientAssertionAcceptedAudiences,
-  );
-  const { data: exp, errors: expErrors } = checkExp(decodedPayload.exp);
-  const { data: iat, errors: iatErrors } = checkIat(decodedPayload.iat);
-  const { data: iss, errors: issErrors } = checkIss(
-    consumerKeychainId,
-    decodedPayload.iss,
-  );
-  const { data: jti, errors: jtiErrors } = checkJti(decodedPayload.jti);
-  const { data: purposeId, errors: purposeIdErrors } = checkPurposeId(
-    decodedPayload["purpose_id"],
-  );
-  const { data: sub, errors: subErrors } = checkSub(
-    consumerKeychainId,
-    decodedPayload.sub,
-  );
-  const { errors: parsingErrors } = checkClientAssertionStrictClaims(
-    decodedHeader,
-    decodedPayload,
-  );
-
-  if (
-    algErrors ||
-    kidErrors ||
-    typErrors ||
-    audErrors ||
-    expErrors ||
-    iatErrors ||
-    issErrors ||
-    jtiErrors ||
-    purposeIdErrors ||
-    subErrors ||
-    parsingErrors
-  ) {
-    const { errors } = failedValidation([
-      algErrors,
-      typErrors,
-      audErrors,
-      expErrors,
-      iatErrors,
-      issErrors,
-      jtiErrors,
-      kidErrors,
-      purposeIdErrors,
-      subErrors,
-      parsingErrors,
-    ]);
-
-    throw clientAssertionClaimsValidationError(consumerKeychainId, errors);
-  }
-
-  return {
-    header: {
-      alg,
-      kid,
-      typ,
-    },
-    payload: {
-      aud,
-      exp,
-      iat,
-      iss,
-      jti,
-      purposeId,
-      sub,
-    },
-  };
-};
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,
@@ -178,6 +74,7 @@ export async function validatePlatformObjects(
     readmodelService,
   );
 
+  assertEserviceVersionUsesBearerToken(eserviceVersion);
   assertPlatformStatesAreActive(purpose, agreement, eserviceVersion);
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
@@ -193,48 +90,82 @@ export async function validatePlatformObjects(
 }
 
 export async function verifyClientAssertionSignature(
-  clientAssertionJws: string,
-  publicKeyForVerification: k2kGatewayApi.PublicKeyForVerification,
-  clientAssertionAlgorithm: Algorithm,
-): Promise<JWTPayload> {
+  {
+    clientAssertionJWS,
+    consumerKeychainId,
+  }: {
+    clientAssertionJWS: string;
+    consumerKeychainId: ConsumerKeychainId;
+  },
+  clientAssertionAcceptedAudiences: string[],
+  clientAssertionClockToleranceSeconds: number,
+  clientAssertionMaxTokenAgeSeconds: number,
+  k2kGatewayClient: K2K2GatewayApiClient,
+  logger: FastifyBaseLogger,
+) {
   try {
-    if (!z.base64().safeParse(publicKeyForVerification.encodedPem).success) {
-      // Unexpected, because we always store public keys
-      // in base64 encoded PEM format
-      throw unexpectedClientAssertionSignatureVerificationError(
-        "Public Key shall be a base64 encoded PEM",
-      );
-    }
+    const protectedHeader = decodeProtectedHeader(clientAssertionJWS);
+    const payload = decodeJwt(clientAssertionJWS);
 
-    // TODO: put keychain-process crypto.ts in a shared package
-    const decodeBase64Pem = (base64String: string): string => {
-      const cleanedBase64 = base64String.trim();
-      const decodedBytes = Buffer.from(cleanedBase64, "base64");
-      return decodedBytes.toString("utf-8");
+    logger.info(
+      `Verifying Client Assertion (JTI=${payload.jti}) signature for Consumer Keychain ${consumerKeychainId} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
+    );
+
+    const {
+      header: { alg: clientAssertionAlg, kid },
+      payload: { purposeId },
+    } = ClientAssertion.parse({
+      header: protectedHeader,
+      payload,
+    });
+
+    const {
+      data: { consumerAttributes, publicKey },
+    } = await k2kGatewayApi.getClientAssertionVerificationData({
+      body: {
+        keychainId: consumerKeychainId,
+        kid,
+        purposeId,
+      },
+      client: k2kGatewayClient,
+    });
+
+    assertPublicKeyAlgEqualToClientAssertionAlg(
+      publicKey.algorithm,
+      clientAssertionAlg,
+    );
+
+    const verificationKey = createPublicKey({
+      pemKey: decodeBase64Pem(publicKey.encodedPem),
+    });
+
+    await jwtVerify(clientAssertionJWS, verificationKey, {
+      algorithms: [publicKey.algorithm],
+      audience: clientAssertionAcceptedAudiences,
+      clockTolerance: clientAssertionClockToleranceSeconds,
+      issuer: consumerKeychainId,
+      maxTokenAge: clientAssertionMaxTokenAgeSeconds,
+      subject: consumerKeychainId,
+      typ: "JWT",
+    });
+
+    return {
+      consumerAttributes,
+      purposeId,
     };
-
-    const publicKey = createPublicKey({
-      key: decodeBase64Pem(publicKeyForVerification.encodedPem),
-    });
-
-    const result = await jwtVerify(clientAssertionJws, publicKey, {
-      algorithms: [clientAssertionAlgorithm],
-    });
-
-    return result.payload;
-  } catch (error: unknown) {
-    if (error instanceof JWTExpired) {
-      throw clientAssertionExpired();
-    } else if (error instanceof JWSSignatureVerificationFailed) {
-      throw invalidClientAssertionSignature();
-    } else if (error instanceof JWSInvalid) {
-      throw jsonWebTokenError(error.message);
-    } else if (error instanceof JOSEError) {
-      throw unexpectedClientAssertionSignatureVerificationError(error.message);
-    } else {
-      const message = error instanceof Error ? error.message : "generic error";
-      throw unexpectedClientAssertionSignatureVerificationError(message);
-    }
+  } catch (error) {
+    throw match(error)
+      .with(P.instanceOf(JWTExpired), () => clientAssertionExpired())
+      .with(
+        P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        (e) => clientAssertionClaimsValidationError(e),
+      )
+      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
+        invalidClientAssertionSignature(),
+      )
+      .with(P.instanceOf(JWSInvalid), (e) => jsonWebTokenError(e.message))
+      .with(P.union(P.instanceOf(ApiError), P.instanceOf(AxiosError)), (e) => e)
+      .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
   }
 }
 
@@ -251,33 +182,60 @@ function assertConsumerAttributesMeetEserviceRequirements(
   }
 }
 
+function assertEserviceVersionUsesBearerToken(
+  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
+) {
+  if (eserviceVersion.accessTokenType !== EserviceAccessTokenType.enum.Bearer) {
+    throw eserviceVersionNotUsingBearerToken(eserviceVersion);
+  }
+}
+
 function assertPlatformStatesAreActive(
   purpose: Purpose,
   agreement: Agreement,
   eserviceVersion: Omit<EserviceVersion, "interfaceDocument">,
 ) {
-  const agreementStateError =
-    agreement.state !== "Active"
-      ? agreementNotActive(agreement.id, agreement.state)
-      : undefined;
+  const agreementStateError = match(agreement.state)
+    .with("Active", () => undefined)
+    .with(
+      "Suspended",
+      "Archived",
+      "PendingConsumerOperatorIdentification",
+      (state) => agreementNotActive(agreement.id, state),
+    )
+    .exhaustive();
 
-  const eserviceVersionError =
-    eserviceVersion.state !== "Active"
-      ? eserviceVersionNotActive(eserviceVersion.id, eserviceVersion.state)
-      : undefined;
+  const eserviceVersionError = match(eserviceVersion.state)
+    .with("Active", () => undefined)
+    .with("Suspended", "Archived", (state) =>
+      eserviceVersionNotActive(eserviceVersion.id, state),
+    )
+    .exhaustive();
 
-  const purposeError =
-    purpose.state !== "Active"
-      ? purposeNotActive(purpose.id, purpose.state)
-      : undefined;
+  const purposeError = match(purpose.state)
+    .with("Active", () => undefined)
+    .with("Suspended", "Archived", (state) =>
+      purposeNotActive(purpose.id, state),
+    )
+    .exhaustive();
 
   if (agreementStateError || eserviceVersionError || purposeError) {
-    const { errors } = failedValidation([
+    throw platformStatesNotActive([
       agreementStateError,
       eserviceVersionError,
       purposeError,
     ]);
+  }
+}
 
-    throw platformStatesNotActive(errors);
+function assertPublicKeyAlgEqualToClientAssertionAlg(
+  publicKeyAlg: string,
+  clientAssertionAlg: Algorithm,
+) {
+  if (publicKeyAlg !== clientAssertionAlg) {
+    throw publicKeyAlgNotMatchingClientAssertionAlg(
+      publicKeyAlg,
+      clientAssertionAlg,
+    );
   }
 }

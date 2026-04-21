@@ -119,13 +119,20 @@ export function getMockOrganization(seed = 0): Organization {
 export const MOCK_PURPOSE_FORM_ANSWERS = {
   checkedExistenceMereCorrectnessInteropCatalogue: "true",
   confirmPrincipleIntegrityAndDiscretion: "true",
+  dataDownload: "NO",
   declarationConfirmGDPR: "true",
+  deliveryMethod: "CLEARTEXT",
+  doneDpia: "NO",
+  institutionalPurpose: "Test purpose for local development",
+  isRequestOnBehalfOfThirdParties: "NO",
+  knowsDataQuantity: "NO",
   legalBasis: ["CONSENT"],
   personalDataTypes: ["WITH_IDENTIFYING_DATA"],
+  policyProvided: "YES",
+  policyProvidedMedium: "PRINT",
   purpose: "INSTITUTIONAL",
-  purposeDescription: "Test purpose for local development",
   purposePursuit: "MERE_CORRECTNESS",
-  usesThirdPartyPersonalData: "NO",
+  usesPersonalData: "YES",
 };
 
 export async function getMockClientAssertion(props?: {
