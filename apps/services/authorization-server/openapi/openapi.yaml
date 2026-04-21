@@ -14,10 +14,10 @@ components:
         code:
           description: Internal code of the error
           example: 123-4567
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: ^[0-9]{3}-[0-9]{4,5}$
           type: string
           minLength: 8
-          maxLength: 8
+          maxLength: 9
         detail:
           description: A human readable explanation specific to this occurrence of the
             problem
@@ -69,10 +69,27 @@ components:
     TokenRequest:
       type: object
       properties:
-        mockClientAssertion:
+        client_assertion:
           type: string
+          format: jwt
+        client_assertion_type:
+          type: string
+          enum:
+            - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_id:
+          description: Unique identifier of the Consumer Keychain
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
       required:
-        - mockClientAssertion
+        - client_assertion
+        - client_assertion_type
+        - client_id
+        - grant_type
       additionalProperties: false
     TokenResponse:
       type: object
@@ -109,7 +126,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: "#/components/schemas/TokenRequest"
       security: []

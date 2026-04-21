@@ -328,6 +328,14 @@ export type Agreement = {
     id: AgreementId;
     producerId: OrganizationId;
     state: AgreementState;
+    /**
+     * Timestamp when the Agreement was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Agreement was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -813,6 +821,76 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type ReactivateAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/reactivate';
+};
+
+export type ReactivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateAgreementError = ReactivateAgreementErrors[keyof ReactivateAgreementErrors];
+
+export type ReactivateAgreementResponses = {
+    /**
+     * Agreement reactivated successfully
+     */
+    200: Agreement;
+};
+
+export type ReactivateAgreementResponse = ReactivateAgreementResponses[keyof ReactivateAgreementResponses];
+
+export type SuspendAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/suspend';
+};
+
+export type SuspendAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendAgreementError = SuspendAgreementErrors[keyof SuspendAgreementErrors];
+
+export type SuspendAgreementResponses = {
+    /**
+     * Agreement suspended successfully
+     */
+    200: Agreement;
+};
+
+export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
 
 export type GetOrganizationData = {
     body?: never;

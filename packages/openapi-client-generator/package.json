@@ -8,13 +8,18 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/generateApiClient.ts"
+    ".": "./src/generateApiClient.ts",
+    "./runtime": "./src/stripContentTypeOnBodylessRequests.ts"
+  },
+  "dependencies": {
+    "axios": "catalog:"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

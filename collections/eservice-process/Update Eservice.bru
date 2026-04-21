@@ -1,0 +1,37 @@
+meta {
+  name: Update Eservice
+  type: http
+}
+
+patch {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: json
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  Content-Type: application/merge-patch+json
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "Updated name"
+    },
+    "description": {
+      "en": "Updated description"
+    },
+    "categories": [
+      {
+        "code": "citizen.identity.birth_date",
+        "scheme": "vc_example_eservice_categories"
+      }
+    ]
+  }
+}

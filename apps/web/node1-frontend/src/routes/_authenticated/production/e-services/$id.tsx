@@ -1,10 +1,15 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
+import { EditEServiceModal } from "@/features/e-service/components/EditEServiceModal";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
@@ -18,37 +23,36 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
-function EServiceActions() {
+function EditAction({
+  eservice,
+}: {
+  eservice: bffApi.ProducerEserviceDetails;
+}) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
-    <>
-      <DialogTrigger>
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-        <Modal
-          actionLabel="Suspend anyway"
-          cancelLabel="Cancel"
-          description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
-          isDismissable
-          kind="destructive"
-          title="Suspend E-Service"
-        />
-      </DialogTrigger>
-      <DialogTrigger>
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Edit
-        </Button>
-        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
-          TODO
-        </Modal>
-      </DialogTrigger>
-    </>
+    <DialogTrigger>
+      <Button
+        hierarchy="brand"
+        kind="filled"
+        onClick={() => setIsEditOpen(true)}
+        size="md"
+      >
+        Edit
+      </Button>
+      <EditEServiceModal
+        eservice={eservice}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
+    </DialogTrigger>
   );
 }
 
 function RouteComponent() {
-  const canManageEserviceState = useHasRole("administrative");
-  const eservice = Route.useLoaderData();
+  const isAdministrative = useHasRole("administrative");
+  const { id } = Route.useParams();
+  const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
 
   return (
     <>
@@ -61,7 +65,12 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        actions={canManageEserviceState && <EServiceActions />}
+        actions={
+          <>
+            {isAdministrative && <SuspendAction />}
+            <EditAction eservice={eservice} />
+          </>
+        }
         copyableId={eservice.id}
         description={eservice.description.en}
         resourceStatusChip={
@@ -84,5 +93,23 @@ function RouteComponent() {
 
       <ProductionEServiceDetailsTabs eservice={eservice} />
     </>
+  );
+}
+
+function SuspendAction() {
+  return (
+    <DialogTrigger>
+      <Button hierarchy="danger" isDisabled kind="tonal" size="md">
+        Suspend
+      </Button>
+      <Modal
+        actionLabel="Suspend anyway"
+        cancelLabel="Cancel"
+        description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
+        isDismissable
+        kind="destructive"
+        title="Suspend E-Service"
+      />
+    </DialogTrigger>
   );
 }

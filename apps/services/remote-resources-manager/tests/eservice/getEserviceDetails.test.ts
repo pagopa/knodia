@@ -88,6 +88,8 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     eserviceVersionId: crypto.randomUUID(),
     producerId: k2kEservice.producerId,
+    suspendedByConsumerAt: null,
+    suspendedByProducerAt: null,
     updatedAt: new Date().toISOString(),
     ...overrides,
   });

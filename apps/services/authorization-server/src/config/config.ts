@@ -1,8 +1,34 @@
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { type z } from "zod";
+import { z } from "zod";
 
-const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig);
+const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig).and(
+  z
+    .object({
+      CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z
+        .string()
+        .min(1)
+        .transform((value) => value.split(",").map((a) => a.trim()))
+        .pipe(z.string().array()),
+      CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: z.coerce
+        .number()
+        .int()
+        .positive(),
+      CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: z.coerce
+        .number()
+        .int()
+        .positive(),
+      KNODE_URL: z.url(),
+    })
+    .transform((c) => ({
+      clientAssertionAcceptedAudiences: c.CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
+      clientAssertionClockToleranceSeconds:
+        c.CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS,
+      clientAssertionMaxTokenAgeSeconds:
+        c.CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS,
+      knodeUrl: c.KNODE_URL,
+    })),
+);
 
 export type AuthorizationServerConfig = z.infer<
   typeof AuthorizationServerConfig
