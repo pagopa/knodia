@@ -141,7 +141,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       const claims: EserviceAccessTokenClaims = {
         aud: input.audience,
         client_id: input.consumerKeychainId,
-        consumer: input.consumer,
+        consumer: { id: input.consumer.id, knode_id: input.consumer.knodeId },
         eservice: {
           id: input.eserviceId,
           knode_id: input.producer.knodeId,
@@ -152,7 +152,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         iss: input.issuer,
         jti: randomUUID(),
         nbf: now,
-        producer: input.producer,
+        producer: { id: input.producer.id, knode_id: input.producer.knodeId },
         purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
       };
