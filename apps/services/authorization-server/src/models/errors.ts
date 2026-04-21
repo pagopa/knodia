@@ -58,7 +58,7 @@ export function agreementNotActive(id: AgreementId, state: AgreementState) {
     code: "AGREEMENT_NOT_ACTIVE",
     detail: `Agreement with ID ${id} is in state '${state}', but it must be in 'Active' state`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Agreement state is not Active",
+    title: "unauthorized_client",
   });
 }
 
@@ -70,7 +70,7 @@ export function agreementNotFound(
     code: "AGREEMENT_NOT_FOUND",
     detail: `Agreement for Consumer ${consumer.id} (${consumer.knodeId}) and E-service ${eserviceId} was not found`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Agreement not found",
+    title: "unauthorized_client",
   });
 }
 
@@ -105,7 +105,7 @@ export function consumerMissingRequiredAttributes(
     code: "CONSUMER_MISSING_REQUIRED_ATTRIBUTES",
     detail: `Consumer ${consumer.id} (Knode ${consumer.knodeId}) missing required attributes for the requested E-service version ${eserviceVersionId}`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Consumer Missing Required Attributes",
+    title: "unauthorized_client",
   });
 }
 
@@ -117,7 +117,7 @@ export function eserviceVersionNotActive(
     code: "ESERVICE_VERSION_NOT_ACTIVE",
     detail: `E-service Version with ID ${id} is in state '${state}', but it must be in 'Active' state`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "E-service Version state is not Active",
+    title: "unauthorized_client",
   });
 }
 
@@ -129,7 +129,7 @@ export function eserviceVersionNotFound(
     code: "ESERVICE_VERSION_NOT_FOUND",
     detail: `E-service Version with ID ${eserviceVersionId} for E-service ${eserviceId} was not found`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "E-service Version not found",
+    title: "unauthorized_client",
   });
 }
 
@@ -141,7 +141,7 @@ export function eserviceVersionNotUsingBearerToken({
     code: "ESERVICE_VERSION_NOT_USING_BEARER_TOKEN",
     detail: `E-service Version with ID ${id} has access token type '${accessTokenType}', but it must be 'Bearer'`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "E-service Version not using Bearer token",
+    title: "unauthorized_client",
   });
 }
 
@@ -174,7 +174,7 @@ export function platformStatesNotActive(
     code: "PLATFORM_STATES_NOT_ACTIVE",
     detail: `One or more platform objects are not in 'Active' state. Details: ${errorDetails}`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Platform states not Active",
+    title: "unauthorized_client",
   });
 }
 
@@ -195,7 +195,7 @@ export function purposeNotActive(id: PurposeId, state: PurposeState) {
     code: "PURPOSE_NOT_ACTIVE",
     detail: `Purpose with ID ${id} is in state '${state}', but it must be in 'Active' state`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Purpose state is not Active",
+    title: "unauthorized_client",
   });
 }
 
@@ -204,7 +204,7 @@ export function purposeNotFound(id: PurposeId) {
     code: "PURPOSE_NOT_FOUND",
     detail: `Purpose with ID ${id} was not found`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "Purpose not found",
+    title: "unauthorized_client",
   });
 }
 
