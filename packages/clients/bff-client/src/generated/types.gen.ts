@@ -668,7 +668,7 @@ export type KeychainMembers = {
  * Unique JWK identifier (kid) of the created key
  */
 export type CreatedKeyResource = {
-    kid: string;
+    kid: KeyId;
 };
 
 /**
