@@ -84,6 +84,36 @@ describe("axios interceptors", () => {
     });
   });
 
+  describe("Content-Type defaults", () => {
+    it("does not send default Content-Type on POST with empty body", async () => {
+      let capturedContentType: null | string = "initial";
+      server.use(
+        http.post(`${BFF_URL}/api/action`, ({ request }) => {
+          capturedContentType = request.headers.get("Content-Type");
+          return HttpResponse.json({ ok: true });
+        }),
+      );
+
+      await axios.post(`${BFF_URL}/api/action`);
+
+      expect(capturedContentType).toBeNull();
+    });
+
+    it("does not send default Content-Type on PATCH with empty body", async () => {
+      let capturedContentType: null | string = "initial";
+      server.use(
+        http.patch(`${BFF_URL}/api/resource/1`, ({ request }) => {
+          capturedContentType = request.headers.get("Content-Type");
+          return HttpResponse.json({ ok: true });
+        }),
+      );
+
+      await axios.patch(`${BFF_URL}/api/resource/1`);
+
+      expect(capturedContentType).toBeNull();
+    });
+  });
+
   describe("response interceptor (handleUnauthorized)", () => {
     it("retries with new token after successful refresh", async () => {
       getAuthToken

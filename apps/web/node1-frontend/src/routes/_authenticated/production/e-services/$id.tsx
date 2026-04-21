@@ -1,6 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
+import { Breadcrumb, Breadcrumbs, Button } from "@knodia/ui-kit/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EditEServiceModal } from "@/features/e-service/components/EditEServiceModal";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
+import { EserviceProducerActions } from "@/features/e-service/components/EserviceProducerActions";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { producerEserviceDetailsQuery } from "@/features/e-service/services/queries";
@@ -67,7 +68,12 @@ function RouteComponent() {
       <PageHeader
         actions={
           <>
-            {isAdministrative && <SuspendAction />}
+            {isAdministrative && (
+              <EserviceProducerActions
+                eserviceId={eservice.id}
+                state={eservice.version.state}
+              />
+            )}
             <EditAction eservice={eservice} />
           </>
         }
@@ -93,23 +99,5 @@ function RouteComponent() {
 
       <ProductionEServiceDetailsTabs eservice={eservice} />
     </>
-  );
-}
-
-function SuspendAction() {
-  return (
-    <DialogTrigger>
-      <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-        Suspend
-      </Button>
-      <Modal
-        actionLabel="Suspend anyway"
-        cancelLabel="Cancel"
-        description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
-        isDismissable
-        kind="destructive"
-        title="Suspend E-Service"
-      />
-    </DialogTrigger>
   );
 }
