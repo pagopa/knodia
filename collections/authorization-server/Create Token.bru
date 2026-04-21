@@ -20,28 +20,15 @@ body:form-urlencoded {
   grant_type: client_credentials
 }
 
-script:pre-request {
-  if (bru.getProcessEnv("CLIENT_ASSERTION_JWT")) return
+script:post-response {
+  if (res.status === 200) return
 
   const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_KEY_PATH") || "<path-to-private-key>"
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
   throw new Error(
-    "CLIENT_ASSERTION_JWT is not set. Run:\n\n" +
+    `Request failed with status ${res.status}. If you haven't signed a client assertion yet, or you rotated the keypair and the CLIENT_ASSERTION_JWT in collections/.env is stale, run:\n\n` +
     `  pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
     "then re-run this call."
   )
-}
-
-script:post-response {
-  if (res.status === 404 && res.body && res.body.errors && res.body.errors.some(e => e.code === "006-0012")) {
-    const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_KEY_PATH") || "<path-to-private-key>"
-    const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
-    const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
-    throw new Error(
-      "Key kid not found in the keychain. If you rotated the keypair (ran `pnpm generate-keypair`), the CLIENT_ASSERTION_JWT in collections/.env is stale. Run:\n\n" +
-      `  pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
-      "then re-run this call."
-    )
-  }
 }

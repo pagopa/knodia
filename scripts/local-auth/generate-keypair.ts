@@ -54,9 +54,7 @@ writeFileSync(pubKeyPath, publicKey);
 writeFileSync(privKeyPath, privateKey);
 
 upsertEnvVars({
-  KEYCHAIN_KID: kid,
   KEYCHAIN_PRIVATE_KEY_PATH: privKeyPath,
-  KEYCHAIN_PRIVATE_KEY_B64: Buffer.from(privateKey, "utf-8").toString("base64"),
   KEYCHAIN_PUBLIC_KEY_B64: Buffer.from(publicKey, "utf-8").toString("base64"),
 });
 
@@ -64,7 +62,5 @@ console.log(`kid: ${kid}`);
 console.log(`Public key  written to ${pubKeyPath}`);
 console.log(`Private key written to ${privKeyPath}`);
 console.log(`\nBruno env updated at ${COLLECTIONS_ENV_PATH}:`);
-console.log("  - KEYCHAIN_KID");
-console.log("  - KEYCHAIN_PRIVATE_KEY_PATH");
-console.log("  - KEYCHAIN_PRIVATE_KEY_B64  (consumed by Bruno signing pre-requests)");
-console.log("  - KEYCHAIN_PUBLIC_KEY_B64   (consumed by the Upload Keychain Key call)");
+console.log("  - KEYCHAIN_PRIVATE_KEY_PATH  (referenced by Create Token help messages)");
+console.log("  - KEYCHAIN_PUBLIC_KEY_B64    (consumed by Upload Keychain Key)");
