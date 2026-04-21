@@ -140,7 +140,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Get Agreement detail",
+      summary: "Get an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements/:agreementId",
