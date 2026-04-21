@@ -144,8 +144,7 @@ function AgreementStatusBanner({
       </>
     ))
     .with("Suspended", () =>
-      agreement.suspendedByProducerAt !== null &&
-      agreement.suspendedByConsumerAt === null ? (
+      agreement.suspendedByProducerAt !== null ? (
         <Banner
           action={
             canManageAgreement
