@@ -9,10 +9,6 @@ post {
   auth: none
 }
 
-headers {
-  X-Correlation-Id: {{correlation-id}}
-}
-
 body:form-urlencoded {
   client_assertion: {{process.env.CLIENT_ASSERTION_JWT}}
   client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
