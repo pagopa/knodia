@@ -9,6 +9,7 @@ import type { AuthorizationServerConfig } from "../config/config.ts";
 
 import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { DPoPHeader } from "../models/headers.ts";
 import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
@@ -58,6 +59,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       body: API_TokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
       description: "Issue an E-service access token",
+      headers: DPoPHeader,
       operationId: "createToken",
       response: {
         200: API_TokenResponse.meta({
