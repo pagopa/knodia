@@ -29,8 +29,7 @@ const errorCodes = {
   AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
   AGREEMENT_NOT_IN_ACTIVATABLE_STATE: "0011",
-  AGREEMENT_ID_MISMATCH: "0012",
-  AGREEMENT_TOKEN_CLAIM_MISMATCH: "0013",
+  AGREEMENT_TOKEN_CLAIM_MISMATCH: "0012",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -54,18 +53,6 @@ export function agreementAlreadyExists({
     detail: `Agreement already exists for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Agreement already exists",
-  });
-}
-
-export function agreementIdMismatch(
-  tokenAgreementId: AgreementId,
-  pathAgreementId: AgreementId,
-) {
-  return createApiError<ErrorCodes>({
-    code: "AGREEMENT_ID_MISMATCH",
-    detail: `Token agreement ID ${tokenAgreementId} does not match path agreement ID ${pathAgreementId}`,
-    status: HTTP_STATUS_FORBIDDEN,
-    title: "Agreement ID Mismatch",
   });
 }
 
@@ -133,14 +120,13 @@ export function agreementNotInSuspendableState({
 }
 
 export function agreementTokenClaimMismatch(
-  agreementId: AgreementId,
   field: string,
   tokenValue: string,
-  agreementValue: string,
+  expectedValue: string,
 ) {
   return createApiError<ErrorCodes>({
     code: "AGREEMENT_TOKEN_CLAIM_MISMATCH",
-    detail: `Token claim "${field}" (${tokenValue}) does not match agreement ${agreementId} value (${agreementValue})`,
+    detail: `Token claim "${field}" (${tokenValue}) does not match expected value (${expectedValue})`,
     status: HTTP_STATUS_FORBIDDEN,
     title: "Agreement Token Claim Mismatch",
   });

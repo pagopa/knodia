@@ -28,7 +28,6 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
-  agreementIdMismatch,
   agreementNotInActivatableState,
   agreementNotInReactivatableState,
   agreementNotInSuspendableState,
@@ -223,7 +222,11 @@ export function assertTokenAgreementIdMatchesPathParam(
   pathAgreementId: AgreementId,
 ): void {
   if (tokenAgreementId !== pathAgreementId) {
-    throw agreementIdMismatch(tokenAgreementId, pathAgreementId);
+    throw agreementTokenClaimMismatch(
+      "agreementId",
+      tokenAgreementId,
+      pathAgreementId,
+    );
   }
 }
 
@@ -265,12 +268,7 @@ export function assertTokenResourceClaimsMatchAgreement(
 
   for (const { agreementValue, field, tokenValue } of checks) {
     if (tokenValue !== agreementValue) {
-      throw agreementTokenClaimMismatch(
-        agreement.id,
-        field,
-        tokenValue,
-        agreementValue,
-      );
+      throw agreementTokenClaimMismatch(field, tokenValue, agreementValue);
     }
   }
 }
