@@ -319,6 +319,21 @@ components:
         - name
         - requiredAttributes
       additionalProperties: false
+    EservicePatch:
+      type: object
+      properties:
+        categories:
+          description: Categories of the E-service
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          allOf:
+            - $ref: "#/components/schemas/LocalizedDescription"
+        name:
+          allOf:
+            - $ref: "#/components/schemas/LocalizedName"
+      additionalProperties: false
     ProducerEservice:
       type: object
       properties:
@@ -1833,11 +1848,11 @@ paths:
           description: Filter by E-service state
       responses:
         "200":
-          description: Producer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEservices"
         "400":
@@ -1869,7 +1884,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve a Producer E-service with all its details
+      description: Retrieve an E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1880,11 +1895,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service details retrieved successfully
+          description: E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-service details retrieved successfully
+                description: E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1919,14 +1934,67 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+    patch:
+      operationId: updateProducerEservice
+      tags:
+        - eservice
+      description: Update an E-service
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/EservicePatch"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "204":
+          description: E-service updated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
-      summary: Download producer E-service latest Version Interface
+      summary: Download E-service latest Version Interface
       tags:
         - eservice
-      description: Download the interface document for the latest version of a
-        Producer E-service
+      description: Download the interface document for the latest version of an E-service
       parameters:
         - schema:
             type: string
@@ -1937,11 +2005,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service interface document downloaded successfully
+          description: E-service interface document downloaded successfully
           content:
             application/json: &a1
               schema:
-                description: Producer E-service interface document downloaded successfully
+                description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
@@ -3188,7 +3256,7 @@ paths:
   /consumer/eservices/{eserviceId}:
     get:
       operationId: getConsumerEserviceDetails
-      summary: Get consumer E-service details
+      summary: Get E-service details
       tags:
         - eservice
       description: Retrieve an E-service with all its details for consumers
@@ -3249,7 +3317,7 @@ paths:
   /consumer/eservices/{eserviceId}/interface:
     get:
       operationId: getConsumerEserviceLatestVersionInterface
-      summary: Download consumer E-service latest Version Interface
+      summary: Download E-service latest Version Interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
@@ -3313,10 +3381,10 @@ paths:
   /consumer/eservices:
     get:
       operationId: getConsumerEservices
-      summary: Get Consumer E-services
+      summary: Get E-services
       tags:
         - eservice
-      description: Retrieve Consumer E-services
+      description: Retrieve E-services
       parameters:
         - schema:
             format: int32
@@ -3343,11 +3411,11 @@ paths:
           required: false
       responses:
         "200":
-          description: Consumer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerEservices"
         "400":

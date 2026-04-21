@@ -538,7 +538,7 @@ describe("POST /token", async () => {
     purpose: Purpose;
     testCase: string;
   }[])(
-    "should return 401 when platform states are not active: $testCase (seed #%#)",
+    "should return 400 when platform states are not active: $testCase (seed #%#)",
     async ({ agreement, eserviceVersion, purpose }) => {
       await Promise.all([
         agreementWriterService.upsertAgreement(agreement, 0),
@@ -557,7 +557,7 @@ describe("POST /token", async () => {
 
       const error = platformStatesNotActive([]);
 
-      expect(response.statusCode).toBe(401);
+      expect(response.statusCode).toBe(400);
       expect(response.json<API_Problem>().title).toEqual(error.title);
     },
   );
@@ -587,7 +587,7 @@ describe("POST /token", async () => {
     purpose: Purpose | undefined;
     testCase: string;
   }[])(
-    "should return 401 when platform objects are not found: $testCase (seed #%#)",
+    "should return 400 when platform objects are not found: $testCase (seed #%#)",
     async ({ agreement, eserviceVersion, purpose }) => {
       await Promise.all([
         agreement
@@ -610,11 +610,11 @@ describe("POST /token", async () => {
 
       const response = await createToken();
 
-      expect(response.statusCode).toBe(401);
+      expect(response.statusCode).toBe(400);
     },
   );
 
-  it("should return 401 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
+  it("should return 400 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
@@ -640,11 +640,11 @@ describe("POST /token", async () => {
       eserviceVersion.id,
     );
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 401 if the E-service version does not use Bearer token", async () => {
+  it("should return 400 if the E-service version does not use Bearer token", async () => {
     const eserviceVersionWithWrongTokenType: EserviceVersion = {
       ...eserviceVersion,
       accessTokenType: "DPoP",
@@ -668,7 +668,7 @@ describe("POST /token", async () => {
       eserviceVersionWithWrongTokenType,
     );
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 });

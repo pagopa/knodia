@@ -179,6 +179,15 @@ export type EserviceSeed = {
     requiredAttributes: Array<Array<Attribute>>;
 };
 
+export type EservicePatch = {
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    description?: LocalizedDescription;
+    name?: LocalizedName;
+};
+
 export type ProducerEservice = {
     /**
      * Number of active agreements
@@ -898,7 +907,7 @@ export type GetProducerEservicesError = GetProducerEservicesErrors[keyof GetProd
 
 export type GetProducerEservicesResponses = {
     /**
-     * Producer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ProducerEservices;
 };
@@ -970,12 +979,51 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * Producer E-service details retrieved successfully
+     * E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
 
 export type GetProducerEserviceDetailsResponse = GetProducerEserviceDetailsResponses[keyof GetProducerEserviceDetailsResponses];
+
+export type UpdateProducerEserviceData = {
+    body: EservicePatch;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}';
+};
+
+export type UpdateProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
+
+export type UpdateProducerEserviceResponses = {
+    /**
+     * E-service updated successfully
+     */
+    204: void;
+};
+
+export type UpdateProducerEserviceResponse = UpdateProducerEserviceResponses[keyof UpdateProducerEserviceResponses];
 
 export type GetProducerEserviceLatestVersionInterfaceData = {
     body?: never;
@@ -1009,7 +1057,7 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * Producer E-service interface document downloaded successfully
+     * E-service interface document downloaded successfully
      */
     200: FileDownload;
 };
@@ -1976,7 +2024,7 @@ export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetCons
 
 export type GetConsumerEservicesResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ConsumerEservices;
 };

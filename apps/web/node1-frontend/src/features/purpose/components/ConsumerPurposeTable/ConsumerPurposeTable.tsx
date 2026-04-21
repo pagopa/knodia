@@ -42,7 +42,7 @@ export function ConsumerPurposeTable({
             kind: "filled",
             label: "See E-Services",
           }}
-          description="You can create new Purposes for the E-Services for which you have an Agreement."
+          description="You can create new Purposes for the E-Services for which you have an existing Agreement."
           icon={<SelectionPlusIcon />}
           title="You don't have any Purpose yet."
         />

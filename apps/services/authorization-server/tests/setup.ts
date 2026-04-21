@@ -47,18 +47,29 @@ beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(connectionString);
 
   app = buildApp({
-    clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
-    clientAssertionClockToleranceSeconds: 30,
-    clientAssertionMaxTokenAgeSeconds: 300,
     config: {
+      clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
+      clientAssertionClockToleranceSeconds: 30,
+      clientAssertionMaxTokenAgeSeconds: 300,
+      consumerKnodeUrl: "http://localhost:0",
+      eserviceAccessTokenJwtKid: "test-kid",
+      generatedEserviceAccessTokenIssuer: "knodia.org",
+      host: "test_host",
       isProduction: false,
+      knodeId: producerKnodeId,
       logLevel: "silent",
       nodeEnv: "test",
+      port: 0,
+      readmodelDbAgreementSchema: "test_agreement_schema",
+      readmodelDbEserviceSchema: "test_eservice_schema",
+      readmodelDbHost: "test_db_host",
+      readmodelDbName: "test_db_name",
+      readmodelDbPassword: "test_db_password",
+      readmodelDbPort: 0,
+      readmodelDbPurposeSchema: "test_purpose_schema",
+      readmodelDbUser: "test_db_user",
+      readmodelDbUseSsl: false,
     },
-    consumerKnodeUrl: "http://localhost:0",
-    eserviceAccessTokenJwtKid: "test-kid",
-    generatedEserviceAccessTokenIssuer: "knodia.org",
-    knodeId: producerKnodeId,
     readmodelDb,
   });
 

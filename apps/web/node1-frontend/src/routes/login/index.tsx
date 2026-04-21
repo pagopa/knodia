@@ -35,13 +35,13 @@ export function LoginPage() {
         </div>
 
         <p className="body-lg text-center text-primary-light-low-contrast">
-          Sign in with your credentials to access the platform.
+          Log in with your credentials to access the platform.
         </p>
 
         <div className="flex w-full flex-col items-center gap-3">
           {error && (
             <Banner kind="error">
-              Unable to complete sign in. Please try again.
+              Unable to complete log in. Please try again.
             </Banner>
           )}
           <Button
@@ -53,7 +53,7 @@ export function LoginPage() {
             type="button"
           >
             <LockIcon size={20} />
-            {error ? "Retry" : "Sign in"}
+            {error ? "Retry" : "Log in"}
           </Button>
           <p className="body-sm text-center text-primary-light-low-contrast">
             You will be redirected to the Authentication Service.
@@ -70,7 +70,7 @@ export function LoginPage() {
           >
             Knodia project website
           </Link>{" "}
-          to request an account. Once your account is activated, you can sign in
+          to request an account. Once your account is activated, you can log in
           from here.
         </Banner>
 

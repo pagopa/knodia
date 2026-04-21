@@ -48,6 +48,8 @@ export const toK2KAgreement = (
   id: agreement.id,
   producerId: agreement.producerId,
   state: toK2KAgreementState(agreement.state),
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt?.toISOString() ?? null,
+  suspendedByProducerAt: agreement.suspendedByProducerAt?.toISOString() ?? null,
   updatedAt: agreement.updatedAt.toISOString(),
 });
 
