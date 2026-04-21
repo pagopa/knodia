@@ -14,6 +14,8 @@ import { OrgConsumptionStatusSection } from "./OrgConsumptionStatusSection";
 const defaultAgreement: bffApi.EserviceAgreementDetail = {
   id: crypto.randomUUID(),
   state: "Active",
+  suspendedByConsumerAt: null,
+  suspendedByProducerAt: null,
 };
 
 function renderSection({
