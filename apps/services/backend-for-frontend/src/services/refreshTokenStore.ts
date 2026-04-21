@@ -3,6 +3,7 @@ import {
   DynamoDBClient,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import { dateToSeconds } from "@knodia/common-models/utils";
 
 export type RefreshTokenStore = ReturnType<typeof createRefreshTokenStore>;
 
@@ -33,7 +34,7 @@ export function createRefreshTokenStore(
      * lag behind), preventing stale records from blocking valid writes.
      */
     async consume(jti: string, expireAtSec: number): Promise<boolean> {
-      const nowSec = Math.floor(Date.now() / 1000);
+      const nowSec = dateToSeconds(new Date());
       try {
         await client.send(
           new PutItemCommand({
