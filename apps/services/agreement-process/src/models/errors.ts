@@ -8,10 +8,16 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type { EserviceVersionState } from "@knodia/eservice-models";
+import type { ExternalUISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
+
+export type ExternalUISessionClaimField = Exclude<
+  keyof ExternalUISessionAuthData,
+  "scope" | "tokenType"
+>;
 
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
   constants;
@@ -120,7 +126,7 @@ export function agreementNotInSuspendableState({
 }
 
 export function agreementTokenClaimMismatch(
-  field: string,
+  field: ExternalUISessionClaimField,
   tokenValue: string,
   expectedValue: string,
 ) {

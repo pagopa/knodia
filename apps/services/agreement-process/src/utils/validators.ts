@@ -35,6 +35,7 @@ import {
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
+  type ExternalUISessionClaimField,
   organizationNotAgreementProducer,
 } from "../models/errors.ts";
 import {
@@ -236,7 +237,7 @@ export function assertTokenResourceClaimsMatchAgreement(
 ): void {
   const checks: {
     agreementValue: string;
-    field: string;
+    field: ExternalUISessionClaimField;
     tokenValue: string;
   }[] = [
     {
