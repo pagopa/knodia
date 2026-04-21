@@ -115,6 +115,8 @@ export type Purpose = {
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 

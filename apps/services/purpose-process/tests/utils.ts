@@ -28,9 +28,16 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     id: purpose.id,
     name: purpose.name,
     state: purpose.state,
+    suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
+    suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
     updatedAt:
       typeof purpose.updatedAt === "string"
         ? purpose.updatedAt
         : purpose.updatedAt.toISOString(),
   };
+}
+
+function toExpectIsoOrNull(value: Date | null | string) {
+  if (value === null) return null;
+  return typeof value === "string" ? value : value.toISOString();
 }
