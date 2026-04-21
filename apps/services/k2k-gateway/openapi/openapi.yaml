@@ -803,21 +803,43 @@ components:
         - updatedAt
       additionalProperties: false
     PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
+      description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
+        texts) with their version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
+        texts:
+          type: object
+          properties:
+            en:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - en
+          additionalProperties: false
         uiSchema:
           type: object
           additionalProperties: {}
+        uiTexts:
+          type: object
+          properties:
+            en:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - en
+          additionalProperties: false
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
     Purposes:
@@ -1562,8 +1584,8 @@ paths:
       tags:
         - resource
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       responses:
         "200":
           description: Current Purpose form schemas retrieved successfully

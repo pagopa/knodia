@@ -14,7 +14,9 @@ import {
   API_PurposeFormAnswers,
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersion,
+  API_PurposeFormTexts,
   API_PurposeFormUiSchema,
+  API_PurposeFormUiTexts,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
@@ -106,7 +108,9 @@ export type API_TotalDailyCalls = z.infer<typeof API_TotalDailyCalls>;
 export const API_CurrentPurposeFormSchemasResponse = z
   .strictObject({
     schema: API_PurposeFormSchema,
+    texts: API_PurposeFormTexts,
     uiSchema: API_PurposeFormUiSchema,
+    uiTexts: API_PurposeFormUiTexts,
     version: API_PurposeFormSchemaVersion,
   })
   .meta({ id: "CurrentPurposeFormSchemasResponse" });

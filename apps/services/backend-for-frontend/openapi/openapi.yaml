@@ -1094,23 +1094,45 @@ components:
       type: object
       additionalProperties: {}
     PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
+      description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
+        texts) with their version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
+        texts:
+          type: object
+          properties:
+            en:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - en
+          additionalProperties: false
         uiSchema:
           type: object
           additionalProperties: {}
+        uiTexts:
+          type: object
+          properties:
+            en:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - en
+          additionalProperties: false
         version:
           description: Version identifier for the Purpose form schema provided by the
             target Knode
           type: string
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
     KeychainLocalizedName:
@@ -3675,8 +3697,8 @@ paths:
       summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"

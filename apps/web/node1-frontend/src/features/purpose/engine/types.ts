@@ -1,10 +1,17 @@
-// JSON Schema types (subset we support)
-
 export interface AndCondition {
   conditions: RuleCondition[];
   type: "AND";
 }
 
+// UI Schema types (JSON Forms format + extensions)
+//
+// The ui-schema file carries only structural information: widgets, conditions
+// and `i18n` identifiers for groups. All user-facing text (labels, descriptions,
+// option labels, error messages) lives in the external `texts.en.json` /
+// `ui-texts.en.json` files and is resolved at render time — the fields below
+// that carry text (`label` on ControlElement, `description`/`optionLabels` on
+// ControlOptions) are populated by the renderer from those dictionaries, not
+// read from the ui-schema itself.
 export interface ControlElement {
   label?: string;
   options?: ControlOptions;
@@ -13,10 +20,9 @@ export interface ControlElement {
   type: "Control";
 }
 
-// Form values
-export type FormValues = Record<string, string | string[]>;
+export type FormTexts = Record<string, string>;
 
-// UI Schema types (JSON Forms format + extensions)
+export type FormValues = Record<string, string | string[]>;
 
 export interface JsonSchema {
   $schema?: string;
@@ -38,22 +44,23 @@ export interface JsonSchemaIfClause {
   required?: string[];
 }
 
-export interface LabelElement {
-  options?: { variant?: "error" | "info" | "warning" };
-  rule?: Rule;
-  text: string;
-  type: "Label";
+export interface JsonSchemaProperty {
+  const?: string;
+  default?: string | string[];
+  enum?: string[];
+  items?: { enum?: string[]; type: "string" };
+  maxLength?: number;
+  minItems?: number;
+  minLength?: number;
+  type: "array" | "string";
+  uniqueItems?: boolean;
 }
 
 export type RuleCondition = AndCondition | LeafCondition;
 
 export type UISchema = GroupElement | LayoutElement;
 
-export type UISchemaElement =
-  | ControlElement
-  | GroupElement
-  | LabelElement
-  | LayoutElement;
+export type UISchemaElement = ControlElement | GroupElement | LayoutElement;
 
 // Validation: takes form values + visible fields, returns field-level errors
 export type ValidateFn = (
@@ -63,17 +70,14 @@ export type ValidateFn = (
 
 interface ControlOptions {
   description?: string;
-  errorMessages?: Record<string, string>;
   hideOptions?: Record<string, HideOptionCondition>;
-  infoLabel?: string;
   optionLabels?: Record<string, string>;
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
 }
 
 interface GroupElement {
   elements: UISchemaElement[];
-  label?: string;
-  options?: { description?: string };
+  i18n: string;
   type: "Group";
 }
 
@@ -86,18 +90,6 @@ interface JsonSchemaConditional {
   else?: { required?: string[] };
   if: JsonSchemaIfClause;
   then: { required?: string[] };
-}
-
-interface JsonSchemaProperty {
-  const?: string;
-  default?: string | string[];
-  enum?: string[];
-  items?: { enum?: string[]; type: "string" };
-  maxLength?: number;
-  minItems?: number;
-  minLength?: number;
-  type: "array" | "string";
-  uniqueItems?: boolean;
 }
 
 interface LayoutElement {
@@ -119,6 +111,10 @@ interface Rule {
 // engine's internal types so the cast is isolated here.
 export function loadSchema(json: Record<string, unknown>): JsonSchema {
   return json as unknown as JsonSchema;
+}
+
+export function loadTexts(json: Record<string, unknown>): FormTexts {
+  return json as FormTexts;
 }
 
 export function loadUiSchema(json: Record<string, unknown>): UISchema {

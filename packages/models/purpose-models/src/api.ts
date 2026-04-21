@@ -66,6 +66,20 @@ export const API_PurposeFormSchema = z
   .meta({ id: "PurposeFormSchema" });
 export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
 
+export const API_PurposeFormTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormTexts" });
+export type API_PurposeFormTexts = z.infer<typeof API_PurposeFormTexts>;
+
+export const API_PurposeFormUiTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormUiTexts" });
+export type API_PurposeFormUiTexts = z.infer<typeof API_PurposeFormUiTexts>;
+
 export const API_PurposeFormUiSchema = z
   .record(z.string(), z.unknown())
   .meta({ id: "PurposeFormUiSchema" });
@@ -90,12 +104,18 @@ export type API_ExternalPurposeFormSchemaVersion = z.infer<
 export const API_ExternalPurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
+    texts: z.strictObject({
+      en: z.record(z.string(), z.string()),
+    }),
     uiSchema: z.record(z.string(), z.unknown()),
+    uiTexts: z.strictObject({
+      en: z.record(z.string(), z.string()),
+    }),
     version: API_ExternalPurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+      "Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier",
     id: "PurposeFormSchemasResponse",
   });
 export type API_ExternalPurposeFormSchemasResponse = z.infer<

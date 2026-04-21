@@ -52,6 +52,14 @@ export const handlers = [
         required: ["purpose", "personalDataTypes", "declarationConfirmGDPR"],
         type: "object",
       },
+      texts: {
+        en: {
+          "groups.test.label": "Test",
+          "purpose.INSTITUTIONAL": "For institutional purposes",
+          "purpose.label": "Purpose of access data",
+          "purpose.OTHER": "Other",
+        },
+      },
       uiSchema: {
         elements: [
           {
@@ -94,11 +102,16 @@ export const handlers = [
                 type: "Control",
               },
             ],
-            label: "Purpose",
+            i18n: "groups.test",
             type: "Group",
           },
         ],
         type: "VerticalLayout",
+      },
+      uiTexts: {
+        en: {
+          "purpose.error.required": "Please select a purpose",
+        },
       },
       version: "1.0",
     }),

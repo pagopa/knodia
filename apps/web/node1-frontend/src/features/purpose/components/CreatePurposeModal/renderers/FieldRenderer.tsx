@@ -3,12 +3,19 @@ import { match } from "ts-pattern";
 
 import type {
   ControlElement,
+  FormTexts,
   FormValues,
   JsonSchema,
+  JsonSchemaProperty,
 } from "@/features/purpose/engine/types";
 
-import { scopeToFieldName } from "@/features/purpose/engine/dependencyResolver";
 import { getFilteredOptionValues } from "@/features/purpose/engine/optionFilter";
+import { scopeToFieldName } from "@/features/purpose/engine/scope";
+import {
+  getFieldDescription,
+  getFieldLabel,
+  getFieldOptionLabels,
+} from "@/features/purpose/engine/textsResolver";
 
 import { CheckboxRenderer } from "./CheckboxRenderer";
 import { RadioRenderer } from "./RadioRenderer";
@@ -22,6 +29,7 @@ interface Props {
   error?: string | undefined;
   jsonSchema: JsonSchema;
   onChange: (value: string | string[]) => void;
+  texts: FormTexts;
   value: string | string[];
 }
 
@@ -31,29 +39,60 @@ export function FieldRenderer({
   error,
   jsonSchema,
   onChange,
+  texts,
   value,
 }: Props) {
   const widget = control.options?.widget ?? "text";
   const fieldName = scopeToFieldName(control.scope);
-  const maxLength = jsonSchema.properties[fieldName]?.maxLength;
+  const schemaProperty = jsonSchema.properties[fieldName];
+  const maxLength = schemaProperty?.maxLength;
+
+  const label = getFieldLabel(texts, fieldName);
+  const description = getFieldDescription(texts, fieldName);
+  const optionValues = useMemo(
+    () => getOptionValues(schemaProperty),
+    [schemaProperty],
+  );
+
+  const optionLabels = useMemo(
+    () => getFieldOptionLabels(texts, fieldName, optionValues),
+    [texts, fieldName, optionValues],
+  );
 
   const options = useMemo(() => {
-    const optionLabels = control.options?.optionLabels ?? {};
-    const allOptions = Object.entries(optionLabels).map(([val, label]) => ({
-      label,
-      value: val,
+    const allOptions = optionValues.map((optionValue) => ({
+      label: optionLabels[optionValue] ?? optionValue,
+      value: optionValue,
     }));
 
     const hiddenValues = getFilteredOptionValues(control, allValues);
     if (!hiddenValues) return allOptions;
 
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
-  }, [control, allValues]);
+  }, [control, allValues, optionLabels, optionValues]);
+
+  const resolvedControl: ControlElement = useMemo(
+    () => ({
+      label,
+      options: control.options
+        ? {
+            description,
+            hideOptions: control.options.hideOptions,
+            optionLabels,
+            widget: control.options.widget,
+          }
+        : undefined,
+      rule: control.rule,
+      scope: control.scope,
+      type: control.type,
+    }),
+    [control, label, description, optionLabels],
+  );
 
   return match(widget)
     .with("radio", () => (
       <RadioRenderer
-        control={control}
+        control={resolvedControl}
         error={error}
         onChange={(v) => onChange(v)}
         options={options}
@@ -62,7 +101,7 @@ export function FieldRenderer({
     ))
     .with("text", "textarea", () => (
       <TextRenderer
-        control={control}
+        control={resolvedControl}
         error={error}
         maxLength={maxLength}
         onChange={(v) => onChange(v)}
@@ -71,7 +110,7 @@ export function FieldRenderer({
     ))
     .with("checkbox", () => (
       <CheckboxRenderer
-        control={control}
+        control={resolvedControl}
         error={error}
         onChange={(v) => onChange(v)}
         options={options}
@@ -80,7 +119,7 @@ export function FieldRenderer({
     ))
     .with("select", () => (
       <SelectRenderer
-        control={control}
+        control={resolvedControl}
         error={error}
         onChange={(v) => onChange(v)}
         options={options}
@@ -89,11 +128,24 @@ export function FieldRenderer({
     ))
     .with("switch", () => (
       <SwitchRenderer
-        control={control}
+        control={resolvedControl}
         error={error}
         onChange={(v) => onChange(v)}
         value={value as string}
       />
     ))
     .exhaustive();
+}
+
+function getOptionValues(
+  schemaProperty: JsonSchemaProperty | undefined,
+): string[] {
+  if (!schemaProperty) return [];
+  if (schemaProperty.type === "array") {
+    return schemaProperty.items?.enum ?? [];
+  }
+  if (schemaProperty.const !== undefined) {
+    return [schemaProperty.const];
+  }
+  return schemaProperty.enum ?? [];
 }

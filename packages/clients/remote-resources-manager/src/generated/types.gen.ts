@@ -302,14 +302,24 @@ export type PurposeFormAnswers = {
 };
 
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
+    texts: {
+        en: {
+            [key: string]: string;
+        };
+    };
     uiSchema: {
         [key: string]: unknown;
+    };
+    uiTexts: {
+        en: {
+            [key: string]: string;
+        };
     };
     /**
      * Version identifier for the Purpose form schema provided by the target Knode

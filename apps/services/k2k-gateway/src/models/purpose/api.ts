@@ -108,8 +108,6 @@ export type API_PurposeState = z.infer<typeof API_PurposeState>;
 
 export const API_Purpose = z
   .strictObject({
-    // formAnswersJson and formSchemaVersion are intentionally excluded —
-    // they can be retrieved via separate routes
     consumer: API_PurposeConsumer,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
@@ -128,12 +126,18 @@ export type API_Purpose = z.infer<typeof API_Purpose>;
 export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
+    texts: z.strictObject({
+      en: z.record(z.string(), z.string()),
+    }),
     uiSchema: z.record(z.string(), z.unknown()),
+    uiTexts: z.strictObject({
+      en: z.record(z.string(), z.string()),
+    }),
     version: API_PurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+      "Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier",
     id: "PurposeFormSchemasResponse",
   });
 export type API_PurposeFormSchemasResponse = z.infer<

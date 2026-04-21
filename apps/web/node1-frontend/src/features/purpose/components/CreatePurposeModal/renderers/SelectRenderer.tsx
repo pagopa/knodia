@@ -19,7 +19,7 @@ export function SelectRenderer({
 }: Props) {
   return (
     <Select
-      description={control.options?.infoLabel}
+      description={control.options?.description}
       errorMessage={error}
       isInvalid={!!error}
       label={control.label}

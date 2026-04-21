@@ -23,7 +23,7 @@ export function TextRenderer({
   return (
     <div className="flex flex-col gap-1">
       <Component
-        description={control.options?.infoLabel}
+        description={control.options?.description}
         errorMessage={error}
         isInvalid={!!error}
         label={control.label}

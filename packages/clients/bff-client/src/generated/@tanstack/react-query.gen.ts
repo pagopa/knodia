@@ -941,7 +941,7 @@ export const getConsumerCurrentPurposeFormSchemasQueryKey = (options: Options<Ge
 /**
  * Get current Purpose form schemas
  *
- * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
+ * Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version
  */
 export const getConsumerCurrentPurposeFormSchemasOptions = (options: Options<GetConsumerCurrentPurposeFormSchemasData>) => queryOptions<GetConsumerCurrentPurposeFormSchemasResponse, AxiosError<GetConsumerCurrentPurposeFormSchemasError>, GetConsumerCurrentPurposeFormSchemasResponse, ReturnType<typeof getConsumerCurrentPurposeFormSchemasQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

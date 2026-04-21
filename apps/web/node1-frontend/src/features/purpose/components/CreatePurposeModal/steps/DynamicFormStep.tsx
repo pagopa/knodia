@@ -3,6 +3,7 @@ import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 
 import type {
+  FormTexts,
   FormValues,
   JsonSchema,
   UISchema,
@@ -16,12 +17,9 @@ import {
   usePurposeWizardContext,
 } from "@/features/purpose/contexts/usePurposeFormContext";
 import { createAjvValidator } from "@/features/purpose/engine/ajv/validation";
-import {
-  getVisibleFields,
-  isLabelVisible,
-  scopeToFieldName,
-} from "@/features/purpose/engine/dependencyResolver";
+import { getVisibleFields } from "@/features/purpose/engine/dependencyResolver";
 import { stripHiddenOptionValuesFromAnswers } from "@/features/purpose/engine/optionFilter";
+import { scopeToFieldName } from "@/features/purpose/engine/scope";
 import {
   collectErrorMessages,
   collectGroups,
@@ -32,12 +30,12 @@ import { useCreatePurpose } from "@/features/purpose/hooks/useCreatePurpose";
 import { useVisibleFields } from "@/features/purpose/hooks/useVisibleFields";
 
 import { FieldRenderer } from "../renderers/FieldRenderer";
-import { InfoBanner } from "../renderers/InfoBanner";
 
 interface Props {
   isLastStep: boolean;
   jsonSchema: JsonSchema;
   step: StepLayout;
+  texts: FormTexts;
   uischema: UISchema;
 }
 
@@ -45,6 +43,7 @@ export function DynamicFormStep({
   isLastStep,
   jsonSchema,
   step,
+  texts,
   uischema,
 }: Props) {
   const { nextStep, prevStep } = useStepsContext();
@@ -61,8 +60,8 @@ export function DynamicFormStep({
   );
 
   const errorMessages = useMemo(
-    () => collectErrorMessages(uischema),
-    [uischema],
+    () => collectErrorMessages(texts, uischema),
+    [texts, uischema],
   );
 
   const validate = useMemo(
@@ -110,25 +109,24 @@ export function DynamicFormStep({
     [...stepVisible].filter((f) => visibleFieldNames.has(f)),
   );
 
-  const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
+  const groups = useMemo(
+    () => collectGroups(stepUischema, texts),
+    [stepUischema, texts],
+  );
 
   const visibleGroups = useMemo(
     () =>
       groups.filter((group) =>
-        group.elements.some(
-          (el) =>
-            (el.type === "Control" &&
-              visibleFieldNames.has(scopeToFieldName(el.scope))) ||
-            (el.type === "Label" &&
-              isLabelVisible(el, values, visibleFieldNames)),
+        group.elements.some((el) =>
+          visibleFieldNames.has(scopeToFieldName(el.scope)),
         ),
       ),
-    [groups, visibleFieldNames, values],
+    [groups, visibleFieldNames],
   );
 
   return (
     <>
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-6">
         {step.label && (
           <StepHeader description={step.description ?? ""} title={step.label} />
         )}
@@ -140,6 +138,7 @@ export function DynamicFormStep({
             isLast={groupIndex === visibleGroups.length - 1}
             jsonSchema={jsonSchema}
             key={group.label ?? groupIndex}
+            texts={texts}
             values={values}
             visibleFieldNames={visibleFieldNames}
           />
@@ -172,6 +171,7 @@ function GroupSection({
   group,
   isLast,
   jsonSchema,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -179,6 +179,7 @@ function GroupSection({
   group: GroupLayout;
   isLast: boolean;
   jsonSchema: JsonSchema;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
@@ -196,17 +197,7 @@ function GroupSection({
           )}
         </div>
       )}
-      {group.elements.map((element, i) => {
-        if (element.type === "Label") {
-          if (!isLabelVisible(element, values, visibleFieldNames)) return null;
-          return (
-            <InfoBanner
-              key={`label-${i}`}
-              text={element.text}
-              variant={element.options?.variant}
-            />
-          );
-        }
+      {group.elements.map((element) => {
         const fieldName = scopeToFieldName(element.scope);
         if (!visibleFieldNames.has(fieldName)) return null;
         return (
@@ -221,6 +212,7 @@ function GroupSection({
                   error={error}
                   jsonSchema={jsonSchema}
                   onChange={(v) => field.handleChange(v)}
+                  texts={texts}
                   value={
                     field.state.value ??
                     (jsonSchema.properties[fieldName]?.type === "array"

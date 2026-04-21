@@ -19,7 +19,7 @@ export function RadioRenderer({
 }: Props) {
   return (
     <RadioGroup
-      description={control.options?.infoLabel}
+      description={control.options?.description}
       errorMessage={error}
       isInvalid={!!error}
       label={control.label}

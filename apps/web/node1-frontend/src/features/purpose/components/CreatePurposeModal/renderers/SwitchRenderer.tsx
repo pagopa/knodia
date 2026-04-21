@@ -13,6 +13,7 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
   const isChecked = value === "true";
   const switchLabel =
     control.options?.optionLabels?.["true"] ?? control.label ?? "";
+  const hasLeadingText = Boolean(control.label ?? control.options?.description);
 
   return (
     <div className="flex flex-col">
@@ -21,14 +22,13 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
           {control.label}
         </span>
       )}
-      {control.options?.infoLabel && (
+      {control.options?.description && (
         <span className="body-sm text-primary-light-mid-contrast mt-3">
-          {control.options.infoLabel}
+          {control.options.description}
         </span>
       )}
       <Checkbox
-        className="mt-3"
-        description={control.options?.description}
+        className={hasLeadingText ? "mt-3" : undefined}
         isInvalid={!!error}
         isSelected={isChecked}
         onChange={(checked) => onChange(checked ? "true" : "false")}
