@@ -5,12 +5,15 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { EserviceVersion } from "@knodia/eservice-models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { type Algorithm } from "@knodia/common-models/algorithms";
+import {
+  EserviceAccessTokenType,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import {
   createPublicKey,
   decodeBase64Pem,
@@ -186,7 +189,7 @@ function assertConsumerAttributesMeetEserviceRequirements(
 function assertEserviceVersionUsesBearerToken(
   eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
 ) {
-  if (eserviceVersion.accessTokenType !== "Bearer") {
+  if (eserviceVersion.accessTokenType !== EserviceAccessTokenType.enum.Bearer) {
     throw eserviceVersionNotUsingBearerToken(eserviceVersion);
   }
 }
