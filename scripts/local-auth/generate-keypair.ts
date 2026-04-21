@@ -22,24 +22,6 @@ function calculateKid(publicKeyPem: string): string {
     .digest("base64url");
 }
 
-function upsertEnvVars(vars: Record<string, string>): void {
-  let content = "";
-  try {
-    content = readFileSync(COLLECTIONS_ENV_PATH, "utf-8");
-  } catch {
-    /* new file */
-  }
-  for (const [name, value] of Object.entries(vars)) {
-    const line = `${name}=${value}`;
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const pattern = new RegExp(`^${escaped}=.*$`, "m");
-    content = pattern.test(content)
-      ? content.replace(pattern, line)
-      : content.trimEnd() + "\n" + line + "\n";
-  }
-  writeFileSync(COLLECTIONS_ENV_PATH, content);
-}
-
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
   publicKeyEncoding: { type: "spki", format: "pem" },
@@ -53,14 +35,18 @@ const privKeyPath = resolve(KEYS_DIR, `${kid}.priv.pem`);
 writeFileSync(pubKeyPath, publicKey);
 writeFileSync(privKeyPath, privateKey);
 
-upsertEnvVars({
-  KEYCHAIN_PRIVATE_KEY_PATH: privKeyPath,
-  KEYCHAIN_PUBLIC_KEY_B64: Buffer.from(publicKey, "utf-8").toString("base64"),
-});
+let existing = "";
+try { existing = readFileSync(COLLECTIONS_ENV_PATH, "utf-8"); } catch { /* new file */ }
+function upsert(content: string, name: string, value: string): string {
+  const line = `${name}=${value}`;
+  const pattern = new RegExp(`^${name}=.*$`, "m");
+  return pattern.test(content) ? content.replace(pattern, line) : content.trimEnd() + "\n" + line + "\n";
+}
+let updated = upsert(existing, "KEYCHAIN_PRIVATE_KEY_PATH", privKeyPath);
+updated = upsert(updated, "KEYCHAIN_PUBLIC_KEY_B64", Buffer.from(publicKey, "utf-8").toString("base64"));
+writeFileSync(COLLECTIONS_ENV_PATH, updated);
 
 console.log(`kid: ${kid}`);
 console.log(`Public key  written to ${pubKeyPath}`);
 console.log(`Private key written to ${privKeyPath}`);
-console.log(`\nBruno env updated at ${COLLECTIONS_ENV_PATH}:`);
-console.log("  - KEYCHAIN_PRIVATE_KEY_PATH  (referenced by Create Token help messages)");
-console.log("  - KEYCHAIN_PUBLIC_KEY_B64    (consumed by Upload Keychain Key)");
+console.log(`Bruno env written to ${COLLECTIONS_ENV_PATH}`);
