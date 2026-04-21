@@ -6,13 +6,9 @@ import { match } from "ts-pattern";
 
 export function AgreementStateChip({
   state,
-  suspendedByConsumerAt,
-  suspendedByProducerAt,
   type = "bright",
 }: {
   state: bffApi.AgreementState;
-  suspendedByConsumerAt?: null | string;
-  suspendedByProducerAt?: null | string;
   type?: ChipProps["type"];
 }) {
   return match(state)
@@ -23,7 +19,7 @@ export function AgreementStateChip({
       <Chip
         icon={<ProhibitIcon />}
         kind="error"
-        label={getSuspendedLabel(suspendedByConsumerAt, suspendedByProducerAt)}
+        label="Suspended"
         type={type}
       />
     ))
@@ -38,17 +34,4 @@ export function AgreementStateChip({
       return null;
     })
     .exhaustive();
-}
-
-function getSuspendedLabel(
-  suspendedByConsumerAt?: null | string,
-  suspendedByProducerAt?: null | string,
-): string {
-  const byConsumer = suspendedByConsumerAt != null;
-  const byProducer = suspendedByProducerAt != null;
-
-  if (byConsumer && byProducer) return "Suspended";
-  if (byProducer) return "Suspended by producer";
-  if (byConsumer) return "Suspended by consumer";
-  return "Suspended";
 }

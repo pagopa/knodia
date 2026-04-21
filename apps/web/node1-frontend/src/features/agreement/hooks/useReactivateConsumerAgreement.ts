@@ -1,6 +1,7 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { reactivateConsumerAgreementMutation } from "@knodia/bff-client/tanstack-query";
+import { toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
@@ -19,8 +20,14 @@ export function useReactivateConsumerAgreement({
 }: UseReactivateConsumerAgreementParams) {
   const queryClient = useQueryClient();
 
-  const { isError, isPending, mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     ...reactivateConsumerAgreementMutation({ client }),
+    onError: () =>
+      toastQueue.add({
+        description: "Please try again later.",
+        kind: "error",
+        title: "Unable to reactivate Agreement",
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         consumerEserviceDetailsQuery(eserviceId, knodeId),
@@ -32,5 +39,5 @@ export function useReactivateConsumerAgreement({
     mutate({ path: { agreementId }, query: { knodeId } });
   };
 
-  return { isError, isPending, reactivateAgreement };
+  return { isPending, reactivateAgreement };
 }

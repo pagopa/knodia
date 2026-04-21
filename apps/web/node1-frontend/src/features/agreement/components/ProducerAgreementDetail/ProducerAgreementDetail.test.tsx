@@ -62,6 +62,61 @@ describe("ProducerAgreementDetail", () => {
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
+  it("renders a link to the eservice detail page", () => {
+    const eserviceId = "50000000-0000-1000-8000-000000000042";
+    renderDetail(
+      createAgreementDetails({
+        eservice: { id: eserviceId, name: { en: "Tax Registry API" } },
+      }),
+    );
+
+    const link = screen.getByRole("link", { name: "Tax Registry API" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      "href",
+      `/production/e-services/${eserviceId}`,
+    );
+  });
+
+  it("renders the Suspended state chip when suspended by producer", () => {
+    renderDetail(
+      createAgreementDetails({
+        state: "Suspended",
+        suspendedByProducerAt: "2026-01-01T00:00:00Z",
+      }),
+    );
+
+    expect(screen.getByText("Suspended")).toBeInTheDocument();
+  });
+
+  it("renders the Suspended state chip when suspended by consumer", () => {
+    renderDetail(
+      createAgreementDetails({
+        state: "Suspended",
+        suspendedByConsumerAt: "2026-01-01T00:00:00Z",
+      }),
+    );
+
+    expect(screen.getByText("Suspended")).toBeInTheDocument();
+  });
+
+  it("renders the eservice state chip", () => {
+    renderDetail();
+
+    expect(screen.getByText("Available")).toBeInTheDocument();
+  });
+
+  it("renders the consumer contact popover button", () => {
+    renderDetail();
+
+    const contactButton = screen.getByRole("button", {
+      name: "View contact info",
+    });
+    expect(contactButton).toBeInTheDocument();
+  });
+});
+
+describe("ProducerAgreementDetail — state actions", () => {
   it("renders the Suspend button when agreement is active", () => {
     renderDetail();
 
@@ -117,9 +172,23 @@ describe("ProducerAgreementDetail", () => {
     expect(reactivateButton).toBeEnabled();
   });
 
-  it("opens reactivate confirmation modal when Reactivate is clicked", async () => {
+  it("calls reactivate mutation immediately when Reactivate is clicked", async () => {
+    const agreementId = "10000000-0000-1000-8000-000000000001";
+    let reactivateCalled = false;
+
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/agreements/${agreementId}/reactivate`,
+        () => {
+          reactivateCalled = true;
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
     const { user } = renderDetail(
       createAgreementDetails({
+        id: agreementId,
         state: "Suspended",
         suspendedByProducerAt: "2026-01-01T00:00:00Z",
       }),
@@ -127,7 +196,7 @@ describe("ProducerAgreementDetail", () => {
 
     await user.click(screen.getByRole("button", { name: "Reactivate" }));
 
-    expect(screen.getByText("Reactivate Agreement")).toBeInTheDocument();
+    expect(reactivateCalled).toBe(true);
   });
 
   it("does not render Reactivate button when suspended only by consumer", () => {
@@ -156,59 +225,6 @@ describe("ProducerAgreementDetail", () => {
     expect(
       screen.getByRole("button", { name: "Reactivate" }),
     ).toBeInTheDocument();
-  });
-
-  it("renders a link to the eservice detail page", () => {
-    const eserviceId = "50000000-0000-1000-8000-000000000042";
-    renderDetail(
-      createAgreementDetails({
-        eservice: { id: eserviceId, name: { en: "Tax Registry API" } },
-      }),
-    );
-
-    const link = screen.getByRole("link", { name: "Tax Registry API" });
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute(
-      "href",
-      `/production/e-services/${eserviceId}`,
-    );
-  });
-
-  it("renders the Suspended state chip with producer context", () => {
-    renderDetail(
-      createAgreementDetails({
-        state: "Suspended",
-        suspendedByProducerAt: "2026-01-01T00:00:00Z",
-      }),
-    );
-
-    expect(screen.getByText("Suspended by producer")).toBeInTheDocument();
-  });
-
-  it("renders the Suspended state chip with consumer context", () => {
-    renderDetail(
-      createAgreementDetails({
-        state: "Suspended",
-        suspendedByConsumerAt: "2026-01-01T00:00:00Z",
-      }),
-    );
-
-    expect(screen.getByText("Suspended by consumer")).toBeInTheDocument();
-  });
-
-  it("renders the eservice state chip", () => {
-    renderDetail();
-
-    expect(screen.getByText("Available")).toBeInTheDocument();
-  });
-
-  it("renders the consumer contact popover button", () => {
-    renderDetail();
-
-    const contactButton = screen.getByRole("button", {
-      name: "View contact info",
-    });
-    expect(contactButton).toBeInTheDocument();
   });
 
   it("hides Suspend button for technical-only users when agreement is active", () => {

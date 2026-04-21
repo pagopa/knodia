@@ -1,6 +1,7 @@
 import type { AgreementId } from "@knodia/common-models/ids";
 
 import { reactivateProducerAgreementMutation } from "@knodia/bff-client/tanstack-query";
+import { toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
@@ -10,8 +11,14 @@ import { producerAgreementDetailsQuery } from "../services/queries";
 export function useReactivateProducerAgreement(agreementId: AgreementId) {
   const queryClient = useQueryClient();
 
-  const { isError, isPending, mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     ...reactivateProducerAgreementMutation({ client }),
+    onError: () =>
+      toastQueue.add({
+        description: "Please try again later.",
+        kind: "error",
+        title: "Unable to reactivate Agreement",
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries(producerAgreementDetailsQuery(agreementId));
     },
@@ -21,5 +28,5 @@ export function useReactivateProducerAgreement(agreementId: AgreementId) {
     mutate({ path: { agreementId } });
   };
 
-  return { isError, isPending, reactivateAgreement };
+  return { isPending, reactivateAgreement };
 }

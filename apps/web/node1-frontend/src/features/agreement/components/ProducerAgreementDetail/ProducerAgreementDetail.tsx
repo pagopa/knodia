@@ -34,12 +34,7 @@ export function ProducerAgreementDetail({
           )
         }
         resourceStatusChip={
-          <AgreementStateChip
-            state={agreement.state}
-            suspendedByConsumerAt={agreement.suspendedByConsumerAt}
-            suspendedByProducerAt={agreement.suspendedByProducerAt}
-            type="light"
-          />
+          <AgreementStateChip state={agreement.state} type="light" />
         }
         title="Agreement request"
       />
@@ -160,25 +155,19 @@ function ReactivateProducerAgreementButton({
 }: {
   agreementId: AgreementId;
 }) {
-  const { isError, isPending, reactivateAgreement } =
+  const { isPending, reactivateAgreement } =
     useReactivateProducerAgreement(agreementId);
 
   return (
-    <DialogTrigger>
-      <Button hierarchy="brand" kind="filled" size="md">
-        Reactivate
-      </Button>
-      <Modal
-        actionLabel="Reactivate"
-        cancelLabel="Cancel"
-        confirmButtonProps={{ isPending }}
-        description="Are you sure you want to reactivate this Agreement? The Consumer will be able to use the associated E-Service again."
-        isDismissable
-        onConfirm={reactivateAgreement}
-        showErrorBanner={isError}
-        title="Reactivate Agreement"
-      />
-    </DialogTrigger>
+    <Button
+      hierarchy="brand"
+      isPending={isPending}
+      kind="filled"
+      onPress={reactivateAgreement}
+      size="md"
+    >
+      Reactivate
+    </Button>
   );
 }
 
