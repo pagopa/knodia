@@ -3256,7 +3256,7 @@ paths:
   /consumer/eservices/{eserviceId}:
     get:
       operationId: getConsumerEserviceDetails
-      summary: Get consumer E-service details
+      summary: Get E-service details
       tags:
         - eservice
       description: Retrieve an E-service with all its details for consumers
@@ -3317,7 +3317,7 @@ paths:
   /consumer/eservices/{eserviceId}/interface:
     get:
       operationId: getConsumerEserviceLatestVersionInterface
-      summary: Download consumer E-service latest Version Interface
+      summary: Download E-service latest Version Interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
@@ -3381,10 +3381,10 @@ paths:
   /consumer/eservices:
     get:
       operationId: getConsumerEservices
-      summary: Get Consumer E-services
+      summary: Get E-services
       tags:
         - eservice
-      description: Retrieve Consumer E-services
+      description: Retrieve E-services
       parameters:
         - schema:
             format: int32
@@ -3411,11 +3411,11 @@ paths:
           required: false
       responses:
         "200":
-          description: Consumer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerEservices"
         "400":

@@ -333,7 +333,7 @@ export const getConsumerCatalogEservices = <ThrowOnError extends boolean = true>
 });
 
 /**
- * Get consumer E-service details
+ * Get E-service details
  *
  * Retrieve an E-service with all its details for consumers
  */
@@ -345,7 +345,7 @@ export const getConsumerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Download consumer E-service latest Version Interface
+ * Download E-service latest Version Interface
  *
  * Download the interface document for the latest version of an E-service
  */
@@ -357,9 +357,9 @@ export const getConsumerEserviceLatestVersionInterface = <ThrowOnError extends b
 });
 
 /**
- * Get Consumer E-services
+ * Get E-services
  *
- * Retrieve Consumer E-services
+ * Retrieve E-services
  */
 export const getConsumerEservices = <ThrowOnError extends boolean = true>(options: Options<GetConsumerEservicesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerEservicesResponses, GetConsumerEservicesErrors, ThrowOnError>({
     responseType: 'json',

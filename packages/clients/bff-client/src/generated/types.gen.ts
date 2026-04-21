@@ -2024,7 +2024,7 @@ export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetCons
 
 export type GetConsumerEservicesResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ConsumerEservices;
 };

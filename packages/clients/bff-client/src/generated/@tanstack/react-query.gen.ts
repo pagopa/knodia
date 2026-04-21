@@ -745,7 +745,7 @@ export const getConsumerCatalogEservicesMutation = (options?: Partial<Options<Ge
 export const getConsumerEserviceDetailsQueryKey = (options: Options<GetConsumerEserviceDetailsData>) => createQueryKey('getConsumerEserviceDetails', options);
 
 /**
- * Get consumer E-service details
+ * Get E-service details
  *
  * Retrieve an E-service with all its details for consumers
  */
@@ -765,7 +765,7 @@ export const getConsumerEserviceDetailsOptions = (options: Options<GetConsumerEs
 export const getConsumerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetConsumerEserviceLatestVersionInterfaceData>) => createQueryKey('getConsumerEserviceLatestVersionInterface', options);
 
 /**
- * Download consumer E-service latest Version Interface
+ * Download E-service latest Version Interface
  *
  * Download the interface document for the latest version of an E-service
  */
@@ -785,9 +785,9 @@ export const getConsumerEserviceLatestVersionInterfaceOptions = (options: Option
 export const getConsumerEservicesQueryKey = (options: Options<GetConsumerEservicesData>) => createQueryKey('getConsumerEservices', options);
 
 /**
- * Get Consumer E-services
+ * Get E-services
  *
- * Retrieve Consumer E-services
+ * Retrieve E-services
  */
 export const getConsumerEservicesOptions = (options: Options<GetConsumerEservicesData>) => queryOptions<GetConsumerEservicesResponse, AxiosError<GetConsumerEservicesError>, GetConsumerEservicesResponse, ReturnType<typeof getConsumerEservicesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -805,9 +805,9 @@ export const getConsumerEservicesOptions = (options: Options<GetConsumerEservice
 export const getConsumerEservicesInfiniteQueryKey = (options: Options<GetConsumerEservicesData>): QueryKey<Options<GetConsumerEservicesData>> => createQueryKey('getConsumerEservices', options, true);
 
 /**
- * Get Consumer E-services
+ * Get E-services
  *
- * Retrieve Consumer E-services
+ * Retrieve E-services
  */
 export const getConsumerEservicesInfiniteOptions = (options: Options<GetConsumerEservicesData>) => infiniteQueryOptions<GetConsumerEservicesResponse, AxiosError<GetConsumerEservicesError>, InfiniteData<GetConsumerEservicesResponse>, QueryKey<Options<GetConsumerEservicesData>>, number | Pick<QueryKey<Options<GetConsumerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
 // @ts-ignore
