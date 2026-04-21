@@ -1,11 +1,23 @@
-import { createHash, createPublicKey, createSign, generateKeyPairSync, randomUUID } from "node:crypto";
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { parseArgs } from "node:util";
+// Signs an RS256 JWT client assertion for the local authorization-server
+// and writes it to collections/.env as CLIENT_ASSERTION_JWT so the
+// authorization-server/Create Token.bru call can pick it up.
+//
+// stdout: the signed JWT and nothing else (so it can be piped / captured).
+// stderr: everything else (logs, usage).
+
+import {
+  createHash,
+  createPublicKey,
+  createSign,
+  randomUUID,
+} from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const KEYS_DIR = resolve(__dirname, "../../docker/keys");
+const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
 
 const { values } = parseArgs({
   options: {
@@ -20,97 +32,81 @@ const { values } = parseArgs({
 });
 
 const keychainId = values.keychainId;
-const kid = values.kid;
+const providedKid = values.kid;
 const purposeId = values.purposeId;
-// Per RFC, the aud of the client assertion identifies the authorization server
-// where the JWT is presented. Must match CLIENT_ASSERTION_ACCEPTED_AUDIENCES
-// configured in the authorization-server .env.
-const DEFAULT_AUD = "test.knodia.org";
-const AUTH_SERVER_URL = "http://localhost:3700";
-const aud = values.aud ?? DEFAULT_AUD;
 const keyPath = values.key;
 const durationSeconds = Number(values.duration);
+// Per RFC, the aud identifies the authorization server where the JWT is
+// presented. Must match CLIENT_ASSERTION_ACCEPTED_AUDIENCES in the
+// authorization-server .env.
+const DEFAULT_AUD = "test.knodia.org";
+const aud = values.aud ?? DEFAULT_AUD;
 
-if (!keychainId || !purposeId) {
+if (!keychainId || !purposeId || !keyPath) {
   console.error(`Usage: node scripts/local-auth/generate-client-assertion.ts \\
+  --key <path-to-pem-private-key> \\
   --keychainId <uuid> \\
   --purposeId <uuid> \\
   [--aud <audience>] \\
   [--kid <key-id>] \\
-  [--key <path-to-pem-private-key>] \\
   [--duration <seconds>]
 
-If --aud is omitted, defaults to ${DEFAULT_AUD} (the local
-authorization server). Per RFC, the audience must identify the
-authorization server where the client assertion is presented.
+--aud defaults to ${DEFAULT_AUD}.
+--kid defaults to the key id derived from the public key JWK (same algorithm
+   as keychain-process), so it matches whatever was uploaded.
 
-If --key is omitted, a fresh RSA-2048 keypair is generated and
-the public key is written to docker/keys/ for use in local testing.
-
-If --kid is omitted, it is derived from the public key JWK (same
-algorithm as keychain-process), so it will match after key upload.`);
+Use \`pnpm generate-keypair\` first if you don't have a keypair yet.`);
   process.exit(1);
 }
 
 const b64url = (data: string | Buffer): string =>
   Buffer.from(data).toString("base64url");
 
-// Derives the kid the same way keychain-process does: sha256(JSON.stringify(sortedJWK)) in base64url.
-// This ensures the kid in the client assertion matches the one stored after key upload.
+// Same algorithm as keychain-process: sha256(JSON.stringify(sortedJWK)) in base64url
 function calculateKid(publicKeyPem: string): string {
   const pubKey = createPublicKey(publicKeyPem);
   const jwk = pubKey.export({ format: "jwk" });
   const sorted = Object.keys(jwk)
     .sort()
-    .reduce<Record<string, unknown>>((acc, k) => { acc[k] = jwk[k as keyof typeof jwk]; return acc; }, {});
-  return createHash("sha256").update(JSON.stringify(sorted)).digest("base64url");
+    .reduce<Record<string, unknown>>((acc, k) => {
+      acc[k] = jwk[k as keyof typeof jwk];
+      return acc;
+    }, {});
+  return createHash("sha256")
+    .update(JSON.stringify(sorted))
+    .digest("base64url");
 }
 
-let privateKeyPem: string;
-let resolvedKid: string;
-
-if (keyPath) {
-  privateKeyPem = readFileSync(keyPath, "utf-8");
-  // Derive kid from the corresponding public key if not explicitly provided
-  if (kid) {
-    resolvedKid = kid;
-  } else {
-    const pubKey = createPublicKey(privateKeyPem);
-    resolvedKid = calculateKid(pubKey.export({ type: "spki", format: "pem" }) as string);
+function upsertEnvVar(name: string, value: string): void {
+  let content = "";
+  try {
+    content = readFileSync(COLLECTIONS_ENV_PATH, "utf-8");
+  } catch {
+    /* new file */
   }
-  console.log(`Using private key from ${keyPath}`);
-  console.log(`kid: ${resolvedKid}`);
-} else {
-  console.log("No --key provided, generating a fresh RSA-2048 keypair...");
-  const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-    modulusLength: 2048,
-    publicKeyEncoding: { type: "spki", format: "pem" },
-    privateKeyEncoding: { type: "pkcs8", format: "pem" },
-  });
-  privateKeyPem = privateKey;
-  resolvedKid = kid ?? calculateKid(publicKey);
-
-  mkdirSync(KEYS_DIR, { recursive: true });
-  const pubKeyPath = resolve(KEYS_DIR, `client-assertion-${resolvedKid}.pub.pem`);
-  writeFileSync(pubKeyPath, publicKey);
-  console.log(`Public key written to ${pubKeyPath}`);
-  console.log(`kid: ${resolvedKid}`);
-  console.log(
-    "Associate this public key with the keychain in the Consumer Knode to complete the setup.\n",
-  );
+  const line = `${name}=${value}`;
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`^${escaped}=.*$`, "m");
+  const updated = pattern.test(content)
+    ? content.replace(pattern, line)
+    : content.trimEnd() + "\n" + line + "\n";
+  writeFileSync(COLLECTIONS_ENV_PATH, updated);
 }
 
-// Build JWT header — kid is already base64url (matches KeyId schema: z.base64url())
+const privatePem = readFileSync(keyPath, "utf-8");
+const publicKeyPem = createPublicKey(privatePem).export({
+  type: "spki",
+  format: "pem",
+}) as string;
+const kid = providedKid ?? calculateKid(publicKeyPem);
+
+console.error(`Using private key from ${keyPath}`);
+console.error(`kid: ${kid}`);
+
 const header = b64url(
-  JSON.stringify({
-    alg: "RS256",
-    kid: resolvedKid,
-    typ: "JWT",
-  }),
+  JSON.stringify({ alg: "RS256", kid, typ: "JWT" }),
 );
-
 const now = Math.floor(Date.now() / 1000);
-
 const payload = b64url(
   JSON.stringify({
     sub: keychainId,
@@ -126,19 +122,12 @@ const payload = b64url(
 const signingInput = `${header}.${payload}`;
 const signer = createSign("RSA-SHA256");
 signer.update(signingInput);
-const signature = signer.sign(privateKeyPem, "base64url");
-
+const signature = signer.sign(privatePem, "base64url");
 const clientAssertion = `${signingInput}.${signature}`;
 
-console.log("\n--- Client Assertion JWT ---\n");
-console.log(clientAssertion);
+upsertEnvVar("CLIENT_ASSERTION_JWT", clientAssertion);
+console.error(
+  `\nCLIENT_ASSERTION_JWT written to ${COLLECTIONS_ENV_PATH} (used by authorization-server/Create Token.bru).`,
+);
 
-console.log("\n--- Sample curl command ---\n");
-console.log(`curl -X POST ${AUTH_SERVER_URL}/token \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "client_assertion": "${clientAssertion}",
-    "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-    "client_id": "${keychainId}",
-    "grant_type": "client_credentials"
-  }'`);
+process.stdout.write(`${clientAssertion}\n`);

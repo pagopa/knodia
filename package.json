@@ -22,6 +22,7 @@
     "db:schema-normalize": "turbo run db:schema-normalize",
     "knip": "dotenvx run --env-file .env.test -- knip",
     "generate-client-assertion": "node scripts/local-auth/generate-client-assertion.ts",
+    "generate-keypair": "node scripts/local-auth/generate-keypair.ts",
     "generate-token": "node scripts/local-auth/generate-token.mjs",
     "generate-all-tokens": "node scripts/local-auth/generate-all-tokens.mjs",
     "infra:start": "./scripts/infra-start.sh",

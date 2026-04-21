@@ -1,0 +1,32 @@
+meta {
+  name: 4 - Create Agreement
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host-remote-resources-manager}}/agreements
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{eserviceId}}",
+    "eserviceVersionId": "{{eserviceVersionId}}",
+    "knodeId": "{{other-knode-id}}"
+  }
+}
+
+vars:post-response {
+  agreementId: res.body.id
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1500))
+}

@@ -1,0 +1,47 @@
+meta {
+  name: 10 - Upload Keychain Key
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/keys
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "Client Assertion Flow Key"
+    },
+    "encodedPem": "{{encodedPem}}"
+  }
+}
+
+script:pre-request {
+  const encodedPem = bru.getProcessEnv("KEYCHAIN_PUBLIC_KEY_B64")
+  if (!encodedPem) {
+    throw new Error("KEYCHAIN_PUBLIC_KEY_B64 not set. Run `pnpm generate-keypair` once before running this flow.")
+  }
+  bru.setVar("encodedPem", encodedPem)
+}
+
+script:post-response {
+  if (res.status === 409) {
+    throw new Error(
+      "Key with this kid already exists in another keychain (keychain-process enforces kid uniqueness).\n" +
+      "Run `pnpm generate-keypair` to rotate to a fresh keypair, then re-run this call."
+    )
+  }
+  await new Promise(r => setTimeout(r, 1500))
+}

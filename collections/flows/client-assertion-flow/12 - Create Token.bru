@@ -1,0 +1,53 @@
+meta {
+  name: 12 - Create Token
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{host-authorization-server}}/token
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}
+
+body:form-urlencoded {
+  client_assertion: {{process.env.CLIENT_ASSERTION_JWT}}
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_id: {{consumerKeychainId}}
+  grant_type: client_credentials
+}
+
+assert {
+  res.status: eq 200
+  res.body.token_type: eq Bearer
+}
+
+script:pre-request {
+  if (bru.getProcessEnv("CLIENT_ASSERTION_JWT")) return
+
+  const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_KEY_PATH") || "<path-to-private-key>"
+  const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
+  const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
+  throw new Error(
+    "CLIENT_ASSERTION_JWT is not set. Run:\n\n" +
+    `  pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
+    "then re-run this call."
+  )
+}
+
+script:post-response {
+  if (res.status === 404 && res.body && res.body.errors && res.body.errors.some(e => e.code === "006-0012")) {
+    const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_KEY_PATH") || "<path-to-private-key>"
+    const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
+    const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
+    throw new Error(
+      "Key kid not found in the keychain. If you rotated the keypair (ran `pnpm generate-keypair`), the CLIENT_ASSERTION_JWT in collections/.env is stale. Run:\n\n" +
+      `  pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
+      "then re-run this call."
+    )
+  }
+}
