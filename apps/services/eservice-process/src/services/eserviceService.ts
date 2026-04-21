@@ -123,8 +123,8 @@ export function eserviceServiceBuilder(
         versions: [
           {
             accessTokenAudience: seed.accessTokenAudience,
-            accessTokenDuration: seed.accessTokenDuration ?? 3600,
-            accessTokenType: seed.accessTokenType ?? "Bearer",
+            accessTokenDuration: seed.accessTokenDuration,
+            accessTokenType: seed.accessTokenType,
             createdAt: now,
             id: eserviceVersionId,
             interfaceDocument: {
