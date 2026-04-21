@@ -34,13 +34,18 @@ describe("PurposeEventV1 codec", () => {
     formAnswersJson: mockFormAnswers,
   };
 
-  // Suspend/reactivate events carry purposes with non-null suspendedBy*At dates,
-  // ensuring the Date serialization path is always exercised
-  const suspendedPurpose: Purpose = {
+  const consumerOnlySuspendedPurpose: Purpose = {
     ...zocker(Purpose).generate(),
     formAnswersJson: mockFormAnswers,
     state: PurposeState.enum.Suspended,
     suspendedByConsumerAt: new Date(),
+    suspendedByProducerAt: null,
+  };
+  const producerOnlySuspendedPurpose: Purpose = {
+    ...zocker(Purpose).generate(),
+    formAnswersJson: mockFormAnswers,
+    state: PurposeState.enum.Suspended,
+    suspendedByConsumerAt: null,
     suspendedByProducerAt: new Date(),
   };
 
@@ -52,22 +57,22 @@ describe("PurposeEventV1 codec", () => {
     },
     {
       message: PurposeSuspendedByConsumerV1,
-      purpose: suspendedPurpose,
+      purpose: consumerOnlySuspendedPurpose,
       type: "PurposeSuspendedByConsumerV1" as const,
     },
     {
       message: PurposeSuspendedByProducerV1,
-      purpose: suspendedPurpose,
+      purpose: producerOnlySuspendedPurpose,
       type: "PurposeSuspendedByProducerV1" as const,
     },
     {
       message: PurposeReactivatedByConsumerV1,
-      purpose: suspendedPurpose,
+      purpose: producerOnlySuspendedPurpose,
       type: "PurposeReactivatedByConsumerV1" as const,
     },
     {
       message: PurposeReactivatedByProducerV1,
-      purpose: suspendedPurpose,
+      purpose: consumerOnlySuspendedPurpose,
       type: "PurposeReactivatedByProducerV1" as const,
     },
   ] as const;
