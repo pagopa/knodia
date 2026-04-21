@@ -153,6 +153,7 @@ export function invalidClientAssertionSignature() {
     title: "invalid_client",
   });
 }
+
 export function jsonWebTokenError(message: string) {
   return createApiError<ErrorCodes>({
     code: "JSON_WEB_TOKEN_ERROR",
