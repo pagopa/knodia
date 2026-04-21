@@ -154,13 +154,14 @@ function AgreementStatusBanner({
                 }
               : undefined
           }
-          kind="warning"
+          kind="error"
           size="md"
-          title="The Producer suspended this Agreement"
+          title="Suspended by Producer"
         >
           You can&apos;t reactivate this Agreement because it was suspended by
-          the Producer, but you can create a new Agreement for the same
-          E-Service.
+          the Producer. If you believe this is a mistake, contact the Producer
+          to request the reactivation, or archive it and request a new
+          Agreement.
         </Banner>
       ) : (
         <Banner

@@ -198,8 +198,9 @@ function SuspendProducerAgreementButton({
           If you suspend it, the Consumer won&apos;t be able to use the
           associated E-Service or reactivate the Agreement. Are you sure you
           want to suspend this Agreement?
+          <br />
+          You will be able to reactivate it later.
         </p>
-        <p className="body-md">You will be able to reactivate it later.</p>
       </Modal>
     </DialogTrigger>
   );
