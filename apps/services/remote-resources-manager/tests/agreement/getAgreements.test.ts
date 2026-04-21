@@ -43,6 +43,8 @@ const toK2KResult = (apiResult: API_Agreement): k2kGatewayApi.Agreement => ({
   id: apiResult.id,
   producerId: apiResult.producerId,
   state: toK2KAPI_AgreementState(apiResult.state),
+  suspendedByConsumerAt: apiResult.suspendedByConsumerAt,
+  suspendedByProducerAt: apiResult.suspendedByProducerAt,
   updatedAt: apiResult.updatedAt,
 });
 
