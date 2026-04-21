@@ -100,7 +100,10 @@ vi.mock("@knodia/token-generator", () => ({
       payload: {
         aud: eserviceVersion.accessTokenAudience,
         client_id: consumerKeychainId,
-        consumer: purpose.consumer,
+        consumer: {
+          id: purpose.consumer.id,
+          knode_id: purpose.consumer.knodeId,
+        },
         eservice: {
           id: eservice.id,
           knode_id: producerKnodeId,

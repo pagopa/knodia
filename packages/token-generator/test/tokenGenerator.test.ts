@@ -103,7 +103,7 @@ const testCases = [
     expectedPayload: {
       aud: ["my-audience"],
       client_id: consumerKeychainId,
-      consumer,
+      consumer: { id: consumer.id, knode_id: consumer.knodeId },
       eservice: {
         id: eservice.id,
         knode_id: producer.knodeId,
@@ -114,7 +114,7 @@ const testCases = [
       iss: "my-issuer",
       jti: expect.any(String),
       nbf: MOCK_NOW_SECONDS,
-      producer,
+      producer: { id: producer.id, knode_id: producer.knodeId },
       purpose: { id: purposeId, knode_id: producer.knodeId },
       sub: consumerKeychainId,
     } satisfies EserviceAccessTokenClaims,
