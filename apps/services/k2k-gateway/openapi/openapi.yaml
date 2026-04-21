@@ -1225,7 +1225,7 @@ paths:
   /agreements/{agreementId}:
     get:
       operationId: getAgreement
-      summary: Get Agreement detail
+      summary: Get an Agreement
       tags:
         - resource
         - agreement

@@ -126,7 +126,7 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
- * Get Agreement detail
+ * Get an Agreement
  *
  * Retrieve an Agreement
  */
