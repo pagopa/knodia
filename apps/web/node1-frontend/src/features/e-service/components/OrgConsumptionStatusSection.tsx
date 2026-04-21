@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
-import { Banner, Modal } from "@knodia/ui-kit/ui";
+import { Banner } from "@knodia/ui-kit/ui";
 import {
   CaretDownIcon,
   CaretUpIcon,
@@ -10,7 +10,6 @@ import {
 import { useContext, useState } from "react";
 import {
   Button,
-  DialogTrigger,
   Disclosure,
   DisclosurePanel,
   DisclosureStateContext,
@@ -20,6 +19,10 @@ import { match } from "ts-pattern";
 
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
+import {
+  ConsumerSuspendAgreementBody,
+  SuspendAgreementModal,
+} from "@/features/agreement/components/SuspendAgreementModal";
 import { useReactivateConsumerAgreement } from "@/features/agreement/hooks/useReactivateConsumerAgreement";
 import { useSuspendConsumerAgreement } from "@/features/agreement/hooks/useSuspendConsumerAgreement";
 
@@ -116,31 +119,15 @@ function AgreementStatusBanner({
         >
           Active
         </Banner>
-        <DialogTrigger
+        <SuspendAgreementModal
+          isError={isSuspendError}
           isOpen={isSuspendModalOpen}
+          isPending={isSuspendPending}
+          onConfirm={suspendAgreement}
           onOpenChange={setIsSuspendModalOpen}
         >
-          <Modal
-            actionLabel="Suspend anyway"
-            cancelLabel="Cancel"
-            confirmButtonProps={{ isPending: isSuspendPending }}
-            isDismissable
-            kind="destructive"
-            onClose={() => setIsSuspendModalOpen(false)}
-            onConfirm={suspendAgreement}
-            onDismiss={() => setIsSuspendModalOpen(false)}
-            showErrorBanner={isSuspendError}
-            title="Suspend Agreement"
-          >
-            <p className="body-md">
-              If you suspend it, the Producer won&apos;t be able to reactivate
-              the Agreement on your behalf. Are you sure you want to suspend
-              this Agreement?
-              <br />
-              You will be able to reactivate it later.
-            </p>
-          </Modal>
-        </DialogTrigger>
+          <ConsumerSuspendAgreementBody />
+        </SuspendAgreementModal>
       </>
     ))
     .with("Suspended", () =>

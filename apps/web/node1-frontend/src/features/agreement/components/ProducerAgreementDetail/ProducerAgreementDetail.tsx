@@ -1,9 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Banner, Button, Modal } from "@knodia/ui-kit/ui";
+import { Banner, Button } from "@knodia/ui-kit/ui";
 import { useState } from "react";
-import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
@@ -16,6 +15,10 @@ import { EserviceStateChip } from "@/features/e-service/components/EserviceState
 import { useReactivateProducerAgreement } from "../../hooks/useReactivateProducerAgreement";
 import { useSuspendProducerAgreement } from "../../hooks/useSuspendProducerAgreement";
 import { AgreementStateChip } from "../AgreementStateChip";
+import {
+  ProducerSuspendAgreementBody,
+  SuspendAgreementModal,
+} from "../SuspendAgreementModal";
 import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
@@ -128,24 +131,15 @@ function ConsumerSuspendedBanner({
         You can also suspend the Agreement on your side to prevent the Consumer
         from reactivating it.
       </Banner>
-      <Modal
-        actionLabel="Suspend anyway"
-        cancelLabel="Cancel"
-        confirmButtonProps={{ isPending }}
+      <SuspendAgreementModal
+        isError={isError}
         isOpen={isOpen}
-        kind="destructive"
+        isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-        showErrorBanner={isError}
-        title="Suspend Agreement"
       >
-        <p className="body-md">
-          If you suspend it, the Consumer won&apos;t be able to use the
-          associated E-Service or reactivate the Agreement. Are you sure you
-          want to suspend this Agreement?
-        </p>
-        <p className="body-md">You will be able to reactivate it later.</p>
-      </Modal>
+        <ProducerSuspendAgreementBody />
+      </SuspendAgreementModal>
     </>
   );
 }
@@ -176,32 +170,29 @@ function SuspendProducerAgreementButton({
 }: {
   agreementId: AgreementId;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const { isError, isPending, suspendAgreement } =
     useSuspendProducerAgreement(agreementId);
 
   return (
-    <DialogTrigger>
-      <Button hierarchy="danger" kind="tonal" size="md">
+    <>
+      <Button
+        hierarchy="danger"
+        kind="tonal"
+        onPress={() => setIsOpen(true)}
+        size="md"
+      >
         Suspend
       </Button>
-      <Modal
-        actionLabel="Suspend anyway"
-        cancelLabel="Cancel"
-        confirmButtonProps={{ isPending }}
-        isDismissable
-        kind="destructive"
+      <SuspendAgreementModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
         onConfirm={suspendAgreement}
-        showErrorBanner={isError}
-        title="Suspend Agreement"
+        onOpenChange={setIsOpen}
       >
-        <p className="body-md">
-          If you suspend it, the Consumer won&apos;t be able to use the
-          associated E-Service or reactivate the Agreement. Are you sure you
-          want to suspend this Agreement?
-          <br />
-          You will be able to reactivate it later.
-        </p>
-      </Modal>
-    </DialogTrigger>
+        <ProducerSuspendAgreementBody />
+      </SuspendAgreementModal>
+    </>
   );
 }
