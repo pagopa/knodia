@@ -1,17 +1,37 @@
+import type { Eservice } from "@knodia/eservice-models";
 import type { Purpose } from "@knodia/purpose-models";
 
+import { generateId } from "@knodia/common-models/ids";
 import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
+import { purposeEventStoreWriterBuilder } from "@knodia/db-event-store-writer/purpose";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 
 import type { API_Purpose } from "../src/models/api.ts";
 
-import { app, eventStoreDb } from "./setup.ts";
+import { createPurposeActivatedV1Event } from "../src/models/purposeEventFactory.ts";
+import {
+  app,
+  eserviceWriterService,
+  eventStoreDb,
+  purposeWriterService,
+} from "./setup.ts";
 
 export async function getAllPurposeEvents() {
   return await eventStoreDb.select().from(eventStorePurposeEvents);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
+
+export async function seedEservice(eservice: Eservice) {
+  await eserviceWriterService.upsertEservice(eservice, 0);
+}
+
+export async function seedPurpose(purpose: Purpose) {
+  await purposeEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createPurposeActivatedV1Event(purpose, generateId()),
+  );
+  await purposeWriterService.upsertPurpose(purpose, 0);
+}
 
 export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
   return {

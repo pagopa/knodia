@@ -30,6 +30,9 @@ export type LocalizedPurposeDescription = z.infer<
 export const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
 export type PurposeState = z.infer<typeof PurposeState>;
 
+export const PurposeActor = z.enum(["Consumer", "Producer"]);
+export type PurposeActor = z.infer<typeof PurposeActor>;
+
 // Generic key-value pairs for form answers (serialized as JSON string in protobuf),
 // validated at runtime based on the JSON schema form of the Knode
 export const PurposeFormAnswers = z.record(z.string(), z.unknown());

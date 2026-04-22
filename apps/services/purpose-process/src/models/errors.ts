@@ -10,6 +10,7 @@ import type {
   EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import type { PurposeActor, PurposeState } from "@knodia/purpose-models";
 import type { ErrorObject } from "ajv";
 
 import {
@@ -19,8 +20,12 @@ import {
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -31,6 +36,9 @@ const errorCodes = {
   ESERVICE_NOT_FOUND: "0005",
   AGREEMENT_NOT_FOUND: "0006",
   FORM_ANSWERS_VALIDATION_FAILED: "0007",
+  PURPOSE_NOT_IN_SUSPENDABLE_STATE: "0008",
+  PURPOSE_NOT_IN_REACTIVATABLE_STATE: "0009",
+  ORGANIZATION_NOT_PURPOSE_PRODUCER: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -124,11 +132,65 @@ export function formAnswersValidationFailed(errors: ErrorObject[]) {
   });
 }
 
+export function organizationNotPurposeProducer(
+  purposeId: PurposeId,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_PURPOSE_PRODUCER",
+    detail: `Organization ${organizationId} is not the producer of Purpose ${purposeId}`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization Not Purpose Producer",
+  });
+}
+
 export function purposeNotFound(id: PurposeId) {
   return createApiError<ErrorCodes>({
     code: "PURPOSE_NOT_FOUND",
     detail: `Purpose with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Purpose Not Found",
+  });
+}
+
+export function purposeNotInReactivatableState({
+  purposeId,
+  reactivatedBy,
+  state,
+  suspendedByConsumerAt,
+  suspendedByProducerAt,
+}: {
+  purposeId: PurposeId;
+  reactivatedBy: PurposeActor;
+  state: PurposeState;
+  suspendedByConsumerAt: Date | null;
+  suspendedByProducerAt: Date | null;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_IN_REACTIVATABLE_STATE",
+    detail: `Purpose ${purposeId} cannot be reactivated by ${reactivatedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Purpose Not In Reactivatable State",
+  });
+}
+
+export function purposeNotInSuspendableState({
+  purposeId,
+  state,
+  suspendedBy,
+  suspendedByConsumerAt,
+  suspendedByProducerAt,
+}: {
+  purposeId: PurposeId;
+  state: PurposeState;
+  suspendedBy: PurposeActor;
+  suspendedByConsumerAt: Date | null;
+  suspendedByProducerAt: Date | null;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_IN_SUSPENDABLE_STATE",
+    detail: `Purpose ${purposeId} cannot be suspended by ${suspendedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Purpose Not In Suspendable State",
   });
 }

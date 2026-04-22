@@ -3,6 +3,7 @@ import type {
   EserviceId,
   KnodeId,
   OrganizationId,
+  PurposeId,
 } from "@knodia/common-models/ids";
 
 import { type Agreement, AgreementState } from "@knodia/agreement-models";
@@ -11,11 +12,20 @@ import {
   type EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import {
+  type Purpose,
+  PurposeActor,
+  PurposeState,
+} from "@knodia/purpose-models";
+import { match } from "ts-pattern";
 
 import {
   agreementNotInExpectedStates,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
+  organizationNotPurposeProducer,
+  purposeNotInReactivatableState,
+  purposeNotInSuspendableState,
 } from "../models/errors.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
@@ -74,3 +84,73 @@ export const assertAgreementAllowsPurposeCreation = ({
     });
   }
 };
+
+export function assertOrganizationIsPurposeProducer(
+  eservice: Eservice,
+  purposeId: PurposeId,
+  organizationId: OrganizationId,
+): void {
+  if (eservice.producerId !== organizationId) {
+    throw organizationNotPurposeProducer(purposeId, organizationId);
+  }
+}
+
+export function assertPurposeCanBeReactivatedBy(
+  purpose: Purpose,
+  reactivatedBy: PurposeActor,
+): void {
+  if (
+    purpose.state !== PurposeState.enum.Suspended ||
+    getOwnSuspendedAt(purpose, reactivatedBy) === null
+  ) {
+    throw purposeNotInReactivatableState({
+      purposeId: purpose.id,
+      reactivatedBy,
+      state: purpose.state,
+      suspendedByConsumerAt: purpose.suspendedByConsumerAt,
+      suspendedByProducerAt: purpose.suspendedByProducerAt,
+    });
+  }
+}
+
+export function assertPurposeCanBeSuspendedBy(
+  purpose: Purpose,
+  suspendedBy: PurposeActor,
+): void {
+  const throwNotSuspendable = (): never => {
+    throw purposeNotInSuspendableState({
+      purposeId: purpose.id,
+      state: purpose.state,
+      suspendedBy,
+      suspendedByConsumerAt: purpose.suspendedByConsumerAt,
+      suspendedByProducerAt: purpose.suspendedByProducerAt,
+    });
+  };
+
+  match(purpose.state)
+    .with(PurposeState.enum.Active, () => undefined)
+    .with(PurposeState.enum.Suspended, () => {
+      if (getOwnSuspendedAt(purpose, suspendedBy) !== null) {
+        throwNotSuspendable();
+      }
+      // Consumer cannot suspend a purpose already suspended by the producer.
+      // Consumer's only action on a producer-suspended purpose is to archive.
+      if (
+        suspendedBy === PurposeActor.enum.Consumer &&
+        purpose.suspendedByProducerAt !== null
+      ) {
+        throwNotSuspendable();
+      }
+    })
+    .with(PurposeState.enum.Archived, () => {
+      throwNotSuspendable();
+    })
+    .exhaustive();
+}
+
+function getOwnSuspendedAt(purpose: Purpose, actor: PurposeActor): Date | null {
+  return match(actor)
+    .with(PurposeActor.enum.Producer, () => purpose.suspendedByProducerAt)
+    .with(PurposeActor.enum.Consumer, () => purpose.suspendedByConsumerAt)
+    .exhaustive();
+}
