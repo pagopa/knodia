@@ -19,17 +19,19 @@ import { parseArgs } from "node:util";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
 
-// aud must match CLIENT_ASSERTION_ACCEPTED_AUDIENCES in authorization-server/.env.
-const AUD = "test.knodia.org";
-// Must not exceed CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS in authorization-server/.env,
-// otherwise the server rejects the assertion before it expires.
-const DURATION_SECONDS = 300;
+// Defaults target the local authorization-server. Override with --aud / --duration
+// when signing for dev/prod envs whose CLIENT_ASSERTION_ACCEPTED_AUDIENCES and
+// CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS are configured differently.
+const DEFAULT_AUD = "test.knodia.org";
+const DEFAULT_DURATION_SECONDS = 300;
 
 const { values } = parseArgs({
   options: {
     key: { type: "string" },
     keychainId: { type: "string" },
     purposeId: { type: "string" },
+    aud: { type: "string" },
+    duration: { type: "string" },
   },
   strict: true,
 });
@@ -38,13 +40,28 @@ if (!values.key || !values.keychainId || !values.purposeId) {
   console.error(`Usage: node scripts/local-auth/generate-client-assertion.ts \\
   --key <path-to-pem-private-key> \\
   --keychainId <uuid> \\
-  --purposeId <uuid>
+  --purposeId <uuid> \\
+  [--aud <audience>] \\
+  [--duration <seconds>]
+
+--aud defaults to ${DEFAULT_AUD} (local authorization-server).
+--duration defaults to ${DEFAULT_DURATION_SECONDS}s; must not exceed the server's
+   CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS or the assertion is rejected before it expires.
 
 Use \`pnpm generate-keypair\` first if you don't have a keypair yet.`);
   process.exit(1);
 }
 
 const { key: keyPath, keychainId, purposeId } = values;
+const aud = values.aud ?? DEFAULT_AUD;
+const durationSeconds = values.duration
+  ? Number(values.duration)
+  : DEFAULT_DURATION_SECONDS;
+
+if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
+  console.error(`--duration must be a positive integer (got: ${values.duration})`);
+  process.exit(1);
+}
 
 const b64url = (data: string | Buffer): string =>
   Buffer.from(data).toString("base64url");
@@ -80,11 +97,11 @@ const payload = b64url(
   JSON.stringify({
     sub: keychainId,
     iss: keychainId,
-    aud: AUD,
+    aud,
     purpose_id: purposeId,
     jti: randomUUID(),
     iat: now,
-    exp: now + DURATION_SECONDS,
+    exp: now + durationSeconds,
   }),
 );
 const signingInput = `${header}.${payload}`;
