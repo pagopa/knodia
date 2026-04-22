@@ -1,7 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Breadcrumb, Breadcrumbs, Button } from "@knodia/ui-kit/ui";
+import { Breadcrumb, Breadcrumbs, Button, Chip } from "@knodia/ui-kit/ui";
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -18,6 +19,7 @@ import { EserviceStateChip } from "@/features/e-service/components/EserviceState
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { producerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { producerRecentPurposesByEserviceQuery } from "@/features/purpose/services/queries";
+import { formatNumericDate } from "@/utils/formatters";
 
 export const Route = createFileRoute(
   "/_authenticated/production/e-services/$id",
@@ -65,6 +67,7 @@ function RouteComponent() {
   const isAdministrative = useHasRole("administrative");
   const { id } = Route.useParams();
   const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
+  const isArchived = eservice.version.state === "Archived";
 
   return (
     <>
@@ -78,20 +81,31 @@ function RouteComponent() {
 
       <PageHeader
         actions={
-          <>
-            {isAdministrative && (
-              <EserviceProducerActions
-                eserviceId={eservice.id}
-                state={eservice.version.state}
-              />
-            )}
-            <EditAction eservice={eservice} />
-          </>
+          isArchived ? (
+            <Chip
+              icon={<ArchiveIcon />}
+              kind="neutral"
+              label={`Archived ${formatNumericDate(eservice.version.updatedAt)}`}
+              type="light"
+            />
+          ) : (
+            <>
+              {isAdministrative && (
+                <EserviceProducerActions
+                  eserviceId={eservice.id}
+                  state={eservice.version.state}
+                />
+              )}
+              <EditAction eservice={eservice} />
+            </>
+          )
         }
         copyableId={eservice.id}
         description={eservice.description.en}
         resourceStatusChip={
-          <EserviceStateChip state={eservice.version.state} />
+          isArchived ? undefined : (
+            <EserviceStateChip state={eservice.version.state} />
+          )
         }
         title={eservice.name.en}
       />
