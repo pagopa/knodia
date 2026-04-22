@@ -19,9 +19,11 @@ export const API_TokenRequest = z
   .meta({ id: "TokenRequest" });
 export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
 
-// TODO remove this mocked response model when the real token flow is implemented.
 export const API_TokenResponse = z
   .strictObject({
-    mockAccessToken: z.string(),
+    access_token: z.string(),
+    expires_in: z.number().meta({ format: "int32" }),
+    token_type: z.enum(["Bearer"]),
   })
   .meta({ id: "TokenResponse" });
+export type API_TokenResponse = z.infer<typeof API_TokenResponse>;
