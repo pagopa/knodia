@@ -1074,6 +1074,79 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
+    EserviceTemplateInterface:
+      type: object
+      properties:
+        contentType:
+          type: string
+        name:
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+      required:
+        - contentType
+        - name
+        - prettyName
+      additionalProperties: false
+    EserviceTemplateDetails:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          $ref: "#/components/schemas/EserviceTemplateInterface"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/Attribute"
+      required:
+        - categories
+        - createdAt
+        - description
+        - id
+        - interfaceDocument
+        - mode
+        - name
+        - requiredAttributes
+      additionalProperties: false
+    EserviceTemplate:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - description
+        - id
+        - name
+      additionalProperties: false
+    EserviceTemplates:
+      type: array
+      items:
+        $ref: "#/components/schemas/EserviceTemplate"
     PurposeState:
       type: string
       enum:
@@ -1749,6 +1822,111 @@ paths:
       responses:
         "204":
           description: Logged out successfully
+  /eserviceTemplates:
+    get:
+      operationId: getEserviceTemplates
+      tags:
+        - eserviceTemplate
+      description: Retrieve a list of e-service templates available for a given Knode
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+      responses:
+        "200":
+          description: E-service templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service templates retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceTemplates"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eserviceTemplates/{templateId}:
+    get:
+      operationId: getEserviceTemplate
+      tags:
+        - eserviceTemplate
+      description: Retrieve an E-service template with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: templateId
+          required: true
+      responses:
+        "200":
+          description: E-service template retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service template retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceTemplateDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service template not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service template not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -4477,3 +4655,5 @@ tags:
     name: purpose
   - description: User routes
     name: user
+  - description: E-service Templates routes
+    name: eserviceTemplate

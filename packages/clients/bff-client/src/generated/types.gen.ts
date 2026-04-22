@@ -513,6 +513,31 @@ export type SessionResponse = {
     uiSessionToken: string;
 };
 
+export type EserviceTemplateInterface = {
+    contentType: string;
+    name: string;
+    prettyName: LocalizedInterfacePrettyName;
+};
+
+export type EserviceTemplateDetails = {
+    categories: Array<EserviceCategory>;
+    createdAt: string;
+    description: LocalizedDescription;
+    id: string;
+    interfaceDocument: EserviceTemplateInterface;
+    mode: EserviceMode;
+    name: LocalizedName;
+    requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceTemplate = {
+    description: LocalizedDescription;
+    id: string;
+    name: LocalizedName;
+};
+
+export type EserviceTemplates = Array<EserviceTemplate>;
+
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -853,6 +878,82 @@ export type LogoutResponses = {
 };
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type GetEserviceTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates';
+};
+
+export type GetEserviceTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetEserviceTemplatesError = GetEserviceTemplatesErrors[keyof GetEserviceTemplatesErrors];
+
+export type GetEserviceTemplatesResponses = {
+    /**
+     * E-service templates retrieved successfully
+     */
+    200: EserviceTemplates;
+};
+
+export type GetEserviceTemplatesResponse = GetEserviceTemplatesResponses[keyof GetEserviceTemplatesResponses];
+
+export type GetEserviceTemplateData = {
+    body?: never;
+    path: {
+        templateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{templateId}';
+};
+
+export type GetEserviceTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceTemplateError = GetEserviceTemplateErrors[keyof GetEserviceTemplateErrors];
+
+export type GetEserviceTemplateResponses = {
+    /**
+     * E-service template retrieved successfully
+     */
+    200: EserviceTemplateDetails;
+};
+
+export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
