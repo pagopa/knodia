@@ -22,3 +22,11 @@ headers {
 vars:post-response {
   eserviceId: res.body.id
 }
+
+script:post-response {
+  console.log(
+    `\n==> eserviceId captured (${res.body.id}).\n` +
+    "Now run the client-assertion-flow from step 3 (Get Eservice Latest Version) to step 12 (Create Token), skipping step 2 (Create Eservice) — the flow will reuse this eserviceId.\n" +
+    "When it's done, run step 2 of this flow (Call Mock Eservice).\n"
+  )
+}
