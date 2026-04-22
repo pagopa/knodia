@@ -16,7 +16,10 @@ import type { K2KGatewayConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { agreementRouter } from "./routers/agreementRouter.ts";
+import {
+  agreementRouter,
+  type MagicLinkConfig,
+} from "./routers/agreementRouter.ts";
 import { clientAssertionRouter } from "./routers/clientAssertionRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
@@ -27,12 +30,10 @@ export function buildApp({
   callerKnodeId,
   eserviceInterfacesS3Bucket,
   eserviceProcessUrl,
-  externalUiSessionMagicLinkJwt,
-  frontendActivationPath,
-  frontendBaseUrl,
   internalJwt,
   keychainProcessUrl,
   loggerConfig,
+  magicLinkConfig,
   organizationProcessUrl,
   pollingService,
   purposeProcessUrl,
@@ -41,12 +42,10 @@ export function buildApp({
   callerKnodeId: KnodeId;
   eserviceInterfacesS3Bucket: string;
   eserviceProcessUrl: string;
-  externalUiSessionMagicLinkJwt: K2KGatewayConfig["externalUiSessionMagicLinkJwt"];
-  frontendActivationPath: string;
-  frontendBaseUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
   loggerConfig: LoggerConfig;
+  magicLinkConfig: MagicLinkConfig;
   organizationProcessUrl: string;
   pollingService: PollingService;
   purposeProcessUrl: string;
@@ -59,8 +58,11 @@ export function buildApp({
     purposeProcessUrl,
   });
   const fileManager = initFileManager();
-  const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
   const tokenGenerator = tokenGeneratorBuilder();
+  const tokenProvider = refreshableInternalTokenGenerator(
+    internalJwt,
+    tokenGenerator,
+  );
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -121,11 +123,7 @@ export function buildApp({
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
-    magicLinkConfig: {
-      ...externalUiSessionMagicLinkJwt,
-      frontendActivationPath,
-      frontendBaseUrl,
-    },
+    magicLinkConfig,
     pollingService,
     tokenGenerator,
     tokenProvider,
@@ -150,12 +148,14 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     callerKnodeId: config.callerKnodeId,
     eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
     eserviceProcessUrl: config.eserviceProcessUrl,
-    externalUiSessionMagicLinkJwt: config.externalUiSessionMagicLinkJwt,
-    frontendActivationPath: config.frontendActivationPath,
-    frontendBaseUrl: config.frontendBaseUrl,
     internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
     loggerConfig: config,
+    magicLinkConfig: {
+      ...config.externalUiSessionMagicLinkJwt,
+      frontendActivationPath: config.frontendActivationPath,
+      frontendBaseUrl: config.frontendBaseUrl,
+    },
     organizationProcessUrl: config.organizationProcessUrl,
     pollingService: pollingServiceBuilder(config),
     purposeProcessUrl: config.purposeProcessUrl,
