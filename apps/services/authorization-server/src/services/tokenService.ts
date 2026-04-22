@@ -10,6 +10,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   validatePlatformObjects,
   verifyClientAssertionSignature,
+  verifyDpopProofSignature,
 } from "../utils/validators.ts";
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;
@@ -33,15 +34,30 @@ export function tokenServiceBuilder({
       {
         clientAssertionJWS,
         consumerKeychainId,
+        dpopProofJWS,
       }: {
         clientAssertionJWS: string;
         consumerKeychainId: ConsumerKeychainId;
+        dpopProofJWS: string | undefined;
       },
-      clientAssertionAcceptedAudiences: string[],
-      clientAssertionClockToleranceSeconds: number,
-      clientAssertionMaxTokenAgeSeconds: number,
+      {
+        clientAssertionAcceptedAudiences,
+        clientAssertionClockToleranceSeconds,
+        clientAssertionMaxTokenAgeSeconds,
+        dpopProofHtuBaseUrl,
+        dpopProofMaxTokenAgeSeconds,
+      }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
+      // Verify DPoP proof signature and claims if a DPoP proof is provided in the Client Assertion header
+      const dpopProofJWT = await verifyDpopProofSignature(
+        dpopProofJWS,
+        dpopProofMaxTokenAgeSeconds,
+        dpopProofHtuBaseUrl,
+        logger,
+      );
+      const isRequestUsingDpop = !!dpopProofJWT;
+
       // Verify Client Assertion signature and claims
       const { consumerAttributes, purposeId } =
         await verifyClientAssertionSignature(
@@ -58,8 +74,12 @@ export function tokenServiceBuilder({
         await validatePlatformObjects(
           purposeId,
           consumerAttributes,
+          dpopProofJWT,
           readmodelService,
         );
+
+      // TODO: check dpop cache
+      // await assertDpopProofNotReplayed(dpopProofJWT);
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
@@ -79,7 +99,9 @@ export function tokenServiceBuilder({
       return {
         access_token: token.serialized,
         expires_in: token.payload.exp - token.payload.iat,
-        token_type: "Bearer" as const,
+        token_type: isRequestUsingDpop
+          ? ("DPoP" as const)
+          : ("Bearer" as const),
       };
     },
   };

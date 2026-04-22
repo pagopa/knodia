@@ -29,6 +29,7 @@ let agreementWriterService: AgreementWriterService;
 let eserviceWriterService: EserviceWriterService;
 let purposeWriterService: PurposeWriterService;
 const producerKnodeId: KnodeId = "Orion";
+const dpopProofHtuBaseUrl = "https://test.knodia.org/token";
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -52,6 +53,8 @@ beforeAll(async () => {
       clientAssertionClockToleranceSeconds: 30,
       clientAssertionMaxTokenAgeSeconds: 300,
       consumerKnodeUrl: "http://localhost:0",
+      dpopProofHtuBaseUrl,
+      dpopProofMaxTokenAgeSeconds: 300,
       eserviceAccessTokenJwtKid: "test-kid",
       generatedEserviceAccessTokenIssuer: "knodia.org",
       host: "test_host",
@@ -91,6 +94,7 @@ afterAll(async () => {
 export {
   agreementWriterService,
   app,
+  dpopProofHtuBaseUrl,
   eserviceWriterService,
   producerKnodeId,
   purposeWriterService,

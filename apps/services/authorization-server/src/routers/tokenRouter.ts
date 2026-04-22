@@ -19,14 +19,7 @@ interface TokenRouterOptions {
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  {
-    config: {
-      clientAssertionAcceptedAudiences,
-      clientAssertionClockToleranceSeconds,
-      clientAssertionMaxTokenAgeSeconds,
-    },
-    tokenService,
-  },
+  { config, tokenService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -45,10 +38,9 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         {
           clientAssertionJWS: req.body.client_assertion,
           consumerKeychainId: unsafeBrandId(req.body.client_id),
+          dpopProofJWS: req.headers.dpop,
         },
-        clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
-        clientAssertionMaxTokenAgeSeconds,
+        config,
         logger,
       );
 

@@ -1,4 +1,7 @@
-import { generateKeyPairSync } from "crypto";
+import { Algorithm } from "@knodia/common-models/algorithms";
+import { createPrivateKey, generateKeyPairSync } from "crypto";
+import { type JWTHeaderParameters, type JWTPayload, SignJWT } from "jose";
+import { match } from "ts-pattern";
 
 export const toBase64 = (value: string) =>
   Buffer.from(value, "utf-8").toString("base64");
@@ -48,3 +51,55 @@ NkBdKFk0r+U+fNZKt6gkEkvSJoJYvam+EnyKzNy4feCP2TYRsli+lqJYaJxmbd2H
 e8gii0NdJ5Sv/VTFpB11GXvlDOKV7w2hRbx8vvkLL0THvq0s5YmcRg6Urqm82n8y
 wDbhe/fDrePo0lGawqs+LRA=
 -----END CERTIFICATE-----`;
+
+export function generateKeySet(alg: Algorithm = Algorithm.enum.RS256) {
+  const keySet = match(alg)
+    .with(Algorithm.enum.RS256, () =>
+      generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+      }),
+    )
+    .with(Algorithm.enum.ES256, () =>
+      generateKeyPairSync("ec", {
+        namedCurve: "P-256", // This is the curve for ES256
+      }),
+    )
+    .exhaustive();
+
+  const pemPublicKey = keySet.publicKey
+    .export({
+      format: "pem",
+      type: "spki",
+    })
+    .toString();
+
+  const publicKeyJwk = keySet.publicKey.export({ format: "jwk" });
+
+  const publicKeyEncodedPem = Buffer.from(pemPublicKey).toString("base64");
+  return {
+    keySet,
+    publicKeyEncodedPem,
+    publicKeyJwk,
+  };
+}
+
+export async function signJWT({
+  jwt: { headers, payload },
+  keySet,
+}: {
+  jwt: {
+    headers: JWTHeaderParameters;
+    payload: JWTPayload;
+  };
+  keySet: ReturnType<typeof generateKeySet>["keySet"];
+}): Promise<string> {
+  const pemPrivateKey = keySet.privateKey.export({
+    format: "pem",
+    type: "pkcs8",
+  });
+
+  const privateKey = createPrivateKey(pemPrivateKey);
+  return await new SignJWT(payload)
+    .setProtectedHeader(headers)
+    .sign(privateKey);
+}

@@ -11,9 +11,11 @@ import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import {
   getMockAgreement,
   getMockClientAssertion,
+  getMockDpopProof,
   getMockEservice,
   getMockEserviceVersion,
   getMockPurpose,
+  signJWT,
 } from "@knodia/test-commons/utils";
 import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,8 +24,8 @@ import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
 import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
+  accessTokenTypeMismatch,
   consumerMissingRequiredAttributes,
-  eserviceVersionNotUsingBearerToken,
   invalidClientAssertionSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
@@ -31,6 +33,7 @@ import {
 import {
   agreementWriterService,
   app,
+  dpopProofHtuBaseUrl,
   eserviceWriterService,
   producerKnodeId,
   purposeWriterService,
@@ -95,6 +98,10 @@ const consumerKeychainId = generateId<ConsumerKeychainId>();
 const MOCK_NOW_SECONDS = 1_000_000_000;
 const MOCK_TOKEN = "mock-eservice-access-token";
 
+const { dpopProofJWS } = await getMockDpopProof({
+  props: { customPayload: { htu: dpopProofHtuBaseUrl } },
+});
+
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateEserviceAccessToken: vi.fn().mockResolvedValue({
@@ -129,20 +136,15 @@ describe("POST /token", async () => {
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
-  const {
-    clientAssertion,
-    clientAssertionJWS,
-    keySet,
-    publicKeyEncodedPem,
-    signClientAssertion,
-  } = await getMockClientAssertion({
-    standardClaimsOverride: {
-      aud: ["test-audience-1"],
-      iss: consumerKeychainId,
-      purpose_id: purpose.id,
-      sub: consumerKeychainId,
-    },
-  });
+  const { clientAssertion, clientAssertionJWS, keySet, publicKeyEncodedPem } =
+    await getMockClientAssertion({
+      standardClaimsOverride: {
+        aud: ["test-audience-1"],
+        iss: consumerKeychainId,
+        purpose_id: purpose.id,
+        sub: consumerKeychainId,
+      },
+    });
 
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
     consumerAttributes: [
@@ -167,9 +169,18 @@ describe("POST /token", async () => {
     grant_type: VALID_GRANT_TYPE,
   };
 
-  async function createToken(body: API_TokenRequest = defaultBody) {
+  async function createToken({
+    body = defaultBody,
+    requestDpopProofJWS,
+  }: {
+    body?: API_TokenRequest;
+    requestDpopProofJWS?: string;
+  } = {}) {
     return app.inject({
-      headers: { "content-type": "application/x-www-form-urlencoded" },
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        ...(requestDpopProofJWS ? { dpop: requestDpopProofJWS } : {}),
+      },
       method: "POST",
       payload: new URLSearchParams(body).toString(),
       url: "/token",
@@ -180,7 +191,7 @@ describe("POST /token", async () => {
     getClientAssertionVerificationDataMock.mockReset();
   });
 
-  it("returns a mocked bearer token", async () => {
+  it("returns an e-service access token", async () => {
     const archivedAgreement1: Agreement = {
       ...getMockAgreement({ seed: 1 }),
       consumer: purpose.consumer,
@@ -242,7 +253,7 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await createToken(body as never);
+      const response = await createToken({ body: body as never });
       expect(response.statusCode).toBe(400);
     },
   );
@@ -435,14 +446,16 @@ describe("POST /token", async () => {
         data: mockK2KResponse,
       });
 
-      const clientAssertionJWS = await signClientAssertion({
-        clientAssertion,
+      const clientAssertionJWS = await signJWT({
+        jwt: clientAssertion,
         keySet,
       });
 
       const response = await createToken({
-        ...defaultBody,
-        client_assertion: clientAssertionJWS,
+        body: {
+          ...defaultBody,
+          client_assertion: clientAssertionJWS,
+        },
       });
 
       expect(response.statusCode).toBe(401);
@@ -662,31 +675,54 @@ describe("POST /token", async () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 400 if the E-service version does not use Bearer token", async () => {
-    const eserviceVersionWithWrongTokenType: EserviceVersion = {
-      ...eserviceVersion,
-      accessTokenType: "DPoP",
-    };
-    await Promise.all([
-      agreementWriterService.upsertAgreement(agreement, 0),
-      eserviceWriterService.upsertEservice(
-        { ...eservice, versions: [eserviceVersionWithWrongTokenType] },
-        0,
-      ),
-      purposeWriterService.upsertPurpose(purpose, 0),
-    ]);
+  it.each([
+    {
+      dpopProofJWS: undefined,
+      eserviceVersion: {
+        ...eserviceVersion,
+        accessTokenType: "DPoP",
+      },
+      testCase:
+        "E-service version uses DPoP token but request is using Bearer token",
+    },
+    {
+      dpopProofJWS,
+      eserviceVersion: {
+        ...eserviceVersion,
+        accessTokenType: "Bearer",
+      },
+      testCase:
+        "E-service version uses Bearer token but request is using DPoP token",
+    },
+  ] satisfies {
+    dpopProofJWS: string | undefined;
+    eserviceVersion: EserviceVersion;
+    testCase: string;
+  }[])(
+    "should return 400 if the E-service version access token type does not match the request token type: $testCase",
+    async ({ dpopProofJWS, eserviceVersion }) => {
+      await Promise.all([
+        agreementWriterService.upsertAgreement(agreement, 0),
+        eserviceWriterService.upsertEservice(
+          { ...eservice, versions: [eserviceVersion] },
+          0,
+        ),
+        purposeWriterService.upsertPurpose(purpose, 0),
+      ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
-      data: mockK2KResponse,
-    });
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
 
-    const response = await createToken();
+      const response = await createToken({ requestDpopProofJWS: dpopProofJWS });
 
-    const error = eserviceVersionNotUsingBearerToken(
-      eserviceVersionWithWrongTokenType,
-    );
+      const error = accessTokenTypeMismatch(
+        eserviceVersion,
+        dpopProofJWS !== undefined,
+      );
 
-    expect(response.statusCode).toBe(400);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
-  });
+      expect(response.statusCode).toBe(400);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
+    },
+  );
 });

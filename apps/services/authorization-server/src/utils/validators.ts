@@ -10,10 +10,7 @@ import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { type Algorithm } from "@knodia/common-models/algorithms";
-import {
-  EserviceAccessTokenType,
-  type EserviceVersion,
-} from "@knodia/eservice-models";
+import { type EserviceVersion } from "@knodia/eservice-models";
 import {
   createPublicKey,
   decodeBase64Pem,
@@ -24,7 +21,13 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 import { AxiosError } from "axios";
-import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
+import {
+  decodeJwt,
+  decodeProtectedHeader,
+  importJWK,
+  type JWTPayload,
+  jwtVerify,
+} from "jose";
 import {
   JWSInvalid,
   JWSSignatureVerificationFailed,
@@ -38,18 +41,27 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { ClientAssertion } from "../models/clientAssertion.ts";
 import {
+  EXPECTED_CLIENT_ASSERTION_TYP,
+  EXPECTED_DPOP_PROOF_TYP,
+} from "../models/constants.ts";
+import { DPoPProof } from "../models/dpop.ts";
+import {
+  accessTokenTypeMismatch,
   agreementNotActive,
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
   consumerMissingRequiredAttributes,
+  dpopClaimsValidationError,
   eserviceVersionNotActive,
-  eserviceVersionNotUsingBearerToken,
+  invalidClientAssertionJWS,
   invalidClientAssertionSignature,
-  jsonWebTokenError,
+  invalidDpopProofJWS,
+  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
+  unexpectedDpopProofSignatureVerificationError,
 } from "../models/errors.ts";
 import {
   retrieveAgreement,
@@ -60,6 +72,7 @@ import {
 export async function validatePlatformObjects(
   purposeId: PurposeId,
   consumerAttributes: k2kGatewayApi.Attribute[],
+  dpopProofJWT: JWTPayload | undefined,
   readmodelService: ReadmodelService,
 ) {
   const { data: purpose } = await retrievePurpose(purposeId, readmodelService);
@@ -74,7 +87,7 @@ export async function validatePlatformObjects(
     readmodelService,
   );
 
-  assertEserviceVersionUsesBearerToken(eserviceVersion);
+  assertEserviceVersionUsesCorrectToken(eserviceVersion, dpopProofJWT);
   assertPlatformStatesAreActive(purpose, agreement, eserviceVersion);
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
@@ -146,7 +159,7 @@ export async function verifyClientAssertionSignature(
       issuer: consumerKeychainId,
       maxTokenAge: clientAssertionMaxTokenAgeSeconds,
       subject: consumerKeychainId,
-      typ: "JWT",
+      typ: EXPECTED_CLIENT_ASSERTION_TYP,
     });
 
     return {
@@ -163,9 +176,64 @@ export async function verifyClientAssertionSignature(
       .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
         invalidClientAssertionSignature(),
       )
-      .with(P.instanceOf(JWSInvalid), (e) => jsonWebTokenError(e.message))
+      .with(P.instanceOf(JWSInvalid), (e) =>
+        invalidClientAssertionJWS(e.message),
+      )
       .with(P.union(P.instanceOf(ApiError), P.instanceOf(AxiosError)), (e) => e)
       .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
+  }
+}
+
+export async function verifyDpopProofSignature(
+  dpopProofJWS: string | undefined,
+  dpopProofMaxTokenAgeSeconds: number,
+  expectedDpopProofHtu: string,
+  logger: FastifyBaseLogger,
+): Promise<JWTPayload | undefined> {
+  if (!dpopProofJWS) {
+    return undefined;
+  }
+
+  try {
+    const protectedHeader = decodeProtectedHeader(dpopProofJWS);
+    const payload = decodeJwt(dpopProofJWS);
+
+    logger.info(
+      `Verifying DPoP Proof (JTI=${payload.jti}) signature with algorithm ${protectedHeader.alg}`,
+    );
+
+    const {
+      header: { alg: dpopProofAlg, jwk },
+      payload: { htu },
+    } = DPoPProof.parse({
+      header: protectedHeader,
+      payload,
+    });
+
+    assertDpopProofHtuIsValid(htu, expectedDpopProofHtu);
+
+    const verificationKey = await importJWK(jwk, dpopProofAlg);
+
+    const result = await jwtVerify(dpopProofJWS, verificationKey, {
+      algorithms: [dpopProofAlg],
+      maxTokenAge: dpopProofMaxTokenAgeSeconds,
+      typ: EXPECTED_DPOP_PROOF_TYP,
+    });
+
+    return result.payload;
+  } catch (error) {
+    console.log("🚀 ~ verifyDpopProofSignature ~ error:", error);
+    throw match(error)
+      .with(P.instanceOf(JWTExpired), () => clientAssertionExpired()) // TODO: needed for maxTokenAge?
+      .with(
+        P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        (e) => dpopClaimsValidationError(e),
+      )
+      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
+        invalidDpopProofSignature(),
+      )
+      .with(P.instanceOf(JWSInvalid), (e) => invalidDpopProofJWS(e.message))
+      .otherwise((e) => unexpectedDpopProofSignatureVerificationError(e));
   }
 }
 
@@ -182,12 +250,32 @@ function assertConsumerAttributesMeetEserviceRequirements(
   }
 }
 
-function assertEserviceVersionUsesBearerToken(
-  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
-) {
-  if (eserviceVersion.accessTokenType !== EserviceAccessTokenType.enum.Bearer) {
-    throw eserviceVersionNotUsingBearerToken(eserviceVersion);
+function assertDpopProofHtuIsValid(htu: string, expectedDpopProofHtu: string) {
+  if (htu !== expectedDpopProofHtu) {
+    throw dpopClaimsValidationError(
+      new Error(
+        `Invalid 'htu' claim in DPoP proof. Expected '${expectedDpopProofHtu}' but got '${htu}'`,
+      ),
+    );
   }
+}
+
+function assertEserviceVersionUsesCorrectToken(
+  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
+  dpopProofJWT: JWTPayload | undefined,
+) {
+  match(eserviceVersion.accessTokenType)
+    .with("Bearer", () => {
+      if (dpopProofJWT) {
+        throw accessTokenTypeMismatch(eserviceVersion, true);
+      }
+    })
+    .with("DPoP", () => {
+      if (!dpopProofJWT) {
+        throw accessTokenTypeMismatch(eserviceVersion, false);
+      }
+    })
+    .exhaustive();
 }
 
 function assertPlatformStatesAreActive(
