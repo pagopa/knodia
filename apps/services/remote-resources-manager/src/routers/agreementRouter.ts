@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import {
+  API_ActivationMagicLinkRequest,
   API_AgreementIdPathParam,
   API_MagicLink,
 } from "@knodia/agreement-models/api";
@@ -14,7 +15,6 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { AgreementService } from "../services/agreementService.ts";
 
 import {
-  API_ActivationMagicLinkRequest,
   API_Agreement,
   API_Agreements,
   API_AgreementSeed,

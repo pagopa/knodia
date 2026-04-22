@@ -46,6 +46,13 @@ export type AgreementConsumer = {
 };
 
 /**
+ * Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param
+ */
+export type ActivationMagicLinkRequest = {
+    knodeId: KnodeId;
+};
+
+/**
  * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
  */
 export type MagicLink = {
@@ -124,13 +131,6 @@ export type Agreement = {
 export type Agreements = {
     pagination: Pagination;
     results: Array<Agreement>;
-};
-
-/**
- * Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param
- */
-export type ActivationMagicLinkRequest = {
-    knodeId: KnodeId;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';

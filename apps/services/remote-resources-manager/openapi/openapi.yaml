@@ -99,6 +99,16 @@ components:
         - id
         - knodeId
       additionalProperties: false
+    ActivationMagicLinkRequest:
+      description: Identifies which Producer Knode should mint the activation magic
+        link for the Agreement in the path param
+      type: object
+      properties:
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - knodeId
+      additionalProperties: false
     MagicLink:
       description: A signed, single-action link a Consumer user can follow to perform
         an action on the Producer Knode's frontend
@@ -260,16 +270,6 @@ components:
       required:
         - pagination
         - results
-      additionalProperties: false
-    ActivationMagicLinkRequest:
-      description: Identifies which Producer Knode should mint the activation magic
-        link for the Agreement in the path param
-      type: object
-      properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - knodeId
       additionalProperties: false
     EserviceVersionState:
       type: string

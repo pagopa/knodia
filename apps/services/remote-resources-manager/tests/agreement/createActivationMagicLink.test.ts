@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { API_MagicLink } from "@knodia/agreement-models/api";
+import type {
+  API_ActivationMagicLinkRequest,
+  API_MagicLink,
+} from "@knodia/agreement-models/api";
 
 import {
   generateId,
@@ -12,8 +15,6 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { API_ActivationMagicLinkRequest } from "../../src/models/agreement/api.ts";
 
 import { remoteResourceDbService } from "../setup.ts";
 import { injectAppRequest } from "../utils.ts";

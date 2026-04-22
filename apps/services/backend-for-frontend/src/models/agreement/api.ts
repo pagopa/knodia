@@ -97,19 +97,6 @@ export const API_ConsumerAgreements = z
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
 
-export const API_ActivationMagicLinkRequest = z
-  .strictObject({
-    knodeId: API_KnodeId,
-  })
-  .meta({
-    description:
-      "Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param",
-    id: "ActivationMagicLinkRequest",
-  });
-export type API_ActivationMagicLinkRequest = z.infer<
-  typeof API_ActivationMagicLinkRequest
->;
-
 export const API_ExternalAgreement = z
   .strictObject({
     attributes: z.array(API_Attribute),
