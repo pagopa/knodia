@@ -25,6 +25,10 @@ export interface EserviceVersionReactivatedV1 {
   eserviceVersionId: string;
 }
 
+export interface EserviceUpdatedV1 {
+  eservice: EserviceV1 | undefined;
+}
+
 function createBaseEserviceVersionActivatedV1(): EserviceVersionActivatedV1 {
   return { eservice: undefined, eserviceVersionId: "" };
 }
@@ -255,6 +259,66 @@ export const EserviceVersionReactivatedV1: MessageFns<EserviceVersionReactivated
       ? EserviceV1.fromPartial(object.eservice)
       : undefined;
     message.eserviceVersionId = object.eserviceVersionId ?? "";
+    return message;
+  },
+};
+
+function createBaseEserviceUpdatedV1(): EserviceUpdatedV1 {
+  return { eservice: undefined };
+}
+
+export const EserviceUpdatedV1: MessageFns<EserviceUpdatedV1> = {
+  encode(message: EserviceUpdatedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.eservice !== undefined) {
+      EserviceV1.encode(message.eservice, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): EserviceUpdatedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEserviceUpdatedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.eservice = EserviceV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EserviceUpdatedV1 {
+    return { eservice: isSet(object.eservice) ? EserviceV1.fromJSON(object.eservice) : undefined };
+  },
+
+  toJSON(message: EserviceUpdatedV1): unknown {
+    const obj: any = {};
+    if (message.eservice !== undefined) {
+      obj.eservice = EserviceV1.toJSON(message.eservice);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EserviceUpdatedV1>, I>>(base?: I): EserviceUpdatedV1 {
+    return EserviceUpdatedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EserviceUpdatedV1>, I>>(object: I): EserviceUpdatedV1 {
+    const message = createBaseEserviceUpdatedV1();
+    message.eservice = (object.eservice !== undefined && object.eservice !== null)
+      ? EserviceV1.fromPartial(object.eservice)
+      : undefined;
     return message;
   },
 };

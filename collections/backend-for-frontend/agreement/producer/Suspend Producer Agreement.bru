@@ -1,0 +1,19 @@
+meta {
+  name: Suspend Producer Agreement
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producer/agreements/:agreementId/suspend
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+

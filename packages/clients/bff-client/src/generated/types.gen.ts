@@ -33,6 +33,13 @@ export type Problem = {
     title: string;
 };
 
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -60,13 +67,6 @@ export type KeyId = string;
 export type CreatedResource = {
     id: string;
 };
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -177,6 +177,15 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EservicePatch = {
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    description?: LocalizedDescription;
+    name?: LocalizedName;
 };
 
 export type ProducerEservice = {
@@ -470,6 +479,8 @@ export type ProducerAgreementDetails = {
     state: AgreementState;
     latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
 };
 
 export type ProducerAgreements = {
@@ -898,7 +909,7 @@ export type GetProducerEservicesError = GetProducerEservicesErrors[keyof GetProd
 
 export type GetProducerEservicesResponses = {
     /**
-     * Producer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ProducerEservices;
 };
@@ -970,12 +981,51 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * Producer E-service details retrieved successfully
+     * E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
 
 export type GetProducerEserviceDetailsResponse = GetProducerEserviceDetailsResponses[keyof GetProducerEserviceDetailsResponses];
+
+export type UpdateProducerEserviceData = {
+    body: EservicePatch;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}';
+};
+
+export type UpdateProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
+
+export type UpdateProducerEserviceResponses = {
+    /**
+     * E-service updated successfully
+     */
+    204: void;
+};
+
+export type UpdateProducerEserviceResponse = UpdateProducerEserviceResponses[keyof UpdateProducerEserviceResponses];
 
 export type GetProducerEserviceLatestVersionInterfaceData = {
     body?: never;
@@ -1009,12 +1059,98 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * Producer E-service interface document downloaded successfully
+     * E-service interface document downloaded successfully
      */
     200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type SuspendProducerEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/suspend';
+};
+
+export type SuspendProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendProducerEserviceError = SuspendProducerEserviceErrors[keyof SuspendProducerEserviceErrors];
+
+export type SuspendProducerEserviceResponses = {
+    /**
+     * E-service suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendProducerEserviceResponse = SuspendProducerEserviceResponses[keyof SuspendProducerEserviceResponses];
+
+export type ReactivateProducerEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/reactivate';
+};
+
+export type ReactivateProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateProducerEserviceError = ReactivateProducerEserviceErrors[keyof ReactivateProducerEserviceErrors];
+
+export type ReactivateProducerEserviceResponses = {
+    /**
+     * E-service reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
 
 export type GetConsumerKeychainKeysData = {
     body?: never;
@@ -1976,7 +2112,7 @@ export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetCons
 
 export type GetConsumerEservicesResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * E-services retrieved successfully
      */
     200: ConsumerEservices;
 };
@@ -2048,6 +2184,96 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type ReactivateConsumerAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/reactivate';
+};
+
+export type ReactivateConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateConsumerAgreementError = ReactivateConsumerAgreementErrors[keyof ReactivateConsumerAgreementErrors];
+
+export type ReactivateConsumerAgreementResponses = {
+    /**
+     * Agreement reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivateConsumerAgreementResponse = ReactivateConsumerAgreementResponses[keyof ReactivateConsumerAgreementResponses];
+
+export type SuspendConsumerAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/suspend';
+};
+
+export type SuspendConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendConsumerAgreementError = SuspendConsumerAgreementErrors[keyof SuspendConsumerAgreementErrors];
+
+export type SuspendConsumerAgreementResponses = {
+    /**
+     * Agreement suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendConsumerAgreementResponse = SuspendConsumerAgreementResponses[keyof SuspendConsumerAgreementResponses];
 
 export type GetConsumerPurposesData = {
     body?: never;
@@ -2261,6 +2487,14 @@ export type GetProducerAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter to only Agreements updated within the recent update window
+         */
+        recentlyUpdated?: 'true' | 'false';
     };
     url: '/producer/agreements';
 };
@@ -2330,6 +2564,92 @@ export type GetProducerAgreementDetailsResponses = {
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
 
+export type ReactivateProducerAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/producer/agreements/{agreementId}/reactivate';
+};
+
+export type ReactivateProducerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateProducerAgreementError = ReactivateProducerAgreementErrors[keyof ReactivateProducerAgreementErrors];
+
+export type ReactivateProducerAgreementResponses = {
+    /**
+     * Agreement reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivateProducerAgreementResponse = ReactivateProducerAgreementResponses[keyof ReactivateProducerAgreementResponses];
+
+export type SuspendProducerAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/producer/agreements/{agreementId}/suspend';
+};
+
+export type SuspendProducerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendProducerAgreementError = SuspendProducerAgreementErrors[keyof SuspendProducerAgreementErrors];
+
+export type SuspendProducerAgreementResponses = {
+    /**
+     * Agreement suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendProducerAgreementResponse = SuspendProducerAgreementResponses[keyof SuspendProducerAgreementResponses];
+
 export type GetProducerPurposesData = {
     body?: never;
     path?: never;
@@ -2350,6 +2670,10 @@ export type GetProducerPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter to only Purposes updated within the recent update window
+         */
+        recentlyUpdated?: 'true' | 'false';
         /**
          * Filter by Purpose State
          */

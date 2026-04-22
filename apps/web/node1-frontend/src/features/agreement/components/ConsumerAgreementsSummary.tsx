@@ -133,7 +133,7 @@ function AgreementCounterCard({
           >
             {icon}
           </span>
-          <span className="label-lg text-primary-light-low-contrast">
+          <span className="label-lg text-primary-light-mid-contrast">
             {label}
           </span>
         </div>

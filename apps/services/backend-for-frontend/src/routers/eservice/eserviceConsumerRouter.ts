@@ -131,7 +131,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { params: req.params, query: req.query },
-        `Getting consumer E-service details with ID ${req.params.eserviceId}`,
+        `Getting E-service details with ID ${req.params.eserviceId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -194,7 +194,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
-      summary: "Get consumer E-service details",
+      summary: "Get E-service details",
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId",
@@ -206,7 +206,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { params: req.params, query: req.query },
-        `Downloading interface of consumer E-service with ID ${req.params.eserviceId}`,
+        `Downloading interface of E-service with ID ${req.params.eserviceId}`,
       );
 
       const { data: blob, headers: downloadHeaders } =
@@ -247,7 +247,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Download consumer E-service latest Version Interface",
+      summary: "Download E-service latest Version Interface",
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId/interface",
@@ -262,7 +262,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestQuery: req.query },
-        `Getting Consumer E-services with query parameters`,
+        `Getting E-services with query parameters`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -355,19 +355,19 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve Consumer E-services",
+      description: "Retrieve E-services",
       operationId: "getConsumerEservices",
       querystring: API_GetConsumerEservicesQueryParams,
       response: {
         200: API_ConsumerEservices.meta({
-          description: "Consumer E-services retrieved successfully",
+          description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Get Consumer E-services",
+      summary: "Get E-services",
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices",

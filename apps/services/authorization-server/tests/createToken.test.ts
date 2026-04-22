@@ -65,10 +65,11 @@ const purpose: Purpose = {
   state: "Active",
 };
 const agreement: Agreement = {
-  ...getMockAgreement(),
+  ...getMockAgreement({ seed: 0 }),
   consumer: purpose.consumer,
   eserviceId: purpose.eserviceId,
   state: "Active",
+  updatedAt: new Date("2026-03-01"),
 };
 const eserviceVersion: EserviceVersion = {
   ...getMockEserviceVersion(),
@@ -180,8 +181,25 @@ describe("POST /token", async () => {
   });
 
   it("returns a mocked bearer token", async () => {
+    const archivedAgreement1: Agreement = {
+      ...getMockAgreement({ seed: 1 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-01-01"),
+    };
+    const archivedAgreement2: Agreement = {
+      ...getMockAgreement({ seed: 2 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-02-01"),
+    };
+
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement1, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement2, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);

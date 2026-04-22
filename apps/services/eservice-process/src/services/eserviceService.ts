@@ -10,7 +10,6 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { getCategory } from "@knodia/category-models";
 import {
   type EserviceId,
   type EserviceVersionId,
@@ -24,6 +23,7 @@ import {
 } from "@knodia/eservice-models";
 
 import type {
+  API_EservicePatch,
   API_EserviceSeed,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
@@ -35,9 +35,9 @@ import {
   duplicateInterfaceId,
   inconsistentDailyCalls,
   invalidAttribute,
-  invalidCategory,
 } from "../models/errors.ts";
 import {
+  createEserviceUpdatedV1Event,
   createEserviceVersionActivatedV1Event,
   createEserviceVersionReactivatedV1Event,
   createEserviceVersionSuspendedV1Event,
@@ -56,6 +56,7 @@ import {
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
+  assertValidCategories,
 } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
@@ -86,11 +87,7 @@ export function eserviceServiceBuilder(
         }
       }
 
-      for (const cat of seed.categories ?? []) {
-        if (getCategory(cat.scheme, cat.code) === undefined) {
-          throw invalidCategory(cat.scheme, cat.code);
-        }
-      }
+      assertValidCategories(seed.categories);
 
       const existingInterface =
         await readmodelService.getEserviceVersionInterfaceById(
@@ -269,6 +266,39 @@ export function eserviceServiceBuilder(
           correlationId,
           version,
         ),
+      );
+
+      return { data: updatedEservice, metadata: { version: newVersion } };
+    },
+
+    async updateEservice(
+      eserviceId: EserviceId,
+      update: API_EservicePatch,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<Eservice>> {
+      logger.info(`Updating E-service ${eserviceId}`);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await retrieveEservice(eserviceId, readmodelService);
+
+      assertIsEserviceProducer(eservice, authData.organizationId);
+
+      assertValidCategories(update.categories);
+
+      const now = new Date();
+
+      const updatedEservice: Eservice = {
+        ...eservice,
+        categories: update.categories ?? eservice.categories,
+        description: update.description ?? eservice.description,
+        name: update.name ?? eservice.name,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createEserviceUpdatedV1Event(updatedEservice, correlationId, version),
       );
 
       return { data: updatedEservice, metadata: { version: newVersion } };

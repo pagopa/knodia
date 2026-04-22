@@ -16,6 +16,36 @@ import { consumer, producer, readmodelDb, topicName } from "./setup.ts";
 import { getAllEservices } from "./utils.ts";
 
 describe("E-service read model writer tests", async () => {
+  it("EserviceUpdatedV1", async () => {
+    const eservice = getMockEservice();
+
+    const eventData = protobufBinaryCodec(
+      eserviceEvents.EserviceUpdatedV1,
+    ).encode({
+      eservice: toEserviceV1(eservice),
+    });
+
+    const metadataVersion = 0;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "EserviceUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: eservice.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedEservices = await getAllEservices(readmodelDb);
+
+    expect(retrievedEservices.length).toBe(1);
+    expect(retrievedEservices[0]).toEqual({
+      data: toExpectEservice(eservice),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Eservice>);
+  });
+
   it("EserviceVersionActivatedV1", async () => {
     const eservice = getMockEservice();
 
