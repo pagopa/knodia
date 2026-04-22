@@ -32,7 +32,19 @@ export const API_AgreementSeed = z
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
-export const API_GetProducerAgreementsQueryParams = API_PaginationQueryParams;
+export const API_SuspendReactivateConsumerAgreementQueryParams = z.strictObject(
+  {
+    knodeId: API_KnodeId,
+  },
+);
+
+export const API_GetProducerAgreementsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+  });
 export type API_GetProducerAgreementsQueryParams = z.infer<
   typeof API_GetProducerAgreementsQueryParams
 >;
@@ -56,6 +68,8 @@ export const API_ProducerAgreementDetails = API_ProducerAgreement.omit({
   .extend({
     latestEserviceVersionState: API_EserviceVersionState,
     producer: API_CompactOrganization,
+    suspendedByConsumerAt: z.string().datetime().nullable(),
+    suspendedByProducerAt: z.string().datetime().nullable(),
   })
   .meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<

@@ -1,4 +1,4 @@
-import type { AgreementId } from "@knodia/common-models/ids";
+import type { AgreementId, EserviceId } from "@knodia/common-models/ids";
 
 import {
   getProducerAgreementDetailsOptions,
@@ -15,8 +15,11 @@ export const producerAgreementDetailsQuery = (agreementId: AgreementId) =>
     path: { agreementId },
   });
 
-export const producerAgreementsQuery = (offset: number) =>
+export const producerAgreementsQuery = (
+  offset: number,
+  eserviceId?: EserviceId,
+) =>
   getProducerAgreementsOptions({
     client,
-    query: { limit: AGREEMENTS_PAGE_LIMIT, offset },
+    query: { eserviceId, limit: AGREEMENTS_PAGE_LIMIT, offset },
   });

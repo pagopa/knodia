@@ -15,6 +15,19 @@ vi.stubGlobal("env", {
 
 import { server } from "./msw/server";
 
+// Polyfill ResizeObserver for jsdom (used by ComboBox)
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    disconnect() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    observe() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    unobserve() {}
+  },
+);
+
 // Polyfill File.arrayBuffer() for jsdom (not natively supported)
 if (typeof File.prototype.arrayBuffer !== "function") {
   File.prototype.arrayBuffer = function () {
