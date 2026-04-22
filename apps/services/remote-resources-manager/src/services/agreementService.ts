@@ -55,9 +55,6 @@ export function agreementServiceBuilder(
         throw agreementNotFound(agreementId);
       }
 
-      // RRM's DB lookup only filters by (agreementId, knodeId); it does not
-      // verify that the row's consumerId belongs to the caller. Since this
-      // route mints a capability token, assert ownership explicitly.
       if (remoteAgreement.consumerId !== authData.organizationId) {
         throw agreementNotOwnedByCaller(agreementId);
       }
