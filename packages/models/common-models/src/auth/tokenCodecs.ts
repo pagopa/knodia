@@ -48,7 +48,7 @@ export type UISessionRefreshTokenClaims = z.infer<
 export const ExternalUISessionScope = z.enum(["agreement-activation"]);
 export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
 
-export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
+const ExternalUISessionResourceClaims = BaseJwtClaims.extend({
   agreementId: AgreementId,
   consumerId: ExternalId<OrganizationId>(),
   consumerKnodeId: KnodeId,
@@ -56,22 +56,23 @@ export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
   eserviceVersionId: EserviceVersionId,
   producerId: OrganizationId,
   scope: ExternalUISessionScope,
-  type: z.literal("external-ui-session"),
 });
+export type ExternalUISessionResourceClaims = z.infer<
+  typeof ExternalUISessionResourceClaims
+>;
+
+export const ExternalUISessionTokenClaims =
+  ExternalUISessionResourceClaims.extend({
+    type: z.literal("external-ui-session"),
+  });
 export type ExternalUISessionTokenClaims = z.infer<
   typeof ExternalUISessionTokenClaims
 >;
 
-export const ExternalUISessionMagicLinkTokenClaims = BaseJwtClaims.extend({
-  agreementId: AgreementId,
-  consumerId: ExternalId<OrganizationId>(),
-  consumerKnodeId: KnodeId,
-  eserviceId: EserviceId,
-  eserviceVersionId: EserviceVersionId,
-  producerId: OrganizationId,
-  scope: ExternalUISessionScope,
-  type: z.literal("external-ui-session-magic-link"),
-});
+export const ExternalUISessionMagicLinkTokenClaims =
+  ExternalUISessionResourceClaims.extend({
+    type: z.literal("external-ui-session-magic-link"),
+  });
 export type ExternalUISessionMagicLinkTokenClaims = z.infer<
   typeof ExternalUISessionMagicLinkTokenClaims
 >;
