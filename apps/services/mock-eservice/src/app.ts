@@ -34,10 +34,7 @@ export function buildApp({
       openapi: {
         components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
-          description:
-            "Mock producer e-service used to exercise the access-token " +
-            "flow end-to-end. Accepts an access token issued by a Knode " +
-            "and returns a static OK payload.",
+          description: "Mock e-service API endpoints",
           title: "Knodia Mock E-service API",
           version: "1.0.0",
         },
