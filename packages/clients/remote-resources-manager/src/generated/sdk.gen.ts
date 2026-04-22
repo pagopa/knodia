@@ -152,11 +152,7 @@ export const createAgreementActivationMagicLink = <ThrowOnError extends boolean 
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}/activationMagicLink',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
+    ...options
 });
 
 /**

@@ -104,7 +104,7 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "POST",
-      payload: { knodeId: "Lynx" },
+      query: { knodeId: "Lynx" },
       url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
     });
 
@@ -112,8 +112,8 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     expect(response.json()).toEqual(mockMagicLinkResponse.data);
     expect(createAgreementActivationMagicLinkMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: { knodeId: "Lynx" },
         path: { agreementId: AGREEMENT_ID },
+        query: { knodeId: "Lynx" },
       }),
     );
   });
@@ -142,7 +142,7 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     const response = await app.inject({
       headers: { authorization: "Bearer external.ui.session" },
       method: "POST",
-      payload: { knodeId: "Lynx" },
+      query: { knodeId: "Lynx" },
       url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
     });
 
@@ -150,11 +150,10 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     expect(createAgreementActivationMagicLinkMock).not.toHaveBeenCalled();
   });
 
-  it("returns 400 when the body is missing knodeId", async () => {
+  it("returns 400 when the query is missing knodeId", async () => {
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "POST",
-      payload: {},
       url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
     });
 
@@ -166,7 +165,7 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "POST",
-      payload: { knodeId: "Lynx" },
+      query: { knodeId: "Lynx" },
       url: "/consumer/agreements/not-a-uuid/activationMagicLink",
     });
 
@@ -182,7 +181,7 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "POST",
-      payload: { knodeId: "Lynx" },
+      query: { knodeId: "Lynx" },
       url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
     });
 
@@ -197,7 +196,7 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "POST",
-      payload: { knodeId: "Lynx" },
+      query: { knodeId: "Lynx" },
       url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
     });
 

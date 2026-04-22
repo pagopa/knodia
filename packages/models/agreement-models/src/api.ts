@@ -25,19 +25,6 @@ export const API_AgreementIdPathParam = z.strictObject({
 });
 export type API_AgreementIdPathParam = z.infer<typeof API_AgreementIdPathParam>;
 
-export const API_ActivationMagicLinkRequest = z
-  .strictObject({
-    knodeId: API_KnodeId,
-  })
-  .meta({
-    description:
-      "Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param",
-    id: "ActivationMagicLinkRequest",
-  });
-export type API_ActivationMagicLinkRequest = z.infer<
-  typeof API_ActivationMagicLinkRequest
->;
-
 export const API_MagicLink = z
   .strictObject({
     expiresAt: z.iso.datetime().meta({

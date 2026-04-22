@@ -41,13 +41,6 @@ export type KnodeId = 'Orion' | 'Lynx';
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 /**
- * Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param
- */
-export type ActivationMagicLinkRequest = {
-    knodeId: KnodeId;
-};
-
-/**
  * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
  */
 export type MagicLink = {
@@ -2207,11 +2200,13 @@ export type CreateConsumerAgreementResponses = {
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
 export type CreateConsumerAgreementActivationMagicLinkData = {
-    body: ActivationMagicLinkRequest;
+    body?: never;
     path: {
         agreementId: string;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumer/agreements/{agreementId}/activationMagicLink';
 };
 

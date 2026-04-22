@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type {
-  API_ActivationMagicLinkRequest,
-  API_MagicLink,
-} from "@knodia/agreement-models/api";
+import type { API_MagicLink } from "@knodia/agreement-models/api";
 
 import {
   generateId,
@@ -42,7 +39,7 @@ const allowedTestTokens: TestToken[] = [
 describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActivationMagicLink)", () => {
   const agreementId = generateId();
   const knodeId = KnodeId.enum.Orion;
-  const body: API_ActivationMagicLinkRequest = { knodeId };
+  const query: Record<string, string> = { knodeId };
 
   const mockMagicLink: API_MagicLink = {
     expiresAt: "2026-06-01T00:00:00.000Z",
@@ -68,12 +65,12 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
 
   const makeRequest = (
     token: TestToken = allowedTestTokens[0]!,
-    requestBody: unknown = body,
+    requestQuery: Record<string, unknown> = query,
     id: string = agreementId,
   ) =>
     injectAppRequest(token)
       .post(`/agreements/${id}/activationMagicLink`)
-      .body(requestBody as never);
+      .query(requestQuery as Record<string, string>);
 
   it("returns 200 and forwards the magic link from K2K when the agreement is owned by the caller", async () => {
     await seedAgreement();
@@ -112,17 +109,17 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
   );
 
   it.each([
-    { requestBody: {}, testCase: "empty body" },
+    { requestQuery: {}, testCase: "missing knodeId" },
     {
-      requestBody: { knodeId: "InvalidKnode" },
+      requestQuery: { knodeId: "InvalidKnode" },
       testCase: "invalid knodeId",
     },
     {
-      requestBody: { extra: "field", knodeId },
+      requestQuery: { extra: "field", knodeId },
       testCase: "extra property",
     },
-  ])("returns 400 for invalid body: $testCase", async ({ requestBody }) => {
-    const response = await makeRequest(allowedTestTokens[0]!, requestBody);
+  ])("returns 400 for invalid query: $testCase", async ({ requestQuery }) => {
+    const response = await makeRequest(allowedTestTokens[0]!, requestQuery);
     expect(response.statusCode).toBe(400);
     expect(createAgreementActivationMagicLinkMock).not.toHaveBeenCalled();
   });
@@ -130,7 +127,7 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
   it("returns 400 when the agreementId path param is not a UUID", async () => {
     const response = await makeRequest(
       allowedTestTokens[0]!,
-      body,
+      query,
       "not-a-uuid",
     );
 

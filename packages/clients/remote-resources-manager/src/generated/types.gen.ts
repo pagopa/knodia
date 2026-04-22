@@ -46,13 +46,6 @@ export type AgreementConsumer = {
 };
 
 /**
- * Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param
- */
-export type ActivationMagicLinkRequest = {
-    knodeId: KnodeId;
-};
-
-/**
  * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
  */
 export type MagicLink = {
@@ -791,11 +784,13 @@ export type GetAgreementResponses = {
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
 
 export type CreateAgreementActivationMagicLinkData = {
-    body: ActivationMagicLinkRequest;
+    body?: never;
     path: {
         agreementId: string;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/agreements/{agreementId}/activationMagicLink';
 };
 

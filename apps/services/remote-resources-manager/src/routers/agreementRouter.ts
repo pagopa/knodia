@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import {
-  API_ActivationMagicLinkRequest,
   API_AgreementIdPathParam,
   API_MagicLink,
 } from "@knodia/agreement-models/api";
@@ -209,7 +208,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       const data = await agreementService.createActivationMagicLink(
         unsafeBrandExternalId<AgreementId>(req.params.agreementId),
-        KnodeId.parse(req.body.knodeId),
+        KnodeId.parse(req.query.knodeId),
         ctx,
       );
 
@@ -217,11 +216,11 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_ActivationMagicLinkRequest,
       description:
         "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
       operationId: "createAgreementActivationMagicLink",
       params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
       response: {
         200: API_MagicLink.meta({
           description: "Magic link created successfully",

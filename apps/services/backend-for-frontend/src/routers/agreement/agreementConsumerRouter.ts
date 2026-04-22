@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import {
-  API_ActivationMagicLinkRequest,
   API_AgreementIdPathParam,
   API_MagicLink,
 } from "@knodia/agreement-models/api";
@@ -152,26 +151,26 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
-        `Creating activation magic link for Agreement ${req.params.agreementId} requested by Consumer ${consumerId} on Knode ${req.body.knodeId}`,
+        `Creating activation magic link for Agreement ${req.params.agreementId} requested by Consumer ${consumerId} on Knode ${req.query.knodeId}`,
       );
 
       const { data } =
         await remoteResourcesManagerApi.createAgreementActivationMagicLink({
-          body: { knodeId: req.body.knodeId },
           client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { agreementId: req.params.agreementId },
+          query: { knodeId: req.query.knodeId },
         });
 
       res.status(200).send(data);
     },
     method: "POST",
     schema: {
-      body: API_ActivationMagicLinkRequest,
       description:
         "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
       operationId: "createConsumerAgreementActivationMagicLink",
       params: API_AgreementIdPathParam,
+      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
       response: {
         200: API_MagicLink.meta({
           description: "Magic link created successfully",

@@ -4,8 +4,8 @@ meta {
 }
 
 post {
-  url: {{host-remote-resources-manager}}/agreements/:agreementId/activationMagicLink
-  body: json
+  url: {{host-remote-resources-manager}}/agreements/:agreementId/activationMagicLink?knodeId={{other-knode-id}}
+  body: none
   auth: none
 }
 
@@ -13,13 +13,11 @@ params:path {
   agreementId: {{agreementId}}
 }
 
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
 headers {
   x-correlation-id: {{correlation-id}}
   authorization: {{ui-session-jwt}}
-}
-
-body:json {
-  {
-    "knodeId": "{{other-knode-id}}"
-  }
 }

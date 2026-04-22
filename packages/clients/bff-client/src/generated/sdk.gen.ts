@@ -421,11 +421,7 @@ export const createConsumerAgreementActivationMagicLink = <ThrowOnError extends 
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumer/agreements/{agreementId}/activationMagicLink',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
+    ...options
 });
 
 /**

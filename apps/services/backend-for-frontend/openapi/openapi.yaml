@@ -86,16 +86,6 @@ components:
         - Suspended
         - Archived
         - PendingConsumerOperatorIdentification
-    ActivationMagicLinkRequest:
-      description: Identifies which Producer Knode should mint the activation magic
-        link for the Agreement in the path param
-      type: object
-      properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - knodeId
-      additionalProperties: false
     MagicLink:
       description: A signed, single-action link a Consumer user can follow to perform
         an action on the Producer Knode's frontend
@@ -3697,13 +3687,12 @@ paths:
         - agreement
       description: Request a magic link for a Consumer user to activate an Agreement
         on the Producer Knode's frontend
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ActivationMagicLinkRequest"
       parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
         - schema:
             type: string
             format: uuid
