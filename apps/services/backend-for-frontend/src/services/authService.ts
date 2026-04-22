@@ -78,61 +78,6 @@ export function authServiceBuilder(
     };
   }
 
-  async function validateCognitoToken(
-    token: string,
-  ): Promise<ClaimsFromCognito> {
-    const rawPayload = await verifyCognitoJwt(token);
-
-    const payloadParsed = CognitoPayload.safeParse(rawPayload);
-    if (!payloadParsed.success) {
-      throw unauthorizedError("Invalid Cognito token payload");
-    }
-
-    const cognitoPayload = payloadParsed.data;
-    const groups = cognitoPayload["cognito:groups"];
-
-    const roles = groups
-      .filter((g) => g.startsWith("role:"))
-      .flatMap((g) => {
-        const parsed = UserRole.safeParse(g.slice("role:".length));
-        return parsed.success ? [parsed.data] : [];
-      });
-    const orgGroup = groups.find((g) => g.startsWith("org:"));
-
-    if (!orgGroup) {
-      throw unauthorizedError("Missing organization claim in cognito token");
-    }
-
-    if (roles.length === 0) {
-      throw unauthorizedError("Missing role claims in cognito token");
-    }
-
-    const claimsParsed = ClaimsFromCognito.safeParse({
-      organizationId: orgGroup.slice("org:".length),
-      roles,
-      sub: cognitoPayload.sub,
-      username: cognitoPayload.username,
-    });
-
-    if (!claimsParsed.success) {
-      throw unauthorizedError("Invalid claims in cognito token");
-    }
-
-    return claimsParsed.data;
-  }
-
-  async function verifyCognitoJwt(token: string): Promise<unknown> {
-    try {
-      const { payload } = await jwtVerify(token, cognitoJwks, {
-        algorithms: ["RS256"],
-        issuer: config.cognitoIssuer,
-      });
-      return payload;
-    } catch {
-      throw unauthorizedError("Cognito token verification failed");
-    }
-  }
-
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
     const rawPayload = await verifyAgainstJwksSets({
       algorithms: ["RS256"],
@@ -164,18 +109,47 @@ export function authServiceBuilder(
     });
   }
 
+  async function verifyMagicLinkToken(
+    token: string,
+  ): Promise<ExternalUISessionMagicLinkTokenClaims> {
+    const rawPayload = await verifyAgainstJwksSets({
+      algorithms: ["RS256"],
+      audience: config.externalUiSessionMagicLinkAccepted.audience,
+      errorMessage: "Magic-link token verification failed",
+      issuer: config.externalUiSessionMagicLinkAccepted.issuer,
+      jwksSets: bffJwksSets,
+      token,
+    });
+
+    const parsed = ExternalUISessionMagicLinkTokenClaims.safeParse(rawPayload);
+    if (!parsed.success) {
+      throw unauthorizedError("Invalid magic-link token claims");
+    }
+    // No explicit scope check: ExternalUISessionScope is a single-value Zod
+    // enum today, so safeParse above already rejects any other scope with 401.
+    // WARNING: this is load-bearing — the moment ExternalUISessionScope gains
+    // a second value, exchangeMagicLinkToken below will forward whatever
+    // scope the magic-link carried (`scope: claims.scope`) to
+    // generateExternalUISessionToken without narrowing. Re-add an explicit
+    // scope check here (or an allow-list parameter) at that point.
+
+    const firstUse = await magicLinkTokenStore.consume(
+      parsed.data.jti,
+      parsed.data.exp,
+    );
+    if (!firstUse) {
+      throw unauthorizedError("Magic-link token already used");
+    }
+
+    return parsed.data;
+  }
+
   return {
     async exchangeMagicLinkToken(magicLinkToken: string): Promise<{
       agreementId: AgreementId;
       externalUiSessionToken: string;
     }> {
-      const claims = await verifyMagicLinkToken({
-        acceptedAudience: config.externalUiSessionMagicLinkAccepted.audience,
-        acceptedIssuer: config.externalUiSessionMagicLinkAccepted.issuer,
-        jwksSets: bffJwksSets,
-        magicLinkTokenStore,
-        token: magicLinkToken,
-      });
+      const claims = await verifyMagicLinkToken(magicLinkToken);
       const { serialized } =
         await tokenGenerator.generateExternalUISessionToken({
           agreementId: claims.agreementId,
@@ -201,7 +175,11 @@ export function authServiceBuilder(
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      const claims = await validateCognitoToken(cognitoToken);
+      const claims = await validateCognitoToken(
+        cognitoToken,
+        cognitoJwks,
+        config.cognitoIssuer,
+      );
       return generateTokenPairFromClaims(claims);
     },
 
@@ -227,42 +205,63 @@ export function authServiceBuilder(
   };
 }
 
-async function verifyMagicLinkToken({
-  acceptedAudience,
-  acceptedIssuer,
-  jwksSets,
-  magicLinkTokenStore,
-  token,
-}: {
-  acceptedAudience: string;
-  acceptedIssuer: string;
-  jwksSets: ReturnType<typeof createRemoteJWKSet>[];
-  magicLinkTokenStore: JtiReplayStore;
-  token: string;
-}): Promise<ExternalUISessionMagicLinkTokenClaims> {
-  const rawPayload = await verifyAgainstJwksSets({
-    algorithms: ["RS256"],
-    audience: acceptedAudience,
-    errorMessage: "Magic-link token verification failed",
-    issuer: acceptedIssuer,
-    jwksSets,
-    token,
+async function validateCognitoToken(
+  token: string,
+  cognitoJwks: ReturnType<typeof createRemoteJWKSet>,
+  cognitoIssuer: string,
+): Promise<ClaimsFromCognito> {
+  const rawPayload = await verifyCognitoJwt(token, cognitoJwks, cognitoIssuer);
+
+  const payloadParsed = CognitoPayload.safeParse(rawPayload);
+  if (!payloadParsed.success) {
+    throw unauthorizedError("Invalid Cognito token payload");
+  }
+
+  const cognitoPayload = payloadParsed.data;
+  const groups = cognitoPayload["cognito:groups"];
+
+  const roles = groups
+    .filter((g) => g.startsWith("role:"))
+    .flatMap((g) => {
+      const parsed = UserRole.safeParse(g.slice("role:".length));
+      return parsed.success ? [parsed.data] : [];
+    });
+  const orgGroup = groups.find((g) => g.startsWith("org:"));
+
+  if (!orgGroup) {
+    throw unauthorizedError("Missing organization claim in cognito token");
+  }
+
+  if (roles.length === 0) {
+    throw unauthorizedError("Missing role claims in cognito token");
+  }
+
+  const claimsParsed = ClaimsFromCognito.safeParse({
+    organizationId: orgGroup.slice("org:".length),
+    roles,
+    sub: cognitoPayload.sub,
+    username: cognitoPayload.username,
   });
 
-  const parsed = ExternalUISessionMagicLinkTokenClaims.safeParse(rawPayload);
-  if (!parsed.success) {
-    throw unauthorizedError("Invalid magic-link token claims");
-  }
-  // No explicit scope check: ExternalUISessionScope is a Zod enum with a
-  // single value, so safeParse above already rejects any other scope with 401.
-
-  const firstUse = await magicLinkTokenStore.consume(
-    parsed.data.jti,
-    parsed.data.exp,
-  );
-  if (!firstUse) {
-    throw unauthorizedError("Magic-link token already used");
+  if (!claimsParsed.success) {
+    throw unauthorizedError("Invalid claims in cognito token");
   }
 
-  return parsed.data;
+  return claimsParsed.data;
+}
+
+async function verifyCognitoJwt(
+  token: string,
+  cognitoJwks: ReturnType<typeof createRemoteJWKSet>,
+  cognitoIssuer: string,
+): Promise<unknown> {
+  try {
+    const { payload } = await jwtVerify(token, cognitoJwks, {
+      algorithms: ["RS256"],
+      issuer: cognitoIssuer,
+    });
+    return payload;
+  } catch {
+    throw unauthorizedError("Cognito token verification failed");
+  }
 }
