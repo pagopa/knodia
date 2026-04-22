@@ -40,6 +40,27 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
+/**
+ * Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param
+ */
+export type ActivationMagicLinkRequest = {
+    knodeId: KnodeId;
+};
+
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -2184,6 +2205,45 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type CreateConsumerAgreementActivationMagicLinkData = {
+    body: ActivationMagicLinkRequest;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/consumer/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateConsumerAgreementActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+};
+
+export type CreateConsumerAgreementActivationMagicLinkError = CreateConsumerAgreementActivationMagicLinkErrors[keyof CreateConsumerAgreementActivationMagicLinkErrors];
+
+export type CreateConsumerAgreementActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateConsumerAgreementActivationMagicLinkResponse = CreateConsumerAgreementActivationMagicLinkResponses[keyof CreateConsumerAgreementActivationMagicLinkResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;

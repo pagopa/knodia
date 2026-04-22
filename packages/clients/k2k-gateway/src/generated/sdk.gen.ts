@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses } from './types.gen.ts';
+import type { CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -155,6 +155,17 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',
     url: '/agreements/{agreementId}/suspend',
+    ...options
+});
+
+/**
+ * Create an Agreement activation magic link
+ *
+ * Create a magic link for a Consumer user to activate an Agreement on the Producer's frontend
+ */
+export const createAgreementActivationMagicLink = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementActivationMagicLinkData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementActivationMagicLinkResponses, CreateAgreementActivationMagicLinkErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}/activationMagicLink',
     ...options
 });
 

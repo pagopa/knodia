@@ -352,6 +352,20 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type ClientAssertionVerificationRequest = {
     /**
      * Unique identifier of the Consumer Keychain
@@ -891,6 +905,37 @@ export type SuspendAgreementResponses = {
 };
 
 export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
+
+export type CreateAgreementActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type CreateAgreementActivationMagicLinkError = CreateAgreementActivationMagicLinkErrors[keyof CreateAgreementActivationMagicLinkErrors];
+
+export type CreateAgreementActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementActivationMagicLinkResponse = CreateAgreementActivationMagicLinkResponses[keyof CreateAgreementActivationMagicLinkResponses];
 
 export type GetOrganizationData = {
     body?: never;
