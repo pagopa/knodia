@@ -1,10 +1,12 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   eserviceTemplates,
   getEserviceTemplate,
+  getEserviceTemplateInterfaceContent,
 } from "@knodia/eservice-template-models";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -101,5 +103,65 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
       tags: [apiTags.eserviceTemplate],
     },
     url: "/eserviceTemplates/:templateId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+      const { templateId } = req.params;
+      const { knodeId } = req.query;
+
+      logger.info(
+        { requestParams: req.params, requestQuery: req.query },
+        `Downloading interface of E-service template with ID ${templateId}`,
+      );
+
+      const eserviceTemplate = getEserviceTemplate(
+        unsafeBrandId(templateId),
+        knodeId,
+      );
+
+      if (eserviceTemplate === undefined) {
+        throw notFoundError(
+          `E-service template with ID ${templateId} not found for Knode ${knodeId}`,
+        );
+      }
+
+      const { contentType, name } = eserviceTemplate.interfaceDocument;
+      const content = getEserviceTemplateInterfaceContent(name);
+
+      if (content === undefined) {
+        throw notFoundError(
+          `Interface document ${name} not found for E-service template ${templateId}`,
+        );
+      }
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${name}"`,
+        "Content-Type": contentType,
+      });
+      res.raw.end(content);
+    },
+    method: "GET",
+    schema: {
+      description: "Download the interface document for an E-service template",
+      operationId: "getEserviceTemplateInterface",
+      params: API_EserviceTemplateIdPathParam,
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
+      querystring: API_GetEserviceTemplateQueryParams,
+      response: {
+        200: API_FileDownload.meta({
+          description:
+            "E-service template interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download E-service template interface",
+      tags: [apiTags.eserviceTemplate],
+    },
+    url: "/eserviceTemplates/:templateId/interface",
   });
 };
