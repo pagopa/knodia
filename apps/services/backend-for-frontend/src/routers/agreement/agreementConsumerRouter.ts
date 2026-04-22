@@ -2,7 +2,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_MagicLink,
+} from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -19,7 +22,6 @@ import {
   API_ActivationMagicLinkRequest,
   API_AgreementSeed,
   API_ConsumerAgreements,
-  API_MagicLink,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
