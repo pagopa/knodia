@@ -65,10 +65,11 @@ const purpose: Purpose = {
   state: "Active",
 };
 const agreement: Agreement = {
-  ...getMockAgreement(),
+  ...getMockAgreement({ seed: 0 }),
   consumer: purpose.consumer,
   eserviceId: purpose.eserviceId,
   state: "Active",
+  updatedAt: new Date("2026-03-01"),
 };
 const eserviceVersion: EserviceVersion = {
   ...getMockEserviceVersion(),
@@ -180,8 +181,25 @@ describe("POST /token", async () => {
   });
 
   it("returns a mocked bearer token", async () => {
+    const archivedAgreement1: Agreement = {
+      ...getMockAgreement({ seed: 1 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-01-01"),
+    };
+    const archivedAgreement2: Agreement = {
+      ...getMockAgreement({ seed: 2 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-02-01"),
+    };
+
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement1, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement2, 0),
       eserviceWriterService.upsertEservice(eservice, 0),
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);
@@ -431,15 +449,18 @@ describe("POST /token", async () => {
     },
   );
 
-  it("should return 500 when the k2k gateway call fails", async () => {
-    getClientAssertionVerificationDataMock.mockRejectedValue(
-      new AxiosError("k2k gateway error"),
-    );
+  it.each([404, 400, 500])(
+    "should return 401 or 500 when the k2k gateway call fails",
+    async (status) => {
+      const axiosError = new AxiosError("K2K Gateway Error");
+      axiosError.status = status;
+      getClientAssertionVerificationDataMock.mockRejectedValue(axiosError);
 
-    const response = await createToken();
+      const response = await createToken();
 
-    expect(response.statusCode).toBe(500);
-  });
+      expect(response.statusCode).toBe(status === 404 ? 401 : 500);
+    },
+  );
 
   it("should return 401 when the client assertion signature is invalid", async () => {
     await Promise.all([

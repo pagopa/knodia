@@ -3,7 +3,10 @@ import type { AgreementId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { assertSQLFiltersAreDefined } from "@knodia/db-readmodel-commons/utils";
+import {
+  assertSQLFiltersAreDefined,
+  createOrderByFilters,
+} from "@knodia/db-readmodel-commons/utils";
 import { eq, type SQL } from "drizzle-orm";
 
 import {
@@ -19,6 +22,12 @@ export function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     ): Promise<undefined | WithMetadata<Agreement>> {
       assertSQLFiltersAreDefined(filters);
 
+      const orderByFilters = createOrderByFilters({
+        sortBy: "updatedAt",
+        sortOrder: "desc",
+        table: readmodelAgreement,
+      });
+
       const queryRes = await readmodelDb
         .select({
           agreement: readmodelAgreement,
@@ -29,7 +38,9 @@ export function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           readmodelAgreementAttribute,
           eq(readmodelAgreementAttribute.agreementId, readmodelAgreement.id),
         )
-        .where(filters);
+        .where(filters)
+        .orderBy(...orderByFilters)
+        .limit(1);
 
       return aggregateAgreement(queryRes);
     },

@@ -149,6 +149,10 @@ export type GetAgreementsData = {
          * Filter by Agreement State
          */
         state?: Array<AgreementState>;
+        /**
+         * Filter Agreements updated at or after this timestamp
+         */
+        updatedSince?: string;
     };
     url: '/agreements';
 };
