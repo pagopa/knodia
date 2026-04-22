@@ -206,7 +206,7 @@ export function getEserviceTemplateInterfaceContent(
 ): Buffer<ArrayBufferLike> | undefined {
   try {
     return readFileSync(
-      new URL(`../fixtures/${interfaceName}`, import.meta.url),
+      new URL(`./fixtures/${interfaceName}`, import.meta.url),
     );
   } catch {
     return undefined;
