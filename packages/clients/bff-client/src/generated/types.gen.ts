@@ -553,6 +553,7 @@ export type ExternalUiSessionExchangeRequest = {
 };
 
 export type ExternalUiSessionExchangeResponse = {
+    agreementId: string;
     externalUiSessionToken: string;
 };
 

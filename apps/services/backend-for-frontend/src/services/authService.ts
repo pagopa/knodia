@@ -3,7 +3,11 @@ import {
   UISessionRefreshTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import { OrganizationId, UserId } from "@knodia/common-models/ids";
+import {
+  type AgreementId,
+  OrganizationId,
+  UserId,
+} from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
@@ -161,9 +165,10 @@ export function authServiceBuilder(
   }
 
   return {
-    async exchangeMagicLinkToken(
-      magicLinkToken: string,
-    ): Promise<{ externalUiSessionToken: string }> {
+    async exchangeMagicLinkToken(magicLinkToken: string): Promise<{
+      agreementId: AgreementId;
+      externalUiSessionToken: string;
+    }> {
       const claims = await verifyMagicLinkToken({
         acceptedAudience: config.externalUiSessionMagicLinkAcceptedAudience,
         acceptedIssuer: config.externalUiSessionMagicLinkAcceptedIssuer,
@@ -186,7 +191,10 @@ export function authServiceBuilder(
           secondsDuration: config.externalUiSessionJwt.secondsDuration,
           subject: claims.agreementId,
         });
-      return { externalUiSessionToken: serialized };
+      return {
+        agreementId: claims.agreementId,
+        externalUiSessionToken: serialized,
+      };
     },
 
     async generateUISessionTokenPair(cognitoToken: string): Promise<{

@@ -621,7 +621,11 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(200);
-      const body = response.json<{ externalUiSessionToken: string }>();
+      const body = response.json<{
+        agreementId: string;
+        externalUiSessionToken: string;
+      }>();
+      expect(body.agreementId).toBe(AGREEMENT_ID);
       expect(body.externalUiSessionToken).toBeDefined();
       expect(body.externalUiSessionToken.split(".")).toHaveLength(3);
 

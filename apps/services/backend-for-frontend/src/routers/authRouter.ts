@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { AgreementId } from "@knodia/common-models/ids";
 import {
   API_Problem,
   unauthorizedError,
@@ -42,6 +43,7 @@ const API_ExternalUiSessionExchangeRequest = z
 
 const API_ExternalUiSessionExchangeResponse = z
   .strictObject({
+    agreementId: AgreementId,
     externalUiSessionToken: z.string(),
   })
   .meta({ id: "ExternalUiSessionExchangeResponse" });
@@ -168,9 +170,9 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { externalUiSessionToken } =
+      const { agreementId, externalUiSessionToken } =
         await authService.exchangeMagicLinkToken(req.body.magicLinkToken);
-      res.send({ externalUiSessionToken });
+      res.send({ agreementId, externalUiSessionToken });
     },
     method: "POST",
     schema: {
