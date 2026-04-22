@@ -36,17 +36,15 @@ export function getFieldOptionLabels(
 
 export function getGroupDescription(
   texts: FormTexts,
-  key: string | undefined,
+  key: string,
 ): string | undefined {
-  if (!key) return undefined;
   return texts[`${key}.description`];
 }
 
 export function getGroupLabel(
   texts: FormTexts,
-  key: string | undefined,
+  key: string,
 ): string | undefined {
-  if (!key) return undefined;
   return texts[`${key}.label`];
 }
 

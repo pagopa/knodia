@@ -1,9 +1,9 @@
 import { TextArea, TextField } from "@knodia/ui-kit/ui";
 
-import type { ControlElement } from "@/features/purpose/engine/types";
+import type { ResolvedControl } from "@/features/purpose/engine/types";
 
 interface Props {
-  control: ControlElement;
+  control: ResolvedControl;
   error?: string | undefined;
   maxLength?: number | undefined;
   onChange: (value: string) => void;

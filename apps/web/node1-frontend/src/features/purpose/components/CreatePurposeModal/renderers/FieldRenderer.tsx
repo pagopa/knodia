@@ -7,6 +7,7 @@ import type {
   FormValues,
   JsonSchema,
   JsonSchemaProperty,
+  ResolvedControl,
 } from "@/features/purpose/engine/types";
 
 import { getFilteredOptionValues } from "@/features/purpose/engine/optionFilter";
@@ -71,22 +72,14 @@ export function FieldRenderer({
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
   }, [control, allValues, optionLabels, optionValues]);
 
-  const resolvedControl: ControlElement = useMemo(
+  const resolvedControl: ResolvedControl = useMemo(
     () => ({
       label,
       options: control.options
-        ? {
-            description,
-            hideOptions: control.options.hideOptions,
-            optionLabels,
-            widget: control.options.widget,
-          }
+        ? { description, optionLabels, widget: control.options.widget }
         : undefined,
-      rule: control.rule,
-      scope: control.scope,
-      type: control.type,
     }),
-    [control, label, description, optionLabels],
+    [control.options, label, description, optionLabels],
   );
 
   return match(widget)

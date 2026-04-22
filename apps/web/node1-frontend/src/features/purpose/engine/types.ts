@@ -56,6 +56,18 @@ export interface JsonSchemaProperty {
   uniqueItems?: boolean;
 }
 
+// Narrowed control shape used by the sub-renderers. The FieldRenderer resolves
+// labels/descriptions/option labels from the texts dictionary and passes only
+// what the renderers need.
+export interface ResolvedControl {
+  label?: string;
+  options?: {
+    description?: string;
+    optionLabels?: Record<string, string>;
+    widget: ControlOptions["widget"];
+  };
+}
+
 export type RuleCondition = AndCondition | LeafCondition;
 
 export type UISchema = GroupElement | LayoutElement;

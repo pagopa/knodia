@@ -12,6 +12,25 @@ const REFERENCE_LANG = "en";
 
 type Dict = Record<string, string>;
 
+function checkLangsAligned(
+  dicts: Map<string, Dict>,
+  version: string,
+  prefix: string,
+) {
+  const reference = dicts.get(REFERENCE_LANG);
+  if (!reference) return;
+  for (const [lang, dict] of dicts) {
+    if (lang === REFERENCE_LANG) continue;
+    const missing = Object.keys(reference).filter((k) => !(k in dict));
+    const extra = Object.keys(dict).filter((k) => !(k in reference));
+    if (missing.length > 0 || extra.length > 0) {
+      fail(
+        `[${version}/${lang}] ${prefix}.${lang}.json differs from ${prefix}.${REFERENCE_LANG}.json: missing=${missing.length}, extra=${extra.length}`,
+      );
+    }
+  }
+}
+
 function fail(message: string) {
   console.error(message);
   process.exitCode = 1;
@@ -36,7 +55,6 @@ for (const version of readdirSync(SCHEMAS_ROOT, { withFileTypes: true })
   const versionDir = join(SCHEMAS_ROOT, version);
   const texts = readDicts(versionDir, "texts");
   const uiTexts = readDicts(versionDir, "ui-texts");
-  const reference = texts.get(REFERENCE_LANG);
 
   for (const [lang, dict] of texts) {
     const ui = uiTexts.get(lang);
@@ -50,15 +68,6 @@ for (const version of readdirSync(SCHEMAS_ROOT, { withFileTypes: true })
         `[${version}/${lang}] duplicate keys across texts and ui-texts:\n  - ${overlap.join("\n  - ")}`,
       );
     }
-    if (reference && lang !== REFERENCE_LANG) {
-      const missing = Object.keys(reference).filter((k) => !(k in dict));
-      const extra = Object.keys(dict).filter((k) => !(k in reference));
-      if (missing.length > 0 || extra.length > 0) {
-        fail(
-          `[${version}/${lang}] texts.${lang}.json differs from texts.${REFERENCE_LANG}.json: missing=${missing.length}, extra=${extra.length}`,
-        );
-      }
-    }
   }
 
   for (const lang of uiTexts.keys()) {
@@ -66,6 +75,9 @@ for (const version of readdirSync(SCHEMAS_ROOT, { withFileTypes: true })
       fail(`[${version}/${lang}] missing texts.${lang}.json`);
     }
   }
+
+  checkLangsAligned(texts, version, "texts");
+  checkLangsAligned(uiTexts, version, "ui-texts");
 }
 
 if (process.exitCode !== 1) {
