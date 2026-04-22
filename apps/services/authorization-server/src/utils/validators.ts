@@ -222,7 +222,6 @@ export async function verifyDpopProofSignature(
 
     return result.payload;
   } catch (error) {
-    console.log("🚀 ~ verifyDpopProofSignature ~ error:", error);
     throw match(error)
       .with(P.instanceOf(JWTExpired), () => clientAssertionExpired()) // TODO: needed for maxTokenAge?
       .with(
