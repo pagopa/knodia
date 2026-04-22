@@ -50,6 +50,7 @@ import {
   agreementNotActive,
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
+  consumerKnodeVerificationDataNotFound,
   consumerMissingRequiredAttributes,
   dpopClaimsValidationError,
   eserviceVersionNotActive,
@@ -61,6 +62,7 @@ import {
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
+  unexpectedConsumerKnodeVerificationDataRetrievalError,
   unexpectedDpopProofSignatureVerificationError,
 } from "../models/errors.ts";
 import {
@@ -179,7 +181,14 @@ export async function verifyClientAssertionSignature(
       .with(P.instanceOf(JWSInvalid), (e) =>
         invalidClientAssertionJWS(e.message),
       )
-      .with(P.union(P.instanceOf(ApiError), P.instanceOf(AxiosError)), (e) => e)
+      .with(P.instanceOf(ApiError), (e) => e)
+      .with(P.instanceOf(AxiosError), (e) => {
+        if (e.status === 404) {
+          return consumerKnodeVerificationDataNotFound();
+        } else {
+          return unexpectedConsumerKnodeVerificationDataRetrievalError(e);
+        }
+      })
       .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
   }
 }

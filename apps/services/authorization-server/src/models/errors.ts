@@ -9,6 +9,7 @@ import type {
   PurposeId,
 } from "@knodia/common-models/ids";
 import type { PurposeState } from "@knodia/purpose-models";
+import type { AxiosError } from "axios";
 
 import {
   EserviceAccessTokenType,
@@ -25,7 +26,11 @@ import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBu
 import { constants } from "http2";
 import { ZodError } from "zod";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_UNAUTHORIZED } = constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_UNAUTHORIZED,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -44,10 +49,12 @@ const errorCodes = {
   PURPOSE_NOT_FOUND: "0013",
   PLATFORM_STATES_NOT_ACTIVE: "0014",
   ACCESS_TOKEN_TYPE_MISMATCH: "0015",
-  DPOP_CLAIMS_VALIDATION_ERROR: "0016",
-  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0017",
-  INVALID_DPOP_PROOF_JWS: "0018",
-  INVALID_DPOP_PROOF_SIGNATURE: "0019",
+  CONSUMER_KNODE_VERIFICATION_DATA_NOT_FOUND: "0016",
+  UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0017",
+  DPOP_CLAIMS_VALIDATION_ERROR: "0018",
+  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0018",
+  INVALID_DPOP_PROOF_JWS: "0019",
+  INVALID_DPOP_PROOF_SIGNATURE: "0020",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -109,6 +116,15 @@ export function clientAssertionExpired() {
   return createApiError<ErrorCodes>({
     code: "CLIENT_ASSERTION_EXPIRED",
     detail: "The Client Assertion has expired",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function consumerKnodeVerificationDataNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_KNODE_VERIFICATION_DATA_NOT_FOUND",
+    detail: "Verification data for the Consumer's Knode was not found",
     status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_client",
   });
@@ -254,7 +270,18 @@ export function unexpectedClientAssertionSignatureVerificationError(
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR",
     detail: `An unexpected error occurred during Client Assertion signature verification: ${message}`,
-    status: HTTP_STATUS_UNAUTHORIZED,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "invalid_client",
+  });
+}
+
+export function unexpectedConsumerKnodeVerificationDataRetrievalError(
+  error: AxiosError,
+) {
+  return createApiError<ErrorCodes>({
+    code: "UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
+    detail: `An unexpected error occurred during retrieval of the Consumer's Knode verification data: ${error.message}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
   });
 }

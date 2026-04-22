@@ -462,15 +462,18 @@ describe("POST /token", async () => {
     },
   );
 
-  it("should return 500 when the k2k gateway call fails", async () => {
-    getClientAssertionVerificationDataMock.mockRejectedValue(
-      new AxiosError("k2k gateway error"),
-    );
+  it.each([404, 400, 500])(
+    "should return 500 when the k2k gateway call fails",
+    async (status) => {
+      const axiosError = new AxiosError("K2K Gateway Error");
+      axiosError.status = status;
+      getClientAssertionVerificationDataMock.mockRejectedValue(axiosError);
 
-    const response = await createToken();
+      const response = await createToken();
 
-    expect(response.statusCode).toBe(500);
-  });
+      expect(response.statusCode).toBe(status === 404 ? 401 : 500);
+    },
+  );
 
   it("should return 401 when the client assertion signature is invalid", async () => {
     await Promise.all([
