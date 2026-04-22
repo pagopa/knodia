@@ -50,6 +50,16 @@ export const producerEservicesQuery = (offset: number) =>
     },
   });
 
+export const archivedProducerEservicesQuery = (offset: number) =>
+  getProducerEservicesOptions({
+    client,
+    query: {
+      limit: DEFAULT_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
+  });
+
 // TODO(KN-479): replace hardcoded limit with server-side search when the number of producer e-services grows
 const ESERVICE_OPTIONS_LIMIT = 50;
 
