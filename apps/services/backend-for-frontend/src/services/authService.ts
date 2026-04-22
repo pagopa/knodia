@@ -5,6 +5,7 @@ import {
 } from "@knodia/common-models/auth";
 import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
+import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
@@ -129,17 +130,13 @@ export function authServiceBuilder(
   }
 
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
-    const rawPayload = await Promise.any(
-      bffJwksSets.map(async (jwks) => {
-        const { payload } = await jwtVerify(token, jwks, {
-          algorithms: ["RS256"],
-          audience: config.acceptedAudiences,
-          issuer: config.uiSessionJwt.issuer,
-        });
-        return payload;
-      }),
-    ).catch(() => {
-      throw unauthorizedError("Refresh token verification failed");
+    const rawPayload = await verifyAgainstJwksSets({
+      algorithms: ["RS256"],
+      audience: config.acceptedAudiences,
+      errorMessage: "Refresh token verification failed",
+      issuer: config.uiSessionJwt.issuer,
+      jwksSets: bffJwksSets,
+      token,
     });
 
     const parsed = UISessionRefreshTokenClaims.safeParse(rawPayload);
@@ -235,17 +232,13 @@ async function verifyMagicLinkToken({
   magicLinkTokenStore: RefreshTokenStore;
   token: string;
 }): Promise<ExternalUISessionMagicLinkTokenClaims> {
-  const rawPayload = await Promise.any(
-    jwksSets.map(async (jwks) => {
-      const { payload } = await jwtVerify(token, jwks, {
-        algorithms: ["RS256"],
-        audience: acceptedAudience,
-        issuer: acceptedIssuer,
-      });
-      return payload;
-    }),
-  ).catch(() => {
-    throw unauthorizedError("Magic-link token verification failed");
+  const rawPayload = await verifyAgainstJwksSets({
+    algorithms: ["RS256"],
+    audience: acceptedAudience,
+    errorMessage: "Magic-link token verification failed",
+    issuer: acceptedIssuer,
+    jwksSets,
+    token,
   });
 
   const parsed = ExternalUISessionMagicLinkTokenClaims.safeParse(rawPayload);
