@@ -43,7 +43,11 @@ export const producerEserviceDetailsQuery = (eserviceId: string) =>
 export const producerEservicesQuery = (offset: number) =>
   getProducerEservicesOptions({
     client,
-    query: { limit: DEFAULT_PAGE_LIMIT, offset },
+    query: {
+      limit: DEFAULT_PAGE_LIMIT,
+      offset,
+      state: ["Active", "Suspended"],
+    },
   });
 
 // TODO(KN-479): replace hardcoded limit with server-side search when the number of producer e-services grows
