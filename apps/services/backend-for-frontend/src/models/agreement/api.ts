@@ -38,7 +38,13 @@ export const API_SuspendReactivateConsumerAgreementQueryParams = z.strictObject(
   },
 );
 
-export const API_GetProducerAgreementsQueryParams = API_PaginationQueryParams;
+export const API_GetProducerAgreementsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+  });
 export type API_GetProducerAgreementsQueryParams = z.infer<
   typeof API_GetProducerAgreementsQueryParams
 >;
