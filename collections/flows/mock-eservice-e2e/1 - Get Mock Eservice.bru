@@ -1,0 +1,24 @@
+meta {
+  name: 1 - Get Mock Eservice
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: 10000000-0000-4000-8000-000000000001
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  eserviceId: res.body.id
+}
