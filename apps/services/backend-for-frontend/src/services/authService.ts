@@ -13,7 +13,7 @@ import z from "zod";
 
 import type { BffProcessConfig } from "../config/config.ts";
 
-import { type RefreshTokenStore } from "./refreshTokenStore.ts";
+import { type JtiReplayStore } from "./jtiReplayStore.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
@@ -33,8 +33,8 @@ type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 export function authServiceBuilder(
   config: BffProcessConfig,
   tokenGenerator: TokenGenerator,
-  refreshTokenStore: RefreshTokenStore,
-  magicLinkTokenStore: RefreshTokenStore,
+  refreshTokenStore: JtiReplayStore,
+  magicLinkTokenStore: JtiReplayStore,
 ) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
@@ -229,7 +229,7 @@ async function verifyMagicLinkToken({
   acceptedAudience: string;
   acceptedIssuer: string;
   jwksSets: ReturnType<typeof createRemoteJWKSet>[];
-  magicLinkTokenStore: RefreshTokenStore;
+  magicLinkTokenStore: JtiReplayStore;
   token: string;
 }): Promise<ExternalUISessionMagicLinkTokenClaims> {
   const rawPayload = await verifyAgainstJwksSets({

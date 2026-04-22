@@ -31,7 +31,7 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
-import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
+import { createJtiReplayStore } from "./services/jtiReplayStore.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
@@ -99,11 +99,11 @@ export function buildAppFromConfig(
   });
 
   const pollingService = pollingServiceBuilder(config);
-  const refreshTokenStore = createRefreshTokenStore(
+  const refreshTokenStore = createJtiReplayStore(
     config.dynamoDbRefreshTokensTable,
     sharedDynamoClient,
   );
-  const magicLinkTokenStore = createRefreshTokenStore(
+  const magicLinkTokenStore = createJtiReplayStore(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
