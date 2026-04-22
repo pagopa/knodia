@@ -3,12 +3,17 @@ import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { z } from "zod";
 
 import {
+  EserviceUpdatedV1,
   EserviceVersionActivatedV1,
   EserviceVersionReactivatedV1,
   EserviceVersionSuspendedV1,
 } from "./generated/v1/eserviceEvents.ts";
 
 export const EserviceEventV1 = z.discriminatedUnion("type", [
+  z.object({
+    data: protobufBinaryCodec(EserviceUpdatedV1),
+    type: z.literal("EserviceUpdatedV1"),
+  }),
   z.object({
     data: protobufBinaryCodec(EserviceVersionActivatedV1),
     type: z.literal("EserviceVersionActivatedV1"),

@@ -58,3 +58,19 @@ export const createEserviceVersionSuspendedV1Event = (
   },
   streamId: eservice.id,
 });
+
+export const createEserviceUpdatedV1Event = (
+  eservice: Eservice,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreEserviceEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      eservice: toEserviceV1(eservice),
+    },
+    type: "EserviceUpdatedV1",
+  },
+  streamId: eservice.id,
+});

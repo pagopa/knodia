@@ -83,6 +83,17 @@ export const MultipleInvalid: Story = {
   },
 };
 
+export const MultipleDisjunction: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    selectionMode: "multiple",
+    selectionListFormatType: "disjunction",
+    description: 'Selected items are joined with "or" (alternatives).',
+    children,
+  },
+};
+
 export const StickerSheet: Story = {
   render: renderStickerSheet([["default", "disabled", "invalid"]], (state) =>
     sizes.map((size) => (

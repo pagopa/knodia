@@ -33,3 +33,67 @@ export const createAgreementCreatedPendingConsumerOperatorIdentificationV1Event 
     },
     streamId: agreement.id,
   });
+
+export const createAgreementReactivatedByConsumerV1Event = (
+  agreement: Agreement,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementReactivatedByConsumerV1",
+  },
+  streamId: agreement.id,
+});
+
+export const createAgreementReactivatedByProducerV1Event = (
+  agreement: Agreement,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementReactivatedByProducerV1",
+  },
+  streamId: agreement.id,
+});
+
+export const createAgreementSuspendedByConsumerV1Event = (
+  agreement: Agreement,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementSuspendedByConsumerV1",
+  },
+  streamId: agreement.id,
+});
+
+export const createAgreementSuspendedByProducerV1Event = (
+  agreement: Agreement,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementSuspendedByProducerV1",
+  },
+  streamId: agreement.id,
+});

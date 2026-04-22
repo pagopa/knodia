@@ -1,7 +1,6 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { ComboBox, ComboBoxItem } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 import { producerEserviceOptionsQuery } from "@/features/e-service/services/queries";
 
@@ -15,30 +14,16 @@ export function ProducerEserviceFilter({
   const { data } = useQuery(producerEserviceOptionsQuery());
   const options = data?.results ?? [];
 
-  const [searchValue, setSearchValue] = useState<null | string>(null);
-
-  const selectedLabel = getEserviceLabel(options, eserviceId);
-  const inputValue = searchValue ?? selectedLabel;
-
-  const filteredOptions = options.filter((es) =>
-    es.name.en.toLowerCase().includes(inputValue.toLowerCase()),
-  );
-
   return (
     <div className="mb-8 max-w-xs">
       <ComboBox
-        inputValue={inputValue}
+        defaultItems={options}
         isClearable
-        items={filteredOptions}
         label="E-Service"
-        onInputChange={(value) => setSearchValue(value)}
         onSelectionChange={(key) => {
-          setSearchValue(null);
-          if (key === null) {
-            onEserviceIdChange(undefined);
-          } else {
-            onEserviceIdChange(unsafeBrandId<EserviceId>(String(key)));
-          }
+          onEserviceIdChange(
+            key === null ? undefined : unsafeBrandId<EserviceId>(String(key)),
+          );
         }}
         placeholder="All E-Services"
         selectedKey={eserviceId ?? null}
@@ -47,11 +32,4 @@ export function ProducerEserviceFilter({
       </ComboBox>
     </div>
   );
-}
-
-function getEserviceLabel(
-  options: { id: string; name: { en: string } }[],
-  eserviceId: EserviceId | undefined,
-): string {
-  return options.find((o) => o.id === eserviceId)?.name.en ?? "";
 }

@@ -23,6 +23,8 @@ export function toAPI_Agreement(
     id: agreement.id,
     producerId: agreement.producerId,
     state: toAPI_AgreementState(agreement.state),
+    suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+    suspendedByProducerAt: agreement.suspendedByProducerAt,
     updatedAt: agreement.updatedAt,
   };
 }
