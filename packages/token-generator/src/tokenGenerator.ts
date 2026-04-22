@@ -1,21 +1,13 @@
 import type {
   ExternalUISessionMagicLinkTokenClaims,
-  ExternalUISessionScope,
+  ExternalUISessionResourceClaims,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  AgreementId,
-  EserviceId,
-  EserviceVersionId,
-  KnodeId,
-  OrganizationId,
-  UserId,
-} from "@knodia/common-models/ids";
+import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
@@ -40,22 +32,23 @@ export interface InternalTokenInput extends TokenParams {
 }
 
 interface ExternalUISessionMagicLinkTokenInput
-  extends ExternalUISessionResourceClaims, TokenParams {
+  extends ExternalUISessionResourceInput, TokenParams {
   subject: string;
 }
 
-interface ExternalUISessionResourceClaims {
-  agreementId: AgreementId;
-  consumerId: ExternalId<OrganizationId>;
-  consumerKnodeId: KnodeId;
-  eserviceId: EserviceId;
-  eserviceVersionId: EserviceVersionId;
-  producerId: OrganizationId;
-  scope: ExternalUISessionScope;
-}
+type ExternalUISessionResourceInput = Pick<
+  ExternalUISessionResourceClaims,
+  | "agreementId"
+  | "consumerId"
+  | "consumerKnodeId"
+  | "eserviceId"
+  | "eserviceVersionId"
+  | "producerId"
+  | "scope"
+>;
 
 interface ExternalUISessionTokenInput
-  extends ExternalUISessionResourceClaims, TokenParams {
+  extends ExternalUISessionResourceInput, TokenParams {
   subject: string;
 }
 
@@ -125,7 +118,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   }
 
   function buildExternalUISessionResourceClaims(
-    input: ExternalUISessionResourceClaims & TokenParams & { subject: string },
+    input: ExternalUISessionResourceInput & TokenParams & { subject: string },
   ): Omit<ExternalUISessionTokenClaims, "type"> {
     const now = dateToSeconds(new Date());
     return {
