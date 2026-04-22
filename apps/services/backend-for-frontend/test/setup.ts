@@ -47,8 +47,10 @@ beforeAll(async () => {
         kid: "alias/test-kid",
         secondsDuration: 300,
       },
-      externalUiSessionMagicLinkAcceptedAudience: "test-magic-link-audience",
-      externalUiSessionMagicLinkAcceptedIssuer: "test-issuer",
+      externalUiSessionMagicLinkAccepted: {
+        audience: "test-magic-link-audience",
+        issuer: "test-issuer",
+      },
       host: "0.0.0.0",
       isProduction: false,
       keychainProcessUrl: "http://localhost:0",

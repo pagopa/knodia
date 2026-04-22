@@ -170,8 +170,8 @@ export function authServiceBuilder(
       externalUiSessionToken: string;
     }> {
       const claims = await verifyMagicLinkToken({
-        acceptedAudience: config.externalUiSessionMagicLinkAcceptedAudience,
-        acceptedIssuer: config.externalUiSessionMagicLinkAcceptedIssuer,
+        acceptedAudience: config.externalUiSessionMagicLinkAccepted.audience,
+        acceptedIssuer: config.externalUiSessionMagicLinkAccepted.issuer,
         jwksSets: bffJwksSets,
         magicLinkTokenStore,
         token: magicLinkToken,

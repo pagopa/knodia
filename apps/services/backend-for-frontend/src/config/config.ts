@@ -76,10 +76,10 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           kid: c.EXTERNAL_UI_SESSION_JWT_KID,
           secondsDuration: c.EXTERNAL_UI_SESSION_JWT_SECONDS_DURATION,
         },
-        externalUiSessionMagicLinkAcceptedAudience:
-          c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE,
-        externalUiSessionMagicLinkAcceptedIssuer:
-          c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER,
+        externalUiSessionMagicLinkAccepted: {
+          audience: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE,
+          issuer: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER,
+        },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
