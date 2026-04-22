@@ -21,7 +21,9 @@ const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
 
 // aud must match CLIENT_ASSERTION_ACCEPTED_AUDIENCES in authorization-server/.env.
 const AUD = "test.knodia.org";
-const DURATION_SECONDS = 600;
+// Must not exceed CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS in authorization-server/.env,
+// otherwise the server rejects the assertion before it expires.
+const DURATION_SECONDS = 300;
 
 const { values } = parseArgs({
   options: {
