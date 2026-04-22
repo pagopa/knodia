@@ -450,7 +450,7 @@ describe("POST /token", async () => {
   );
 
   it.each([404, 400, 500])(
-    "should return 500 when the k2k gateway call fails",
+    "should return 401 or 500 when the k2k gateway call fails",
     async (status) => {
       const axiosError = new AxiosError("K2K Gateway Error");
       axiosError.status = status;
