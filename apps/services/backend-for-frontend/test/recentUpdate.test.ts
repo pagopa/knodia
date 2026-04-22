@@ -1,6 +1,38 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { hasRecentlyBeenUpdated } from "../src/utils/recentUpdate.ts";
+import {
+  getRecentUpdateCutoffDate,
+  hasRecentlyBeenUpdated,
+} from "../src/utils/recentUpdate.ts";
+
+describe("getRecentUpdateCutoffDate", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-14T12:00:00Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns a date N days in the past", () => {
+    expect(getRecentUpdateCutoffDate(3)).toEqual(
+      new Date("2026-04-11T12:00:00Z"),
+    );
+  });
+
+  it("returns the current date when days is 0", () => {
+    expect(getRecentUpdateCutoffDate(0)).toEqual(
+      new Date("2026-04-14T12:00:00Z"),
+    );
+  });
+
+  it("works with 1 day", () => {
+    expect(getRecentUpdateCutoffDate(1)).toEqual(
+      new Date("2026-04-13T12:00:00Z"),
+    );
+  });
+});
 
 describe("hasRecentlyBeenUpdated", () => {
   beforeEach(() => {

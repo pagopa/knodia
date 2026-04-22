@@ -47,6 +47,7 @@ import {
   toAPI_PurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 interface PurposeProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -83,7 +84,12 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Purposes with query parameters",
       );
 
-      const { agreementId, eserviceId, limit, offset, state } = req.query;
+      const { agreementId, eserviceId, limit, offset, recentlyUpdated, state } =
+        req.query;
+
+      const updatedSince = recentlyUpdated
+        ? getRecentUpdateCutoffDate(config.recentUpdateDays).toISOString()
+        : undefined;
 
       const { data } = await purposeProcessApi.getPurposes({
         client: purposeProcessClient,
@@ -95,6 +101,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           offset,
           producerId,
           state,
+          updatedSince,
         },
       });
 

@@ -7,7 +7,12 @@ import { describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
-import { consumerId, eservice1, mockAgreements } from "./mockAgreements.ts";
+import {
+  consumerId,
+  eservice1,
+  mockAgreements,
+  updatedAt,
+} from "./mockAgreements.ts";
 import {
   injectAppRequest,
   seedAgreement,
@@ -116,6 +121,35 @@ describe("GET /agreements (getAgreements)", () => {
       testCase: "filter by state, sort by updatedAt desc by default",
       totalCount: 6,
     },
+    {
+      expectedResult: [
+        mockAgreements[9],
+        mockAgreements[8],
+        mockAgreements[7],
+        mockAgreements[6],
+      ] as Agreement[],
+      query: {
+        ...defaultQuery,
+        updatedSince: new Date(updatedAt.getTime() + 12000).toISOString(),
+      },
+      testCase:
+        "filter by updatedSince, only agreements updated at or after cutoff",
+      totalCount: 4,
+    },
+    {
+      expectedResult: [
+        mockAgreements[9],
+        mockAgreements[8],
+        mockAgreements[7],
+        mockAgreements[6],
+      ] as Agreement[],
+      query: {
+        ...defaultQuery,
+        updatedSince: mockAgreements[1]!.updatedAt.toISOString(),
+      },
+      testCase: "filter by updatedSince at exact boundary (inclusive)",
+      totalCount: 9,
+    },
   ] satisfies {
     expectedResult: Agreement[];
     query: z.input<typeof API_GetAgreementsQueryParams>;
@@ -154,6 +188,7 @@ describe("GET /agreements (getAgreements)", () => {
     { ...defaultQuery, consumerKnodeId: "InvalidConsumerKnodeId" },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     { ...defaultQuery, state: ["InvalidState"] },
+    { ...defaultQuery, updatedSince: "not-a-date" },
     {
       ...defaultQuery,
       invalidParam: "invalid",

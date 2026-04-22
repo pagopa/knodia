@@ -8,6 +8,7 @@ import {
 import { client } from "@/libs/axios";
 
 const AGREEMENTS_PAGE_LIMIT = 9;
+const AGREEMENTS_SECTION_LIMIT = 50;
 
 export const producerAgreementDetailsQuery = (agreementId: AgreementId) =>
   getProducerAgreementDetailsOptions({
@@ -22,4 +23,18 @@ export const producerAgreementsQuery = (
   getProducerAgreementsOptions({
     client,
     query: { eserviceId, limit: AGREEMENTS_PAGE_LIMIT, offset },
+  });
+
+// TODO: replace hardcoded limit with pagination when the number of recently updated agreements per e-service grows
+export const producerRecentAgreementsByEserviceQuery = (
+  eserviceId: EserviceId,
+) =>
+  getProducerAgreementsOptions({
+    client,
+    query: {
+      eserviceId,
+      limit: AGREEMENTS_SECTION_LIMIT,
+      offset: 0,
+      recentlyUpdated: "true",
+    },
   });

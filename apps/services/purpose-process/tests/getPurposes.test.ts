@@ -15,6 +15,7 @@ import type { API_GetPurposesQueryParams } from "../src/models/api.ts";
 import {
   consumerId1,
   consumerKnodeId1,
+  createdAt,
   eserviceId1,
   eserviceId2,
   mockPurposes,
@@ -160,6 +161,29 @@ describe("GET /purposes (getPurposes)", () => {
       testCase: "filter by agreementId",
       totalCount: 2,
     },
+    {
+      expectedResult: [mockPurposes[4], mockPurposes[3]] as Purpose[],
+      query: {
+        ...defaultQuery,
+        updatedSince: new Date(createdAt.getTime() + 3500).toISOString(),
+      },
+      testCase:
+        "filter by updatedSince, only purposes updated at or after cutoff",
+      totalCount: 2,
+    },
+    {
+      expectedResult: [
+        mockPurposes[4],
+        mockPurposes[3],
+        mockPurposes[2],
+      ] as Purpose[],
+      query: {
+        ...defaultQuery,
+        updatedSince: mockPurposes[2]!.updatedAt.toISOString(),
+      },
+      testCase: "filter by updatedSince at exact boundary (inclusive)",
+      totalCount: 3,
+    },
   ] satisfies {
     expectedResult: Purpose[];
     query: z.input<typeof API_GetPurposesQueryParams>;
@@ -194,6 +218,7 @@ describe("GET /purposes (getPurposes)", () => {
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     { ...defaultQuery, agreementId: "InvalidAgreementId" },
     { ...defaultQuery, state: ["InvalidState"] },
+    { ...defaultQuery, updatedSince: "not-a-date" },
     { ...defaultQuery, invalidParam: "invalid" },
   ])(
     "should return 400 if query parameters are formatted incorrectly (%o)",

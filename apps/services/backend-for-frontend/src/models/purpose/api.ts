@@ -97,6 +97,14 @@ export const API_GetProducerPurposesQueryParams =
       .uuid()
       .optional()
       .meta({ description: "Filter by E-service ID" }),
+    recentlyUpdated: z
+      .enum(["true", "false"])
+      .transform((v) => v === "true")
+      .optional()
+      .meta({
+        description:
+          "Filter to only Purposes updated within the recent update window",
+      }),
     state: arrayQueryParam(API_PurposeState)
       .optional()
       .meta({ description: "Filter by Purpose State" }),
