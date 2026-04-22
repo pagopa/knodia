@@ -16,10 +16,7 @@ import type { K2KGatewayConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import {
-  agreementRouter,
-  type MagicLinkConfig,
-} from "./routers/agreementRouter.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
 import { clientAssertionRouter } from "./routers/clientAssertionRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
@@ -45,7 +42,7 @@ export function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
   loggerConfig: LoggerConfig;
-  magicLinkConfig: MagicLinkConfig;
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"];
   organizationProcessUrl: string;
   pollingService: PollingService;
   purposeProcessUrl: string;
@@ -151,11 +148,7 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
     loggerConfig: config,
-    magicLinkConfig: {
-      ...config.externalUiSessionMagicLinkJwt,
-      frontendActivationPath: config.frontendActivationPath,
-      frontendBaseUrl: config.frontendBaseUrl,
-    },
+    magicLinkConfig: config.magicLinkConfig,
     organizationProcessUrl: config.organizationProcessUrl,
     pollingService: pollingServiceBuilder(config),
     purposeProcessUrl: config.purposeProcessUrl,

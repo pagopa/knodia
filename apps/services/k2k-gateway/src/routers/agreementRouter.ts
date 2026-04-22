@@ -26,6 +26,8 @@ import {
   type PollingService,
 } from "@knodia/polling";
 
+import type { K2KGatewayConfig } from "../config/config.ts";
+
 import {
   API_Agreement,
   API_AgreementIdPathParam,
@@ -43,19 +45,10 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
-export interface MagicLinkConfig {
-  audience: string;
-  frontendActivationPath: string;
-  frontendBaseUrl: string;
-  issuer: string;
-  kid: string;
-  secondsDuration: number;
-}
-
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   callerKnodeId: KnodeId;
-  magicLinkConfig: MagicLinkConfig;
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"];
   pollingService: PollingService;
   tokenGenerator: TokenGenerator;
   tokenProvider: RefreshableInternalTokenGenerator;
@@ -64,7 +57,7 @@ interface AgreementRouterOptions {
 async function buildActivationMagicLink(
   agreement: agreementProcessApi.Agreement,
   tokenGenerator: TokenGenerator,
-  magicLinkConfig: MagicLinkConfig,
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"],
 ) {
   const { payload, serialized } =
     await tokenGenerator.generateExternalUISessionMagicLinkToken({
