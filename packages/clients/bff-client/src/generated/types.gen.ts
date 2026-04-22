@@ -2487,6 +2487,14 @@ export type GetProducerAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter to only Agreements updated within the recent update window
+         */
+        recentlyUpdated?: 'true' | 'false';
     };
     url: '/producer/agreements';
 };
@@ -2662,6 +2670,10 @@ export type GetProducerPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter to only Purposes updated within the recent update window
+         */
+        recentlyUpdated?: 'true' | 'false';
         /**
          * Filter by Purpose State
          */

@@ -29,39 +29,13 @@ function createPurpose(
   };
 }
 
-function renderTable(
-  purposes: bffApi.ProducerPurpose[] = [],
-  isLoading = false,
-) {
-  return renderWithProviders(
-    <ProducerPurposeTable isLoading={isLoading} purposes={purposes} />,
-    { routes: [{ path: "/production/purposes/$id" }] },
-  );
+function renderTable(purposes: bffApi.ProducerPurpose[] = []) {
+  return renderWithProviders(<ProducerPurposeTable purposes={purposes} />, {
+    routes: [{ path: "/production/purposes/$id" }],
+  });
 }
 
 describe("ProducerPurposeTable", () => {
-  it("renders the loading state", () => {
-    renderTable([], true);
-
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-    expect(
-      screen.queryByText("There are no Purposes for your E-Services yet."),
-    ).not.toBeInTheDocument();
-  });
-
-  it("renders the empty state when there are no purposes", () => {
-    renderTable([]);
-
-    expect(
-      screen.getByText("There are no Purposes for your E-Services yet."),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Purposes created for your E-Services by Consumer Organizations will appear here.",
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("renders purposes in a table with correct columns", () => {
     renderTable([createPurpose()]);
 

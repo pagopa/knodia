@@ -8,7 +8,7 @@ import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 
 const createdAt = new Date();
-const updatedAt = new Date(createdAt.getTime() + 1000);
+export const updatedAt = new Date(createdAt.getTime() + 1000);
 
 export const eservice1: Eservice = {
   ...getMockEservice({ latestVersionState: "Active" }),

@@ -55,6 +55,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 const producerVisibleStates: API_AgreementState[] = [
   API_AgreementState.enum.Active,
@@ -143,6 +144,7 @@ interface AgreementProducerRouterOptions {
 
 export const agreementProducerRouter: FastifyPluginAsyncZod<
   AgreementProducerRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
   {
@@ -185,17 +187,23 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Agreements with query parameters",
       );
 
-      const { limit, offset } = req.query;
+      const { eserviceId, limit, offset, recentlyUpdated } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const updatedSince = recentlyUpdated
+        ? getRecentUpdateCutoffDate(config.recentUpdateDays).toISOString()
+        : undefined;
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
         headers,
         query: {
+          eserviceId,
           limit,
           offset,
           producerId,
           state: producerVisibleStates,
+          updatedSince,
         },
       });
 
