@@ -148,22 +148,22 @@
   /* Elevation Shadows */
   .elevation-1 {
     box-shadow: 0 2px 4px 0
-      color-mix(in srgb, var(--color-neutral-700) 8%, transparent);
+      color-mix(in srgb, var(--color-slate-700) 8%, transparent);
   }
   .elevation-2 {
     box-shadow: 0 4px 8px 0
-      color-mix(in srgb, var(--color-neutral-700) 12%, transparent);
+      color-mix(in srgb, var(--color-slate-700) 12%, transparent);
   }
   .elevation-3 {
     box-shadow: 0 8px 16px 0
-      color-mix(in srgb, var(--color-neutral-700) 16%, transparent);
+      color-mix(in srgb, var(--color-slate-700) 16%, transparent);
   }
   .elevation-4 {
     box-shadow: 0 16px 32px 0
-      color-mix(in srgb, var(--color-neutral-700) 24%, transparent);
+      color-mix(in srgb, var(--color-slate-700) 24%, transparent);
   }
   .elevation-5 {
     box-shadow: 0 32px 64px 0
-      color-mix(in srgb, var(--color-neutral-700) 32%, transparent);
+      color-mix(in srgb, var(--color-slate-700) 32%, transparent);
   }
 }
