@@ -9,7 +9,8 @@
     "build:storybook": "storybook build"
   },
   "exports": {
-    "./themes/node1.css": "./src/themes/node1.css",
+    "./themes/lynx.css": "./src/themes/lynx.css",
+    "./themes/orion.css": "./src/themes/orion.css",
     "./ui": "./src/components/ui/index.ts",
     "./layout": "./src/components/layout/index.ts"
   },

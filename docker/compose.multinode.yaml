@@ -1380,6 +1380,8 @@ services:
     build:
       context: ..
       dockerfile: apps/web/node1-frontend/Dockerfile
+      args:
+        VITE_THEME: orion
     ports:
       - 5001:80
     volumes:
@@ -1400,6 +1402,8 @@ services:
     build:
       context: ..
       dockerfile: apps/web/node1-frontend/Dockerfile
+      args:
+        VITE_THEME: lynx
     ports:
       - 5002:80
     volumes:

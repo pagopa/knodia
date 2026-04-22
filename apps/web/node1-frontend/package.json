@@ -3,8 +3,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:lynx": "VITE_THEME=lynx vite",
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
+    "build:lynx": "tsc -b && VITE_THEME=lynx vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "preview": "vite preview"
