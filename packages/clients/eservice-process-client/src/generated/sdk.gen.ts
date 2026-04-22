@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses } from './types.gen.ts';
+import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -59,6 +59,20 @@ export const getEservice = <ThrowOnError extends boolean = true>(options: Option
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}',
     ...options
+});
+
+/**
+ * Update an E-service
+ */
+export const updateEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateEserviceResponses, UpdateEserviceErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/merge-patch+json',
+        ...options.headers
+    }
 });
 
 /**

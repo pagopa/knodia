@@ -9,6 +9,7 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { dateToSeconds } from "@knodia/common-models/utils";
 import { randomUUID } from "node:crypto";
 
 import type {
@@ -45,10 +46,6 @@ const b64url = (data: string): string =>
 export type TokenGenerator = ReturnType<typeof tokenGeneratorBuilder>;
 export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
-
-  function getNowInSeconds(): number {
-    return Math.floor(Date.now() / 1000);
-  }
 
   function buildHeader(kid: string, typ: string): string {
     return b64url(
@@ -95,7 +92,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   function buildUserTokenClaims(
     input: UISessionTokenInput,
   ): Omit<UISessionTokenClaims, "type"> {
-    const now = getNowInSeconds();
+    const now = dateToSeconds(new Date());
     return {
       aud: input.audience,
       exp: now + input.secondsDuration,
@@ -113,7 +110,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
     async generateInternalToken(
       input: InternalTokenInput,
     ): Promise<InternalToken> {
-      const now = getNowInSeconds();
+      const now = dateToSeconds(new Date());
       const claims: InternalTokenClaims = {
         aud: input.audience,
         exp: now + input.secondsDuration,

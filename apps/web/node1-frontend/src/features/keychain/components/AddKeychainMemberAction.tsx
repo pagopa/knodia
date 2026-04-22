@@ -1,6 +1,7 @@
 import { bffApi } from "@knodia/bff-client";
 import {
   addConsumerKeychainMemberMutation,
+  getConsumerKeychainMembershipQueryKey,
   getConsumerKeychainMembersQueryKey,
   getTechnicalUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -11,7 +12,7 @@ import { useState } from "react";
 import { match } from "ts-pattern";
 import z from "zod";
 
-import { useHasRole } from "@/contexts/auth";
+import { useAuth, useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
@@ -62,6 +63,8 @@ function AddKeychainMemberModal({
   keychainType: KeychainType;
   onClose: () => void;
 }) {
+  const { userId } = useAuth();
+
   const queryClient = useQueryClient();
   const {
     isError,
@@ -78,6 +81,14 @@ function AddKeychainMemberModal({
           query: undefined!,
         }),
       });
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: getConsumerKeychainMembershipQueryKey({
+            client,
+            path: { consumerKeychainId: keychainId, userId },
+          }),
+        });
+      }
       onClose();
     },
   });

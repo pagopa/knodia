@@ -230,6 +230,15 @@ export type EserviceSeed = {
     requiredAttributes: Array<Array<Attribute>>;
 };
 
+export type EservicePatch = {
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    description?: LocalizedDescription;
+    name?: LocalizedName;
+};
+
 export type GetCatalogEserviceSearchParams = {
     /**
      * Search by name or description
@@ -430,6 +439,51 @@ export type GetEserviceResponses = {
 };
 
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
+
+export type UpdateEserviceData = {
+    body: EservicePatch;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}';
+};
+
+export type UpdateEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type UpdateEserviceError = UpdateEserviceErrors[keyof UpdateEserviceErrors];
+
+export type UpdateEserviceResponses = {
+    /**
+     * E-service updated successfully
+     */
+    200: Eservice;
+};
+
+export type UpdateEserviceResponse = UpdateEserviceResponses[keyof UpdateEserviceResponses];
 
 export type GetEserviceLatestVersionData = {
     body?: never;

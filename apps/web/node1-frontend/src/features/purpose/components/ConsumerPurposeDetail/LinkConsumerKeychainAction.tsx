@@ -1,5 +1,6 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
+import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainOptionsOptions,
   linkPurposeToConsumerKeychainMutation,
@@ -122,6 +123,29 @@ function LinkConsumerKeychainModal({
           .nullable()
           .refine((value) => value !== null, "Select a keychain"),
       }),
+      onSubmitAsync: async ({ value: { keychainId } }) => {
+        if (!keychainId) return undefined;
+
+        const {
+          data: { isLinked },
+        } = await bffApi.getConsumerKeychainPurposeLink({
+          client,
+          path: { consumerKeychainId: keychainId, purposeId },
+          query: { knodeId },
+        });
+
+        if (isLinked) {
+          return {
+            fields: {
+              keychainId: {
+                message: "Keychain is already linked to the purpose",
+              },
+            },
+          };
+        }
+
+        return undefined;
+      },
     },
   });
 

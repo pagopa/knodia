@@ -30,10 +30,11 @@ const schema: JsonSchema = {
       enum: ["QUANTITY_0_TO_100", "QUANTITY_101_TO_500"],
       type: "string",
     },
-    description: { maxLength: 2000, type: "string" },
+    description: { maxLength: 2000, minLength: 1, type: "string" },
     knowsDataQuantity: { enum: ["YES", "NO"], type: "string" },
     legalBasis: {
       items: { enum: ["CONSENT", "PUBLIC_INTEREST"], type: "string" },
+      minItems: 1,
       type: "array",
       uniqueItems: true,
     },
@@ -171,6 +172,7 @@ describe("createAjvValidator", () => {
         },
         personalDataTypes: {
           items: { enum: ["GDPR_ART_9", "OTHER"], type: "string" },
+          minItems: 1,
           type: "array",
         },
       },
@@ -363,6 +365,49 @@ describe("createAjvValidator", () => {
         new Set(["dependentField", "trigger"]),
       ),
     ).not.toHaveProperty("dependentField");
+  });
+
+  // Regression: the per-step subset schema must filter `if.required` to
+  // fields visible in the current step. Otherwise a cross-step `if.required`
+  // is always missing from the subset values, the `if` fails, and the
+  // `else` branch fires spuriously — incorrectly requiring current-step
+  // fields that belong to the `if`'s true branch.
+  it("filters cross-step fields from if.required so else doesn't fire spuriously", () => {
+    const schemaWithCrossStepGuard: JsonSchema = {
+      allOf: [
+        {
+          else: { required: ["elseOnlyField"] },
+          if: {
+            properties: {
+              crossStepGuard: { const: "YES" },
+              currentStepTrigger: { const: "A" },
+            },
+            required: ["crossStepGuard", "currentStepTrigger"],
+          },
+          then: {},
+        },
+      ],
+      properties: {
+        crossStepGuard: { enum: ["YES", "NO"], type: "string" },
+        currentStepTrigger: { enum: ["A", "B"], type: "string" },
+        elseOnlyField: { type: "string" },
+      },
+      type: "object",
+    };
+
+    const validateCrossStep = createAjvValidator(schemaWithCrossStepGuard, {});
+
+    // `crossStepGuard` was answered on a prior step (present in full form
+    // values) but is not in the current step's `visibleFields`, so AJV only
+    // sees `currentStepTrigger`. With the filter, `if.required` reduces to
+    // `["currentStepTrigger"]`, the `if` matches, and `else` stays dormant.
+    // Without the filter, missing `crossStepGuard` in the subset values
+    // would fail `if.required`, fire `else`, and demand `elseOnlyField`.
+    const errors = validateCrossStep(
+      { crossStepGuard: "YES", currentStepTrigger: "A" },
+      new Set(["currentStepTrigger", "elseOnlyField"]),
+    );
+    expect(errors["elseOnlyField"]).toBeUndefined();
   });
 });
 

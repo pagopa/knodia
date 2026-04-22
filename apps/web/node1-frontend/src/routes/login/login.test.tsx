@@ -29,20 +29,26 @@ describe("LoginPage", () => {
 
     expect(screen.getByText("Welcome to")).toBeInTheDocument();
     expect(screen.getByText("Orion Knode")).toBeInTheDocument();
+    expect(
+      screen.getByText("Log in with your credentials to access the platform."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Once your account is activated, you can log in/),
+    ).toBeInTheDocument();
     expect(screen.getByText("Part of Knodia")).toBeInTheDocument();
   });
 
-  it("renders sign in button when not authenticated", () => {
+  it("renders log in button when not authenticated", () => {
     render(<LoginPage />);
 
-    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Log in" })).toBeInTheDocument();
   });
 
-  it("calls login when the sign in button is clicked", async () => {
+  it("calls login when the log in button is clicked", async () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    await user.click(screen.getByRole("button", { name: "Log in" }));
 
     expect(mockLogin).toHaveBeenCalledOnce();
   });
@@ -52,7 +58,7 @@ describe("LoginPage", () => {
 
     render(<LoginPage />);
 
-    expect(screen.getByText(/Unable to complete sign in/)).toBeInTheDocument();
+    expect(screen.getByText(/Unable to complete log in/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 

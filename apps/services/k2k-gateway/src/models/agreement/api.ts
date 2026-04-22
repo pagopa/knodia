@@ -85,6 +85,12 @@ export const API_Agreement = z
     id: API_AgreementId,
     producerId: API_OrganizationId,
     state: API_AgreementState,
+    suspendedByConsumerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Agreement was suspended by the Consumer",
+    }),
+    suspendedByProducerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Agreement was suspended by the Producer",
+    }),
     updatedAt: z.iso.datetime(),
   })
   .meta({
