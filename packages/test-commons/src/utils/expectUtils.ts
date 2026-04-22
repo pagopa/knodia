@@ -19,11 +19,12 @@ export function toExpectAgreement(agreement: Agreement) {
 export function toExpectAPI_Eservice(
   eservice: Omit<
     Eservice,
-    "createdAt" | "id" | "producerId" | "updatedAt" | "versions"
+    "createdAt" | "id" | "producerId" | "templateId" | "updatedAt" | "versions"
   > & {
     createdAt: Date | string;
     id: string;
     producerId: string;
+    templateId?: string;
     updatedAt: Date | string;
   },
 ) {
@@ -41,6 +42,7 @@ export function toExpectAPI_Eservice(
     mode: eservice.mode,
     name: eservice.name,
     producerId: unsafeBrandId(eservice.producerId),
+    templateId: eservice.templateId ? unsafeBrandId(eservice.templateId) : null,
     updatedAt: toISOString(eservice.updatedAt),
   };
 }

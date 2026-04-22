@@ -33,16 +33,15 @@ const LocalizedDescription = LocalizedText(
 );
 type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-export const EserviceTemplateInterface = z.object({
+const EserviceTemplateInterface = z.object({
   contentType: z.string(),
   name: z.string(),
   prettyName: LocalizedName,
 });
-export type EserviceTemplateInterface = z.infer<
-  typeof EserviceTemplateInterface
->;
+type EserviceTemplateInterface = z.infer<typeof EserviceTemplateInterface>;
 
 /* eslint-disable perfectionist/sort-objects */
+/** @knipignore */
 export const EserviceTemplate = z.object({
   id: EserviceTemplateId,
 
@@ -88,6 +87,7 @@ const sharedInterfaceDocument = {
   prettyName: { en: "API Interface" },
 };
 
+/** @knipignore */
 export const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
   Lynx: [
     {
@@ -190,6 +190,7 @@ export const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
   ],
 };
 
+/** @knipignore */
 export function getEserviceTemplate(
   eserviceTemplateId: EserviceTemplateId,
   knodeId: KnodeId,
@@ -199,6 +200,7 @@ export function getEserviceTemplate(
   );
 }
 
+/** @knipignore */
 export function getEserviceTemplateInterfaceContent(
   interfaceName: string,
 ): Buffer<ArrayBufferLike> | undefined {
