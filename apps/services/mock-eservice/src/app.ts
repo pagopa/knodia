@@ -36,8 +36,8 @@ export function buildApp({
         info: {
           description:
             "Mock producer e-service used to exercise the access-token " +
-            "flow end-to-end. Accepts an Orion-issued Bearer token and " +
-            "returns a static OK payload.",
+            "flow end-to-end. Accepts an access token issued by a Knode " +
+            "and returns a static OK payload.",
           title: "Knodia Mock E-service API",
           version: "1.0.0",
         },

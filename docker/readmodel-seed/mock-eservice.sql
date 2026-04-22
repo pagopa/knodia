@@ -1,6 +1,5 @@
 -- Seeds the producer-side rows for the mock e-service (eservice + version
--- + interface + required attribute + category). Consumer-side artefacts are
--- created per-run by the Bruno flow. Idempotent.
+-- + interface + required attribute + category).
 
 INSERT INTO ${NAMESPACE}_eservice."eservice" (
   id, producer_id, name, description, mode,
@@ -38,7 +37,8 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '10000000-0000-4000-8000-000000000003',
   '10000000-0000-4000-8000-000000000001',
   '10000000-0000-4000-8000-000000000002',
-  '0000000000000000000000000000000000000000000000000000000000000000',
+  -- Placeholder SHA-256 checksum. Nothing validates it at runtime.
+  repeat('0', 64),
   'application/yaml',
   'openapi.yaml',
   '/interfaces/mock-eservice.yaml',

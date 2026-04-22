@@ -10,8 +10,6 @@ interface AccessTokenAuthPluginOptions {
   jwksResolvers: JWTVerifyGetKey[];
 }
 
-// Mock-eservice is a frontier producer: it just rejects invalid tokens with a
-// plain 401, no internal API_Problem shape.
 const replyUnauthorized = (reply: {
   code: (n: number) => { send: (body: unknown) => unknown };
 }) => reply.code(401).send({ error: "Unauthorized" });

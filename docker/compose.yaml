@@ -233,8 +233,6 @@ services:
       minio:
         condition: service_healthy
     volumes:
-      # Mount the generated OpenAPI directly so the minio seed always tracks
-      # the source of truth.
       - ../apps/services/mock-eservice/openapi/openapi.yaml:/seed/mock-eservice.yaml:ro
     entrypoint: >
       /bin/sh -c "
