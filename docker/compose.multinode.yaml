@@ -411,7 +411,7 @@ services:
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_ISSUER: "local-knodia"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID: "alias/local-knodia-key"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION: "120"
-      FRONTEND_BASE_URL: "http://localhost:5173"
+      FRONTEND_BASE_URL: "http://localhost:5001"
       FRONTEND_ACTIVATION_PATH: "/activate"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
@@ -934,7 +934,7 @@ services:
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_ISSUER: "local-knodia"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID: "alias/local-knodia-key"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION: "120"
-      FRONTEND_BASE_URL: "http://localhost:5173"
+      FRONTEND_BASE_URL: "http://localhost:5002"
       FRONTEND_ACTIVATION_PATH: "/activate"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
