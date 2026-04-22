@@ -164,14 +164,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Authorization Server API
     url: /
