@@ -94,7 +94,7 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
     expect(createAgreementActivationMagicLinkMock).not.toHaveBeenCalled();
   });
 
-  it("returns 403 when the agreement exists but is not owned by the caller", async () => {
+  it("returns 403 when the calling organization is not the agreement consumer", async () => {
     await seedAgreement({ consumerId: generateId<OrganizationId>() });
 
     const response = await makeRequest();

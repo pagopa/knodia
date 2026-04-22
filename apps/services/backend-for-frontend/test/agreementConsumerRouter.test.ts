@@ -189,9 +189,9 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     expect(response.statusCode).toBe(404);
   });
 
-  it("passes through a 403 from RRM (agreement not owned by caller)", async () => {
+  it("passes through a 403 from RRM (organization is not the agreement consumer)", async () => {
     createAgreementActivationMagicLinkMock.mockRejectedValue(
-      makeAxiosError(403, "Agreement Not Owned By Caller"),
+      makeAxiosError(403, "Organization is not the Agreement consumer"),
     );
 
     const response = await app.inject({
