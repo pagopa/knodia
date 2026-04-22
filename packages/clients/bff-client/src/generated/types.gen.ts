@@ -801,6 +801,8 @@ export type PurposeDetails = {
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
 };
 
 /**
@@ -2647,6 +2649,96 @@ export type GetConsumerPurposeDetailsResponses = {
 
 export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
 
+export type ReactivateConsumerPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivateConsumerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateConsumerPurposeError = ReactivateConsumerPurposeErrors[keyof ReactivateConsumerPurposeErrors];
+
+export type ReactivateConsumerPurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivateConsumerPurposeResponse = ReactivateConsumerPurposeResponses[keyof ReactivateConsumerPurposeResponses];
+
+export type SuspendConsumerPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendConsumerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendConsumerPurposeError = SuspendConsumerPurposeErrors[keyof SuspendConsumerPurposeErrors];
+
+export type SuspendConsumerPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendConsumerPurposeResponse = SuspendConsumerPurposeResponses[keyof SuspendConsumerPurposeResponses];
+
 export type GetSessionOrganizationData = {
     body?: never;
     path?: never;
@@ -2951,3 +3043,89 @@ export type GetProducerPurposeDetailsResponses = {
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
+
+export type ReactivateProducerPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivateProducerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateProducerPurposeError = ReactivateProducerPurposeErrors[keyof ReactivateProducerPurposeErrors];
+
+export type ReactivateProducerPurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivateProducerPurposeResponse = ReactivateProducerPurposeResponses[keyof ReactivateProducerPurposeResponses];
+
+export type SuspendProducerPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendProducerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendProducerPurposeError = SuspendProducerPurposeErrors[keyof SuspendProducerPurposeErrors];
+
+export type SuspendProducerPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendProducerPurposeResponse = SuspendProducerPurposeResponses[keyof SuspendProducerPurposeResponses];

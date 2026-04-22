@@ -1727,6 +1727,16 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/PurposeState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - agreement
         - consumer
@@ -1738,6 +1748,8 @@ components:
         - name
         - producer
         - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
       additionalProperties: false
     SessionOrganization:
       description: Organization details for the current session, including attributes
@@ -4372,6 +4384,130 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/{purposeId}/reactivate:
+    post:
+      operationId: reactivateConsumerPurpose
+      tags:
+        - purpose
+      description: Reactivate a Purpose as Consumer
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/{purposeId}/suspend:
+    post:
+      operationId: suspendConsumerPurpose
+      tags:
+        - purpose
+      description: Suspend a Purpose as Consumer
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /session/organization:
     get:
       operationId: getSessionOrganization
@@ -4800,6 +4936,120 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}/reactivate:
+    post:
+      operationId: reactivateProducerPurpose
+      tags:
+        - purpose
+      description: Reactivate a Purpose as Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}/suspend:
+    post:
+      operationId: suspendProducerPurpose
+      tags:
+        - purpose
+      description: Suspend a Purpose as Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
