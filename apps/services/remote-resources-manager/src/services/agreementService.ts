@@ -1,3 +1,4 @@
+import type { API_MagicLink } from "@knodia/agreement-models/api";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
@@ -15,7 +16,6 @@ import type {
   API_AgreementSeed,
   API_CreatedAgreementResource,
   API_GetAgreementsQueryParams,
-  API_MagicLink,
 } from "../models/agreement/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
