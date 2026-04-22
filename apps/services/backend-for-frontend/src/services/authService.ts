@@ -253,9 +253,8 @@ async function verifyMagicLinkToken({
   if (!parsed.success) {
     throw unauthorizedError("Invalid magic-link token claims");
   }
-  if (parsed.data.scope !== "agreement-activation") {
-    throw unauthorizedError("Invalid magic-link token scope");
-  }
+  // No explicit scope check: ExternalUISessionScope is a Zod enum with a
+  // single value, so safeParse above already rejects any other scope with 401.
 
   const firstUse = await magicLinkTokenStore.consume(
     parsed.data.jti,

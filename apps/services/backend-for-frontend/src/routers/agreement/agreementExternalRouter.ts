@@ -27,10 +27,10 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
 > = async (fastify, { agreementProcessClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
-        { scope: "agreement-activation", tokenType: "external-ui-session" },
-      ]);
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { correlationId, logger } = validateAuthorization(
+        getContextValues(requestContext),
+        [{ scope: "agreement-activation", tokenType: "external-ui-session" }],
+      );
       const { agreementId } = req.params;
 
       logger.info(`Activating Agreement ${agreementId}`);
