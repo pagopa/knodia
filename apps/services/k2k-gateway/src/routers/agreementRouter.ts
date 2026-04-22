@@ -334,8 +334,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
       );
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
-      // Agreement state is enforced downstream by agreement-process's activate
-      // endpoint (409 propagates via API Problem passthrough).
       const { data: agreement } = await retrieveAgreementById(
         agreementId,
         headers,
