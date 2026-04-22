@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ControlElement, FormTexts, UISchema } from "./types";
+import type { ControlElement, UISchema } from "./types";
 
 import {
   collectConditionScopes,
@@ -44,7 +44,7 @@ const conditionalControl: ControlElement = {
   type: "Control",
 };
 
-const mockTexts: FormTexts = {
+const mockTexts: Record<string, string> = {
   "address.street.error.required": "Street is required",
   "groups.inner.label": "Inner",
   "groups.nested.label": "Nested",

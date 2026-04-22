@@ -15,11 +15,7 @@ import {
 } from "@/contexts/steps";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
 import { mergeTexts } from "@/features/purpose/engine/textsResolver";
-import {
-  loadSchema,
-  loadTexts,
-  loadUiSchema,
-} from "@/features/purpose/engine/types";
+import { loadSchema, loadUiSchema } from "@/features/purpose/engine/types";
 import { collectSteps } from "@/features/purpose/engine/uischemaParser";
 import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
@@ -55,9 +51,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const texts = useMemo(
     () =>
       schemasResponse
-        ? loadTexts(
-            mergeTexts(schemasResponse.texts.en, schemasResponse.uiTexts.en),
-          )
+        ? mergeTexts(schemasResponse.texts.en, schemasResponse.uiTexts.en)
         : undefined,
     [schemasResponse],
   );

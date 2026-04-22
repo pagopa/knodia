@@ -1,32 +1,33 @@
 import { TextArea, TextField } from "@knodia/ui-kit/ui";
 
-import type { ResolvedControl } from "@/features/purpose/engine/types";
-
 interface Props {
-  control: ResolvedControl;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   maxLength?: number | undefined;
   onChange: (value: string) => void;
   value: string;
+  widget: "text" | "textarea";
 }
 
 export function TextRenderer({
-  control,
+  description,
   error,
+  label,
   maxLength,
   onChange,
   value,
+  widget,
 }: Props) {
-  const Component =
-    control.options?.widget === "textarea" ? TextArea : TextField;
+  const Component = widget === "textarea" ? TextArea : TextField;
 
   return (
     <div className="flex flex-col gap-1">
       <Component
-        description={control.options?.description}
+        description={description}
         errorMessage={error}
         isInvalid={!!error}
-        label={control.label}
+        label={label}
         onChange={onChange}
         value={value}
         {...(maxLength !== undefined && { maxLength })}

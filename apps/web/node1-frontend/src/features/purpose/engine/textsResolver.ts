@@ -1,28 +1,26 @@
-import type { FormTexts } from "./types";
-
 export function getFieldDescription(
-  texts: FormTexts,
+  texts: Record<string, string>,
   field: string,
 ): string | undefined {
   return texts[`${field}.description`];
 }
 
 export function getFieldErrorMessages(
-  texts: FormTexts,
+  texts: Record<string, string>,
   field: string,
 ): Record<string, string> {
   return Object.fromEntries(getEntriesByPrefix(texts, `${field}.error.`));
 }
 
 export function getFieldLabel(
-  texts: FormTexts,
+  texts: Record<string, string>,
   field: string,
 ): string | undefined {
   return texts[`${field}.label`];
 }
 
 export function getFieldOptionLabels(
-  texts: FormTexts,
+  texts: Record<string, string>,
   field: string,
   optionValues: string[],
 ): Record<string, string> {
@@ -35,14 +33,14 @@ export function getFieldOptionLabels(
 }
 
 export function getGroupDescription(
-  texts: FormTexts,
+  texts: Record<string, string>,
   key: string,
 ): string | undefined {
   return texts[`${key}.description`];
 }
 
 export function getGroupLabel(
-  texts: FormTexts,
+  texts: Record<string, string>,
   key: string,
 ): string | undefined {
   return texts[`${key}.label`];
@@ -66,7 +64,7 @@ export function mergeTexts(
 }
 
 function getEntriesByPrefix(
-  texts: FormTexts,
+  texts: Record<string, string>,
   prefix: string,
 ): [string, string][] {
   return Object.entries(texts).flatMap(([key, value]) =>

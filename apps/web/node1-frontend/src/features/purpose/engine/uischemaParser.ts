@@ -1,7 +1,6 @@
 import type {
   AndCondition,
   ControlElement,
-  FormTexts,
   RuleCondition,
   UISchema,
   UISchemaElement,
@@ -44,7 +43,7 @@ export function collectControls(element: UISchemaElement): ControlElement[] {
 }
 
 export function collectErrorMessages(
-  texts: FormTexts,
+  texts: Record<string, string>,
   uischema: UISchema,
 ): Record<string, Record<string, string>> {
   const result: Record<string, Record<string, string>> = {};
@@ -60,7 +59,7 @@ export function collectErrorMessages(
 
 export function collectGroups(
   uischema: UISchema,
-  texts: FormTexts,
+  texts: Record<string, string>,
 ): GroupLayout[] {
   if (uischema.type === "Group") {
     return [
@@ -87,7 +86,7 @@ export function collectGroups(
 
 export function collectSteps(
   uischema: UISchema,
-  texts: FormTexts,
+  texts: Record<string, string>,
 ): StepLayout[] {
   const steps = uischema.elements
     .filter((child) => child.type === "Group")
@@ -120,7 +119,7 @@ function collectGroupElements(element: UISchemaElement): ControlElement[] {
 // Returns { label, description } for a Group, falling back to the raw i18n key
 // when a text is missing so renders never crash mid-flow.
 function resolveGroupI18n(
-  texts: FormTexts,
+  texts: Record<string, string>,
   i18n: string,
 ): { description: string | undefined; label: string } {
   return {

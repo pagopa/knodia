@@ -802,6 +802,26 @@ components:
         - state
         - updatedAt
       additionalProperties: false
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormUiTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
     PurposeFormSchemasResponse:
       description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
         texts) with their version identifier
@@ -811,28 +831,12 @@ components:
           type: object
           additionalProperties: {}
         texts:
-          type: object
-          properties:
-            en:
-              type: object
-              additionalProperties:
-                type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           type: object
           additionalProperties: {}
         uiTexts:
-          type: object
-          properties:
-            en:
-              type: object
-              additionalProperties:
-                type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/PurposeFormUiTexts"
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:

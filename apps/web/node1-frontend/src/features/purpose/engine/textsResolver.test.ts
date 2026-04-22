@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import type { FormTexts } from "./types";
-
 import {
   getFieldOptionLabels,
   getGroupLabel,
   mergeTexts,
 } from "./textsResolver";
 
-const texts: FormTexts = {
+const texts: Record<string, string> = {
   "groups.section.label": "Section",
   "purpose.INSTITUTIONAL": "Institutional purpose",
   "purpose.label": "Purpose",

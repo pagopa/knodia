@@ -3,11 +3,9 @@ import { match } from "ts-pattern";
 
 import type {
   ControlElement,
-  FormTexts,
   FormValues,
   JsonSchema,
   JsonSchemaProperty,
-  ResolvedControl,
 } from "@/features/purpose/engine/types";
 
 import { getFilteredOptionValues } from "@/features/purpose/engine/optionFilter";
@@ -30,7 +28,7 @@ interface Props {
   error?: string | undefined;
   jsonSchema: JsonSchema;
   onChange: (value: string | string[]) => void;
-  texts: FormTexts;
+  texts: Record<string, string>;
   value: string | string[];
 }
 
@@ -72,39 +70,33 @@ export function FieldRenderer({
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
   }, [control, allValues, optionLabels, optionValues]);
 
-  const resolvedControl: ResolvedControl = useMemo(
-    () => ({
-      label,
-      options: control.options
-        ? { description, optionLabels, widget: control.options.widget }
-        : undefined,
-    }),
-    [control.options, label, description, optionLabels],
-  );
-
   return match(widget)
     .with("radio", () => (
       <RadioRenderer
-        control={resolvedControl}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string}
       />
     ))
-    .with("text", "textarea", () => (
+    .with("text", "textarea", (w) => (
       <TextRenderer
-        control={resolvedControl}
+        description={description}
         error={error}
+        label={label}
         maxLength={maxLength}
         onChange={(v) => onChange(v)}
         value={value as string}
+        widget={w}
       />
     ))
     .with("checkbox", () => (
       <CheckboxRenderer
-        control={resolvedControl}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string[]}
@@ -112,8 +104,9 @@ export function FieldRenderer({
     ))
     .with("select", () => (
       <SelectRenderer
-        control={resolvedControl}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string}
@@ -121,8 +114,10 @@ export function FieldRenderer({
     ))
     .with("switch", () => (
       <SwitchRenderer
-        control={resolvedControl}
+        checkedLabel={optionLabels["true"]}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         value={value as string}
       />

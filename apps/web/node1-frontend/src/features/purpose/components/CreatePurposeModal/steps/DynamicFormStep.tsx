@@ -3,7 +3,6 @@ import { useStore } from "@tanstack/react-form";
 import { useMemo } from "react";
 
 import type {
-  FormTexts,
   FormValues,
   JsonSchema,
   UISchema,
@@ -35,7 +34,7 @@ interface Props {
   isLastStep: boolean;
   jsonSchema: JsonSchema;
   step: StepLayout;
-  texts: FormTexts;
+  texts: Record<string, string>;
   uischema: UISchema;
 }
 
@@ -179,7 +178,7 @@ function GroupSection({
   group: GroupLayout;
   isLast: boolean;
   jsonSchema: JsonSchema;
-  texts: FormTexts;
+  texts: Record<string, string>;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {

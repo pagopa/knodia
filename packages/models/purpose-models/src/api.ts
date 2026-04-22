@@ -104,13 +104,9 @@ export type API_ExternalPurposeFormSchemaVersion = z.infer<
 export const API_ExternalPurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
-    texts: z.strictObject({
-      en: z.record(z.string(), z.string()),
-    }),
+    texts: API_PurposeFormTexts,
     uiSchema: z.record(z.string(), z.unknown()),
-    uiTexts: z.strictObject({
-      en: z.record(z.string(), z.string()),
-    }),
+    uiTexts: API_PurposeFormUiTexts,
     version: API_ExternalPurposeFormSchemaVersion,
   })
   .meta({

@@ -125,16 +125,24 @@ export const API_Purpose = z
   });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
+const API_PurposeFormTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormTexts" });
+
+const API_PurposeFormUiTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormUiTexts" });
+
 export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
-    texts: z.strictObject({
-      en: z.record(z.string(), z.string()),
-    }),
+    texts: API_PurposeFormTexts,
     uiSchema: z.record(z.string(), z.unknown()),
-    uiTexts: z.strictObject({
-      en: z.record(z.string(), z.string()),
-    }),
+    uiTexts: API_PurposeFormUiTexts,
     version: API_PurposeFormSchemaVersion,
   })
   .meta({

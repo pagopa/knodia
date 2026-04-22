@@ -8,19 +8,13 @@ export interface AndCondition {
 // The ui-schema file carries only structural information: widgets, conditions
 // and `i18n` identifiers for groups. All user-facing text (labels, descriptions,
 // option labels, error messages) lives in the external `texts.en.json` /
-// `ui-texts.en.json` files and is resolved at render time — the fields below
-// that carry text (`label` on ControlElement, `description`/`optionLabels` on
-// ControlOptions) are populated by the renderer from those dictionaries, not
-// read from the ui-schema itself.
+// `ui-texts.en.json` files and is resolved at render time.
 export interface ControlElement {
-  label?: string;
   options?: ControlOptions;
   rule?: Rule;
   scope: string;
   type: "Control";
 }
-
-export type FormTexts = Record<string, string>;
 
 export type FormValues = Record<string, string | string[]>;
 
@@ -56,18 +50,6 @@ export interface JsonSchemaProperty {
   uniqueItems?: boolean;
 }
 
-// Narrowed control shape used by the sub-renderers. The FieldRenderer resolves
-// labels/descriptions/option labels from the texts dictionary and passes only
-// what the renderers need.
-export interface ResolvedControl {
-  label?: string;
-  options?: {
-    description?: string;
-    optionLabels?: Record<string, string>;
-    widget: ControlOptions["widget"];
-  };
-}
-
 export type RuleCondition = AndCondition | LeafCondition;
 
 export type UISchema = GroupElement | LayoutElement;
@@ -81,9 +63,7 @@ export type ValidateFn = (
 ) => Record<string, string>;
 
 interface ControlOptions {
-  description?: string;
   hideOptions?: Record<string, HideOptionCondition>;
-  optionLabels?: Record<string, string>;
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
 }
 
@@ -118,15 +98,8 @@ interface Rule {
   effect: "DISABLE" | "ENABLE" | "HIDE" | "SHOW";
 }
 
-// Typed loaders that centralise the cast in one place.
-// The API returns Record<string, unknown>; these functions cast to the
-// engine's internal types so the cast is isolated here.
 export function loadSchema(json: Record<string, unknown>): JsonSchema {
   return json as unknown as JsonSchema;
-}
-
-export function loadTexts(json: Record<string, unknown>): FormTexts {
-  return json as FormTexts;
 }
 
 export function loadUiSchema(json: Record<string, unknown>): UISchema {

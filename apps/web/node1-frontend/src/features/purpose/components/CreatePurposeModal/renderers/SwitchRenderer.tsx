@@ -1,34 +1,39 @@
 import { Checkbox } from "@knodia/ui-kit/ui";
 
-import type { ResolvedControl } from "@/features/purpose/engine/types";
-
 interface Props {
-  control: ResolvedControl;
+  checkedLabel?: string | undefined;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string) => void;
   value: string;
 }
 
-export function SwitchRenderer({ control, error, onChange, value }: Props) {
+export function SwitchRenderer({
+  checkedLabel,
+  description,
+  error,
+  label,
+  onChange,
+  value,
+}: Props) {
   const isChecked = value === "true";
-  const switchLabel =
-    control.options?.optionLabels?.["true"] ?? control.label ?? "";
-  const hasLeadingText = Boolean(control.label ?? control.options?.description);
+  const switchLabel = checkedLabel ?? label ?? "";
 
   return (
     <div className="flex flex-col">
-      {control.label && (
+      {label && (
         <span className="label-md text-primary-light-high-contrast">
-          {control.label}
+          {label}
         </span>
       )}
-      {control.options?.description && (
-        <span className="body-sm text-primary-light-mid-contrast mt-3">
-          {control.options.description}
+      {description && (
+        <span className="body-sm text-primary-light-mid-contrast first:mt-0 mt-3">
+          {description}
         </span>
       )}
       <Checkbox
-        className={hasLeadingText ? "mt-3" : undefined}
+        className="first:mt-0 mt-3"
         isInvalid={!!error}
         isSelected={isChecked}
         onChange={(checked) => onChange(checked ? "true" : "false")}
