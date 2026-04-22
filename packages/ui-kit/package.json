@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
+    "@fontsource-variable/petrona": "catalog:",
+    "@fontsource-variable/source-serif-4": "catalog:",
     "@phosphor-icons/react": "catalog:",
     "@react-aria/toast": "catalog:",
     "@react-stately/toast": "catalog:",
