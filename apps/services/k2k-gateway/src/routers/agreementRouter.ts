@@ -43,6 +43,15 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
+export interface MagicLinkConfig {
+  audience: string;
+  frontendActivationPath: string;
+  frontendBaseUrl: string;
+  issuer: string;
+  kid: string;
+  secondsDuration: number;
+}
+
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   callerKnodeId: KnodeId;
@@ -50,15 +59,6 @@ interface AgreementRouterOptions {
   pollingService: PollingService;
   tokenGenerator: TokenGenerator;
   tokenProvider: RefreshableInternalTokenGenerator;
-}
-
-interface MagicLinkConfig {
-  audience: string;
-  frontendActivationPath: string;
-  frontendBaseUrl: string;
-  issuer: string;
-  kid: string;
-  secondsDuration: number;
 }
 
 async function buildActivationMagicLink(
@@ -82,9 +82,18 @@ async function buildActivationMagicLink(
       subject: agreement.id,
     });
 
+  const url = new URL(
+    magicLinkConfig.frontendActivationPath,
+    magicLinkConfig.frontendBaseUrl,
+  );
+  // Put the token in the URL fragment, not the query string: browsers don't
+  // send fragments upstream, so the one-time token stays out of Referer
+  // headers and server access logs.
+  url.hash = new URLSearchParams({ token: serialized }).toString();
+
   return {
     expiresAt: new Date(payload.exp * 1000).toISOString(),
-    url: `${magicLinkConfig.frontendBaseUrl}${magicLinkConfig.frontendActivationPath}?token=${encodeURIComponent(serialized)}`,
+    url: url.toString(),
   };
 }
 
