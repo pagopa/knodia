@@ -346,6 +346,20 @@ describe("auth integration", () => {
       const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
       expect(refreshCookie!["httponly"]).toBe("true");
+
+      // Pin the refresh-verifier inputs so a regression that drops the
+      // issuer/audience/algorithm check or points at a non-BFF JWKS cannot
+      // pass silently. The JWKS return value is URL-keyed by the shared
+      // authMocks factory, so this also excludes the Cognito JWKS.
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        "valid-refresh-jwt",
+        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[01]\//),
+        {
+          algorithms: ["RS256"],
+          audience: ["test-audience"],
+          issuer: "test-issuer",
+        },
+      );
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
@@ -632,6 +646,20 @@ describe("auth integration", () => {
       expect(payload["producerId"]).toBe(PRODUCER_ID);
       expect(payload["scope"]).toBe("agreement-activation");
       expect(payload["sub"]).toBe(AGREEMENT_ID);
+
+      // Pin the magic-link verifier inputs: a regression that drops the
+      // issuer/audience/algorithm check or points at the Cognito JWKS (or
+      // any other non-BFF JWKS) would otherwise pass silently. The JWKS
+      // return value is URL-keyed by the shared authMocks factory.
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        "valid.magic.link",
+        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[01]\//),
+        {
+          algorithms: ["RS256"],
+          audience: "test-magic-link-audience",
+          issuer: "test-issuer",
+        },
+      );
     });
 
     it("does not set a refresh cookie (one-shot session)", async () => {
