@@ -43,7 +43,7 @@ export function ConsumptionAgreementTable({
               <AgreementStateChip state={agreement.state} />
             </Cell>
             <Cell>
-              <RecentlyUpdatedIcon />
+              {agreement.hasRecentlyBeenUpdated && <RecentlyUpdatedIcon />}
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload

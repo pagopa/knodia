@@ -57,7 +57,7 @@ export function ConsumptionPurposeTable({
               <PurposeStateChip state={purpose.state} type="bright" />
             </Cell>
             <Cell>
-              <RecentlyUpdatedIcon />
+              {purpose.hasRecentlyBeenUpdated && <RecentlyUpdatedIcon />}
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload
