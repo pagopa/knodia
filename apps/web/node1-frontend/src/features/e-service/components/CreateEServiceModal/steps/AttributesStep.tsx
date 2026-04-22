@@ -90,6 +90,7 @@ export function AttributesStep() {
                           groupField.handleChange(parseSchemeRefKeys(keys))
                         }
                         placeholder="Select one or more attributes"
+                        selectionListFormatType="disjunction"
                         selectionMode="multiple"
                         value={
                           groupField.state.value?.map(toSchemeRefKey) ?? []

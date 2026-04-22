@@ -125,6 +125,7 @@ export function buildAppFromConfig(
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
       pollingService,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(userRouter, {
       keychainProcessClient: clients.keychainProcessClient,
@@ -153,6 +154,7 @@ export function buildAppFromConfig(
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
+      pollingService,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeProducerRouter, {

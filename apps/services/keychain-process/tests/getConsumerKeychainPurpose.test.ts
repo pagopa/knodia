@@ -11,13 +11,34 @@ import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
 import { keychainWriterService } from "./setup.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
-const allowedTestTokens: TestToken[] = [{ type: "internal" }];
+const allowedUiSessionTestTokens: Extract<TestToken, { type: "ui-session" }>[] =
+  [
+    { roles: ["administrative"], type: "ui-session" },
+    { roles: ["technical"], type: "ui-session" },
+  ];
+const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
+  ...allowedUiSessionTestTokens,
+];
 
 const consumerKeychain = getMockConsumerKeychain();
 const mockPurpose = {
   ...getMockConsumerKeychainPurpose(0),
   consumerKeychainId: consumerKeychain.id,
 };
+
+const getConsumerKeychainPurpose = (
+  consumerKeychainId: string,
+  purposeId: string,
+  knodeId: string,
+  token: TestToken = {
+    ...allowedUiSessionTestTokens[0]!,
+    organizationId: consumerKeychain.ownerId,
+  },
+) =>
+  injectAppRequest(token)
+    .get(`/consumerKeychains/${consumerKeychainId}/purposes/${purposeId}`)
+    .query({ knodeId });
 
 const seedData = async () => {
   await seedConsumerKeychain(consumerKeychain);
@@ -28,26 +49,32 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
   it("should return 200 with the purpose link on success", async () => {
     await seedData();
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(
-        `/consumerKeychains/${consumerKeychain.id}/purposes/${mockPurpose.purpose.id}`,
-      )
-      .query({ knodeId: mockPurpose.purpose.knodeId });
+    const response = await getConsumerKeychainPurpose(
+      consumerKeychain.id,
+      mockPurpose.purpose.id,
+      mockPurpose.purpose.knodeId,
+    );
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual(toAPI_ConsumerKeychainPurpose(mockPurpose));
   });
 
   it.each(allowedTestTokens)(
-    "should return 200 for authorized token ($type)",
+    "should return 200 for authorized token ($type, $roles)",
     async (token) => {
       await seedData();
 
-      const response = await injectAppRequest(token)
-        .get(
-          `/consumerKeychains/${consumerKeychain.id}/purposes/${mockPurpose.purpose.id}`,
-        )
-        .query({ knodeId: mockPurpose.purpose.knodeId });
+      const response = await getConsumerKeychainPurpose(
+        consumerKeychain.id,
+        mockPurpose.purpose.id,
+        mockPurpose.purpose.knodeId,
+        token.type === "ui-session"
+          ? {
+              ...token,
+              organizationId: consumerKeychain.ownerId,
+            }
+          : token,
+      );
       expect(response.statusCode).toBe(200);
     },
   );
@@ -55,30 +82,43 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await injectAppRequest(token)
-        .get(
-          `/consumerKeychains/${consumerKeychain.id}/purposes/${mockPurpose.purpose.id}`,
-        )
-        .query({ knodeId: mockPurpose.purpose.knodeId });
+      const response = await getConsumerKeychainPurpose(
+        consumerKeychain.id,
+        mockPurpose.purpose.id,
+        mockPurpose.purpose.knodeId,
+        token,
+      );
       expect(response.statusCode).toBe(403);
     },
   );
 
-  it("should return 404 for non-existent consumer keychain", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(
-        `/consumerKeychains/${generateId()}/purposes/${mockPurpose.purpose.id}`,
-      )
-      .query({ knodeId: mockPurpose.purpose.knodeId });
-    expect(response.statusCode).toBe(404);
-  });
+  it.each(allowedTestTokens)(
+    "should return 404 for non-existent consumer keychain ($type, $roles)",
+    async (token) => {
+      const response = await getConsumerKeychainPurpose(
+        generateId(),
+        mockPurpose.purpose.id,
+        mockPurpose.purpose.knodeId,
+        token.type === "ui-session"
+          ? {
+              ...token,
+              organizationId: consumerKeychain.ownerId,
+            }
+          : token,
+      );
+      expect(response.statusCode).toBe(404);
+    },
+  );
 
   it("should return 404 when purpose is not linked to keychain", async () => {
     await seedConsumerKeychain(consumerKeychain);
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(`/consumerKeychains/${consumerKeychain.id}/purposes/${generateId()}`)
-      .query({ knodeId: mockPurpose.purpose.knodeId });
+    const response = await getConsumerKeychainPurpose(
+      consumerKeychain.id,
+      generateId(),
+      mockPurpose.purpose.knodeId,
+      { type: "internal" },
+    );
     expect(response.statusCode).toBe(404);
   });
 
@@ -87,11 +127,12 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
 
     const wrongKnodeId =
       mockPurpose.purpose.knodeId === "Orion" ? "Lynx" : "Orion";
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(
-        `/consumerKeychains/${consumerKeychain.id}/purposes/${mockPurpose.purpose.id}`,
-      )
-      .query({ knodeId: wrongKnodeId });
+    const response = await getConsumerKeychainPurpose(
+      consumerKeychain.id,
+      mockPurpose.purpose.id,
+      wrongKnodeId,
+      { type: "internal" },
+    );
     expect(response.statusCode).toBe(404);
   });
 
@@ -125,7 +166,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
   ])(
     "should return 400 for invalid parameters: $testCase",
     async ({ params, query }) => {
-      const response = await injectAppRequest(allowedTestTokens[0]!)
+      const response = await injectAppRequest({ type: "internal" })
         .get(
           `/consumerKeychains/${params.keychainId}/purposes/${params.purposeId}`,
         )

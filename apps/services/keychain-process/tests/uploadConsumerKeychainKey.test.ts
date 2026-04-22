@@ -5,6 +5,11 @@ import {
   type OrganizationId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
+import {
+  calculateKid,
+  createJWK,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
@@ -18,8 +23,12 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import {
+  createEcKeyPair,
+  createRsaKeyPair,
   getMockConsumerKeychain,
   getMockConsumerKeychainKey,
+  rsaX509CertificatePem,
+  toBase64,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -29,20 +38,11 @@ import type {
 } from "../src/models/api.ts";
 
 import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
-import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-} from "../src/utils/crypto.ts";
 import { mockMaxKeysPerKeychain } from "./setup.ts";
 import {
-  createEcKeyPair,
-  createRsaKeyPair,
   getAllKeychainEvents,
   injectAppRequest,
-  rsaX509CertificatePem,
   seedConsumerKeychain,
-  toBase64,
 } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [

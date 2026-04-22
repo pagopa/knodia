@@ -27,6 +27,11 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
+import {
+  calculateKid,
+  createJWK,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
 import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
 import {
   remoteResourcesManagerApi,
@@ -64,7 +69,6 @@ import {
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import { calculateKid, createJWK, decodeBase64Pem } from "../utils/crypto.ts";
 import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainKey,
@@ -359,7 +363,7 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychainPurpose(
       consumerKeychainId: ConsumerKeychainId,
       purpose: ExternalResource<PurposeId>,
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
       logger.info(
         `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,

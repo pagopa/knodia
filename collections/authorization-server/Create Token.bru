@@ -5,13 +5,13 @@ meta {
 
 post {
   url: {{host-authorization-server}}/token
-  body: json
+  body: formUrlEncoded
+  auth: none
 }
 
-body:json {
-  {
-    "grant_type": "client_credentials",
-    "client_id": "test-client",
-    "scope": "eservices.read"
-  }
+body:form-urlencoded {
+  client_assertion: {{clientAssertion}}
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_id: {{consumerKeychainId}}
+  grant_type: client_credentials
 }

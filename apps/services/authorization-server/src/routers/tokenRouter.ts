@@ -9,30 +9,49 @@ import { apiTags } from "../models/apiTags.ts";
 import { type tokenServiceBuilder } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
+  clientAssertionAcceptedAudiences: string[];
+  clientAssertionClockToleranceSeconds: number;
+  clientAssertionMaxTokenAgeSeconds: number;
   tokenService: ReturnType<typeof tokenServiceBuilder>;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  { tokenService },
+  {
+    clientAssertionAcceptedAudiences,
+    clientAssertionClockToleranceSeconds,
+    clientAssertionMaxTokenAgeSeconds,
+    tokenService,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { client_assertion_type, client_id, grant_type } = req.body;
 
       logger.info(
-        { correlationId, requestBody: req.body },
+        {
+          correlationId,
+          requestBody: { client_assertion_type, client_id, grant_type }, // Only log non-sensitive parts of the request body
+        },
         "Issuing mocked access token",
       );
 
       // TODO remove this mocked route behavior when the real token flow is implemented.
-      const token = await tokenService.issueToken();
+      const token = await tokenService.issueToken(
+        req.body,
+        clientAssertionAcceptedAudiences,
+        clientAssertionClockToleranceSeconds,
+        clientAssertionMaxTokenAgeSeconds,
+        logger,
+      );
 
       res.send(token);
     },
     method: "POST",
     schema: {
       body: API_TokenRequest,
+      consumes: ["application/x-www-form-urlencoded"],
       description: "Issue a mocked access token",
       operationId: "createToken",
       response: {
