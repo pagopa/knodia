@@ -9,6 +9,7 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
+import { ExternalUISessionScope } from "@knodia/common-models/auth";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type CorrelationId,
@@ -70,7 +71,7 @@ async function buildActivationMagicLink(
       issuer: magicLinkConfig.issuer,
       kid: magicLinkConfig.kid,
       producerId: unsafeBrandId(agreement.producerId),
-      scope: "agreement-activation",
+      scope: ExternalUISessionScope.enum["agreement-activation"],
       secondsDuration: magicLinkConfig.secondsDuration,
       subject: agreement.id,
     });
