@@ -3,14 +3,12 @@ import type { bffApi } from "@knodia/bff-client";
 import {
   Cell,
   Column,
-  Empty,
-  Loader,
   Row,
   Table,
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
@@ -19,26 +17,10 @@ import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { PurposeStateChip } from "../PurposeStateChip";
 
 export function ProducerPurposeTable({
-  isLoading,
   purposes,
 }: {
-  isLoading: boolean;
   purposes: bffApi.ProducerPurpose[];
 }) {
-  if (isLoading) {
-    return <Loader className="mx-auto mt-20" label="Loading..." />;
-  }
-
-  if (purposes.length === 0) {
-    return (
-      <Empty
-        description="Purposes created for your E-Services by Consumer Organizations will appear here."
-        icon={<SelectionIcon />}
-        title="There are no Purposes for your E-Services yet."
-      />
-    );
-  }
-
   return (
     <Table aria-label="Producer purposes">
       <TableHeader>
