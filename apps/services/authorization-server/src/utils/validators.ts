@@ -41,6 +41,7 @@ import {
   agreementNotActive,
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
+  consumerKnodeVerificationDataNotFound,
   consumerMissingRequiredAttributes,
   eserviceVersionNotActive,
   eserviceVersionNotUsingBearerToken,
@@ -50,6 +51,7 @@ import {
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
+  unexpectedConsumerKnodeVerificationDataRetrievalError,
 } from "../models/errors.ts";
 import {
   retrieveAgreement,
@@ -164,7 +166,14 @@ export async function verifyClientAssertionSignature(
         invalidClientAssertionSignature(),
       )
       .with(P.instanceOf(JWSInvalid), (e) => jsonWebTokenError(e.message))
-      .with(P.union(P.instanceOf(ApiError), P.instanceOf(AxiosError)), (e) => e)
+      .with(P.instanceOf(ApiError), (e) => e)
+      .with(P.instanceOf(AxiosError), (e) => {
+        if (e.status === 404) {
+          return consumerKnodeVerificationDataNotFound();
+        } else {
+          return unexpectedConsumerKnodeVerificationDataRetrievalError(e);
+        }
+      })
       .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
   }
 }

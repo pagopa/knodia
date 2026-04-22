@@ -76,7 +76,4 @@ axios.interceptors.response.use((response) => response, handleUnauthorized);
 export const client = createBffApiClient({
   axios,
   baseURL: config.bffUrl,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
