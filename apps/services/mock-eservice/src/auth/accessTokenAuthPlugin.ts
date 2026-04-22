@@ -1,6 +1,6 @@
 import { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import { parseAuthHeaderToken } from "@knodia/fastify-zod-api-commons/auth";
-import { ApiError } from "@knodia/fastify-zod-api-commons/models";
+import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import fastifyPlugin from "fastify-plugin";
 import { jwtVerify, type JWTVerifyGetKey } from "jose";
 
@@ -10,20 +10,10 @@ interface AccessTokenAuthPluginOptions {
   jwksResolvers: JWTVerifyGetKey[];
 }
 
-const replyUnauthorized = (reply: {
-  code: (n: number) => { send: (body: unknown) => unknown };
-}) => reply.code(401).send({ error: "Unauthorized" });
-
 export const accessTokenAuthPlugin =
   fastifyPlugin<AccessTokenAuthPluginOptions>(async (fastify, opts) => {
-    fastify.addHook("onRequest", async (request, reply) => {
-      let token: string;
-      try {
-        token = parseAuthHeaderToken(request.headers.authorization);
-      } catch (err) {
-        if (err instanceof ApiError) return replyUnauthorized(reply);
-        throw err;
-      }
+    fastify.addHook("onRequest", async (request) => {
+      const token = parseAuthHeaderToken(request.headers.authorization);
 
       const rawPayload = await Promise.any(
         opts.jwksResolvers.map(async (jwks) => {
@@ -33,15 +23,13 @@ export const accessTokenAuthPlugin =
           });
           return payload;
         }),
-      ).catch(() => undefined);
+      ).catch(() => {
+        throw unauthorizedError("Token verification failed");
+      });
 
-      if (
-        !rawPayload ||
-        !EserviceAccessTokenClaims.safeParse(rawPayload).success
-      ) {
-        return replyUnauthorized(reply);
+      const parsed = EserviceAccessTokenClaims.safeParse(rawPayload);
+      if (!parsed.success) {
+        throw unauthorizedError("Invalid access token claims");
       }
-
-      return undefined;
     });
   });

@@ -2,12 +2,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import z from "zod";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { API_TestResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-
-const UnauthorizedResponse = z.object({ error: z.string() });
 
 export const mockRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
@@ -23,7 +21,7 @@ export const mockRouter: FastifyPluginAsyncZod = async (fastify) => {
       operationId: "test",
       response: {
         200: API_TestResponse.meta({ description: "Access token accepted" }),
-        401: UnauthorizedResponse.meta({ description: "Unauthorized" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
       },
       summary: "Mock e-service endpoint",
       tags: [apiTags.mock],

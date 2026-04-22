@@ -4,8 +4,8 @@ info:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
   description: Mock producer e-service used to exercise the access-token flow
-    end-to-end. Accepts an Orion-issued Bearer token and returns a static OK
-    payload.
+    end-to-end. Accepts an access token issued by a Knode and returns a static
+    OK payload.
   title: Knodia Mock E-service API
   version: 1.0.0
 components:
@@ -126,13 +126,8 @@ paths:
             application/problem+json:
               schema:
                 description: Unauthorized
-                type: object
-                properties:
-                  error:
-                    type: string
-                required:
-                  - error
-                additionalProperties: false
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Mock E-service API
     url: /
