@@ -5,7 +5,7 @@ import fastifyPlugin from "fastify-plugin";
 import { jwtVerify, type JWTVerifyGetKey } from "jose";
 
 interface AccessTokenAuthPluginOptions {
-  acceptedAudience: string;
+  acceptedAudiences: string[];
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
 }
@@ -18,7 +18,7 @@ export const accessTokenAuthPlugin =
       const rawPayload = await Promise.any(
         opts.jwksResolvers.map(async (jwks) => {
           const { payload } = await jwtVerify(token, jwks, {
-            audience: opts.acceptedAudience,
+            audience: opts.acceptedAudiences,
             issuer: opts.expectedIssuer,
           });
           return payload;

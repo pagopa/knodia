@@ -19,12 +19,12 @@ import { makeApiProblem } from "./models/errors.ts";
 import { mockRouter } from "./routers/mockRouter.ts";
 
 export function buildApp({
-  acceptedAudience,
+  acceptedAudiences,
   config,
   expectedIssuer,
   jwksResolvers,
 }: {
-  acceptedAudience: string;
+  acceptedAudiences: string[];
   config: LoggerConfig;
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
@@ -59,7 +59,7 @@ export function buildApp({
   // Protected routes — accessTokenAuthPlugin is scoped to this context only.
   app.register(async (protectedApp) => {
     protectedApp.register(accessTokenAuthPlugin, {
-      acceptedAudience,
+      acceptedAudiences,
       expectedIssuer,
       jwksResolvers,
     });
@@ -71,7 +71,7 @@ export function buildApp({
 
 export function buildAppFromConfig(config: MockEserviceConfig) {
   return buildApp({
-    acceptedAudience: config.acceptedAudience,
+    acceptedAudiences: config.acceptedAudiences,
     config,
     expectedIssuer: config.expectedIssuer,
     jwksResolvers: config.wellKnownUrls.map((url) =>

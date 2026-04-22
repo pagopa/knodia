@@ -25,6 +25,7 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "organization-process": "007",
   "purpose-process": "008",
   "authorization-server": "009",
+  // mock e-services
   "mock-eservice": "999",
 };
 /* eslint-enable perfectionist/sort-objects */

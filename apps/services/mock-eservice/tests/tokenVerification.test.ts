@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
 import {
-  ACCEPTED_AUDIENCE,
+  ACCEPTED_AUDIENCES,
   EXPECTED_ISSUER,
   getCtx,
   TEST_KID,
@@ -36,7 +36,7 @@ async function signToken(
     .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ: "JWT" })
     .setSubject(randomUUID())
     .setIssuer(issuer ?? EXPECTED_ISSUER)
-    .setAudience(audience ?? ACCEPTED_AUDIENCE)
+    .setAudience(audience ?? ACCEPTED_AUDIENCES[0])
     .setJti(randomUUID())
     .setIssuedAt(now)
     .setExpirationTime(expiresIn);

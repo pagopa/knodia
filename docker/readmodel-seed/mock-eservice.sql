@@ -37,12 +37,11 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '10000000-0000-4000-8000-000000000003',
   '10000000-0000-4000-8000-000000000001',
   '10000000-0000-4000-8000-000000000002',
-  -- Placeholder SHA-256 checksum. Nothing validates it at runtime.
-  repeat('0', 64),
+  '186811e830bb8c525b6d1b06828b4f551a3b8ac23787a3a4ad1557d64c4a1c23',
   'application/yaml',
-  'openapi.yaml',
-  '/interfaces/mock-eservice.yaml',
-  '{"en": "Mock E-service Interface"}'::jsonb,
+  'mock-eservice.yaml',
+  'interfaces/mock-eservice.yaml',
+  '{"en": "mock-eservice.yaml"}'::jsonb,
   0, now(), now()
 ) ON CONFLICT (id) DO NOTHING;
 

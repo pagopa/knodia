@@ -10,7 +10,9 @@ import { afterAll, beforeAll } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
-export const ACCEPTED_AUDIENCE = "mock-eservice.knodia.local";
+export const ACCEPTED_AUDIENCES: [string, ...string[]] = [
+  "mock-eservice.knodia.local",
+];
 export const EXPECTED_ISSUER = "https://knodia.org";
 export const TEST_KID = "test-mock-eservice-kid";
 
@@ -31,7 +33,7 @@ beforeAll(async () => {
   jwk.use = "sig";
 
   const app = buildApp({
-    acceptedAudience: ACCEPTED_AUDIENCE,
+    acceptedAudiences: ACCEPTED_AUDIENCES,
     config: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
     expectedIssuer: EXPECTED_ISSUER,
     jwksResolvers: [createLocalJWKSet({ keys: [jwk] })],
