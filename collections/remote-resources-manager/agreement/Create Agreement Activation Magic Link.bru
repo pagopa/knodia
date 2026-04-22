@@ -1,0 +1,25 @@
+meta {
+  name: Create Agreement Activation Magic Link
+  type: http
+}
+
+post {
+  url: {{host-remote-resources-manager}}/agreements/:agreementId/activationMagicLink
+  body: json
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "knodeId": "{{other-knode-id}}"
+  }
+}

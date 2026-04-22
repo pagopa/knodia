@@ -1,0 +1,24 @@
+meta {
+  name: Create Agreement Activation Magic Link
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/agreements/:agreementId/activationMagicLink
+  body: json
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "knodeId": "{{other-knode-id}}"
+  }
+}
