@@ -1,27 +1,17 @@
 import { AxiosError, type AxiosHeaders, type AxiosResponse } from "axios";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockJwtVerify = vi.hoisted(() => vi.fn());
-const mockDecodeJwt = vi.hoisted(() => vi.fn());
-const mockKmsSend = vi.hoisted(() => vi.fn());
+import { joseMockFactory, kmsMockFactory } from "./mocks/authMocks.ts";
+
+const { mockDecodeJwt, mockJwtVerify, mockKmsSend } = vi.hoisted(() => ({
+  mockDecodeJwt: vi.fn<(...args: unknown[]) => unknown>(),
+  mockJwtVerify: vi.fn<(...args: unknown[]) => unknown>(),
+  mockKmsSend: vi.fn<(...args: unknown[]) => unknown>(),
+}));
 const activateAgreementMock = vi.hoisted(() => vi.fn());
 
-vi.mock("jose", () => ({
-  createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks"),
-  decodeJwt: (...args: unknown[]) => mockDecodeJwt(...args),
-  jwtVerify: mockJwtVerify,
-}));
-
-vi.mock("@aws-sdk/client-kms", () => ({
-  KMSClient: function MockKMSClient() {
-    return { send: mockKmsSend };
-  },
-  SignCommand: function MockSignCommand(
-    input: Record<string, unknown>,
-  ): Record<string, unknown> {
-    return { ...input };
-  },
-}));
+vi.mock("jose", () => joseMockFactory({ mockDecodeJwt, mockJwtVerify }));
+vi.mock("@aws-sdk/client-kms", () => kmsMockFactory({ mockKmsSend }));
 
 vi.mock("@knodia/agreement-process-client", async (importOriginal) => {
   const original =

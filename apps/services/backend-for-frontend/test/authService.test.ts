@@ -7,26 +7,16 @@ import {
 } from "@knodia/common-models/auth";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const mockJwtVerify = vi.hoisted(() => vi.fn());
-const mockDecodeJwt = vi.hoisted(() => vi.fn());
-const mockKmsSend = vi.hoisted(() => vi.fn());
+import { joseMockFactory, kmsMockFactory } from "./mocks/authMocks.ts";
 
-vi.mock("jose", () => ({
-  createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks"),
-  decodeJwt: (...args: unknown[]) => mockDecodeJwt(...args),
-  jwtVerify: mockJwtVerify,
+const { mockDecodeJwt, mockJwtVerify, mockKmsSend } = vi.hoisted(() => ({
+  mockDecodeJwt: vi.fn<(...args: unknown[]) => unknown>(),
+  mockJwtVerify: vi.fn<(...args: unknown[]) => unknown>(),
+  mockKmsSend: vi.fn<(...args: unknown[]) => unknown>(),
 }));
 
-vi.mock("@aws-sdk/client-kms", () => ({
-  KMSClient: function MockKMSClient() {
-    return { send: mockKmsSend };
-  },
-  SignCommand: function MockSignCommand(
-    input: Record<string, unknown>,
-  ): Record<string, unknown> {
-    return { ...input };
-  },
-}));
+vi.mock("jose", () => joseMockFactory({ mockDecodeJwt, mockJwtVerify }));
+vi.mock("@aws-sdk/client-kms", () => kmsMockFactory({ mockKmsSend }));
 
 import { app } from "./setup.ts";
 
