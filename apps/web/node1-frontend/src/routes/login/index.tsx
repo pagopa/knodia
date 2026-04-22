@@ -1,8 +1,8 @@
 import { Banner, Button, Divider, Link } from "@knodia/ui-kit/ui";
+import loginBg from "@login-bg";
 import { LockIcon } from "@phosphor-icons/react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import loginBg from "@/assets/login-bg.webp";
 import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
 
@@ -26,6 +26,8 @@ export function LoginPage() {
         alt=""
         aria-hidden
         className="pointer-events-none absolute inset-0 size-full object-cover opacity-80"
+        decoding="async"
+        fetchPriority="high"
         src={loginBg}
       />
       <div className="elevation-5 relative z-10 mx-6 flex w-full max-w-140 flex-col items-center gap-6 rounded-2xl bg-primary-light px-10 py-16">
