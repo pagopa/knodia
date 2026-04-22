@@ -1,10 +1,10 @@
+/* eslint-disable max-lines-per-function */
 import type { KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { type API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -57,7 +57,7 @@ const retrievePurpose = async (
 const pollPurpose = (
   pollingService: PollingService,
   purposeProcessClient: PurposeProcessClient,
-  response: AxiosResponse<API_CreatedResource>,
+  response: AxiosResponse<purposeProcessApi.Purpose>,
   headers: KnodiaServiceHeaders,
 ) =>
   pollingService.pollResourceWithMetadata(() =>
@@ -181,6 +181,94 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose, apiTags.resource],
     },
     url: "/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Reactivating Purpose ${req.params.purposeId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const response = await purposeProcessApi.reactivatePurposeByConsumer({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      await pollPurpose(
+        pollingService,
+        purposeProcessClient,
+        response,
+        headers,
+      );
+
+      res.send(toAPI_Purpose(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Reactivate a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "reactivatePurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate a Purpose",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Suspending Purpose ${req.params.purposeId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const response = await purposeProcessApi.suspendPurposeByConsumer({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      await pollPurpose(
+        pollingService,
+        purposeProcessClient,
+        response,
+        headers,
+      );
+
+      res.send(toAPI_Purpose(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Suspend a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "suspendPurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend a Purpose",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/suspend",
   });
 
   fastify.route({
