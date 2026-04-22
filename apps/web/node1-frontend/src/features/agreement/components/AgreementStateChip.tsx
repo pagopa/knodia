@@ -11,27 +11,30 @@ export function AgreementStateChip({
   state: bffApi.AgreementState;
   type?: ChipProps["type"];
 }) {
-  return match(state)
-    .with("Active", () => (
-      <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
-    ))
-    .with("Suspended", () => (
-      <Chip
-        icon={<ProhibitIcon />}
-        kind="error"
-        label="Suspended"
-        type={type}
-      />
-    ))
-    .with("Archived", () => {
-      console.warn("Unhandled agreement state: Archived");
-      return null;
-    })
-    .with("PendingConsumerOperatorIdentification", () => {
-      console.warn(
-        "Unhandled agreement state: PendingConsumerOperatorIdentification",
-      );
-      return null;
-    })
-    .exhaustive();
+  return (
+    match(state)
+      .with("Active", () => (
+        <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
+      ))
+      .with("Suspended", () => (
+        <Chip
+          icon={<ProhibitIcon />}
+          kind="error"
+          label="Suspended"
+          type={type}
+        />
+      ))
+      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
+      .with("Archived", () => {
+        console.warn("Unhandled agreement state: Archived");
+        return null;
+      })
+      .with("PendingConsumerOperatorIdentification", () => {
+        console.warn(
+          "Unhandled agreement state: PendingConsumerOperatorIdentification",
+        );
+        return null;
+      })
+      .exhaustive()
+  );
 }
