@@ -4099,6 +4099,15 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+          in: query
+          name: recentlyUpdated
+          required: false
+          description: Filter to only Agreements updated within the recent update window
       responses:
         "200":
           description: Producer Agreements retrieved successfully
@@ -4343,6 +4352,15 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+          in: query
+          name: recentlyUpdated
+          required: false
+          description: Filter to only Purposes updated within the recent update window
         - schema:
             type: array
             items:

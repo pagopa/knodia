@@ -8,7 +8,7 @@ import {
 import { type Purpose, PurposeState } from "@knodia/purpose-models";
 import { getMockPurpose } from "@knodia/test-commons/utils";
 
-const createdAt = new Date();
+export const createdAt = new Date();
 
 export const eserviceId1 = generateId<EserviceId>();
 export const eserviceId2 = generateId<EserviceId>();

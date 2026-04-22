@@ -1,5 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
+import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs, Button } from "@knodia/ui-kit/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -8,6 +9,7 @@ import { DialogTrigger } from "react-aria-components";
 
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
+import { producerRecentAgreementsByEserviceQuery } from "@/features/agreement/services/queries";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EditEServiceModal } from "@/features/e-service/components/EditEServiceModal";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
@@ -15,13 +17,22 @@ import { EserviceProducerActions } from "@/features/e-service/components/Eservic
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { producerEserviceDetailsQuery } from "@/features/e-service/services/queries";
+import { producerRecentPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
 export const Route = createFileRoute(
   "/_authenticated/production/e-services/$id",
 )({
   component: RouteComponent,
-  loader: async ({ context: { queryClient }, params: { id } }) =>
-    await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
+  loader: async ({ context: { queryClient }, params: { id } }) => {
+    const eserviceId = unsafeBrandId<EserviceId>(id);
+    void queryClient.prefetchQuery(
+      producerRecentAgreementsByEserviceQuery(eserviceId),
+    );
+    void queryClient.prefetchQuery(
+      producerRecentPurposesByEserviceQuery(eserviceId),
+    );
+    return await queryClient.ensureQueryData(producerEserviceDetailsQuery(id));
+  },
 });
 
 function EditAction({
