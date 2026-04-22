@@ -79,6 +79,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
   state: arrayQueryParam(API_PurposeState)
     .optional()
     .meta({ description: "Filter by Purpose State" }),
+  updatedSince: z.iso.datetime().optional().meta({
+    description: "Filter Purposes updated at or after this timestamp",
+  }),
 });
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams

@@ -196,6 +196,10 @@ export type GetPurposesData = {
          * Filter by Purpose State
          */
         state?: Array<PurposeState>;
+        /**
+         * Filter Purposes updated at or after this timestamp
+         */
+        updatedSince?: string;
     };
     url: '/purposes';
 };

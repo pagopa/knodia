@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyErrors, DownloadConsumerKeychainKeyResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasErrors, GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipErrors, GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembersResponses, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsErrors, GetConsumerKeychainOptionsResponses, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkErrors, GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsErrors, GetConsumerPurposeDetailsResponses, GetConsumerPurposesData, GetConsumerPurposesErrors, GetConsumerPurposesResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, LogoutData, LogoutResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateProducerEserviceData, UpdateProducerEserviceErrors, UpdateProducerEserviceResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyErrors, DownloadConsumerKeychainKeyResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasErrors, GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipErrors, GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembersResponses, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsErrors, GetConsumerKeychainOptionsResponses, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkErrors, GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsErrors, GetConsumerPurposeDetailsResponses, GetConsumerPurposesData, GetConsumerPurposesErrors, GetConsumerPurposesResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, LogoutData, LogoutResponses, ReactivateConsumerAgreementData, ReactivateConsumerAgreementErrors, ReactivateConsumerAgreementResponses, ReactivateProducerAgreementData, ReactivateProducerAgreementErrors, ReactivateProducerAgreementResponses, ReactivateProducerEserviceData, ReactivateProducerEserviceErrors, ReactivateProducerEserviceResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, SuspendConsumerAgreementData, SuspendConsumerAgreementErrors, SuspendConsumerAgreementResponses, SuspendProducerAgreementData, SuspendProducerAgreementErrors, SuspendProducerAgreementResponses, SuspendProducerEserviceData, SuspendProducerEserviceErrors, SuspendProducerEserviceResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateProducerEserviceData, UpdateProducerEserviceErrors, UpdateProducerEserviceResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -110,6 +110,24 @@ export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends b
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producer/eservices/{eserviceId}/interface',
+    ...options
+});
+
+/**
+ * Suspend an E-service
+ */
+export const suspendProducerEservice = <ThrowOnError extends boolean = true>(options: Options<SuspendProducerEserviceData, ThrowOnError>) => (options.client ?? client).post<SuspendProducerEserviceResponses, SuspendProducerEserviceErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/eservices/{eserviceId}/suspend',
+    ...options
+});
+
+/**
+ * Reactivate a suspended E-service
+ */
+export const reactivateProducerEservice = <ThrowOnError extends boolean = true>(options: Options<ReactivateProducerEserviceData, ThrowOnError>) => (options.client ?? client).post<ReactivateProducerEserviceResponses, ReactivateProducerEserviceErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/eservices/{eserviceId}/reactivate',
     ...options
 });
 
@@ -395,6 +413,24 @@ export const createConsumerAgreement = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Reactivate an Agreement as Consumer
+ */
+export const reactivateConsumerAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateConsumerAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateConsumerAgreementResponses, ReactivateConsumerAgreementErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumer/agreements/{agreementId}/reactivate',
+    ...options
+});
+
+/**
+ * Suspend an Agreement as Consumer
+ */
+export const suspendConsumerAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendConsumerAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendConsumerAgreementResponses, SuspendConsumerAgreementErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumer/agreements/{agreementId}/suspend',
+    ...options
+});
+
+/**
  * List consumer Purposes
  *
  * Retrieve a paginated list of Purposes created by the logged-in consumer
@@ -473,6 +509,24 @@ export const getProducerAgreementDetails = <ThrowOnError extends boolean = true>
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producer/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Reactivate an Agreement as Producer
+ */
+export const reactivateProducerAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateProducerAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateProducerAgreementResponses, ReactivateProducerAgreementErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/agreements/{agreementId}/reactivate',
+    ...options
+});
+
+/**
+ * Suspend an Agreement as Producer
+ */
+export const suspendProducerAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendProducerAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendProducerAgreementResponses, SuspendProducerAgreementErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/agreements/{agreementId}/suspend',
     ...options
 });
 

@@ -29,6 +29,8 @@ function createAgreementDetails(
       name: "Rigel Corp",
     },
     state: "Active",
+    suspendedByConsumerAt: null,
+    suspendedByProducerAt: null,
     ...overrides,
   };
 }
