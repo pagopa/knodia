@@ -138,6 +138,7 @@ export interface EserviceV1 {
   versions: EserviceVersionV1[];
   createdAt: number;
   updatedAt: number;
+  templateId?: string | undefined;
 }
 
 export interface EserviceCategoryV1 {
@@ -199,6 +200,7 @@ function createBaseEserviceV1(): EserviceV1 {
     versions: [],
     createdAt: 0,
     updatedAt: 0,
+    templateId: undefined,
   };
 }
 
@@ -236,6 +238,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     }
     if (message.updatedAt !== 0) {
       writer.uint32(88).int64(message.updatedAt);
+    }
+    if (message.templateId !== undefined) {
+      writer.uint32(98).string(message.templateId);
     }
     return writer;
   },
@@ -335,6 +340,14 @@ export const EserviceV1: MessageFns<EserviceV1> = {
           message.updatedAt = longToNumber(reader.int64());
           continue;
         }
+        case 12: {
+          if (tag !== 98) {
+            break;
+          }
+
+          message.templateId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -363,6 +376,7 @@ export const EserviceV1: MessageFns<EserviceV1> = {
         : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+      templateId: isSet(object.templateId) ? globalThis.String(object.templateId) : undefined,
     };
   },
 
@@ -401,6 +415,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
+    if (message.templateId !== undefined) {
+      obj.templateId = message.templateId;
+    }
     return obj;
   },
 
@@ -424,6 +441,7 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     message.versions = object.versions?.map((e) => EserviceVersionV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
+    message.templateId = object.templateId ?? undefined;
     return message;
   },
 };

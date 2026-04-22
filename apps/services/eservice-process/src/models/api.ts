@@ -91,6 +91,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    templateId: z.uuid().optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });

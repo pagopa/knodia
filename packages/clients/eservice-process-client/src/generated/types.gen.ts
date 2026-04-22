@@ -112,6 +112,7 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
+    templateId?: string;
     updatedAt: string;
 };
 

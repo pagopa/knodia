@@ -36,6 +36,7 @@ export const readmodelEservice = eserviceSchema.table(
     mode: text().notNull(),
     name: jsonb().notNull(),
     producerId: uuid("producer_id").notNull(),
+    templateId: uuid("template_id"),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,

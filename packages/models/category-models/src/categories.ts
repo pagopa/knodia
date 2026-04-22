@@ -4,7 +4,7 @@ interface Category {
   scheme: string;
 }
 
-export const categories: Record<string, Record<string, string>> = {
+export const categories = {
   vc_example_eservice_categories: {
     "citizen.identity.birth_date": "Birth date",
     "citizen.identity.birth_place": "Birth place",
@@ -19,13 +19,18 @@ export const categories: Record<string, Record<string, string>> = {
       "PA digital domicile",
     "organization.public_administration.typology": "PA typology",
   },
-};
+} as const satisfies Record<string, Record<string, string>>;
+
+export type CategoryCode<S extends CategoryScheme> =
+  keyof (typeof categories)[S];
+export type CategoryScheme = keyof typeof categories;
 
 export function getCategory(
   scheme: string,
   code: string,
 ): Category | undefined {
-  const name = categories[scheme]?.[code];
+  const c: Record<string, Record<string, string>> = categories;
+  const name = c[scheme]?.[code];
   if (name === undefined) {
     return undefined;
   }

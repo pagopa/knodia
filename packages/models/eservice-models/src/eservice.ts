@@ -2,6 +2,7 @@ import { AttributeGroup } from "@knodia/attribute-models";
 import {
   EserviceId,
   EserviceInterfaceId,
+  EserviceTemplateId,
   EserviceVersionId,
   OrganizationId,
 } from "@knodia/common-models/ids";
@@ -89,6 +90,7 @@ export const Eservice = z.strictObject({
   mode: EserviceMode,
   name: LocalizedName,
   producerId: OrganizationId,
+  templateId: EserviceTemplateId.optional(), // present if instantiated from a template
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),
 });
