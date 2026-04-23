@@ -30,6 +30,8 @@ import type {
   UISessionToken,
 } from "./models.ts";
 
+import { calculateDpopThumbprint } from "./utils/utils.ts";
+
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
@@ -160,7 +162,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         ...(input.dpopJWK
           ? {
               cnf: {
-                jkt: calculateKid(input.dpopJWK),
+                jkt: calculateDpopThumbprint(input.dpopJWK),
               },
             }
           : {}),

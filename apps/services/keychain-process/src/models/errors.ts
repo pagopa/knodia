@@ -72,6 +72,15 @@ export function invalidUserRole(userId: UserId, requiredRole: string) {
   });
 }
 
+export function jwkDecodingError(details: string) {
+  return createApiError<ErrorCodes>({
+    code: "JWK_DECODING_ERROR",
+    detail: details,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "JWK Decoding Error",
+  });
+}
+
 export function keyAlreadyExists(kid: string) {
   return createApiError<ErrorCodes>({
     code: "KEY_ALREADY_EXISTS",

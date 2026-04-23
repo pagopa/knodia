@@ -27,6 +27,7 @@
     "@knodia/agreement-models": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/crypto": "workspace:*",
     "@knodia/db-readmodel-agreement": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",

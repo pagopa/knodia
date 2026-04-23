@@ -10,11 +10,8 @@ import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { type Algorithm } from "@knodia/common-models/algorithms";
+import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
-import {
-  createPublicKey,
-  decodeBase64Pem,
-} from "@knodia/fastify-zod-api-commons/crypto";
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
