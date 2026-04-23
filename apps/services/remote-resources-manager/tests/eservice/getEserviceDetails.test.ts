@@ -76,7 +76,6 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
-    state: "ACTIVE",
   };
 
   const buildK2KAgreement = (
@@ -170,6 +169,8 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(body.agreement).toEqual({
       id: k2kAgreement.id,
       state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
       updatedAt: k2kAgreement.updatedAt,
     });
   });

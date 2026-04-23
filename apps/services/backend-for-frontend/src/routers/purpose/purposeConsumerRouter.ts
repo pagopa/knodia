@@ -259,7 +259,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+        "Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version",
       operationId: "getConsumerCurrentPurposeFormSchemas",
       querystring: API_GetConsumerPurposeFormSchemaQueryParams,
       response: {

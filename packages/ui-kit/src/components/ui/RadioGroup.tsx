@@ -57,7 +57,7 @@ export function RadioGroup<T extends string = string>({
       {...(onChange && { onChange: onChange as (value: string) => void })}
       {...(value !== undefined && { value })}
     >
-      <Label>{props.label}</Label>
+      {props.label && <Label>{props.label}</Label>}
       <div className={radioGroupItems({ orientation: props.orientation })}>
         {props.children}
       </div>

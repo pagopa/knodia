@@ -674,6 +674,55 @@ export type ReactivateEserviceResponses = {
 
 export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
 
+export type ArchiveEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/archive';
+};
+
+export type ArchiveEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveEserviceError = ArchiveEserviceErrors[keyof ArchiveEserviceErrors];
+
+export type ArchiveEserviceResponses = {
+    /**
+     * E-service archived successfully
+     */
+    200: Eservice;
+};
+
+export type ArchiveEserviceResponse = ArchiveEserviceResponses[keyof ArchiveEserviceResponses];
+
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
     headers: {

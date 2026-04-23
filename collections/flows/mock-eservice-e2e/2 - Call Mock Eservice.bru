@@ -1,0 +1,28 @@
+meta {
+  name: 2 - Call Mock Eservice
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-mock-eservice}}/test
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.status: eq ok
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
