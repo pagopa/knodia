@@ -161,6 +161,8 @@ describe("toConsumptionEserviceDetail", () => {
     const agreement = {
       id: crypto.randomUUID(),
       state: "Active" as const,
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
       updatedAt: "2026-01-01T00:00:00.000Z",
     };
     const result = toConsumptionEserviceDetail(createBffDetail({ agreement }));

@@ -484,16 +484,30 @@ export type Purpose = {
     updatedAt: string;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
+export type PurposeFormUiTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
+    texts: PurposeFormTexts;
     uiSchema: {
         [key: string]: unknown;
     };
+    uiTexts: PurposeFormUiTexts;
     version: PurposeFormSchemaVersion;
 };
 

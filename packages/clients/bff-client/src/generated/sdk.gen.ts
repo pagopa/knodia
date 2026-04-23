@@ -493,7 +493,7 @@ export const createConsumerPurpose = <ThrowOnError extends boolean = true>(optio
 /**
  * Get current Purpose form schemas
  *
- * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
+ * Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version
  */
 export const getConsumerCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true>(options: Options<GetConsumerCurrentPurposeFormSchemasData, ThrowOnError>) => (options.client ?? client).get<GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerCurrentPurposeFormSchemasErrors, ThrowOnError>({
     responseType: 'json',
