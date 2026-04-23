@@ -14,6 +14,8 @@ locals {
       "${src.prefix}${replace(d, src.dir, "")}"
     ]
   ])
+
+  ecr_cross_account_pull_enabled = var.env == "dev" && length(var.ecr_cross_account_pull_account_ids) > 0
 }
 
 resource "aws_ecr_repository" "app" {
@@ -21,6 +23,33 @@ resource "aws_ecr_repository" "app" {
 
   image_tag_mutability = contains(["test", "prod"], var.env) ? "IMMUTABLE" : "MUTABLE"
   name                 = each.key
+}
+
+data "aws_iam_policy_document" "ecr_cross_account_pull" {
+  count = local.ecr_cross_account_pull_enabled ? 1 : 0
+
+  statement {
+    sid    = "AllowCrossAccountPull"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = formatlist("arn:aws:iam::%s:root", var.ecr_cross_account_pull_account_ids)
+    }
+
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+    ]
+  }
+}
+
+resource "aws_ecr_repository_policy" "cross_account_pull" {
+  for_each = local.ecr_cross_account_pull_enabled ? aws_ecr_repository.app : {}
+
+  repository = each.value.name
+  policy     = data.aws_iam_policy_document.ecr_cross_account_pull[0].json
 }
 
 resource "aws_ecr_lifecycle_policy" "app" {
