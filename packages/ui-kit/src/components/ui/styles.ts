@@ -109,7 +109,7 @@ export const listItemStyles = tv({
 
 export const buttonStyles = tv({
   extend: focusRing,
-  base: "body-md-em relative box-border inline-flex items-center justify-center gap-2 rounded-[var(--button-radius)] border py-0 text-center transition [-webkit-tap-highlight-color:transparent] hover:cursor-pointer",
+  base: "body-md-em relative box-border inline-flex items-center justify-center gap-2 rounded-button border py-0 text-center transition [-webkit-tap-highlight-color:transparent] hover:cursor-pointer",
   variants: {
     kind: {
       filled: "border-transparent",
