@@ -3,17 +3,9 @@ import "@knodia/test-commons/dynamodb";
 import { afterAll, beforeAll, inject } from "vitest";
 
 import { buildAppFromConfig } from "../src/app.ts";
-import {
-  createJtiReplayStore,
-  type JtiReplayStore,
-} from "../src/services/jtiReplayStore.ts";
-
-// Must match a schema file under dynamo-tables/
-export const refreshTokenTableName = "knodia-bff-refresh-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
-export let dynamoClient: DynamoDBClient;
-export let refreshTokenStore: JtiReplayStore;
+let dynamoClient: DynamoDBClient;
 
 beforeAll(async () => {
   dynamoClient = new DynamoDBClient({
@@ -21,7 +13,6 @@ beforeAll(async () => {
     endpoint: inject("DYNAMODB_CONNECTION_STRING"),
     region: "eu-south-1",
   });
-  refreshTokenStore = createJtiReplayStore(refreshTokenTableName, dynamoClient);
 
   app = buildAppFromConfig(
     {
@@ -37,7 +28,7 @@ beforeAll(async () => {
       },
       defaultPollingMaxRetries: 5,
       defaultPollingRetryDelay: 400,
-      dynamoDbRefreshTokensTable: refreshTokenTableName,
+      dynamoDbRefreshTokensTable: "knodia-bff-refresh-tokens",
       eserviceInterfacesS3Bucket: "test-bucket",
       eserviceProcessUrl: "http://localhost:0",
       host: "0.0.0.0",

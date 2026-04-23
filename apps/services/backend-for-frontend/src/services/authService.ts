@@ -1,3 +1,5 @@
+import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
+
 import {
   UISessionRefreshTokenClaims,
   UserRole,
@@ -10,8 +12,6 @@ import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import z from "zod";
 
 import type { BffProcessConfig } from "../config/config.ts";
-
-import { type JtiReplayStore } from "./jtiReplayStore.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),

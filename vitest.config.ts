@@ -26,6 +26,7 @@ export default defineConfig({
       "apps/services/*",
       "apps/web/*",
       "packages/*",
+      "packages/db/*",
     ],
     env: loadEnvFile(".env.test"),
   },

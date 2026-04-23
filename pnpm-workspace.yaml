@@ -4,6 +4,7 @@ packages:
   - packages/*
   - packages/models/*
   - packages/db/event-store/*
+  - packages/db/jti-replay-store
   - packages/db/readmodel/*
   - packages/db/remote-resource
   - packages/clients/*
