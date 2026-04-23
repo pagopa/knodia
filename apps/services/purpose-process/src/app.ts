@@ -18,22 +18,29 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { initFileManager } from "@knodia/file-manager";
 
 import type { PurposeProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
+import {
+  type FormSchemaStore,
+  formSchemaStoreBuilder,
+} from "./services/formSchemaStore.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   config,
   eventStoreDb,
+  formSchemaStore,
   readmodelDb,
 }: {
   config: AuthConfig & LoggerConfig;
   eventStoreDb: NodePgDatabase;
+  formSchemaStore: FormSchemaStore;
   readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -73,6 +80,7 @@ export function buildApp({
       purposeService: purposeServiceBuilder(
         purposeEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        formSchemaStore,
       ),
     });
   });
@@ -86,9 +94,16 @@ export function buildAppFromConfig(config: PurposeProcessConfig) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
 
+  const formSchemaStore = formSchemaStoreBuilder({
+    bucket: config.purposeFormsBucket,
+    currentTtlMs: config.purposeFormsCurrentTtlMs,
+    fileManager: initFileManager(),
+  });
+
   const app = buildApp({
     config,
     eventStoreDb,
+    formSchemaStore,
     readmodelDb,
   });
 

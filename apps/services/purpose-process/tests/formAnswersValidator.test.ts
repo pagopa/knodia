@@ -8,17 +8,20 @@ import {
 import { MOCK_PURPOSE_FORM_ANSWERS } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { assertFormAnswersAreValid } from "../src/utils/formAnswersValidator.ts";
+import { formSchemaStore } from "./setup.ts";
 
 const version = PurposeFormSchemaVersion.enum["1.0"];
 
-function expectValidationErrors(
+async function expectValidationErrors(
   formAnswers: unknown,
   expectedDetails: string[],
-): void {
+): Promise<void> {
   let thrown: unknown;
   try {
-    assertFormAnswersAreValid(formAnswers as PurposeFormAnswers, version);
+    await formSchemaStore.validateFormAnswers(
+      formAnswers as PurposeFormAnswers,
+      version,
+    );
   } catch (e) {
     thrown = e;
   }
@@ -35,23 +38,23 @@ function expectValidationErrors(
 }
 
 // eslint-disable-next-line max-lines-per-function
-describe("assertFormAnswersAreValid", () => {
-  it("should not throw for valid form answers", () => {
-    expect(() =>
-      assertFormAnswersAreValid(MOCK_PURPOSE_FORM_ANSWERS, version),
-    ).not.toThrow();
+describe("validateFormAnswers", () => {
+  it("should not throw for valid form answers", async () => {
+    await expect(
+      formSchemaStore.validateFormAnswers(MOCK_PURPOSE_FORM_ANSWERS, version),
+    ).resolves.not.toThrow();
   });
 
-  it("should throw for empty form answers (missing required fields)", () => {
-    expectValidationErrors({}, [
+  it("should throw for empty form answers (missing required fields)", async () => {
+    await expectValidationErrors({}, [
       "must have required property 'purpose'",
       "must have required property 'usesPersonalData'",
       "must have required property 'isRequestOnBehalfOfThirdParties'",
     ]);
   });
 
-  it("should throw for invalid enum value", () => {
-    expectValidationErrors(
+  it("should throw for invalid enum value", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         purpose: "INVALID_VALUE",
@@ -60,19 +63,18 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should throw when conditional required fields for PUBLIC_INTEREST are missing", () => {
-    expectValidationErrors(
+  it("should throw when conditional required fields for PUBLIC_INTEREST are missing", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
-        // legalBasis=PUBLIC_INTEREST requires legalBasisPublicInterest
         legalBasis: ["PUBLIC_INTEREST"],
       },
       ["must have required property 'legalBasisPublicInterest'"],
     );
   });
 
-  it("should throw when purpose=OTHER but otherPurpose is missing", () => {
-    expectValidationErrors(
+  it("should throw when purpose=OTHER but otherPurpose is missing", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         institutionalPurpose: undefined,
@@ -83,8 +85,8 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should throw when usesPersonalData=YES but declarationConfirmGDPR is missing", () => {
-    expectValidationErrors(
+  it("should throw when usesPersonalData=YES but declarationConfirmGDPR is missing", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         declarationConfirmGDPR: undefined,
@@ -93,8 +95,8 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should throw when isRequestOnBehalfOfThirdParties=YES but thirdPartiesRequestDataUsage is missing", () => {
-    expectValidationErrors(
+  it("should throw when isRequestOnBehalfOfThirdParties=YES but thirdPartiesRequestDataUsage is missing", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         isRequestOnBehalfOfThirdParties: "YES",
@@ -103,8 +105,8 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should throw when legalBasisPublicInterest=PUBLIC_INTEREST_TASK but publicInterestTaskText is missing", () => {
-    expectValidationErrors(
+  it("should throw when legalBasisPublicInterest=PUBLIC_INTEREST_TASK but publicInterestTaskText is missing", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         legalBasis: ["PUBLIC_INTEREST"],
@@ -114,9 +116,9 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should not throw when legalBasisPublicInterest=PUBLIC_INTEREST_TASK and publicInterestTaskText is provided", () => {
-    expect(() =>
-      assertFormAnswersAreValid(
+  it("should not throw when legalBasisPublicInterest=PUBLIC_INTEREST_TASK and publicInterestTaskText is provided", async () => {
+    await expect(
+      formSchemaStore.validateFormAnswers(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           legalBasis: ["PUBLIC_INTEREST"],
@@ -125,12 +127,12 @@ describe("assertFormAnswersAreValid", () => {
         },
         version,
       ),
-    ).not.toThrow();
+    ).resolves.not.toThrow();
   });
 
-  it("should not throw when usesPersonalData=NO and the non-personal-data branch is satisfied", () => {
-    expect(() =>
-      assertFormAnswersAreValid(
+  it("should not throw when usesPersonalData=NO and the non-personal-data branch is satisfied", async () => {
+    await expect(
+      formSchemaStore.validateFormAnswers(
         {
           institutionalPurpose: "Institutional purpose",
           isRequestOnBehalfOfThirdParties: "NO",
@@ -140,11 +142,11 @@ describe("assertFormAnswersAreValid", () => {
         },
         version,
       ),
-    ).not.toThrow();
+    ).resolves.not.toThrow();
   });
 
-  it("should throw when usesPersonalData=NO and usesThirdPartyNonPersonalData is missing", () => {
-    expectValidationErrors(
+  it("should throw when usesPersonalData=NO and usesThirdPartyNonPersonalData is missing", async () => {
+    await expectValidationErrors(
       {
         institutionalPurpose: "Institutional purpose",
         isRequestOnBehalfOfThirdParties: "NO",
@@ -155,8 +157,8 @@ describe("assertFormAnswersAreValid", () => {
     );
   });
 
-  it("should throw when usesPersonalData=NO, usesThirdPartyNonPersonalData=YES but usesThirdPartyConfidentialData is missing", () => {
-    expectValidationErrors(
+  it("should throw when usesPersonalData=NO, usesThirdPartyNonPersonalData=YES but usesThirdPartyConfidentialData is missing", async () => {
+    await expectValidationErrors(
       {
         institutionalPurpose: "Institutional purpose",
         isRequestOnBehalfOfThirdParties: "NO",
@@ -169,8 +171,8 @@ describe("assertFormAnswersAreValid", () => {
   });
 
   describe("non-empty constraints", () => {
-    it("should throw when a required free-text field is an empty string", () => {
-      expectValidationErrors(
+    it("should throw when a required free-text field is an empty string", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           institutionalPurpose: "",
@@ -179,8 +181,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when a required array field is empty", () => {
-      expectValidationErrors(
+    it("should throw when a required array field is empty", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           legalBasis: [],
@@ -203,8 +205,8 @@ describe("assertFormAnswersAreValid", () => {
       usesThirdPartyNonPersonalData: "NO",
     };
 
-    it("should throw when usesPersonalData=YES but usesThirdPartyNonPersonalData is present", () => {
-      expectValidationErrors(
+    it("should throw when usesPersonalData=YES but usesThirdPartyNonPersonalData is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           usesThirdPartyNonPersonalData: "NO",
@@ -213,8 +215,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when usesPersonalData=NO but personalDataTypes is present", () => {
-      expectValidationErrors(
+    it("should throw when usesPersonalData=NO but personalDataTypes is present", async () => {
+      await expectValidationErrors(
         {
           ...nonPersonalDataBranch,
           personalDataTypes: ["WITH_IDENTIFYING_DATA"],
@@ -223,8 +225,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when purpose=INSTITUTIONAL but otherPurpose is present", () => {
-      expectValidationErrors(
+    it("should throw when purpose=INSTITUTIONAL but otherPurpose is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           otherPurpose: "Some other purpose",
@@ -233,11 +235,10 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when purpose=OTHER but institutionalPurpose is present", () => {
-      expectValidationErrors(
+    it("should throw when purpose=OTHER but institutionalPurpose is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
-          // institutionalPurpose is still present from the mock (stale)
           otherPurpose: "Other purpose",
           purpose: "OTHER",
         },
@@ -245,8 +246,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when policyProvided=YES but reasonPolicyNotProvided is present", () => {
-      expectValidationErrors(
+    it("should throw when policyProvided=YES but reasonPolicyNotProvided is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           reasonPolicyNotProvided: "Some reason",
@@ -255,8 +256,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when purposePursuit=MERE_CORRECTNESS but checkedAllDataNeeded is present", () => {
-      expectValidationErrors(
+    it("should throw when purposePursuit=MERE_CORRECTNESS but checkedAllDataNeeded is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           checkedAllDataNeeded: "true",
@@ -265,8 +266,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when legalBasis does not contain PUBLIC_INTEREST but legalBasisPublicInterest is present", () => {
-      expectValidationErrors(
+    it("should throw when legalBasis does not contain PUBLIC_INTEREST but legalBasisPublicInterest is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           legalBasisPublicInterest: "RULE_OF_LAW",
@@ -275,8 +276,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when isRequestOnBehalfOfThirdParties=NO but thirdPartiesRequestDataUsage is present", () => {
-      expectValidationErrors(
+    it("should throw when isRequestOnBehalfOfThirdParties=NO but thirdPartiesRequestDataUsage is present", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           thirdPartiesRequestDataUsage: "PA_ONLY",
@@ -285,8 +286,8 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should throw when usesPersonalData=NO but ruleOfLawText is present (transitive)", () => {
-      expectValidationErrors(
+    it("should throw when usesPersonalData=NO but ruleOfLawText is present (transitive)", async () => {
+      await expectValidationErrors(
         {
           ...nonPersonalDataBranch,
           ruleOfLawText: "Some law reference",
@@ -297,8 +298,8 @@ describe("assertFormAnswersAreValid", () => {
   });
 
   describe("hideOptions mirroring (forbidden option values)", () => {
-    it("should throw when personalDataTypes contains GDPR_ART_9 and legalBasisPublicInterest is PUBLIC_INTEREST_TASK", () => {
-      expectValidationErrors(
+    it("should throw when personalDataTypes contains GDPR_ART_9 and legalBasisPublicInterest is PUBLIC_INTEREST_TASK", async () => {
+      await expectValidationErrors(
         {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           legalBasis: ["PUBLIC_INTEREST"],
@@ -310,9 +311,9 @@ describe("assertFormAnswersAreValid", () => {
       );
     });
 
-    it("should not throw when personalDataTypes contains GDPR_ART_9 and legalBasisPublicInterest is RULE_OF_LAW", () => {
-      expect(() =>
-        assertFormAnswersAreValid(
+    it("should not throw when personalDataTypes contains GDPR_ART_9 and legalBasisPublicInterest is RULE_OF_LAW", async () => {
+      await expect(
+        formSchemaStore.validateFormAnswers(
           {
             ...MOCK_PURPOSE_FORM_ANSWERS,
             legalBasis: ["PUBLIC_INTEREST"],
@@ -322,12 +323,12 @@ describe("assertFormAnswersAreValid", () => {
           },
           version,
         ),
-      ).not.toThrow();
+      ).resolves.not.toThrow();
     });
 
-    it("should not throw when personalDataTypes does not contain GDPR_ART_9 and legalBasisPublicInterest is PUBLIC_INTEREST_TASK", () => {
-      expect(() =>
-        assertFormAnswersAreValid(
+    it("should not throw when personalDataTypes does not contain GDPR_ART_9 and legalBasisPublicInterest is PUBLIC_INTEREST_TASK", async () => {
+      await expect(
+        formSchemaStore.validateFormAnswers(
           {
             ...MOCK_PURPOSE_FORM_ANSWERS,
             legalBasis: ["PUBLIC_INTEREST"],
@@ -336,12 +337,12 @@ describe("assertFormAnswersAreValid", () => {
           },
           version,
         ),
-      ).not.toThrow();
+      ).resolves.not.toThrow();
     });
   });
 
-  it("should throw for unknown properties (e.g. misspelled field names)", () => {
-    expectValidationErrors(
+  it("should throw for unknown properties (e.g. misspelled field names)", async () => {
+    await expectValidationErrors(
       {
         ...MOCK_PURPOSE_FORM_ANSWERS,
         legalBasicPublicInterest: "RULE_OF_LAW",

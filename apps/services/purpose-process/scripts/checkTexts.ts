@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 const SCHEMAS_ROOT = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",
-  "src",
-  "schemas",
+  "seed",
+  "forms",
 );
 const REFERENCE_LANG = "en";
 

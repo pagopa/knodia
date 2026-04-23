@@ -232,11 +232,15 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    volumes:
+      - ../apps/services/purpose-process/seed/forms:/seed/purpose-forms:ro
     entrypoint: >
-      /bin/sh -c "
+      /bin/sh -ec "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
-      exit 0;
+      mc mb --ignore-existing local/knodia-orion-purpose-forms;
+      mc cp --recursive /seed/purpose-forms/ local/knodia-orion-purpose-forms/versions/;
+      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-orion-purpose-forms/current.json;
       "
   # Web GUI for PostgreSQL
   pgadmin:

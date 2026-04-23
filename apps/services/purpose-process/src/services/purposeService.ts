@@ -31,14 +31,10 @@ import type {
   API_GetPurposesQueryParams,
   API_GetTotalDailyCallsQueryParams,
 } from "../models/api.ts";
+import type { FormSchemaStore } from "./formSchemaStore.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import {
-  CURRENT_FORM_SCHEMA_VERSION,
-  getFormSchemas,
-} from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
-import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
   retrieveEservice,
@@ -55,6 +51,7 @@ export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 export function purposeServiceBuilder(
   eventStoreWriter: PurposeEventStoreWriter,
   readmodelService: ReadmodelService,
+  formSchemaStore: FormSchemaStore,
 ) {
   return {
     async createPurpose(
@@ -100,7 +97,10 @@ export function purposeServiceBuilder(
         eserviceId,
       });
 
-      assertFormAnswersAreValid(formAnswersJson, formSchemaVersion);
+      await formSchemaStore.validateFormAnswers(
+        formAnswersJson,
+        formSchemaVersion,
+      );
 
       const now = new Date();
       const purpose: Purpose = {
@@ -126,18 +126,11 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getCurrentPurposeFormSchemas({ logger }: AuthorizedContext<AuthData>): {
-      schema: Record<string, unknown>;
-      texts: { en: Record<string, string> };
-      uiSchema: Record<string, unknown>;
-      uiTexts: { en: Record<string, string> };
-      version: PurposeFormSchemaVersion;
-    } {
+    async getCurrentPurposeFormSchemas({
+      logger,
+    }: AuthorizedContext<AuthData>) {
       logger.info("Getting current Purpose form schemas");
-      return {
-        ...getFormSchemas(CURRENT_FORM_SCHEMA_VERSION),
-        version: CURRENT_FORM_SCHEMA_VERSION,
-      };
+      return await formSchemaStore.getCurrentFormSchemas();
     },
     async getPurpose(
       purposeId: PurposeId,

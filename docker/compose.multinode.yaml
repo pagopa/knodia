@@ -300,12 +300,19 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    volumes:
+      - ../apps/services/purpose-process/seed/forms:/seed/purpose-forms:ro
     entrypoint: >
-      /bin/sh -c "
+      /bin/sh -ec "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
-      exit 0;
+      mc mb --ignore-existing local/knodia-orion-purpose-forms;
+      mc mb --ignore-existing local/knodia-lynx-purpose-forms;
+      mc cp --recursive /seed/purpose-forms/ local/knodia-orion-purpose-forms/versions/;
+      mc cp --recursive /seed/purpose-forms/ local/knodia-lynx-purpose-forms/versions/;
+      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-orion-purpose-forms/current.json;
+      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-lynx-purpose-forms/current.json;
       "
 
   # ============================================================
@@ -812,10 +819,17 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      PURPOSE_FORMS_BUCKET: knodia-orion-purpose-forms
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
       local-kms-setup:
+        condition: service_completed_successfully
+      minio-setup:
         condition: service_completed_successfully
 
   purpose-readmodel-writer-orion:
@@ -1329,8 +1343,15 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      PURPOSE_FORMS_BUCKET: knodia-lynx-purpose-forms
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
       flyway-lynx:
+        condition: service_completed_successfully
+      minio-setup:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
