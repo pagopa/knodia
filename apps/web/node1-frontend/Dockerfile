@@ -19,7 +19,7 @@ COPY --from=pruner /repo/out/full/ ./
 
 FROM installer AS build
 ARG SERVICE_NAME
-ARG VITE_THEME=orion
+ARG VITE_THEME
 ENV VITE_THEME=${VITE_THEME}
 RUN pnpm --filter @knodia/${SERVICE_NAME} build
 

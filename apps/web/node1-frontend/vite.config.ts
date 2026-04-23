@@ -11,12 +11,16 @@ import { APP_BASE_PATH } from "./src/config/basepath.ts";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const requestedTheme = env["VITE_THEME"];
-  const theme = requestedTheme === "lynx" ? "lynx" : "orion";
-  if (requestedTheme && requestedTheme !== theme) {
-    console.warn(
-      `[vite] Unknown VITE_THEME="${requestedTheme}", falling back to "${theme}"`,
+  if (
+    requestedTheme !== undefined &&
+    requestedTheme !== "orion" &&
+    requestedTheme !== "lynx"
+  ) {
+    throw new Error(
+      `[vite] Invalid VITE_THEME="${requestedTheme}". Expected "orion" or "lynx".`,
     );
   }
+  const theme = requestedTheme ?? "orion";
 
   return {
     base: APP_BASE_PATH,
