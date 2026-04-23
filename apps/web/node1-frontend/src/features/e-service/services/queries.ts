@@ -66,7 +66,11 @@ const ESERVICE_OPTIONS_LIMIT = 50;
 export const producerEserviceOptionsQuery = () =>
   getProducerEservicesOptions({
     client,
-    query: { limit: ESERVICE_OPTIONS_LIMIT, offset: 0 },
+    query: {
+      limit: ESERVICE_OPTIONS_LIMIT,
+      offset: 0,
+      state: ["Active", "Suspended"],
+    },
   });
 
 export const consumerCatalogEservicesQuery = (
