@@ -4386,7 +4386,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/purposes/{purposeId}/reactivate:
     post:
-      operationId: reactivateConsumerPurpose
+      operationId: reactivatePurposeByConsumer
       tags:
         - purpose
       description: Reactivate a Purpose as Consumer
@@ -4448,7 +4448,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/purposes/{purposeId}/suspend:
     post:
-      operationId: suspendConsumerPurpose
+      operationId: suspendPurposeByConsumer
       tags:
         - purpose
       description: Suspend a Purpose as Consumer
@@ -4940,7 +4940,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/purposes/{purposeId}/reactivate:
     post:
-      operationId: reactivateProducerPurpose
+      operationId: reactivatePurposeByProducer
       tags:
         - purpose
       description: Reactivate a Purpose as Producer
@@ -4997,7 +4997,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/purposes/{purposeId}/suspend:
     post:
-      operationId: suspendProducerPurpose
+      operationId: suspendPurposeByProducer
       tags:
         - purpose
       description: Suspend a Purpose as Producer

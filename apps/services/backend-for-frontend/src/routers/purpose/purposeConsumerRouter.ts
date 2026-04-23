@@ -357,7 +357,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       getUISessionAuthData(authData);
 
       logger.info(
-        `Reactivating Consumer Purpose ${req.params.purposeId} on knode ${req.query.knodeId}`,
+        `Reactivating Purpose ${req.params.purposeId} on knode ${req.query.knodeId} by Consumer`,
       );
 
       await remoteResourcesManagerApi.reactivatePurpose({
@@ -372,7 +372,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate a Purpose as Consumer",
-      operationId: "reactivateConsumerPurpose",
+      operationId: "reactivatePurposeByConsumer",
       params: API_PurposeIdPathParam,
       querystring: API_SuspendReactivateConsumerPurposeQueryParams,
       response: {
@@ -397,7 +397,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       getUISessionAuthData(authData);
 
       logger.info(
-        `Suspending Consumer Purpose ${req.params.purposeId} on knode ${req.query.knodeId}`,
+        `Suspending Purpose ${req.params.purposeId} on knode ${req.query.knodeId} by Consumer`,
       );
 
       await remoteResourcesManagerApi.suspendPurpose({
@@ -412,7 +412,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend a Purpose as Consumer",
-      operationId: "suspendConsumerPurpose",
+      operationId: "suspendPurposeByConsumer",
       params: API_PurposeIdPathParam,
       querystring: API_SuspendReactivateConsumerPurposeQueryParams,
       response: {

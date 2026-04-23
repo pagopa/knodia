@@ -328,7 +328,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       getUISessionAuthData(authData);
 
-      logger.info(`Reactivating Producer Purpose ${req.params.purposeId}`);
+      logger.info(`Reactivating Purpose ${req.params.purposeId} by Producer`);
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
@@ -345,7 +345,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate a Purpose as Producer",
-      operationId: "reactivateProducerPurpose",
+      operationId: "reactivatePurposeByProducer",
       params: API_PurposeIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -368,7 +368,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       getUISessionAuthData(authData);
 
-      logger.info(`Suspending Producer Purpose ${req.params.purposeId}`);
+      logger.info(`Suspending Purpose ${req.params.purposeId} by Producer`);
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
@@ -385,7 +385,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend a Purpose as Producer",
-      operationId: "suspendProducerPurpose",
+      operationId: "suspendPurposeByProducer",
       params: API_PurposeIdPathParam,
       response: {
         204: z.undefined().meta({
