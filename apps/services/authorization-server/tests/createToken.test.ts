@@ -196,7 +196,7 @@ describe("POST /token", async () => {
   });
 
   it.each(EserviceAccessTokenType.options)(
-    "should return 200 and a valid $tokenType token",
+    "should return 200 and a valid %s token",
     async (tokenType) => {
       const archivedAgreement1: Agreement = {
         ...getMockAgreement({ seed: 1 }),
