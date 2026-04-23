@@ -23,6 +23,24 @@ export const createEserviceVersionActivatedV1Event = (
   streamId: eservice.id,
 });
 
+export const createEserviceVersionArchivedV1Event = (
+  eservice: Eservice,
+  eserviceVersionId: EserviceVersionId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreEserviceEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId,
+    },
+    type: "EserviceVersionArchivedV1",
+  },
+  streamId: eservice.id,
+});
+
 export const createEserviceVersionReactivatedV1Event = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,

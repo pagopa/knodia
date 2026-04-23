@@ -23,6 +23,8 @@ function createEservice(
     agreement: {
       id: crypto.randomUUID(),
       state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
     },
     categories: [{ code: "birth-place", scheme: "eu-categories" }],
     description: "Test description",
