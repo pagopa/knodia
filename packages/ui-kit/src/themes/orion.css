@@ -196,3 +196,7 @@
   /* Pagination button */
   --radius-pagination-button: 8px;
 }
+
+.lynx-only {
+  display: none;
+}
