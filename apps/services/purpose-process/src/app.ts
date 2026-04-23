@@ -95,7 +95,7 @@ export function buildAppFromConfig(config: PurposeProcessConfig) {
     makeReadmodelDrizzleConnection(config);
 
   const formSchemaStore = formSchemaStoreBuilder({
-    bucket: config.purposeFormsBucket,
+    bucket: config.purposeFormsS3Bucket,
     fileManager: initFileManager(),
   });
 

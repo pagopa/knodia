@@ -9,14 +9,13 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import z from "zod";
 
-export const PurposeFormsConfig = z
+const PurposeFormsConfig = z
   .object({
-    PURPOSE_FORMS_BUCKET: z.string(),
+    PURPOSE_FORMS_S3_BUCKET: z.string(),
   })
   .transform((c) => ({
-    purposeFormsBucket: c.PURPOSE_FORMS_BUCKET,
+    purposeFormsS3Bucket: c.PURPOSE_FORMS_S3_BUCKET,
   }));
-export type PurposeFormsConfig = z.infer<typeof PurposeFormsConfig>;
 
 const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)

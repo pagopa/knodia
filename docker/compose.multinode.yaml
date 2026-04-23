@@ -303,17 +303,19 @@ services:
     volumes:
       - ../apps/services/purpose-process/seed/forms:/seed/purpose-forms:ro
     entrypoint: >
-      /bin/sh -ec "
+      /bin/sh -ec '
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
       mc mb --ignore-existing local/knodia-orion-purpose-forms;
       mc mb --ignore-existing local/knodia-lynx-purpose-forms;
-      mc cp --recursive /seed/purpose-forms/ local/knodia-orion-purpose-forms/versions/;
-      mc cp --recursive /seed/purpose-forms/ local/knodia-lynx-purpose-forms/versions/;
-      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-orion-purpose-forms/current.json;
-      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-lynx-purpose-forms/current.json;
-      "
+      for knode in orion lynx; do
+        for v in /seed/purpose-forms/*/; do
+          mc cp --recursive "$$v" "local/knodia-$$knode-purpose-forms/versions/$$(basename $$v)/";
+        done;
+        mc cp /seed/purpose-forms/current.json "local/knodia-$$knode-purpose-forms/current.json";
+      done;
+      '
 
   # ============================================================
   # pgAdmin
@@ -819,7 +821,7 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      PURPOSE_FORMS_BUCKET: knodia-orion-purpose-forms
+      PURPOSE_FORMS_S3_BUCKET: knodia-orion-purpose-forms
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1343,7 +1345,7 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      PURPOSE_FORMS_BUCKET: knodia-lynx-purpose-forms
+      PURPOSE_FORMS_S3_BUCKET: knodia-lynx-purpose-forms
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret

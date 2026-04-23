@@ -235,13 +235,15 @@ services:
     volumes:
       - ../apps/services/purpose-process/seed/forms:/seed/purpose-forms:ro
     entrypoint: >
-      /bin/sh -ec "
+      /bin/sh -ec '
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
       mc mb --ignore-existing local/knodia-orion-purpose-forms;
-      mc cp --recursive /seed/purpose-forms/ local/knodia-orion-purpose-forms/versions/;
-      echo '{\"version\":\"1.0\"}' | mc pipe local/knodia-orion-purpose-forms/current.json;
-      "
+      for v in /seed/purpose-forms/*/; do
+        mc cp --recursive "$$v" "local/knodia-orion-purpose-forms/versions/$$(basename $$v)/";
+      done;
+      mc cp /seed/purpose-forms/current.json local/knodia-orion-purpose-forms/current.json;
+      '
   # Web GUI for PostgreSQL
   pgadmin:
     security_opt:

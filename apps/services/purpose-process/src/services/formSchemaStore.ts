@@ -7,22 +7,19 @@ import {
 } from "@knodia/purpose-models";
 import AjvModule from "ajv";
 const Ajv = AjvModule.default;
+import { z } from "zod";
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
 
-export interface FormSchemaBundle {
+export type FormSchemaStore = ReturnType<typeof formSchemaStoreBuilder>;
+
+interface FormSchemaBundle {
   schema: Record<string, unknown>;
   texts: { en: Record<string, string> };
   uiSchema: Record<string, unknown>;
   uiTexts: { en: Record<string, string> };
 }
 
-export type FormSchemaStore = ReturnType<typeof formSchemaStoreBuilder>;
-
-// Bundles are addressed by version and treated as immutable: a given
-// version always resolves to the same content. Ops publish a new version by
-// uploading a new `versions/<v>/` folder and overwriting `current.json` —
-// they never mutate an existing version in place.
 export const BUNDLE_FILES = {
   schema: "schema.json",
   texts: "texts.en.json",
@@ -31,6 +28,8 @@ export const BUNDLE_FILES = {
 } as const;
 
 export const CURRENT_POINTER_FILE = "current.json";
+
+const CurrentPointer = z.object({ version: PurposeFormSchemaVersion });
 
 const bundleKey = (version: PurposeFormSchemaVersion, file: string) =>
   `versions/${version}/${file}`;
@@ -79,8 +78,10 @@ export function formSchemaStoreBuilder({
   };
 
   const readCurrentVersion = async (): Promise<PurposeFormSchemaVersion> => {
-    const pointer = await readJson<{ version: unknown }>(CURRENT_POINTER_FILE);
-    return PurposeFormSchemaVersion.parse(pointer.version);
+    const pointer = CurrentPointer.parse(
+      await readJson<unknown>(CURRENT_POINTER_FILE),
+    );
+    return pointer.version;
   };
 
   return {
@@ -91,16 +92,18 @@ export function formSchemaStoreBuilder({
       const bundle = await loadBundle(version);
       return { ...bundle, version };
     },
-    async getFormSchemas(
+    getFormSchemas(
       version: PurposeFormSchemaVersion,
     ): Promise<FormSchemaBundle> {
-      return await loadBundle(version);
+      return loadBundle(version);
     },
     async validateFormAnswers(
       formAnswersJson: PurposeFormAnswers,
       version: PurposeFormSchemaVersion,
     ): Promise<void> {
-      const { schema } = await loadBundle(version);
+      const schema = await readJson<Record<string, unknown>>(
+        bundleKey(version, BUNDLE_FILES.schema),
+      );
       const validate = new Ajv({ allErrors: true }).compile(schema);
       if (!validate(formAnswersJson)) {
         throw formAnswersValidationFailed(validate.errors ?? []);
