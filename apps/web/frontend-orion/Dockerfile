@@ -19,8 +19,7 @@ COPY --from=pruner /repo/out/full/ ./
 
 FROM installer AS build
 ARG SERVICE_NAME
-ARG VITE_THEME
-ENV VITE_THEME=${VITE_THEME}
+ENV VITE_THEME=orion
 RUN pnpm --filter @knodia/${SERVICE_NAME} build
 
 FROM nginx:1.29.2@sha256:029d4461bd98f124e531380505ceea2072418fdf28752aa73b7b273ba3048903 AS runner
