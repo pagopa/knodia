@@ -914,6 +914,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
       EXPECTED_ISSUER: "https://orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
@@ -1498,6 +1499,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
       EXPECTED_ISSUER: "https://lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
