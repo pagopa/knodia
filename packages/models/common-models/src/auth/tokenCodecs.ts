@@ -31,6 +31,7 @@ const UserTokenClaims = BaseJwtClaims.extend({
 
 const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
+  cnf: z.strictObject({ jkt: z.string() }).optional(),
   consumer: z.strictObject({
     id: ExternalId<OrganizationId>(),
     knode_id: KnodeId,
