@@ -3,8 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   CURRENT_FORM_SCHEMA_VERSION,
-  getFormSchema,
-  getFormUiSchema,
+  getFormSchemas,
 } from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
 
@@ -19,8 +18,7 @@ describe("GET /purposes/formSchemas/current (getCurrentFormSchemas)", () => {
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
-        uiSchema: getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
+        ...getFormSchemas(CURRENT_FORM_SCHEMA_VERSION),
         version: CURRENT_FORM_SCHEMA_VERSION,
       });
     },

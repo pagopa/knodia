@@ -1,7 +1,7 @@
 meta {
-  name: 12 - Create Token
+  name: 11 - Create Token
   type: http
-  seq: 12
+  seq: 11
 }
 
 post {
@@ -20,10 +20,6 @@ body:form-urlencoded {
 assert {
   res.status: eq 200
   res.body.token_type: eq Bearer
-}
-
-vars:post-response {
-  access_token: res.body.access_token
 }
 
 script:post-response {

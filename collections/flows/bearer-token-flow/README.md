@@ -1,7 +1,7 @@
-# client-assertion-flow
+# bearer-token-flow
 
 End-to-end exercise of the `/token` endpoint: sets up an eservice chain,
-signs a client assertion, and exchanges it for an access token.
+signs a client assertion, and exchanges it for a bearer access token.
 
 ## Prerequisite
 
@@ -15,7 +15,7 @@ Generates an RSA keypair under `docker/keys/` and writes
 
 ## Run
 
-Steps 1–11 set up the chain. Between step 11 and step 12 run the
+Steps 1–10 set up the chain. Between step 10 and step 11 run the
 signing script:
 
 ```
@@ -25,9 +25,9 @@ pnpm generate-client-assertion \
   --purposeId <purposeId>
 ```
 
-It writes `CLIENT_ASSERTION_JWT` to `collections/.env`. Step 12 picks it
+It writes `CLIENT_ASSERTION_JWT` to `collections/.env`. Step 11 picks it
 up and calls `/token`; on success the response `access_token` is stashed
 as a Bruno var.
 
-If step 12 fails (or any step 1–11 hits 409 "kid already exists") the
+If step 11 fails (or any step 1–10 hits 409 "kid already exists") the
 bru file prints the exact command to run.

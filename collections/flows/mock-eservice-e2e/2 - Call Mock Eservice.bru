@@ -22,7 +22,7 @@ assert {
 script:pre-request {
   if (!bru.getVar("access_token")) {
     throw new Error(
-      "access_token is not set. Run the client-assertion-flow (steps 3-12, skipping step 2) first — step 12 stashes the access_token."
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
     )
   }
 }
