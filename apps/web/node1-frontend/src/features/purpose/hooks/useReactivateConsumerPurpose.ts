@@ -1,6 +1,6 @@
 import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 
-import { reactivateConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query";
+import { reactivatePurposeByConsumerMutation } from "@knodia/bff-client/tanstack-query";
 import { toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -15,7 +15,7 @@ export function useReactivateConsumerPurpose(
   const queryClient = useQueryClient();
 
   const { isPending, mutate } = useMutation({
-    ...reactivateConsumerPurposeMutation({ client }),
+    ...reactivatePurposeByConsumerMutation({ client }),
     onError: () =>
       toastQueue.add({
         description: "Please try again later.",

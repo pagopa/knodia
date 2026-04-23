@@ -1,6 +1,6 @@
 import type { PurposeId } from "@knodia/common-models/ids";
 
-import { suspendProducerPurposeMutation } from "@knodia/bff-client/tanstack-query";
+import { suspendPurposeByProducerMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
@@ -11,7 +11,7 @@ export function useSuspendProducerPurpose(purposeId: PurposeId) {
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({
-    ...suspendProducerPurposeMutation({ client }),
+    ...suspendPurposeByProducerMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(producerPurposeDetailsQuery(purposeId));
     },
