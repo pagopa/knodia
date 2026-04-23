@@ -1,8 +1,17 @@
+import { requestContext } from "@fastify/request-context";
 import { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import { parseAuthHeaderToken } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import fastifyPlugin from "fastify-plugin";
 import { jwtVerify, type JWTVerifyGetKey } from "jose";
+
+// Augment @fastify/request-context so routers in this service can read the
+// verified access-token claims stashed by this plugin.
+declare module "@fastify/request-context" {
+  interface RequestContextData {
+    accessTokenClaims?: EserviceAccessTokenClaims;
+  }
+}
 
 interface AccessTokenAuthPluginOptions {
   acceptedAudiences: string[];
@@ -20,6 +29,7 @@ export const accessTokenAuthPlugin =
           const { payload } = await jwtVerify(token, jwks, {
             audience: opts.acceptedAudiences,
             issuer: opts.expectedIssuer,
+            typ: "at+jwt",
           });
           return payload;
         }),
@@ -43,5 +53,7 @@ export const accessTokenAuthPlugin =
             .join("; ")}`,
         );
       }
+
+      requestContext.set("accessTokenClaims", parsed.data);
     });
   });

@@ -7,6 +7,7 @@ import {
   generateId,
   type OrganizationId,
   type PurposeId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { SignJWT } from "jose";
 import { randomUUID } from "node:crypto";
@@ -19,6 +20,18 @@ import {
   TEST_KID,
 } from "./setup.ts";
 
+// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockRouter.ts
+// (kept in sync with docker/readmodel-seed/mock-eservice.sql).
+const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "10000000-0000-4000-8000-000000000001",
+);
+const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
+  "10000000-0000-4000-8000-000000000002",
+);
+const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
+  "00000000-0000-4000-8000-000000000004",
+);
+
 const ENDPOINT = "/test";
 
 async function signToken(
@@ -27,27 +40,34 @@ async function signToken(
     expiresIn?: string;
     issuer?: string;
     payload?: Record<string, unknown>;
+    typ?: string;
   } = {},
 ) {
   const { privateKey } = getCtx();
-  const { audience, expiresIn = "5m", issuer, payload } = overrides;
+  const {
+    audience,
+    expiresIn = "5m",
+    issuer,
+    payload,
+    typ = "at+jwt",
+  } = overrides;
 
   const now = Math.floor(Date.now() / 1000);
   const defaultPayload: Partial<EserviceAccessTokenClaims> = {
     client_id: generateId<ConsumerKeychainId>(),
     consumer: { id: generateExternalId<OrganizationId>(), knode_id: "Lynx" },
     eservice: {
-      id: generateId<EserviceId>(),
+      id: EXPECTED_ESERVICE_ID,
       knode_id: "Orion",
-      version: generateId<EserviceVersionId>(),
+      version: EXPECTED_ESERVICE_VERSION_ID,
     },
     nbf: now,
-    producer: { id: generateId<OrganizationId>(), knode_id: "Orion" },
+    producer: { id: EXPECTED_PRODUCER_ID, knode_id: "Orion" },
     purpose: { id: generateId<PurposeId>(), knode_id: "Lynx" },
   };
 
   const jwt = new SignJWT({ ...defaultPayload, ...payload })
-    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ: "JWT" })
+    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ })
     .setSubject(randomUUID())
     .setIssuer(issuer ?? EXPECTED_ISSUER)
     .setAudience(audience ?? ACCEPTED_AUDIENCES)
@@ -143,6 +163,74 @@ describe("mock-eservice access-token verification", () => {
   it("returns 401 when claims do not match the expected schema", async () => {
     const token = await signToken({
       payload: { consumer: "not-an-object" },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the header typ is not at+jwt", async () => {
+    const token = await signToken({ typ: "JWT" });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when eservice.id does not match this e-service", async () => {
+    const token = await signToken({
+      payload: {
+        eservice: {
+          id: generateId(),
+          knode_id: "Orion",
+          version: EXPECTED_ESERVICE_VERSION_ID,
+        },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when eservice.version does not match this e-service", async () => {
+    const token = await signToken({
+      payload: {
+        eservice: {
+          id: EXPECTED_ESERVICE_ID,
+          knode_id: "Orion",
+          version: generateId(),
+        },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when producer.id does not match this e-service", async () => {
+    const token = await signToken({
+      payload: {
+        producer: { id: generateId(), knode_id: "Orion" },
+      },
     });
     const res = await getCtx().app.inject({
       headers: {
