@@ -1,13 +1,17 @@
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
 import type { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
-import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import {
+  type Eservice,
+  EserviceAccessTokenType,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import {
   getMockAgreement,
   getMockClientAssertion,
@@ -191,45 +195,56 @@ describe("POST /token", async () => {
     getClientAssertionVerificationDataMock.mockReset();
   });
 
-  it("returns an e-service access token", async () => {
-    const archivedAgreement1: Agreement = {
-      ...getMockAgreement({ seed: 1 }),
-      consumer: purpose.consumer,
-      eserviceId: purpose.eserviceId,
-      state: "Archived",
-      updatedAt: new Date("2026-01-01"),
-    };
-    const archivedAgreement2: Agreement = {
-      ...getMockAgreement({ seed: 2 }),
-      consumer: purpose.consumer,
-      eserviceId: purpose.eserviceId,
-      state: "Archived",
-      updatedAt: new Date("2026-02-01"),
-    };
+  it.each(EserviceAccessTokenType.options)(
+    "should return 200 and a valid $tokenType token",
+    async (tokenType) => {
+      const archivedAgreement1: Agreement = {
+        ...getMockAgreement({ seed: 1 }),
+        consumer: purpose.consumer,
+        eserviceId: purpose.eserviceId,
+        state: "Archived",
+        updatedAt: new Date("2026-01-01"),
+      };
+      const archivedAgreement2: Agreement = {
+        ...getMockAgreement({ seed: 2 }),
+        consumer: purpose.consumer,
+        eserviceId: purpose.eserviceId,
+        state: "Archived",
+        updatedAt: new Date("2026-02-01"),
+      };
 
-    await Promise.all([
-      agreementWriterService.upsertAgreement(agreement, 0),
-      agreementWriterService.upsertAgreement(archivedAgreement1, 0),
-      agreementWriterService.upsertAgreement(archivedAgreement2, 0),
-      eserviceWriterService.upsertEservice(eservice, 0),
-      purposeWriterService.upsertPurpose(purpose, 0),
-    ]);
+      await Promise.all([
+        agreementWriterService.upsertAgreement(agreement, 0),
+        agreementWriterService.upsertAgreement(archivedAgreement1, 0),
+        agreementWriterService.upsertAgreement(archivedAgreement2, 0),
+        eserviceWriterService.upsertEservice(
+          {
+            ...eservice,
+            versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
+          },
+          0,
+        ),
+        purposeWriterService.upsertPurpose(purpose, 0),
+      ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
-      data: mockK2KResponse,
-    });
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
 
-    const response = await createToken();
+      const response = await createToken({
+        requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
+      });
 
-    const responseBody = response.json<API_TokenResponse>();
+      const responseBody = response.json<API_TokenResponse>();
 
-    expect(response.statusCode).toBe(200);
-    expect(responseBody).toEqual({
-      access_token: MOCK_TOKEN,
-      expires_in: eserviceVersion.accessTokenDuration,
-      token_type: "Bearer",
-    });
-  });
+      expect(response.statusCode).toBe(200);
+      expect(responseBody).toEqual({
+        access_token: MOCK_TOKEN,
+        expires_in: eserviceVersion.accessTokenDuration,
+        token_type: tokenType,
+      });
+    },
+  );
 
   it.each([
     ["invalid property", { ...defaultBody, wrongProperty: "wrong" }],
