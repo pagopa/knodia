@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
-        "@login-bg": path.resolve(
+        "@login-bg.webp": path.resolve(
           __dirname,
           `./src/assets/login-bg-${theme}.webp`,
         ),

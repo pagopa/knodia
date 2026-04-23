@@ -5,7 +5,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@login-bg": path.resolve(__dirname, "./src/assets/login-bg-orion.webp"),
+      "@login-bg.webp": path.resolve(
+        __dirname,
+        "./src/assets/login-bg-orion.webp",
+      ),
       "@theme.css": path.resolve(
         __dirname,
         "../../../packages/ui-kit/src/themes/orion.css",

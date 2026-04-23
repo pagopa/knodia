@@ -1,5 +1,5 @@
 import { Banner, Button, Divider, Link } from "@knodia/ui-kit/ui";
-import loginBg from "@login-bg";
+import loginBg from "@login-bg.webp";
 import { LockIcon } from "@phosphor-icons/react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
