@@ -359,6 +359,8 @@ export type ConsumerRequiredAttribute = {
 export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
 };
 
 export type ConsumerEserviceDetailsAccessToken = {

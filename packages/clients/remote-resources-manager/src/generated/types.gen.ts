@@ -221,6 +221,14 @@ export type EserviceDetailsProducer = {
 export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
+    /**
+     * Timestamp when the Agreement was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Agreement was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
