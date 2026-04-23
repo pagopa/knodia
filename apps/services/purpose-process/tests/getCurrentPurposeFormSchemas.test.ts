@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   CURRENT_FORM_SCHEMA_VERSION,
-  getFormSchemas,
+  loadFormSchemas,
 } from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
+
+const getFormSchemas = loadFormSchemas("schemas-orion");
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 

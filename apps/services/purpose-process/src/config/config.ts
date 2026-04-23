@@ -9,13 +9,14 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import z from "zod";
 
-const PurposeFormsConfig = z
+const PurposeFormsConfigSchema = z
   .object({
     PURPOSE_FORMS_DIR: z.string().min(1),
   })
   .transform((c) => ({
     purposeFormsDir: c.PURPOSE_FORMS_DIR,
   }));
+export type PurposeFormsConfig = z.infer<typeof PurposeFormsConfigSchema>;
 
 const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
@@ -23,7 +24,7 @@ const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(ReadmodelAgreementConfig)
   .and(ReadmodelEserviceConfig)
   .and(ReadmodelPurposeConfig)
-  .and(PurposeFormsConfig);
+  .and(PurposeFormsConfigSchema);
 export type PurposeProcessConfig = z.infer<typeof PurposeProcessConfig>;
 
 export const config = PurposeProcessConfig.parse(process.env);

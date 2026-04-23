@@ -2,6 +2,8 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import type { PurposeFormsConfig } from "./config/config.ts";
+
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { purposeEventStoreWriterBuilder } from "@knodia/db-event-store-writer/purpose";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -23,19 +25,23 @@ import type { PurposeProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { loadFormSchemas } from "./models/formSchemas.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
+import { buildFormAnswersValidator } from "./utils/formAnswersValidator.ts";
 
 export function buildApp({
   config,
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig & LoggerConfig & PurposeFormsConfig;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
+  const getFormSchemas = loadFormSchemas(config.purposeFormsDir);
+  const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -73,6 +79,8 @@ export function buildApp({
       purposeService: purposeServiceBuilder(
         purposeEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        getFormSchemas,
+        assertFormAnswersAreValid,
       ),
     });
   });
