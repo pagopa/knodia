@@ -177,4 +177,7 @@
 
   /* List item */
   --radius-list-item: 0;
+
+  /* Modal */
+  --radius-modal: 0;
 }

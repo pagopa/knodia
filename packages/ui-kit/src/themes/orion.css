@@ -186,4 +186,7 @@
 
   /* List item */
   --radius-list-item: 6px;
+
+  /* Modal */
+  --radius-modal: 16px;
 }
