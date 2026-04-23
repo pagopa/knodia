@@ -18,7 +18,7 @@ const empty = tv({
 });
 
 const emptyIconWrapper = tv({
-  base: "flex items-center justify-center p-2 rounded-[10px]",
+  base: "flex items-center justify-center p-2 rounded-empty-icon",
   variants: {
     kind: {
       neutral: "bg-secondary-light",

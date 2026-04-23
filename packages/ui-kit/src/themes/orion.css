@@ -180,4 +180,7 @@
 
   /* Dropdown */
   --radius-dropdown: 16px;
+
+  /* Empty icon */
+  --radius-empty-icon: 10px;
 }
