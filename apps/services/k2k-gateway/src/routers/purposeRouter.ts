@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { KnodeId } from "@knodia/common-models/ids";
+import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -72,14 +72,16 @@ export const purposeRouter: FastifyPluginAsyncZod<
   fastify,
   { callerKnodeId, pollingService, purposeProcessClient, tokenProvider },
 ) => {
+  const getHeaders = async (correlationId: CorrelationId) =>
+    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info({ requestBody: req.body }, "Creating purpose with body data");
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const response = await purposeProcessApi.createPurpose({
         body: toProcessAPI_PurposeSeed(req.body, callerKnodeId),
@@ -124,10 +126,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       logger.info("Getting current Purpose form schemas");
 
-      const token = await tokenProvider.get();
       const { data } = await purposeProcessApi.getCurrentPurposeFormSchemas({
         client: purposeProcessClient,
-        headers: getKnodiaServiceHeaders(correlationId, token),
+        headers: await getHeaders(correlationId),
       });
 
       res.send(data);
@@ -154,8 +155,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       logger.info(`Getting Purpose with ID ${req.params.purposeId}`);
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { data } = await retrievePurpose(
         purposeProcessClient,
@@ -189,8 +189,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       logger.info(`Reactivating Purpose ${req.params.purposeId}`);
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const response = await purposeProcessApi.reactivatePurposeByConsumer({
         client: purposeProcessClient,
@@ -233,8 +232,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       logger.info(`Suspending Purpose ${req.params.purposeId}`);
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const response = await purposeProcessApi.suspendPurposeByConsumer({
         client: purposeProcessClient,
@@ -280,8 +278,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         "Getting Purposes with query params",
       );
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { consumerId, eserviceId, limit, offset, state } = req.query;
 
