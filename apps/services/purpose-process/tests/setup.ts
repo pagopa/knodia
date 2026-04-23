@@ -106,7 +106,6 @@ beforeAll(async () => {
 
   formSchemaStore = formSchemaStoreBuilder({
     bucket: minio.bucket,
-    currentTtlMs: 0,
     fileManager: initFileManager(minio.s3Client),
   });
 

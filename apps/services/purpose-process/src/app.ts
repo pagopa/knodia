@@ -96,7 +96,6 @@ export function buildAppFromConfig(config: PurposeProcessConfig) {
 
   const formSchemaStore = formSchemaStoreBuilder({
     bucket: config.purposeFormsBucket,
-    currentTtlMs: config.purposeFormsCurrentTtlMs,
     fileManager: initFileManager(),
   });
 

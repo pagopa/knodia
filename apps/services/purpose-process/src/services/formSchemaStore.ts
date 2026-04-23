@@ -5,7 +5,7 @@ import {
   type PurposeFormAnswers,
   PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
-import AjvModule, { type ValidateFunction } from "ajv";
+import AjvModule from "ajv";
 const Ajv = AjvModule.default;
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
@@ -37,26 +37,11 @@ const bundleKey = (version: PurposeFormSchemaVersion, file: string) =>
 
 export function formSchemaStoreBuilder({
   bucket,
-  currentTtlMs,
   fileManager,
 }: {
   bucket: string;
-  currentTtlMs: number;
   fileManager: FileManager;
 }) {
-  const ajv = new Ajv({ allErrors: true });
-  const bundleLoads = new Map<
-    PurposeFormSchemaVersion,
-    Promise<FormSchemaBundle>
-  >();
-  const validatorLoads = new Map<
-    PurposeFormSchemaVersion,
-    Promise<ValidateFunction>
-  >();
-  let currentCache:
-    | undefined
-    | { expiresAt: number; version: PurposeFormSchemaVersion };
-
   const readJson = async <T>(key: string): Promise<T> => {
     try {
       const { content } = await fileManager.getBytes({ bucket, key });
@@ -70,39 +55,27 @@ export function formSchemaStoreBuilder({
     }
   };
 
-  const loadBundle = (
+  const loadBundle = async (
     version: PurposeFormSchemaVersion,
   ): Promise<FormSchemaBundle> => {
-    const inflight = bundleLoads.get(version);
-    if (inflight) return inflight;
-
-    const promise = (async () => {
-      const [schema, uiSchema, textsEn, uiTextsEn] = await Promise.all([
-        readJson<Record<string, unknown>>(
-          bundleKey(version, BUNDLE_FILES.schema),
-        ),
-        readJson<Record<string, unknown>>(
-          bundleKey(version, BUNDLE_FILES.uiSchema),
-        ),
-        readJson<Record<string, string>>(
-          bundleKey(version, BUNDLE_FILES.texts),
-        ),
-        readJson<Record<string, string>>(
-          bundleKey(version, BUNDLE_FILES.uiTexts),
-        ),
-      ]);
-
-      return {
-        schema,
-        texts: { en: textsEn },
-        uiSchema,
-        uiTexts: { en: uiTextsEn },
-      };
-    })();
-
-    bundleLoads.set(version, promise);
-    promise.catch(() => bundleLoads.delete(version));
-    return promise;
+    const [schema, uiSchema, textsEn, uiTextsEn] = await Promise.all([
+      readJson<Record<string, unknown>>(
+        bundleKey(version, BUNDLE_FILES.schema),
+      ),
+      readJson<Record<string, unknown>>(
+        bundleKey(version, BUNDLE_FILES.uiSchema),
+      ),
+      readJson<Record<string, string>>(bundleKey(version, BUNDLE_FILES.texts)),
+      readJson<Record<string, string>>(
+        bundleKey(version, BUNDLE_FILES.uiTexts),
+      ),
+    ]);
+    return {
+      schema,
+      texts: { en: textsEn },
+      uiSchema,
+      uiTexts: { en: uiTextsEn },
+    };
   };
 
   const readCurrentVersion = async (): Promise<PurposeFormSchemaVersion> => {
@@ -110,38 +83,12 @@ export function formSchemaStoreBuilder({
     return PurposeFormSchemaVersion.parse(pointer.version);
   };
 
-  const getValidator = (
-    version: PurposeFormSchemaVersion,
-  ): Promise<ValidateFunction> => {
-    const inflight = validatorLoads.get(version);
-    if (inflight) return inflight;
-
-    const promise = loadBundle(version).then(({ schema }) =>
-      ajv.compile(schema),
-    );
-    validatorLoads.set(version, promise);
-    promise.catch(() => validatorLoads.delete(version));
-    return promise;
-  };
-
   return {
     async getCurrentFormSchemas(): Promise<
       FormSchemaBundle & { version: PurposeFormSchemaVersion }
     > {
-      const now = Date.now();
-      const cachedVersion =
-        currentCache && currentCache.expiresAt > now
-          ? currentCache.version
-          : undefined;
-
-      const version = cachedVersion ?? (await readCurrentVersion());
+      const version = await readCurrentVersion();
       const bundle = await loadBundle(version);
-
-      // Cache only after the bundle load succeeds: a transient bad pointer
-      // or partially-uploaded version should not be remembered for the TTL.
-      if (!cachedVersion) {
-        currentCache = { expiresAt: now + currentTtlMs, version };
-      }
       return { ...bundle, version };
     },
     async getFormSchemas(
@@ -153,7 +100,8 @@ export function formSchemaStoreBuilder({
       formAnswersJson: PurposeFormAnswers,
       version: PurposeFormSchemaVersion,
     ): Promise<void> {
-      const validate = await getValidator(version);
+      const { schema } = await loadBundle(version);
+      const validate = new Ajv({ allErrors: true }).compile(schema);
       if (!validate(formAnswersJson)) {
         throw formAnswersValidationFailed(validate.errors ?? []);
       }

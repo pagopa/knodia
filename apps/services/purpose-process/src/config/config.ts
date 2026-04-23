@@ -12,15 +12,9 @@ import z from "zod";
 export const PurposeFormsConfig = z
   .object({
     PURPOSE_FORMS_BUCKET: z.string(),
-    PURPOSE_FORMS_CURRENT_TTL_MS: z.coerce
-      .number()
-      .int()
-      .nonnegative()
-      .default(60_000),
   })
   .transform((c) => ({
     purposeFormsBucket: c.PURPOSE_FORMS_BUCKET,
-    purposeFormsCurrentTtlMs: c.PURPOSE_FORMS_CURRENT_TTL_MS,
   }));
 export type PurposeFormsConfig = z.infer<typeof PurposeFormsConfig>;
 
