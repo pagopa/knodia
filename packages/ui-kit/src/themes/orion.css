@@ -171,4 +171,7 @@
 
   /* Banner */
   --radius-banner: 8px;
+
+  /* Chip */
+  --radius-chip: calc(infinity * 1px);
 }

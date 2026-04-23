@@ -162,4 +162,7 @@
 
   /* Banner */
   --radius-banner: 0;
+
+  /* Chip */
+  --radius-chip: 3px;
 }
