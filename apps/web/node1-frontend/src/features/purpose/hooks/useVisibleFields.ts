@@ -2,10 +2,8 @@ import { useMemo } from "react";
 
 import type { FormValues, UISchema } from "../engine/types";
 
-import {
-  getVisibleFields,
-  scopeToFieldName,
-} from "../engine/dependencyResolver";
+import { getVisibleFields } from "../engine/dependencyResolver";
+import { scopeToFieldName } from "../engine/scope";
 import { collectControls } from "../engine/uischemaParser";
 
 export function useVisibleFields(uischema: UISchema, values: FormValues) {

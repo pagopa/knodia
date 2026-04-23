@@ -133,6 +133,12 @@ export const API_EserviceAgreementDetail = z
   .strictObject({
     id: z.uuid(),
     state: API_AgreementState,
+    suspendedByConsumerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Agreement was suspended by the Consumer",
+    }),
+    suspendedByProducerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Agreement was suspended by the Producer",
+    }),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "EserviceAgreementDetail" });
