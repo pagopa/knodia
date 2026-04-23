@@ -23,7 +23,7 @@ body:json {
     "name": {
       "en": "{{randomKeyName}}"
     },
-    "encodedPem": "{{encodedPem}}"
+    "encodedPem": "{{process.env.KEYCHAIN_PUBLIC_KEY_B64}}"
   }
 }
 
@@ -33,17 +33,15 @@ vars:post-response {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  const publicKeyPem = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtYm0Lu6e11n2vB6ylQ7j
-wkYhLwZjH3hhGVE8FD2NY4Wc9N2RU5BIzyA6cAxGxaXv+gBjxExY4x2qM7p0WJ6z
-YczNpYgWE7s1Y6GTnJ5Go4YrLqaO6E+6TRx8jN2tLYmlg2Lr3wF8X7ahj+8bqR/9
-8khaHc6b4B7+mf0x1k0ANj8uQ8TnX8s7QHcGkWn3XAT8D8rdX9WvU8Y3z5SuX0Kc
-6y1k3obxZx6W4o9m7Yx8+7b0+Q3Wf9O4b0ymB3W2UkEp4x0T14g6Wg+ZtNfo6x5y
-R4CdbM0GAg7x3e4xjX5b5h4QvA4l8TRyr7C5xvNy9V4s9iYV1xFh8JH3y0fP7b2e
-VwIDAQAB
------END PUBLIC KEY-----`
-
   bru.setVar("randomKeyName", `Test Consumer Key ${random}`)
-  bru.setVar("publicKeyPem", publicKeyPem)
-  bru.setVar("encodedPem", Buffer.from(publicKeyPem, "utf-8").toString("base64"))
+}
+
+script:post-response {
+  if (res.status === 201) return
+
+  throw new Error(
+    `Request failed with status ${res.status}. If you haven't generated a keypair yet, or you need a fresh one because the current kid already exists in another keychain, run:\n\n` +
+    "  pnpm generate-keypair\n\n" +
+    "then re-run this call."
+  )
 }

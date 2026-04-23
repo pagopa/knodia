@@ -69,6 +69,18 @@ export type PurposeFormSchema = {
     [key: string]: unknown;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
+export type PurposeFormUiTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
 export type PurposeFormUiSchema = {
     [key: string]: unknown;
 };
@@ -120,7 +132,9 @@ export type TotalDailyCalls = {
 
 export type CurrentPurposeFormSchemasResponse = {
     schema: PurposeFormSchema;
+    texts: PurposeFormTexts;
     uiSchema: PurposeFormUiSchema;
+    uiTexts: PurposeFormUiTexts;
     version: PurposeFormSchemaVersion;
 };
 
