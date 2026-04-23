@@ -134,7 +134,7 @@ describe("EserviceProducerActions", () => {
     expect(await screen.findByText("Archive E-Service")).toBeInTheDocument();
     expect(
       screen.getByText(
-        /All Agreements and Purposes will be suspended\. This action cannot be undone\./,
+        /Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens\. This action cannot be undone\./,
       ),
     ).toBeInTheDocument();
 

@@ -112,7 +112,7 @@ export function EserviceProducerActions({
             actionLabel="Archive anyway"
             cancelLabel="Cancel"
             confirmButtonProps={{ isPending: isArchiving }}
-            description="Are you sure you want to archive this E-Service? All Agreements and Purposes will be suspended. This action cannot be undone."
+            description="Are you sure you want to archive this E-Service? Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens. This action cannot be undone."
             isDismissable
             kind="destructive"
             onConfirm={() => archive({ path: { eserviceId } })}
