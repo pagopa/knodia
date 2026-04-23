@@ -183,4 +183,7 @@
 
   /* Checkbox */
   --radius-checkbox: 2px;
+
+  /* Pagination button */
+  --radius-pagination-button: 100px;
 }
