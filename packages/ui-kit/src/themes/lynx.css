@@ -8,6 +8,7 @@
 @theme {
   --font-body: "Source Serif 4 Variable", serif;
   --font-display: "Petrona Variable", serif;
+  --font-sans: var(--font-body);
 
   /* Brand Colors */
   --color-brand-light: var(--color-brand-100);
