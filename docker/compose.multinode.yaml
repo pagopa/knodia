@@ -1379,7 +1379,7 @@ services:
     container_name: knodia-multinode-frontend-orion
     build:
       context: ..
-      dockerfile: apps/web/node1-frontend/Dockerfile
+      dockerfile: apps/web/knode-frontend/Dockerfile
       args:
         VITE_THEME: orion
     ports:
@@ -1401,7 +1401,7 @@ services:
     container_name: knodia-multinode-frontend-lynx
     build:
       context: ..
-      dockerfile: apps/web/node1-frontend/Dockerfile
+      dockerfile: apps/web/knode-frontend/Dockerfile
       args:
         VITE_THEME: lynx
     ports:

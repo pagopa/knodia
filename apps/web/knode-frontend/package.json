@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/node1-frontend",
+  "name": "@knodia/knode-frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",
