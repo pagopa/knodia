@@ -1,18 +1,9 @@
 #!/bin/bash
 
-COMPOSE_FILE=docker/compose.multinode.yaml
-
-# Build services one at a time. Parallel builds have many containers run
-# `corepack enable` simultaneously, saturating the corepack → npm registry
-# download and tripping its 10s fetch timeout.
-for svc in $(docker compose -f "$COMPOSE_FILE" config --services); do
-  docker compose -f "$COMPOSE_FILE" build "$svc" || exit 1
-done
-
 # --wait exits 1 when init containers (flyway, debezium-setup, etc.) exit,
 # even with exit code 0. This is expected, so we suppress it.
 # See: https://github.com/docker/compose/issues/10596.
-docker compose -f "$COMPOSE_FILE" up -d --wait || true
+docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
