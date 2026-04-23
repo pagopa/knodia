@@ -11,14 +11,14 @@ import {
   createJWK,
   decodeBase64Pem,
   isX509Certificate,
-} from "../src/crypto";
+} from "../src/crypto.ts";
 import {
   invalidKeyLength,
   invalidPublicKey,
   notAllowedMultipleKeys,
   notAllowedPrivateKey,
   notAnRSAKey,
-} from "../src/errors";
+} from "../src/errors.ts";
 
 const rsa2048KeyPair = createRsaKeyPair(2048);
 const rsa1024KeyPair = createRsaKeyPair(1024);
