@@ -4,11 +4,11 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 export function getK2K2GatewayApiClient({
-  knodeUrl,
+  consumerKnodeUrl,
 }: {
-  knodeUrl: string;
+  consumerKnodeUrl: string;
 }): K2K2GatewayApiClient {
   return createK2K2GatewayApiClient({
-    baseURL: knodeUrl,
+    baseURL: consumerKnodeUrl,
   });
 }

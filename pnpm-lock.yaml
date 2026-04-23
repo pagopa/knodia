@@ -487,12 +487,18 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../packages/models/agreement-models
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
       '@knodia/db-readmodel-agreement':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/agreement
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
@@ -514,9 +520,15 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../../../packages/models/purpose-models
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       axios:
         specifier: 'catalog:'
         version: 1.15.0
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.5
@@ -3090,6 +3102,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

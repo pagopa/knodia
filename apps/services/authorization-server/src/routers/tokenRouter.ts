@@ -1,26 +1,29 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import type { AuthorizationServerConfig } from "../config/config.ts";
+
 import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { type tokenServiceBuilder } from "../services/tokenService.ts";
+import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
-  clientAssertionAcceptedAudiences: string[];
-  clientAssertionClockToleranceSeconds: number;
-  clientAssertionMaxTokenAgeSeconds: number;
-  tokenService: ReturnType<typeof tokenServiceBuilder>;
+  config: AuthorizationServerConfig;
+  tokenService: TokenService;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
   {
-    clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds,
+    config: {
+      clientAssertionAcceptedAudiences,
+      clientAssertionClockToleranceSeconds,
+      clientAssertionMaxTokenAgeSeconds,
+    },
     tokenService,
   },
 ) => {
@@ -34,12 +37,14 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
           correlationId,
           requestBody: { client_assertion_type, client_id, grant_type }, // Only log non-sensitive parts of the request body
         },
-        "Issuing mocked access token",
+        "Issuing an E-service access token",
       );
 
-      // TODO remove this mocked route behavior when the real token flow is implemented.
       const token = await tokenService.issueToken(
-        req.body,
+        {
+          clientAssertionJWS: req.body.client_assertion,
+          consumerKeychainId: unsafeBrandId(req.body.client_id),
+        },
         clientAssertionAcceptedAudiences,
         clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
@@ -52,13 +57,14 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
     schema: {
       body: API_TokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
-      description: "Issue a mocked access token",
+      description: "Issue an E-service access token",
       operationId: "createToken",
       response: {
         200: API_TokenResponse.meta({
           description: "Token issued successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
       },
       security: [],
       summary: "Create Token",
