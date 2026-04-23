@@ -31,6 +31,7 @@ import {
   accessTokenTypeMismatch,
   consumerMissingRequiredAttributes,
   invalidClientAssertionSignature,
+  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
@@ -102,10 +103,6 @@ const consumerKeychainId = generateId<ConsumerKeychainId>();
 const MOCK_NOW_SECONDS = 1_000_000_000;
 const MOCK_TOKEN = "mock-eservice-access-token";
 
-const { dpopProofJWS } = await getMockDpopProof({
-  props: { customPayload: { htu: dpopProofHtuBaseUrl } },
-});
-
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateEserviceAccessToken: vi.fn().mockResolvedValue({
@@ -140,15 +137,23 @@ describe("POST /token", async () => {
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
-  const { clientAssertion, clientAssertionJWS, keySet, publicKeyEncodedPem } =
-    await getMockClientAssertion({
-      standardClaimsOverride: {
-        aud: ["test-audience-1"],
-        iss: consumerKeychainId,
-        purpose_id: purpose.id,
-        sub: consumerKeychainId,
-      },
-    });
+  const {
+    clientAssertion,
+    clientAssertionJWS,
+    keySet: clientAssertionKeySet,
+    publicKeyEncodedPem,
+  } = await getMockClientAssertion({
+    standardClaimsOverride: {
+      aud: ["test-audience-1"],
+      iss: consumerKeychainId,
+      purpose_id: purpose.id,
+      sub: consumerKeychainId,
+    },
+  });
+
+  const { dpopProofJWS, dpopProofJWT } = await getMockDpopProof({
+    props: { customPayload: { htu: dpopProofHtuBaseUrl } },
+  });
 
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
     consumerAttributes: [
@@ -463,7 +468,7 @@ describe("POST /token", async () => {
 
       const clientAssertionJWS = await signJWT({
         jwt: clientAssertion,
-        keySet,
+        keySet: clientAssertionKeySet,
       });
 
       const response = await createToken({
@@ -513,6 +518,26 @@ describe("POST /token", async () => {
     const response = await createToken();
 
     const error = invalidClientAssertionSignature();
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 401 when the DPoP signature is invalid", async () => {
+    const { keySet: wrongKeySet } = await getMockDpopProof();
+    const wrongDpopProofJWS = await signJWT({
+      jwt: {
+        headers: dpopProofJWT.headers,
+        payload: dpopProofJWT.payload,
+      },
+      keySet: wrongKeySet,
+    });
+
+    const response = await createToken({
+      requestDpopProofJWS: wrongDpopProofJWS,
+    });
+
+    const error = invalidDpopProofSignature();
 
     expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);

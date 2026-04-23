@@ -220,6 +220,7 @@ export async function getMockDpopProof({
     headers: JWTHeaderParameters;
     payload: JWTPayload;
   };
+  keySet: ReturnType<typeof generateKeySet>["keySet"];
 }> {
   const { keySet, publicKeyJwk } = generateKeySet(alg);
 
@@ -254,6 +255,7 @@ export async function getMockDpopProof({
       headers,
       payload,
     },
+    keySet,
   };
 }
 
