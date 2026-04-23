@@ -4,6 +4,7 @@ import { parseAuthHeaderToken } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import fastifyPlugin from "fastify-plugin";
 import { jwtVerify, type JWTVerifyGetKey } from "jose";
+import { prettifyError } from "zod";
 
 // Augment @fastify/request-context so routers in this service can read the
 // verified access-token claims stashed by this plugin.
@@ -48,9 +49,7 @@ export const accessTokenAuthPlugin =
       const parsed = EserviceAccessTokenClaims.safeParse(rawPayload);
       if (!parsed.success) {
         throw unauthorizedError(
-          `Invalid access token claims: ${parsed.error.issues
-            .map((i) => `${i.path.join(".") || "<root>"}: ${i.message}`)
-            .join("; ")}`,
+          `Invalid access token claims:\n${prettifyError(parsed.error)}`,
         );
       }
 
