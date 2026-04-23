@@ -1,3 +1,13 @@
+import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import {
+  type ConsumerKeychainId,
+  type EserviceId,
+  type EserviceVersionId,
+  generateId,
+  type OrganizationId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { SignJWT } from "jose";
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
@@ -23,20 +33,24 @@ async function signToken(
   const { audience, expiresIn = "5m", issuer, payload } = overrides;
 
   const now = Math.floor(Date.now() / 1000);
-  const defaultPayload: Record<string, unknown> = {
-    client_id: randomUUID(),
-    consumer: { id: randomUUID(), knode_id: "Lynx" },
-    eservice: { id: randomUUID(), knode_id: "Orion", version: randomUUID() },
+  const defaultPayload: Partial<EserviceAccessTokenClaims> = {
+    client_id: generateId<ConsumerKeychainId>(),
+    consumer: { id: generateExternalId<OrganizationId>(), knode_id: "Lynx" },
+    eservice: {
+      id: generateId<EserviceId>(),
+      knode_id: "Orion",
+      version: generateId<EserviceVersionId>(),
+    },
     nbf: now,
-    producer: { id: randomUUID(), knode_id: "Orion" },
-    purpose: { id: randomUUID(), knode_id: "Lynx" },
+    producer: { id: generateId<OrganizationId>(), knode_id: "Orion" },
+    purpose: { id: generateId<PurposeId>(), knode_id: "Lynx" },
   };
 
   const jwt = new SignJWT({ ...defaultPayload, ...payload })
     .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ: "JWT" })
     .setSubject(randomUUID())
     .setIssuer(issuer ?? EXPECTED_ISSUER)
-    .setAudience(audience ?? ACCEPTED_AUDIENCES[0])
+    .setAudience(audience ?? ACCEPTED_AUDIENCES)
     .setJti(randomUUID())
     .setIssuedAt(now)
     .setExpirationTime(expiresIn);

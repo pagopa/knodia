@@ -10,12 +10,12 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
         .min(1)
         .transform((value) => value.split(",").map((a) => a.trim()))
         .pipe(z.string().array()),
-      EXPECTED_ISSUER: z.string().min(1),
+      EXPECTED_ISSUER: z.url(),
       WELL_KNOWN_URLS: z
         .string()
         .min(1)
         .transform((value) => value.split(",").map((u) => u.trim()))
-        .pipe(z.string().array()),
+        .pipe(z.url().array()),
     })
     .transform((c) => ({
       acceptedAudiences: c.ACCEPTED_AUDIENCES,
