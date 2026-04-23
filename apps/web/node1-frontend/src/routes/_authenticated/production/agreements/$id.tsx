@@ -1,5 +1,6 @@
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProducerAgreementDetail } from "@/features/agreement/components/ProducerAgreementDetail/ProducerAgreementDetail";
@@ -16,7 +17,10 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const agreement = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { data: agreement } = useSuspenseQuery(
+    producerAgreementDetailsQuery(unsafeBrandId<AgreementId>(id)),
+  );
 
   return (
     <>

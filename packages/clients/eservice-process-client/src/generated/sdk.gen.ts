@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
+import type { ArchiveEserviceData, ArchiveEserviceErrors, ArchiveEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -112,6 +112,16 @@ export const reactivateEservice = <ThrowOnError extends boolean = true>(options:
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}/reactivate',
+    ...options
+});
+
+/**
+ * Archive a suspended E-service
+ */
+export const archiveEservice = <ThrowOnError extends boolean = true>(options: Options<ArchiveEserviceData, ThrowOnError>) => (options.client ?? client).post<ArchiveEserviceResponses, ArchiveEserviceErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}/archive',
     ...options
 });
 
