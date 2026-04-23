@@ -125,15 +125,29 @@ export const API_Purpose = z
   });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
+const API_PurposeFormTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormTexts" });
+
+const API_PurposeFormUiTexts = z
+  .strictObject({
+    en: z.record(z.string(), z.string()),
+  })
+  .meta({ id: "PurposeFormUiTexts" });
+
 export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
+    texts: API_PurposeFormTexts,
     uiSchema: z.record(z.string(), z.unknown()),
+    uiTexts: API_PurposeFormUiTexts,
     version: API_PurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+      "Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier",
     id: "PurposeFormSchemasResponse",
   });
 export type API_PurposeFormSchemasResponse = z.infer<
