@@ -8,6 +8,7 @@ import {
   XCircleIcon,
   XSquareIcon,
 } from "@phosphor-icons/react";
+import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
 interface StepsProps {
@@ -122,8 +123,14 @@ function StepDot({ status }: { status: StepStatus }) {
 
   return (
     <>
-      <OrionStepDot className={`${className} orion-only`} status={status} />
-      <LynxStepDot className={`${className} lynx-only`} status={status} />
+      <OrionStepDot
+        className={twMerge(className, "orion-only")}
+        status={status}
+      />
+      <LynxStepDot
+        className={twMerge(className, "lynx-only")}
+        status={status}
+      />
     </>
   );
 }

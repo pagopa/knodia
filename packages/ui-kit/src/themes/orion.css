@@ -197,6 +197,8 @@
   --radius-pagination-button: 8px;
 }
 
-.lynx-only {
-  display: none;
+@layer utilities {
+  .lynx-only {
+    display: none;
+  }
 }
