@@ -9,9 +9,11 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import z from "zod";
 
+import { PURPOSE_FORM_SCHEMA_FOLDERS } from "../models/formSchemas.ts";
+
 const PurposeFormsConfigSchema = z
   .object({
-    PURPOSE_FORMS_DIR: z.string().min(1),
+    PURPOSE_FORMS_DIR: z.enum(PURPOSE_FORM_SCHEMA_FOLDERS),
   })
   .transform((c) => ({
     purposeFormsDir: c.PURPOSE_FORMS_DIR,

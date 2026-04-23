@@ -3,9 +3,15 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+export const PURPOSE_FORM_SCHEMA_FOLDERS = [
+  "schemas-orion",
+  "schemas-lynx",
+] as const;
+type PurposeFormSchemaFolder = (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
+
 export const CURRENT_FORM_SCHEMA_VERSION: PurposeFormSchemaVersion = "1.0";
 
-interface FormSchemaBundle {
+interface FormSchemaFiles {
   schema: Record<string, unknown>;
   texts: { en: Record<string, string> };
   uiSchema: Record<string, unknown>;
@@ -15,10 +21,10 @@ interface FormSchemaBundle {
 const readJson = (dir: string, version: string, file: string): unknown =>
   JSON.parse(readFileSync(join(dir, version, file), "utf8"));
 
-const loadBundle = (
+const loadFormSchemaFiles = (
   dir: string,
   version: PurposeFormSchemaVersion,
-): FormSchemaBundle => ({
+): FormSchemaFiles => ({
   schema: readJson(dir, version, "schema.json") as Record<string, unknown>,
   texts: {
     en: readJson(dir, version, "texts.en.json") as Record<string, string>,
@@ -31,15 +37,15 @@ const loadBundle = (
 
 export type GetFormSchemas = ReturnType<typeof loadFormSchemas>;
 
-export function loadFormSchemas(purposeFormsDir: string) {
+export function loadFormSchemas(purposeFormsDir: PurposeFormSchemaFolder) {
   const schemasDir = resolve(
     dirname(fileURLToPath(import.meta.url)),
     "..",
     purposeFormsDir,
   );
   const formSchemas = {
-    "1.0": loadBundle(schemasDir, "1.0"),
-  } satisfies Record<PurposeFormSchemaVersion, FormSchemaBundle>;
-  return (version: PurposeFormSchemaVersion): FormSchemaBundle =>
+    "1.0": loadFormSchemaFiles(schemasDir, "1.0"),
+  } satisfies Record<PurposeFormSchemaVersion, FormSchemaFiles>;
+  return (version: PurposeFormSchemaVersion): FormSchemaFiles =>
     formSchemas[version];
 }

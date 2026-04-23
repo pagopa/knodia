@@ -30,7 +30,6 @@ import { loadFormSchemas } from "./models/formSchemas.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
-import { buildFormAnswersValidator } from "./utils/formAnswersValidator.ts";
 
 export function buildApp({
   config,
@@ -42,7 +41,6 @@ export function buildApp({
   readmodelDb: NodePgDatabase;
 }) {
   const getFormSchemas = loadFormSchemas(config.purposeFormsDir);
-  const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -81,7 +79,6 @@ export function buildApp({
         purposeEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
         getFormSchemas,
-        assertFormAnswersAreValid,
       ),
     });
   });

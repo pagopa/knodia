@@ -31,7 +31,6 @@ import type {
   API_GetPurposesQueryParams,
   API_GetTotalDailyCallsQueryParams,
 } from "../models/api.ts";
-import type { AssertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -39,6 +38,7 @@ import {
   type GetFormSchemas,
 } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
+import { buildFormAnswersValidator } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
   retrieveEservice,
@@ -56,8 +56,8 @@ export function purposeServiceBuilder(
   eventStoreWriter: PurposeEventStoreWriter,
   readmodelService: ReadmodelService,
   getFormSchemas: GetFormSchemas,
-  assertFormAnswersAreValid: AssertFormAnswersAreValid,
 ) {
+  const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   return {
     async createPurpose(
       {

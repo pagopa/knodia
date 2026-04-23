@@ -12,7 +12,7 @@ import type { GetFormSchemas } from "../models/formSchemas.ts";
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
 
-export type AssertFormAnswersAreValid = (
+type AssertFormAnswersAreValid = (
   formAnswersJson: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
 ) => void;
