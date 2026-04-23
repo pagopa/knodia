@@ -301,16 +301,30 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
+export type PurposeFormUiTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
+    texts: PurposeFormTexts;
     uiSchema: {
         [key: string]: unknown;
     };
+    uiTexts: PurposeFormUiTexts;
     /**
      * Version identifier for the Purpose form schema provided by the target Knode
      */

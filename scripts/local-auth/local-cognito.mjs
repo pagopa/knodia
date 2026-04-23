@@ -11,7 +11,7 @@ const DEFAULT_USER_POOL_ID =
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
-const USERNAME = "jane.doe";
+const USERNAME = "Mario Rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
