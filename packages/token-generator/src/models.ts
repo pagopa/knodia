@@ -1,8 +1,13 @@
 import type {
+  EserviceAccessTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
+
+export interface EserviceAccessToken extends BaseToken {
+  payload: EserviceAccessTokenClaims;
+}
 
 export interface InternalToken extends BaseToken {
   payload: InternalTokenClaims;
