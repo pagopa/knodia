@@ -184,7 +184,6 @@ describe("createAjvValidator", () => {
       elements: [
         {
           options: {
-            errorMessages: { required: "Pick one" },
             hideOptions: {
               PUBLIC_INTEREST_TASK: {
                 schema: { contains: { const: "GDPR_ART_9" } },
