@@ -2,12 +2,10 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const SCHEMAS_ROOT = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "seed",
-  "forms",
-);
+const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "src");
+const SCHEMAS_ROOTS = readdirSync(SRC_ROOT, { withFileTypes: true })
+  .filter((e) => e.isDirectory() && e.name.startsWith("schemas-"))
+  .map((e) => join(SRC_ROOT, e.name));
 const REFERENCE_LANG = "en";
 
 type Dict = Record<string, string>;
@@ -49,35 +47,39 @@ function readDicts(versionDir: string, prefix: string): Map<string, Dict> {
   return dicts;
 }
 
-for (const version of readdirSync(SCHEMAS_ROOT, { withFileTypes: true })
-  .filter((e) => e.isDirectory())
-  .map((e) => e.name)) {
-  const versionDir = join(SCHEMAS_ROOT, version);
-  const texts = readDicts(versionDir, "texts");
-  const uiTexts = readDicts(versionDir, "ui-texts");
+for (const schemasRoot of SCHEMAS_ROOTS) {
+  const rootLabel = schemasRoot.split("/").pop() ?? schemasRoot;
+  for (const version of readdirSync(schemasRoot, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)) {
+    const versionDir = join(schemasRoot, version);
+    const label = `${rootLabel}/${version}`;
+    const texts = readDicts(versionDir, "texts");
+    const uiTexts = readDicts(versionDir, "ui-texts");
 
-  for (const [lang, dict] of texts) {
-    const ui = uiTexts.get(lang);
-    if (!ui) {
-      fail(`[${version}/${lang}] missing ui-texts.${lang}.json`);
-      continue;
+    for (const [lang, dict] of texts) {
+      const ui = uiTexts.get(lang);
+      if (!ui) {
+        fail(`[${label}/${lang}] missing ui-texts.${lang}.json`);
+        continue;
+      }
+      const overlap = Object.keys(dict).filter((k) => k in ui);
+      if (overlap.length > 0) {
+        fail(
+          `[${label}/${lang}] duplicate keys across texts and ui-texts:\n  - ${overlap.join("\n  - ")}`,
+        );
+      }
     }
-    const overlap = Object.keys(dict).filter((k) => k in ui);
-    if (overlap.length > 0) {
-      fail(
-        `[${version}/${lang}] duplicate keys across texts and ui-texts:\n  - ${overlap.join("\n  - ")}`,
-      );
+
+    for (const lang of uiTexts.keys()) {
+      if (!texts.has(lang)) {
+        fail(`[${label}/${lang}] missing texts.${lang}.json`);
+      }
     }
+
+    checkLangsAligned(texts, label, "texts");
+    checkLangsAligned(uiTexts, label, "ui-texts");
   }
-
-  for (const lang of uiTexts.keys()) {
-    if (!texts.has(lang)) {
-      fail(`[${version}/${lang}] missing texts.${lang}.json`);
-    }
-  }
-
-  checkLangsAligned(texts, version, "texts");
-  checkLangsAligned(uiTexts, version, "ui-texts");
 }
 
 if (process.exitCode !== 1) {

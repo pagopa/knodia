@@ -301,21 +301,16 @@ services:
       minio:
         condition: service_healthy
     volumes:
-      - ../apps/services/purpose-process/seed/forms:/seed/purpose-forms:ro
+      - ../apps/services/mock-eservice/openapi/openapi.yaml:/seed/mock-eservice.yaml:ro
     entrypoint: >
-      /bin/sh -ec '
+      /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
-      mc mb --ignore-existing local/knodia-orion-purpose-forms;
-      mc mb --ignore-existing local/knodia-lynx-purpose-forms;
-      for knode in orion lynx; do
-        for v in /seed/purpose-forms/*/; do
-          mc cp --recursive "$$v" "local/knodia-$$knode-purpose-forms/versions/$$(basename $$v)/";
-        done;
-        mc cp /seed/purpose-forms/current.json "local/knodia-$$knode-purpose-forms/current.json";
-      done;
-      '
+      mc cp /seed/mock-eservice.yaml local/knodia-orion-eservice-interfaces/interfaces/mock-eservice.yaml;
+      mc cp /seed/mock-eservice.yaml local/knodia-lynx-eservice-interfaces/interfaces/mock-eservice.yaml;
+      exit 0;
+      "
 
   # ============================================================
   # pgAdmin
@@ -821,17 +816,10 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      PURPOSE_FORMS_S3_BUCKET: knodia-orion-purpose-forms
-      AWS_REGION: eu-south-1
-      AWS_ACCESS_KEY_ID: testawskey
-      AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
       local-kms-setup:
-        condition: service_completed_successfully
-      minio-setup:
         condition: service_completed_successfully
 
   purpose-readmodel-writer-orion:
@@ -1345,15 +1333,9 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      PURPOSE_FORMS_S3_BUCKET: knodia-lynx-purpose-forms
-      AWS_REGION: eu-south-1
-      AWS_ACCESS_KEY_ID: testawskey
-      AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_ENDPOINT_URL_S3: http://minio:9000
+      PURPOSE_FORMS_DIR: schemas-lynx
     depends_on:
       flyway-lynx:
-        condition: service_completed_successfully
-      minio-setup:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
@@ -1506,13 +1488,13 @@ services:
         condition: service_healthy
     volumes:
       - multinode-jwks-data:/jwks
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-    command: node scripts/local-kms/kms-setup.mjs
+    command: node scripts/local-auth/kms-setup.mjs
 
   local-jwks:
     security_opt:
@@ -1536,12 +1518,12 @@ services:
     ports:
       - 4567:3000
     volumes:
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
     working_dir: /app
     environment:
       ISSUER: "http://localhost:4567"
       ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
-    command: node scripts/local-kms/local-cognito.mjs
+    command: node scripts/local-auth/local-cognito.mjs
 
 volumes:
   multinode-postgres-data:

@@ -216,9 +216,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      res
-        .status(200)
-        .send(await purposeService.getCurrentPurposeFormSchemas(ctx));
+      res.status(200).send(purposeService.getCurrentPurposeFormSchemas(ctx));
     },
     method: "GET",
     schema: {

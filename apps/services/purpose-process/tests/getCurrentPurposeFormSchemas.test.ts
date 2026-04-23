@@ -1,7 +1,10 @@
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import { formSchemaStore, TEST_FORM_VERSION } from "./setup.ts";
+import {
+  CURRENT_FORM_SCHEMA_VERSION,
+  getFormSchemas,
+} from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
@@ -15,8 +18,8 @@ describe("GET /purposes/formSchemas/current (getCurrentFormSchemas)", () => {
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        ...(await formSchemaStore.getFormSchemas(TEST_FORM_VERSION)),
-        version: TEST_FORM_VERSION,
+        ...getFormSchemas(CURRENT_FORM_SCHEMA_VERSION),
+        version: CURRENT_FORM_SCHEMA_VERSION,
       });
     },
   );
