@@ -1,5 +1,4 @@
 import { type Preview } from "@storybook/react-vite";
-import { useEffect } from "react";
 
 import lynxHref from "../src/themes/lynx.css?url";
 import orionHref from "../src/themes/orion.css?url";
@@ -26,10 +25,6 @@ function resolveTheme(value: unknown): ThemeName {
   return value === "orion" || value === "lynx" ? value : DEFAULT_THEME;
 }
 
-if (typeof document !== "undefined") {
-  getOrCreateThemeLink().href = THEMES[DEFAULT_THEME].href;
-}
-
 const preview: Preview = {
   globalTypes: {
     theme: {
@@ -49,9 +44,7 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const theme = resolveTheme(context.globals["theme"]);
-      useEffect(() => {
-        getOrCreateThemeLink().href = THEMES[theme].href;
-      }, [theme]);
+      getOrCreateThemeLink().href = THEMES[theme].href;
       return <Story />;
     },
   ],
