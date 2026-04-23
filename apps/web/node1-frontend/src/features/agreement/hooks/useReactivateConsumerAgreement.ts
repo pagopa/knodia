@@ -1,4 +1,8 @@
-import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  KnodeId,
+} from "@knodia/common-models/ids";
 
 import { reactivateConsumerAgreementMutation } from "@knodia/bff-client/tanstack-query";
 import { toastQueue } from "@knodia/ui-kit/ui";
@@ -8,7 +12,7 @@ import { consumerEserviceDetailsQuery } from "@/features/e-service/services/quer
 import { client } from "@/libs/axios";
 
 interface UseReactivateConsumerAgreementParams {
-  agreementId: string;
+  agreementId: AgreementId;
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }

@@ -1,4 +1,8 @@
-import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  KnodeId,
+} from "@knodia/common-models/ids";
 
 import { suspendConsumerAgreementMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +11,7 @@ import { consumerEserviceDetailsQuery } from "@/features/e-service/services/quer
 import { client } from "@/libs/axios";
 
 interface UseSuspendConsumerAgreementParams {
-  agreementId: string;
+  agreementId: AgreementId;
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }

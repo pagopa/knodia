@@ -1,6 +1,11 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
+import {
+  type AgreementId,
+  type EserviceId,
+  type KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { Banner } from "@knodia/ui-kit/ui";
 import {
   CaretDownIcon,
@@ -85,20 +90,21 @@ function AgreementStatusBanner({
   knodeId: KnodeId;
 }) {
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const agreementId = unsafeBrandId<AgreementId>(agreement.id);
 
   const {
     isError: isSuspendError,
     isPending: isSuspendPending,
     suspendAgreement,
   } = useSuspendConsumerAgreement({
-    agreementId: agreement.id,
+    agreementId,
     eserviceId,
     knodeId,
   });
 
   const { isPending: isReactivatePending, reactivateAgreement } =
     useReactivateConsumerAgreement({
-      agreementId: agreement.id,
+      agreementId,
       eserviceId,
       knodeId,
     });
