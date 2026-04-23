@@ -1,8 +1,10 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
   type EserviceTemplateId,
+  KnodeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -208,9 +210,15 @@ const buildEservice = ({
     mode: EserviceMode.parse(eserviceSQL.mode),
     name: LocalizedName.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
-    templateId: eserviceSQL.templateId
-      ? unsafeBrandId<EserviceTemplateId>(eserviceSQL.templateId)
-      : undefined,
+    template:
+      eserviceSQL.templateId && eserviceSQL.templateKnodeId
+        ? {
+            id: unsafeBrandExternalId<EserviceTemplateId>(
+              eserviceSQL.templateId,
+            ),
+            knodeId: KnodeId.parse(eserviceSQL.templateKnodeId),
+          }
+        : undefined,
     updatedAt: eserviceSQL.updatedAt,
     versions: eserviceVersions,
   };

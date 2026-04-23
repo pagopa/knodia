@@ -170,6 +170,7 @@ const toEserviceSQL = (
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  templateId: eservice.templateId ?? null,
+  templateId: eservice.template?.id ?? null,
+  templateKnodeId: eservice.template?.knodeId ?? null,
   updatedAt: eservice.updatedAt,
 });
