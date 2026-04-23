@@ -189,4 +189,7 @@
 
   /* Modal */
   --radius-modal: 16px;
+
+  /* Checkbox */
+  --radius-checkbox: 4px;
 }

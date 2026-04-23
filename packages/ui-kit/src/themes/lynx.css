@@ -180,4 +180,7 @@
 
   /* Modal */
   --radius-modal: 0;
+
+  /* Checkbox */
+  --radius-checkbox: 2px;
 }
