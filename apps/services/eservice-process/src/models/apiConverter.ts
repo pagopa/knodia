@@ -37,12 +37,7 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  ...(eservice.template !== undefined
-    ? {
-        templateId: eservice.template.id,
-        templateKnodeId: eservice.template.knodeId,
-      }
-    : {}),
+  template: eservice.template,
   updatedAt: eservice.updatedAt.toISOString(),
 });
 
