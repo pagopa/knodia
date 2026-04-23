@@ -9,12 +9,12 @@ import AjvModule, { type ValidateFunction } from "ajv";
 const Ajv = AjvModule.default;
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
-import { getFormSchema } from "../models/formSchemas.ts";
+import { getFormSchemas } from "../models/formSchemas.ts";
 
 const ajv = new Ajv({ allErrors: true });
 
 const compiledSchemas: Record<PurposeFormSchemaVersion, ValidateFunction> = {
-  "1.0": ajv.compile(getFormSchema("1.0")),
+  "1.0": ajv.compile(getFormSchemas("1.0").schema),
 };
 
 export function assertFormAnswersAreValid(

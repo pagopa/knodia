@@ -1,6 +1,7 @@
 import type { ControlElement, FormValues, UISchema } from "./types";
 
-import { evaluateCondition, scopeToFieldName } from "./dependencyResolver";
+import { evaluateCondition } from "./dependencyResolver";
+import { scopeToFieldName } from "./scope";
 import { collectControls } from "./uischemaParser";
 
 export function buildControlsByField(

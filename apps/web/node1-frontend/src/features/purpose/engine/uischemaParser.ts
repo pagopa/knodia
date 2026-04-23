@@ -1,15 +1,21 @@
 import type {
   AndCondition,
   ControlElement,
-  LabelElement,
   RuleCondition,
   UISchema,
   UISchemaElement,
 } from "./types";
 
+import { scopeToFieldName } from "./scope";
+import {
+  getFieldErrorMessages,
+  getGroupDescription,
+  getGroupLabel,
+} from "./textsResolver";
+
 export interface GroupLayout {
   description?: string | undefined;
-  elements: (ControlElement | LabelElement)[];
+  elements: ControlElement[];
   label?: string | undefined;
 }
 
@@ -26,7 +32,6 @@ export function collectConditionScopes(condition: RuleCondition): string[] {
   return [condition.scope];
 }
 
-// Recursively flattens the UI Schema tree into a list of Control elements.
 export function collectControls(element: UISchemaElement): ControlElement[] {
   if (element.type === "Control") {
     return [element];
@@ -37,47 +42,41 @@ export function collectControls(element: UISchemaElement): ControlElement[] {
   return [];
 }
 
-// Extracts custom error messages (options.errorMessages) from each control,
-// keyed by field name then validation keyword (e.g. "required", "minLength").
 export function collectErrorMessages(
+  texts: Record<string, string>,
   uischema: UISchema,
 ): Record<string, Record<string, string>> {
   const result: Record<string, Record<string, string>> = {};
   for (const control of collectControls(uischema)) {
-    if (control.options?.errorMessages) {
-      const fieldName = control.scope.replace("#/properties/", "");
-      result[fieldName] = control.options.errorMessages;
+    const fieldName = scopeToFieldName(control.scope);
+    const errors = getFieldErrorMessages(texts, fieldName);
+    if (Object.keys(errors).length > 0) {
+      result[fieldName] = errors;
     }
   }
   return result;
 }
 
-// Collects Group elements from the UI Schema for section-based rendering.
-// If the schema has no explicit groups, wraps all elements in a single implicit group.
-export function collectGroups(uischema: UISchema): GroupLayout[] {
+export function collectGroups(
+  uischema: UISchema,
+  texts: Record<string, string>,
+): GroupLayout[] {
   if (uischema.type === "Group") {
     return [
       {
-        description: uischema.options?.description,
+        ...resolveGroupI18n(texts, uischema.i18n),
         elements: collectGroupElements(uischema),
-        label: uischema.label,
       },
     ];
   }
 
-  // VerticalLayout / HorizontalLayout — check if children are Groups
-  const groups: GroupLayout[] = [];
-  for (const child of uischema.elements) {
-    if (child.type === "Group") {
-      groups.push({
-        description: child.options?.description,
-        elements: collectGroupElements(child),
-        label: child.label,
-      });
-    }
-  }
+  const groups = uischema.elements
+    .filter((child) => child.type === "Group")
+    .map((child) => ({
+      ...resolveGroupI18n(texts, child.i18n),
+      elements: collectGroupElements(child),
+    }));
 
-  // If no groups found, wrap everything in a single implicit group
   if (groups.length === 0) {
     return [{ elements: collectGroupElements(uischema) }];
   }
@@ -85,19 +84,16 @@ export function collectGroups(uischema: UISchema): GroupLayout[] {
   return groups;
 }
 
-// Extracts step layouts from the UI Schema for multi-step form rendering.
-// If no top-level Groups exist, wraps all elements in a single implicit step.
-export function collectSteps(uischema: UISchema): StepLayout[] {
-  const steps: StepLayout[] = [];
-  for (const child of uischema.elements) {
-    if (child.type === "Group") {
-      steps.push({
-        description: child.options?.description,
-        elements: child.elements,
-        label: child.label,
-      });
-    }
-  }
+export function collectSteps(
+  uischema: UISchema,
+  texts: Record<string, string>,
+): StepLayout[] {
+  const steps = uischema.elements
+    .filter((child) => child.type === "Group")
+    .map((child) => ({
+      ...resolveGroupI18n(texts, child.i18n),
+      elements: child.elements,
+    }));
 
   if (steps.length === 0) {
     return [{ elements: uischema.elements }];
@@ -110,14 +106,24 @@ export function isAndCondition(c: RuleCondition): c is AndCondition {
   return "type" in c && c.type === "AND";
 }
 
-function collectGroupElements(
-  element: UISchemaElement,
-): (ControlElement | LabelElement)[] {
-  if (element.type === "Control" || element.type === "Label") {
+function collectGroupElements(element: UISchemaElement): ControlElement[] {
+  if (element.type === "Control") {
     return [element];
   }
   if ("elements" in element) {
     return element.elements.flatMap(collectGroupElements);
   }
   return [];
+}
+
+// Returns { label, description } for a Group, falling back to the raw i18n key
+// when a text is missing so renders never crash mid-flow.
+function resolveGroupI18n(
+  texts: Record<string, string>,
+  i18n: string,
+): { description: string | undefined; label: string } {
+  return {
+    description: getGroupDescription(texts, i18n),
+    label: getGroupLabel(texts, i18n) ?? i18n,
+  };
 }

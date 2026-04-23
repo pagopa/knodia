@@ -1,34 +1,39 @@
 import { Checkbox } from "@knodia/ui-kit/ui";
 
-import type { ControlElement } from "@/features/purpose/engine/types";
-
 interface Props {
-  control: ControlElement;
+  checkedLabel?: string | undefined;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string) => void;
   value: string;
 }
 
-export function SwitchRenderer({ control, error, onChange, value }: Props) {
+export function SwitchRenderer({
+  checkedLabel,
+  description,
+  error,
+  label,
+  onChange,
+  value,
+}: Props) {
   const isChecked = value === "true";
-  const switchLabel =
-    control.options?.optionLabels?.["true"] ?? control.label ?? "";
+  const switchLabel = checkedLabel ?? label ?? "";
 
   return (
     <div className="flex flex-col">
-      {control.label && (
+      {label && (
         <span className="label-md text-primary-light-high-contrast">
-          {control.label}
+          {label}
         </span>
       )}
-      {control.options?.infoLabel && (
-        <span className="body-sm text-primary-light-mid-contrast mt-3">
-          {control.options.infoLabel}
+      {description && (
+        <span className="body-sm text-primary-light-mid-contrast first:mt-0 mt-3">
+          {description}
         </span>
       )}
       <Checkbox
-        className="mt-3"
-        description={control.options?.description}
+        className="first:mt-0 mt-3"
         isInvalid={!!error}
         isSelected={isChecked}
         onChange={(checked) => onChange(checked ? "true" : "false")}

@@ -52,24 +52,27 @@ export const handlers = [
         required: ["purpose", "personalDataTypes", "declarationConfirmGDPR"],
         type: "object",
       },
+      texts: {
+        en: {
+          "declarationConfirmGDPR.label": "I confirm GDPR compliance",
+          "groups.test.label": "Test",
+          "institutionalPurpose.label": "Describe your purpose",
+          "personalDataTypes.label": "Personal data types",
+          "purpose.INSTITUTIONAL": "For institutional purposes",
+          "purpose.label": "Purpose of access data",
+          "purpose.OTHER": "Other",
+        },
+      },
       uiSchema: {
         elements: [
           {
             elements: [
               {
-                label: "Purpose of data access",
-                options: {
-                  optionLabels: {
-                    INSTITUTIONAL: "Institutional",
-                    OTHER: "Other",
-                  },
-                  widget: "radio",
-                },
+                options: { widget: "radio" },
                 scope: "#/properties/purpose",
                 type: "Control",
               },
               {
-                label: "Describe your purpose",
                 options: { widget: "textarea" },
                 rule: {
                   condition: {
@@ -82,23 +85,26 @@ export const handlers = [
                 type: "Control",
               },
               {
-                label: "Personal data types",
                 options: { widget: "multiselect" },
                 scope: "#/properties/personalDataTypes",
                 type: "Control",
               },
               {
-                label: "I confirm GDPR compliance",
                 options: { widget: "checkbox" },
                 scope: "#/properties/declarationConfirmGDPR",
                 type: "Control",
               },
             ],
-            label: "Purpose",
+            i18n: "groups.test",
             type: "Group",
           },
         ],
         type: "VerticalLayout",
+      },
+      uiTexts: {
+        en: {
+          "purpose.error.required": "Please select a purpose",
+        },
       },
       version: "1.0",
     }),

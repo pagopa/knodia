@@ -288,13 +288,13 @@ services:
         condition: service_healthy
     volumes:
       - jwks-data:/jwks
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-    command: node scripts/local-kms/kms-setup.mjs
+    command: node scripts/local-auth/kms-setup.mjs
 
   # Serves JWKS endpoints for local token validation
   # - http://localhost:4500/knodia/.well-known/jwks.json
@@ -350,9 +350,9 @@ services:
     ports:
       - 4567:3000
     volumes:
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
     working_dir: /app
-    command: node scripts/local-kms/local-cognito.mjs
+    command: node scripts/local-auth/local-cognito.mjs
 
 volumes:
   postgres-data:
