@@ -695,52 +695,45 @@ describe("POST /token", async () => {
 
   it.each([
     {
-      dpopProofJWS: undefined,
-      eserviceVersion: {
-        ...eserviceVersion,
-        accessTokenType: "DPoP",
-      },
       testCase:
         "E-service version uses DPoP token but request is using Bearer token",
+      tokenType: "DPoP",
     },
     {
-      dpopProofJWS,
-      eserviceVersion: {
-        ...eserviceVersion,
-        accessTokenType: "Bearer",
-      },
       testCase:
         "E-service version uses Bearer token but request is using DPoP token",
+      tokenType: "Bearer",
     },
   ] satisfies {
-    dpopProofJWS: string | undefined;
-    eserviceVersion: EserviceVersion;
     testCase: string;
-  }[])(
-    "should return 400 if the E-service version access token type does not match the request token type: $testCase",
-    async ({ dpopProofJWS, eserviceVersion }) => {
-      await Promise.all([
-        agreementWriterService.upsertAgreement(agreement, 0),
-        eserviceWriterService.upsertEservice(
-          { ...eservice, versions: [eserviceVersion] },
-          0,
-        ),
-        purposeWriterService.upsertPurpose(purpose, 0),
-      ]);
+    tokenType: EserviceAccessTokenType;
+  }[])("should return 400 if the $testCase", async ({ tokenType }) => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(
+        {
+          ...eservice,
+          versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
+        },
+        0,
+      ),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
 
-      getClientAssertionVerificationDataMock.mockResolvedValue({
-        data: mockK2KResponse,
-      });
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
 
-      const response = await createToken({ requestDpopProofJWS: dpopProofJWS });
+    const response = await createToken({
+      requestDpopProofJWS: tokenType === "Bearer" ? dpopProofJWS : undefined,
+    });
 
-      const error = accessTokenTypeMismatch(
-        eserviceVersion,
-        dpopProofJWS !== undefined,
-      );
+    const error = accessTokenTypeMismatch(
+      eserviceVersion,
+      dpopProofJWS !== undefined,
+    );
 
-      expect(response.statusCode).toBe(400);
-      expect(response.json<API_Problem>().title).toEqual(error.title);
-    },
-  );
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
 });
