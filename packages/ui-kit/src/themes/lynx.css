@@ -168,4 +168,7 @@
 
   /* Field */
   --radius-field: 2px;
+
+  /* Dropdown */
+  --radius-dropdown: 0;
 }

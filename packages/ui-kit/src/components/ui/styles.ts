@@ -76,7 +76,7 @@ export const fieldGroupStyles = tv({
 });
 
 export const dropdownStyles = tv({
-  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
+  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-dropdown shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });
 
 export const listItemStyles = tv({

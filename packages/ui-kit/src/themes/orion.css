@@ -177,4 +177,7 @@
 
   /* Field */
   --radius-field: 8px;
+
+  /* Dropdown */
+  --radius-dropdown: 16px;
 }
