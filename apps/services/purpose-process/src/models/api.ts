@@ -14,7 +14,9 @@ import {
   API_PurposeFormAnswers,
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersion,
+  API_PurposeFormTexts,
   API_PurposeFormUiSchema,
+  API_PurposeFormUiTexts,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
@@ -77,6 +79,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
   state: arrayQueryParam(API_PurposeState)
     .optional()
     .meta({ description: "Filter by Purpose State" }),
+  updatedSince: z.iso.datetime().optional().meta({
+    description: "Filter Purposes updated at or after this timestamp",
+  }),
 });
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
@@ -106,7 +111,9 @@ export type API_TotalDailyCalls = z.infer<typeof API_TotalDailyCalls>;
 export const API_CurrentPurposeFormSchemasResponse = z
   .strictObject({
     schema: API_PurposeFormSchema,
+    texts: API_PurposeFormTexts,
     uiSchema: API_PurposeFormUiSchema,
+    uiTexts: API_PurposeFormUiTexts,
     version: API_PurposeFormSchemaVersion,
   })
   .meta({ id: "CurrentPurposeFormSchemasResponse" });

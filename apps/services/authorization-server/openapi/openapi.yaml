@@ -94,10 +94,19 @@ components:
     TokenResponse:
       type: object
       properties:
-        mockAccessToken:
+        access_token:
           type: string
+        expires_in:
+          format: int32
+          type: number
+        token_type:
+          type: string
+          enum:
+            - Bearer
       required:
-        - mockAccessToken
+        - access_token
+        - expires_in
+        - token_type
       additionalProperties: false
 paths:
   /status:
@@ -122,7 +131,7 @@ paths:
       summary: Create Token
       tags:
         - token
-      description: Issue a mocked access token
+      description: Issue an E-service access token
       requestBody:
         required: true
         content:
@@ -145,6 +154,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

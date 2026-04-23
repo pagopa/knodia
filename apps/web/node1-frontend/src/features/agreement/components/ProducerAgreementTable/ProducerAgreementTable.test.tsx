@@ -26,39 +26,14 @@ function createAgreement(
   };
 }
 
-function renderTable(
-  agreements: bffApi.ProducerAgreement[] = [],
-  isLoading = false,
-) {
+function renderTable(agreements: bffApi.ProducerAgreement[] = []) {
   return renderWithProviders(
-    <ProducerAgreementTable agreements={agreements} isLoading={isLoading} />,
+    <ProducerAgreementTable agreements={agreements} />,
     { routes: [{ path: "/production/agreements/$id" }] },
   );
 }
 
 describe("ProducerAgreementTable", () => {
-  it("renders the loading state", () => {
-    renderTable([], true);
-
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-    expect(
-      screen.queryByText("There are no Agreements for your E-Services."),
-    ).not.toBeInTheDocument();
-  });
-
-  it("renders the empty state when there are no agreements", () => {
-    renderTable([]);
-
-    expect(
-      screen.getByText("There are no Agreements for your E-Services."),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Agreements requested for your E-Services by Consumer Organizations will appear here.",
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("renders agreements in a table with correct columns", () => {
     renderTable([createAgreement()]);
 

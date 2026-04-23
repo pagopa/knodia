@@ -28,7 +28,7 @@ import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/s
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { aggregatePurposes } from "@knodia/db-readmodel-purpose/converters";
 import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
-import { and, eq, inArray, sum } from "drizzle-orm";
+import { and, eq, gte, inArray, sum } from "drizzle-orm";
 
 import type {
   API_GetPurposesQueryParams,
@@ -90,6 +90,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         offset,
         producerId,
         state,
+        updatedSince,
       } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
@@ -144,6 +145,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 ? eq(readmodelEservice.producerId, producerId)
                 : undefined,
               agreementId ? eq(readmodelAgreement.id, agreementId) : undefined,
+              // TODO: consider adding a DB index on updatedAt when we have many purposes
+              updatedSince
+                ? gte(readmodelPurpose.updatedAt, new Date(updatedSince))
+                : undefined,
             ),
           );
         };
