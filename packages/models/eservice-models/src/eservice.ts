@@ -1,8 +1,9 @@
 import { AttributeGroup } from "@knodia/attribute-models";
+import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   EserviceId,
   EserviceInterfaceId,
-  EserviceTemplateId,
+  type EserviceTemplateId,
   EserviceVersionId,
   OrganizationId,
 } from "@knodia/common-models/ids";
@@ -90,7 +91,7 @@ export const Eservice = z.strictObject({
   mode: EserviceMode,
   name: LocalizedName,
   producerId: OrganizationId,
-  templateId: EserviceTemplateId.optional(), // present if instantiated from a template
+  template: ExternalResource<EserviceTemplateId>().optional(), // present only if the eservice is created from a template
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),
 });

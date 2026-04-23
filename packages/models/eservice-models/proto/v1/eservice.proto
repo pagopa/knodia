@@ -14,7 +14,7 @@ message EserviceV1 {
   repeated EserviceVersionV1 versions = 9;
   int64 createdAt = 10;
   int64 updatedAt = 11;
-  optional string templateId = 12;
+  optional EserviceTemplateV1 template = 12;
 }
 
 message EserviceCategoryV1 {
@@ -76,4 +76,9 @@ message EserviceVersionAttributeV1 {
 message LocalizedTextV1 {
   // TODO find a way to share this in common models and make proto gen work
   string en = 1;
+}
+
+message EserviceTemplateV1 {
+  string id = 1;
+  string knodeId = 2;
 }
