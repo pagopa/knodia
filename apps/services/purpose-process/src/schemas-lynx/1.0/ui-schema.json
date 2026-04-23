@@ -1,5 +1,12 @@
 {
-  "$comment": "Lynx placeholder UI schema",
   "type": "VerticalLayout",
-  "elements": []
+  "elements": [
+    {
+      "type": "Control",
+      "scope": "#/properties/confirm",
+      "options": {
+        "widget": "switch"
+      }
+    }
+  ]
 }

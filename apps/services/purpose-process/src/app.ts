@@ -2,8 +2,6 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import type { PurposeFormsConfig } from "./config/config.ts";
-
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { purposeEventStoreWriterBuilder } from "@knodia/db-event-store-writer/purpose";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -21,7 +19,10 @@ import {
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
 
-import type { PurposeProcessConfig } from "./config/config.ts";
+import type {
+  PurposeFormsConfig,
+  PurposeProcessConfig,
+} from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";

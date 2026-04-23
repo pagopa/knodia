@@ -31,11 +31,13 @@ import type {
   API_GetPurposesQueryParams,
   API_GetTotalDailyCallsQueryParams,
 } from "../models/api.ts";
-import type { GetFormSchemas } from "../models/formSchemas.ts";
 import type { AssertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { CURRENT_FORM_SCHEMA_VERSION } from "../models/formSchemas.ts";
+import {
+  CURRENT_FORM_SCHEMA_VERSION,
+  type GetFormSchemas,
+} from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import {
   retrieveAgreements,

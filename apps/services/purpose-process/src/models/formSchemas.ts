@@ -1,12 +1,11 @@
+import { type PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { type PurposeFormSchemaVersion } from "@knodia/purpose-models";
-
 export const CURRENT_FORM_SCHEMA_VERSION: PurposeFormSchemaVersion = "1.0";
 
-export interface FormSchemaBundle {
+interface FormSchemaBundle {
   schema: Record<string, unknown>;
   texts: { en: Record<string, string> };
   uiSchema: Record<string, unknown>;
@@ -24,14 +23,13 @@ const loadBundle = (
   texts: {
     en: readJson(dir, version, "texts.en.json") as Record<string, string>,
   },
-  uiSchema: readJson(dir, version, "ui-schema.json") as Record<
-    string,
-    unknown
-  >,
+  uiSchema: readJson(dir, version, "ui-schema.json") as Record<string, unknown>,
   uiTexts: {
     en: readJson(dir, version, "ui-texts.en.json") as Record<string, string>,
   },
 });
+
+export type GetFormSchemas = ReturnType<typeof loadFormSchemas>;
 
 export function loadFormSchemas(purposeFormsDir: string) {
   const schemasDir = resolve(
@@ -45,5 +43,3 @@ export function loadFormSchemas(purposeFormsDir: string) {
   return (version: PurposeFormSchemaVersion): FormSchemaBundle =>
     formSchemas[version];
 }
-
-export type GetFormSchemas = ReturnType<typeof loadFormSchemas>;
