@@ -17,3 +17,4 @@ export const PublicKeyJwk = z.discriminatedUnion("kty", [
   PublicKeyJwkRS256,
   PublicKeyJwkES256,
 ]);
+export type PublicKeyJwk = z.infer<typeof PublicKeyJwk>;

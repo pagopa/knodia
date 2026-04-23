@@ -19,6 +19,7 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { randomUUID } from "node:crypto";
 
@@ -42,6 +43,7 @@ interface EserviceAccessTokenInput extends TokenParams {
   audience: string[];
   consumer: ExternalResource<OrganizationId>;
   consumerKeychainId: ConsumerKeychainId; // access token client_id claim
+  dpopJWK?: PublicKeyJwk;
   eserviceId: EserviceId;
   eserviceVersionId: EserviceVersionId;
   producer: { id: OrganizationId; knodeId: KnodeId };
@@ -155,6 +157,13 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         producer: { id: input.producer.id, knode_id: input.producer.knodeId },
         purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
+        ...(input.dpopJWK
+          ? {
+              cnf: {
+                jkt: calculateKid(input.dpopJWK),
+              },
+            }
+          : {}),
       };
 
       const { header, serialized } = await buildAndSignToken(input.kid, claims);

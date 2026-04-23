@@ -198,7 +198,7 @@ export async function verifyDpopProofSignature(
   dpopProofMaxTokenAgeSeconds: number,
   expectedDpopProofHtu: string,
   logger: FastifyBaseLogger,
-): Promise<JWTPayload | undefined> {
+): Promise<DPoPProof | undefined> {
   if (!dpopProofJWS) {
     return undefined;
   }
@@ -211,25 +211,26 @@ export async function verifyDpopProofSignature(
       `Verifying DPoP Proof (JTI=${payload.jti}) signature with algorithm ${protectedHeader.alg}`,
     );
 
-    const {
-      header: { alg: dpopProofAlg, jwk },
-      payload: { htu },
-    } = DPoPProof.parse({
+    const dpopProof = DPoPProof.parse({
       header: protectedHeader,
       payload,
     });
+    const {
+      header: { alg: dpopProofAlg, jwk },
+      payload: { htu },
+    } = dpopProof;
 
     assertDpopProofHtuIsValid(htu, expectedDpopProofHtu);
 
     const verificationKey = await importJWK(jwk, dpopProofAlg);
 
-    const result = await jwtVerify(dpopProofJWS, verificationKey, {
+    await jwtVerify(dpopProofJWS, verificationKey, {
       algorithms: [dpopProofAlg],
       maxTokenAge: dpopProofMaxTokenAgeSeconds,
       typ: EXPECTED_DPOP_PROOF_TYP,
     });
 
-    return result.payload;
+    return dpopProof;
   } catch (error) {
     throw match(error)
       .with(P.instanceOf(JWTExpired), () => clientAssertionExpired()) // TODO: needed for maxTokenAge?

@@ -86,6 +86,7 @@ export function tokenServiceBuilder({
         audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,
         consumerKeychainId,
+        dpopJWK: dpopProofJWT?.header.jwk,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,
