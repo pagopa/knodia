@@ -81,7 +81,7 @@ export const dropdownStyles = tv({
 
 export const listItemStyles = tv({
   extend: focusRing,
-  base: "group body-md relative flex w-full items-center gap-3 rounded-md px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
+  base: "group body-md relative flex w-full items-center gap-3 rounded-list-item px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
   variants: {
     isDisabled: { true: "", false: "" },
     isSelected: { true: "", false: "" },

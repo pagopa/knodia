@@ -183,4 +183,7 @@
 
   /* Empty icon */
   --radius-empty-icon: 10px;
+
+  /* List item */
+  --radius-list-item: 6px;
 }

@@ -174,4 +174,7 @@
 
   /* Empty icon */
   --radius-empty-icon: 100px;
+
+  /* List item */
+  --radius-list-item: 0;
 }
