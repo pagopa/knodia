@@ -12,7 +12,7 @@ export const focusRing = tv({
 
 export const fieldInputStyle = tv({
   extend: focusRing,
-  base: "border-primary-light-decorative box-border w-full rounded-lg border px-3 text-sm leading-[1.6] transition",
+  base: "border-primary-light-decorative box-border w-full rounded-field border px-3 text-sm leading-[1.6] transition",
   variants: {
     isInvalid: {
       true: "",
@@ -71,7 +71,7 @@ export const fieldBorderStyles = tv({
 
 export const fieldGroupStyles = tv({
   extend: focusRing,
-  base: "group flex h-10 items-center overflow-hidden rounded-lg border bg-white",
+  base: "group flex h-10 items-center overflow-hidden rounded-field border bg-white",
   variants: fieldBorderStyles.variants,
 });
 

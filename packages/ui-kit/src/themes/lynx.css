@@ -165,4 +165,7 @@
 
   /* Chip */
   --radius-chip: 3px;
+
+  /* Field */
+  --radius-field: 2px;
 }

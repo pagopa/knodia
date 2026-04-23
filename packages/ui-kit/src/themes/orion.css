@@ -174,4 +174,7 @@
 
   /* Chip */
   --radius-chip: calc(infinity * 1px);
+
+  /* Field */
+  --radius-field: 8px;
 }
