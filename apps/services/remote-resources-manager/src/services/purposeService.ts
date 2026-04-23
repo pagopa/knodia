@@ -82,7 +82,9 @@ export function purposeServiceBuilder(
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{
       schema: Record<string, unknown>;
+      texts: { en: Record<string, string> };
       uiSchema: Record<string, unknown>;
+      uiTexts: { en: Record<string, string> };
       version: string;
     }> {
       logger.info(`Getting current Purpose form schemas from Knode ${knodeId}`);

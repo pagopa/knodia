@@ -130,6 +130,26 @@ components:
     PurposeFormSchema:
       type: object
       additionalProperties: {}
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormUiTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
     PurposeFormUiSchema:
       type: object
       additionalProperties: {}
@@ -263,13 +283,19 @@ components:
       properties:
         schema:
           $ref: "#/components/schemas/PurposeFormSchema"
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           $ref: "#/components/schemas/PurposeFormUiSchema"
+        uiTexts:
+          $ref: "#/components/schemas/PurposeFormUiTexts"
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
 paths:
@@ -622,8 +648,8 @@ paths:
       summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       parameters:
         - schema:
             allOf:
