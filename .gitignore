@@ -16,6 +16,9 @@ docker/minio-data
 # Local KMS tokens
 docker/tokens/
 
+# Generated client assertion keys
+docker/keys/
+
 # Bruno local env (contains generated JWTs)
 collections/.env
 
