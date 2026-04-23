@@ -50,6 +50,7 @@ import {
   consumerKnodeVerificationDataNotFound,
   consumerMissingRequiredAttributes,
   dpopClaimsValidationError,
+  dpopProofExpired,
   eserviceVersionNotActive,
   invalidClientAssertionJWS,
   invalidClientAssertionSignature,
@@ -230,7 +231,7 @@ export async function verifyDpopProofSignature(
     return dpopProof;
   } catch (error) {
     throw match(error)
-      .with(P.instanceOf(JWTExpired), () => clientAssertionExpired()) // TODO: needed for maxTokenAge?
+      .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
       .with(
         P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
         (e) => dpopClaimsValidationError(e),
@@ -239,6 +240,7 @@ export async function verifyDpopProofSignature(
         invalidDpopProofSignature(),
       )
       .with(P.instanceOf(JWSInvalid), (e) => invalidDpopProofJWS(e.message))
+      .with(P.instanceOf(ApiError), (e) => e)
       .otherwise((e) => unexpectedDpopProofSignatureVerificationError(e));
   }
 }

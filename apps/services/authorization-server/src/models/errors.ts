@@ -55,6 +55,7 @@ const errorCodes = {
   UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0018",
   INVALID_DPOP_PROOF_JWS: "0019",
   INVALID_DPOP_PROOF_SIGNATURE: "0020",
+  DPOP_PROOF_EXPIRED: "0021",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -151,6 +152,15 @@ export function dpopClaimsValidationError(error: unknown) {
         : error instanceof Error
           ? [error]
           : [],
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function dpopProofExpired() {
+  return createApiError<ErrorCodes>({
+    code: "DPOP_PROOF_EXPIRED",
+    detail: "The DPoP Proof has expired",
     status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_client",
   });
