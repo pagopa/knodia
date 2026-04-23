@@ -7,14 +7,23 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { type z } from "zod";
+import z from "zod";
+
+const PurposeFormsConfig = z
+  .object({
+    PURPOSE_FORMS_DIR: z.string().min(1),
+  })
+  .transform((c) => ({
+    purposeFormsDir: c.PURPOSE_FORMS_DIR,
+  }));
 
 const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStorePurposeConfig)
   .and(ReadmodelAgreementConfig)
   .and(ReadmodelEserviceConfig)
-  .and(ReadmodelPurposeConfig);
+  .and(ReadmodelPurposeConfig)
+  .and(PurposeFormsConfig);
 export type PurposeProcessConfig = z.infer<typeof PurposeProcessConfig>;
 
 export const config = PurposeProcessConfig.parse(process.env);

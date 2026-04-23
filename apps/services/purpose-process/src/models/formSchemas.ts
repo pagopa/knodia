@@ -13,10 +13,14 @@ interface FormSchemaBundle {
   uiTexts: { en: Record<string, string> };
 }
 
+const purposeFormsDir = process.env["PURPOSE_FORMS_DIR"];
+if (!purposeFormsDir) {
+  throw new Error("PURPOSE_FORMS_DIR env var is required");
+}
 const SCHEMAS_DIR = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "..",
-  process.env["PURPOSE_FORMS_DIR"] ?? "schemas-orion",
+  purposeFormsDir,
 );
 
 const readJson = (version: PurposeFormSchemaVersion, file: string): unknown =>
