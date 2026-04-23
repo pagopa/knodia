@@ -1,6 +1,6 @@
 ARG NODE_REGISTRY="docker.io"
-ARG SERVICE_NAME="knode-frontend"
-ARG SERVICE_PATH="apps/web/knode-frontend"
+ARG SERVICE_NAME="node1-frontend"
+ARG SERVICE_PATH="apps/web/node1-frontend"
 
 FROM ${NODE_REGISTRY}/node:24-slim@sha256:a81a03dd965b4052269a57fac857004022b522a4bf06e7a739e25e18bce45af2 AS pruner
 ARG SERVICE_NAME
@@ -19,8 +19,7 @@ COPY --from=pruner /repo/out/full/ ./
 
 FROM installer AS build
 ARG SERVICE_NAME
-ARG VITE_THEME
-ENV VITE_THEME=${VITE_THEME}
+ENV VITE_THEME=orion
 RUN pnpm --filter @knodia/${SERVICE_NAME} build
 
 FROM nginx:1.29.2@sha256:029d4461bd98f124e531380505ceea2072418fdf28752aa73b7b273ba3048903 AS runner
