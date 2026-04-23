@@ -36,6 +36,7 @@ describe("E-service Splitters", () => {
       name: eservice.name,
       producerId: eservice.producerId,
       templateId: null,
+      templateKnodeId: null,
       updatedAt: eservice.updatedAt,
     };
 
