@@ -159,4 +159,7 @@
 
   /* Button */
   --radius-button: 3px;
+
+  /* Banner */
+  --radius-banner: 0;
 }

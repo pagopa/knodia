@@ -168,4 +168,7 @@
 
   /* Button */
   --radius-button: 8px;
+
+  /* Banner */
+  --radius-banner: 8px;
 }
