@@ -10,7 +10,7 @@ post {
 }
 
 headers {
-  ~DPoP: {{dpopProof}}
+  ~DPoP: {{process.env.DPOP_PROOF_JWT}}
 }
 
 body:form-urlencoded {

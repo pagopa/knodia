@@ -24,7 +24,7 @@ body:json {
     "name": {
       "en": "Client Assertion Flow Key"
     },
-    "encodedPem": "{{process.env.KEYCHAIN_PUBLIC_KEY_B64}}"
+    "encodedPem": "{{process.env.KEYCHAIN_PUBLIC_RS256_KEY_B64}}"
   }
 }
 
@@ -33,7 +33,7 @@ script:post-response {
     await new Promise(r => setTimeout(r, 1500))
     return
   }
-
+  
   throw new Error(
     `Request failed with status ${res.status}. If you haven't generated a keypair yet, or you need a fresh one because the current kid already exists in another keychain, run:\n\n` +
     "  pnpm generate-keypair\n\n" +
