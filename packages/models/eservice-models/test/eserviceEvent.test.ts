@@ -1,5 +1,5 @@
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { type EserviceTemplateId, generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
