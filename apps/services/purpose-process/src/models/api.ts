@@ -45,6 +45,8 @@ export const API_Purpose = z
     id: PurposeId,
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
+    suspendedByConsumerAt: z.iso.datetime().nullable(),
+    suspendedByProducerAt: z.iso.datetime().nullable(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Purpose" });

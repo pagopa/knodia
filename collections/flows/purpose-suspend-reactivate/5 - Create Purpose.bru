@@ -1,0 +1,64 @@
+meta {
+  name: 5 - Create Purpose
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host-purpose-process}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}
+
+body:json {
+  {
+    "consumer": {
+      "id": "{{organizationId}}",
+      "knodeId": "{{other-knode-id}}"
+    },
+    "dailyCalls": 1000,
+    "description": {
+      "en": "Purpose for suspend/reactivate flow"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "formAnswersJson": {
+      "checkedExistenceMereCorrectnessInteropCatalogue": "true",
+      "confirmPrincipleIntegrityAndDiscretion": "true",
+      "dataDownload": "NO",
+      "declarationConfirmGDPR": "true",
+      "deliveryMethod": "CLEARTEXT",
+      "doneDpia": "NO",
+      "institutionalPurpose": "Test purpose for suspend/reactivate flow",
+      "isRequestOnBehalfOfThirdParties": "NO",
+      "knowsDataQuantity": "NO",
+      "legalBasis": ["CONSENT"],
+      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
+      "policyProvided": "YES",
+      "policyProvidedMedium": "PRINT",
+      "purpose": "INSTITUTIONAL",
+      "purposePursuit": "MERE_CORRECTNESS",
+      "usesPersonalData": "YES"
+    },
+    "formSchemaVersion": "{{purposeFormSchemasVersion}}",
+    "name": {
+      "en": "Purpose for suspend/reactivate flow"
+    }
+  }
+}
+
+vars:pre-request {
+  organizationId: 00000000-0000-4000-8000-000000000002
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}

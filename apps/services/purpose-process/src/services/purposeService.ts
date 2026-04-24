@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
 import type {
@@ -22,6 +23,7 @@ import {
   type LocalizedPurposeDescription,
   type LocalizedPurposeName,
   type Purpose,
+  PurposeActor,
   type PurposeFormAnswers,
   type PurposeFormSchemaVersion,
   PurposeState,
@@ -37,7 +39,13 @@ import {
   CURRENT_FORM_SCHEMA_VERSION,
   getFormSchemas,
 } from "../models/formSchemas.ts";
-import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
+import {
+  createPurposeActivatedV1Event,
+  createPurposeReactivatedByConsumerV1Event,
+  createPurposeReactivatedByProducerV1Event,
+  createPurposeSuspendedByConsumerV1Event,
+  createPurposeSuspendedByProducerV1Event,
+} from "../models/purposeEventFactory.ts";
 import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
@@ -48,9 +56,25 @@ import {
   assertAgreementAllowsPurposeCreation,
   assertEserviceAllowsPurposeCreation,
   assertEserviceModeIs,
+  assertOrganizationIsPurposeProducer,
+  assertPurposeCanBeReactivatedBy,
+  assertPurposeCanBeSuspendedBy,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
+
+// Only the Producer calls via ui-session (from their own knode) and only the
+// Consumer calls via an internal k2k token (from RRM). This union makes the
+// other two pairings unrepresentable at the type level.
+type CallerIdentity =
+  | {
+      actor: typeof PurposeActor.enum.Consumer;
+      ctx: AuthorizedContext<InternalAuthData>;
+    }
+  | {
+      actor: typeof PurposeActor.enum.Producer;
+      ctx: AuthorizedContext<UISessionAuthData>;
+    };
 
 export function purposeServiceBuilder(
   eventStoreWriter: PurposeEventStoreWriter,
@@ -114,6 +138,8 @@ export function purposeServiceBuilder(
         id: purposeId,
         name,
         state: PurposeState.enum.Active,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: now,
       };
 
@@ -163,6 +189,131 @@ export function purposeServiceBuilder(
         "Getting total daily calls for Purposes with query params",
       );
       return await readmodelService.getTotalDailyCalls(requestQuery);
+    },
+    async reactivatePurpose(
+      purposeId: PurposeId,
+      caller: CallerIdentity,
+    ): Promise<WithMetadata<Purpose>> {
+      const {
+        actor,
+        ctx: { correlationId, logger },
+      } = caller;
+      logger.info(`Reactivating Purpose ${purposeId} by ${actor}`);
+
+      const { data: purpose, metadata } = await retrievePurpose(
+        purposeId,
+        readmodelService,
+      );
+
+      // Consumer calls arrive via an internal k2k token from RRM; RRM is
+      // responsible for the caller=consumer check on its side before
+      // issuing the downstream call, so we only verify the producer here.
+      if (caller.actor === PurposeActor.enum.Producer) {
+        const eservice = await retrieveEservice(
+          purpose.eserviceId,
+          readmodelService,
+        );
+        assertOrganizationIsPurposeProducer(
+          eservice,
+          purpose.id,
+          caller.ctx.authData.organizationId,
+        );
+      }
+
+      assertPurposeCanBeReactivatedBy(purpose, actor);
+
+      const now = new Date();
+      const suspendedByConsumerAt =
+        actor === PurposeActor.enum.Consumer
+          ? null
+          : purpose.suspendedByConsumerAt;
+      const suspendedByProducerAt =
+        actor === PurposeActor.enum.Producer
+          ? null
+          : purpose.suspendedByProducerAt;
+      const nextState: PurposeState =
+        suspendedByConsumerAt === null && suspendedByProducerAt === null
+          ? PurposeState.enum.Active
+          : PurposeState.enum.Suspended;
+
+      const updatedPurpose: Purpose = {
+        ...purpose,
+        state: nextState,
+        suspendedByConsumerAt,
+        suspendedByProducerAt,
+        updatedAt: now,
+      };
+
+      const eventFactory =
+        actor === PurposeActor.enum.Producer
+          ? createPurposeReactivatedByProducerV1Event
+          : createPurposeReactivatedByConsumerV1Event;
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        eventFactory(updatedPurpose, metadata.version, correlationId),
+      );
+
+      return { data: updatedPurpose, metadata: { version: newVersion } };
+    },
+    async suspendPurpose(
+      purposeId: PurposeId,
+      caller: CallerIdentity,
+    ): Promise<WithMetadata<Purpose>> {
+      const {
+        actor,
+        ctx: { correlationId, logger },
+      } = caller;
+      logger.info(`Suspending Purpose ${purposeId} by ${actor}`);
+
+      const { data: purpose, metadata } = await retrievePurpose(
+        purposeId,
+        readmodelService,
+      );
+
+      // Producer authorization runs before the state-transition check so
+      // unauthorized callers get 403 instead of leaking 409 state info.
+      // Consumer calls arrive via an internal k2k token from RRM; RRM is
+      // responsible for the caller=consumer check on its side before
+      // issuing the downstream call, so we only verify the producer here.
+      if (caller.actor === PurposeActor.enum.Producer) {
+        const eservice = await retrieveEservice(
+          purpose.eserviceId,
+          readmodelService,
+        );
+        assertOrganizationIsPurposeProducer(
+          eservice,
+          purpose.id,
+          caller.ctx.authData.organizationId,
+        );
+      }
+
+      assertPurposeCanBeSuspendedBy(purpose, actor);
+
+      const now = new Date();
+      const updatedPurpose: Purpose = {
+        ...purpose,
+        state: PurposeState.enum.Suspended,
+        suspendedByConsumerAt:
+          actor === PurposeActor.enum.Consumer
+            ? now
+            : purpose.suspendedByConsumerAt,
+        suspendedByProducerAt:
+          actor === PurposeActor.enum.Producer
+            ? now
+            : purpose.suspendedByProducerAt,
+        updatedAt: now,
+      };
+
+      const eventFactory =
+        actor === PurposeActor.enum.Producer
+          ? createPurposeSuspendedByProducerV1Event
+          : createPurposeSuspendedByConsumerV1Event;
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        eventFactory(updatedPurpose, metadata.version, correlationId),
+      );
+
+      return { data: updatedPurpose, metadata: { version: newVersion } };
     },
   };
 }
