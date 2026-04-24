@@ -186,6 +186,9 @@
 
   /* Pagination button */
   --radius-pagination-button: 100px;
+
+  /* Tab */
+  --radius-tab: 2px;
 }
 
 @layer utilities {
