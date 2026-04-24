@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
+import { genericInternalError } from "@knodia/common-models/errors";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   eserviceTemplates,
@@ -104,31 +105,35 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-      const { templateId } = req.params;
+      const { eserviceTemplateId } = req.params;
       const { knodeId } = req.query;
 
       logger.info(
         { requestParams: req.params, requestQuery: req.query },
-        `Downloading interface of E-service template with ID ${templateId}`,
+        `Downloading interface of E-service template with ID ${eserviceTemplateId}`,
       );
 
       const eserviceTemplate = getEserviceTemplate(
-        unsafeBrandId(templateId),
+        unsafeBrandId(eserviceTemplateId),
         knodeId,
       );
 
       if (eserviceTemplate === undefined) {
-        throw notFoundError(
-          `E-service template with ID ${templateId} not found for Knode ${knodeId}`,
-        );
+        throw eserviceTemplateNotFound(eserviceTemplateId);
       }
 
-      const { contentType, name } = eserviceTemplate.interfaceDocument;
+      const { contentType, name } =
+        eserviceTemplate.eserviceFields.interfaceDocument;
       const content = getEserviceTemplateInterfaceContent(name);
 
       if (content === undefined) {
-        throw notFoundError(
-          `Interface document ${name} not found for E-service template ${templateId}`,
+        /**
+         * This case should not happen as the interface documents for the templates are
+         * required. If it happens, it means there is a problem with the data mock
+         * and a 500 Internal Server Error is more appropriate than a 404 Not Found.
+         */
+        throw genericInternalError(
+          `Interface document ${name} not found for E-service template ${eserviceTemplateId}`,
         );
       }
 
