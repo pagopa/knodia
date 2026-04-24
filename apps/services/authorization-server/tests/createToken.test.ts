@@ -23,13 +23,16 @@ import {
 } from "@knodia/test-commons/utils";
 import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { unknown } from "zod";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
 import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
   accessTokenTypeMismatch,
+  clientAssertionClaimsValidationError,
   consumerMissingRequiredAttributes,
+  dpopClaimsValidationError,
   invalidClientAssertionSignature,
   invalidDpopProofSignature,
   platformStatesNotActive,
@@ -151,7 +154,11 @@ describe("POST /token", async () => {
     },
   });
 
-  const { dpopProofJWS, dpopProofJWT } = await getMockDpopProof({
+  const {
+    dpopProofJWS,
+    dpopProofJWT,
+    keySet: dpopProofKeySet,
+  } = await getMockDpopProof({
     props: { customPayload: { htu: dpopProofHtuBaseUrl } },
   });
 
@@ -478,7 +485,110 @@ describe("POST /token", async () => {
         },
       });
 
+      const error = clientAssertionClaimsValidationError(unknown);
+
       expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
+    },
+  );
+
+  it.each([
+    [
+      "invalid claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid typ claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          typ: "wrong",
+        },
+      },
+    ],
+    [
+      "missing jwk claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          jwk: undefined,
+        },
+      },
+    ],
+    [
+      "invalid htm claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          htm: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid htu claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          htu: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid iat claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          iat: -123,
+        },
+      },
+    ],
+    [
+      "invalid jti claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          jti: "wrong",
+        },
+      },
+    ],
+  ])(
+    "should return 401 if the DPoP proof has invalid claims - %s",
+    async (_label, dpopProof) => {
+      const dpopProofJWS = await signJWT({
+        jwt: dpopProof,
+        keySet: dpopProofKeySet,
+      });
+
+      const response = await createToken({
+        requestDpopProofJWS: dpopProofJWS,
+      });
+
+      const error = dpopClaimsValidationError(unknown);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
     },
   );
 
