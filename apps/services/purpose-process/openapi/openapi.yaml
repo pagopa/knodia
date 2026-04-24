@@ -130,6 +130,26 @@ components:
     PurposeFormSchema:
       type: object
       additionalProperties: {}
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormUiTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
     PurposeFormUiSchema:
       type: object
       additionalProperties: {}
@@ -218,6 +238,16 @@ components:
           $ref: "#/components/schemas/LocalizedPurposeName"
         state:
           $ref: "#/components/schemas/PurposeState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         updatedAt:
           type: string
           format: date-time
@@ -231,6 +261,8 @@ components:
         - id
         - name
         - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
         - updatedAt
       additionalProperties: false
     Purposes:
@@ -263,13 +295,19 @@ components:
       properties:
         schema:
           $ref: "#/components/schemas/PurposeFormSchema"
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           $ref: "#/components/schemas/PurposeFormUiSchema"
+        uiTexts:
+          $ref: "#/components/schemas/PurposeFormUiTexts"
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
 paths:
@@ -622,8 +660,8 @@ paths:
       summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       parameters:
         - schema:
             allOf:
@@ -655,6 +693,314 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}/suspendByConsumer:
+    post:
+      operationId: suspendPurposeByConsumer
+      summary: Suspend Purpose by Consumer
+      tags:
+        - purpose
+      description: Suspend a Purpose by Consumer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Purpose suspended successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose suspended successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}/suspendByProducer:
+    post:
+      operationId: suspendPurposeByProducer
+      summary: Suspend Purpose by Producer
+      tags:
+        - purpose
+      description: Suspend a Purpose by Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Purpose suspended successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose suspended successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}/reactivateByConsumer:
+    post:
+      operationId: reactivatePurposeByConsumer
+      summary: Reactivate Purpose by Consumer
+      tags:
+        - purpose
+      description: Reactivate a Purpose by Consumer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Purpose reactivated successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose reactivated successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}/reactivateByProducer:
+    post:
+      operationId: reactivatePurposeByProducer
+      summary: Reactivate Purpose by Producer
+      tags:
+        - purpose
+      description: Reactivate a Purpose by Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Purpose reactivated successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose reactivated successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

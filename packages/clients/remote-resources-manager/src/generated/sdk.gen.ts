@@ -174,7 +174,7 @@ export const createPurpose = <ThrowOnError extends boolean = true>(options: Opti
 /**
  * Get current Purpose form schemas
  *
- * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
+ * Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version
  */
 export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true>(options: Options<GetCurrentPurposeFormSchemasData, ThrowOnError>) => (options.client ?? client).get<GetCurrentPurposeFormSchemasResponses, GetCurrentPurposeFormSchemasErrors, ThrowOnError>({
     responseType: 'json',

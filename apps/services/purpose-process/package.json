@@ -5,9 +5,10 @@
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm check-texts",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
+    "check-texts": "node ./scripts/checkTexts.ts"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",

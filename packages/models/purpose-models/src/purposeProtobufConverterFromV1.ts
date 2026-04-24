@@ -41,6 +41,14 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
     id: unsafeBrandId(input.id),
     name: input.name,
     state: fromPurposeStateV1(input.state),
+    suspendedByConsumerAt:
+      input.suspendedByConsumerAt != null
+        ? new Date(input.suspendedByConsumerAt)
+        : null,
+    suspendedByProducerAt:
+      input.suspendedByProducerAt != null
+        ? new Date(input.suspendedByProducerAt)
+        : null,
     updatedAt: new Date(input.updatedAt),
   };
 };

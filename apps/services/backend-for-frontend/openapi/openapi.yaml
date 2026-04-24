@@ -707,9 +707,21 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           $ref: "#/components/schemas/AgreementState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - id
         - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
       additionalProperties: false
     ConsumerEserviceDetailsAccessToken:
       type: object
@@ -1105,24 +1117,50 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormUiTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
     PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
+      description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
+        texts) with their version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           type: object
           additionalProperties: {}
+        uiTexts:
+          $ref: "#/components/schemas/PurposeFormUiTexts"
         version:
           description: Version identifier for the Purpose form schema provided by the
             target Knode
           type: string
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
     KeychainLocalizedName:
@@ -3925,8 +3963,8 @@ paths:
       summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
