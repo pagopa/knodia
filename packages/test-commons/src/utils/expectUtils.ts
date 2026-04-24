@@ -43,7 +43,7 @@ export function toExpectAPI_Eservice(
     mode: eservice.mode,
     name: eservice.name,
     producerId: unsafeBrandId(eservice.producerId),
-    template: eservice.template,
+    ...(eservice.template ? { template: eservice.template } : {}),
     updatedAt: toISOString(eservice.updatedAt),
   };
 }
