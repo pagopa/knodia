@@ -64,7 +64,7 @@ beforeAll(async () => {
       consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
-      dynamoDbDpopProofsTable: "test_dpop_proofs_table",
+      dynamoDbDpopProofsTable: "knodia-auth-server-dpop-proofs",
       eserviceAccessTokenJwtKid: "test-kid",
       generatedEserviceAccessTokenIssuer: "knodia.org",
       host: "test_host",
