@@ -82,7 +82,7 @@ export const getEserviceTemplate = <ThrowOnError extends boolean = true>(options
 export const getEserviceTemplateInterface = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplateInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplateInterfaceResponses, GetEserviceTemplateInterfaceErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/eserviceTemplates/{templateId}/interface',
+    url: '/eserviceTemplates/{eserviceTemplateId}/interface',
     ...options
 });
 

@@ -983,7 +983,7 @@ export type GetEserviceTemplateInterfaceData = {
     query: {
         knodeId: KnodeId;
     };
-    url: '/eserviceTemplates/{templateId}/interface';
+    url: '/eserviceTemplates/{eserviceTemplateId}/interface';
 };
 
 export type GetEserviceTemplateInterfaceErrors = {
