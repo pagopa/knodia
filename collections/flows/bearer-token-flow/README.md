@@ -20,7 +20,7 @@ signing script:
 
 ```
 pnpm generate-client-assertion \
-  --key $KEYCHAIN_PRIVATE_KEY_PATH \
+  --key $KEYCHAIN_PRIVATE_RS256_KEY_PATH \
   --keychainId <consumerKeychainId> \
   --purposeId <purposeId>
 ```
