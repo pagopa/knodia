@@ -178,6 +178,9 @@
   /* Field */
   --radius-field: 8px;
 
+  /* Text area */
+  --radius-textarea: 6px;
+
   /* Dropdown */
   --radius-dropdown: 16px;
 

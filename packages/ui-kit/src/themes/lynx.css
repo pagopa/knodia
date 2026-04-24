@@ -169,6 +169,9 @@
   /* Field */
   --radius-field: 2px;
 
+  /* Text area */
+  --radius-textarea: 2px;
+
   /* Dropdown */
   --radius-dropdown: 0;
 
