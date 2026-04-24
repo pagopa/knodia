@@ -9,6 +9,7 @@ import { EserviceEventV1 } from "../src/eserviceEvent.ts";
 import { toEserviceV1 } from "../src/eserviceProtobufConverterToV1.ts";
 import {
   EserviceVersionActivatedV1,
+  EserviceVersionArchivedV1,
   EserviceVersionReactivatedV1,
   EserviceVersionSuspendedV1,
 } from "../src/generated/v1/eserviceEvents.ts";
@@ -134,6 +135,34 @@ describe("EserviceEventV1 codec", () => {
 
   it("encodes and decodes an EserviceVersionReactivatedV1 payload (protobufBinaryCodec-only)", () => {
     const codec = protobufBinaryCodec(EserviceVersionReactivatedV1);
+    const value = {
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId: generateId(),
+    };
+    const bytes = codec.encode(value);
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(codec.decode(bytes)).toEqual(value);
+  });
+
+  it("encodes and decodes an EserviceVersionArchivedV1 payload (EserviceEventV1 full codec)", () => {
+    const event: EserviceEventV1 = {
+      data: {
+        eservice: toEserviceV1(eservice),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        eserviceVersionId: eservice.versions[0]!.id,
+      },
+      type: "EserviceVersionArchivedV1",
+    };
+    const encoded = EserviceEventV1.encode(event);
+    expect(encoded).toMatchObject({ type: "EserviceVersionArchivedV1" });
+    expect(encoded.data).toBeInstanceOf(Uint8Array);
+
+    const decoded = EserviceEventV1.decode(encoded);
+    expect(decoded).toMatchObject(event);
+  });
+
+  it("encodes and decodes an EserviceVersionArchivedV1 payload (protobufBinaryCodec-only)", () => {
+    const codec = protobufBinaryCodec(EserviceVersionArchivedV1);
     const value = {
       eservice: toEserviceV1(eservice),
       eserviceVersionId: generateId(),

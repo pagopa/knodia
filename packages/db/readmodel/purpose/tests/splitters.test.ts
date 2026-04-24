@@ -25,6 +25,8 @@ describe("Purpose Splitters", () => {
       metadataVersion,
       name: purpose.name,
       state: purpose.state,
+      suspendedByConsumerAt: purpose.suspendedByConsumerAt,
+      suspendedByProducerAt: purpose.suspendedByProducerAt,
       updatedAt: purpose.updatedAt,
     };
 

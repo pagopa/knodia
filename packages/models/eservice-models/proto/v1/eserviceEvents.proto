@@ -20,6 +20,11 @@ message EserviceVersionReactivatedV1 {
   string eserviceVersionId = 2;
 }
 
+message EserviceVersionArchivedV1 {
+  EserviceV1 eservice = 1;
+  string eserviceVersionId = 2;
+}
+
 message EserviceUpdatedV1 {
   EserviceV1 eservice = 1;
 }
