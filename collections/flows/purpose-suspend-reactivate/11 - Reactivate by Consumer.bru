@@ -1,0 +1,31 @@
+meta {
+  name: 11 - Reactivate by Consumer
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/reactivateByConsumer
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Suspended
+  res.body.suspendedByConsumerAt: isNull
+  res.body.suspendedByProducerAt: isDefined
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
