@@ -42,4 +42,140 @@ describe("Purpose read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Purpose>);
   });
+
+  it("PurposeSuspendedByConsumerV1", async () => {
+    const purpose: Purpose = {
+      ...getMockPurpose(),
+      state: "Suspended",
+      suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
+      suspendedByProducerAt: null,
+    };
+    const eventData = protobufBinaryCodec(
+      purposeEvents.PurposeSuspendedByConsumerV1,
+    ).encode({
+      purpose: toPurposeV1(purpose),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "PurposeSuspendedByConsumerV1",
+      metadataVersion,
+      producer,
+      streamId: purpose.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedPurposes = await getAllPurposes(readmodelDb);
+
+    expect(retrievedPurposes.length).toBe(1);
+    expect(retrievedPurposes[0]).toEqual({
+      data: purpose,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Purpose>);
+  });
+
+  it("PurposeSuspendedByProducerV1", async () => {
+    const purpose: Purpose = {
+      ...getMockPurpose(),
+      state: "Suspended",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: new Date("2026-01-15T10:00:00Z"),
+    };
+    const eventData = protobufBinaryCodec(
+      purposeEvents.PurposeSuspendedByProducerV1,
+    ).encode({
+      purpose: toPurposeV1(purpose),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "PurposeSuspendedByProducerV1",
+      metadataVersion,
+      producer,
+      streamId: purpose.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedPurposes = await getAllPurposes(readmodelDb);
+
+    expect(retrievedPurposes.length).toBe(1);
+    expect(retrievedPurposes[0]).toEqual({
+      data: purpose,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Purpose>);
+  });
+
+  it("PurposeReactivatedByConsumerV1", async () => {
+    const purpose: Purpose = {
+      ...getMockPurpose(),
+      state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+    };
+    const eventData = protobufBinaryCodec(
+      purposeEvents.PurposeReactivatedByConsumerV1,
+    ).encode({
+      purpose: toPurposeV1(purpose),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "PurposeReactivatedByConsumerV1",
+      metadataVersion,
+      producer,
+      streamId: purpose.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedPurposes = await getAllPurposes(readmodelDb);
+
+    expect(retrievedPurposes.length).toBe(1);
+    expect(retrievedPurposes[0]).toEqual({
+      data: purpose,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Purpose>);
+  });
+
+  it("PurposeReactivatedByProducerV1", async () => {
+    const purpose: Purpose = {
+      ...getMockPurpose(),
+      state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+    };
+    const eventData = protobufBinaryCodec(
+      purposeEvents.PurposeReactivatedByProducerV1,
+    ).encode({
+      purpose: toPurposeV1(purpose),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "PurposeReactivatedByProducerV1",
+      metadataVersion,
+      producer,
+      streamId: purpose.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedPurposes = await getAllPurposes(readmodelDb);
+
+    expect(retrievedPurposes.length).toBe(1);
+    expect(retrievedPurposes[0]).toEqual({
+      data: purpose,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Purpose>);
+  });
 });

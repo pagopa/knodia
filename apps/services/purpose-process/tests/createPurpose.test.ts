@@ -94,6 +94,8 @@ describe("POST /purposes (createPurpose)", () => {
         id: expect.any(String),
         name: body.name,
         state: "Active",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: new Date(responseBody.updatedAt),
       };
 
