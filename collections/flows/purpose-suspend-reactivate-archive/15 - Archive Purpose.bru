@@ -1,0 +1,31 @@
+meta {
+  name: 15 - Archive Purpose
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/archive
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Archived
+  res.body.archivedAt: isDefined
+  res.body.suspendedByConsumerAt: isDefined
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
