@@ -1,3 +1,4 @@
+import { type Icon } from "@phosphor-icons/react";
 import { useId } from "react";
 import {
   composeRenderProps,
@@ -10,6 +11,7 @@ import { listItemStyles } from "../ui/styles";
 
 interface SidebarNavItemProps extends LinkProps {
   children?: React.ReactNode;
+  Icon?: Icon;
   isCurrent?: boolean;
 }
 
@@ -40,6 +42,7 @@ export function SidebarHeader({ children }: { children?: React.ReactNode }) {
 
 export function SidebarNavItem({
   children,
+  Icon,
   isCurrent,
   ...props
 }: SidebarNavItemProps) {
@@ -57,6 +60,12 @@ export function SidebarNavItem({
             }),
         )}
       >
+        {Icon && (
+          <>
+            <Icon className="orion-only" />
+            <Icon className="lynx-only" weight="duotone" />
+          </>
+        )}
         {children}
       </Link>
     </li>
