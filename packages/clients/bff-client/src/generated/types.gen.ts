@@ -978,7 +978,7 @@ export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof Get
 export type GetEserviceTemplateInterfaceData = {
     body?: never;
     path: {
-        templateId: string;
+        eserviceTemplateId: string;
     };
     query: {
         knodeId: KnodeId;
