@@ -163,6 +163,6 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
       summary: "Download E-service template interface",
       tags: [apiTags.eserviceTemplate],
     },
-    url: "/eserviceTemplates/:templateId/interface",
+    url: "/eserviceTemplates/:eserviceTemplateId/interface",
   });
 };

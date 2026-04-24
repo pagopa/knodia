@@ -1973,7 +1973,7 @@ paths:
                 description: E-service template not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eserviceTemplates/{templateId}/interface:
+  /eserviceTemplates/{eserviceTemplateId}/interface:
     get:
       operationId: getEserviceTemplateInterface
       summary: Download E-service template interface
