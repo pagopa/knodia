@@ -2,12 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
-import { genericInternalError } from "@knodia/common-models/errors";
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import {
-  getEserviceTemplateInterfaceContent,
-  getEserviceTemplates,
-} from "@knodia/eservice-template-models";
+import { getEserviceTemplates } from "@knodia/eservice-template-models";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -25,7 +21,10 @@ import {
   toAPI_EserviceTemplateDetails,
 } from "../../models/eservice-template/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { retrieveEserviceTemplate } from "../../utils/eserviceTemplate.ts";
+import {
+  retrieveEserviceTemplate,
+  retrieveEserviceTemplateInterfaceContent,
+} from "../../utils/eserviceTemplate.ts";
 
 export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
   fastify,
@@ -122,22 +121,17 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
         knodeId,
       );
 
-      const { contentType, name } =
+      const interfaceDocument =
         eserviceTemplate.eserviceFields.interfaceDocument;
-      const content = getEserviceTemplateInterfaceContent(name);
+      const interfaceContent =
+        retrieveEserviceTemplateInterfaceContent(eserviceTemplate);
 
-      if (content === undefined) {
-        /**
-         * This case should not happen as the interface documents for the templates are
-         * required. If it happens, it means there is a problem with the data mock
-         * and a 500 Internal Server Error is more appropriate than a 404 Not Found.
-         */
-        throw genericInternalError(
-          `Interface document ${name} not found for E-service Template ${eserviceTemplateId}`,
-        );
-      }
-
-      sendFileDownload(res, content, name, contentType);
+      sendFileDownload(
+        res,
+        interfaceContent,
+        interfaceDocument.name,
+        interfaceDocument.contentType,
+      );
     },
     method: "GET",
     schema: {

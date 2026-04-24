@@ -44,6 +44,36 @@ const API_InterfaceDocumentSeed = z
   })
   .meta({ id: "InterfaceDocumentSeed" });
 
+const API_EserviceTemplateReference = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "EserviceTemplateReference" });
+
+const API_InterfaceDocumentContactOverrides = z
+  .strictObject({
+    email: z.email().optional(),
+    name: z.string().optional(),
+    url: z.string().optional(),
+  })
+  .meta({ id: "InterfaceDocumentContactOverrides" });
+
+export const API_InterfaceDocumentOverrides = z
+  .strictObject({
+    contact: API_InterfaceDocumentContactOverrides.optional().meta({
+      description:
+        "OpenAPI contact overrides to apply to the template interface",
+    }),
+    serverUrl: z.string().optional().meta({
+      description: "Server URL override to apply to the template interface",
+    }),
+  })
+  .meta({ id: "InterfaceDocumentOverrides" });
+export type API_InterfaceDocumentOverrides = z.infer<
+  typeof API_InterfaceDocumentOverrides
+>;
+
 export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
@@ -105,6 +135,23 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+export const API_EserviceFromTemplateSeed = API_EserviceSeed.omit({
+  categories: true,
+  interfaceDocument: true,
+  mode: true,
+  requiredAttributes: true,
+}).extend({
+  interfaceDocumentOverrides: API_InterfaceDocumentOverrides.meta({
+    description: "Overrides applied to the template interface document",
+  }),
+  template: API_EserviceTemplateReference.meta({
+    description: "Reference to the E-service template to instantiate",
+  }),
+});
+export type API_EserviceFromTemplateSeed = z.infer<
+  typeof API_EserviceFromTemplateSeed
+>;
 
 export const API_EservicePatch = z
   .strictObject({
