@@ -10,10 +10,12 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
   type Eservice,
@@ -21,6 +23,7 @@ import {
   type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { getEserviceTemplate } from "@knodia/eservice-template-models";
 
 import type {
   API_EservicePatch,
@@ -33,6 +36,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   duplicateInterfaceId,
+  eserviceTemplateNotFound,
   inconsistentDailyCalls,
   invalidAttribute,
 } from "../models/errors.ts";
@@ -116,13 +120,16 @@ export function eserviceServiceBuilder(
 
       await assertOrganizationExists(producerId, readmodelService);
 
-      for (const attr of seed.requiredAttributes.flat()) {
+      const { categories, mode, requiredAttributes, template } =
+        resolveTemplateFixedFields(seed);
+
+      for (const attr of requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }
 
-      assertValidCategories(seed.categories);
+      assertValidCategories(categories);
 
       const existingInterface =
         await readmodelService.getEserviceVersionInterfaceById(
@@ -141,16 +148,17 @@ export function eserviceServiceBuilder(
       const eserviceVersionId = generateId<EserviceVersionId>();
 
       const eservice: Eservice = {
-        categories: seed.categories ?? [],
+        categories: categories ?? [],
         createdAt: now,
         description: seed.description,
         id: eserviceId,
         isConsumerOperatorIdentificationRequired:
           config.isConsumerOperatorIdentificationRequired,
         isSignalHubEnabled: seed.isSignalHubEnabled ?? false,
-        mode: seed.mode ?? "ProvideData",
+        mode: mode ?? "ProvideData",
         name: seed.name,
         producerId,
+        template,
         updatedAt: now,
         versions: [
           {
@@ -171,7 +179,7 @@ export function eserviceServiceBuilder(
             },
             maxDailyCallsPerConsumer: seed.maxDailyCallsPerConsumer,
             maxDailyCallsPerKnode: seed.maxDailyCallsPerKnode,
-            requiredAttributes: seed.requiredAttributes,
+            requiredAttributes,
             state: "Active",
             updatedAt: now,
             versionNumber: 1,
@@ -183,6 +191,7 @@ export function eserviceServiceBuilder(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,
+          template,
           correlationId,
         ),
       );
@@ -339,5 +348,41 @@ export function eserviceServiceBuilder(
 
       return { data: updatedEservice, metadata: { version: newVersion } };
     },
+  };
+}
+
+function resolveTemplateFixedFields(
+  seed: API_EserviceSeed,
+): Pick<Eservice, "categories" | "mode" | "template"> &
+  Pick<EserviceVersion, "requiredAttributes"> {
+  if ("template" in seed) {
+    const template = getEserviceTemplate(
+      unsafeBrandId(seed.template.id),
+      seed.template.knodeId,
+    );
+
+    if (!template) {
+      throw eserviceTemplateNotFound(
+        unsafeBrandId(seed.template.id),
+        seed.template.knodeId,
+      );
+    }
+
+    return {
+      categories: template.categories,
+      mode: template.mode,
+      requiredAttributes: template.requiredAttributes,
+      template: {
+        id: unsafeBrandExternalId(seed.template.id),
+        knodeId: seed.template.knodeId,
+      },
+    };
+  }
+
+  return {
+    categories: seed.categories ?? [],
+    mode: seed.mode ?? "ProvideData",
+    requiredAttributes: seed.requiredAttributes,
+    template: undefined,
   };
 }

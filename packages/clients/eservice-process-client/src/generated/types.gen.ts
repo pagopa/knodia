@@ -196,7 +196,7 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceSeed = {
+export type EserviceManualSeed = {
     /**
      * Audience for the access token
      */
@@ -209,10 +209,6 @@ export type EserviceSeed = {
      * Type of the access token
      */
     accessTokenType: AccessTokenType;
-    /**
-     * Categories of the E-service
-     */
-    categories?: Array<EserviceCategory>;
     description: LocalizedDescription;
     /**
      * Interface document
@@ -230,16 +226,62 @@ export type EserviceSeed = {
      * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
      */
     maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
     /**
      * Mode of the E-service
      */
     mode?: EserviceMode;
-    name: LocalizedName;
     /**
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
 };
+
+export type EserviceFromTemplateSeed = {
+    /**
+     * Audience for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    /**
+     * Type of the access token
+     */
+    accessTokenType: AccessTokenType;
+    description: LocalizedDescription;
+    /**
+     * Interface document
+     */
+    interfaceDocument: InterfaceDocumentSeed;
+    /**
+     * Whether SignalHub is enabled for the E-service
+     */
+    isSignalHubEnabled?: boolean;
+    /**
+     * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+     */
+    maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Reference to an E-service template
+     */
+    template: {
+        id: string;
+        knodeId: KnodeId;
+    };
+};
+
+export type EserviceSeed = EserviceManualSeed | EserviceFromTemplateSeed;
 
 export type EservicePatch = {
     /**
@@ -389,6 +431,10 @@ export type CreateEserviceErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
     /**
      * Conflict
      */
