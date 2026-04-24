@@ -201,6 +201,9 @@
 
   /* Tooltip */
   --radius-tooltip: 8px;
+
+  /* Toast */
+  --radius-toast: 8px;
 }
 
 @layer utilities {

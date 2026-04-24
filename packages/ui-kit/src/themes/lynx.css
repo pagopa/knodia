@@ -192,6 +192,9 @@
 
   /* Tooltip */
   --radius-tooltip: 0;
+
+  /* Toast */
+  --radius-toast: 0;
 }
 
 @layer utilities {
