@@ -47,16 +47,14 @@ const EserviceTemplateEserviceFields = z.strictObject({
   requiredAttributes: z.array(AttributeGroup),
 });
 
-/* eslint-disable perfectionist/sort-objects */
 /** @knipignore */
 export const EserviceTemplate = z.strictObject({
-  id: EserviceTemplateId,
-  name: LocalizedName,
+  createdAt: z.coerce.date(), // Used for sorting (for now)
   description: LocalizedDescription,
   eserviceFields: EserviceTemplateEserviceFields,
-  createdAt: z.coerce.date(), // Used for sorting (for now)
+  id: EserviceTemplateId,
+  name: LocalizedName,
 });
-/* eslint-enable perfectionist/sort-objects */
 
 export type EserviceTemplate = z.infer<typeof EserviceTemplate>;
 
