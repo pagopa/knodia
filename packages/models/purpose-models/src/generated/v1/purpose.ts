@@ -95,6 +95,8 @@ export interface PurposeV1 {
   createdAt: number;
   updatedAt: number;
   formSchemaVersion: PurposeFormSchemaVersionV1;
+  suspendedByConsumerAt?: number | undefined;
+  suspendedByProducerAt?: number | undefined;
 }
 
 export interface PurposeConsumerV1 {
@@ -119,6 +121,8 @@ function createBasePurposeV1(): PurposeV1 {
     createdAt: 0,
     updatedAt: 0,
     formSchemaVersion: 0,
+    suspendedByConsumerAt: undefined,
+    suspendedByProducerAt: undefined,
   };
 }
 
@@ -156,6 +160,12 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     }
     if (message.formSchemaVersion !== 0) {
       writer.uint32(88).int32(message.formSchemaVersion);
+    }
+    if (message.suspendedByConsumerAt !== undefined) {
+      writer.uint32(96).int64(message.suspendedByConsumerAt);
+    }
+    if (message.suspendedByProducerAt !== undefined) {
+      writer.uint32(104).int64(message.suspendedByProducerAt);
     }
     return writer;
   },
@@ -255,6 +265,22 @@ export const PurposeV1: MessageFns<PurposeV1> = {
           message.formSchemaVersion = reader.int32() as any;
           continue;
         }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.suspendedByConsumerAt = longToNumber(reader.int64());
+          continue;
+        }
+        case 13: {
+          if (tag !== 104) {
+            break;
+          }
+
+          message.suspendedByProducerAt = longToNumber(reader.int64());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -279,6 +305,12 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       formSchemaVersion: isSet(object.formSchemaVersion)
         ? purposeFormSchemaVersionV1FromJSON(object.formSchemaVersion)
         : 0,
+      suspendedByConsumerAt: isSet(object.suspendedByConsumerAt)
+        ? globalThis.Number(object.suspendedByConsumerAt)
+        : undefined,
+      suspendedByProducerAt: isSet(object.suspendedByProducerAt)
+        ? globalThis.Number(object.suspendedByProducerAt)
+        : undefined,
     };
   },
 
@@ -317,6 +349,12 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.formSchemaVersion !== 0) {
       obj.formSchemaVersion = purposeFormSchemaVersionV1ToJSON(message.formSchemaVersion);
     }
+    if (message.suspendedByConsumerAt !== undefined) {
+      obj.suspendedByConsumerAt = Math.round(message.suspendedByConsumerAt);
+    }
+    if (message.suspendedByProducerAt !== undefined) {
+      obj.suspendedByProducerAt = Math.round(message.suspendedByProducerAt);
+    }
     return obj;
   },
 
@@ -342,6 +380,8 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
     message.formSchemaVersion = object.formSchemaVersion ?? 0;
+    message.suspendedByConsumerAt = object.suspendedByConsumerAt ?? undefined;
+    message.suspendedByProducerAt = object.suspendedByProducerAt ?? undefined;
     return message;
   },
 };

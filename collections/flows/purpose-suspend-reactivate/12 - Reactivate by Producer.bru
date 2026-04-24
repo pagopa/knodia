@@ -1,0 +1,31 @@
+meta {
+  name: 12 - Reactivate by Producer
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/reactivateByProducer
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Active
+  res.body.suspendedByProducerAt: isNull
+  res.body.suspendedByConsumerAt: isNull
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
