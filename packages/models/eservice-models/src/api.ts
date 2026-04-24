@@ -64,10 +64,10 @@ export const API_AccessTokenType = z
   .meta({ id: "AccessTokenType" });
 export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
 
-export const API_EServiceTemplate = z
+export const API_EserviceTemplateId = z
   .strictObject({
     id: z.uuid(),
     knodeId: API_KnodeId,
   })
-  .meta({ id: "EServiceTemplate" });
-export type API_EServiceTemplate = z.infer<typeof API_EServiceTemplate>;
+  .meta({ id: "EServiceTemplateId" });
+export type API_EserviceTemplateId = z.infer<typeof API_EserviceTemplateId>;

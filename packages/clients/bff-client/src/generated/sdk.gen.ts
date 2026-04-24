@@ -70,7 +70,7 @@ export const getEserviceTemplates = <ThrowOnError extends boolean = true>(option
 export const getEserviceTemplate = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplateData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplateResponses, GetEserviceTemplateErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/eserviceTemplates/{templateId}',
+    url: '/eserviceTemplates/{eserviceTemplateId}',
     ...options
 });
 

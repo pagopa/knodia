@@ -18,7 +18,6 @@ const {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
-  HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_UNAUTHORIZED,
 } = constants;
 
@@ -36,7 +35,6 @@ export const commonErrorCodes = {
   NOT_ALLOWED_MULTIPLE_KEYS: "10000",
   NOT_ALLOWED_PRIVATE_KEY: "10001",
   NOT_AN_RSA_KEY: "10002",
-  NOT_FOUND: "10003",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -140,15 +138,6 @@ export function notAnRSAKey() {
     detail: "Provided key is not an RSA key",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Not an RSA key",
-  });
-}
-
-export function notFoundError(detail: string): ApiError<CommonErrorCodes> {
-  return createApiError({
-    code: "NOT_FOUND",
-    detail,
-    status: HTTP_STATUS_NOT_FOUND,
-    title: "Not Found",
   });
 }
 

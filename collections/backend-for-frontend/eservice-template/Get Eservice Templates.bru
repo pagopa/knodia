@@ -1,13 +1,16 @@
 meta {
   name: Get Eservice Templates
   type: http
-  seq: 1
 }
 
 get {
   url: {{host-backend-for-frontend}}/eserviceTemplates?knodeId=Lynx
   body: none
   auth: inherit
+}
+
+params:query {
+  knodeId: {{knodeId}}
 }
 
 headers {

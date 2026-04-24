@@ -521,15 +521,19 @@ export type EserviceTemplateInterface = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceTemplateDetails = {
+export type EserviceTemplateEserviceFields = {
     categories: Array<EserviceCategory>;
-    createdAt: string;
-    description: LocalizedDescription;
-    id: string;
     interfaceDocument: EserviceTemplateInterface;
     mode: EserviceMode;
-    name: LocalizedName;
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceTemplateDetails = {
+    createdAt: string;
+    description: LocalizedDescription;
+    eserviceFields: EserviceTemplateEserviceFields;
+    id: string;
+    name: LocalizedName;
 };
 
 export type EserviceTemplate = {
@@ -933,12 +937,12 @@ export type GetEserviceTemplatesResponse = GetEserviceTemplatesResponses[keyof G
 export type GetEserviceTemplateData = {
     body?: never;
     path: {
-        templateId: string;
+        eserviceTemplateId: string;
     };
     query: {
         knodeId: KnodeId;
     };
-    url: '/eserviceTemplates/{templateId}';
+    url: '/eserviceTemplates/{eserviceTemplateId}';
 };
 
 export type GetEserviceTemplateErrors = {

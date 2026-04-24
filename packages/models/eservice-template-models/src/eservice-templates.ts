@@ -33,28 +33,27 @@ const LocalizedDescription = LocalizedText(
 );
 type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-const EserviceTemplateInterface = z.object({
+const EserviceTemplateInterface = z.strictObject({
   contentType: z.string(),
   name: z.string(),
   prettyName: LocalizedName,
 });
 type EserviceTemplateInterface = z.infer<typeof EserviceTemplateInterface>;
 
+const EserviceTemplateEserviceFields = z.strictObject({
+  categories: z.array(EserviceCategory),
+  interfaceDocument: EserviceTemplateInterface,
+  mode: EserviceMode,
+  requiredAttributes: z.array(AttributeGroup),
+});
+
 /* eslint-disable perfectionist/sort-objects */
 /** @knipignore */
-export const EserviceTemplate = z.object({
+export const EserviceTemplate = z.strictObject({
   id: EserviceTemplateId,
-
-  // Info used for display and selection of the template
   name: LocalizedName,
   description: LocalizedDescription,
-
-  // Fields locked (set by the template, not modifiable by the user when instantiating an e-service from the template)
-  mode: EserviceMode,
-  categories: z.array(EserviceCategory),
-  requiredAttributes: z.array(AttributeGroup),
-  interfaceDocument: EserviceTemplateInterface,
-
+  eserviceFields: EserviceTemplateEserviceFields,
   createdAt: z.coerce.date(), // Used for sorting (for now)
 });
 /* eslint-enable perfectionist/sort-objects */
@@ -91,101 +90,113 @@ const sharedInterfaceDocument = {
 export const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
   Lynx: [
     {
-      categories: [
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "citizen.identity.birth_date",
-        ),
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "citizen.identity.marital_status",
-        ),
-      ],
       createdAt: new Date("2025-01-01T00:00:00Z"),
       description: {
         en: "Provides verified citizen identity information including birth data and marital status.",
       },
+      eserviceFields: {
+        categories: [
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "citizen.identity.birth_date",
+          ),
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "citizen.identity.marital_status",
+          ),
+        ],
+        interfaceDocument: sharedInterfaceDocument,
+        mode: EserviceMode.enum.ProvideData,
+        requiredAttributes: [
+          [mockedAttribute("vc_territorial_units", "nuts2")],
+        ],
+      },
       id: unsafeBrandId("6067609a-1eec-4e3e-8300-764000dd0440"),
-      interfaceDocument: sharedInterfaceDocument,
-      mode: EserviceMode.enum.ProvideData,
       name: { en: "Citizen Identity Data Provider" },
-      requiredAttributes: [[mockedAttribute("vc_territorial_units", "nuts2")]],
     },
     {
-      categories: [
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "citizen.residence.residence_place",
-        ),
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "citizen.residence.digital_domicile",
-        ),
-      ],
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
         en: "Provides citizen residence information including digital domicile and residence place.",
       },
-      id: unsafeBrandId("f0cec351-d498-4666-8d46-b2a6dfb821aa"),
-      interfaceDocument: sharedInterfaceDocument,
-      mode: EserviceMode.enum.ProvideData,
-      name: { en: "Citizen Residence Data Provider" },
-      requiredAttributes: [
-        [
-          mockedAttribute("vc_territorial_units", "nuts2"),
-          mockedAttribute("vc_territorial_units", "nuts1"),
+      eserviceFields: {
+        categories: [
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "citizen.residence.residence_place",
+          ),
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "citizen.residence.digital_domicile",
+          ),
         ],
-      ],
+        interfaceDocument: sharedInterfaceDocument,
+        mode: EserviceMode.enum.ProvideData,
+        requiredAttributes: [
+          [
+            mockedAttribute("vc_territorial_units", "nuts2"),
+            mockedAttribute("vc_territorial_units", "nuts1"),
+          ],
+        ],
+      },
+      id: unsafeBrandId("f0cec351-d498-4666-8d46-b2a6dfb821aa"),
+      name: { en: "Citizen Residence Data Provider" },
     },
   ],
   Orion: [
     {
-      categories: [
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "organization.public_administration.address",
-        ),
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "organization.public_administration.typology",
-        ),
-      ],
       createdAt: new Date("2025-01-01T00:00:00Z"),
       description: {
         en: "Receives and processes data related to public administration typology and address.",
       },
+      eserviceFields: {
+        categories: [
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "organization.public_administration.address",
+          ),
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "organization.public_administration.typology",
+          ),
+        ],
+        interfaceDocument: sharedInterfaceDocument,
+        mode: EserviceMode.enum.ProvideData,
+        requiredAttributes: [
+          [mockedAttribute("vc_territorial_units", "nuts3")],
+        ],
+      },
       id: unsafeBrandId("4834a8bf-84a0-4bf2-8f1e-4102d11b58a9"),
-      interfaceDocument: sharedInterfaceDocument,
-      mode: EserviceMode.enum.ProvideData,
       name: { en: "Public Administration Data Receiver" },
-      requiredAttributes: [[mockedAttribute("vc_territorial_units", "nuts3")]],
     },
     {
-      categories: [
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "organization.private_company.economic_activity",
-        ),
-        mockedCategory(
-          "vc_example_eservice_categories",
-          "organization.private_company.digital_domicile",
-        ),
-      ],
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
         en: "Provides data on private company economic activities and digital domicile.",
       },
-      id: unsafeBrandId("bec95864-6ca6-4256-bd10-b33ce7868ecd"),
-      interfaceDocument: sharedInterfaceDocument,
-      mode: EserviceMode.enum.ProvideData,
-      name: { en: "Private Company Economic Activity Provider" },
-      requiredAttributes: [
-        [mockedAttribute("vc_territorial_units", "nuts1")],
-        [
-          mockedAttribute("vc_territorial_units", "nuts2"),
-          mockedAttribute("vc_territorial_units", "nuts3"),
+      eserviceFields: {
+        categories: [
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "organization.private_company.economic_activity",
+          ),
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "organization.private_company.digital_domicile",
+          ),
         ],
-      ],
+        interfaceDocument: sharedInterfaceDocument,
+        mode: EserviceMode.enum.ProvideData,
+        requiredAttributes: [
+          [mockedAttribute("vc_territorial_units", "nuts1")],
+          [
+            mockedAttribute("vc_territorial_units", "nuts2"),
+            mockedAttribute("vc_territorial_units", "nuts3"),
+          ],
+        ],
+      },
+      id: unsafeBrandId("bec95864-6ca6-4256-bd10-b33ce7868ecd"),
+      name: { en: "Private Company Economic Activity Provider" },
     },
   ],
 };

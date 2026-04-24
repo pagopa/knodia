@@ -9,12 +9,10 @@ import {
   getEserviceTemplateInterfaceContent,
 } from "@knodia/eservice-template-models";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  notFoundError,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { eserviceTemplateNotFound } from "../../models/errors.ts";
 import {
   API_EserviceTemplateDetails,
   API_EserviceTemplateIdPathParam,
@@ -64,23 +62,21 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-      const { templateId } = req.params;
+      const { eserviceTemplateId } = req.params;
       const { knodeId } = req.query;
 
       logger.info(
         { requestParams: req.params, requestQuery: req.query },
-        `Getting E-service template with ID ${templateId}`,
+        `Getting E-service template with ID ${eserviceTemplateId}`,
       );
 
       const eserviceTemplate = getEserviceTemplate(
-        unsafeBrandId(templateId),
+        unsafeBrandId(eserviceTemplateId),
         knodeId,
       );
 
       if (eserviceTemplate === undefined) {
-        throw notFoundError(
-          `E-service template with ID ${templateId} not found for Knode ${knodeId}`,
-        );
+        throw eserviceTemplateNotFound(eserviceTemplateId);
       }
 
       res.send(toAPI_EserviceTemplateDetails(eserviceTemplate));
@@ -102,7 +98,7 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
       },
       tags: [apiTags.eserviceTemplate],
     },
-    url: "/eserviceTemplates/:templateId",
+    url: "/eserviceTemplates/:eserviceTemplateId",
   });
 
   fastify.route({

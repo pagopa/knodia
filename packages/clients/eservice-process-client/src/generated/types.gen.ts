@@ -70,7 +70,7 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type EServiceTemplate = {
+export type EServiceTemplateId = {
     id: string;
     knodeId: KnodeId;
 };
@@ -122,7 +122,7 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
-    template?: EServiceTemplate;
+    template?: EServiceTemplateId;
     updatedAt: string;
 };
 

@@ -8,14 +8,16 @@ import type {
 export const toAPI_EserviceTemplateDetails = (
   eserviceTemplate: EserviceTemplate,
 ): API_EserviceTemplateDetails => ({
-  categories: eserviceTemplate.categories,
   createdAt: eserviceTemplate.createdAt.toISOString(),
   description: eserviceTemplate.description,
+  eserviceFields: {
+    categories: eserviceTemplate.eserviceFields.categories,
+    interfaceDocument: eserviceTemplate.eserviceFields.interfaceDocument,
+    mode: eserviceTemplate.eserviceFields.mode,
+    requiredAttributes: eserviceTemplate.eserviceFields.requiredAttributes,
+  },
   id: eserviceTemplate.id,
-  interfaceDocument: eserviceTemplate.interfaceDocument,
-  mode: eserviceTemplate.mode,
   name: eserviceTemplate.name,
-  requiredAttributes: eserviceTemplate.requiredAttributes,
 });
 
 export const toAPI_EserviceTemplate = (
