@@ -96,10 +96,7 @@ export function purposeServiceBuilder(
         readmodelService,
       );
 
-      // Consumer calls arrive via an internal k2k token from RRM; RRM is
-      // responsible for the caller=consumer check on its side. Archive is
-      // a single-actor action: only the consumer can archive a Suspended
-      // purpose, regardless of who originally suspended it.
+      // Only the consumer can archive a Suspended purpose.
       assertPurposeCanBeArchived(purpose);
 
       const now = new Date();
