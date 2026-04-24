@@ -3,6 +3,7 @@ import type { Purpose } from "@knodia/purpose-models";
 import type { API_Purpose } from "./api.ts";
 
 export const toAPI_Purpose = (purpose: Purpose): API_Purpose => ({
+  archivedAt: purpose.archivedAt?.toISOString() ?? null,
   consumer: purpose.consumer,
   createdAt: purpose.createdAt.toISOString(),
   dailyCalls: purpose.dailyCalls,

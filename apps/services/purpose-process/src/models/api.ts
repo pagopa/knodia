@@ -37,6 +37,7 @@ export const API_Purpose = z
   .strictObject({
     // formAnswersJson and formSchemaVersion are intentionally excluded —
     // they can be retrieved via separate routes
+    archivedAt: z.iso.datetime().nullable(),
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: API_PurposeDailyCalls,

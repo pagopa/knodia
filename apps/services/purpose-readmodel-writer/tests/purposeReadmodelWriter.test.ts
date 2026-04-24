@@ -178,4 +178,37 @@ describe("Purpose read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Purpose>);
   });
+
+  it("PurposeArchivedV1", async () => {
+    const purpose: Purpose = {
+      ...getMockPurpose(),
+      archivedAt: new Date("2026-02-01T09:00:00Z"),
+      state: "Archived",
+    };
+    const eventData = protobufBinaryCodec(
+      purposeEvents.PurposeArchivedV1,
+    ).encode({
+      purpose: toPurposeV1(purpose),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "PurposeArchivedV1",
+      metadataVersion,
+      producer,
+      streamId: purpose.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedPurposes = await getAllPurposes(readmodelDb);
+
+    expect(retrievedPurposes.length).toBe(1);
+    expect(retrievedPurposes[0]).toEqual({
+      data: purpose,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Purpose>);
+  });
 });

@@ -24,6 +24,7 @@ import {
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
+  purposeNotInArchivableState,
   purposeNotInReactivatableState,
   purposeNotInSuspendableState,
 } from "../models/errors.ts";
@@ -92,6 +93,15 @@ export function assertOrganizationIsPurposeProducer(
 ): void {
   if (eservice.producerId !== organizationId) {
     throw organizationNotPurposeProducer(purposeId, organizationId);
+  }
+}
+
+export function assertPurposeCanBeArchived(purpose: Purpose): void {
+  if (purpose.state !== PurposeState.enum.Suspended) {
+    throw purposeNotInArchivableState({
+      purposeId: purpose.id,
+      state: purpose.state,
+    });
   }
 }
 

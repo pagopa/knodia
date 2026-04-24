@@ -53,6 +53,7 @@ export const mockPurposes: Purpose[] = [
   },
   {
     ...getMockPurpose(3),
+    archivedAt: new Date(createdAt.getTime() + 4000),
     consumer: { id: consumerId2, knodeId: consumerKnodeId2 },
     dailyCalls: 300,
     description: { en: "Purpose 4 description" },

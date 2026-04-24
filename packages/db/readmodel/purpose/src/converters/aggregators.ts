@@ -32,6 +32,7 @@ const LocalizedDescription = LocalizedText(
 
 const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
   const purpose: Purpose = {
+    archivedAt: purposeSQL.archivedAt,
     consumer: {
       id: unsafeBrandExternalId(purposeSQL.consumerId),
       knodeId: KnodeId.parse(purposeSQL.consumerKnodeId),

@@ -41,6 +41,7 @@ import {
 } from "../models/formSchemas.ts";
 import {
   createPurposeActivatedV1Event,
+  createPurposeArchivedV1Event,
   createPurposeReactivatedByConsumerV1Event,
   createPurposeReactivatedByProducerV1Event,
   createPurposeSuspendedByConsumerV1Event,
@@ -57,6 +58,7 @@ import {
   assertEserviceAllowsPurposeCreation,
   assertEserviceModeIs,
   assertOrganizationIsPurposeProducer,
+  assertPurposeCanBeArchived,
   assertPurposeCanBeReactivatedBy,
   assertPurposeCanBeSuspendedBy,
 } from "../utils/validators.ts";
@@ -83,6 +85,41 @@ export function purposeServiceBuilder(
 ) {
   const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   return {
+    async archivePurpose(
+      purposeId: PurposeId,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Purpose>> {
+      logger.info(`Archiving Purpose ${purposeId}`);
+
+      const { data: purpose, metadata } = await retrievePurpose(
+        purposeId,
+        readmodelService,
+      );
+
+      // Consumer calls arrive via an internal k2k token from RRM; RRM is
+      // responsible for the caller=consumer check on its side. Archive is
+      // a single-actor action: only the consumer can archive a Suspended
+      // purpose, regardless of who originally suspended it.
+      assertPurposeCanBeArchived(purpose);
+
+      const now = new Date();
+      const updatedPurpose: Purpose = {
+        ...purpose,
+        archivedAt: now,
+        state: PurposeState.enum.Archived,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createPurposeArchivedV1Event(
+          updatedPurpose,
+          metadata.version,
+          correlationId,
+        ),
+      );
+
+      return { data: updatedPurpose, metadata: { version: newVersion } };
+    },
     async createPurpose(
       {
         consumer,
@@ -130,6 +167,7 @@ export function purposeServiceBuilder(
 
       const now = new Date();
       const purpose: Purpose = {
+        archivedAt: null,
         consumer,
         createdAt: now,
         dailyCalls,

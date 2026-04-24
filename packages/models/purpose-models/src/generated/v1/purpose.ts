@@ -97,6 +97,7 @@ export interface PurposeV1 {
   formSchemaVersion: PurposeFormSchemaVersionV1;
   suspendedByConsumerAt?: number | undefined;
   suspendedByProducerAt?: number | undefined;
+  archivedAt?: number | undefined;
 }
 
 export interface PurposeConsumerV1 {
@@ -123,6 +124,7 @@ function createBasePurposeV1(): PurposeV1 {
     formSchemaVersion: 0,
     suspendedByConsumerAt: undefined,
     suspendedByProducerAt: undefined,
+    archivedAt: undefined,
   };
 }
 
@@ -166,6 +168,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     }
     if (message.suspendedByProducerAt !== undefined) {
       writer.uint32(104).int64(message.suspendedByProducerAt);
+    }
+    if (message.archivedAt !== undefined) {
+      writer.uint32(112).int64(message.archivedAt);
     }
     return writer;
   },
@@ -281,6 +286,14 @@ export const PurposeV1: MessageFns<PurposeV1> = {
           message.suspendedByProducerAt = longToNumber(reader.int64());
           continue;
         }
+        case 14: {
+          if (tag !== 112) {
+            break;
+          }
+
+          message.archivedAt = longToNumber(reader.int64());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -311,6 +324,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       suspendedByProducerAt: isSet(object.suspendedByProducerAt)
         ? globalThis.Number(object.suspendedByProducerAt)
         : undefined,
+      archivedAt: isSet(object.archivedAt) ? globalThis.Number(object.archivedAt) : undefined,
     };
   },
 
@@ -355,6 +369,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.suspendedByProducerAt !== undefined) {
       obj.suspendedByProducerAt = Math.round(message.suspendedByProducerAt);
     }
+    if (message.archivedAt !== undefined) {
+      obj.archivedAt = Math.round(message.archivedAt);
+    }
     return obj;
   },
 
@@ -382,6 +399,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     message.formSchemaVersion = object.formSchemaVersion ?? 0;
     message.suspendedByConsumerAt = object.suspendedByConsumerAt ?? undefined;
     message.suspendedByProducerAt = object.suspendedByProducerAt ?? undefined;
+    message.archivedAt = object.archivedAt ?? undefined;
     return message;
   },
 };

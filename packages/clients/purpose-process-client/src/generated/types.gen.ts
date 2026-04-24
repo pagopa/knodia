@@ -107,6 +107,7 @@ export type PurposeSeed = {
 };
 
 export type Purpose = {
+    archivedAt: string | null;
     consumer: PurposeConsumer;
     createdAt: string;
     dailyCalls: number;
@@ -602,3 +603,52 @@ export type ReactivatePurposeByProducerResponses = {
 };
 
 export type ReactivatePurposeByProducerResponse = ReactivatePurposeByProducerResponses[keyof ReactivatePurposeByProducerResponses];
+
+export type ArchivePurposeData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];

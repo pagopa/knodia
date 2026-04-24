@@ -13,6 +13,7 @@ describe("Purpose Splitters", () => {
     const { purposeSQL } = splitPurposeIntoObjectsSQL(purpose, metadataVersion);
 
     const expectedPurposeSQL: PurposeSQL = {
+      archivedAt: purpose.archivedAt,
       consumerId: purpose.consumer.id,
       consumerKnodeId: purpose.consumer.knodeId,
       createdAt: purpose.createdAt,

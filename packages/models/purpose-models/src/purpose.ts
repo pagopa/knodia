@@ -42,6 +42,7 @@ export const PurposeFormSchemaVersion = z.enum(["1.0"]);
 export type PurposeFormSchemaVersion = z.infer<typeof PurposeFormSchemaVersion>;
 
 export const Purpose = z.strictObject({
+  archivedAt: z.coerce.date().nullable(),
   consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
   dailyCalls: z.int().min(minDailyCalls).max(maxDailyCalls),
