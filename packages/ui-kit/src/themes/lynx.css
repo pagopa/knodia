@@ -189,6 +189,9 @@
 
   /* Tab */
   --radius-tab: 2px;
+
+  /* Tooltip */
+  --radius-tooltip: 0;
 }
 
 @layer utilities {

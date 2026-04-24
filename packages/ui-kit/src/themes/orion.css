@@ -198,6 +198,9 @@
 
   /* Tab */
   --radius-tab: 6px;
+
+  /* Tooltip */
+  --radius-tooltip: 8px;
 }
 
 @layer utilities {
