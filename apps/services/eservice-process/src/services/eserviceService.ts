@@ -369,9 +369,9 @@ function resolveTemplateFixedFields(
     }
 
     return {
-      categories: template.categories,
-      mode: template.mode,
-      requiredAttributes: template.requiredAttributes,
+      categories: template.eserviceFields.categories,
+      mode: template.eserviceFields.mode,
+      requiredAttributes: template.eserviceFields.requiredAttributes,
       template: {
         id: unsafeBrandExternalId(seed.template.id),
         knodeId: seed.template.knodeId,

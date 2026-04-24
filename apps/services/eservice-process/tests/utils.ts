@@ -30,6 +30,7 @@ export async function seedEservice(eservice: Eservice) {
     createEserviceVersionActivatedV1Event(
       eservice,
       latestVersion.id,
+      undefined,
       generateId(),
     ),
   );

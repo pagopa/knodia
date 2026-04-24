@@ -142,13 +142,13 @@ describe("POST /eservices (createEservice)", () => {
     const responseBody = response.json<API_Eservice>();
 
     const expectedEservice: Eservice = {
-      categories: templateSeed.categories,
+      categories: templateSeed.eserviceFields.categories,
       createdAt: new Date(responseBody.createdAt),
       description: bodyFromTemplate.description,
       id: responseBody.id as EserviceId,
       isConsumerOperatorIdentificationRequired: false,
       isSignalHubEnabled: bodyFromTemplate.isSignalHubEnabled ?? false,
-      mode: templateSeed.mode,
+      mode: templateSeed.eserviceFields.mode,
       name: bodyFromTemplate.name,
       producerId: TEST_ORGANIZATION_ID,
       template: {
@@ -175,7 +175,7 @@ describe("POST /eservices (createEservice)", () => {
           },
           maxDailyCallsPerConsumer: bodyFromTemplate.maxDailyCallsPerConsumer,
           maxDailyCallsPerKnode: bodyFromTemplate.maxDailyCallsPerKnode,
-          requiredAttributes: templateSeed.requiredAttributes,
+          requiredAttributes: templateSeed.eserviceFields.requiredAttributes,
           state: "Active",
           updatedAt: new Date(responseBody.createdAt),
           versionNumber: 1,
