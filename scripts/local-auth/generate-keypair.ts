@@ -61,8 +61,8 @@ function upsert(content: string, name: string, value: string): string {
   const pattern = new RegExp(`^${name}=.*$`, "m");
   return pattern.test(content) ? content.replace(pattern, line) : content.trimEnd() + "\n" + line + "\n";
 }
-let updated = upsert(existing, `KEYCHAIN_PRIVATE_${String(alg).toUpperCase()}_KEY_PATH`, privKeyPath);
-updated = upsert(updated, `KEYCHAIN_PUBLIC_${String(alg).toUpperCase()}_KEY_B64`, Buffer.from(publicKey, "utf-8").toString("base64"));
+let updated = upsert(existing, `KEYCHAIN_PRIVATE_${alg}_KEY_PATH`, privKeyPath);
+updated = upsert(updated, `KEYCHAIN_PUBLIC_${alg}_KEY_B64`, Buffer.from(publicKey, "utf-8").toString("base64"));
 writeFileSync(COLLECTIONS_ENV_PATH, updated);
 
 console.log(`kid: ${kid}`);
