@@ -47,6 +47,8 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     id: unsafeBrandId(purposeSQL.id),
     name: LocalizedName.parse(purposeSQL.name),
     state: PurposeState.parse(purposeSQL.state),
+    suspendedByConsumerAt: purposeSQL.suspendedByConsumerAt,
+    suspendedByProducerAt: purposeSQL.suspendedByProducerAt,
     updatedAt: purposeSQL.updatedAt,
   };
   return {
