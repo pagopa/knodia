@@ -106,6 +106,10 @@
   --color-error-900: var(--color-red-900);
   --color-error-950: var(--color-red-950);
 
+  /* Table */
+  --color-table-header-bg: var(--color-brand-light);
+  --color-table-header-border: transparent;
+
   /* Typography */
   --font-family-display: var(--font-display);
   --font-size-display-sm: 36px;

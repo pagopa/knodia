@@ -115,6 +115,10 @@
   --color-error-900: var(--color-rose-900);
   --color-error-950: var(--color-rose-950);
 
+  /* Table */
+  --color-table-header-bg: transparent;
+  --color-table-header-border: var(--color-black);
+
   /* Typography */
   --font-family-display: var(--font-sans);
   --font-size-display-sm: 36px;
