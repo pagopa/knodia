@@ -1,0 +1,19 @@
+meta {
+  name: Suspend Purpose by Producer
+  type: http
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/suspendByProducer
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

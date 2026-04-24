@@ -144,7 +144,6 @@ interface AgreementProducerRouterOptions {
 
 export const agreementProducerRouter: FastifyPluginAsyncZod<
   AgreementProducerRouterOptions
-  // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
   {

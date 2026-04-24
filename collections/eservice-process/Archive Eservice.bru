@@ -1,0 +1,19 @@
+meta {
+  name: Archive Eservice
+  type: http
+}
+
+post {
+  url: {{host-eservice-process}}/eservices/:eserviceId/archive
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

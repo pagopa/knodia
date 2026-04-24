@@ -5,7 +5,7 @@ import {
   fromPurposeV1,
   type PurposeEventEnvelopeV1,
 } from "@knodia/purpose-models";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 export async function handlePurposeEvent(
   message: PurposeEventEnvelopeV1,
@@ -14,11 +14,22 @@ export async function handlePurposeEvent(
   assertDataExistsInEvent(message, "purpose");
 
   return match(message)
-    .with({ type: "PurposeActivatedV1" }, async (msg) => {
-      await writerService.upsertPurpose(
-        fromPurposeV1(msg.data.purpose),
-        message.version,
-      );
-    })
+    .with(
+      {
+        type: P.union(
+          "PurposeActivatedV1",
+          "PurposeSuspendedByConsumerV1",
+          "PurposeSuspendedByProducerV1",
+          "PurposeReactivatedByConsumerV1",
+          "PurposeReactivatedByProducerV1",
+        ),
+      },
+      async (msg) => {
+        await writerService.upsertPurpose(
+          fromPurposeV1(msg.data.purpose),
+          message.version,
+        );
+      },
+    )
     .exhaustive();
 }

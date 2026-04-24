@@ -3,9 +3,11 @@ import z from "zod";
 import { ExternalId } from "../externalResource.ts";
 import {
   AgreementId,
+  ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
   OrganizationId,
+  PurposeId,
 } from "../ids/brandedIds.ts";
 import { KnodeId } from "../ids/ids.ts";
 import { UserId } from "../ids/userId.ts";
@@ -27,6 +29,26 @@ const UserTokenClaims = BaseJwtClaims.extend({
   sub: UserId,
   username: z.string(),
 });
+
+export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
+  client_id: ConsumerKeychainId,
+  consumer: z.strictObject({
+    id: ExternalId<OrganizationId>(),
+    knode_id: KnodeId,
+  }),
+  eservice: z.strictObject({
+    id: EserviceId,
+    knode_id: KnodeId,
+    version: EserviceVersionId,
+  }),
+  nbf: z.int(),
+  producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
+  purpose: z.strictObject({ id: PurposeId, knode_id: KnodeId }),
+  sub: ConsumerKeychainId,
+});
+export type EserviceAccessTokenClaims = z.infer<
+  typeof EserviceAccessTokenClaims
+>;
 
 export const UISessionTokenClaims = UserTokenClaims.extend({
   type: z.literal("ui-session"),

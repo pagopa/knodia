@@ -32,5 +32,7 @@ export const toPurposeV1 = (purpose: Purpose): PurposeV1 => ({
   formAnswersJson: JSON.stringify(purpose.formAnswersJson),
   formSchemaVersion: toPurposeFormSchemaVersionV1(purpose.formSchemaVersion),
   state: toPurposeStateV1(purpose.state),
+  suspendedByConsumerAt: purpose.suspendedByConsumerAt?.getTime(),
+  suspendedByProducerAt: purpose.suspendedByProducerAt?.getTime(),
   updatedAt: purpose.updatedAt.getTime(),
 });

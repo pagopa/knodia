@@ -1,15 +1,7 @@
-import type {
-  FormValues,
-  LabelElement,
-  RuleCondition,
-  UISchema,
-} from "./types";
+import type { FormValues, RuleCondition, UISchema } from "./types";
 
-import {
-  collectConditionScopes,
-  collectControls,
-  isAndCondition,
-} from "./uischemaParser";
+import { scopeToFieldName } from "./scope";
+import { collectControls, isAndCondition } from "./uischemaParser";
 
 export function evaluateCondition(
   condition: RuleCondition,
@@ -67,22 +59,4 @@ export function getVisibleFields(
   }
 
   return visible;
-}
-
-export function isLabelVisible(
-  label: LabelElement,
-  allValues: FormValues,
-  visibleFieldNames: Set<string>,
-): boolean {
-  if (!label.rule) return true;
-  const scopes = collectConditionScopes(label.rule.condition).map(
-    scopeToFieldName,
-  );
-  if (scopes.some((s) => !visibleFieldNames.has(s))) return false;
-  const conditionMet = evaluateCondition(label.rule.condition, allValues);
-  return label.rule.effect === "SHOW" ? conditionMet : !conditionMet;
-}
-
-export function scopeToFieldName(scope: string): string {
-  return scope.replace("#/properties/", "");
 }

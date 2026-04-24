@@ -11,6 +11,7 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
+import { PurposeActor } from "@knodia/purpose-models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
@@ -221,7 +222,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+        "Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version",
       headers: KnodiaServiceHeaders,
       operationId: "getCurrentPurposeFormSchemas",
       response: {
@@ -235,5 +236,173 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes/formSchemas/current",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.suspendPurpose(req.params.purposeId, {
+        actor: PurposeActor.enum.Consumer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend a Purpose by Consumer",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendPurposeByConsumer",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose suspended successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend Purpose by Consumer",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/suspendByConsumer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.suspendPurpose(req.params.purposeId, {
+        actor: PurposeActor.enum.Producer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend a Purpose by Producer",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendPurposeByProducer",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose suspended successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend Purpose by Producer",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/suspendByProducer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.reactivatePurpose(req.params.purposeId, {
+        actor: PurposeActor.enum.Consumer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate a Purpose by Consumer",
+      headers: KnodiaServiceHeaders,
+      operationId: "reactivatePurposeByConsumer",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose reactivated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate Purpose by Consumer",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/reactivateByConsumer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.reactivatePurpose(req.params.purposeId, {
+        actor: PurposeActor.enum.Producer,
+        ctx,
+      });
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate a Purpose by Producer",
+      headers: KnodiaServiceHeaders,
+      operationId: "reactivatePurposeByProducer",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose reactivated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate Purpose by Producer",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/reactivateByProducer",
   });
 };

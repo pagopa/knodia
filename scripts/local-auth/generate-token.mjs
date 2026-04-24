@@ -40,7 +40,7 @@ function getClaims(targetEnv, type) {
 
   switch (type) {
     case "ui-session":
-      return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type, aud };
+      return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "Mario Rossi", type, aud };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
     case "external-ui-session":
