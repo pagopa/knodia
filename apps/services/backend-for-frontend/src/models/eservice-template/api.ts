@@ -17,16 +17,22 @@ const API_EserviceTemplateInterface = z
   })
   .meta({ id: "EserviceTemplateInterface" });
 
-export const API_EserviceTemplateDetails = z
+const API_EserviceTemplateEserviceFields = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    createdAt: z.iso.datetime(),
-    description: API_LocalizedDescription,
-    id: z.uuid(),
     interfaceDocument: API_EserviceTemplateInterface,
     mode: API_EserviceMode,
-    name: API_LocalizedName,
     requiredAttributes: z.array(z.array(API_Attribute)),
+  })
+  .meta({ id: "EserviceTemplateEserviceFields" });
+
+export const API_EserviceTemplateDetails = z
+  .strictObject({
+    createdAt: z.iso.datetime(),
+    description: API_LocalizedDescription,
+    eserviceFields: API_EserviceTemplateEserviceFields,
+    id: z.uuid(),
+    name: API_LocalizedName,
   })
   .meta({ id: "EserviceTemplateDetails" });
 export type API_EserviceTemplateDetails = z.infer<
@@ -57,7 +63,7 @@ export type API_GetEserviceTemplateQueryParams = z.infer<
 >;
 
 export const API_EserviceTemplateIdPathParam = z.strictObject({
-  templateId: z.uuid(),
+  eserviceTemplateId: z.uuid(),
 });
 export type API_EserviceTemplateIdPathParam = z.infer<
   typeof API_EserviceTemplateIdPathParam
