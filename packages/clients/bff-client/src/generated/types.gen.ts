@@ -134,6 +134,29 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+export type InterfaceDocumentContactOverrides = {
+    email: string;
+    name: string;
+    url?: string;
+};
+
+export type InterfaceDocumentOverrides = {
+    /**
+     * OpenAPI contact overrides to apply to the template interface
+     */
+    contact: InterfaceDocumentContactOverrides;
+    /**
+     * Server URLs override to apply to the template interface
+     */
+    serverUrls: Array<string>;
+    termsAndConditionsUrl?: string;
+};
+
 export type EserviceSeed = {
     /**
      * Audience for the access token
@@ -1110,6 +1133,78 @@ export type CreateEserviceResponses = {
 };
 
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
+
+export type CreateEserviceFromTemplateData = {
+    body: {
+        /**
+         * Audience for the access token
+         */
+        accessTokenAudience: Array<string>;
+        /**
+         * Duration of the access token in seconds
+         */
+        accessTokenDuration?: number;
+        /**
+         * Type of the access token
+         */
+        accessTokenType?: AccessTokenType;
+        description: LocalizedDescription;
+        /**
+         * Whether SignalHub is enabled for the E-service
+         */
+        isSignalHubEnabled?: boolean;
+        /**
+         * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+         */
+        maxDailyCallsPerConsumer: number;
+        /**
+         * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+         */
+        maxDailyCallsPerKnode: number;
+        name: LocalizedName;
+        /**
+         * Overrides applied to the template interface document
+         */
+        interfaceDocumentOverrides: InterfaceDocumentOverrides;
+        /**
+         * Reference to the E-service template to instantiate
+         */
+        template: EserviceTemplateReference;
+    };
+    path?: never;
+    query?: never;
+    url: '/producer/eservices/from-template';
+};
+
+export type CreateEserviceFromTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type CreateEserviceFromTemplateError = CreateEserviceFromTemplateErrors[keyof CreateEserviceFromTemplateErrors];
+
+export type CreateEserviceFromTemplateResponses = {
+    /**
+     * E-service created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateEserviceFromTemplateResponse = CreateEserviceFromTemplateResponses[keyof CreateEserviceFromTemplateResponses];
 
 export type GetProducerEserviceDetailsData = {
     body?: never;

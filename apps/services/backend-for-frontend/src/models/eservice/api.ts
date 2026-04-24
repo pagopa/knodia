@@ -53,21 +53,22 @@ const API_EserviceTemplateReference = z
 
 const API_InterfaceDocumentContactOverrides = z
   .strictObject({
-    email: z.email().optional(),
-    name: z.string().optional(),
+    email: z.email(),
+    name: z.string(),
     url: z.string().optional(),
   })
   .meta({ id: "InterfaceDocumentContactOverrides" });
 
 export const API_InterfaceDocumentOverrides = z
   .strictObject({
-    contact: API_InterfaceDocumentContactOverrides.optional().meta({
+    contact: API_InterfaceDocumentContactOverrides.meta({
       description:
         "OpenAPI contact overrides to apply to the template interface",
     }),
-    serverUrl: z.string().optional().meta({
-      description: "Server URL override to apply to the template interface",
+    serverUrls: z.array(z.string()).meta({
+      description: "Server URLs override to apply to the template interface",
     }),
+    termsAndConditionsUrl: z.string().optional(),
   })
   .meta({ id: "InterfaceDocumentOverrides" });
 export type API_InterfaceDocumentOverrides = z.infer<
