@@ -85,7 +85,7 @@ const sharedInterfaceDocument = {
 };
 
 /** @knipignore */
-export const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
+const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
   Lynx: [
     {
       createdAt: new Date("2025-01-01T00:00:00Z"),
@@ -220,4 +220,8 @@ export function getEserviceTemplateInterfaceContent(
   } catch {
     return undefined;
   }
+}
+
+export function getEserviceTemplates(knodeId: KnodeId): EserviceTemplate[] {
+  return eserviceTemplates[knodeId];
 }

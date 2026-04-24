@@ -55,7 +55,7 @@ export const refreshSession = <ThrowOnError extends boolean = true>(options: Opt
 export const logout = <ThrowOnError extends boolean = true>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, unknown, ThrowOnError>({ url: '/auth/logout', ...options });
 
 /**
- * Retrieve a list of e-service templates available for a given Knode
+ * Retrieve a list of E-Service Templates available for a given Knode
  */
 export const getEserviceTemplates = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplatesData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplatesResponses, GetEserviceTemplatesErrors, ThrowOnError>({
     responseType: 'json',
@@ -65,7 +65,7 @@ export const getEserviceTemplates = <ThrowOnError extends boolean = true>(option
 });
 
 /**
- * Retrieve an E-service template with all its details
+ * Retrieve an E-service Template with all its details
  */
 export const getEserviceTemplate = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplateData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplateResponses, GetEserviceTemplateErrors, ThrowOnError>({
     responseType: 'json',

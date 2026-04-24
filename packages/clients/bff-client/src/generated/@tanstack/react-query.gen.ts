@@ -112,7 +112,7 @@ export const logoutMutation = (options?: Partial<Options<LogoutData>>): UseMutat
 export const getEserviceTemplatesQueryKey = (options: Options<GetEserviceTemplatesData>) => createQueryKey('getEserviceTemplates', options);
 
 /**
- * Retrieve a list of e-service templates available for a given Knode
+ * Retrieve a list of E-Service Templates available for a given Knode
  */
 export const getEserviceTemplatesOptions = (options: Options<GetEserviceTemplatesData>) => queryOptions<GetEserviceTemplatesResponse, AxiosError<GetEserviceTemplatesError>, GetEserviceTemplatesResponse, ReturnType<typeof getEserviceTemplatesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -130,7 +130,7 @@ export const getEserviceTemplatesOptions = (options: Options<GetEserviceTemplate
 export const getEserviceTemplateQueryKey = (options: Options<GetEserviceTemplateData>) => createQueryKey('getEserviceTemplate', options);
 
 /**
- * Retrieve an E-service template with all its details
+ * Retrieve an E-service Template with all its details
  */
 export const getEserviceTemplateOptions = (options: Options<GetEserviceTemplateData>) => queryOptions<GetEserviceTemplateResponse, AxiosError<GetEserviceTemplateError>, GetEserviceTemplateResponse, ReturnType<typeof getEserviceTemplateQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

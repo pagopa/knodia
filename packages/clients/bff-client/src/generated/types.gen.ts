@@ -927,7 +927,7 @@ export type GetEserviceTemplatesError = GetEserviceTemplatesErrors[keyof GetEser
 
 export type GetEserviceTemplatesResponses = {
     /**
-     * E-service templates retrieved successfully
+     * E-service Templates retrieved successfully
      */
     200: EserviceTemplates;
 };
@@ -968,7 +968,7 @@ export type GetEserviceTemplateError = GetEserviceTemplateErrors[keyof GetEservi
 
 export type GetEserviceTemplateResponses = {
     /**
-     * E-service template retrieved successfully
+     * E-service Template retrieved successfully
      */
     200: EserviceTemplateDetails;
 };
