@@ -211,6 +211,11 @@
 
   /* Toast */
   --radius-toast: 8px;
+
+  /* Login card */
+  --radius-login-card: 16px;
+  --spacing-login-card-y: 64px;
+  --spacing-login-card-x: 40px;
 }
 
 @layer utilities {
