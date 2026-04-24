@@ -1873,7 +1873,7 @@ paths:
       operationId: getEserviceTemplates
       tags:
         - eserviceTemplate
-      description: Retrieve a list of e-service templates available for a given Knode
+      description: Retrieve a list of E-Service Templates available for a given Knode
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1882,11 +1882,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service templates retrieved successfully
+          description: E-service Templates retrieved successfully
           content:
             application/json:
               schema:
-                description: E-service templates retrieved successfully
+                description: E-service Templates retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/EserviceTemplates"
         "400":
@@ -1918,7 +1918,7 @@ paths:
       operationId: getEserviceTemplate
       tags:
         - eserviceTemplate
-      description: Retrieve an E-service template with all its details
+      description: Retrieve an E-service Template with all its details
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1934,11 +1934,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service template retrieved successfully
+          description: E-service Template retrieved successfully
           content:
             application/json:
               schema:
-                description: E-service template retrieved successfully
+                description: E-service Template retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/EserviceTemplateDetails"
         "400":

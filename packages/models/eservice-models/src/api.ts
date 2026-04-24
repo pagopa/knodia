@@ -69,5 +69,5 @@ export const API_EserviceTemplateId = z
     id: z.uuid(),
     knodeId: API_KnodeId,
   })
-  .meta({ id: "EServiceTemplateId" });
+  .meta({ id: "EserviceTemplateId" });
 export type API_EserviceTemplateId = z.infer<typeof API_EserviceTemplateId>;

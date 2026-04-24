@@ -5,9 +5,9 @@ import { API_FileDownload } from "@knodia/common-models/api";
 import { genericInternalError } from "@knodia/common-models/errors";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  eserviceTemplates,
   getEserviceTemplate,
   getEserviceTemplateInterfaceContent,
+  getEserviceTemplates,
 } from "@knodia/eservice-template-models";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -25,13 +25,15 @@ import {
   toAPI_EserviceTemplate,
   toAPI_EserviceTemplateDetails,
 } from "../../models/eservice-template/apiConverter.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 
 export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
   fastify,
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { authData, logger } = getContextValues(requestContext);
+      getUISessionAuthData(authData);
       const { knodeId } = req.query;
 
       logger.info(
@@ -39,17 +41,19 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
         `Getting E-service templates for Knode ${knodeId}`,
       );
 
-      res.send(eserviceTemplates[knodeId].map(toAPI_EserviceTemplate));
+      const eserviceTemplates = getEserviceTemplates(knodeId);
+
+      res.send(eserviceTemplates.map(toAPI_EserviceTemplate));
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve a list of e-service templates available for a given Knode",
+        "Retrieve a list of E-Service Templates available for a given Knode",
       operationId: "getEserviceTemplates",
       querystring: API_GetEserviceTemplatesQueryParams,
       response: {
         200: API_EserviceTemplates.meta({
-          description: "E-service templates retrieved successfully",
+          description: "E-service Templates retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -62,7 +66,9 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { authData, logger } = getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
       const { eserviceTemplateId } = req.params;
       const { knodeId } = req.query;
 
@@ -84,13 +90,13 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
     },
     method: "GET",
     schema: {
-      description: "Retrieve an E-service template with all its details",
+      description: "Retrieve an E-service Template with all its details",
       operationId: "getEserviceTemplate",
       params: API_EserviceTemplateIdPathParam,
       querystring: API_GetEserviceTemplateQueryParams,
       response: {
         200: API_EserviceTemplateDetails.meta({
-          description: "E-service template retrieved successfully",
+          description: "E-service Template retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
