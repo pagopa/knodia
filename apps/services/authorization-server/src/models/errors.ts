@@ -52,10 +52,10 @@ const errorCodes = {
   CONSUMER_KNODE_VERIFICATION_DATA_NOT_FOUND: "0016",
   UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0017",
   DPOP_CLAIMS_VALIDATION_ERROR: "0018",
-  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0018",
-  INVALID_DPOP_PROOF_JWS: "0019",
-  INVALID_DPOP_PROOF_SIGNATURE: "0020",
-  DPOP_PROOF_EXPIRED: "0021",
+  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0019",
+  INVALID_DPOP_PROOF_JWS: "0020",
+  INVALID_DPOP_PROOF_SIGNATURE: "0021",
+  DPOP_PROOF_EXPIRED: "0022",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -153,7 +153,7 @@ export function dpopClaimsValidationError(error: unknown) {
           ? [error]
           : [],
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    title: "invalid_dpop_proof",
   });
 }
 
@@ -162,7 +162,7 @@ export function dpopProofExpired() {
     code: "DPOP_PROOF_EXPIRED",
     detail: "The DPoP Proof has expired",
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    title: "invalid_dpop_proof",
   });
 }
 
@@ -213,7 +213,7 @@ export function invalidDpopProofJWS(message: string) {
     code: "INVALID_DPOP_PROOF_JWS",
     detail: `Invalid JWT format in DPoP Proof signature verification. Reason: ${message}`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    title: "invalid_dpop_proof",
   });
 }
 
@@ -222,7 +222,7 @@ export function invalidDpopProofSignature() {
     code: "INVALID_DPOP_PROOF_SIGNATURE",
     detail: "The DPoP Proof signature is invalid",
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    title: "invalid_dpop_proof",
   });
 }
 
@@ -302,7 +302,7 @@ export function unexpectedDpopProofSignatureVerificationError(error: unknown) {
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR",
     detail: `An unexpected error occurred during DPoP Proof signature verification: ${message}`,
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "invalid_dpop_proof",
   });
 }
