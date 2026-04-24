@@ -138,6 +138,7 @@ const fromEserviceVersionInterfaceV1 = (
 const fromEserviceTemplateV1 = (
   input: EserviceTemplateV1,
 ): ExternalResource<EserviceTemplateId> => ({
+  ...input,
   id: unsafeBrandExternalId(input.id),
   knodeId: KnodeId.parse(input.knodeId),
 });

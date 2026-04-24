@@ -25,7 +25,6 @@ export function toExpectAPI_Eservice(
     id: string;
     producerId: string;
     template?: { id: string; knodeId: string };
-    templateId?: string;
     updatedAt: Date | string;
   },
 ) {
