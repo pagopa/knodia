@@ -5,6 +5,7 @@ import { generateId } from "@knodia/common-models/ids";
 import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
 import { purposeEventStoreWriterBuilder } from "@knodia/db-event-store-writer/purpose";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
 
 import type { API_Purpose } from "../src/models/api.ts";
 
@@ -35,13 +36,11 @@ export async function seedPurpose(purpose: Purpose) {
 
 export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
   return {
+    archivedAt: toExpectIsoOrNull(purpose.archivedAt),
     // formAnswersJson and formSchemaVersion are intentionally excluded —
     // they can be retrieved via separate routes
     consumer: purpose.consumer,
-    createdAt:
-      typeof purpose.createdAt === "string"
-        ? purpose.createdAt
-        : purpose.createdAt.toISOString(),
+    createdAt: toExpectIsoOrNull(purpose.createdAt),
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,
     eserviceId: purpose.eserviceId,
@@ -50,14 +49,6 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     state: purpose.state,
     suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
     suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
-    updatedAt:
-      typeof purpose.updatedAt === "string"
-        ? purpose.updatedAt
-        : purpose.updatedAt.toISOString(),
+    updatedAt: toExpectIsoOrNull(purpose.updatedAt),
   };
-}
-
-function toExpectIsoOrNull(value: Date | null | string) {
-  if (value === null) return null;
-  return typeof value === "string" ? value : value.toISOString();
 }
