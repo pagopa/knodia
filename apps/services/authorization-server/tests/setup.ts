@@ -2,6 +2,8 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import "@knodia/test-commons/dynamodb";
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import {
   type AgreementWriterService,
@@ -28,6 +30,7 @@ let app: FastifyInstance;
 let agreementWriterService: AgreementWriterService;
 let eserviceWriterService: EserviceWriterService;
 let purposeWriterService: PurposeWriterService;
+let dynamoClient: DynamoDBClient;
 const producerKnodeId: KnodeId = "Orion";
 const dpopProofHtuBaseUrl = "https://test.knodia.org/token";
 
@@ -47,6 +50,12 @@ beforeAll(async () => {
 
   readmodelDb = await setupReadmodelTestDatabase(connectionString);
 
+  dynamoClient = new DynamoDBClient({
+    credentials: { accessKeyId: "test", secretAccessKey: "test" },
+    endpoint: inject("DYNAMODB_CONNECTION_STRING"),
+    region: "eu-south-1",
+  });
+
   app = buildApp({
     config: {
       clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
@@ -55,6 +64,7 @@ beforeAll(async () => {
       consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
+      dynamoDbDpopProofsTable: "test_dpop_proofs_table",
       eserviceAccessTokenJwtKid: "test-kid",
       generatedEserviceAccessTokenIssuer: "knodia.org",
       host: "test_host",
@@ -74,6 +84,7 @@ beforeAll(async () => {
       readmodelDbUseSsl: false,
     },
     readmodelDb,
+    sharedDynamoClient: dynamoClient,
   });
 
   await app.ready();
@@ -88,6 +99,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  dynamoClient.destroy();
   await Promise.all([app.close(), readmodelDb.$client.end()]);
 });
 

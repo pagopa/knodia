@@ -5,6 +5,7 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
+import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
@@ -12,7 +13,10 @@ import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { type Algorithm } from "@knodia/common-models/algorithms";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
-import { ApiError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  ApiError,
+  unauthorizedError,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -68,6 +72,21 @@ import {
   retrieveEserviceVersion,
   retrievePurpose,
 } from "./readmodelUtils.ts";
+
+export async function assertDpopProofNotReplayed(
+  dpopProofJWT: DPoPProof,
+  dpopProofMaxTokenAgeSeconds: number,
+  dpopProofStore: JtiReplayStore,
+) {
+  const firstUse = await dpopProofStore.consume(
+    dpopProofJWT.payload.jti,
+    dpopProofJWT.payload.iat,
+    dpopProofJWT.payload.iat + dpopProofMaxTokenAgeSeconds,
+  );
+  if (!firstUse) {
+    throw unauthorizedError("DPoP proof already used");
+  }
+}
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,

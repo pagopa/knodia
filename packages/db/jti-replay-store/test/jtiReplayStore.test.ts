@@ -15,15 +15,16 @@ describe("jtiReplayStore", () => {
     return result.Item;
   }
 
+  const iat = Date.now();
   function futureExpiry(): number {
-    return Math.floor(Date.now() / 1000) + 60;
+    return Math.floor(iat / 1000) + 60;
   }
 
   describe("consume", () => {
     it("marks the JTI as used in DynamoDB on first use", async () => {
       const jti = crypto.randomUUID();
 
-      const firstUse = await jtiReplayStore.consume(jti, futureExpiry());
+      const firstUse = await jtiReplayStore.consume(jti, iat, futureExpiry());
 
       expect(firstUse).toBe(true);
       expect(await getItem(jti)).toBeDefined();
@@ -33,8 +34,8 @@ describe("jtiReplayStore", () => {
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 
-      await jtiReplayStore.consume(jti, exp);
-      const firstUse = await jtiReplayStore.consume(jti, exp);
+      await jtiReplayStore.consume(jti, iat, exp);
+      const firstUse = await jtiReplayStore.consume(jti, iat, exp);
 
       expect(firstUse).toBe(false);
     });
@@ -43,7 +44,7 @@ describe("jtiReplayStore", () => {
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 
-      await jtiReplayStore.consume(jti, exp);
+      await jtiReplayStore.consume(jti, iat, exp);
 
       const item = await getItem(jti);
       const ttlValue = item?.["ttl"]?.N;
@@ -54,8 +55,12 @@ describe("jtiReplayStore", () => {
     it("treats distinct JTIs independently", async () => {
       const exp = futureExpiry();
 
-      const first = await jtiReplayStore.consume(crypto.randomUUID(), exp);
-      const second = await jtiReplayStore.consume(crypto.randomUUID(), exp);
+      const first = await jtiReplayStore.consume(crypto.randomUUID(), iat, exp);
+      const second = await jtiReplayStore.consume(
+        crypto.randomUUID(),
+        iat,
+        exp,
+      );
 
       expect(first).toBe(true);
       expect(second).toBe(true);
@@ -65,9 +70,9 @@ describe("jtiReplayStore", () => {
       const jti = crypto.randomUUID();
       const pastExpiry = Math.floor(Date.now() / 1000) - 60;
 
-      await jtiReplayStore.consume(jti, pastExpiry);
+      await jtiReplayStore.consume(jti, iat, pastExpiry);
 
-      const reuse = await jtiReplayStore.consume(jti, futureExpiry());
+      const reuse = await jtiReplayStore.consume(jti, iat, futureExpiry());
 
       expect(reuse).toBe(true);
     });
@@ -81,7 +86,7 @@ describe("jtiReplayStore", () => {
       await jtiReplayStore.revoke(jti, exp);
 
       expect(await getItem(jti)).toBeDefined();
-      expect(await jtiReplayStore.consume(jti, exp)).toBe(false);
+      expect(await jtiReplayStore.consume(jti, iat, exp)).toBe(false);
     });
 
     it("is idempotent — revoking the same JTI twice does not throw", async () => {

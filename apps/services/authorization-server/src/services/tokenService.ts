@@ -2,12 +2,14 @@ import type { TokenGenerator } from "@knodia/token-generator";
 import type { FastifyBaseLogger } from "fastify";
 
 import { type ConsumerKeychainId } from "@knodia/common-models/ids";
+import { type JtiReplayStore } from "@knodia/db-jti-replay-store";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
+  assertDpopProofNotReplayed,
   validatePlatformObjects,
   verifyClientAssertionSignature,
   verifyDpopProofSignature,
@@ -20,11 +22,13 @@ export function tokenServiceBuilder({
     generatedEserviceAccessTokenIssuer,
     knodeId,
   },
+  dpopProofStore,
   k2kGatewayClient,
   readmodelService,
   tokenGenerator,
 }: {
   config: AuthorizationServerConfig;
+  dpopProofStore: JtiReplayStore;
   k2kGatewayClient: K2K2GatewayApiClient;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
@@ -56,7 +60,6 @@ export function tokenServiceBuilder({
         dpopProofHtuBaseUrl,
         logger,
       );
-      const isRequestUsingDpop = !!dpopProofJWT;
 
       // Verify Client Assertion signature and claims
       const { consumerAttributes, purposeId } =
@@ -78,8 +81,14 @@ export function tokenServiceBuilder({
           readmodelService,
         );
 
-      // TODO: check dpop cache
-      // await assertDpopProofNotReplayed(dpopProofJWT);
+      // Check that the DPoP proof has not been replayed if the request is using DPoP
+      if (dpopProofJWT) {
+        await assertDpopProofNotReplayed(
+          dpopProofJWT,
+          dpopProofMaxTokenAgeSeconds,
+          dpopProofStore,
+        );
+      }
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
@@ -100,9 +109,7 @@ export function tokenServiceBuilder({
       return {
         access_token: token.serialized,
         expires_in: token.payload.exp - token.payload.iat,
-        token_type: isRequestUsingDpop
-          ? ("DPoP" as const)
-          : ("Bearer" as const),
+        token_type: dpopProofJWT ? ("DPoP" as const) : ("Bearer" as const),
       };
     },
   };

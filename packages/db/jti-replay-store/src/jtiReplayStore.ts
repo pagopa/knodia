@@ -28,7 +28,11 @@ export function createJtiReplayStore(
      * hasn't physically deleted yet (TTL cleanup is best-effort and can
      * lag behind), preventing stale records from blocking valid writes.
      */
-    async consume(jti: string, expireAtSec: number): Promise<boolean> {
+    async consume(
+      jti: string,
+      iat: number,
+      expireAtSec: number,
+    ): Promise<boolean> {
       const nowSec = dateToSeconds(new Date());
       try {
         await dynamoClient.send(
@@ -38,6 +42,7 @@ export function createJtiReplayStore(
             ExpressionAttributeNames: { "#ttl": "ttl" },
             ExpressionAttributeValues: { ":now": { N: String(nowSec) } },
             Item: {
+              iat: { N: String(iat) },
               jti: { S: jti },
               ttl: { N: String(expireAtSec) },
             },

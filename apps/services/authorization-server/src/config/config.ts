@@ -29,6 +29,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         CONSUMER_KNODE_URL: z.url(),
         DPOP_PROOF_HTU_BASE_URL: z.url(),
         DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: z.coerce.number().int().positive(),
+        DYNAMODB_DPOP_PROOFS_TABLE: z.string(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
         KNODE_ID: KnodeId,
@@ -42,6 +43,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         consumerKnodeUrl: c.CONSUMER_KNODE_URL,
         dpopProofHtuBaseUrl: c.DPOP_PROOF_HTU_BASE_URL,
         dpopProofMaxTokenAgeSeconds: c.DPOP_PROOF_MAX_TOKEN_AGE_SECONDS,
+        dynamoDbDpopProofsTable: c.DYNAMODB_DPOP_PROOFS_TABLE,
         eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
