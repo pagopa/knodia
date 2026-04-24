@@ -1,6 +1,6 @@
 -- Local development seed data (idempotent)
 -- Placeholder ${NAMESPACE} is replaced at runtime via sed (same convention as Flyway)
--- Organization IDs match scripts/local-kms/local-cognito.mjs and generate-token.mjs
+-- Organization IDs match scripts/local-auth/local-cognito.mjs and generate-token.mjs
 
 -- Organizations
 

@@ -1,0 +1,24 @@
+meta {
+  name: 14 - Reject: Consumer re-suspend
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/suspendByConsumer
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 409
+}
