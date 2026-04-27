@@ -43,7 +43,21 @@ export const producerEserviceDetailsQuery = (eserviceId: string) =>
 export const producerEservicesQuery = (offset: number) =>
   getProducerEservicesOptions({
     client,
-    query: { limit: DEFAULT_PAGE_LIMIT, offset },
+    query: {
+      limit: DEFAULT_PAGE_LIMIT,
+      offset,
+      state: ["Active", "Suspended"],
+    },
+  });
+
+export const archivedProducerEservicesQuery = (offset: number) =>
+  getProducerEservicesOptions({
+    client,
+    query: {
+      limit: DEFAULT_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
   });
 
 // TODO(KN-479): replace hardcoded limit with server-side search when the number of producer e-services grows
@@ -52,7 +66,11 @@ const ESERVICE_OPTIONS_LIMIT = 50;
 export const producerEserviceOptionsQuery = () =>
   getProducerEservicesOptions({
     client,
-    query: { limit: ESERVICE_OPTIONS_LIMIT, offset: 0 },
+    query: {
+      limit: ESERVICE_OPTIONS_LIMIT,
+      offset: 0,
+      state: ["Active", "Suspended"],
+    },
   });
 
 export const consumerCatalogEservicesQuery = (
