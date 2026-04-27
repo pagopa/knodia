@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -218,5 +219,45 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements/:agreementId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(
+        `Archiving Consumer Agreement ${req.params.agreementId} on knode ${req.query.knodeId}`,
+      );
+
+      await remoteResourcesManagerApi.archiveAgreement({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { agreementId: req.params.agreementId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Archive an Agreement as Consumer",
+      operationId: "archiveConsumerAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/archive",
   });
 };

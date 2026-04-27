@@ -2291,6 +2291,51 @@ export type SuspendConsumerAgreementResponses = {
 
 export type SuspendConsumerAgreementResponse = SuspendConsumerAgreementResponses[keyof SuspendConsumerAgreementResponses];
 
+export type ArchiveConsumerAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/archive';
+};
+
+export type ArchiveConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveConsumerAgreementError = ArchiveConsumerAgreementErrors[keyof ArchiveConsumerAgreementErrors];
+
+export type ArchiveConsumerAgreementResponses = {
+    /**
+     * Agreement archived successfully
+     */
+    204: void;
+};
+
+export type ArchiveConsumerAgreementResponse = ArchiveConsumerAgreementResponses[keyof ArchiveConsumerAgreementResponses];
+
 export type GetConsumerPurposesData = {
     body?: never;
     path?: never;
