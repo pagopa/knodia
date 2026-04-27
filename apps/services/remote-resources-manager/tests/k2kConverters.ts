@@ -131,6 +131,8 @@ export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
     en: purpose.name.en,
   },
   state: toK2KPurposeState(purpose.state),
+  suspendedByConsumerAt: purpose.suspendedByConsumerAt?.toISOString() ?? null,
+  suspendedByProducerAt: purpose.suspendedByProducerAt?.toISOString() ?? null,
   updatedAt: purpose.updatedAt.toISOString(),
 });
 

@@ -24,6 +24,8 @@ export function toAPI_Purpose(
     knodeId,
     name: purpose.name,
     state: toAPI_PurposeState(purpose.state),
+    suspendedByConsumerAt: purpose.suspendedByConsumerAt,
+    suspendedByProducerAt: purpose.suspendedByProducerAt,
     updatedAt: purpose.updatedAt,
   };
 }

@@ -38,6 +38,7 @@ import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
+  toRRM_Purpose,
 } from "./utils.ts";
 
 const getPurposeMock = vi.hoisted(() => vi.fn());
@@ -78,17 +79,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     id: unsafeBrandExternalId(purpose.id),
     knodeId,
   };
-  const apiPurpose: remoteResourcesManagerApi.Purpose = {
-    consumer: purpose.consumer,
-    dailyCalls: purpose.dailyCalls,
-    description: purpose.description,
-    eserviceId: purpose.eserviceId,
-    id: purpose.id,
-    knodeId,
-    name: purpose.name,
-    state: purpose.state,
-    updatedAt: purpose.updatedAt.toISOString(),
-  };
+  const apiPurpose = toRRM_Purpose(purpose, knodeId);
   const body: API_ConsumerKeychainPurposeLinkSeed = {
     knodeId,
     purposeId: purpose.id,

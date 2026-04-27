@@ -168,6 +168,7 @@ export function buildAppFromConfig(
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
+      pollingService,
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });

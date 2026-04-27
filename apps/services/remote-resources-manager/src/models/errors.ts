@@ -17,6 +17,7 @@ const errorCodes = {
   ORGANIZATION_NOT_FOUND: "0002",
   PURPOSE_NOT_FOUND: "0003",
   ORGANIZATION_NOT_AGREEMENT_CONSUMER: "0004",
+  ORGANIZATION_NOT_PURPOSE_CONSUMER: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -53,6 +54,18 @@ export function organizationNotFound(organizationId: OrganizationId) {
     detail: `Organization with id ${organizationId} not found`,
     status: HTTP_STATUS_FORBIDDEN,
     title: "Organization Not Found",
+  });
+}
+
+export function organizationNotPurposeConsumer(
+  purposeId: ExternalId<PurposeId>,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_PURPOSE_CONSUMER",
+    detail: `Organization ${organizationId} is not the consumer of Purpose ${purposeId}. Only the consumer can perform this operation.`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization is not the Purpose consumer",
   });
 }
 

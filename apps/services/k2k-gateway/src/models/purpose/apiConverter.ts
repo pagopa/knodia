@@ -22,6 +22,8 @@ export function toAPI_Purpose(purpose: purposeProcessApi.Purpose): API_Purpose {
     id: purpose.id,
     name: purpose.name,
     state: toAPI_PurposeState(purpose.state),
+    suspendedByConsumerAt: purpose.suspendedByConsumerAt,
+    suspendedByProducerAt: purpose.suspendedByProducerAt,
     updatedAt: purpose.updatedAt,
   };
 }
