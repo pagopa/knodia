@@ -110,6 +110,9 @@
   --color-table-header-bg: var(--color-brand-light);
   --color-table-header-border: transparent;
 
+  /* Navbar */
+  --color-navbar-role-text: var(--color-brand-dark-high-contrast);
+
   /* Typography */
   --font-family-display: var(--font-display);
   --font-size-display-sm: 36px;

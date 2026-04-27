@@ -119,6 +119,9 @@
   --color-table-header-bg: transparent;
   --color-table-header-border: var(--color-black);
 
+  /* Navbar */
+  --color-navbar-role-text: var(--color-brand-dark-mid-contrast);
+
   /* Typography */
   --font-family-display: var(--font-sans);
   --font-size-display-sm: 36px;
