@@ -33,6 +33,11 @@ export type Problem = {
     title: string;
 };
 
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -64,6 +69,11 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
+
+export type EserviceTemplateId = {
+    id: string;
+    knodeId: KnodeId;
+};
 
 export type Attribute = {
     code: string;
@@ -112,6 +122,7 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
+    template?: EserviceTemplateId;
     updatedAt: string;
 };
 
