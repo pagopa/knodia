@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Button, Popover } from "@knodia/ui-kit/ui";
-import { AddressBookIcon } from "@phosphor-icons/react";
+import { AddressBookIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react";
 import { DialogTrigger } from "react-aria-components";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
@@ -22,7 +22,11 @@ export function OrganizationContactPopover({
         size="icon-sm"
       >
         <AddressBookIcon
-          className="text-primary-light-low-contrast"
+          className="orion-only text-primary-light-low-contrast"
+          size={16}
+        />
+        <EnvelopeSimpleIcon
+          className="lynx-only text-primary-light-low-contrast"
           size={16}
         />
       </Button>
