@@ -113,6 +113,11 @@
   /* Navbar */
   --color-navbar-role-text: var(--color-brand-dark-high-contrast);
 
+  /* Document recap */
+  --color-document-recap-border: var(--color-primary-light-decorative);
+  --radius-document-recap: 0;
+  --shadow-document-recap: none;
+
   /* Typography */
   --font-family-display: var(--font-display);
   --font-size-display-sm: 36px;

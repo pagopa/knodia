@@ -122,6 +122,12 @@
   /* Navbar */
   --color-navbar-role-text: var(--color-brand-dark-mid-contrast);
 
+  /* Document recap */
+  --color-document-recap-border: var(--color-slate-100);
+  --radius-document-recap: 16px;
+  --shadow-document-recap: 0 2px 4px 0
+    color-mix(in srgb, var(--color-slate-700) 8%, transparent);
+
   /* Typography */
   --font-family-display: var(--font-sans);
   --font-size-display-sm: 36px;
