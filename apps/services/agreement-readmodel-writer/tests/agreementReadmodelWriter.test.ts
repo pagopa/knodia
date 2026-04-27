@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
@@ -190,6 +191,39 @@ describe("Agreement read model writer tests", async () => {
     await sendTestEvent({
       data: eventData,
       eventType: "AgreementReactivatedByProducerV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
+
+  it("AgreementArchivedV1", async () => {
+    const agreement: Agreement = {
+      ...getMockAgreement({ state: "Archived" }),
+      suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
+      suspendedByProducerAt: null,
+    };
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementArchivedV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementArchivedV1",
       metadataVersion,
       producer,
       streamId: agreement.id,

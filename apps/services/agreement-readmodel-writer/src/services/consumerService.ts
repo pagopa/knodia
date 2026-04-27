@@ -18,6 +18,7 @@ export async function handleAgreementEvent(
       {
         type: P.union(
           "AgreementActivatedV1",
+          "AgreementArchivedV1",
           "AgreementCreatedPendingConsumerOperatorIdentificationV1",
           "AgreementSuspendedByConsumerV1",
           "AgreementSuspendedByProducerV1",
