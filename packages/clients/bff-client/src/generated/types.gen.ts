@@ -975,47 +975,6 @@ export type GetEserviceTemplateResponses = {
 
 export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
 
-export type DownloadEserviceTemplateInterfaceData = {
-    body?: never;
-    path: {
-        eserviceTemplateId: string;
-    };
-    query: {
-        knodeId: KnodeId;
-    };
-    url: '/eserviceTemplates/{eserviceTemplateId}/interface';
-};
-
-export type DownloadEserviceTemplateInterfaceErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
-
-export type DownloadEserviceTemplateInterfaceResponses = {
-    /**
-     * E-service Template interface document downloaded successfully
-     */
-    200: FileDownload;
-};
-
-export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
-
 export type GetProducerEservicesData = {
     body?: never;
     path?: never;
@@ -1313,6 +1272,49 @@ export type ReactivateProducerEserviceResponses = {
 };
 
 export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
+
+export type ArchiveProducerEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/archive';
+};
+
+export type ArchiveProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveProducerEserviceError = ArchiveProducerEserviceErrors[keyof ArchiveProducerEserviceErrors];
+
+export type ArchiveProducerEserviceResponses = {
+    /**
+     * E-service archived successfully
+     */
+    204: void;
+};
+
+export type ArchiveProducerEserviceResponse = ArchiveProducerEserviceResponses[keyof ArchiveProducerEserviceResponses];
 
 export type GetConsumerKeychainKeysData = {
     body?: never;

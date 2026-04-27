@@ -1973,70 +1973,6 @@ paths:
                 description: E-service template not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eserviceTemplates/{eserviceTemplateId}/interface:
-    get:
-      operationId: downloadEserviceTemplateInterface
-      summary: Download E-service Template interface
-      tags:
-        - eserviceTemplate
-      description: Download the interface document for an E-service Template
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: knodeId
-          required: true
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: eserviceTemplateId
-          required: true
-      responses:
-        "200":
-          description: E-service Template interface document downloaded successfully
-          content:
-            application/json: &a1
-              schema:
-                description: E-service Template interface document downloaded successfully
-                format: binary
-                allOf:
-                  - $ref: "#/components/schemas/FileDownload"
-            application/yaml: *a1
-            application/x-yaml: *a1
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -2307,14 +2243,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/json: &a2
+            application/json: &a1
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
-            application/yaml: *a2
-            application/x-yaml: *a2
+            application/yaml: *a1
+            application/x-yaml: *a1
         "400":
           description: Bad Request
           content:
@@ -2421,6 +2357,63 @@ paths:
       responses:
         "204":
           description: E-service reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/eservices/{eserviceId}/archive:
+    post:
+      operationId: archiveProducerEservice
+      tags:
+        - eservice
+      description: Archive an E-service
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "204":
+          description: E-service archived successfully
         "400":
           description: Bad Request
           content:
@@ -3752,14 +3745,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/json: &a3
+            application/json: &a2
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
-            application/yaml: *a3
-            application/x-yaml: *a3
+            application/yaml: *a2
+            application/x-yaml: *a2
         "400":
           description: Bad Request
           content:

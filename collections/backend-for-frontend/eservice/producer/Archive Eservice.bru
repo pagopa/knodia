@@ -1,0 +1,18 @@
+meta {
+  name: Archive Eservice
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producer/eservices/:eserviceId/archive
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
