@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Banner } from "@knodia/ui-kit/ui";
-import { CheckCircleIcon } from "@phosphor-icons/react";
+import { SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
@@ -19,7 +19,7 @@ export function PendingAgreementList({
 }) {
   if (agreements.length === 0) {
     return (
-      <Banner icon={<CheckCircleIcon />} kind="neutral">
+      <Banner icon={<SelectionIcon />} kind="neutral">
         No actions are needed.
       </Banner>
     );
