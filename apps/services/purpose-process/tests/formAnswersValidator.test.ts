@@ -12,7 +12,7 @@ import { loadFormSchemas } from "../src/models/formSchemas.ts";
 import { buildFormAnswersValidator } from "../src/utils/formAnswersValidator.ts";
 
 const assertFormAnswersAreValid = buildFormAnswersValidator(
-  loadFormSchemas("schemas-orion"),
+  loadFormSchemas("schemas-withriskanalysis"),
 );
 const version = PurposeFormSchemaVersion.enum["1.0"];
 

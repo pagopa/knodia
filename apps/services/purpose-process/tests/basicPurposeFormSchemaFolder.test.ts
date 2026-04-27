@@ -8,36 +8,36 @@ import {
 import { buildFormAnswersValidator } from "../src/utils/formAnswersValidator.ts";
 
 const version = PurposeFormSchemaVersion.enum["1.0"];
-const lynxSchemas = loadFormSchemas("schemas-lynx");
-const validateLynx = buildFormAnswersValidator(lynxSchemas);
+const basicSchemas = loadFormSchemas("schemas-basic");
+const validateBasic = buildFormAnswersValidator(basicSchemas);
 
-const lynxRequired = (
-  lynxSchemas(CURRENT_FORM_SCHEMA_VERSION).schema as {
+const basicRequired = (
+  basicSchemas(CURRENT_FORM_SCHEMA_VERSION).schema as {
     required: string[];
   }
 ).required;
-const lynxProperties = Object.keys(
+const basicProperties = Object.keys(
   (
-    lynxSchemas(CURRENT_FORM_SCHEMA_VERSION).schema as {
+    basicSchemas(CURRENT_FORM_SCHEMA_VERSION).schema as {
       properties: Record<string, unknown>;
     }
   ).properties,
 );
 
-describe("Lynx purpose form schema folder", () => {
+describe("Basic purpose form schema folder", () => {
   it("has the reduced top-level required set (no isRequestOnBehalfOfThirdParties)", () => {
-    expect(lynxRequired).toEqual(["purpose", "usesPersonalData"]);
+    expect(basicRequired).toEqual(["purpose", "usesPersonalData"]);
   });
 
-  it("drops risk-analysis properties from the Orion schema", () => {
-    expect(lynxProperties).not.toContain("dataProtectionMeasures");
-    expect(lynxProperties).not.toContain("doneDpia");
-    expect(lynxProperties).not.toContain("isRequestOnBehalfOfThirdParties");
+  it("drops risk-analysis properties from the with-risk-analysis schema", () => {
+    expect(basicProperties).not.toContain("dataProtectionMeasures");
+    expect(basicProperties).not.toContain("doneDpia");
+    expect(basicProperties).not.toContain("isRequestOnBehalfOfThirdParties");
   });
 
-  it("accepts a trimmed Lynx payload (no third-party request fields)", () => {
+  it("accepts a trimmed basic payload (no third-party request fields)", () => {
     expect(() =>
-      validateLynx(
+      validateBasic(
         {
           declarationConfirmGDPR: "true",
           institutionalPurpose: "Institutional purpose",
@@ -51,9 +51,9 @@ describe("Lynx purpose form schema folder", () => {
     ).not.toThrow();
   });
 
-  it("rejects Orion-only fields on Lynx (additionalProperties: false)", () => {
+  it("rejects with-risk-analysis-only fields on basic (additionalProperties: false)", () => {
     expect(() =>
-      validateLynx(
+      validateBasic(
         {
           declarationConfirmGDPR: "true",
           institutionalPurpose: "Institutional purpose",

@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 import z from "zod";
 
 export const PURPOSE_FORM_SCHEMA_FOLDERS = [
-  "schemas-orion",
-  "schemas-lynx",
+  "schemas-basic",
+  "schemas-withriskanalysis",
 ] as const;
 type PurposeFormSchemaFolder = (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
 

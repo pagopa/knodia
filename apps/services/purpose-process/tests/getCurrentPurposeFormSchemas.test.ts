@@ -7,7 +7,7 @@ import {
 } from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const getFormSchemas = loadFormSchemas("schemas-orion");
+const getFormSchemas = loadFormSchemas("schemas-withriskanalysis");
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 

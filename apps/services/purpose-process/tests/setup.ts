@@ -50,7 +50,7 @@ beforeAll(async () => {
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
-      purposeFormsDir: "schemas-orion",
+      purposeFormsDir: "schemas-withriskanalysis",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
     eventStoreDb,
