@@ -3,6 +3,7 @@ import type { RemoteResourceDbService } from "@knodia/db-remote-resource/service
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
   type ExternalResource,
   unsafeBrandExternalId,
@@ -142,6 +143,13 @@ export function eserviceServiceBuilder(
               eserviceId: eserviceId.id,
               limit: 1,
               offset: 0,
+              state: [
+                toK2KAPI_AgreementState(API_AgreementState.enum.Active),
+                toK2KAPI_AgreementState(API_AgreementState.enum.Suspended),
+                toK2KAPI_AgreementState(
+                  API_AgreementState.enum.PendingConsumerOperatorIdentification,
+                ),
+              ],
             },
           }),
         ]);

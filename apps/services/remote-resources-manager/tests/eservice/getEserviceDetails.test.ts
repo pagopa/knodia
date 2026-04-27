@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable max-lines-per-function */
 
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
@@ -76,6 +77,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
+    state: ["ACTIVE", "SUSPENDED", "PENDING_CONSUMER_OPERATOR_IDENTIFICATION"],
   };
 
   const buildK2KAgreement = (
@@ -169,6 +171,70 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(body.agreement).toEqual({
       id: k2kAgreement.id,
       state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+      updatedAt: k2kAgreement.updatedAt,
+    });
+  });
+
+  it("should return 200 with agreement when a suspended one exists", async () => {
+    const k2kAgreement = buildK2KAgreement({
+      id: crypto.randomUUID(),
+      state: "SUSPENDED",
+    });
+
+    getEserviceMock.mockResolvedValue({ data: k2kEservice });
+    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getAgreementsMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 1, offset: 0, total: 1 },
+        results: [k2kAgreement],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/eservices/${eserviceId}`)
+      .query({ knodeId });
+
+    expect(response.statusCode).toBe(200);
+
+    const body = response.json();
+    expect(body.agreement).toEqual({
+      id: k2kAgreement.id,
+      state: "Suspended",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+      updatedAt: k2kAgreement.updatedAt,
+    });
+  });
+
+  it("should return 200 with agreement when a pending one exists", async () => {
+    const k2kAgreement = buildK2KAgreement({
+      id: crypto.randomUUID(),
+      state: "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
+    });
+
+    getEserviceMock.mockResolvedValue({ data: k2kEservice });
+    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getAgreementsMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 1, offset: 0, total: 1 },
+        results: [k2kAgreement],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/eservices/${eserviceId}`)
+      .query({ knodeId });
+
+    expect(response.statusCode).toBe(200);
+
+    const body = response.json();
+    expect(body.agreement).toEqual({
+      id: k2kAgreement.id,
+      state: "PendingConsumerOperatorIdentification",
       suspendedByConsumerAt: null,
       suspendedByProducerAt: null,
       updatedAt: k2kAgreement.updatedAt,
