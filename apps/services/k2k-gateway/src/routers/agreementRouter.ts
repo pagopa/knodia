@@ -226,6 +226,44 @@ export const agreementRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
+      logger.info(`Archiving Agreement ${req.params.agreementId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const response = await agreementProcessApi.archiveAgreement({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      await pollAgreement(response, headers);
+
+      res.send(toAPI_Agreement(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Archive an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "archiveAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Archive an Agreement",
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/archive",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
       logger.info(
         { requestQuery: req.query },
         "Getting Agreements with query params",
