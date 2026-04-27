@@ -124,16 +124,19 @@ function AgreementCounterCard({
 
   return (
     <div
-      className={`${cardBg} flex flex-col gap-4 rounded-2xl pb-4 pl-4 pr-6 pt-4`}
+      className={`${cardBg} flex flex-col gap-counter-card-gap rounded-card pb-counter-card pl-counter-card pr-6 pt-counter-card`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`${iconBg} flex size-8 items-center justify-center rounded-lg p-2 [&>svg]:size-4`}
+            className={`${iconBg} flex size-counter-card-icon items-center justify-center rounded-counter-card-icon p-2 [&>svg]:size-4`}
           >
             {icon}
           </span>
-          <span className="label-lg text-primary-light-mid-contrast">
+          <span className="orion-only label-lg text-primary-light-mid-contrast">
+            {label}
+          </span>
+          <span className="lynx-only title-md-em text-primary-light-mid-contrast">
             {label}
           </span>
         </div>

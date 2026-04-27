@@ -245,6 +245,12 @@
   /* Settings card */
   --radius-settings-card: 8px;
 
+  /* Agreement counter card */
+  --spacing-counter-card: 16px;
+  --spacing-counter-card-gap: 16px;
+  --spacing-counter-card-icon: 32px;
+  --radius-counter-card-icon: 8px;
+
   /* E-service card */
   --radius-eservice-card: 16px;
   --color-eservice-card-border: var(--color-slate-100);
