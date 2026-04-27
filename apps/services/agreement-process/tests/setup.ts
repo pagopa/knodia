@@ -66,10 +66,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export {
-  agreementWriterService,
-  app,
-  currentKnodeId,
-  eserviceWriterService,
-  eventStoreDb,
-};
+export { agreementWriterService, app, eserviceWriterService, eventStoreDb };
