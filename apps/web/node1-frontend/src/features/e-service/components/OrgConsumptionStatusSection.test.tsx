@@ -76,6 +76,8 @@ describe("OrgConsumptionStatusSection", () => {
       agreement: {
         id: crypto.randomUUID(),
         state: "PendingConsumerOperatorIdentification",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
       },
     });
 
@@ -92,6 +94,8 @@ describe("OrgConsumptionStatusSection", () => {
       agreement: {
         id: crypto.randomUUID(),
         state: "PendingConsumerOperatorIdentification",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
       },
     });
 
