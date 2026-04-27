@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -88,5 +88,53 @@ export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/purposes/formSchemas/current',
+    ...options
+});
+
+/**
+ * Suspend Purpose by Consumer
+ *
+ * Suspend a Purpose by Consumer
+ */
+export const suspendPurposeByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeByConsumerResponses, SuspendPurposeByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/suspendByConsumer',
+    ...options
+});
+
+/**
+ * Suspend Purpose by Producer
+ *
+ * Suspend a Purpose by Producer
+ */
+export const suspendPurposeByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeByProducerResponses, SuspendPurposeByProducerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/suspendByProducer',
+    ...options
+});
+
+/**
+ * Reactivate Purpose by Consumer
+ *
+ * Reactivate a Purpose by Consumer
+ */
+export const reactivatePurposeByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivatePurposeByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivatePurposeByConsumerResponses, ReactivatePurposeByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/reactivateByConsumer',
+    ...options
+});
+
+/**
+ * Reactivate Purpose by Producer
+ *
+ * Reactivate a Purpose by Producer
+ */
+export const reactivatePurposeByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivatePurposeByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivatePurposeByProducerResponses, ReactivatePurposeByProducerErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/reactivateByProducer',
     ...options
 });

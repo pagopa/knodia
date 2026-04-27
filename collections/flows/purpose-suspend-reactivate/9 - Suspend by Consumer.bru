@@ -1,0 +1,31 @@
+meta {
+  name: 9 - Suspend by Consumer
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/suspendByConsumer
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Suspended
+  res.body.suspendedByConsumerAt: isDefined
+  res.body.suspendedByProducerAt: isNull
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
