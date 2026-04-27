@@ -219,6 +219,12 @@
   --radius-login-card: 16px;
   --spacing-login-card-y: 64px;
   --spacing-login-card-x: 40px;
+
+  /* Card */
+  --radius-card: 16px;
+
+  /* Attribute group */
+  --radius-attribute-group: 8px;
 }
 
 @layer utilities {
