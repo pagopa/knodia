@@ -1,8 +1,8 @@
-import type { InferSelectModel } from "drizzle-orm";
-
+import { type InferSelectModel, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   foreignKey,
   integer,
   jsonb,
@@ -36,6 +36,8 @@ export const readmodelEservice = eserviceSchema.table(
     mode: text().notNull(),
     name: jsonb().notNull(),
     producerId: uuid("producer_id").notNull(),
+    templateId: uuid("template_id"),
+    templateKnodeId: text("template_knode_id"),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
@@ -43,6 +45,12 @@ export const readmodelEservice = eserviceSchema.table(
   },
   (table) => [
     unique("eservice_id_metadata_v_unique").on(table.metadataVersion, table.id),
+    check(
+      "eservice_template_fields_check",
+      sql`(
+        (${table.templateId} IS NULL) = (${table.templateKnodeId} IS NULL)
+      )`,
+    ),
   ],
 );
 
