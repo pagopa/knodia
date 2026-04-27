@@ -28,6 +28,7 @@ const errorCodes = {
   AGREEMENT_NOT_IN_SUSPENDABLE_STATE: "0008",
   AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
+  AGREEMENT_NOT_IN_ARCHIVABLE_STATE: "0011",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -60,6 +61,21 @@ export function agreementNotFound(id: AgreementId) {
     detail: `Agreement with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function agreementNotInArchivableState({
+  agreementId,
+  state,
+}: {
+  agreementId: AgreementId;
+  state: AgreementState;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_ARCHIVABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be archived (state=${state})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not In Archivable State",
   });
 }
 

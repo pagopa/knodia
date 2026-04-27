@@ -26,6 +26,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
+  agreementNotInArchivableState,
   agreementNotInReactivatableState,
   agreementNotInSuspendableState,
   consumerMissingRequiredAttributes,
@@ -98,6 +99,15 @@ export function assertAgreementCanBeSuspendedBy(
       },
     )
     .exhaustive();
+}
+
+export function assertAgreementIsSuspended(agreement: Agreement): void {
+  if (agreement.state !== AgreementState.enum.Suspended) {
+    throw agreementNotInArchivableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+    });
+  }
 }
 
 export function assertOrganizationIsAgreementProducer(

@@ -30,6 +30,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   createAgreementActivatedV1Event,
+  createAgreementArchivedV1Event,
   createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
   createAgreementReactivatedByConsumerV1Event,
   createAgreementReactivatedByProducerV1Event,
@@ -43,6 +44,7 @@ import {
 import {
   assertAgreementCanBeReactivatedBy,
   assertAgreementCanBeSuspendedBy,
+  assertAgreementIsSuspended,
   assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
@@ -70,6 +72,39 @@ export function agreementServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async archiveAgreement(
+      agreementId: AgreementId,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Archiving Agreement ${agreementId}`);
+
+      const { data: agreement, metadata } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+
+      // Calls arrive via an internal k2k token from RRM; RRM is responsible
+      // for the caller=consumer check on its side before issuing the
+      // downstream call.
+      assertAgreementIsSuspended(agreement);
+
+      const now = new Date();
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: AgreementState.enum.Archived,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createAgreementArchivedV1Event(
+          updatedAgreement,
+          metadata.version,
+          correlationId,
+        ),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
+    },
     async createAgreement(
       {
         consumer,
