@@ -145,7 +145,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         key: `${interfaceDocumentId}/${name}`,
       });
 
-      const seed: eserviceProcessApi.EserviceManualSeed = {
+      const seed: eserviceProcessApi.EserviceFromScratchSeed = {
         ...rest,
         interfaceDocument: {
           ...interfaceDocumentRest,
