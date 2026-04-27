@@ -187,7 +187,7 @@ export const buttonStyles = tv({
       kind: "tonal",
       hierarchy: "brand",
       class:
-        "bg-brand-50 hover:bg-brand-100 pressed:bg-brand-100 text-brand-700",
+        "bg-button-tonal-brand-bg hover:bg-button-tonal-brand-bg-hover pressed:bg-button-tonal-brand-bg-hover text-brand-700",
     },
     {
       kind: "tonal",
