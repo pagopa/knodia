@@ -6,21 +6,21 @@ import {
   EXPECTED_DPOP_PROOF_TYP,
 } from "./constants.ts";
 
-const DPoPProofHeader = z.strictObject({
+const DpopProofHeader = z.strictObject({
   alg: z.union([z.literal("RS256"), z.literal("ES256")]),
   jwk: PublicKeyJwk,
   typ: z.literal(EXPECTED_DPOP_PROOF_TYP),
 });
 
-const DPoPProofPayload = z.strictObject({
+const DpopProofPayload = z.strictObject({
   htm: z.literal(EXPECTED_DPOP_PROOF_HTM),
   htu: z.string(),
   iat: z.number().positive(),
   jti: z.uuid(),
 });
 
-export const DPoPProof = z.strictObject({
-  header: DPoPProofHeader,
-  payload: DPoPProofPayload,
+export const DpopProof = z.strictObject({
+  header: DpopProofHeader,
+  payload: DpopProofPayload,
 });
-export type DPoPProof = z.infer<typeof DPoPProof>;
+export type DpopProof = z.infer<typeof DpopProof>;

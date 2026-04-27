@@ -45,7 +45,7 @@ import {
   EXPECTED_CLIENT_ASSERTION_TYP,
   EXPECTED_DPOP_PROOF_TYP,
 } from "../models/constants.ts";
-import { DPoPProof } from "../models/dpop.ts";
+import { DpopProof } from "../models/dpop.ts";
 import {
   accessTokenTypeMismatch,
   agreementNotActive,
@@ -74,7 +74,7 @@ import {
 } from "./readmodelUtils.ts";
 
 export async function assertDpopProofNotReplayed(
-  dpopProofJWT: DPoPProof,
+  dpopProofJWT: DpopProof,
   dpopProofMaxTokenAgeSeconds: number,
   dpopProofStore: JtiReplayStore,
 ) {
@@ -215,7 +215,7 @@ export async function verifyDpopProofSignature(
   dpopProofMaxTokenAgeSeconds: number,
   expectedDpopProofHtu: string,
   logger: FastifyBaseLogger,
-): Promise<DPoPProof | undefined> {
+): Promise<DpopProof | undefined> {
   if (!dpopProofJWS) {
     return undefined;
   }
@@ -228,7 +228,7 @@ export async function verifyDpopProofSignature(
       `Verifying DPoP Proof (JTI=${payload.jti}) signature with algorithm ${protectedHeader.alg}`,
     );
 
-    const dpopProof = DPoPProof.parse({
+    const dpopProof = DpopProof.parse({
       header: protectedHeader,
       payload,
     });
