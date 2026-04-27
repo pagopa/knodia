@@ -13,7 +13,7 @@ const emptyCounters = {
 
 function getCardByLabel(label: string) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return within(screen.getByText(label).closest("div[class*='bg-']")!);
+  return within(screen.getAllByText(label)[0]!.closest("div[class*='bg-']")!);
 }
 
 describe("ConsumerAgreementsSummary", () => {
