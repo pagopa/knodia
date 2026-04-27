@@ -10,7 +10,7 @@ import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
-import { type Algorithm } from "@knodia/common-models/algorithms";
+import { type Algorithm } from "@knodia/common-models/crypto";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
 import {

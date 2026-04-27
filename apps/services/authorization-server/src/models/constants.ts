@@ -1,4 +1,4 @@
-import { Algorithm } from "@knodia/common-models/algorithms";
+import { Algorithm } from "@knodia/common-models/crypto";
 
 export const EXPECTED_GRANT_TYPE = "client_credentials";
 

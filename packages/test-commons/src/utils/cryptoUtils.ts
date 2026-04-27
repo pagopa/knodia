@@ -1,4 +1,4 @@
-import { Algorithm } from "@knodia/common-models/algorithms";
+import { Algorithm } from "@knodia/common-models/crypto";
 import { createPrivateKey, generateKeyPairSync } from "crypto";
 import { type JWTHeaderParameters, type JWTPayload, SignJWT } from "jose";
 import { match } from "ts-pattern";

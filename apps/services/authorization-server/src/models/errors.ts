@@ -1,5 +1,5 @@
 import type { AgreementState } from "@knodia/agreement-models";
-import type { Algorithm } from "@knodia/common-models/algorithms";
+import type { Algorithm } from "@knodia/common-models/crypto";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
