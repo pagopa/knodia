@@ -40,12 +40,23 @@ describe("extractAuthDataFromToken", () => {
     const result = extractAuthDataFromToken(externalUISessionClaims);
 
     expect(result).toEqual({
-      agreementId: externalUISessionClaims.agreementId,
-      consumerId: externalUISessionClaims.consumerId,
-      consumerKnodeId: externalUISessionClaims.consumerKnodeId,
-      eserviceId: externalUISessionClaims.eserviceId,
-      eserviceVersionId: externalUISessionClaims.eserviceVersionId,
-      producerId: externalUISessionClaims.producerId,
+      agreement: {
+        id: externalUISessionClaims.agreement.id,
+        knodeId: externalUISessionClaims.agreement.knode_id,
+      },
+      consumer: {
+        id: externalUISessionClaims.consumer.id,
+        knodeId: externalUISessionClaims.consumer.knode_id,
+      },
+      eservice: {
+        id: externalUISessionClaims.eservice.id,
+        knodeId: externalUISessionClaims.eservice.knode_id,
+        version: externalUISessionClaims.eservice.version,
+      },
+      producer: {
+        id: externalUISessionClaims.producer.id,
+        knodeId: externalUISessionClaims.producer.knode_id,
+      },
       scope: externalUISessionClaims.scope,
       tokenType: externalUISessionClaims.type,
     } satisfies ExternalUISessionAuthData);

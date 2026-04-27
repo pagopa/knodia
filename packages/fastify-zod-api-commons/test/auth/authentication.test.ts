@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyInstance } from "fastify";
 
 import { requestContext } from "@fastify/request-context";
@@ -237,12 +238,23 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
         authData: {
-          agreementId: validExternalUISessionPayload.agreementId,
-          consumerId: validExternalUISessionPayload.consumerId,
-          consumerKnodeId: validExternalUISessionPayload.consumerKnodeId,
-          eserviceId: validExternalUISessionPayload.eserviceId,
-          eserviceVersionId: validExternalUISessionPayload.eserviceVersionId,
-          producerId: validExternalUISessionPayload.producerId,
+          agreement: {
+            id: validExternalUISessionPayload.agreement.id,
+            knodeId: validExternalUISessionPayload.agreement.knode_id,
+          },
+          consumer: {
+            id: validExternalUISessionPayload.consumer.id,
+            knodeId: validExternalUISessionPayload.consumer.knode_id,
+          },
+          eservice: {
+            id: validExternalUISessionPayload.eservice.id,
+            knodeId: validExternalUISessionPayload.eservice.knode_id,
+            version: validExternalUISessionPayload.eservice.version,
+          },
+          producer: {
+            id: validExternalUISessionPayload.producer.id,
+            knodeId: validExternalUISessionPayload.producer.knode_id,
+          },
           scope: validExternalUISessionPayload.scope,
           tokenType: validExternalUISessionPayload.type,
         },

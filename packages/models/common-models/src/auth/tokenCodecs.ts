@@ -71,12 +71,17 @@ export const ExternalUISessionScope = z.enum(["agreement-activation"]);
 export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
 
 export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
-  agreementId: AgreementId,
-  consumerId: ExternalId<OrganizationId>(),
-  consumerKnodeId: KnodeId,
-  eserviceId: EserviceId,
-  eserviceVersionId: EserviceVersionId,
-  producerId: OrganizationId,
+  agreement: z.strictObject({ id: AgreementId, knode_id: KnodeId }),
+  consumer: z.strictObject({
+    id: ExternalId<OrganizationId>(),
+    knode_id: KnodeId,
+  }),
+  eservice: z.strictObject({
+    id: EserviceId,
+    knode_id: KnodeId,
+    version: EserviceVersionId,
+  }),
+  producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
   scope: ExternalUISessionScope,
   type: z.literal("external-ui-session"),
 });

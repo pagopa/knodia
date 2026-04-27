@@ -22,12 +22,23 @@ export type AuthData =
   | UISessionAuthData;
 
 export interface ExternalUISessionAuthData {
-  agreementId: AgreementId;
-  consumerId: ExternalId<OrganizationId>;
-  consumerKnodeId: KnodeId;
-  eserviceId: EserviceId;
-  eserviceVersionId: EserviceVersionId;
-  producerId: OrganizationId;
+  agreement: {
+    id: AgreementId;
+    knodeId: KnodeId;
+  };
+  consumer: {
+    id: ExternalId<OrganizationId>;
+    knodeId: KnodeId;
+  };
+  eservice: {
+    id: EserviceId;
+    knodeId: KnodeId;
+    version: EserviceVersionId;
+  };
+  producer: {
+    id: OrganizationId;
+    knodeId: KnodeId;
+  };
   scope: ExternalUISessionScope;
   tokenType: "external-ui-session";
 }
@@ -65,12 +76,23 @@ export function extractAuthDataFromToken(
     .with(
       { type: "external-ui-session" },
       (c): ExternalUISessionAuthData => ({
-        agreementId: c.agreementId,
-        consumerId: c.consumerId,
-        consumerKnodeId: c.consumerKnodeId,
-        eserviceId: c.eserviceId,
-        eserviceVersionId: c.eserviceVersionId,
-        producerId: c.producerId,
+        agreement: {
+          id: c.agreement.id,
+          knodeId: c.agreement.knode_id,
+        },
+        consumer: {
+          id: c.consumer.id,
+          knodeId: c.consumer.knode_id,
+        },
+        eservice: {
+          id: c.eservice.id,
+          knodeId: c.eservice.knode_id,
+          version: c.eservice.version,
+        },
+        producer: {
+          id: c.producer.id,
+          knodeId: c.producer.knode_id,
+        },
         scope: c.scope,
         tokenType: "external-ui-session",
       }),

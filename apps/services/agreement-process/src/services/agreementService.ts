@@ -23,6 +23,7 @@ import {
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  type KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
@@ -73,6 +74,7 @@ type CallerIdentity =
 export function agreementServiceBuilder(
   eventStoreWriter: AgreementEventStoreWriter,
   readmodelService: ReadmodelService,
+  currentKnodeId: KnodeId,
 ) {
   return {
     async activateAgreement(
@@ -85,14 +87,21 @@ export function agreementServiceBuilder(
     ): Promise<WithMetadata<Agreement>> {
       logger.info(`Activating Agreement ${agreementId}`);
 
-      assertTokenAgreementIdMatchesPathParam(authData.agreementId, agreementId);
+      assertTokenAgreementIdMatchesPathParam(
+        authData.agreement.id,
+        agreementId,
+      );
 
       const {
         data: agreement,
         metadata: { version },
       } = await retrieveAgreement(agreementId, readmodelService);
 
-      assertTokenResourceClaimsMatchAgreement(authData, agreement);
+      assertTokenResourceClaimsMatchAgreement(
+        authData,
+        agreement,
+        currentKnodeId,
+      );
       assertAgreementIsPendingConsumerOperatorIdentification(agreement);
 
       const updatedAgreement: Agreement = {

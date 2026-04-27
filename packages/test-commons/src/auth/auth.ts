@@ -49,11 +49,14 @@ const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
 export type TestToken =
   | {
       agreementId?: AgreementId;
+      agreementKnodeId?: KnodeId;
       consumerId?: ExternalId<OrganizationId>;
       consumerKnodeId?: KnodeId;
       eserviceId?: EserviceId;
+      eserviceKnodeId?: KnodeId;
       eserviceVersionId?: EserviceVersionId;
       producerId?: OrganizationId;
+      producerKnodeId?: KnodeId;
       scope?: ExternalUISessionScope;
       type: "external-ui-session";
     }
@@ -93,26 +96,40 @@ export function createTestTokenPayload(spec: TestToken): string {
 export function getTestExternalUISessionTokenClaims(
   props: {
     agreementId?: AgreementId;
+    agreementKnodeId?: KnodeId;
     consumerId?: ExternalId<OrganizationId>;
     consumerKnodeId?: KnodeId;
     eserviceId?: EserviceId;
+    eserviceKnodeId?: KnodeId;
     eserviceVersionId?: EserviceVersionId;
     producerId?: OrganizationId;
+    producerKnodeId?: KnodeId;
     scope?: ExternalUISessionScope;
   } = {},
 ): ExternalUISessionTokenClaims {
   return {
-    agreementId: props.agreementId ?? TEST_AGREEMENT_ID,
+    agreement: {
+      id: props.agreementId ?? TEST_AGREEMENT_ID,
+      knode_id: props.agreementKnodeId ?? KnodeId.enum.Orion,
+    },
     aud: "test-audience",
-    consumerId: props.consumerId ?? TEST_CONSUMER_ID,
-    consumerKnodeId: props.consumerKnodeId ?? KnodeId.enum.Orion,
-    eserviceId: props.eserviceId ?? TEST_ESERVICE_ID,
-    eserviceVersionId: props.eserviceVersionId ?? TEST_ESERVICE_VERSION_ID,
+    consumer: {
+      id: props.consumerId ?? TEST_CONSUMER_ID,
+      knode_id: props.consumerKnodeId ?? KnodeId.enum.Orion,
+    },
+    eservice: {
+      id: props.eserviceId ?? TEST_ESERVICE_ID,
+      knode_id: props.eserviceKnodeId ?? KnodeId.enum.Orion,
+      version: props.eserviceVersionId ?? TEST_ESERVICE_VERSION_ID,
+    },
     exp: 9999999999,
     iat: 0,
     iss: "test-issuer",
     jti: "test-jti",
-    producerId: props.producerId ?? TEST_PRODUCER_ID,
+    producer: {
+      id: props.producerId ?? TEST_PRODUCER_ID,
+      knode_id: props.producerKnodeId ?? KnodeId.enum.Orion,
+    },
     scope: props.scope ?? "agreement-activation",
     sub: "test-external-user",
     type: "external-ui-session",
