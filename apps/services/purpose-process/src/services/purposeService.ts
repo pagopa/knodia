@@ -58,9 +58,9 @@ import {
   assertEserviceAllowsPurposeCreation,
   assertEserviceModeIs,
   assertOrganizationIsPurposeProducer,
-  assertPurposeCanBeArchived,
   assertPurposeCanBeReactivatedBy,
   assertPurposeCanBeSuspendedBy,
+  assertPurposeIsSuspended,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -96,8 +96,9 @@ export function purposeServiceBuilder(
         readmodelService,
       );
 
-      // Only the consumer can archive a Suspended purpose.
-      assertPurposeCanBeArchived(purpose);
+      // Only the consumer can archive a purpose.
+      // Purpose must be in Suspended state.
+      assertPurposeIsSuspended(purpose);
 
       const now = new Date();
       const updatedPurpose: Purpose = {

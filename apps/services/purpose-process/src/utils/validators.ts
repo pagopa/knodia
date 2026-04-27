@@ -96,15 +96,6 @@ export function assertOrganizationIsPurposeProducer(
   }
 }
 
-export function assertPurposeCanBeArchived(purpose: Purpose): void {
-  if (purpose.state !== PurposeState.enum.Suspended) {
-    throw purposeNotInArchivableState({
-      purposeId: purpose.id,
-      state: purpose.state,
-    });
-  }
-}
-
 export function assertPurposeCanBeReactivatedBy(
   purpose: Purpose,
   reactivatedBy: PurposeActor,
@@ -156,6 +147,15 @@ export function assertPurposeCanBeSuspendedBy(
       throwNotSuspendable();
     })
     .exhaustive();
+}
+
+export function assertPurposeIsSuspended(purpose: Purpose): void {
+  if (purpose.state !== PurposeState.enum.Suspended) {
+    throw purposeNotInArchivableState({
+      purposeId: purpose.id,
+      state: purpose.state,
+    });
+  }
 }
 
 function getOwnSuspendedAt(purpose: Purpose, actor: PurposeActor): Date | null {
