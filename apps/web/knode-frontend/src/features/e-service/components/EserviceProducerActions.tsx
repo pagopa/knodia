@@ -1,6 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
+  archiveProducerEserviceMutation,
   getProducerEserviceDetailsQueryKey,
   getProducerEservicesQueryKey,
   reactivateProducerEserviceMutation,
@@ -25,6 +26,7 @@ export function EserviceProducerActions({
 }: EserviceProducerActionsProps) {
   const queryClient = useQueryClient();
   const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 
   const invalidateEserviceQueries = () =>
     Promise.all([
@@ -63,6 +65,18 @@ export function EserviceProducerActions({
     onSuccess: () => invalidateEserviceQueries(),
   });
 
+  const {
+    isError: isArchiveError,
+    isPending: isArchiving,
+    mutate: archive,
+  } = useMutation({
+    ...archiveProducerEserviceMutation({ client }),
+    onSuccess: () => {
+      setIsArchiveDialogOpen(false);
+      invalidateEserviceQueries();
+    },
+  });
+
   return match(state)
     .with("Active", () => (
       <DialogTrigger
@@ -86,15 +100,36 @@ export function EserviceProducerActions({
       </DialogTrigger>
     ))
     .with("Suspended", () => (
-      <Button
-        hierarchy="brand"
-        isPending={isReactivating}
-        kind="filled"
-        onPress={() => reactivate({ path: { eserviceId } })}
-        size="md"
-      >
-        Reactivate
-      </Button>
+      <>
+        <DialogTrigger
+          isOpen={isArchiveDialogOpen}
+          onOpenChange={setIsArchiveDialogOpen}
+        >
+          <Button hierarchy="danger" kind="tonal" size="md">
+            Archive
+          </Button>
+          <Modal
+            actionLabel="Archive anyway"
+            cancelLabel="Cancel"
+            confirmButtonProps={{ isPending: isArchiving }}
+            description="Are you sure you want to archive this E-Service? Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens. This action cannot be undone."
+            isDismissable
+            kind="destructive"
+            onConfirm={() => archive({ path: { eserviceId } })}
+            showErrorBanner={isArchiveError}
+            title="Archive E-Service"
+          />
+        </DialogTrigger>
+        <Button
+          hierarchy="brand"
+          isPending={isReactivating}
+          kind="filled"
+          onPress={() => reactivate({ path: { eserviceId } })}
+          size="md"
+        >
+          Reactivate
+        </Button>
+      </>
     ))
     .with("Archived", () => null)
     .exhaustive();
