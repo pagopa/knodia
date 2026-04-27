@@ -30,7 +30,6 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
 
   return {
     ...input,
-    archivedAt: input.archivedAt != null ? new Date(input.archivedAt) : null,
     consumer: fromPurposeConsumerV1(input.consumer),
     createdAt: new Date(input.createdAt),
     description: input.description,

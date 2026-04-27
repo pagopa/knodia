@@ -13,7 +13,6 @@ const toPurposeSQL = (
   purpose: Purpose,
   metadataVersion: number,
 ): PurposeSQL => ({
-  archivedAt: purpose.archivedAt,
   consumerId: purpose.consumer.id,
   consumerKnodeId: purpose.consumer.knodeId,
   createdAt: purpose.createdAt,

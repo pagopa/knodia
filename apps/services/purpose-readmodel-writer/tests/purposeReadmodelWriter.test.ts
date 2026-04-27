@@ -182,8 +182,8 @@ describe("Purpose read model writer tests", async () => {
   it("PurposeArchivedV1", async () => {
     const purpose: Purpose = {
       ...getMockPurpose(),
-      archivedAt: new Date("2026-02-01T09:00:00Z"),
       state: "Archived",
+      updatedAt: new Date("2026-02-01T09:00:00Z"),
     };
     const eventData = protobufBinaryCodec(
       purposeEvents.PurposeArchivedV1,

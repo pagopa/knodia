@@ -84,7 +84,6 @@ describe("POST /purposes (createPurpose)", () => {
       const responseBody = response.json<API_Purpose>();
 
       const expectedPurpose: Purpose = {
-        archivedAt: null,
         consumer: { id: consumerId, knodeId: consumerKnodeId },
         createdAt: new Date(responseBody.createdAt),
         dailyCalls: body.dailyCalls,

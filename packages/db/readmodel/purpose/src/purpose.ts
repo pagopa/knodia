@@ -18,10 +18,6 @@ export const purposeSchema = pgSchema(
 export const readmodelPurpose = purposeSchema.table(
   "purpose",
   {
-    archivedAt: timestamp("archived_at", {
-      mode: "date",
-      withTimezone: true,
-    }),
     consumerId: uuid("consumer_id").notNull(),
     consumerKnodeId: text("consumer_knode_id").notNull(),
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })

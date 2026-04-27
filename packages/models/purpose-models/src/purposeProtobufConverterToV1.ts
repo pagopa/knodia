@@ -28,7 +28,6 @@ const toPurposeFormSchemaVersionV1 = (
 
 export const toPurposeV1 = (purpose: Purpose): PurposeV1 => ({
   ...purpose,
-  archivedAt: purpose.archivedAt?.getTime(),
   createdAt: purpose.createdAt.getTime(),
   formAnswersJson: JSON.stringify(purpose.formAnswersJson),
   formSchemaVersion: toPurposeFormSchemaVersionV1(purpose.formSchemaVersion),

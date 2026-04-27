@@ -16,7 +16,6 @@ message PurposeV1 {
   PurposeFormSchemaVersionV1 formSchemaVersion = 11;
   optional int64 suspendedByConsumerAt = 12;
   optional int64 suspendedByProducerAt = 13;
-  optional int64 archivedAt = 14;
 }
 
 enum PurposeStateV1 {

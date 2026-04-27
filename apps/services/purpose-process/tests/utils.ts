@@ -36,7 +36,6 @@ export async function seedPurpose(purpose: Purpose) {
 
 export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
   return {
-    archivedAt: toExpectIsoOrNull(purpose.archivedAt),
     // formAnswersJson and formSchemaVersion are intentionally excluded —
     // they can be retrieved via separate routes
     consumer: purpose.consumer,

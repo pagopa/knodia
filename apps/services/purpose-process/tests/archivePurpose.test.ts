@@ -26,7 +26,6 @@ const notAllowedStates: PurposeState[] = ["Active", "Archived"];
 function makeSuspendedPurpose(overrides: Partial<Purpose>): Purpose {
   return {
     ...getMockPurpose(),
-    archivedAt: null,
     state: "Suspended",
     suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
     suspendedByProducerAt: null,
@@ -58,7 +57,6 @@ describe("POST /purposes/:purposeId/archive", () => {
 
     const body = response.json<API_Purpose>();
     expect(body.state).toBe("Archived");
-    expect(body.archivedAt).not.toBeNull();
     expect(body.suspendedByConsumerAt).toBe(
       purpose.suspendedByConsumerAt?.toISOString(),
     );
@@ -90,7 +88,6 @@ describe("POST /purposes/:purposeId/archive", () => {
 
     const body = response.json<API_Purpose>();
     expect(body.state).toBe("Archived");
-    expect(body.archivedAt).not.toBeNull();
     expect(body.suspendedByConsumerAt).toBeNull();
     expect(body.suspendedByProducerAt).toBe(producerSuspendedAt.toISOString());
   });
@@ -113,7 +110,6 @@ describe("POST /purposes/:purposeId/archive", () => {
 
     const body = response.json<API_Purpose>();
     expect(body.state).toBe("Archived");
-    expect(body.archivedAt).not.toBeNull();
     expect(body.suspendedByConsumerAt).toBe(consumerSuspendedAt.toISOString());
     expect(body.suspendedByProducerAt).toBe(producerSuspendedAt.toISOString());
   });

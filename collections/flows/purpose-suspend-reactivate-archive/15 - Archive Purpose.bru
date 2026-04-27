@@ -22,7 +22,6 @@ headers {
 assert {
   res.status: eq 200
   res.body.state: eq Archived
-  res.body.archivedAt: isDefined
   res.body.suspendedByConsumerAt: isDefined
 }
 

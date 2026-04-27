@@ -102,7 +102,6 @@ export function purposeServiceBuilder(
       const now = new Date();
       const updatedPurpose: Purpose = {
         ...purpose,
-        archivedAt: now,
         state: PurposeState.enum.Archived,
         updatedAt: now,
       };
@@ -164,7 +163,6 @@ export function purposeServiceBuilder(
 
       const now = new Date();
       const purpose: Purpose = {
-        archivedAt: null,
         consumer,
         createdAt: now,
         dailyCalls,

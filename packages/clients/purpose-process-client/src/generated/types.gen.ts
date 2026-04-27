@@ -107,7 +107,6 @@ export type PurposeSeed = {
 };
 
 export type Purpose = {
-    archivedAt: string | null;
     consumer: PurposeConsumer;
     createdAt: string;
     dailyCalls: number;
