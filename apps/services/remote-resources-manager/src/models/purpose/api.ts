@@ -72,6 +72,12 @@ export const API_Purpose = z
     }),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
+    suspendedByConsumerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Purpose was suspended by the Consumer",
+    }),
+    suspendedByProducerAt: z.iso.datetime().nullable().meta({
+      description: "Timestamp when the Purpose was suspended by the Producer",
+    }),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Purpose" });

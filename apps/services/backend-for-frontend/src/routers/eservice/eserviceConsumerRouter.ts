@@ -5,7 +5,10 @@ import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
+import {
+  parseContentDispositionFileName,
+  sendFileDownload,
+} from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -224,11 +227,12 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         downloadHeaders["content-disposition"],
       );
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${fileName}"`,
-        "Content-Type": contentType,
-      });
-      res.raw.end(Buffer.from(blob as unknown as ArrayBuffer));
+      sendFileDownload(
+        res,
+        Buffer.from(blob as unknown as ArrayBuffer),
+        fileName,
+        contentType,
+      );
     },
     method: "GET",
     schema: {

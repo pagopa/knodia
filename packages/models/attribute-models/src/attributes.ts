@@ -1,18 +1,23 @@
 import z from "zod";
 
-export const attributes: Record<string, Record<string, string>> = {
+export const attributes = {
   vc_territorial_units: {
     nuts1: "NUTS 1",
     nuts2: "NUTS 2",
     nuts3: "NUTS 3",
   },
-};
+} as const satisfies Record<string, Record<string, string>>;
+
+export type AttributeCode<S extends AttributeScheme> =
+  keyof (typeof attributes)[S];
+export type AttributeScheme = keyof typeof attributes;
 
 export function getAttribute({
   code,
   scheme,
 }: AttributeId): Attribute | undefined {
-  const name = attributes[scheme]?.[code];
+  const a: Record<string, Record<string, string>> = attributes;
+  const name = a[scheme]?.[code];
   if (name === undefined) {
     return undefined;
   }

@@ -1,0 +1,21 @@
+meta {
+  name: Get Eservice Template Details
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/eserviceTemplates/:eserviceTemplateId?knodeId=Lynx
+  body: none
+}
+
+params:path {
+  eserviceTemplateId: {{eserviceTemplateId}}
+}
+
+params:query {
+  knodeId: {{knodeId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

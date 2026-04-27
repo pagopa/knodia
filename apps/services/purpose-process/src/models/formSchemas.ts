@@ -1,28 +1,56 @@
 import { type PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import z from "zod";
 
-import schema_1_0 from "../schemas/1.0/schema.json" with { type: "json" };
-import texts_en_1_0 from "../schemas/1.0/texts.en.json" with { type: "json" };
-import uiSchema_1_0 from "../schemas/1.0/ui-schema.json" with { type: "json" };
-import uiTexts_en_1_0 from "../schemas/1.0/ui-texts.en.json" with { type: "json" };
+export const PURPOSE_FORM_SCHEMA_FOLDERS = [
+  "schemas-basic",
+  "schemas-withriskanalysis",
+] as const;
+type PurposeFormSchemaFolder = (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
 
 export const CURRENT_FORM_SCHEMA_VERSION: PurposeFormSchemaVersion = "1.0";
 
-interface FormSchemaBundle {
-  schema: Record<string, unknown>;
-  texts: { en: Record<string, string> };
-  uiSchema: Record<string, unknown>;
-  uiTexts: { en: Record<string, string> };
+const JsonObject = z.record(z.string(), z.unknown());
+const TextsDict = z.record(z.string(), z.string());
+
+interface FormSchemaFiles {
+  schema: z.infer<typeof JsonObject>;
+  texts: { en: z.infer<typeof TextsDict> };
+  uiSchema: z.infer<typeof JsonObject>;
+  uiTexts: { en: z.infer<typeof TextsDict> };
 }
 
-const FORM_SCHEMAS = {
-  "1.0": {
-    schema: schema_1_0,
-    texts: { en: texts_en_1_0 },
-    uiSchema: uiSchema_1_0,
-    uiTexts: { en: uiTexts_en_1_0 },
-  },
-} satisfies Record<PurposeFormSchemaVersion, FormSchemaBundle>;
+const readJson = <T>(
+  dir: string,
+  version: string,
+  file: string,
+  schema: z.ZodType<T>,
+): T =>
+  schema.parse(JSON.parse(readFileSync(join(dir, version, file), "utf8")));
 
-export const getFormSchemas = (
+const loadFormSchemaFiles = (
+  dir: string,
   version: PurposeFormSchemaVersion,
-): FormSchemaBundle => FORM_SCHEMAS[version];
+): FormSchemaFiles => ({
+  schema: readJson(dir, version, "schema.json", JsonObject),
+  texts: { en: readJson(dir, version, "texts.en.json", TextsDict) },
+  uiSchema: readJson(dir, version, "ui-schema.json", JsonObject),
+  uiTexts: { en: readJson(dir, version, "ui-texts.en.json", TextsDict) },
+});
+
+export type GetFormSchemas = ReturnType<typeof loadFormSchemas>;
+
+export function loadFormSchemas(purposeFormsDir: PurposeFormSchemaFolder) {
+  const schemasDir = resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    "..",
+    purposeFormsDir,
+  );
+  const formSchemas = {
+    "1.0": loadFormSchemaFiles(schemasDir, "1.0"),
+  } satisfies Record<PurposeFormSchemaVersion, FormSchemaFiles>;
+  return (version: PurposeFormSchemaVersion): FormSchemaFiles =>
+    formSchemas[version];
+}
