@@ -4,6 +4,7 @@ import { Button, Empty } from "@knodia/ui-kit/ui";
 import {
   ArchiveIcon,
   CheckIcon,
+  type Icon,
   ProhibitIcon,
   SelectionPlusIcon,
 } from "@phosphor-icons/react";
@@ -57,7 +58,7 @@ export function ConsumerAgreementsSummary({
       <div className="grid grid-cols-3 gap-4">
         <AgreementCounterCard
           count={activeAgreements}
-          icon={<CheckIcon />}
+          Icon={CheckIcon}
           kind="success"
           label="Active"
           onViewAll={() =>
@@ -69,7 +70,7 @@ export function ConsumerAgreementsSummary({
         />
         <AgreementCounterCard
           count={suspendedAgreements}
-          icon={<ProhibitIcon />}
+          Icon={ProhibitIcon}
           kind="error"
           label="Suspended"
           onViewAll={() =>
@@ -81,7 +82,7 @@ export function ConsumerAgreementsSummary({
         />
         <AgreementCounterCard
           count={archivedAgreements}
-          icon={<ArchiveIcon />}
+          Icon={ArchiveIcon}
           kind="neutral"
           label="Archived"
           onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
@@ -95,13 +96,13 @@ export function ConsumerAgreementsSummary({
 
 function AgreementCounterCard({
   count,
-  icon,
+  Icon,
   kind,
   label,
   onViewAll,
 }: {
   count: number;
-  icon: React.ReactNode;
+  Icon: Icon;
   kind: "error" | "neutral" | "success";
   label: string;
   onViewAll: () => void;
@@ -129,9 +130,10 @@ function AgreementCounterCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`${iconBg} flex size-counter-card-icon items-center justify-center rounded-counter-card-icon p-2 [&>svg]:size-4`}
+            className={`${iconBg} flex size-counter-card-icon items-center justify-center rounded-counter-card-icon p-2 [&>svg]:size-counter-card-svg`}
           >
-            {icon}
+            <Icon className="orion-only" />
+            <Icon className="lynx-only" weight="bold" />
           </span>
           <span className="orion-only label-lg text-primary-light-mid-contrast">
             {label}
