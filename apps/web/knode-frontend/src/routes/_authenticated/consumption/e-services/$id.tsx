@@ -185,16 +185,16 @@ function RouteComponent() {
         ))}
       </div>
 
-      <Divider className="my-10" />
-
       {agreement && (
         <>
-          <OrgConsumptionStatusSection
-            agreement={agreement}
-            eserviceId={eservice.id}
-            hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
-            knodeId={knodeId}
-          />
+          <div className="mt-10">
+            <OrgConsumptionStatusSection
+              agreement={agreement}
+              eserviceId={eservice.id}
+              hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
+              knodeId={knodeId}
+            />
+          </div>
           <Divider className="my-10" />
         </>
       )}
