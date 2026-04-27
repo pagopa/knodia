@@ -135,10 +135,7 @@ function AgreementCounterCard({
             <Icon className="orion-only" />
             <Icon className="lynx-only" weight="bold" />
           </span>
-          <span className="orion-only label-lg text-primary-light-mid-contrast">
-            {label}
-          </span>
-          <span className="lynx-only title-md-em text-primary-light-mid-contrast">
+          <span className="counter-card-label text-primary-light-mid-contrast">
             {label}
           </span>
         </div>

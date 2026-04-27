@@ -266,6 +266,11 @@
   --spacing-counter-card-icon: 32px;
   --spacing-counter-card-svg: 16px;
   --radius-counter-card-icon: 8px;
+  --font-family-counter-card-label: var(--font-family-label);
+  --font-size-counter-card-label: var(--font-size-label-lg);
+  --font-weight-counter-card-label: var(--font-weight-label);
+  --letter-spacing-counter-card-label: var(--letter-spacing-label);
+  --line-height-counter-card-label: var(--line-height-label);
 
   /* E-service card */
   --radius-eservice-card: 16px;
