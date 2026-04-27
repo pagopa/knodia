@@ -117,6 +117,10 @@
   --color-button-tonal-brand-bg: var(--color-brand-100);
   --color-button-tonal-brand-bg-hover: var(--color-brand-200);
 
+  /* Org consumption status */
+  --radius-org-consumption-status-card: 0;
+  --shadow-org-consumption-status: none;
+
   /* Document recap */
   --color-document-recap-border: var(--color-primary-light-decorative);
   --radius-document-recap: 0;

@@ -48,7 +48,7 @@ export function OrgConsumptionStatusSection({
 
   return (
     <Disclosure
-      className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-expanded:pb-6 elevation-2"
+      className="flex flex-col rounded-org-consumption-status-card border border-primary-light-decorative px-6 pt-6 data-expanded:pb-6 shadow-org-consumption-status"
       defaultExpanded
     >
       <CollapseTrigger hasRecentlyBeenUpdated={hasRecentlyBeenUpdated} />
@@ -226,7 +226,7 @@ function CollapseTrigger({
           {hasRecentlyBeenUpdated && <RecentlyUpdatedChip />}
           <span
             aria-hidden
-            className="flex items-center justify-center rounded-[7px] bg-slate-100 p-2"
+            className="flex items-center justify-center rounded-button bg-slate-100 p-2"
           >
             {isExpanded ? (
               <CaretUpIcon size={20} />
