@@ -116,7 +116,7 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 export const createEserviceFromTemplate = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceFromTemplateData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceFromTemplateResponses, CreateEserviceFromTemplateErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/producer/eservices/from-template',
+    url: '/producer/eservices/fromTemplate',
     ...options,
     headers: {
         'Content-Type': 'application/json',

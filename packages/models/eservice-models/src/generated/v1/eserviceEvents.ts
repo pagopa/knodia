@@ -13,8 +13,6 @@ export const protobufPackage = "eservice.v1";
 export interface EserviceVersionActivatedV1 {
   eservice: EserviceV1 | undefined;
   eserviceVersionId: string;
-  templateId?: string | undefined;
-  templateKnodeId?: string | undefined;
 }
 
 export interface EserviceVersionSuspendedV1 {
@@ -37,7 +35,7 @@ export interface EserviceUpdatedV1 {
 }
 
 function createBaseEserviceVersionActivatedV1(): EserviceVersionActivatedV1 {
-  return { eservice: undefined, eserviceVersionId: "", templateId: undefined, templateKnodeId: undefined };
+  return { eservice: undefined, eserviceVersionId: "" };
 }
 
 export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> = {
@@ -47,12 +45,6 @@ export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> 
     }
     if (message.eserviceVersionId !== "") {
       writer.uint32(18).string(message.eserviceVersionId);
-    }
-    if (message.templateId !== undefined) {
-      writer.uint32(26).string(message.templateId);
-    }
-    if (message.templateKnodeId !== undefined) {
-      writer.uint32(34).string(message.templateKnodeId);
     }
     return writer;
   },
@@ -80,22 +72,6 @@ export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> 
           message.eserviceVersionId = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.templateId = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.templateKnodeId = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -109,8 +85,6 @@ export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> 
     return {
       eservice: isSet(object.eservice) ? EserviceV1.fromJSON(object.eservice) : undefined,
       eserviceVersionId: isSet(object.eserviceVersionId) ? globalThis.String(object.eserviceVersionId) : "",
-      templateId: isSet(object.templateId) ? globalThis.String(object.templateId) : undefined,
-      templateKnodeId: isSet(object.templateKnodeId) ? globalThis.String(object.templateKnodeId) : undefined,
     };
   },
 
@@ -121,12 +95,6 @@ export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> 
     }
     if (message.eserviceVersionId !== "") {
       obj.eserviceVersionId = message.eserviceVersionId;
-    }
-    if (message.templateId !== undefined) {
-      obj.templateId = message.templateId;
-    }
-    if (message.templateKnodeId !== undefined) {
-      obj.templateKnodeId = message.templateKnodeId;
     }
     return obj;
   },
@@ -140,8 +108,6 @@ export const EserviceVersionActivatedV1: MessageFns<EserviceVersionActivatedV1> 
       ? EserviceV1.fromPartial(object.eservice)
       : undefined;
     message.eserviceVersionId = object.eserviceVersionId ?? "";
-    message.templateId = object.templateId ?? undefined;
-    message.templateKnodeId = object.templateKnodeId ?? undefined;
     return message;
   },
 };

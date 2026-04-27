@@ -8,8 +8,6 @@ import "v1/eservice.proto";
 message EserviceVersionActivatedV1 {
   EserviceV1 eservice = 1;
   string eserviceVersionId = 2;
-  optional string templateId = 3;
-  optional string templateKnodeId = 4;
 }
 
 message EserviceVersionSuspendedV1 {

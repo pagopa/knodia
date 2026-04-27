@@ -269,7 +269,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/producer/eservices/from-template",
+    url: "/producer/eservices/fromTemplate",
   });
 
   fastify.route({

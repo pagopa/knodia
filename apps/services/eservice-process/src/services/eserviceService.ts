@@ -191,7 +191,6 @@ export function eserviceServiceBuilder(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,
-          template,
           correlationId,
         ),
       );

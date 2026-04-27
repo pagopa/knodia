@@ -1165,17 +1165,17 @@ export type CreateEserviceFromTemplateData = {
         maxDailyCallsPerKnode: number;
         name: LocalizedName;
         /**
-         * Overrides applied to the template interface document
+         * Overrides applied to the E-service Template interface document
          */
         interfaceDocumentOverrides: InterfaceDocumentOverrides;
         /**
-         * Reference to the E-service template to instantiate
+         * Reference to the E-service Template to instantiate
          */
         template: EserviceTemplateReference;
     };
     path?: never;
     query?: never;
-    url: '/producer/eservices/from-template';
+    url: '/producer/eservices/fromTemplate';
 };
 
 export type CreateEserviceFromTemplateErrors = {

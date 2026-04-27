@@ -231,7 +231,7 @@ const API_EserviceBaseSeed = z.strictObject({
   name: API_LocalizedName,
 });
 
-export const API_EserviceManualSeed = API_EserviceBaseSeed.extend({
+export const API_EserviceFromScratchSeed = API_EserviceBaseSeed.extend({
   categories: z
     .array(API_EserviceCategory)
     .optional()
@@ -243,7 +243,9 @@ export const API_EserviceManualSeed = API_EserviceBaseSeed.extend({
     .array(z.array(API_Attribute))
     .meta({ description: "Required attributes for the E-service" }),
 }).meta({ id: "EserviceManualSeed" });
-export type API_EserviceManualSeed = z.infer<typeof API_EserviceManualSeed>;
+export type API_EserviceFromScratchSeed = z.infer<
+  typeof API_EserviceFromScratchSeed
+>;
 
 const TemplateReference = z
   .strictObject({
@@ -262,7 +264,7 @@ export type API_EserviceFromTemplateSeed = z.infer<
 >;
 
 export const API_EserviceSeed = z
-  .union([API_EserviceManualSeed, API_EserviceFromTemplateSeed])
+  .union([API_EserviceFromScratchSeed, API_EserviceFromTemplateSeed])
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 

@@ -144,10 +144,11 @@ export const API_EserviceFromTemplateSeed = API_EserviceSeed.omit({
   requiredAttributes: true,
 }).extend({
   interfaceDocumentOverrides: API_InterfaceDocumentOverrides.meta({
-    description: "Overrides applied to the template interface document",
+    description:
+      "Overrides applied to the E-service Template interface document",
   }),
   template: API_EserviceTemplateReference.meta({
-    description: "Reference to the E-service template to instantiate",
+    description: "Reference to the E-service Template to instantiate",
   }),
 });
 export type API_EserviceFromTemplateSeed = z.infer<

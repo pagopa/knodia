@@ -25,8 +25,8 @@ import { zocker } from "zocker";
 import { buildApp } from "../src/app.ts";
 import {
   type API_Eservice,
+  API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
-  API_EserviceManualSeed,
 } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
@@ -45,7 +45,7 @@ const allowedTestTokens: TestToken[] = [
 
 describe("POST /eservices (createEservice)", () => {
   const body = {
-    ...zocker(API_EserviceManualSeed).setSeed(0).generate(),
+    ...zocker(API_EserviceFromScratchSeed).setSeed(0).generate(),
     categories: [validCategory],
     maxDailyCallsPerConsumer: 1000,
     maxDailyCallsPerKnode: 2000,

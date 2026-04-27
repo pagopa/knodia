@@ -1,7 +1,5 @@
-import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   CorrelationId,
-  EserviceTemplateId,
   EserviceVersionId,
 } from "@knodia/common-models/ids";
 import type { NewEventStoreEserviceEvent } from "@knodia/db-event-store-writer/eservice";
@@ -11,7 +9,6 @@ import { type Eservice, toEserviceV1 } from "@knodia/eservice-models";
 export const createEserviceVersionActivatedV1Event = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
-  template: ExternalResource<EserviceTemplateId> | undefined,
   correlationId: CorrelationId,
 ): NewEventStoreEserviceEvent => ({
   correlationId,
@@ -20,8 +17,6 @@ export const createEserviceVersionActivatedV1Event = (
     data: {
       eservice: toEserviceV1(eservice),
       eserviceVersionId,
-      templateId: template?.id,
-      templateKnodeId: template?.knodeId,
     },
     type: "EserviceVersionActivatedV1",
   },

@@ -2237,7 +2237,7 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /producer/eservices/from-template:
+  /producer/eservices/fromTemplate:
     post:
       operationId: createEserviceFromTemplate
       tags:
@@ -2289,11 +2289,11 @@ paths:
                 name:
                   $ref: "#/components/schemas/LocalizedName"
                 interfaceDocumentOverrides:
-                  description: Overrides applied to the template interface document
+                  description: Overrides applied to the E-service Template interface document
                   allOf:
                     - $ref: "#/components/schemas/InterfaceDocumentOverrides"
                 template:
-                  description: Reference to the E-service template to instantiate
+                  description: Reference to the E-service Template to instantiate
                   allOf:
                     - $ref: "#/components/schemas/EserviceTemplateReference"
               required:
