@@ -201,7 +201,7 @@ export function eserviceServiceBuilder(
             limit: dynamicLimit,
             offset: dynamicOffset,
             state: agreementState
-              ? toK2KAPI_AgreementState(agreementState)
+              ? [toK2KAPI_AgreementState(agreementState)]
               : undefined,
           },
         });
