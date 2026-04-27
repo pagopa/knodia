@@ -53,7 +53,7 @@ export function tokenServiceBuilder({
       }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
-      // Verify DPoP proof signature and claims if a DPoP proof is provided in the Client Assertion header
+      // Verify DPoP proof signature and claims if a DPoP proof is provided in the request headers
       const dpopProofJWT = await verifyDpopProofSignature(
         dpopProofJWS,
         dpopProofMaxTokenAgeSeconds,

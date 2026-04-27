@@ -138,6 +138,7 @@ export interface EserviceV1 {
   versions: EserviceVersionV1[];
   createdAt: number;
   updatedAt: number;
+  template?: EserviceTemplateV1 | undefined;
 }
 
 export interface EserviceCategoryV1 {
@@ -186,6 +187,11 @@ export interface LocalizedTextV1 {
   en: string;
 }
 
+export interface EserviceTemplateV1 {
+  id: string;
+  knodeId: string;
+}
+
 function createBaseEserviceV1(): EserviceV1 {
   return {
     id: "",
@@ -199,6 +205,7 @@ function createBaseEserviceV1(): EserviceV1 {
     versions: [],
     createdAt: 0,
     updatedAt: 0,
+    template: undefined,
   };
 }
 
@@ -236,6 +243,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     }
     if (message.updatedAt !== 0) {
       writer.uint32(88).int64(message.updatedAt);
+    }
+    if (message.template !== undefined) {
+      EserviceTemplateV1.encode(message.template, writer.uint32(98).fork()).join();
     }
     return writer;
   },
@@ -335,6 +345,14 @@ export const EserviceV1: MessageFns<EserviceV1> = {
           message.updatedAt = longToNumber(reader.int64());
           continue;
         }
+        case 12: {
+          if (tag !== 98) {
+            break;
+          }
+
+          message.template = EserviceTemplateV1.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -363,6 +381,7 @@ export const EserviceV1: MessageFns<EserviceV1> = {
         : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+      template: isSet(object.template) ? EserviceTemplateV1.fromJSON(object.template) : undefined,
     };
   },
 
@@ -401,6 +420,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
+    if (message.template !== undefined) {
+      obj.template = EserviceTemplateV1.toJSON(message.template);
+    }
     return obj;
   },
 
@@ -424,6 +446,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     message.versions = object.versions?.map((e) => EserviceVersionV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
+    message.template = (object.template !== undefined && object.template !== null)
+      ? EserviceTemplateV1.fromPartial(object.template)
+      : undefined;
     return message;
   },
 };
@@ -1159,6 +1184,82 @@ export const LocalizedTextV1: MessageFns<LocalizedTextV1> = {
   fromPartial<I extends Exact<DeepPartial<LocalizedTextV1>, I>>(object: I): LocalizedTextV1 {
     const message = createBaseLocalizedTextV1();
     message.en = object.en ?? "";
+    return message;
+  },
+};
+
+function createBaseEserviceTemplateV1(): EserviceTemplateV1 {
+  return { id: "", knodeId: "" };
+}
+
+export const EserviceTemplateV1: MessageFns<EserviceTemplateV1> = {
+  encode(message: EserviceTemplateV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.knodeId !== "") {
+      writer.uint32(18).string(message.knodeId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): EserviceTemplateV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEserviceTemplateV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.knodeId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EserviceTemplateV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      knodeId: isSet(object.knodeId) ? globalThis.String(object.knodeId) : "",
+    };
+  },
+
+  toJSON(message: EserviceTemplateV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.knodeId !== "") {
+      obj.knodeId = message.knodeId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EserviceTemplateV1>, I>>(base?: I): EserviceTemplateV1 {
+    return EserviceTemplateV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EserviceTemplateV1>, I>>(object: I): EserviceTemplateV1 {
+    const message = createBaseEserviceTemplateV1();
+    message.id = object.id ?? "";
+    message.knodeId = object.knodeId ?? "";
     return message;
   },
 };

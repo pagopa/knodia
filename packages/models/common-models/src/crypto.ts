@@ -1,5 +1,8 @@
 import z from "zod";
 
+export const Algorithm = z.enum(["RS256", "ES256"]);
+export type Algorithm = z.infer<typeof Algorithm>;
+
 export const PublicKeyJwkRS256 = z.strictObject({
   e: z.string(),
   kty: z.literal("RSA"),

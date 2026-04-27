@@ -578,4 +578,46 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     url: "/producer/eservices/:eserviceId/reactivate",
   });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { eserviceId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Archiving E-service with ID ${eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await eserviceProcessApi.archiveEservice({
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId },
+      });
+
+      await pollEserviceById(eserviceId, response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Archive an E-service",
+      operationId: "archiveProducerEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "E-service archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/archive",
+  });
 };

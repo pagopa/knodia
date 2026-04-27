@@ -14,6 +14,7 @@ import {
   API_AccessTokenType,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceTemplateId,
   API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
@@ -91,6 +92,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    template: API_EserviceTemplateId.optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });

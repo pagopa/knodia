@@ -1,11 +1,13 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
-import { Algorithm } from "@knodia/common-models/algorithms";
 import {
+  Algorithm,
   PublicKeyJwkES256,
   PublicKeyJwkRS256,
 } from "@knodia/common-models/crypto";
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
+  type EserviceTemplateId,
   generateId,
   generateUserId,
   type PurposeId,
@@ -94,6 +96,10 @@ export function getMockEservice({
       })
       .setSeed(seed)
       .generate(),
+    template: {
+      id: generateExternalId<EserviceTemplateId>(),
+      knodeId: "Lynx",
+    },
     ...(latestVersionState !== undefined
       ? {
           versions: [
