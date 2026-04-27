@@ -238,6 +238,9 @@
   /* Info card */
   --radius-info-card: 8px;
 
+  /* Settings card */
+  --radius-settings-card: 8px;
+
   /* E-service card */
   --radius-eservice-card: 16px;
   --color-eservice-card-border: var(--color-slate-100);
