@@ -447,6 +447,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       EVENTSTORE_DB_USER: local_orion_agreement_process_user
       EVENTSTORE_DB_PASSWORD: local_orion_agreement_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -964,6 +965,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       EVENTSTORE_DB_USER: local_lynx_agreement_process_user
       EVENTSTORE_DB_PASSWORD: local_lynx_agreement_process_user
       EVENTSTORE_DB_HOST: postgres
