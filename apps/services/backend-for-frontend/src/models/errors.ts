@@ -1,3 +1,5 @@
+import type { EserviceTemplateId, KnodeId } from "@knodia/common-models/ids";
+
 import {
   type ApiError,
   createApiError,
@@ -19,11 +21,12 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
 });
 
 export function eserviceTemplateNotFound(
-  eserviceTemplateId: string,
+  eserviceTemplateId: EserviceTemplateId,
+  knodeId: KnodeId,
 ): ApiError<ErrorCodes> {
   return createApiError({
     code: "ESERVICE_TEMPLATE_NOT_FOUND",
-    detail: `E-service Template with ID ${eserviceTemplateId} not found`,
+    detail: `E-service Template with ID ${eserviceTemplateId} not found in Knode ${knodeId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Template not found",
   });

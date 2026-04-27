@@ -1975,11 +1975,11 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /eserviceTemplates/{eserviceTemplateId}/interface:
     get:
-      operationId: getEserviceTemplateInterface
-      summary: Download E-service template interface
+      operationId: downloadEserviceTemplateInterface
+      summary: Download E-service Template interface
       tags:
         - eserviceTemplate
-      description: Download the interface document for an E-service template
+      description: Download the interface document for an E-service Template
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1995,11 +1995,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service template interface document downloaded successfully
+          description: E-service Template interface document downloaded successfully
           content:
             application/json: &a1
               schema:
-                description: E-service template interface document downloaded successfully
+                description: E-service Template interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"

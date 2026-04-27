@@ -5,15 +5,14 @@ import { API_FileDownload } from "@knodia/common-models/api";
 import { genericInternalError } from "@knodia/common-models/errors";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  getEserviceTemplate,
   getEserviceTemplateInterfaceContent,
   getEserviceTemplates,
 } from "@knodia/eservice-template-models";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { apiTags } from "../../models/apiTags.ts";
-import { eserviceTemplateNotFound } from "../../models/errors.ts";
 import {
   API_EserviceTemplateDetails,
   API_EserviceTemplateIdPathParam,
@@ -26,6 +25,7 @@ import {
   toAPI_EserviceTemplateDetails,
 } from "../../models/eservice-template/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { retrieveEserviceTemplate } from "../../utils/eserviceTemplate.ts";
 
 export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
   fastify,
@@ -77,14 +77,10 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
         `Getting E-service template with ID ${eserviceTemplateId}`,
       );
 
-      const eserviceTemplate = getEserviceTemplate(
+      const eserviceTemplate = retrieveEserviceTemplate(
         unsafeBrandId(eserviceTemplateId),
         knodeId,
       );
-
-      if (eserviceTemplate === undefined) {
-        throw eserviceTemplateNotFound(eserviceTemplateId);
-      }
 
       res.send(toAPI_EserviceTemplateDetails(eserviceTemplate));
     },
@@ -110,23 +106,21 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { authData, logger } = getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
       const { eserviceTemplateId } = req.params;
       const { knodeId } = req.query;
 
       logger.info(
         { requestParams: req.params, requestQuery: req.query },
-        `Downloading interface of E-service template with ID ${eserviceTemplateId}`,
+        `Downloading interface of E-service Template with ID ${eserviceTemplateId}`,
       );
 
-      const eserviceTemplate = getEserviceTemplate(
+      const eserviceTemplate = retrieveEserviceTemplate(
         unsafeBrandId(eserviceTemplateId),
         knodeId,
       );
-
-      if (eserviceTemplate === undefined) {
-        throw eserviceTemplateNotFound(eserviceTemplateId);
-      }
 
       const { contentType, name } =
         eserviceTemplate.eserviceFields.interfaceDocument;
@@ -139,34 +133,30 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
          * and a 500 Internal Server Error is more appropriate than a 404 Not Found.
          */
         throw genericInternalError(
-          `Interface document ${name} not found for E-service template ${eserviceTemplateId}`,
+          `Interface document ${name} not found for E-service Template ${eserviceTemplateId}`,
         );
       }
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${name}"`,
-        "Content-Type": contentType,
-      });
-      res.raw.end(content);
+      sendFileDownload(res, content, name, contentType);
     },
     method: "GET",
     schema: {
-      description: "Download the interface document for an E-service template",
-      operationId: "getEserviceTemplateInterface",
+      description: "Download the interface document for an E-service Template",
+      operationId: "downloadEserviceTemplateInterface",
       params: API_EserviceTemplateIdPathParam,
       produces: ["application/json", "application/yaml", "application/x-yaml"],
       querystring: API_GetEserviceTemplateQueryParams,
       response: {
         200: API_FileDownload.meta({
           description:
-            "E-service template interface document downloaded successfully",
+            "E-service Template interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Download E-service template interface",
+      summary: "Download E-service Template interface",
       tags: [apiTags.eserviceTemplate],
     },
     url: "/eserviceTemplates/:eserviceTemplateId/interface",

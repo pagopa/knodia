@@ -975,7 +975,7 @@ export type GetEserviceTemplateResponses = {
 
 export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
 
-export type GetEserviceTemplateInterfaceData = {
+export type DownloadEserviceTemplateInterfaceData = {
     body?: never;
     path: {
         eserviceTemplateId: string;
@@ -986,7 +986,7 @@ export type GetEserviceTemplateInterfaceData = {
     url: '/eserviceTemplates/{eserviceTemplateId}/interface';
 };
 
-export type GetEserviceTemplateInterfaceErrors = {
+export type DownloadEserviceTemplateInterfaceErrors = {
     /**
      * Bad Request
      */
@@ -1005,16 +1005,16 @@ export type GetEserviceTemplateInterfaceErrors = {
     404: Problem;
 };
 
-export type GetEserviceTemplateInterfaceError = GetEserviceTemplateInterfaceErrors[keyof GetEserviceTemplateInterfaceErrors];
+export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
 
-export type GetEserviceTemplateInterfaceResponses = {
+export type DownloadEserviceTemplateInterfaceResponses = {
     /**
-     * E-service template interface document downloaded successfully
+     * E-service Template interface document downloaded successfully
      */
     200: FileDownload;
 };
 
-export type GetEserviceTemplateInterfaceResponse = GetEserviceTemplateInterfaceResponses[keyof GetEserviceTemplateInterfaceResponses];
+export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
