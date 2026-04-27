@@ -184,6 +184,21 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(401);
       expect(response.body).toContain("Invalid token claims");
     });
+
+    it("returns 401 when external-ui-session scope is an invalid value", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: { ...validExternalUISessionPayload, scope: "invalid-scope" },
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer invalid-scope-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Invalid token claims");
+    });
   });
 
   describe("valid tokens", () => {
