@@ -975,6 +975,47 @@ export type GetEserviceTemplateResponses = {
 
 export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
 
+export type DownloadEserviceTemplateInterfaceData = {
+    body?: never;
+    path: {
+        eserviceTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{eserviceTemplateId}/interface';
+};
+
+export type DownloadEserviceTemplateInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
+
+export type DownloadEserviceTemplateInterfaceResponses = {
+    /**
+     * E-service Template interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
+
 export type GetProducerEservicesData = {
     body?: never;
     path?: never;
