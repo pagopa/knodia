@@ -1,6 +1,12 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  type EserviceId,
+  type EserviceTemplateId,
+  KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
@@ -204,6 +210,15 @@ const buildEservice = ({
     mode: EserviceMode.parse(eserviceSQL.mode),
     name: LocalizedName.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
+    template:
+      eserviceSQL.templateId && eserviceSQL.templateKnodeId
+        ? {
+            id: unsafeBrandExternalId<EserviceTemplateId>(
+              eserviceSQL.templateId,
+            ),
+            knodeId: KnodeId.parse(eserviceSQL.templateKnodeId),
+          }
+        : undefined,
     updatedAt: eserviceSQL.updatedAt,
     versions: eserviceVersions,
   };

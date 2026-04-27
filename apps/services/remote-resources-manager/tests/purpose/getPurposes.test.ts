@@ -40,6 +40,8 @@ const toK2KResult = (apiResult: API_Purpose): k2kGatewayApi.Purpose => ({
   id: apiResult.id,
   name: apiResult.name,
   state: toK2KPurposeState(apiResult.state),
+  suspendedByConsumerAt: apiResult.suspendedByConsumerAt,
+  suspendedByProducerAt: apiResult.suspendedByProducerAt,
   updatedAt: apiResult.updatedAt,
 });
 
