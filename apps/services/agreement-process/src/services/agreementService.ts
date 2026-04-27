@@ -87,10 +87,7 @@ export function agreementServiceBuilder(
     ): Promise<WithMetadata<Agreement>> {
       logger.info(`Activating Agreement ${agreementId}`);
 
-      assertTokenAgreementIdMatchesPathParam(
-        authData.agreement.id,
-        agreementId,
-      );
+      assertTokenAgreementIdMatchesPathParam(authData, agreementId);
 
       const {
         data: agreement,

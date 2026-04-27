@@ -219,13 +219,13 @@ export function assertAgreementIsPendingConsumerOperatorIdentification(
 }
 
 export function assertTokenAgreementIdMatchesPathParam(
-  tokenAgreementId: AgreementId,
+  authData: ExternalUISessionAuthData,
   pathAgreementId: AgreementId,
 ): void {
-  if (tokenAgreementId !== pathAgreementId) {
+  if (authData.agreement.id !== pathAgreementId) {
     throw agreementTokenClaimMismatch(
       "agreement.id",
-      tokenAgreementId,
+      authData.agreement.id,
       pathAgreementId,
     );
   }
