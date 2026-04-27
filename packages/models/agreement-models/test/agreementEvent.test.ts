@@ -13,6 +13,7 @@ import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
 import {
   AgreementActivatedV1,
+  AgreementArchivedV1,
   AgreementCreatedPendingConsumerOperatorIdentificationV1,
   AgreementReactivatedByConsumerV1,
   AgreementReactivatedByProducerV1,
@@ -32,8 +33,16 @@ describe("AgreementEventV1 codec", () => {
     suspendedByProducerAt: new Date(),
   };
 
+  const archivedAgreement: Agreement = {
+    ...zocker(Agreement).generate(),
+    state: AgreementState.enum.Archived,
+    suspendedByConsumerAt: new Date(),
+    suspendedByProducerAt: new Date(),
+  };
+
   const defaultData = { agreement: toAgreementV1(agreement) };
   const suspendedData = { agreement: toAgreementV1(suspendedAgreement) };
+  const archivedData = { agreement: toAgreementV1(archivedAgreement) };
 
   const cases = [
     {
@@ -61,6 +70,11 @@ describe("AgreementEventV1 codec", () => {
       message: AgreementReactivatedByProducerV1,
       type: "AgreementReactivatedByProducerV1" as const,
     },
+    {
+      data: archivedData,
+      message: AgreementArchivedV1,
+      type: "AgreementArchivedV1" as const,
+    },
   ] as const;
 
   it.each(cases)(
@@ -82,6 +96,7 @@ describe("AgreementEventV1 codec", () => {
           { type: "AgreementSuspendedByProducerV1" },
           { type: "AgreementReactivatedByConsumerV1" },
           { type: "AgreementReactivatedByProducerV1" },
+          { type: "AgreementArchivedV1" },
           ({ data, type }) => testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -105,6 +120,7 @@ describe("AgreementEventV1 codec", () => {
           { type: "AgreementSuspendedByProducerV1" },
           { type: "AgreementReactivatedByConsumerV1" },
           { type: "AgreementReactivatedByProducerV1" },
+          { type: "AgreementArchivedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
         .exhaustive();

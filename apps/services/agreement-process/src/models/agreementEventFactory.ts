@@ -97,3 +97,19 @@ export const createAgreementSuspendedByProducerV1Event = (
   },
   streamId: agreement.id,
 });
+
+export const createAgreementArchivedV1Event = (
+  agreement: Agreement,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementArchivedV1",
+  },
+  streamId: agreement.id,
+});
