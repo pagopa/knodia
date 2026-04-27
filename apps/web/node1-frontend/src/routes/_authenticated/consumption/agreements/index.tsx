@@ -23,7 +23,7 @@ import { pendingConsumerAgreementsQuery } from "@/features/agreement/services/qu
 import { client } from "@/libs/axios";
 
 const searchSchema = z.object({
-  offset: z.number().int().min(0).default(0),
+  offset: z.number().int().min(0).default(0).catch(0),
 });
 
 export const Route = createFileRoute("/_authenticated/consumption/agreements/")(

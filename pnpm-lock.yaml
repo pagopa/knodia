@@ -1592,6 +1592,9 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models

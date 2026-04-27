@@ -1,3 +1,4 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
@@ -75,7 +76,11 @@ export const consumptionEserviceListDefaultValues = {
 
 export const consumptionEserviceListSchema = z.object({
   agreementState: z
-    .enum(["Active", "Suspended", "PendingConsumerOperatorIdentification"])
+    .enum([
+      API_AgreementState.enum.Active,
+      API_AgreementState.enum.Suspended,
+      API_AgreementState.enum.PendingConsumerOperatorIdentification,
+    ])
     .optional()
     .catch(consumptionEserviceListDefaultValues.agreementState),
   offset: z

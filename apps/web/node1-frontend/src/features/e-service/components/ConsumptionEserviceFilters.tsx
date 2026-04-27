@@ -1,3 +1,4 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { ComboBox, ComboBoxItem } from "@knodia/ui-kit/ui";
 
 import type { ConsumptionEserviceListParams } from "@/features/e-service/models/search-params";
@@ -8,9 +9,12 @@ const agreementStateOptions: {
   id: NonNullable<AgreementStateFilter>;
   label: string;
 }[] = [
-  { id: "Active", label: "Active" },
-  { id: "Suspended", label: "Suspended" },
-  { id: "PendingConsumerOperatorIdentification", label: "Action needed" },
+  { id: API_AgreementState.enum.Active, label: "Active" },
+  { id: API_AgreementState.enum.Suspended, label: "Suspended" },
+  {
+    id: API_AgreementState.enum.PendingConsumerOperatorIdentification,
+    label: "Action needed",
+  },
 ];
 
 export function ConsumptionEserviceFilters({
