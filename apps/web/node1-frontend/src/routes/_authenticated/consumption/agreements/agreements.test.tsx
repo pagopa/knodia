@@ -1,6 +1,5 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { QueryClient } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { Component, type ReactElement, type ReactNode, Suspense } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -72,13 +71,11 @@ function mockPending(body: bffApi.PendingConsumerAgreements | { status: 500 }) {
 function renderPage({
   offset = 0,
   onOffsetChange = vi.fn(),
-  queryClient,
   roles,
   wrapper,
 }: {
   offset?: number;
   onOffsetChange?: (offset: number) => void;
-  queryClient?: QueryClient;
   roles?: readonly ("administrative" | "technical")[];
   wrapper?: (children: ReactElement) => ReactElement;
 } = {}) {
@@ -89,7 +86,6 @@ function renderPage({
   );
 
   return renderWithProviders(wrapper ? wrapper(page) : page, {
-    queryClient,
     roles,
     routes,
   });
@@ -205,14 +201,7 @@ describe("ConsumerAgreementsPage", () => {
     mockCounters(emptyCounters);
     mockPending({ status: 500 });
 
-    const errorClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false, throwOnError: true },
-      },
-    });
-
     renderPage({
-      queryClient: errorClient,
       wrapper: (children) => <TestErrorBoundary>{children}</TestErrorBoundary>,
     });
 

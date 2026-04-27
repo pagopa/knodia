@@ -1,11 +1,7 @@
 import { getConsumerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
-import {
-  keepPreviousData,
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
   stripSearchParams,
@@ -32,10 +28,10 @@ export const Route = createFileRoute("/_authenticated/consumption/agreements/")(
     loaderDeps: ({ search: { offset } }) => ({ offset }),
     // eslint-disable-next-line perfectionist/sort-objects
     loader: async ({ context: { queryClient }, deps: { offset } }) => {
-      await queryClient.ensureQueryData(
-        getConsumerAgreementsOptions({ client }),
-      );
-      queryClient.prefetchQuery(pendingConsumerAgreementsQuery(offset));
+      await Promise.all([
+        queryClient.ensureQueryData(getConsumerAgreementsOptions({ client })),
+        queryClient.ensureQueryData(pendingConsumerAgreementsQuery(offset)),
+      ]);
     },
     search: {
       middlewares: [stripSearchParams({ offset: 0 })],
@@ -58,13 +54,11 @@ export function ConsumerAgreementsPage({
     getConsumerAgreementsOptions({ client }),
   );
 
-  const { data: pendingData } = useQuery({
-    ...pendingConsumerAgreementsQuery(offset),
-    placeholderData: keepPreviousData,
-  });
+  const { data: pendingData } = useSuspenseQuery(
+    pendingConsumerAgreementsQuery(offset),
+  );
 
   const isStaleOffset =
-    pendingData !== undefined &&
     pendingData.results.length === 0 &&
     pendingData.pagination.total > 0 &&
     offset > 0;
@@ -80,20 +74,20 @@ export function ConsumerAgreementsPage({
     counters.activeAgreements +
       counters.suspendedAgreements +
       counters.archivedAgreements >
-      0 || (pendingData?.pagination.total ?? 0) > 0;
+      0 || pendingData.pagination.total > 0;
 
   return (
     <ListPageLayout
       pagination={{
-        limit: pendingData?.pagination.limit ?? 0,
+        limit: pendingData.pagination.limit,
         offset,
         onOffsetChange,
-        totalItems: pendingData?.pagination.total ?? 0,
+        totalItems: pendingData.pagination.total,
       }}
     >
       <PageHeader overline="Consumption" title="Agreements" />
 
-      {pendingData === undefined || isStaleOffset ? (
+      {isStaleOffset ? (
         <Loader className="mx-auto mt-10" label="Loading..." />
       ) : hasAgreements ? (
         <>
