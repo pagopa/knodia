@@ -154,16 +154,7 @@ export function eserviceServiceBuilder(
           }),
         ]);
 
-      // TODO(KN-372): filter archived agreements out server-side once archiving is implemented.
-      //
-      // Today at most one non-archived agreement per (consumer, eservice)
-      // exists (archiving is not yet implemented), so `limit: 1` with the
-      // default `updatedAt desc` ordering returns the latest.
-      //
-      // The ARCHIVED guard below is defensive for when this changes.
-      const latestAgreement = agreements.results.at(0);
-      const agreement =
-        latestAgreement?.state === "ARCHIVED" ? undefined : latestAgreement;
+      const agreement = agreements.results.at(0);
 
       const { data: producer } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,
