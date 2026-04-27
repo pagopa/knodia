@@ -216,6 +216,9 @@
 
   /* Attribute group */
   --radius-attribute-group: 0;
+
+  /* Info card */
+  --radius-info-card: 0;
 }
 
 @layer utilities {
