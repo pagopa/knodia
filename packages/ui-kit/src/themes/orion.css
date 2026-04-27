@@ -228,6 +228,9 @@
 
   /* Card */
   --radius-card: 16px;
+  --color-card-border: var(--color-slate-100);
+  --shadow-card: 0 2px 4px 0
+    color-mix(in srgb, var(--color-slate-700) 8%, transparent);
 
   /* Attribute group */
   --radius-attribute-group: 8px;
