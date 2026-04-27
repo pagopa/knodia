@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
@@ -36,6 +37,35 @@ export function agreementServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async archiveAgreement(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Agreement> {
+      logger.info(`Archiving Agreement ${agreementId} on Knode ${knodeId}`);
+
+      await retrieveOrganization(authData.organizationId, readmodelService);
+
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+        agreementId,
+        knodeId,
+      );
+
+      assertAgreementExists(remoteAgreement, agreementId);
+      assertOrganizationIsAgreementConsumer(
+        remoteAgreement,
+        agreementId,
+        authData.organizationId,
+      );
+
+      const { data } = await k2kGatewayApi.archiveAgreement({
+        client: k2kGatewayClient,
+        path: { agreementId },
+      });
+
+      return toAPI_Agreement(data);
+    },
+
     async createAgreement(
       reqBody: API_AgreementSeed,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,

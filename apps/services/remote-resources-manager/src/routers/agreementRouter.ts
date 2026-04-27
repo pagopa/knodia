@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -130,6 +131,43 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.archiveAgreement(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Archive an Agreement on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "archiveAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Archive an Agreement",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/archive",
   });
 
   fastify.route({

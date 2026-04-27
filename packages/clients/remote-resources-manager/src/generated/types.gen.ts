@@ -750,6 +750,51 @@ export type SuspendAgreementResponses = {
 
 export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
 
+export type ArchiveAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/agreements/{agreementId}/archive';
+};
+
+export type ArchiveAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveAgreementError = ArchiveAgreementErrors[keyof ArchiveAgreementErrors];
+
+export type ArchiveAgreementResponses = {
+    /**
+     * Agreement archived successfully
+     */
+    200: Agreement;
+};
+
+export type ArchiveAgreementResponse = ArchiveAgreementResponses[keyof ArchiveAgreementResponses];
+
 export type GetAgreementData = {
     body?: never;
     path: {
