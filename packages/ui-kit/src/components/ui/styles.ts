@@ -193,13 +193,13 @@ export const buttonStyles = tv({
       kind: "tonal",
       hierarchy: "danger",
       class:
-        "bg-error-50 hover:bg-error-100 pressed:bg-error-100 text-error-600",
+        "bg-button-tonal-danger-bg hover:bg-button-tonal-danger-bg-hover pressed:bg-button-tonal-danger-bg-hover text-error-600 border-button-tonal-danger-border",
     },
     {
       kind: "tonal",
       hierarchy: "neutral",
       class:
-        "pressed:bg-neutral-100 bg-neutral-50 text-neutral-700 hover:bg-neutral-100",
+        "bg-button-tonal-neutral-bg hover:bg-button-tonal-neutral-bg-hover pressed:bg-button-tonal-neutral-bg-hover text-neutral-700 border-button-tonal-neutral-border",
     },
 
     // --- GHOST buttons ---
