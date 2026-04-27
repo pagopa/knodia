@@ -11,7 +11,7 @@ import {
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
-import { eserviceTemplates } from "@knodia/eservice-template-models";
+import { getEserviceTemplates } from "@knodia/eservice-template-models";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   forbiddenTestTokens,
@@ -51,7 +51,7 @@ describe("POST /eservices (createEservice)", () => {
     maxDailyCallsPerKnode: 2000,
     requiredAttributes: [[validAttribute]],
   };
-  const templateSeed = eserviceTemplates.Lynx[0]!;
+  const templateSeed = getEserviceTemplates("Lynx")[0]!;
   const bodyFromTemplate = {
     ...zocker(API_EserviceFromTemplateSeed).setSeed(1).generate(),
     maxDailyCallsPerConsumer: 1000,
