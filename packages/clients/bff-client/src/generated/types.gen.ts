@@ -2649,7 +2649,7 @@ export type GetConsumerPurposeDetailsResponses = {
 
 export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
 
-export type ReactivateConsumerPurposeData = {
+export type ReactivatePurposeByConsumerData = {
     body?: never;
     path: {
         purposeId: string;
@@ -2660,7 +2660,7 @@ export type ReactivateConsumerPurposeData = {
     url: '/consumer/purposes/{purposeId}/reactivate';
 };
 
-export type ReactivateConsumerPurposeErrors = {
+export type ReactivatePurposeByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2683,18 +2683,18 @@ export type ReactivateConsumerPurposeErrors = {
     409: Problem;
 };
 
-export type ReactivateConsumerPurposeError = ReactivateConsumerPurposeErrors[keyof ReactivateConsumerPurposeErrors];
+export type ReactivatePurposeByConsumerError = ReactivatePurposeByConsumerErrors[keyof ReactivatePurposeByConsumerErrors];
 
-export type ReactivateConsumerPurposeResponses = {
+export type ReactivatePurposeByConsumerResponses = {
     /**
      * Purpose reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateConsumerPurposeResponse = ReactivateConsumerPurposeResponses[keyof ReactivateConsumerPurposeResponses];
+export type ReactivatePurposeByConsumerResponse = ReactivatePurposeByConsumerResponses[keyof ReactivatePurposeByConsumerResponses];
 
-export type SuspendConsumerPurposeData = {
+export type SuspendPurposeByConsumerData = {
     body?: never;
     path: {
         purposeId: string;
@@ -2705,7 +2705,7 @@ export type SuspendConsumerPurposeData = {
     url: '/consumer/purposes/{purposeId}/suspend';
 };
 
-export type SuspendConsumerPurposeErrors = {
+export type SuspendPurposeByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2728,16 +2728,16 @@ export type SuspendConsumerPurposeErrors = {
     409: Problem;
 };
 
-export type SuspendConsumerPurposeError = SuspendConsumerPurposeErrors[keyof SuspendConsumerPurposeErrors];
+export type SuspendPurposeByConsumerError = SuspendPurposeByConsumerErrors[keyof SuspendPurposeByConsumerErrors];
 
-export type SuspendConsumerPurposeResponses = {
+export type SuspendPurposeByConsumerResponses = {
     /**
      * Purpose suspended successfully
      */
     204: void;
 };
 
-export type SuspendConsumerPurposeResponse = SuspendConsumerPurposeResponses[keyof SuspendConsumerPurposeResponses];
+export type SuspendPurposeByConsumerResponse = SuspendPurposeByConsumerResponses[keyof SuspendPurposeByConsumerResponses];
 
 export type GetSessionOrganizationData = {
     body?: never;
@@ -3044,7 +3044,7 @@ export type GetProducerPurposeDetailsResponses = {
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
 
-export type ReactivateProducerPurposeData = {
+export type ReactivatePurposeByProducerData = {
     body?: never;
     path: {
         purposeId: string;
@@ -3053,7 +3053,7 @@ export type ReactivateProducerPurposeData = {
     url: '/producer/purposes/{purposeId}/reactivate';
 };
 
-export type ReactivateProducerPurposeErrors = {
+export type ReactivatePurposeByProducerErrors = {
     /**
      * Bad Request
      */
@@ -3076,18 +3076,18 @@ export type ReactivateProducerPurposeErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerPurposeError = ReactivateProducerPurposeErrors[keyof ReactivateProducerPurposeErrors];
+export type ReactivatePurposeByProducerError = ReactivatePurposeByProducerErrors[keyof ReactivatePurposeByProducerErrors];
 
-export type ReactivateProducerPurposeResponses = {
+export type ReactivatePurposeByProducerResponses = {
     /**
      * Purpose reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerPurposeResponse = ReactivateProducerPurposeResponses[keyof ReactivateProducerPurposeResponses];
+export type ReactivatePurposeByProducerResponse = ReactivatePurposeByProducerResponses[keyof ReactivatePurposeByProducerResponses];
 
-export type SuspendProducerPurposeData = {
+export type SuspendPurposeByProducerData = {
     body?: never;
     path: {
         purposeId: string;
@@ -3096,7 +3096,7 @@ export type SuspendProducerPurposeData = {
     url: '/producer/purposes/{purposeId}/suspend';
 };
 
-export type SuspendProducerPurposeErrors = {
+export type SuspendPurposeByProducerErrors = {
     /**
      * Bad Request
      */
@@ -3119,13 +3119,13 @@ export type SuspendProducerPurposeErrors = {
     409: Problem;
 };
 
-export type SuspendProducerPurposeError = SuspendProducerPurposeErrors[keyof SuspendProducerPurposeErrors];
+export type SuspendPurposeByProducerError = SuspendPurposeByProducerErrors[keyof SuspendPurposeByProducerErrors];
 
-export type SuspendProducerPurposeResponses = {
+export type SuspendPurposeByProducerResponses = {
     /**
      * Purpose suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerPurposeResponse = SuspendProducerPurposeResponses[keyof SuspendProducerPurposeResponses];
+export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses[keyof SuspendPurposeByProducerResponses];
