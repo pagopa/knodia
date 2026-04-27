@@ -1168,6 +1168,49 @@ export type ReactivateProducerEserviceResponses = {
 
 export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
 
+export type ArchiveProducerEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/archive';
+};
+
+export type ArchiveProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveProducerEserviceError = ArchiveProducerEserviceErrors[keyof ArchiveProducerEserviceErrors];
+
+export type ArchiveProducerEserviceResponses = {
+    /**
+     * E-service archived successfully
+     */
+    204: void;
+};
+
+export type ArchiveProducerEserviceResponse = ArchiveProducerEserviceResponses[keyof ArchiveProducerEserviceResponses];
+
 export type GetConsumerKeychainKeysData = {
     body?: never;
     path: {
