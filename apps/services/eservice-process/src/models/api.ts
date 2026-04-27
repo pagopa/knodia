@@ -4,7 +4,6 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -16,6 +15,7 @@ import {
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceTemplateId,
+  API_EserviceTemplateReference,
   API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
@@ -242,20 +242,13 @@ export const API_EserviceFromScratchSeed = API_EserviceBaseSeed.extend({
   requiredAttributes: z
     .array(z.array(API_Attribute))
     .meta({ description: "Required attributes for the E-service" }),
-}).meta({ id: "EserviceManualSeed" });
+}).meta({ id: "EserviceFromScratchSeed" });
 export type API_EserviceFromScratchSeed = z.infer<
   typeof API_EserviceFromScratchSeed
 >;
 
-const TemplateReference = z
-  .strictObject({
-    id: z.uuid(),
-    knodeId: API_KnodeId,
-  })
-  .meta({ description: "Reference to an E-service template" });
-
 export const API_EserviceFromTemplateSeed = API_EserviceBaseSeed.extend({
-  template: TemplateReference,
+  template: API_EserviceTemplateReference,
 }).meta({
   id: "EserviceFromTemplateSeed",
 });

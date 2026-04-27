@@ -111,7 +111,7 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Create a new E-service from a template
+ * Create a new E-service from a Template
  */
 export const createEserviceFromTemplate = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceFromTemplateData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceFromTemplateResponses, CreateEserviceFromTemplateErrors, ThrowOnError>({
     responseType: 'json',

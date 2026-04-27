@@ -257,7 +257,7 @@ export const createEserviceMutation = (options?: Partial<Options<CreateEserviceD
 };
 
 /**
- * Create a new E-service from a template
+ * Create a new E-service from a Template
  */
 export const createEserviceFromTemplateMutation = (options?: Partial<Options<CreateEserviceFromTemplateData>>): UseMutationOptions<CreateEserviceFromTemplateResponse, AxiosError<CreateEserviceFromTemplateError>, Options<CreateEserviceFromTemplateData>> => {
     const mutationOptions: UseMutationOptions<CreateEserviceFromTemplateResponse, AxiosError<CreateEserviceFromTemplateError>, Options<CreateEserviceFromTemplateData>> = {

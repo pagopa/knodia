@@ -75,6 +75,14 @@ export type EserviceTemplateId = {
     knodeId: KnodeId;
 };
 
+/**
+ * Reference to an E-service template
+ */
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 export type Attribute = {
     code: string;
     scheme: string;
@@ -196,7 +204,7 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceManualSeed = {
+export type EserviceFromScratchSeed = {
     /**
      * Audience for the access token
      */
@@ -272,16 +280,10 @@ export type EserviceFromTemplateSeed = {
      */
     maxDailyCallsPerKnode: number;
     name: LocalizedName;
-    /**
-     * Reference to an E-service template
-     */
-    template: {
-        id: string;
-        knodeId: KnodeId;
-    };
+    template: EserviceTemplateReference;
 };
 
-export type EserviceSeed = EserviceManualSeed | EserviceFromTemplateSeed;
+export type EserviceSeed = EserviceFromScratchSeed | EserviceFromTemplateSeed;
 
 export type EservicePatch = {
     /**

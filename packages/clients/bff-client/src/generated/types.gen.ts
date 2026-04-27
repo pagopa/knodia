@@ -101,6 +101,14 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
+ * Reference to an E-service template
+ */
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
@@ -134,11 +142,6 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceTemplateReference = {
-    id: string;
-    knodeId: KnodeId;
-};
-
 export type InterfaceDocumentContactOverrides = {
     email: string;
     name: string;
@@ -157,7 +160,7 @@ export type InterfaceDocumentOverrides = {
     termsAndConditionsUrl?: string;
 };
 
-export type EserviceSeed = {
+export type EserviceFromScratchSeed = {
     /**
      * Audience for the access token
      */
@@ -170,15 +173,7 @@ export type EserviceSeed = {
      * Type of the access token
      */
     accessTokenType: AccessTokenType;
-    /**
-     * Categories of the E-service
-     */
-    categories?: Array<EserviceCategory>;
     description: LocalizedDescription;
-    /**
-     * Interface document for the E-service
-     */
-    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Whether SignalHub is enabled for the E-service
      */
@@ -191,15 +186,60 @@ export type EserviceSeed = {
      * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
      */
     maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    /**
+     * Interface document for the E-service
+     */
+    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Mode of the E-service
      */
     mode?: EserviceMode;
-    name: LocalizedName;
     /**
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceFromTemplateSeed = {
+    /**
+     * Audience for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    /**
+     * Type of the access token
+     */
+    accessTokenType: AccessTokenType;
+    description: LocalizedDescription;
+    /**
+     * Whether SignalHub is enabled for the E-service
+     */
+    isSignalHubEnabled?: boolean;
+    /**
+     * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+     */
+    maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Overrides applied to the E-service Template interface document
+     */
+    interfaceDocumentOverrides: InterfaceDocumentOverrides;
+    /**
+     * Reference to the E-service Template to instantiate
+     */
+    template: EserviceTemplateReference;
 };
 
 export type EservicePatch = {
@@ -1104,7 +1144,7 @@ export type GetProducerEservicesResponses = {
 export type GetProducerEservicesResponse = GetProducerEservicesResponses[keyof GetProducerEservicesResponses];
 
 export type CreateEserviceData = {
-    body: EserviceSeed;
+    body: EserviceFromScratchSeed;
     path?: never;
     query?: never;
     url: '/producer/eservices';
@@ -1137,42 +1177,7 @@ export type CreateEserviceResponses = {
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
 
 export type CreateEserviceFromTemplateData = {
-    body: {
-        /**
-         * Audience for the access token
-         */
-        accessTokenAudience: Array<string>;
-        /**
-         * Duration of the access token in seconds
-         */
-        accessTokenDuration?: number;
-        /**
-         * Type of the access token
-         */
-        accessTokenType?: AccessTokenType;
-        description: LocalizedDescription;
-        /**
-         * Whether SignalHub is enabled for the E-service
-         */
-        isSignalHubEnabled?: boolean;
-        /**
-         * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
-         */
-        maxDailyCallsPerConsumer: number;
-        /**
-         * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
-         */
-        maxDailyCallsPerKnode: number;
-        name: LocalizedName;
-        /**
-         * Overrides applied to the E-service Template interface document
-         */
-        interfaceDocumentOverrides: InterfaceDocumentOverrides;
-        /**
-         * Reference to the E-service Template to instantiate
-         */
-        template: EserviceTemplateReference;
-    };
+    body: EserviceFromTemplateSeed;
     path?: never;
     query?: never;
     url: '/producer/eservices/fromTemplate';

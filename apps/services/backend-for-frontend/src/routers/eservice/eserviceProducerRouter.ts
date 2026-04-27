@@ -45,9 +45,9 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
   API_EservicePatch,
-  API_EserviceSeed,
   type API_InterfaceDocumentOverrides,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
@@ -167,7 +167,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EserviceSeed,
+      body: API_EserviceFromScratchSeed,
       description: "Create a new E-service",
       operationId: "createEservice",
       response: {
@@ -256,7 +256,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_EserviceFromTemplateSeed,
-      description: "Create a new E-service from a template",
+      description: "Create a new E-service from a Template",
       operationId: "createEserviceFromTemplate",
       response: {
         201: API_CreatedResource.meta({
