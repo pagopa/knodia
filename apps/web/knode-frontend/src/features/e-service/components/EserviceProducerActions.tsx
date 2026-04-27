@@ -16,11 +16,13 @@ import { match } from "ts-pattern";
 import { client } from "@/libs/axios";
 
 interface EserviceProducerActionsProps {
+  editAction?: React.ReactNode;
   eserviceId: string;
   state: bffApi.EserviceVersionState;
 }
 
 export function EserviceProducerActions({
+  editAction,
   eserviceId,
   state,
 }: EserviceProducerActionsProps) {
@@ -79,25 +81,28 @@ export function EserviceProducerActions({
 
   return match(state)
     .with("Active", () => (
-      <DialogTrigger
-        isOpen={isSuspendDialogOpen}
-        onOpenChange={setIsSuspendDialogOpen}
-      >
-        <Button hierarchy="danger" kind="tonal" size="md">
-          Suspend
-        </Button>
-        <Modal
-          actionLabel="Suspend anyway"
-          cancelLabel="Cancel"
-          confirmButtonProps={{ isPending: isSuspending }}
-          description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
-          isDismissable
-          kind="destructive"
-          onConfirm={() => suspend({ path: { eserviceId } })}
-          showErrorBanner={isSuspendError}
-          title="Suspend E-Service"
-        />
-      </DialogTrigger>
+      <>
+        <DialogTrigger
+          isOpen={isSuspendDialogOpen}
+          onOpenChange={setIsSuspendDialogOpen}
+        >
+          <Button hierarchy="danger" kind="tonal" size="md">
+            Suspend
+          </Button>
+          <Modal
+            actionLabel="Suspend anyway"
+            cancelLabel="Cancel"
+            confirmButtonProps={{ isPending: isSuspending }}
+            description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
+            isDismissable
+            kind="destructive"
+            onConfirm={() => suspend({ path: { eserviceId } })}
+            showErrorBanner={isSuspendError}
+            title="Suspend E-Service"
+          />
+        </DialogTrigger>
+        {editAction}
+      </>
     ))
     .with("Suspended", () => (
       <>
@@ -120,6 +125,7 @@ export function EserviceProducerActions({
             title="Archive E-Service"
           />
         </DialogTrigger>
+        {editAction}
         <Button
           hierarchy="brand"
           isPending={isReactivating}
