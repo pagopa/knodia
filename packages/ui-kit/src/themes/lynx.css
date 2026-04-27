@@ -224,6 +224,11 @@
 
   /* Info card */
   --radius-info-card: 0;
+
+  /* E-service card */
+  --radius-eservice-card: 0;
+  --color-eservice-card-border: var(--color-primary-light-decorative);
+  --shadow-eservice-card: none;
 }
 
 @layer utilities {
