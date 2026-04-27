@@ -84,6 +84,7 @@ export function toRRM_Purpose(
   knodeId: KnodeId,
 ): remoteResourcesManagerApi.Purpose {
   return {
+    archivedAt: toExpectIsoOrNull(purpose.archivedAt),
     consumer: purpose.consumer,
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,

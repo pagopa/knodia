@@ -37,6 +37,35 @@ export function purposeServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async archivePurpose(
+      purposeId: ExternalId<PurposeId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purpose> {
+      logger.info(`Archiving Purpose ${purposeId} on Knode ${knodeId}`);
+
+      await retrieveOrganization(authData.organizationId, readmodelService);
+
+      const remotePurpose = await remoteResourceDbService.getPurposeById(
+        purposeId,
+        knodeId,
+      );
+
+      assertPurposeExists(remotePurpose, purposeId);
+      assertOrganizationIsPurposeConsumer(
+        remotePurpose,
+        purposeId,
+        authData.organizationId,
+      );
+
+      const { data } = await k2kGatewayApi.archivePurpose({
+        client: k2kGatewayClient,
+        path: { purposeId },
+      });
+
+      return toAPI_Purpose(data, knodeId);
+    },
+
     async createPurpose(
       reqBody: API_PurposeSeed,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,

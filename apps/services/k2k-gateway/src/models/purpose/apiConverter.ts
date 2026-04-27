@@ -12,6 +12,7 @@ import {
 
 export function toAPI_Purpose(purpose: purposeProcessApi.Purpose): API_Purpose {
   return {
+    archivedAt: purpose.archivedAt,
     consumer: {
       id: purpose.consumer.id,
       knodeId: toAPI_KnodeId(purpose.consumer.knodeId),

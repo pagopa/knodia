@@ -30,6 +30,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 });
 
 const toK2KResult = (apiResult: API_Purpose): k2kGatewayApi.Purpose => ({
+  archivedAt: apiResult.archivedAt,
   consumer: {
     id: apiResult.consumer.id,
     knodeId: toK2KKnodeId(apiResult.consumer.knodeId),

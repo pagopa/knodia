@@ -83,6 +83,7 @@ export const toAPI_ConsumerPurposeDetails = ({
     id: agreement.id,
     state: agreement.state,
   },
+  archivedAt: purpose.archivedAt,
   consumer: {
     id: consumer.id,
     knodeId: consumer.knodeId,
@@ -130,6 +131,7 @@ export const toAPI_PurposeDetails = ({
     id: agreement.id,
     state: agreement.state,
   },
+  archivedAt: purpose.archivedAt,
   consumer: {
     id: consumer.id,
     knodeId: purpose.consumer.knodeId,

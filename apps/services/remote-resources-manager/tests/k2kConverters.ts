@@ -118,6 +118,7 @@ export const toK2KOrganization = (
 });
 
 export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
+  archivedAt: toExpectIsoOrNull(purpose.archivedAt),
   consumer: {
     id: purpose.consumer.id,
     knodeId: toK2KKnodeId(purpose.consumer.knodeId),

@@ -900,6 +900,7 @@ export type PurposeDetailsEservice = {
 
 export type PurposeDetails = {
     agreement: CompactAgreement;
+    archivedAt: string | null;
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
@@ -2970,6 +2971,51 @@ export type SuspendPurposeByConsumerResponses = {
 };
 
 export type SuspendPurposeByConsumerResponse = SuspendPurposeByConsumerResponses[keyof SuspendPurposeByConsumerResponses];
+
+export type ArchivePurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeByConsumerError = ArchivePurposeByConsumerErrors[keyof ArchivePurposeByConsumerErrors];
+
+export type ArchivePurposeByConsumerResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    204: void;
+};
+
+export type ArchivePurposeByConsumerResponse = ArchivePurposeByConsumerResponses[keyof ArchivePurposeByConsumerResponses];
 
 export type GetSessionOrganizationData = {
     body?: never;

@@ -789,6 +789,12 @@ components:
       description: A Consumer's Purpose to access an E-service
       type: object
       properties:
+        archivedAt:
+          description: Timestamp when the Purpose was archived
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         consumer:
           $ref: "#/components/schemas/PurposeConsumer"
         dailyCalls:
@@ -824,6 +830,7 @@ components:
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
+        - archivedAt
         - consumer
         - dailyCalls
         - description
@@ -1790,6 +1797,54 @@ paths:
             application/json:
               schema:
                 description: Purpose suspended successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}/archive:
+    post:
+      operationId: archivePurpose
+      summary: Archive a Purpose
+      tags:
+        - resource
+        - purpose
+      description: Archive a Purpose on behalf of its Consumer; the Consumer must
+        belong to the caller Knode
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/PurposeId"
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Purpose archived successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose archived successfully
                 allOf:
                   - $ref: "#/components/schemas/Purpose"
         "400":

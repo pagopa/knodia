@@ -13,6 +13,7 @@ export function toAPI_Purpose(
   knodeId: KnodeId,
 ): API_Purpose {
   return {
+    archivedAt: purpose.archivedAt,
     consumer: {
       id: purpose.consumer.id,
       knodeId: toAPI_KnodeId(purpose.consumer.knodeId),

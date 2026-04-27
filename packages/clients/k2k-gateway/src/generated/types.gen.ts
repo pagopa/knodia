@@ -485,6 +485,10 @@ export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
  * A Consumer's Purpose to access an E-service
  */
 export type Purpose = {
+    /**
+     * Timestamp when the Purpose was archived
+     */
+    archivedAt: string | null;
     consumer: PurposeConsumer;
     /**
      * Expected number of daily API calls for this Purpose
@@ -1227,3 +1231,38 @@ export type SuspendPurposeResponses = {
 };
 
 export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];
+
+export type ArchivePurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];
