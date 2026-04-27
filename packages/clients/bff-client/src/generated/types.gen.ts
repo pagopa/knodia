@@ -515,6 +515,10 @@ export type PendingConsumerAgreement = {
         name: LocalizedName;
         state: EserviceVersionState;
     };
+    /**
+     * Indicates whether the Agreement or its E-service has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     producer: CompactOrganization;
 };

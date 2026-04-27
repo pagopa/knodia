@@ -4,6 +4,7 @@ import { Banner } from "@knodia/ui-kit/ui";
 import { CheckCircleIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
   EserviceCard,
@@ -43,6 +44,9 @@ function PendingAgreementCard({
   return (
     <EserviceCard>
       <EserviceCardHeader
+        badge={
+          agreement.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
+        }
         id={agreement.eservice.id}
         search={{ knodeId: agreement.producer.knodeId }}
         title={agreement.eservice.name.en}

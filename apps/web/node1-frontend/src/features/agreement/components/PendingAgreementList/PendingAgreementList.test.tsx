@@ -14,6 +14,7 @@ const mockAgreement: bffApi.PendingConsumerAgreement = {
     name: { en: "Vehicle registration details" },
     state: "Active",
   },
+  hasRecentlyBeenUpdated: false,
   id: crypto.randomUUID(),
   producer: { id: crypto.randomUUID(), knodeId: "Orion", name: "Producer Org" },
 };
@@ -36,5 +37,19 @@ describe("PendingAgreementList", () => {
       screen.getByText("Vehicle registration details"),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Producer Org").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Recent update")).not.toBeInTheDocument();
+  });
+
+  it("renders the Recent update chip when hasRecentlyBeenUpdated is true", () => {
+    renderWithProviders(
+      <PendingAgreementList
+        agreements={[{ ...mockAgreement, hasRecentlyBeenUpdated: true }]}
+      />,
+      {
+        routes: [{ path: "/consumption/e-services/$id" }],
+      },
+    );
+
+    expect(screen.getByText("Recent update")).toBeInTheDocument();
   });
 });

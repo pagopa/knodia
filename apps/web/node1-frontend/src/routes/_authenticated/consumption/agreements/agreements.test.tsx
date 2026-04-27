@@ -36,6 +36,7 @@ function buildPendingAgreement(
       name: { en: "Vehicle registration details" },
       state: "Active",
     },
+    hasRecentlyBeenUpdated: false,
     id: crypto.randomUUID(),
     producer: { id: crypto.randomUUID(), knodeId: "Orion", name: "Producer X" },
     ...overrides,

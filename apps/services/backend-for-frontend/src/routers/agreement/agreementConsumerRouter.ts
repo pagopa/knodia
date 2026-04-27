@@ -18,6 +18,8 @@ import {
 } from "@knodia/remote-resources-manager-client";
 import z from "zod";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
@@ -30,12 +32,13 @@ import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface AgreementConsumerRouterOptions {
+  config: BffProcessConfig;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (fastify, { config, remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -171,7 +174,12 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.results.map(toAPI_PendingConsumerAgreement),
+        results: data.results.map((eservice) =>
+          toAPI_PendingConsumerAgreement({
+            eservice,
+            recentUpdateDays: config.recentUpdateDays,
+          }),
+        ),
       });
     },
     method: "GET",

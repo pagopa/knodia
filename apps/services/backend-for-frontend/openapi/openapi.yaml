@@ -1097,6 +1097,10 @@ components:
             - name
             - state
           additionalProperties: false
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Agreement or its E-service has been recently
+            updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -1105,6 +1109,7 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
       required:
         - eservice
+        - hasRecentlyBeenUpdated
         - id
         - producer
       additionalProperties: false

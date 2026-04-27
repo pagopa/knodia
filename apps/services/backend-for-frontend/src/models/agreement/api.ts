@@ -127,6 +127,10 @@ export const API_PendingConsumerAgreement = z
       name: API_LocalizedName,
       state: API_EserviceVersionState,
     }),
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the Agreement or its E-service has been recently updated",
+    }),
     id: z.uuid(),
     producer: API_CompactOrganization,
   })
