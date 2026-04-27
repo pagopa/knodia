@@ -47,9 +47,6 @@ export function ConsumerAgreementsPage({
   offset: number;
   onOffsetChange: (offset: number) => void;
 }) {
-  const navigate = useNavigate();
-  const canManageAgreements = useHasRole("administrative");
-
   const { data: countersData } = useSuspenseQuery(
     getConsumerAgreementsOptions({ client }),
   );
@@ -86,43 +83,58 @@ export function ConsumerAgreementsPage({
       }}
     >
       <PageHeader overline="Consumption" title="Agreements" />
-
-      {isStaleOffset ? (
-        <Loader className="mx-auto mt-10" label="Loading..." />
-      ) : hasAgreements ? (
-        <>
-          <ConsumerAgreementsSummary counters={counters} />
-
-          <h2 className="title-lg-em text-primary-light-high-contrast mt-10 mb-6">
-            Action needed
-          </h2>
-
-          <PendingAgreementList agreements={pendingData.results} />
-        </>
-      ) : (
-        <Empty
-          action={
-            canManageAgreements
-              ? {
-                  as: "button",
-                  hierarchy: "brand",
-                  kind: "filled",
-                  label: "Search new E-Services",
-                  onClick: () =>
-                    navigate({ to: "/consumption/e-services/search" }),
-                }
-              : undefined
-          }
-          description={
-            canManageAgreements
-              ? "Search for an E-Service to request an Agreement."
-              : undefined
-          }
-          icon={<SelectionPlusIcon />}
-          title="You don't have any Agreements yet."
-        />
-      )}
+      {renderBody()}
     </ListPageLayout>
+  );
+
+  function renderBody() {
+    if (isStaleOffset) {
+      return <Loader className="mx-auto mt-10" label="Loading..." />;
+    }
+
+    if (!hasAgreements) {
+      return <EmptyAgreementsState />;
+    }
+
+    return (
+      <>
+        <ConsumerAgreementsSummary counters={counters} />
+
+        <h2 className="title-lg-em text-primary-light-high-contrast mt-10 mb-6">
+          Action needed
+        </h2>
+
+        <PendingAgreementList agreements={pendingData.results} />
+      </>
+    );
+  }
+}
+
+function EmptyAgreementsState() {
+  const navigate = useNavigate();
+  const canManageAgreements = useHasRole("administrative");
+
+  return (
+    <Empty
+      action={
+        canManageAgreements
+          ? {
+              as: "button",
+              hierarchy: "brand",
+              kind: "filled",
+              label: "Search new E-Services",
+              onClick: () => navigate({ to: "/consumption/e-services/search" }),
+            }
+          : undefined
+      }
+      description={
+        canManageAgreements
+          ? "Search for an E-Service to request an Agreement."
+          : undefined
+      }
+      icon={<SelectionPlusIcon />}
+      title="You don't have any Agreements yet."
+    />
   );
 }
 
