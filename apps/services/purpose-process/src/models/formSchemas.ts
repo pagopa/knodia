@@ -8,8 +8,7 @@ export const PURPOSE_FORM_SCHEMA_FOLDERS = [
   "schemas-basic",
   "schemas-withriskanalysis",
 ] as const;
-export type PurposeFormSchemaFolder =
-  (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
+type PurposeFormSchemaFolder = (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
 
 export const CURRENT_FORM_SCHEMA_VERSION: PurposeFormSchemaVersion = "1.0";
 
