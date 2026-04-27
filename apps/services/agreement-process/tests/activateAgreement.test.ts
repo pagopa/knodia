@@ -4,10 +4,14 @@ import {
   AgreementState,
   toAgreementV1,
 } from "@knodia/agreement-models";
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
   type EserviceId,
+  type EserviceVersionId,
   generateId,
+  KnodeId,
+  type OrganizationId,
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
@@ -100,23 +104,74 @@ describe("POST /agreements/:agreementId/activate", async () => {
     expect(response.statusCode).toBe(403);
   });
 
-  it("should return 403 when token resource claims do not match the agreement", async () => {
-    const agreement: Agreement = getMockAgreement({
-      state: "PendingConsumerOperatorIdentification",
-    });
-    await seedPendingAgreement(agreement);
+  const otherKnodeId = (knodeId: KnodeId): KnodeId =>
+    knodeId === KnodeId.enum.Orion ? KnodeId.enum.Lynx : KnodeId.enum.Orion;
 
-    const response = await injectAppRequest({
-      agreementId: agreement.id,
-      consumerId: agreement.consumer.id,
-      consumerKnodeId: agreement.consumer.knodeId,
-      eserviceId: generateId<EserviceId>(),
-      eserviceVersionId: agreement.eserviceVersionId,
-      producerId: agreement.producerId,
-      type: "external-ui-session",
-    }).post(`/agreements/${agreement.id}/activate`);
-    expect(response.statusCode).toBe(403);
-  });
+  const claimMismatchCases: {
+    field: string;
+    makeOverride: (agreement: Agreement) => Partial<TestToken>;
+  }[] = [
+    {
+      field: "consumer.id",
+      makeOverride: () => ({
+        consumerId: generateExternalId<OrganizationId>(),
+      }),
+    },
+    {
+      field: "consumer.knodeId",
+      makeOverride: (agreement) => ({
+        consumerKnodeId: otherKnodeId(agreement.consumer.knodeId),
+      }),
+    },
+    {
+      field: "eservice.id",
+      makeOverride: () => ({ eserviceId: generateId<EserviceId>() }),
+    },
+    {
+      field: "eservice.knodeId",
+      makeOverride: () => ({ eserviceKnodeId: KnodeId.enum.Lynx }),
+    },
+    {
+      field: "eservice.version",
+      makeOverride: () => ({
+        eserviceVersionId: generateId<EserviceVersionId>(),
+      }),
+    },
+    {
+      field: "producer.id",
+      makeOverride: () => ({ producerId: generateId<OrganizationId>() }),
+    },
+    {
+      field: "producer.knodeId",
+      makeOverride: () => ({ producerKnodeId: KnodeId.enum.Lynx }),
+    },
+    {
+      field: "agreement.knodeId",
+      makeOverride: () => ({ agreementKnodeId: KnodeId.enum.Lynx }),
+    },
+  ];
+
+  it.each(claimMismatchCases)(
+    "should return 403 when token claim $field does not match the agreement",
+    async ({ makeOverride }) => {
+      const agreement: Agreement = getMockAgreement({
+        state: "PendingConsumerOperatorIdentification",
+      });
+      await seedPendingAgreement(agreement);
+
+      const response = await injectAppRequest({
+        agreementId: agreement.id,
+        consumerId: agreement.consumer.id,
+        consumerKnodeId: agreement.consumer.knodeId,
+        eserviceId: agreement.eserviceId,
+        eserviceVersionId: agreement.eserviceVersionId,
+        producerId: agreement.producerId,
+        type: "external-ui-session",
+        ...makeOverride(agreement),
+      }).post(`/agreements/${agreement.id}/activate`);
+      expect(response.statusCode).toBe(403);
+    },
+  );
 
   it("should return 404 when agreement does not exist", async () => {
     const agreementId = generateId<AgreementId>();
