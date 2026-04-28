@@ -1,7 +1,9 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyInstance } from "fastify";
 
 import { requestContext } from "@fastify/request-context";
 import {
+  getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
@@ -53,6 +55,7 @@ describe("parseAuthHeaderToken", () => {
 
 const validUISessionPayload = getTestUISessionTokenClaims();
 const validInternalPayload = getTestInternalTokenClaims();
+const validExternalUISessionPayload = getTestExternalUISessionTokenClaims();
 
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
@@ -181,6 +184,21 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(401);
       expect(response.body).toContain("Invalid token claims");
     });
+
+    it("returns 401 when external-ui-session scope is an invalid value", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: { ...validExternalUISessionPayload, scope: "invalid-scope" },
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer invalid-scope-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Invalid token claims");
+    });
   });
 
   describe("valid tokens", () => {
@@ -217,6 +235,43 @@ describe("authenticationPlugin", () => {
       expect(response.json()).toMatchObject({
         authData: {
           tokenType: validInternalPayload.type,
+        },
+      });
+    });
+
+    it("sets authData in context when external-ui-session token is valid", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: validExternalUISessionPayload,
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer external-ui-session-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          agreement: {
+            id: validExternalUISessionPayload.agreement.id,
+            knodeId: validExternalUISessionPayload.agreement.knode_id,
+          },
+          consumer: {
+            id: validExternalUISessionPayload.consumer.id,
+            knodeId: validExternalUISessionPayload.consumer.knode_id,
+          },
+          eservice: {
+            id: validExternalUISessionPayload.eservice.id,
+            knodeId: validExternalUISessionPayload.eservice.knode_id,
+            version: validExternalUISessionPayload.eservice.version,
+          },
+          producer: {
+            id: validExternalUISessionPayload.producer.id,
+            knodeId: validExternalUISessionPayload.producer.knode_id,
+          },
+          scope: validExternalUISessionPayload.scope,
+          tokenType: validExternalUISessionPayload.type,
         },
       });
     });

@@ -13,6 +13,17 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
+export type ExternalUISessionClaimField =
+  | "agreement.id"
+  | "agreement.knodeId"
+  | "consumer.id"
+  | "consumer.knodeId"
+  | "eservice.id"
+  | "eservice.knodeId"
+  | "eservice.version"
+  | "producer.id"
+  | "producer.knodeId";
+
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
   constants;
 
@@ -28,6 +39,8 @@ const errorCodes = {
   AGREEMENT_NOT_IN_SUSPENDABLE_STATE: "0008",
   AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
+  AGREEMENT_NOT_IN_ACTIVATABLE_STATE: "0011",
+  AGREEMENT_TOKEN_CLAIM_MISMATCH: "0012",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -60,6 +73,18 @@ export function agreementNotFound(id: AgreementId) {
     detail: `Agreement with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function agreementNotInActivatableState(
+  agreementId: AgreementId,
+  state: AgreementState,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_ACTIVATABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be activated (state=${state})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not In Activatable State",
   });
 }
 
@@ -102,6 +127,19 @@ export function agreementNotInSuspendableState({
     detail: `Agreement ${agreementId} cannot be suspended by ${suspendedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
     status: HTTP_STATUS_CONFLICT,
     title: "Agreement Not In Suspendable State",
+  });
+}
+
+export function agreementTokenClaimMismatch(
+  field: ExternalUISessionClaimField,
+  tokenValue: string,
+  expectedValue: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_TOKEN_CLAIM_MISMATCH",
+    detail: `Token claim "${field}" (${tokenValue}) does not match expected value (${expectedValue})`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Agreement Token Claim Mismatch",
   });
 }
 

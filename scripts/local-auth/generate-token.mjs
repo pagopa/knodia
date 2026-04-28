@@ -13,6 +13,17 @@ const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const INTERNAL_SUB = "local-internal-service";
 
+// Placeholder IDs for external-ui-session tokens (replace with real values for testing)
+const EXTERNAL_AGREEMENT_ID = "00000000-0000-4000-8000-000000000010";
+const EXTERNAL_AGREEMENT_KNODE_ID = "Orion";
+const EXTERNAL_CONSUMER_ID = "00000000-0000-4000-8000-000000000011";
+const EXTERNAL_CONSUMER_KNODE_ID = "Orion";
+const EXTERNAL_ESERVICE_ID = "00000000-0000-4000-8000-000000000012";
+const EXTERNAL_ESERVICE_KNODE_ID = "Orion";
+const EXTERNAL_PRODUCER_ID = "00000000-0000-4000-8000-000000000013";
+const EXTERNAL_PRODUCER_KNODE_ID = "Orion";
+const EXTERNAL_ESERVICE_VERSION_ID = "00000000-0000-4000-8000-000000000014";
+
 import { TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
@@ -35,11 +46,37 @@ function getClaims(targetEnv, type) {
       return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "Mario Rossi", type, aud };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
+    case "external-ui-session":
+      return {
+        sub: randomUUID(),
+        type,
+        aud,
+        scope: "agreement-activation",
+        agreement: {
+          id: EXTERNAL_AGREEMENT_ID,
+          knode_id: EXTERNAL_AGREEMENT_KNODE_ID,
+        },
+        consumer: {
+          id: EXTERNAL_CONSUMER_ID,
+          knode_id: EXTERNAL_CONSUMER_KNODE_ID,
+        },
+        eservice: {
+          id: EXTERNAL_ESERVICE_ID,
+          knode_id: EXTERNAL_ESERVICE_KNODE_ID,
+          version: EXTERNAL_ESERVICE_VERSION_ID,
+        },
+        producer: {
+          id: EXTERNAL_PRODUCER_ID,
+          knode_id: EXTERNAL_PRODUCER_KNODE_ID,
+        },
+      };
   }
 }
 
 function getEnvVarName(targetEnv, type) {
-  const base = type === "ui-session" ? "UI_SESSION_JWT" : "INTERNAL_JWT";
+  const base = type === "ui-session" ? "UI_SESSION_JWT"
+    : type === "internal" ? "INTERNAL_JWT"
+    : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
 }
