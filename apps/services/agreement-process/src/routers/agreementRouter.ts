@@ -347,7 +347,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Archive a suspended Agreement by Consumer",
+      description: "Archive an Agreement on behalf of its Consumer",
       headers: KnodiaServiceHeaders,
       operationId: "archiveAgreement",
       params: API_AgreementIdPathParam,

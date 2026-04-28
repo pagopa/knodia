@@ -44,6 +44,15 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Suspended,
 ];
 
+export function assertAgreementCanBeArchived(agreement: Agreement): void {
+  if (agreement.state !== AgreementState.enum.Suspended) {
+    throw agreementNotInArchivableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+    });
+  }
+}
+
 export function assertAgreementCanBeReactivatedBy(
   agreement: Agreement,
   reactivatedBy: AgreementActor,
@@ -99,15 +108,6 @@ export function assertAgreementCanBeSuspendedBy(
       },
     )
     .exhaustive();
-}
-
-export function assertAgreementIsSuspended(agreement: Agreement): void {
-  if (agreement.state !== AgreementState.enum.Suspended) {
-    throw agreementNotInArchivableState({
-      agreementId: agreement.id,
-      state: agreement.state,
-    });
-  }
 }
 
 export function assertOrganizationIsAgreementProducer(

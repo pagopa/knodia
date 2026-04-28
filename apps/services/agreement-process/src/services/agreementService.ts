@@ -42,9 +42,9 @@ import {
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
+  assertAgreementCanBeArchived,
   assertAgreementCanBeReactivatedBy,
   assertAgreementCanBeSuspendedBy,
-  assertAgreementIsSuspended,
   assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
@@ -83,10 +83,7 @@ export function agreementServiceBuilder(
         readmodelService,
       );
 
-      // Calls arrive via an internal k2k token from RRM; RRM is responsible
-      // for the caller=consumer check on its side before issuing the
-      // downstream call.
-      assertAgreementIsSuspended(agreement);
+      assertAgreementCanBeArchived(agreement);
 
       const now = new Date();
       const updatedAgreement: Agreement = {

@@ -102,7 +102,7 @@ export const reactivateAgreementByProducer = <ThrowOnError extends boolean = tru
 });
 
 /**
- * Archive a suspended Agreement by Consumer
+ * Archive an Agreement on behalf of its Consumer
  */
 export const archiveAgreement = <ThrowOnError extends boolean = true>(options: Options<ArchiveAgreementData, ThrowOnError>) => (options.client ?? client).post<ArchiveAgreementResponses, ArchiveAgreementErrors, ThrowOnError>({
     responseType: 'json',

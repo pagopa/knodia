@@ -821,7 +821,7 @@ paths:
       operationId: archiveAgreement
       tags:
         - agreement
-      description: Archive a suspended Agreement by Consumer
+      description: Archive an Agreement on behalf of its Consumer
       parameters:
         - schema:
             type: string

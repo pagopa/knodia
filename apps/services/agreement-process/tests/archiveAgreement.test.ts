@@ -39,7 +39,7 @@ function makeAgreement(overrides: Partial<Agreement>): Agreement {
 }
 
 describe("POST /agreements/:agreementId/archive", () => {
-  it("archives a suspended-by-consumer agreement", async () => {
+  it("archives a suspended agreement and emits AgreementArchivedV1", async () => {
     const agreement = makeAgreement({ id: generateId<AgreementId>() });
     await seedAgreement(agreement);
 
@@ -66,39 +66,49 @@ describe("POST /agreements/:agreementId/archive", () => {
     expect(agreementFromEvent.state).toBe("Archived");
   });
 
-  it("archives a suspended-by-producer agreement", async () => {
-    const agreement = makeAgreement({
-      id: generateId<AgreementId>(),
+  // suspendedBy*At is preserved across archive — it's the agreement's
+  // suspension history, not transient transition data
+  it.each([
+    {
+      name: "suspended-by-consumer",
+      suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
+      suspendedByProducerAt: null,
+    },
+    {
+      name: "suspended-by-producer",
       suspendedByConsumerAt: null,
-      suspendedByProducerAt: new Date(),
-    });
-    await seedAgreement(agreement);
+      suspendedByProducerAt: new Date("2026-01-15T10:00:00Z"),
+    },
+    {
+      name: "suspended-by-both",
+      suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
+      suspendedByProducerAt: new Date("2026-01-16T10:00:00Z"),
+    },
+  ])(
+    "preserves suspendedBy*At history when archiving a $name agreement",
+    async ({ suspendedByConsumerAt, suspendedByProducerAt }) => {
+      const agreement = makeAgreement({
+        id: generateId<AgreementId>(),
+        suspendedByConsumerAt,
+        suspendedByProducerAt,
+      });
+      await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/archive`,
-    );
+      const response = await injectAppRequest(internalToken).post(
+        `/agreements/${agreement.id}/archive`,
+      );
 
-    expect(response.statusCode).toBe(200);
-    const body = response.json<API_Agreement>();
-    expect(body.state).toBe("Archived");
-  });
-
-  it("archives an agreement suspended by both consumer and producer", async () => {
-    const agreement = makeAgreement({
-      id: generateId<AgreementId>(),
-      suspendedByConsumerAt: new Date(),
-      suspendedByProducerAt: new Date(),
-    });
-    await seedAgreement(agreement);
-
-    const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/archive`,
-    );
-
-    expect(response.statusCode).toBe(200);
-    const body = response.json<API_Agreement>();
-    expect(body.state).toBe("Archived");
-  });
+      expect(response.statusCode).toBe(200);
+      const body = response.json<API_Agreement>();
+      expect(body.state).toBe("Archived");
+      expect(body.suspendedByConsumerAt).toBe(
+        suspendedByConsumerAt?.toISOString() ?? null,
+      );
+      expect(body.suspendedByProducerAt).toBe(
+        suspendedByProducerAt?.toISOString() ?? null,
+      );
+    },
+  );
 
   it.each(notArchivableStates)(
     "returns 409 when the agreement is %s",
