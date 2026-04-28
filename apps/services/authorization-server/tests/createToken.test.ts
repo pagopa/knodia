@@ -246,7 +246,6 @@ describe("POST /token", async () => {
       const response = await createToken({
         requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
       });
-      console.log("🚀 ~ response:", response);
 
       const responseBody = response.json<API_TokenResponse>();
 
