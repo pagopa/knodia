@@ -635,8 +635,10 @@ export type EserviceTemplateDetails = {
 };
 
 export type EserviceTemplate = {
+    categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    mode: EserviceMode;
     name: LocalizedName;
 };
 

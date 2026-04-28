@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { useCallback, useMemo, useState } from "react";
 
 import type {
@@ -16,12 +18,21 @@ import {
 
 export function EServiceFormProvider({
   children,
+  template,
 }: {
   children: React.ReactNode;
+  template: bffApi.EserviceTemplateDetails;
 }) {
-  const [data, setData] = useState<EServiceFormDraftData>(
-    ESERVICE_FORM_DEFAULTS,
-  );
+  const [data, setData] = useState<EServiceFormDraftData>({
+    ...ESERVICE_FORM_DEFAULTS,
+    ...(template
+      ? {
+          categories: template.eserviceFields.categories,
+          mode: template.eserviceFields.mode,
+          requiredAttributes: template.eserviceFields.requiredAttributes,
+        }
+      : {}),
+  });
 
   const updateGeneralStep = useCallback((stepData: GeneralStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
@@ -42,6 +53,7 @@ export function EServiceFormProvider({
   const value = useMemo<EServiceWizardContextValue>(
     () => ({
       data,
+      template,
       updateAttributesStep,
       updateDocsStep,
       updateGeneralStep,
@@ -49,6 +61,7 @@ export function EServiceFormProvider({
     }),
     [
       data,
+      template,
       updateAttributesStep,
       updateDocsStep,
       updateGeneralStep,

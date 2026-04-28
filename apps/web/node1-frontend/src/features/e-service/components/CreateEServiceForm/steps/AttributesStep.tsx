@@ -5,17 +5,26 @@ import { TrashIcon } from "@phosphor-icons/react";
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
-import { useAttributesStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import {
+  useAttributesStepForm,
+  useEServiceWizardContext,
+} from "@/features/e-service/contexts/useEServiceFormContext";
+import {
+  formatSchemeRefLabels,
   parseSchemeRefKeys,
   renderSchemeRefItems,
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
+import { DefinedByTemplateReadOnlyField } from "../components/DefinedByTemplateReadOnlyField";
+
+type AttributesStepForm = ReturnType<typeof useAttributesStepForm>;
+
 export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
   const form = useAttributesStepForm(nextStep);
+  const { template } = useEServiceWizardContext();
 
   const handleAddGroup = () => {
     const currentGroups = form.getFieldValue("requiredAttributes") ?? [];
@@ -29,6 +38,8 @@ export function AttributesStep() {
       currentGroups.filter((_, i) => i !== index),
     );
   };
+
+  const areDefinedByTemplate = template !== undefined;
 
   return (
     <>
@@ -58,7 +69,7 @@ export function AttributesStep() {
                         Group {groupIndex + 1}
                       </h3>
 
-                      {groupIndex > 0 && (
+                      {!areDefinedByTemplate && groupIndex > 0 && (
                         <Button
                           hierarchy="danger"
                           kind="tonal"
@@ -74,46 +85,27 @@ export function AttributesStep() {
                       group.
                     </span>
                   </div>
-                  <form.Field name={`requiredAttributes[${groupIndex}]`}>
-                    {(groupField) => (
-                      <Select
-                        className="flex-1"
-                        errorMessage={getFieldErrorMessage(
-                          groupField.state.meta.errors,
-                        )}
-                        id={`${groupField.name}-${groupIndex}`}
-                        isInvalid={!groupField.state.meta.isValid}
-                        isRequired
-                        label="Attributes"
-                        name={groupField.name}
-                        onChange={(keys) =>
-                          groupField.handleChange(parseSchemeRefKeys(keys))
-                        }
-                        placeholder="Select one or more attributes"
-                        selectionListFormatType="disjunction"
-                        selectionMode="multiple"
-                        value={
-                          groupField.state.value?.map(toSchemeRefKey) ?? []
-                        }
-                      >
-                        {renderSchemeRefItems(attributes)}
-                      </Select>
-                    )}
-                  </form.Field>
+                  <AttributesField
+                    areDefinedByTemplate={areDefinedByTemplate}
+                    form={form}
+                    groupIndex={groupIndex}
+                  />
                 </div>
               ))}
             </div>
           )}
         </form.Field>
 
-        <Button
-          className="self-start"
-          hierarchy="neutral"
-          kind="tonal"
-          onPress={handleAddGroup}
-        >
-          Add group
-        </Button>
+        {!areDefinedByTemplate && (
+          <Button
+            className="self-start"
+            hierarchy="neutral"
+            kind="tonal"
+            onPress={handleAddGroup}
+          >
+            Add group
+          </Button>
+        )}
       </div>
 
       <form.Subscribe selector={(state) => state.canSubmit}>
@@ -126,5 +118,55 @@ export function AttributesStep() {
         )}
       </form.Subscribe>
     </>
+  );
+}
+
+function AttributesField({
+  areDefinedByTemplate,
+  form,
+  groupIndex,
+}: {
+  areDefinedByTemplate: boolean;
+  form: AttributesStepForm;
+  groupIndex: number;
+}) {
+  return (
+    <form.Field name={`requiredAttributes[${groupIndex}]`}>
+      {(groupField) => {
+        const value = groupField.state.value ?? [];
+
+        if (areDefinedByTemplate) {
+          return (
+            <DefinedByTemplateReadOnlyField
+              label="Attributes"
+              value={formatSchemeRefLabels(value, attributes, {
+                type: "disjunction",
+              })}
+            />
+          );
+        }
+
+        return (
+          <Select
+            className="flex-1"
+            errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
+            id={`${groupField.name}-${groupIndex}`}
+            isInvalid={!groupField.state.meta.isValid}
+            isRequired
+            label="Attributes"
+            name={groupField.name}
+            onChange={(keys) =>
+              groupField.handleChange(parseSchemeRefKeys(keys))
+            }
+            placeholder="Select one or more attributes"
+            selectionListFormatType="disjunction"
+            selectionMode="multiple"
+            value={value.map(toSchemeRefKey)}
+          >
+            {renderSchemeRefItems(attributes)}
+          </Select>
+        );
+      }}
+    </form.Field>
   );
 }

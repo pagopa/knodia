@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { server } from "@/test/msw/server";
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
-import { CreateEServiceModal } from "./CreateEServiceModal";
+import { CreateEServiceForm } from "./CreateEServiceForm";
 
 const BASE_URL = "http://localhost:3000/bff";
 
@@ -95,20 +95,19 @@ async function fillTechnicalStep(
   ).toBeInTheDocument();
 }
 
-function renderWizard(onClose = vi.fn()) {
+function renderWizard(onLeave = vi.fn()) {
   return {
-    onClose,
-    ...renderWithProviders(<CreateEServiceModal onClose={onClose} />, {
+    onLeave,
+    ...renderWithProviders(<CreateEServiceForm onLeave={onLeave} />, {
       routes: [{ path: "/production/e-services/$id" }],
     }),
   };
 }
 
-describe("CreateEServiceModal", () => {
+describe("CreateEServiceForm", () => {
   it("renders the wizard with GeneralStep as first step", () => {
     renderWizard();
 
-    expect(screen.getByText("Create E-Service")).toBeInTheDocument();
     expect(screen.getByText("General Information")).toBeInTheDocument();
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
@@ -138,7 +137,7 @@ describe("CreateEServiceModal", () => {
   });
 });
 
-describe("CreateEServiceModal — step validation", () => {
+describe("CreateEServiceForm — step validation", () => {
   it("blocks navigation when GeneralStep fields are invalid", async () => {
     const { user } = renderWizard();
 
@@ -178,7 +177,7 @@ describe("CreateEServiceModal — step validation", () => {
   });
 });
 
-describe("CreateEServiceModal — file upload", () => {
+describe("CreateEServiceForm — file upload", () => {
   it("shows uploaded file name and allows removal", async () => {
     const { user } = renderWizard();
 
@@ -259,7 +258,7 @@ describe("CreateEServiceModal — file upload", () => {
   });
 });
 
-describe("CreateEServiceModal — publish flow", () => {
+describe("CreateEServiceForm — publish flow", () => {
   it("completes the full wizard flow and navigates to the detail page", async () => {
     server.use(
       http.post(`${BASE_URL}/producer/eservices`, () =>
@@ -322,7 +321,7 @@ describe("CreateEServiceModal — publish flow", () => {
   });
 });
 
-describe("CreateEServiceModal — multi-select trigger text", () => {
+describe("CreateEServiceForm — multi-select trigger text", () => {
   it("joins selected attributes within a group with 'or'", async () => {
     const { user } = renderWizard();
 
@@ -375,39 +374,5 @@ describe("CreateEServiceModal — multi-select trigger text", () => {
 
     expect(categoriesSelect).toHaveAccessibleName(/\band\b/i);
     expect(categoriesSelect).not.toHaveAccessibleName(/\bor\b/i);
-  });
-});
-
-describe("CreateEServiceModal — leave confirmation", () => {
-  it("shows modal and calls onClose when confirmed", async () => {
-    const { onClose, user } = renderWizard();
-
-    await user.click(screen.getByRole("button", { name: /close/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Leave process and discard changes"),
-      ).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole("button", { name: "Leave anyway" }));
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  it("cancels and stays on form", async () => {
-    const { onClose, user } = renderWizard();
-
-    await user.click(screen.getByRole("button", { name: /close/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Leave process and discard changes"),
-      ).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
-
-    expect(screen.getByText("General Information")).toBeInTheDocument();
-    expect(onClose).not.toHaveBeenCalled();
   });
 });

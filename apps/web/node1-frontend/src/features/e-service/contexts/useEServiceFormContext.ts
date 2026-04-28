@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import {
   createFormHook,
   createFormHookContexts,
@@ -25,6 +27,7 @@ import {
 // Wizard context for accumulated data
 export interface EServiceWizardContextValue {
   data: EServiceFormDraftData;
+  template: bffApi.EserviceTemplateDetails | undefined;
   updateAttributesStep: (data: AttributesStepData) => void;
   updateDocsStep: (data: DocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;

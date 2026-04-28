@@ -23,7 +23,9 @@ export const toAPI_EserviceTemplateDetails = (
 export const toAPI_EserviceTemplate = (
   eserviceTemplate: EserviceTemplate,
 ): API_EserviceTemplate => ({
+  categories: eserviceTemplate.eserviceFields.categories,
   description: eserviceTemplate.description,
   id: eserviceTemplate.id,
+  mode: eserviceTemplate.eserviceFields.mode,
   name: eserviceTemplate.name,
 });

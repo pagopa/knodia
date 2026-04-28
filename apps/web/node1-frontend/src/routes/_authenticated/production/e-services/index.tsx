@@ -1,3 +1,4 @@
+import { Button, Menu, MenuItem, MenuTrigger } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
@@ -64,12 +65,24 @@ function RouteComponent() {
               Archive
             </ButtonLinkWithPreload>
             {canPublishEservices && (
-              <ButtonLinkWithPreload
-                hierarchy="brand"
-                to="/production/e-services/new"
-              >
-                Create E-Service
-              </ButtonLinkWithPreload>
+              <MenuTrigger>
+                <Button hierarchy="brand">Create E-Service</Button>
+
+                <Menu
+                  onAction={(key) => {
+                    if (key === "scratch") {
+                      navigate({ to: "/production/e-services/new" });
+                    }
+
+                    if (key === "template") {
+                      navigate({ to: "/production/e-services/from-template" });
+                    }
+                  }}
+                >
+                  <MenuItem id="scratch">From scratch</MenuItem>
+                  <MenuItem id="template">From template</MenuItem>
+                </Menu>
+              </MenuTrigger>
             )}
           </>
         }
