@@ -49,31 +49,42 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   callerKnodeId: KnodeId;
+  internalTokenProvider: RefreshableInternalTokenGenerator;
   magicLinkConfig: K2KGatewayConfig["magicLinkConfig"];
   pollingService: PollingService;
   tokenGenerator: TokenGenerator;
-  tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 async function buildActivationMagicLink(
-  agreement: agreementProcessApi.Agreement,
+  claims: agreementProcessApi.AgreementActivationClaims,
   tokenGenerator: TokenGenerator,
   magicLinkConfig: K2KGatewayConfig["magicLinkConfig"],
 ) {
   const { payload, serialized } =
     await tokenGenerator.generateExternalUISessionMagicLinkToken({
-      agreementId: unsafeBrandId(agreement.id),
+      agreement: {
+        id: unsafeBrandId(claims.agreement.id),
+        knodeId: claims.agreement.knodeId,
+      },
       audience: magicLinkConfig.audience,
-      consumerId: unsafeBrandExternalId<OrganizationId>(agreement.consumer.id),
-      consumerKnodeId: agreement.consumer.knodeId,
-      eserviceId: unsafeBrandId(agreement.eserviceId),
-      eserviceVersionId: unsafeBrandId(agreement.eserviceVersionId),
+      consumer: {
+        id: unsafeBrandExternalId<OrganizationId>(claims.consumer.id),
+        knodeId: claims.consumer.knodeId,
+      },
+      eservice: {
+        id: unsafeBrandId(claims.eservice.id),
+        knodeId: claims.eservice.knodeId,
+        version: unsafeBrandId(claims.eservice.version),
+      },
       issuer: magicLinkConfig.issuer,
       kid: magicLinkConfig.kid,
-      producerId: unsafeBrandId(agreement.producerId),
+      producer: {
+        id: unsafeBrandId(claims.producer.id),
+        knodeId: claims.producer.knodeId,
+      },
       scope: ExternalUISessionScope.enum["agreement-activation"],
       secondsDuration: magicLinkConfig.secondsDuration,
-      subject: agreement.id,
+      subject: claims.agreement.id,
     });
 
   const url = new URL(
@@ -98,10 +109,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
   {
     agreementProcessClient,
     callerKnodeId,
+    internalTokenProvider,
     magicLinkConfig,
     pollingService,
     tokenGenerator,
-    tokenProvider,
   },
 ) => {
   const retrieveAgreementById = async (
@@ -125,7 +136,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     });
 
   const getHeaders = async (correlationId: CorrelationId) =>
-    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
+    getKnodiaServiceHeaders(correlationId, await internalTokenProvider.get());
 
   fastify.route({
     handler: async (req, res) => {
@@ -333,17 +344,20 @@ export const agreementRouter: FastifyPluginAsyncZod<
       logger.info(
         `Creating activation magic link for Agreement ${agreementId}`,
       );
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
-      const { data: agreement } = await retrieveAgreementById(
-        agreementId,
-        headers,
-      );
+      const headers = await getHeaders(correlationId);
+      // The activationClaims endpoint returns the claims but also
+      // validates the agreement state.
+      const { data: claims } =
+        await agreementProcessApi.getAgreementActivationClaims({
+          client: agreementProcessClient,
+          headers,
+          path: { agreementId },
+        });
       res
         .status(200)
         .send(
           await buildActivationMagicLink(
-            agreement,
+            claims,
             tokenGenerator,
             magicLinkConfig,
           ),

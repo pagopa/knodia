@@ -2,7 +2,7 @@ import { generateId } from "@knodia/common-models/ids";
 import { AxiosError, type AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getAgreementMock = vi.hoisted(() => vi.fn());
+const getAgreementActivationClaimsMock = vi.hoisted(() => vi.fn());
 const generateExternalUISessionMagicLinkTokenMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/token-generator/refreshable", () => ({
@@ -34,7 +34,7 @@ vi.mock("@knodia/agreement-process-client", async (importOriginal) => {
     ...original,
     agreementProcessApi: {
       ...original.agreementProcessApi,
-      getAgreement: getAgreementMock,
+      getAgreementActivationClaims: getAgreementActivationClaimsMock,
     },
   };
 });
@@ -42,37 +42,22 @@ vi.mock("@knodia/agreement-process-client", async (importOriginal) => {
 // Must import after vi.mock
 import { injectRequest } from "../utils.ts";
 
-function makeAxios404(title: string): AxiosError {
-  const error = new AxiosError("Request failed with status code 404");
-  error.response = {
-    data: {
-      correlationId: generateId(),
-      errors: [{ code: "000-0000", detail: title }],
-      status: 404,
-      title,
-    },
-    headers: {},
-    status: 404,
-  } as AxiosResponse;
-  return error;
-}
-
 const agreementId = generateId();
 const consumerId = generateId();
 const eserviceId = generateId();
 const eserviceVersionId = generateId();
 const producerId = generateId();
 
-const mockAgreement = {
+const mockClaimsResponse = {
   data: {
-    attributes: [],
-    consumer: { id: consumerId, knodeId: "Orion" },
-    eserviceId,
-    eserviceVersionId,
-    id: agreementId,
-    producerId,
-    state: "PendingConsumerOperatorIdentification",
-    updatedAt: "2026-01-01T00:00:00.000Z",
+    agreement: { id: agreementId, knodeId: "Orion" },
+    consumer: { id: consumerId, knodeId: "Lynx" },
+    eservice: {
+      id: eserviceId,
+      knodeId: "Orion",
+      version: eserviceVersionId,
+    },
+    producer: { id: producerId, knodeId: "Orion" },
   },
 };
 
@@ -80,17 +65,19 @@ const mockTokenExpiresAt = 1_800_000_000; // arbitrary far-future unix seconds
 const mockToken = {
   header: "mock-header",
   payload: {
-    agreementId,
+    agreement: { id: agreementId, knode_id: "Orion" },
     aud: "test-magic-link-audience",
-    consumerId,
-    consumerKnodeId: "Orion",
-    eserviceId,
-    eserviceVersionId,
+    consumer: { id: consumerId, knode_id: "Lynx" },
+    eservice: {
+      id: eserviceId,
+      knode_id: "Orion",
+      version: eserviceVersionId,
+    },
     exp: mockTokenExpiresAt,
     iat: mockTokenExpiresAt - 120,
     iss: "test-magic-link-issuer",
     jti: generateId(),
-    producerId,
+    producer: { id: producerId, knode_id: "Orion" },
     scope: "agreement-activation",
     sub: agreementId,
     type: "external-ui-session-magic-link",
@@ -99,8 +86,23 @@ const mockToken = {
   type: "external-ui-session-magic-link",
 };
 
+function makeAxiosError(status: number, title: string, code: string) {
+  const err = new AxiosError(`Request failed with status code ${status}`);
+  err.response = {
+    data: {
+      correlationId: generateId(),
+      errors: [{ code, detail: title }],
+      status,
+      title,
+    },
+    headers: {},
+    status,
+  } as AxiosResponse;
+  return err;
+}
+
 beforeEach(() => {
-  getAgreementMock.mockReset();
+  getAgreementActivationClaimsMock.mockReset();
   generateExternalUISessionMagicLinkTokenMock.mockReset();
 });
 
@@ -108,8 +110,8 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
   const makeRequest = (id: string = agreementId) =>
     injectRequest().post(`/agreements/${id}/activationMagicLink`);
 
-  it("returns 200 with a signed URL and expiresAt when the agreement exists", async () => {
-    getAgreementMock.mockResolvedValue(mockAgreement);
+  it("returns 200 with a signed URL and expiresAt for a pending agreement", async () => {
+    getAgreementActivationClaimsMock.mockResolvedValue(mockClaimsResponse);
     generateExternalUISessionMagicLinkTokenMock.mockResolvedValue(mockToken);
 
     const response = await makeRequest();
@@ -121,23 +123,25 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
     });
   });
 
-  it("mints a token with claims derived from the agreement", async () => {
-    getAgreementMock.mockResolvedValue(mockAgreement);
+  it("mints a token with claims sourced from agreement-process's activation-claims endpoint", async () => {
+    getAgreementActivationClaimsMock.mockResolvedValue(mockClaimsResponse);
     generateExternalUISessionMagicLinkTokenMock.mockResolvedValue(mockToken);
 
     await makeRequest();
 
     expect(generateExternalUISessionMagicLinkTokenMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        agreementId,
+        agreement: { id: agreementId, knodeId: "Orion" },
         audience: "test-magic-link-audience",
-        consumerId,
-        consumerKnodeId: "Orion",
-        eserviceId,
-        eserviceVersionId,
+        consumer: { id: consumerId, knodeId: "Lynx" },
+        eservice: {
+          id: eserviceId,
+          knodeId: "Orion",
+          version: eserviceVersionId,
+        },
         issuer: "test-magic-link-issuer",
         kid: "test-magic-link-kid",
-        producerId,
+        producer: { id: producerId, knodeId: "Orion" },
         scope: "agreement-activation",
         secondsDuration: 120,
         subject: agreementId,
@@ -145,19 +149,23 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
     );
   });
 
-  it("passes agreement retrieval through to agreement-process with the agreementId", async () => {
-    getAgreementMock.mockResolvedValue(mockAgreement);
+  it("calls agreement-process's activation-claims endpoint with the agreementId path param", async () => {
+    getAgreementActivationClaimsMock.mockResolvedValue(mockClaimsResponse);
     generateExternalUISessionMagicLinkTokenMock.mockResolvedValue(mockToken);
 
     await makeRequest();
 
-    expect(getAgreementMock).toHaveBeenCalledWith(
-      expect.objectContaining({ path: { agreementId } }),
+    expect(getAgreementActivationClaimsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: { agreementId },
+      }),
     );
   });
 
-  it("passes through a 404 when the agreement does not exist", async () => {
-    getAgreementMock.mockRejectedValue(makeAxios404("Agreement Not Found"));
+  it("propagates a 404 from agreement-process (agreement not found)", async () => {
+    getAgreementActivationClaimsMock.mockRejectedValue(
+      makeAxiosError(404, "Agreement Not Found", "001-0005"),
+    );
 
     const response = await makeRequest();
 
@@ -165,11 +173,22 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
     expect(generateExternalUISessionMagicLinkTokenMock).not.toHaveBeenCalled();
   });
 
+  it("propagates a 409 from agreement-process (agreement not in activatable state)", async () => {
+    getAgreementActivationClaimsMock.mockRejectedValue(
+      makeAxiosError(409, "Agreement Not In Activatable State", "001-0011"),
+    );
+
+    const response = await makeRequest();
+
+    expect(response.statusCode).toBe(409);
+    expect(generateExternalUISessionMagicLinkTokenMock).not.toHaveBeenCalled();
+  });
+
   it("returns 400 when the agreementId path param is not a UUID", async () => {
     const response = await makeRequest("not-a-uuid");
 
     expect(response.statusCode).toBe(400);
-    expect(getAgreementMock).not.toHaveBeenCalled();
+    expect(getAgreementActivationClaimsMock).not.toHaveBeenCalled();
     expect(generateExternalUISessionMagicLinkTokenMock).not.toHaveBeenCalled();
   });
 });
