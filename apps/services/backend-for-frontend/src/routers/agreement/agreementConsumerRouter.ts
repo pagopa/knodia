@@ -100,7 +100,19 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
-      const callRRM = (
+
+      const countAgreementsByState = async (
+        agreementState: API_AgreementState,
+      ) => {
+        const { data } = await remoteResourcesManagerApi.getAgreements({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: { limit: 1, offset: 0, state: [agreementState] },
+        });
+        return data.pagination.total;
+      };
+
+      const listAgreements = (
         query: remoteResourcesManagerApi.GetAgreementsData["query"],
       ) =>
         remoteResourcesManagerApi.getAgreements({
@@ -110,27 +122,15 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         });
 
       const [
-        { data: activeAgreements },
-        { data: suspendedAgreements },
-        { data: archivedAgreements },
+        activeAgreements,
+        suspendedAgreements,
+        archivedAgreements,
         { data: filteredAgreements },
       ] = await Promise.all([
-        callRRM({
-          limit: 1,
-          offset: 0,
-          state: [API_AgreementState.enum.Active],
-        }),
-        callRRM({
-          limit: 1,
-          offset: 0,
-          state: [API_AgreementState.enum.Suspended],
-        }),
-        callRRM({
-          limit: 1,
-          offset: 0,
-          state: [API_AgreementState.enum.Archived],
-        }),
-        callRRM({
+        countAgreementsByState(API_AgreementState.enum.Active),
+        countAgreementsByState(API_AgreementState.enum.Suspended),
+        countAgreementsByState(API_AgreementState.enum.Archived),
+        listAgreements({
           limit,
           offset,
           state: state?.length ? state : consumerVisibleStates,
@@ -139,9 +139,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         counters: {
-          activeAgreements: activeAgreements.pagination.total,
-          archivedAgreements: archivedAgreements.pagination.total,
-          suspendedAgreements: suspendedAgreements.pagination.total,
+          activeAgreements,
+          archivedAgreements,
+          suspendedAgreements,
         },
         pagination: filteredAgreements.pagination,
         results: filteredAgreements.results.map(toAPI_ConsumerAgreement),
