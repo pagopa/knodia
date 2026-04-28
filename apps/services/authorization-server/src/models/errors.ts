@@ -34,7 +34,7 @@ const {
 } = constants;
 
 /* eslint-disable perfectionist/sort-objects */
-const errorCodes = {
+const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   CLIENT_ASSERTION_CLAIMS_VALIDATION_ERROR: "0001",
   UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0002",
   CLIENT_ASSERTION_EXPIRED: "0003",
@@ -58,7 +58,7 @@ const errorCodes = {
   INVALID_DPOP_PROOF_SIGNATURE: "0021",
   DPOP_PROOF_EXPIRED: "0022",
   DPOP_PROOF_ALREADY_USED: "0023",
-} satisfies Record<DpopErrorKey, string> & Record<string, string>;
+};
 /* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = CommonErrorCodes | keyof typeof errorCodes;

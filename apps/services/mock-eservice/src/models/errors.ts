@@ -3,7 +3,7 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 
 /* eslint-disable perfectionist/sort-objects */
-const errorCodes = {
+const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   DPOP_CLAIMS_VALIDATION_ERROR: "0001",
   DPOP_PROOF_EXPIRED: "0002",
   INVALID_DPOP_PROOF_JWS: "0003",
@@ -14,7 +14,7 @@ const errorCodes = {
   INVALID_DPOP_PROOF_JWS_FORMAT: "0008",
   INVALID_DPOP_PROOF_ATH: "0009",
   INVALID_DPOP_THUMBPRINT: "0010",
-} satisfies Record<DpopErrorKey, string> & Record<string, string>;
+};
 /* eslint-enable perfectionist/sort-objects */
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
