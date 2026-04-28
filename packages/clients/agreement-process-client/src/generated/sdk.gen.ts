@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetStatusData, GetStatusResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, ReactivateAgreementByProducerData, ReactivateAgreementByProducerErrors, ReactivateAgreementByProducerResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses, SuspendAgreementByProducerData, SuspendAgreementByProducerErrors, SuspendAgreementByProducerResponses } from './types.gen.ts';
+import type { ActivateAgreementData, ActivateAgreementErrors, ActivateAgreementResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetStatusData, GetStatusResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, ReactivateAgreementByProducerData, ReactivateAgreementByProducerErrors, ReactivateAgreementByProducerResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses, SuspendAgreementByProducerData, SuspendAgreementByProducerErrors, SuspendAgreementByProducerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -58,6 +58,16 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Activate an Agreement (consumer operator identification)
+ */
+export const activateAgreement = <ThrowOnError extends boolean = true>(options: Options<ActivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ActivateAgreementResponses, ActivateAgreementErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/activate',
     ...options
 });
 
