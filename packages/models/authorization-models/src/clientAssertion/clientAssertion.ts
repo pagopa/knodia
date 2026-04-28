@@ -16,7 +16,7 @@ const ClientAssertionHeader = z.strictObject({
 });
 export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
 
-export const ClientAssertionPayload = z
+const ClientAssertionPayload = z
   .strictObject({
     aud: z.array(z.string()).or(z.string()),
     exp: z.int().positive(),
@@ -30,8 +30,8 @@ export const ClientAssertionPayload = z
     ...rest,
     purposeId: purpose_id,
   }));
-export type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
 export type ClientAssertionRawPayload = z.input<typeof ClientAssertionPayload>;
+type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
 
 export const ClientAssertion = z.strictObject({
   headers: ClientAssertionHeader,

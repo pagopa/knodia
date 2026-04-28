@@ -3,6 +3,10 @@ import type { FastifyBaseLogger } from "fastify";
 
 import { type ConsumerKeychainId } from "@knodia/common-models/ids";
 import { type JtiReplayStore } from "@knodia/db-jti-replay-store";
+import {
+  assertDpopProofNotReplayed,
+  verifyDpopProofSignature,
+} from "@knodia/dpop-validator";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { AuthorizationServerConfig } from "../config/config.ts";
@@ -10,10 +14,8 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import { EXPECTED_DPOP_PROOF_HTM } from "../models/constants.ts";
 import {
-  assertDpopProofNotReplayed,
   validatePlatformObjects,
   verifyClientAssertionSignature,
-  verifyDpopProofSignature,
 } from "../utils/validators.ts";
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;

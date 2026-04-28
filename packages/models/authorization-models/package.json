@@ -8,8 +8,8 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    "./dpop": "./src/dpop.ts",
-    "./clientAssertion": "./src/clientAssertion.ts"
+    "./dpop": "./src/dpop/index.ts",
+    "./clientAssertion": "./src/clientAssertion/clientAssertion.ts"
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
@@ -20,7 +20,6 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "catalog:"
   }
 }

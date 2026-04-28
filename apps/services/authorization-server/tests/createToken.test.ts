@@ -12,6 +12,10 @@ import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { storeJti } from "@knodia/db-jti-replay-store/utils";
 import {
+  dpopClaimsValidationError,
+  invalidDpopProofSignature,
+} from "@knodia/dpop-validator";
+import {
   type Eservice,
   EserviceAccessTokenType,
   type EserviceVersion,
@@ -35,9 +39,7 @@ import {
   accessTokenTypeMismatch,
   clientAssertionClaimsValidationError,
   consumerMissingRequiredAttributes,
-  dpopClaimsValidationError,
   invalidClientAssertionSignature,
-  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";

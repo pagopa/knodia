@@ -41,6 +41,7 @@
     "@knodia/logger": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/token-generator": "workspace:*",
+    "@knodia/dpop-validator": "workspace:*",
     "axios": "catalog:",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
