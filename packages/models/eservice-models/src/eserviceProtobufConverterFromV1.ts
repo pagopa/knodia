@@ -1,6 +1,14 @@
 import type { AttributeGroup } from "@knodia/attribute-models";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type ExternalResource,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
+import {
+  type EserviceTemplateId,
+  KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
@@ -16,6 +24,7 @@ import {
   EserviceAccessTokenTypeV1,
   type EserviceInterfaceV1,
   EserviceModeV1,
+  type EserviceTemplateV1,
   type EserviceV1,
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
@@ -34,6 +43,9 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
     mode: fromEserviceModeV1(input.mode),
     name: input.name,
     producerId: unsafeBrandId(input.producerId),
+    template: input.template
+      ? fromEserviceTemplateV1(input.template)
+      : undefined,
     updatedAt: new Date(input.updatedAt),
     versions: input.versions.map(fromEserviceVersionV1),
   };
@@ -122,3 +134,11 @@ const fromEserviceVersionInterfaceV1 = (
     updatedAt: new Date(input.updatedAt),
   };
 };
+
+const fromEserviceTemplateV1 = (
+  input: EserviceTemplateV1,
+): ExternalResource<EserviceTemplateId> => ({
+  ...input,
+  id: unsafeBrandExternalId(input.id),
+  knodeId: KnodeId.parse(input.knodeId),
+});

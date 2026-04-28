@@ -611,6 +611,9 @@ importers:
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/eservice-process-client
+      '@knodia/eservice-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-template-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -1373,6 +1376,9 @@ importers:
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -2888,6 +2894,40 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/models/eservice-template-models:
+    dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../attribute-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../category-models
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../common-models
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../eservice-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/models/keychain-models:
     dependencies:

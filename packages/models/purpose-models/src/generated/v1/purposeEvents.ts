@@ -14,6 +14,22 @@ export interface PurposeActivatedV1 {
   purpose: PurposeV1 | undefined;
 }
 
+export interface PurposeSuspendedByConsumerV1 {
+  purpose: PurposeV1 | undefined;
+}
+
+export interface PurposeSuspendedByProducerV1 {
+  purpose: PurposeV1 | undefined;
+}
+
+export interface PurposeReactivatedByConsumerV1 {
+  purpose: PurposeV1 | undefined;
+}
+
+export interface PurposeReactivatedByProducerV1 {
+  purpose: PurposeV1 | undefined;
+}
+
 function createBasePurposeActivatedV1(): PurposeActivatedV1 {
   return { purpose: undefined };
 }
@@ -67,6 +83,250 @@ export const PurposeActivatedV1: MessageFns<PurposeActivatedV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<PurposeActivatedV1>, I>>(object: I): PurposeActivatedV1 {
     const message = createBasePurposeActivatedV1();
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePurposeSuspendedByConsumerV1(): PurposeSuspendedByConsumerV1 {
+  return { purpose: undefined };
+}
+
+export const PurposeSuspendedByConsumerV1: MessageFns<PurposeSuspendedByConsumerV1> = {
+  encode(message: PurposeSuspendedByConsumerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeSuspendedByConsumerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeSuspendedByConsumerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeSuspendedByConsumerV1 {
+    return { purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined };
+  },
+
+  toJSON(message: PurposeSuspendedByConsumerV1): unknown {
+    const obj: any = {};
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeSuspendedByConsumerV1>, I>>(base?: I): PurposeSuspendedByConsumerV1 {
+    return PurposeSuspendedByConsumerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeSuspendedByConsumerV1>, I>>(object: I): PurposeSuspendedByConsumerV1 {
+    const message = createBasePurposeSuspendedByConsumerV1();
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePurposeSuspendedByProducerV1(): PurposeSuspendedByProducerV1 {
+  return { purpose: undefined };
+}
+
+export const PurposeSuspendedByProducerV1: MessageFns<PurposeSuspendedByProducerV1> = {
+  encode(message: PurposeSuspendedByProducerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeSuspendedByProducerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeSuspendedByProducerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeSuspendedByProducerV1 {
+    return { purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined };
+  },
+
+  toJSON(message: PurposeSuspendedByProducerV1): unknown {
+    const obj: any = {};
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeSuspendedByProducerV1>, I>>(base?: I): PurposeSuspendedByProducerV1 {
+    return PurposeSuspendedByProducerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeSuspendedByProducerV1>, I>>(object: I): PurposeSuspendedByProducerV1 {
+    const message = createBasePurposeSuspendedByProducerV1();
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePurposeReactivatedByConsumerV1(): PurposeReactivatedByConsumerV1 {
+  return { purpose: undefined };
+}
+
+export const PurposeReactivatedByConsumerV1: MessageFns<PurposeReactivatedByConsumerV1> = {
+  encode(message: PurposeReactivatedByConsumerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeReactivatedByConsumerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeReactivatedByConsumerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeReactivatedByConsumerV1 {
+    return { purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined };
+  },
+
+  toJSON(message: PurposeReactivatedByConsumerV1): unknown {
+    const obj: any = {};
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeReactivatedByConsumerV1>, I>>(base?: I): PurposeReactivatedByConsumerV1 {
+    return PurposeReactivatedByConsumerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeReactivatedByConsumerV1>, I>>(
+    object: I,
+  ): PurposeReactivatedByConsumerV1 {
+    const message = createBasePurposeReactivatedByConsumerV1();
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePurposeReactivatedByProducerV1(): PurposeReactivatedByProducerV1 {
+  return { purpose: undefined };
+}
+
+export const PurposeReactivatedByProducerV1: MessageFns<PurposeReactivatedByProducerV1> = {
+  encode(message: PurposeReactivatedByProducerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeReactivatedByProducerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeReactivatedByProducerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeReactivatedByProducerV1 {
+    return { purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined };
+  },
+
+  toJSON(message: PurposeReactivatedByProducerV1): unknown {
+    const obj: any = {};
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeReactivatedByProducerV1>, I>>(base?: I): PurposeReactivatedByProducerV1 {
+    return PurposeReactivatedByProducerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeReactivatedByProducerV1>, I>>(
+    object: I,
+  ): PurposeReactivatedByProducerV1 {
+    const message = createBasePurposeReactivatedByProducerV1();
     message.purpose = (object.purpose !== undefined && object.purpose !== null)
       ? PurposeV1.fromPartial(object.purpose)
       : undefined;

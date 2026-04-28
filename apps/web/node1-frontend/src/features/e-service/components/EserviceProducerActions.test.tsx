@@ -89,7 +89,7 @@ describe("EserviceProducerActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the Reactivate button when the eservice is suspended and calls the mutation", async () => {
+  it("shows the Reactivate and Archive buttons when the eservice is suspended and calls the reactivate mutation", async () => {
     const reactivateHandler = vi.fn(
       () => new HttpResponse(null, { status: 204 }),
     );
@@ -107,11 +107,83 @@ describe("EserviceProducerActions", () => {
     expect(
       screen.queryByRole("button", { name: "Suspend" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Reactivate" }));
 
     await waitFor(() => {
       expect(reactivateHandler).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("opens the Archive confirmation modal, confirms, and calls the archive mutation", async () => {
+    const archiveHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/eservices/:eserviceId/archive`,
+        archiveHandler,
+      ),
+    );
+
+    const { user } = renderWithProviders(
+      <EserviceProducerActions eserviceId={ESERVICE_ID} state="Suspended" />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+
+    expect(await screen.findByText("Archive E-Service")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens\. This action cannot be undone\./,
+      ),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Archive anyway" }));
+
+    await waitFor(() => {
+      expect(archiveHandler).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("does not call the archive mutation when cancelling the dialog", async () => {
+    const archiveHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/eservices/:eserviceId/archive`,
+        archiveHandler,
+      ),
+    );
+
+    const { user } = renderWithProviders(
+      <EserviceProducerActions eserviceId={ESERVICE_ID} state="Suspended" />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+
+    expect(await screen.findByText("Archive E-Service")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(archiveHandler).not.toHaveBeenCalled();
+  });
+
+  it("shows the error banner in the modal when the archive mutation fails", async () => {
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/eservices/:eserviceId/archive`,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    const { user } = renderWithProviders(
+      <EserviceProducerActions eserviceId={ESERVICE_ID} state="Suspended" />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+    await user.click(screen.getByRole("button", { name: "Archive anyway" }));
+
+    expect(
+      await screen.findByText(/Something went wrong/i),
+    ).toBeInTheDocument();
   });
 });

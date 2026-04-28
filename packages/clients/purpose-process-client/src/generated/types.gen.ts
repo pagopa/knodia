@@ -115,6 +115,8 @@ export type Purpose = {
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -404,3 +406,199 @@ export type GetCurrentPurposeFormSchemasResponses = {
 };
 
 export type GetCurrentPurposeFormSchemasResponse = GetCurrentPurposeFormSchemasResponses[keyof GetCurrentPurposeFormSchemasResponses];
+
+export type SuspendPurposeByConsumerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/suspendByConsumer';
+};
+
+export type SuspendPurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByConsumerError = SuspendPurposeByConsumerErrors[keyof SuspendPurposeByConsumerErrors];
+
+export type SuspendPurposeByConsumerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeByConsumerResponse = SuspendPurposeByConsumerResponses[keyof SuspendPurposeByConsumerResponses];
+
+export type SuspendPurposeByProducerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/suspendByProducer';
+};
+
+export type SuspendPurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByProducerError = SuspendPurposeByProducerErrors[keyof SuspendPurposeByProducerErrors];
+
+export type SuspendPurposeByProducerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses[keyof SuspendPurposeByProducerResponses];
+
+export type ReactivatePurposeByConsumerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/reactivateByConsumer';
+};
+
+export type ReactivatePurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByConsumerError = ReactivatePurposeByConsumerErrors[keyof ReactivatePurposeByConsumerErrors];
+
+export type ReactivatePurposeByConsumerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeByConsumerResponse = ReactivatePurposeByConsumerResponses[keyof ReactivatePurposeByConsumerResponses];
+
+export type ReactivatePurposeByProducerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/reactivateByProducer';
+};
+
+export type ReactivatePurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByProducerError = ReactivatePurposeByProducerErrors[keyof ReactivatePurposeByProducerErrors];
+
+export type ReactivatePurposeByProducerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeByProducerResponse = ReactivatePurposeByProducerResponses[keyof ReactivatePurposeByProducerResponses];

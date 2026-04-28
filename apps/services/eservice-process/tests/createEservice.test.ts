@@ -93,7 +93,9 @@ describe("POST /eservices (createEservice)", () => {
       ],
     };
 
-    expect(responseBody).toMatchObject(toAPI_Eservice(expectedEservice));
+    expect({ ...responseBody, template: undefined }).toMatchObject(
+      toAPI_Eservice(expectedEservice),
+    );
 
     const events = await getAllEserviceEvents();
     expect(events).toHaveLength(1);

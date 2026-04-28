@@ -1,0 +1,17 @@
+meta {
+  name: Suspend Purpose
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/purposes/:purposeId/suspend
+  body: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  ~Authorization:
+}
