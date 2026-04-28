@@ -19,10 +19,14 @@ import {
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
 
-import type { PurposeProcessConfig } from "./config/config.ts";
+import type {
+  PurposeFormsConfig,
+  PurposeProcessConfig,
+} from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { loadFormSchemas } from "./models/formSchemas.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
@@ -32,10 +36,11 @@ export function buildApp({
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig & LoggerConfig & PurposeFormsConfig;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
+  const getFormSchemas = loadFormSchemas(config.purposeFormsDir);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -73,6 +78,7 @@ export function buildApp({
       purposeService: purposeServiceBuilder(
         purposeEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        getFormSchemas,
       ),
     });
   });

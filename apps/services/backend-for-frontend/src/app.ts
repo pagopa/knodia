@@ -23,6 +23,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
 import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
+import { eserviceTemplateRouter } from "./routers/eservice-template/eserviceTemplateRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
@@ -91,6 +92,10 @@ export function buildAppFromConfig(
             description: "User routes",
             name: apiTags.user,
           },
+          {
+            description: "E-service Templates routes",
+            name: apiTags.eserviceTemplate,
+          },
         ],
       },
     },
@@ -120,6 +125,7 @@ export function buildAppFromConfig(
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(eserviceTemplateRouter);
     protectedApp.register(eserviceProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       config,
@@ -168,6 +174,7 @@ export function buildAppFromConfig(
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
+      pollingService,
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });

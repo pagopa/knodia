@@ -76,6 +76,11 @@ function RouteComponent() {
         <Breadcrumb href={{ to: "/production/e-services" }}>
           E-Services
         </Breadcrumb>
+        {isArchived && (
+          <Breadcrumb href={{ to: "/production/e-services/archive" }}>
+            Archive
+          </Breadcrumb>
+        )}
         <Breadcrumb>{eservice.name.en}</Breadcrumb>
       </Breadcrumbs>
 

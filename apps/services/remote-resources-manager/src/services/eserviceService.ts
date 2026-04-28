@@ -3,6 +3,7 @@ import type { RemoteResourceDbService } from "@knodia/db-remote-resource/service
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
   type ExternalResource,
   unsafeBrandExternalId,
@@ -142,20 +143,18 @@ export function eserviceServiceBuilder(
               eserviceId: eserviceId.id,
               limit: 1,
               offset: 0,
+              state: [
+                toK2KAPI_AgreementState(API_AgreementState.enum.Active),
+                toK2KAPI_AgreementState(API_AgreementState.enum.Suspended),
+                toK2KAPI_AgreementState(
+                  API_AgreementState.enum.PendingConsumerOperatorIdentification,
+                ),
+              ],
             },
           }),
         ]);
 
-      // TODO(KN-372): filter archived agreements out server-side once archiving is implemented.
-      //
-      // Today at most one non-archived agreement per (consumer, eservice)
-      // exists (archiving is not yet implemented), so `limit: 1` with the
-      // default `updatedAt desc` ordering returns the latest.
-      //
-      // The ARCHIVED guard below is defensive for when this changes.
-      const latestAgreement = agreements.results.at(0);
-      const agreement =
-        latestAgreement?.state === "ARCHIVED" ? undefined : latestAgreement;
+      const agreement = agreements.results.at(0);
 
       const { data: producer } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,
@@ -201,7 +200,7 @@ export function eserviceServiceBuilder(
             limit: dynamicLimit,
             offset: dynamicOffset,
             state: agreementState
-              ? toK2KAPI_AgreementState(agreementState)
+              ? [toK2KAPI_AgreementState(agreementState)]
               : undefined,
           },
         });

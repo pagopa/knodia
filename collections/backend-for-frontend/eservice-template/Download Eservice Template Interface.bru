@@ -1,0 +1,21 @@
+meta {
+  name: Download Eservice Template Interface
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/eserviceTemplates/{{eserviceTemplateId}}/interface?knodeId=Lynx
+  body: none
+}
+
+params:path {
+  eserviceTemplateId: {{eserviceTemplateId}}
+}
+
+params:query {
+  knodeId: {{knodeId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

@@ -103,7 +103,7 @@ describe("GET /agreements (getAgreements)", () => {
         query: {
           ...parsedDefaultQuery,
           consumerId: TEST_ORGANIZATION_ID,
-          state: toK2KAPI_AgreementState(expectedApiResult.state),
+          state: [toK2KAPI_AgreementState(expectedApiResult.state)],
         },
       }),
     );

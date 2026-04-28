@@ -37,7 +37,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   CURRENT_FORM_SCHEMA_VERSION,
-  getFormSchemas,
+  type GetFormSchemas,
 } from "../models/formSchemas.ts";
 import {
   createPurposeActivatedV1Event,
@@ -46,7 +46,7 @@ import {
   createPurposeSuspendedByConsumerV1Event,
   createPurposeSuspendedByProducerV1Event,
 } from "../models/purposeEventFactory.ts";
-import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
+import { buildFormAnswersValidator } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
   retrieveEservice,
@@ -79,7 +79,9 @@ type CallerIdentity =
 export function purposeServiceBuilder(
   eventStoreWriter: PurposeEventStoreWriter,
   readmodelService: ReadmodelService,
+  getFormSchemas: GetFormSchemas,
 ) {
+  const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   return {
     async createPurpose(
       {

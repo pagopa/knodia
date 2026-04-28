@@ -1,0 +1,236 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "i18n": "groups.lawfulnessOfProcessing",
+      "elements": [
+        {
+          "type": "Group",
+          "i18n": "groups.purposeOfAccess",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/purpose",
+              "options": {
+                "widget": "radio"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/institutionalPurpose",
+              "options": {
+                "widget": "textarea"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/purpose",
+                  "schema": {
+                    "const": "INSTITUTIONAL"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/otherPurpose",
+              "options": {
+                "widget": "textarea"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/purpose",
+                  "schema": {
+                    "const": "OTHER"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Group",
+          "i18n": "groups.personalDataAccess",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/usesPersonalData",
+              "options": {
+                "widget": "radio"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/usesThirdPartyNonPersonalData",
+              "options": {
+                "widget": "radio"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "NO"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/usesThirdPartyConfidentialData",
+              "options": {
+                "widget": "radio"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "type": "AND",
+                  "conditions": [
+                    {
+                      "scope": "#/properties/usesPersonalData",
+                      "schema": {
+                        "const": "NO"
+                      }
+                    },
+                    {
+                      "scope": "#/properties/usesThirdPartyNonPersonalData",
+                      "schema": {
+                        "const": "YES"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Group",
+          "i18n": "groups.personalDataTypes",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/personalDataTypes",
+              "options": {
+                "widget": "checkbox"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/otherPersonalDataTypes",
+              "options": {
+                "widget": "textarea"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "type": "AND",
+                  "conditions": [
+                    {
+                      "scope": "#/properties/usesPersonalData",
+                      "schema": {
+                        "const": "YES"
+                      }
+                    },
+                    {
+                      "scope": "#/properties/personalDataTypes",
+                      "schema": {
+                        "contains": {
+                          "const": "OTHER"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Group",
+          "i18n": "groups.legalBasis",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/legalBasis",
+              "options": {
+                "widget": "checkbox"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/legalObligationReference",
+              "options": {
+                "widget": "textarea"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "type": "AND",
+                  "conditions": [
+                    {
+                      "scope": "#/properties/usesPersonalData",
+                      "schema": {
+                        "const": "YES"
+                      }
+                    },
+                    {
+                      "scope": "#/properties/legalBasis",
+                      "schema": {
+                        "contains": {
+                          "const": "LEGAL_OBLIGATION"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Group",
+          "i18n": "groups.gdprComplianceDeclaration",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/declarationConfirmGDPR",
+              "options": {
+                "widget": "switch"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

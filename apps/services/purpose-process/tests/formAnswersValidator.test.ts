@@ -8,8 +8,12 @@ import {
 import { MOCK_PURPOSE_FORM_ANSWERS } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { assertFormAnswersAreValid } from "../src/utils/formAnswersValidator.ts";
+import { loadFormSchemas } from "../src/models/formSchemas.ts";
+import { buildFormAnswersValidator } from "../src/utils/formAnswersValidator.ts";
 
+const assertFormAnswersAreValid = buildFormAnswersValidator(
+  loadFormSchemas("schemas-withriskanalysis"),
+);
 const version = PurposeFormSchemaVersion.enum["1.0"];
 
 function expectValidationErrors(
