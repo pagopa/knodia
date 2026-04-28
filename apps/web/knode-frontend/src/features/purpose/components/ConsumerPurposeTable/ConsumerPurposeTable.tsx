@@ -44,6 +44,7 @@ export function ConsumerPurposeTable({
           }}
           description="You can create new Purposes for the E-Services for which you have an existing Agreement."
           icon={<SelectionPlusIcon />}
+          kind="brand-soft"
           title="You don't have any Purpose yet."
         />
       );
@@ -53,6 +54,7 @@ export function ConsumerPurposeTable({
       <Empty
         description="Purposes will appear here."
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title="There are no Purposes yet."
       />
     );

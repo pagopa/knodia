@@ -27,6 +27,7 @@ function RouteComponent() {
       <Empty
         description="Archived Agreements will be displayed here."
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title="You haven't archived any Agreement yet."
       />
     </>

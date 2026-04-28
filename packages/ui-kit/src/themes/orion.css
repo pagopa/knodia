@@ -141,6 +141,9 @@
   --color-button-outlined-neutral-bg-hover: var(--color-slate-50);
   --color-button-outlined-brand-bg-hover: var(--color-brand-50);
 
+  /* Empty icon — brand-soft (theme-scoped) */
+  --color-empty-icon-brand-soft-bg: var(--color-secondary-light);
+
   /* Org consumption status */
   --radius-org-consumption-status-card: 8px;
   --shadow-org-consumption-status: 0 4px 8px 0

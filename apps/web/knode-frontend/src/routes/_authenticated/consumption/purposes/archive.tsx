@@ -27,6 +27,7 @@ function RouteComponent() {
       <Empty
         description="Archived Purposes will be displayed here."
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title={
           canManagePurposes
             ? "You haven't archived any Purpose yet."

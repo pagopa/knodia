@@ -23,6 +23,7 @@ const emptyIconWrapper = tv({
     kind: {
       neutral: "bg-secondary-light",
       brand: "bg-brand-light",
+      "brand-soft": "bg-empty-icon-brand-soft-bg",
       informative: "bg-info-light",
       success: "bg-success-light",
       warning: "bg-warning-light",
@@ -40,6 +41,7 @@ const emptyIcon = tv({
     kind: {
       neutral: "text-secondary-light-mid-contrast",
       brand: "text-brand-light-mid-contrast",
+      "brand-soft": "text-secondary-light-mid-contrast",
       informative: "text-info-light-mid-contrast",
       success: "text-success-light-mid-contrast",
       warning: "text-warning-light-mid-contrast",
@@ -133,6 +135,7 @@ function DefaultEmptyIcon({ kind }: { kind: EmptyVariants["kind"] }) {
     case "warning":
       return <WarningIcon />;
     case "brand":
+    case "brand-soft":
     case "neutral":
     default:
       return <PlaceholderIcon />;
