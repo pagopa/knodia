@@ -56,7 +56,7 @@ export function buildApp({
   });
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
-  const tokenProvider = refreshableInternalTokenGenerator(
+  const internalTokenProvider = refreshableInternalTokenGenerator(
     internalJwt,
     tokenGenerator,
   );
@@ -109,31 +109,31 @@ export function buildApp({
     callerKnodeId,
     keychainProcessClient: clients.keychainProcessClient,
     organizationProcessClient: clients.organizationProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(eserviceRouter, {
     eserviceInterfacesS3Bucket,
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
+    internalTokenProvider,
     magicLinkConfig,
     pollingService,
     tokenGenerator,
-    tokenProvider,
   });
   app.register(organizationRouter, {
     organizationProcessClient: clients.organizationProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(purposeRouter, {
     callerKnodeId,
     pollingService,
     purposeProcessClient: clients.purposeProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
 
   return app;

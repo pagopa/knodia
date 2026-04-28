@@ -4038,7 +4038,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/activationMagicLink:
     post:
-      operationId: createConsumerAgreementActivationMagicLink
+      operationId: createAgreementConsumerActivationMagicLink
       summary: Create an Agreement activation magic link
       tags:
         - agreement
@@ -4096,6 +4096,14 @@ paths:
             application/problem+json:
               schema:
                 description: Agreement not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/reactivate:

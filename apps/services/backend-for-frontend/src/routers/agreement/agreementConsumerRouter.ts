@@ -21,6 +21,7 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
+  API_CreateAgreementConsumerActivationMagicLinkQueryParams,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -168,9 +169,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
-      operationId: "createConsumerAgreementActivationMagicLink",
+      operationId: "createAgreementConsumerActivationMagicLink",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_CreateAgreementConsumerActivationMagicLinkQueryParams,
       response: {
         200: API_MagicLink.meta({
           description: "Magic link created successfully",
@@ -179,6 +180,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       summary: "Create an Agreement activation magic link",
       tags: [apiTags.agreement],

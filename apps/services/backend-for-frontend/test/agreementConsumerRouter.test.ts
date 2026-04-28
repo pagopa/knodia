@@ -85,7 +85,7 @@ function makeUiSessionPayload(
   };
 }
 
-describe("POST /consumer/agreements/:agreementId/activationMagicLink (createConsumerAgreementActivationMagicLink)", () => {
+describe("POST /consumer/agreements/:agreementId/activationMagicLink (createAgreementConsumerActivationMagicLink)", () => {
   beforeEach(() => {
     mockJwtVerify.mockResolvedValue({
       payload: makeUiSessionPayload(),
@@ -201,5 +201,20 @@ describe("POST /consumer/agreements/:agreementId/activationMagicLink (createCons
     });
 
     expect(response.statusCode).toBe(403);
+  });
+
+  it("passes through a 409 from RRM (agreement not in activatable state)", async () => {
+    createAgreementActivationMagicLinkMock.mockRejectedValue(
+      makeAxiosError(409, "Agreement not in activatable state"),
+    );
+
+    const response = await app.inject({
+      headers: { authorization: "Bearer valid.ui.session" },
+      method: "POST",
+      query: { knodeId: "Lynx" },
+      url: `/consumer/agreements/${AGREEMENT_ID}/activationMagicLink`,
+    });
+
+    expect(response.statusCode).toBe(409);
   });
 });

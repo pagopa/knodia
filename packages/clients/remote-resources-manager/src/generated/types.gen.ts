@@ -841,6 +841,10 @@ export type CreateAgreementActivationMagicLinkErrors = {
      * Agreement not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateAgreementActivationMagicLinkError = CreateAgreementActivationMagicLinkErrors[keyof CreateAgreementActivationMagicLinkErrors];

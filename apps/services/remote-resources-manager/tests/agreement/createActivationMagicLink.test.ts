@@ -11,6 +11,7 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
+import { AxiosError, type AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { remoteResourceDbService } from "../setup.ts";
@@ -133,5 +134,30 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
 
     expect(response.statusCode).toBe(400);
     expect(createAgreementActivationMagicLinkMock).not.toHaveBeenCalled();
+  });
+
+  it("propagates a 409 from the downstream K2K gateway", async () => {
+    await seedAgreement();
+    const downstreamError = new AxiosError("Request failed with status 409");
+    downstreamError.response = {
+      data: {
+        correlationId: generateId(),
+        errors: [
+          {
+            code: "000-0001",
+            detail: "Agreement not in activatable state",
+          },
+        ],
+        status: 409,
+        title: "Conflict",
+      },
+      headers: {},
+      status: 409,
+    } as AxiosResponse;
+    createAgreementActivationMagicLinkMock.mockRejectedValue(downstreamError);
+
+    const response = await makeRequest();
+
+    expect(response.statusCode).toBe(409);
   });
 });

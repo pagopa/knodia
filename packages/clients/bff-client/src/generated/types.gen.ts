@@ -2406,7 +2406,7 @@ export type CreateConsumerAgreementResponses = {
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
-export type CreateConsumerAgreementActivationMagicLinkData = {
+export type CreateAgreementConsumerActivationMagicLinkData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2417,7 +2417,7 @@ export type CreateConsumerAgreementActivationMagicLinkData = {
     url: '/consumer/agreements/{agreementId}/activationMagicLink';
 };
 
-export type CreateConsumerAgreementActivationMagicLinkErrors = {
+export type CreateAgreementConsumerActivationMagicLinkErrors = {
     /**
      * Bad Request
      */
@@ -2434,18 +2434,22 @@ export type CreateConsumerAgreementActivationMagicLinkErrors = {
      * Agreement not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
-export type CreateConsumerAgreementActivationMagicLinkError = CreateConsumerAgreementActivationMagicLinkErrors[keyof CreateConsumerAgreementActivationMagicLinkErrors];
+export type CreateAgreementConsumerActivationMagicLinkError = CreateAgreementConsumerActivationMagicLinkErrors[keyof CreateAgreementConsumerActivationMagicLinkErrors];
 
-export type CreateConsumerAgreementActivationMagicLinkResponses = {
+export type CreateAgreementConsumerActivationMagicLinkResponses = {
     /**
      * Magic link created successfully
      */
     200: MagicLink;
 };
 
-export type CreateConsumerAgreementActivationMagicLinkResponse = CreateConsumerAgreementActivationMagicLinkResponses[keyof CreateConsumerAgreementActivationMagicLinkResponses];
+export type CreateAgreementConsumerActivationMagicLinkResponse = CreateAgreementConsumerActivationMagicLinkResponses[keyof CreateAgreementConsumerActivationMagicLinkResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;
