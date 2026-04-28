@@ -150,7 +150,6 @@ export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
-    archivedAt: z.iso.datetime().nullable(),
     consumer: API_CompactOrganization,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,

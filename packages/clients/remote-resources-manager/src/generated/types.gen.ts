@@ -381,10 +381,6 @@ export type PurposeSeed = {
 export type CreatedPurposeResource = CreatedResource;
 
 export type Purpose = {
-    /**
-     * Timestamp when the Purpose was archived
-     */
-    archivedAt: string | null;
     consumer: PurposeConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;

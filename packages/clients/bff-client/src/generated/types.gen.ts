@@ -900,7 +900,6 @@ export type PurposeDetailsEservice = {
 
 export type PurposeDetails = {
     agreement: CompactAgreement;
-    archivedAt: string | null;
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;

@@ -485,10 +485,6 @@ export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
  * A Consumer's Purpose to access an E-service
  */
 export type Purpose = {
-    /**
-     * Timestamp when the Purpose was archived
-     */
-    archivedAt: string | null;
     consumer: PurposeConsumer;
     /**
      * Expected number of daily API calls for this Purpose
