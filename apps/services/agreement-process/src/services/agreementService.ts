@@ -27,7 +27,10 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
-import type { API_GetAgreementsQueryParams } from "../models/api.ts";
+import type {
+  API_AgreementActivationClaims,
+  API_GetAgreementsQueryParams,
+} from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -210,6 +213,34 @@ export function agreementServiceBuilder(
       const agreement = await retrieveAgreement(agreementId, readmodelService);
 
       return agreement;
+    },
+    async getAgreementActivationClaims(
+      agreementId: AgreementId,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<API_AgreementActivationClaims> {
+      logger.info(
+        `Getting activation claims for Agreement with ID ${agreementId}`,
+      );
+
+      const { data: agreement } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+      assertAgreementIsPendingConsumerOperatorIdentification(agreement);
+
+      return {
+        agreement: { id: agreement.id, knodeId: currentKnodeId },
+        consumer: {
+          id: agreement.consumer.id,
+          knodeId: agreement.consumer.knodeId,
+        },
+        eservice: {
+          id: agreement.eserviceId,
+          knodeId: currentKnodeId,
+          version: agreement.eserviceVersionId,
+        },
+        producer: { id: agreement.producerId, knodeId: currentKnodeId },
+      };
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
