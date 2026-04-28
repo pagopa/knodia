@@ -4,6 +4,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
@@ -61,7 +62,7 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
   eserviceId: API_EserviceId.optional().meta({
     description: "Filter by E-service ID",
   }),
-  state: API_AgreementState.optional().meta({
+  state: arrayQueryParam(API_AgreementState).optional().meta({
     description: "Filter by Agreement State",
   }),
 });

@@ -3,6 +3,7 @@ export const apiTags = {
   auth: "auth",
   consumerKeychain: "consumerKeychain",
   eservice: "eservice",
+  eserviceTemplate: "eserviceTemplate",
   purpose: "purpose",
   user: "user",
 } as const;

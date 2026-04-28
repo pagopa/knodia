@@ -1,0 +1,17 @@
+{
+  "declarationConfirmGDPR.error.required": "Confirmation required",
+  "institutionalPurpose.error.maxLength": "Must not exceed 2000 characters",
+  "institutionalPurpose.error.required": "Please specify the institutional purpose",
+  "legalBasis.error.required": "Please select at least one legal basis",
+  "legalObligationReference.error.maxLength": "Must not exceed 2000 characters",
+  "legalObligationReference.error.required": "Please specify the legal obligation",
+  "otherPersonalDataTypes.error.maxLength": "Must not exceed 2000 characters",
+  "otherPersonalDataTypes.error.required": "Please specify the type of personal data",
+  "otherPurpose.error.maxLength": "Must not exceed 2000 characters",
+  "otherPurpose.error.required": "Please specify the purpose",
+  "personalDataTypes.error.required": "Please select at least one type of personal data",
+  "purpose.error.required": "Please select a purpose",
+  "usesPersonalData.error.required": "Please select an option",
+  "usesThirdPartyConfidentialData.error.required": "Please select an option",
+  "usesThirdPartyNonPersonalData.error.required": "Please select an option"
+}
