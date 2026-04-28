@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { EserviceTemplate } from "@knodia/eservice-template-models";
 
 import type {
@@ -7,6 +8,7 @@ import type {
 
 export const toAPI_EserviceTemplateDetails = (
   eserviceTemplate: EserviceTemplate,
+  knodeId: KnodeId,
 ): API_EserviceTemplateDetails => ({
   createdAt: eserviceTemplate.createdAt.toISOString(),
   description: eserviceTemplate.description,
@@ -17,6 +19,7 @@ export const toAPI_EserviceTemplateDetails = (
     requiredAttributes: eserviceTemplate.eserviceFields.requiredAttributes,
   },
   id: eserviceTemplate.id,
+  knodeId,
   name: eserviceTemplate.name,
 });
 

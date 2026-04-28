@@ -13,7 +13,7 @@ import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
-import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateForm";
+import { eserviceFromScratchFormSchema } from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
 import { DocumentRecap } from "../../DocumentRecap";
@@ -25,7 +25,7 @@ export function RecapStep() {
   const { isError, isPending, publish } = usePublishEService();
 
   const onPublish = () =>
-    publish(eserviceFormSchema.parse(data), sha256Checksum);
+    publish(eserviceFromScratchFormSchema.parse(data), sha256Checksum);
 
   return (
     <>

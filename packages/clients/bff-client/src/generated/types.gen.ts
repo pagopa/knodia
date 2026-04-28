@@ -631,6 +631,7 @@ export type EserviceTemplateDetails = {
     description: LocalizedDescription;
     eserviceFields: EserviceTemplateEserviceFields;
     id: string;
+    knodeId: KnodeId;
     name: LocalizedName;
 };
 

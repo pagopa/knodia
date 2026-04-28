@@ -22,6 +22,9 @@ import {
   TECHNICAL_STEP_DEFAULTS,
   type TechnicalStepData,
   technicalStepSchema,
+  TEMPLATE_DOCS_STEP_DEFAULTS,
+  type TemplateDocsStepData,
+  templateDocsStepSchema,
 } from "@/features/e-service/types/eserviceCreateForm";
 
 // Wizard context for accumulated data
@@ -29,9 +32,10 @@ export interface EServiceWizardContextValue {
   data: EServiceFormDraftData;
   template: bffApi.EserviceTemplateDetails | undefined;
   updateAttributesStep: (data: AttributesStepData) => void;
-  updateDocsStep: (data: DocsStepData) => void;
+  updateDocsStep: (data: DocsStepData | TemplateDocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;
   updateTechnicalStep: (data: TechnicalStepData) => void;
+  updateTemplateDocsStep: (data: TemplateDocsStepData) => void;
 }
 
 export const EServiceWizardContext =
@@ -68,22 +72,38 @@ export function useAttributesStepForm(onSubmitSuccess: () => void) {
 }
 
 export function useDocsStepForm(onSubmitSuccess: () => void) {
-  const { data, updateDocsStep } = useEServiceWizardContext();
+  const { data, template, updateDocsStep } = useEServiceWizardContext();
+
+  const defaultValues = template
+    ? {
+        contactEmail:
+          data.contactEmail ?? TEMPLATE_DOCS_STEP_DEFAULTS.contactEmail,
+        contactName:
+          data.contactName ?? TEMPLATE_DOCS_STEP_DEFAULTS.contactName,
+        contactUrl: data.contactUrl ?? TEMPLATE_DOCS_STEP_DEFAULTS.contactUrl,
+        serverUrls: data.serverUrls ?? TEMPLATE_DOCS_STEP_DEFAULTS.serverUrls,
+        termsOfServiceUrl:
+          data.termsOfServiceUrl ??
+          TEMPLATE_DOCS_STEP_DEFAULTS.termsOfServiceUrl,
+      }
+    : {
+        interfaceDocument:
+          data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
+      };
+
+  const schema = template ? templateDocsStepSchema : docsStepSchema;
 
   return useAppForm({
-    defaultValues: {
-      interfaceDocument:
-        data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
-    },
+    defaultValues,
     onSubmit: ({ value }) => {
       // Already validated by onDynamic, re-parse only to narrow File | null → File
-      const parsedValue = docsStepSchema.parse(value);
+      const parsedValue = schema.parse(value);
       updateDocsStep(parsedValue);
       onSubmitSuccess();
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: docsStepSchema,
+      onDynamic: schema,
     },
   });
 }

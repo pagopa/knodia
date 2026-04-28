@@ -32,6 +32,7 @@ export const API_EserviceTemplateDetails = z
     description: API_LocalizedDescription,
     eserviceFields: API_EserviceTemplateEserviceFields,
     id: z.uuid(),
+    knodeId: API_KnodeId,
     name: API_LocalizedName,
   })
   .meta({ id: "EserviceTemplateDetails" });
