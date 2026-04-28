@@ -1,0 +1,32 @@
+meta {
+  name: 1 - Get Mock Eservice
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: 10000000-0000-4000-8000-000000000001
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  eserviceId: res.body.id
+}
+
+script:post-response {
+  console.log(
+    `\n==> eserviceId captured (${res.body.id}).\n` +
+    "Now run the bearer-token-flow from step 2 (Get Eservice Latest Version) to step 11 (Create Token), skipping step 1 (Create Eservice) — the flow will reuse this eserviceId.\n" +
+    "When it's done, run step 2 of this flow (Call Mock Eservice).\n"
+  )
+}

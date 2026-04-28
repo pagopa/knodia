@@ -1,6 +1,7 @@
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
+import { KnodeId } from "@knodia/common-models/ids";
 import { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import {
@@ -18,6 +19,8 @@ import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
+
+const currentKnodeId: KnodeId = KnodeId.enum.Orion;
 
 let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
@@ -42,6 +45,7 @@ beforeAll(async () => {
     config: {
       acceptedAudiences: ["test-audience"],
       isProduction: false,
+      knodeId: currentKnodeId,
       logLevel: "silent",
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],

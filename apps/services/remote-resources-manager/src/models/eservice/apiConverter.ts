@@ -45,6 +45,8 @@ const toAPI_EserviceAgreementDetail = (
     ? {
         id: agreement.id,
         state: toAPI_AgreementState(agreement.state),
+        suspendedByConsumerAt: agreement.suspendedByConsumerAt ?? null,
+        suspendedByProducerAt: agreement.suspendedByProducerAt ?? null,
         updatedAt: agreement.updatedAt,
       }
     : undefined;

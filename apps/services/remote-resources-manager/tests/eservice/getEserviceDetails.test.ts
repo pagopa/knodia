@@ -76,7 +76,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
-    state: "ACTIVE",
+    state: ["ACTIVE", "SUSPENDED", "PENDING_CONSUMER_OPERATOR_IDENTIFICATION"],
   };
 
   const buildK2KAgreement = (
@@ -144,35 +144,50 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     });
   });
 
-  it("should return 200 with agreement when an active one exists", async () => {
-    const k2kAgreement = buildK2KAgreement({
-      id: crypto.randomUUID(),
-      state: "ACTIVE",
-    });
+  it.each([
+    { apiState: "Active", k2kState: "ACTIVE" },
+    { apiState: "Suspended", k2kState: "SUSPENDED" },
+    {
+      apiState: "PendingConsumerOperatorIdentification",
+      k2kState: "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
+    },
+  ] as const)(
+    "should return 200 with agreement when a $apiState one exists",
+    async ({ apiState, k2kState }) => {
+      const k2kAgreement = buildK2KAgreement({
+        id: crypto.randomUUID(),
+        state: k2kState,
+      });
 
-    getEserviceMock.mockResolvedValue({ data: k2kEservice });
-    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
-    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
-    getAgreementsMock.mockResolvedValue({
-      data: {
-        pagination: { limit: 1, offset: 0, total: 1 },
-        results: [k2kAgreement],
-      },
-    });
+      getEserviceMock.mockResolvedValue({ data: k2kEservice });
+      getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+      getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+      getAgreementsMock.mockResolvedValue({
+        data: {
+          pagination: { limit: 1, offset: 0, total: 1 },
+          results: [k2kAgreement],
+        },
+      });
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(`/eservices/${eserviceId}`)
-      .query({ knodeId });
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .get(`/eservices/${eserviceId}`)
+        .query({ knodeId });
 
-    expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(200);
 
-    const body = response.json();
-    expect(body.agreement).toEqual({
-      id: k2kAgreement.id,
-      state: "Active",
-      updatedAt: k2kAgreement.updatedAt,
-    });
-  });
+      expect(getAgreementsMock).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expectedAgreementsQuery }),
+      );
+
+      expect(response.json().agreement).toEqual({
+        id: k2kAgreement.id,
+        state: apiState,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+        updatedAt: k2kAgreement.updatedAt,
+      });
+    },
+  );
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",

@@ -96,7 +96,12 @@ export const toAPI_ConsumerEserviceDetails = (
   },
   agreement:
     detail.agreement !== undefined
-      ? { id: detail.agreement.id, state: detail.agreement.state }
+      ? {
+          id: detail.agreement.id,
+          state: detail.agreement.state,
+          suspendedByConsumerAt: detail.agreement.suspendedByConsumerAt,
+          suspendedByProducerAt: detail.agreement.suspendedByProducerAt,
+        }
       : undefined,
   categories: detail.categories,
   description: detail.description,

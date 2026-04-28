@@ -1,11 +1,13 @@
-import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import formBody from "@fastify/formbody";
+import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
@@ -13,24 +15,20 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
-  clientAssertionAcceptedAudiences,
-  clientAssertionClockToleranceSeconds,
-  clientAssertionMaxTokenAgeSeconds,
   config,
-  knodeUrl,
+  readmodelDb,
 }: {
-  clientAssertionAcceptedAudiences: string[];
-  clientAssertionClockToleranceSeconds: number;
-  clientAssertionMaxTokenAgeSeconds: number;
-  config: LoggerConfig;
-  knodeUrl: string;
+  config: AuthorizationServerConfig;
+  readmodelDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
-    knodeUrl,
+    consumerKnodeUrl: config.consumerKnodeUrl,
   });
+  const tokenGenerator = tokenGeneratorBuilder();
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -59,22 +57,30 @@ export function buildApp({
   app.register(formBody);
   app.register(healthRouter);
   app.register(tokenRouter, {
-    clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds,
-    tokenService: tokenServiceBuilder(k2kGatewayClient),
+    config,
+    tokenService: tokenServiceBuilder({
+      config,
+      k2kGatewayClient,
+      readmodelService: readmodelServiceBuilder(readmodelDb),
+      tokenGenerator,
+    }),
   });
 
   return app;
 }
 
 export function buildAppFromConfig(config: AuthorizationServerConfig) {
-  return buildApp({
-    clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
-    clientAssertionClockToleranceSeconds:
-      config.clientAssertionClockToleranceSeconds,
-    clientAssertionMaxTokenAgeSeconds: config.clientAssertionMaxTokenAgeSeconds,
+  const { db: readmodelDb, pool: readmodelPool } =
+    makeReadmodelDrizzleConnection(config);
+
+  const app = buildApp({
     config,
-    knodeUrl: config.knodeUrl,
+    readmodelDb,
   });
+
+  app.addHook("onClose", async () => {
+    await readmodelPool.end();
+  });
+
+  return app;
 }

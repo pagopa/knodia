@@ -1,0 +1,17 @@
+meta {
+  name: Reactivate Purpose
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/purposes/:purposeId/reactivate
+  body: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  ~Authorization:
+}

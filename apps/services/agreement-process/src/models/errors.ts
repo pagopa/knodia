@@ -8,16 +8,21 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type { EserviceVersionState } from "@knodia/eservice-models";
-import type { ExternalUISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-export type ExternalUISessionClaimField = Exclude<
-  keyof ExternalUISessionAuthData,
-  "scope" | "tokenType"
->;
+export type ExternalUISessionClaimField =
+  | "agreement.id"
+  | "agreement.knodeId"
+  | "consumer.id"
+  | "consumer.knodeId"
+  | "eservice.id"
+  | "eservice.knodeId"
+  | "eservice.version"
+  | "producer.id"
+  | "producer.knodeId";
 
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
   constants;

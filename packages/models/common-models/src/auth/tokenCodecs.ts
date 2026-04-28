@@ -3,9 +3,11 @@ import z from "zod";
 import { ExternalId } from "../externalResource.ts";
 import {
   AgreementId,
+  ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
   OrganizationId,
+  PurposeId,
 } from "../ids/brandedIds.ts";
 import { KnodeId } from "../ids/ids.ts";
 import { UserId } from "../ids/userId.ts";
@@ -28,6 +30,26 @@ const UserTokenClaims = BaseJwtClaims.extend({
   username: z.string(),
 });
 
+export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
+  client_id: ConsumerKeychainId,
+  consumer: z.strictObject({
+    id: ExternalId<OrganizationId>(),
+    knode_id: KnodeId,
+  }),
+  eservice: z.strictObject({
+    id: EserviceId,
+    knode_id: KnodeId,
+    version: EserviceVersionId,
+  }),
+  nbf: z.int(),
+  producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
+  purpose: z.strictObject({ id: PurposeId, knode_id: KnodeId }),
+  sub: ConsumerKeychainId,
+});
+export type EserviceAccessTokenClaims = z.infer<
+  typeof EserviceAccessTokenClaims
+>;
+
 export const UISessionTokenClaims = UserTokenClaims.extend({
   type: z.literal("ui-session"),
 });
@@ -48,33 +70,23 @@ export type UISessionRefreshTokenClaims = z.infer<
 export const ExternalUISessionScope = z.enum(["agreement-activation"]);
 export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
 
-const ExternalUISessionResourceClaims = BaseJwtClaims.extend({
-  agreementId: AgreementId,
-  consumerId: ExternalId<OrganizationId>(),
-  consumerKnodeId: KnodeId,
-  eserviceId: EserviceId,
-  eserviceVersionId: EserviceVersionId,
-  producerId: OrganizationId,
+export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
+  agreement: z.strictObject({ id: AgreementId, knode_id: KnodeId }),
+  consumer: z.strictObject({
+    id: ExternalId<OrganizationId>(),
+    knode_id: KnodeId,
+  }),
+  eservice: z.strictObject({
+    id: EserviceId,
+    knode_id: KnodeId,
+    version: EserviceVersionId,
+  }),
+  producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
   scope: ExternalUISessionScope,
+  type: z.literal("external-ui-session"),
 });
-export type ExternalUISessionResourceClaims = z.infer<
-  typeof ExternalUISessionResourceClaims
->;
-
-export const ExternalUISessionTokenClaims =
-  ExternalUISessionResourceClaims.extend({
-    type: z.literal("external-ui-session"),
-  });
 export type ExternalUISessionTokenClaims = z.infer<
   typeof ExternalUISessionTokenClaims
->;
-
-export const ExternalUISessionMagicLinkTokenClaims =
-  ExternalUISessionResourceClaims.extend({
-    type: z.literal("external-ui-session-magic-link"),
-  });
-export type ExternalUISessionMagicLinkTokenClaims = z.infer<
-  typeof ExternalUISessionMagicLinkTokenClaims
 >;
 
 // Token types accepted as authentication credentials by API services.

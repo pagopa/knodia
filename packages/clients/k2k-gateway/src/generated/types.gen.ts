@@ -495,19 +495,41 @@ export type Purpose = {
     id: PurposeId;
     name: LocalizedPurposeName;
     state: PurposeState;
+    /**
+     * Timestamp when the Purpose was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Purpose was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
+export type PurposeFormUiTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
+    texts: PurposeFormTexts;
     uiSchema: {
         [key: string]: unknown;
     };
+    uiTexts: PurposeFormUiTexts;
     version: PurposeFormSchemaVersion;
 };
 
@@ -749,7 +771,7 @@ export type GetAgreementsData = {
         /**
          * Filter by Agreement State
          */
-        state?: AgreementState;
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };
@@ -1131,3 +1153,73 @@ export type GetPurposeResponses = {
 };
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
+
+export type ReactivatePurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeError = ReactivatePurposeErrors[keyof ReactivatePurposeErrors];
+
+export type ReactivatePurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeResponse = ReactivatePurposeResponses[keyof ReactivatePurposeResponses];
+
+export type SuspendPurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeError = SuspendPurposeErrors[keyof SuspendPurposeErrors];
+
+export type SuspendPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];

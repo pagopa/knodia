@@ -235,6 +235,14 @@ export type EserviceDetailsProducer = {
 export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
+    /**
+     * Timestamp when the Agreement was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Agreement was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -315,16 +323,30 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
+export type PurposeFormUiTexts = {
+    en: {
+        [key: string]: string;
+    };
+};
+
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + legal/UI texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
+    texts: PurposeFormTexts;
     uiSchema: {
         [key: string]: unknown;
     };
+    uiTexts: PurposeFormUiTexts;
     /**
      * Version identifier for the Purpose form schema provided by the target Knode
      */
@@ -370,6 +392,14 @@ export type Purpose = {
     knodeId: KnodeId;
     name: LocalizedPurposeName;
     state: PurposeState;
+    /**
+     * Timestamp when the Purpose was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Purpose was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -990,6 +1020,96 @@ export type GetPurposeResponses = {
 };
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
+
+export type ReactivatePurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeError = ReactivatePurposeErrors[keyof ReactivatePurposeErrors];
+
+export type ReactivatePurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeResponse = ReactivatePurposeResponses[keyof ReactivatePurposeResponses];
+
+export type SuspendPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeError = SuspendPurposeErrors[keyof SuspendPurposeErrors];
+
+export type SuspendPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];
 
 export type GetOrganizationData = {
     body?: never;

@@ -8,22 +8,27 @@ import type {
 import AjvModule, { type ValidateFunction } from "ajv";
 const Ajv = AjvModule.default;
 
+import type { GetFormSchemas } from "../models/formSchemas.ts";
+
 import { formAnswersValidationFailed } from "../models/errors.ts";
-import { getFormSchema } from "../models/formSchemas.ts";
 
-const ajv = new Ajv({ allErrors: true });
-
-const compiledSchemas: Record<PurposeFormSchemaVersion, ValidateFunction> = {
-  "1.0": ajv.compile(getFormSchema("1.0")),
-};
-
-export function assertFormAnswersAreValid(
+type AssertFormAnswersAreValid = (
   formAnswersJson: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
-): void {
-  const validate = compiledSchemas[formSchemaVersion];
+) => void;
 
-  if (!validate(formAnswersJson)) {
-    throw formAnswersValidationFailed(validate.errors ?? []);
-  }
+export function buildFormAnswersValidator(
+  getFormSchemas: GetFormSchemas,
+): AssertFormAnswersAreValid {
+  const ajv = new Ajv({ allErrors: true });
+  const compiledSchemas: Record<PurposeFormSchemaVersion, ValidateFunction> = {
+    "1.0": ajv.compile(getFormSchemas("1.0").schema),
+  };
+
+  return (formAnswersJson, formSchemaVersion) => {
+    const validate = compiledSchemas[formSchemaVersion];
+    if (!validate(formAnswersJson)) {
+      throw formAnswersValidationFailed(validate.errors ?? []);
+    }
+  };
 }

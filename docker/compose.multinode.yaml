@@ -300,11 +300,15 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    volumes:
+      - ../apps/services/mock-eservice/openapi/openapi.yaml:/seed/mock-eservice.yaml:ro
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
+      mc cp /seed/mock-eservice.yaml local/knodia-orion-eservice-interfaces/interfaces/mock-eservice.yaml;
+      mc cp /seed/mock-eservice.yaml local/knodia-lynx-eservice-interfaces/interfaces/mock-eservice.yaml;
       exit 0;
       "
 
@@ -449,6 +453,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       EVENTSTORE_DB_USER: local_orion_agreement_process_user
       EVENTSTORE_DB_PASSWORD: local_orion_agreement_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -664,7 +669,7 @@ services:
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
@@ -818,6 +823,7 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      PURPOSE_FORMS_DIR: schemas-withriskanalysis
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -855,6 +861,74 @@ services:
         condition: service_completed_successfully
       kafka:
         condition: service_healthy
+
+  authorization-server-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-authorization-server-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/authorization-server/Dockerfile
+    ports:
+      - 3701:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_ID: "Orion"
+      CONSUMER_KNODE_URL: "http://k2k-gateway-lynx:3000"
+      ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
+      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "https://orion.local.knodia.com"
+      CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
+      CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
+      READMODEL_DB_USER: local_orion_authorization_server_user
+      READMODEL_DB_PASSWORD: local_orion_authorization_server_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      READMODEL_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  mock-eservice-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-mock-eservice-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/mock-eservice/Dockerfile
+    ports:
+      - 9991:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_ID: "Orion"
+      ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
+      EXPECTED_ISSUER: "https://orion.local.knodia.com"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      local-kms-setup:
+        condition: service_completed_successfully
 
   # ============================================================
   # Lynx Node
@@ -972,6 +1046,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       EVENTSTORE_DB_USER: local_lynx_agreement_process_user
       EVENTSTORE_DB_PASSWORD: local_lynx_agreement_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -1187,7 +1262,7 @@ services:
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
@@ -1341,6 +1416,7 @@ services:
       READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      PURPOSE_FORMS_DIR: schemas-basic
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -1378,6 +1454,74 @@ services:
         condition: service_completed_successfully
       kafka:
         condition: service_healthy
+
+  authorization-server-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-authorization-server-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/authorization-server/Dockerfile
+    ports:
+      - 3702:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_ID: "Lynx"
+      CONSUMER_KNODE_URL: "http://k2k-gateway-orion:3000"
+      ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
+      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "https://lynx.local.knodia.com"
+      CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
+      CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
+      READMODEL_DB_USER: local_lynx_authorization_server_user
+      READMODEL_DB_PASSWORD: local_lynx_authorization_server_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      READMODEL_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  mock-eservice-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-mock-eservice-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/mock-eservice/Dockerfile
+    ports:
+      - 9992:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_ID: "Lynx"
+      ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
+      EXPECTED_ISSUER: "https://lynx.local.knodia.com"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      local-kms-setup:
+        condition: service_completed_successfully
 
   # ============================================================
   # Frontends
@@ -1495,13 +1639,13 @@ services:
         condition: service_healthy
     volumes:
       - multinode-jwks-data:/jwks
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-    command: node scripts/local-kms/kms-setup.mjs
+    command: node scripts/local-auth/kms-setup.mjs
 
   local-jwks:
     security_opt:
@@ -1525,12 +1669,12 @@ services:
     ports:
       - 4567:3000
     volumes:
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
     working_dir: /app
     environment:
       ISSUER: "http://localhost:4567"
       ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
-    command: node scripts/local-kms/local-cognito.mjs
+    command: node scripts/local-auth/local-cognito.mjs
 
 volumes:
   multinode-postgres-data:

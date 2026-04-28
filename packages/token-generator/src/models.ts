@@ -1,19 +1,12 @@
 import type {
-  ExternalUISessionMagicLinkTokenClaims,
-  ExternalUISessionTokenClaims,
+  EserviceAccessTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 
-export interface ExternalUISessionMagicLinkToken extends BaseToken {
-  payload: ExternalUISessionMagicLinkTokenClaims;
-  type: "external-ui-session-magic-link";
-}
-
-export interface ExternalUISessionToken extends BaseToken {
-  payload: ExternalUISessionTokenClaims;
-  type: "external-ui-session";
+export interface EserviceAccessToken extends BaseToken {
+  payload: EserviceAccessTokenClaims;
 }
 
 export interface InternalToken extends BaseToken {

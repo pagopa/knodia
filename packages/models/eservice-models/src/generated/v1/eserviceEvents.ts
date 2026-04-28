@@ -25,6 +25,11 @@ export interface EserviceVersionReactivatedV1 {
   eserviceVersionId: string;
 }
 
+export interface EserviceVersionArchivedV1 {
+  eservice: EserviceV1 | undefined;
+  eserviceVersionId: string;
+}
+
 export interface EserviceUpdatedV1 {
   eservice: EserviceV1 | undefined;
 }
@@ -255,6 +260,84 @@ export const EserviceVersionReactivatedV1: MessageFns<EserviceVersionReactivated
   },
   fromPartial<I extends Exact<DeepPartial<EserviceVersionReactivatedV1>, I>>(object: I): EserviceVersionReactivatedV1 {
     const message = createBaseEserviceVersionReactivatedV1();
+    message.eservice = (object.eservice !== undefined && object.eservice !== null)
+      ? EserviceV1.fromPartial(object.eservice)
+      : undefined;
+    message.eserviceVersionId = object.eserviceVersionId ?? "";
+    return message;
+  },
+};
+
+function createBaseEserviceVersionArchivedV1(): EserviceVersionArchivedV1 {
+  return { eservice: undefined, eserviceVersionId: "" };
+}
+
+export const EserviceVersionArchivedV1: MessageFns<EserviceVersionArchivedV1> = {
+  encode(message: EserviceVersionArchivedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.eservice !== undefined) {
+      EserviceV1.encode(message.eservice, writer.uint32(10).fork()).join();
+    }
+    if (message.eserviceVersionId !== "") {
+      writer.uint32(18).string(message.eserviceVersionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): EserviceVersionArchivedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEserviceVersionArchivedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.eservice = EserviceV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.eserviceVersionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EserviceVersionArchivedV1 {
+    return {
+      eservice: isSet(object.eservice) ? EserviceV1.fromJSON(object.eservice) : undefined,
+      eserviceVersionId: isSet(object.eserviceVersionId) ? globalThis.String(object.eserviceVersionId) : "",
+    };
+  },
+
+  toJSON(message: EserviceVersionArchivedV1): unknown {
+    const obj: any = {};
+    if (message.eservice !== undefined) {
+      obj.eservice = EserviceV1.toJSON(message.eservice);
+    }
+    if (message.eserviceVersionId !== "") {
+      obj.eserviceVersionId = message.eserviceVersionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EserviceVersionArchivedV1>, I>>(base?: I): EserviceVersionArchivedV1 {
+    return EserviceVersionArchivedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EserviceVersionArchivedV1>, I>>(object: I): EserviceVersionArchivedV1 {
+    const message = createBaseEserviceVersionArchivedV1();
     message.eservice = (object.eservice !== undefined && object.eservice !== null)
       ? EserviceV1.fromPartial(object.eservice)
       : undefined;

@@ -28,7 +28,7 @@ export function CheckboxGroup({
       )}
       data-orientation={orientation}
     >
-      <Label>{props.label}</Label>
+      {props.label && <Label>{props.label}</Label>}
       <div className="flex group-orientation-vertical:flex-col gap-4">
         {props.children}
       </div>

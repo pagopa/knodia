@@ -154,7 +154,7 @@ export function agreementServiceBuilder(
             consumerId: authData.organizationId,
             limit: dynamicLimit,
             offset: dynamicOffset,
-            state: state ? toK2KAPI_AgreementState(state) : undefined,
+            state: state ? [toK2KAPI_AgreementState(state)] : undefined,
           },
         });
 

@@ -1,8 +1,9 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
+import { KnodeId, type PurposeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -77,7 +78,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+        "Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version",
       operationId: "getCurrentPurposeFormSchemas",
       querystring: API_GetPurposeFormSchemaQueryParams,
       response: {
@@ -129,6 +130,80 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await purposeService.reactivatePurpose(
+        unsafeBrandExternalId<PurposeId>(req.params.purposeId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Reactivate a Purpose on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "reactivatePurpose",
+      params: API_PurposeIdPathParam,
+      querystring: API_GetPurposeQueryParams,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate a Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await purposeService.suspendPurpose(
+        unsafeBrandExternalId<PurposeId>(req.params.purposeId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Suspend a Purpose on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "suspendPurpose",
+      params: API_PurposeIdPathParam,
+      querystring: API_GetPurposeQueryParams,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend a Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/suspend",
   });
 
   fastify.route({

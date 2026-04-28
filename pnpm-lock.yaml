@@ -487,12 +487,18 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../packages/models/agreement-models
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
       '@knodia/db-readmodel-agreement':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/agreement
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
@@ -514,9 +520,15 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../../../packages/models/purpose-models
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       axios:
         specifier: 'catalog:'
         version: 1.15.0
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.5
@@ -599,6 +611,9 @@ importers:
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/eservice-process-client
+      '@knodia/eservice-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-template-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -1079,6 +1094,67 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  apps/services/mock-eservice:
+    dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      fastify:
+        specifier: 'catalog:'
+        version: 5.8.5
+      fastify-plugin:
+        specifier: 'catalog:'
+        version: 5.1.0
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.8.5)(openapi-types@12.1.3)(zod@4.2.0)
+      jose:
+        specifier: 'catalog:'
+        version: 6.1.3
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
@@ -2819,6 +2895,40 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/models/eservice-template-models:
+    dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../attribute-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../category-models
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../common-models
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../eservice-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/models/keychain-models:
     dependencies:
       '@bufbuild/protobuf':
@@ -3090,6 +3200,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

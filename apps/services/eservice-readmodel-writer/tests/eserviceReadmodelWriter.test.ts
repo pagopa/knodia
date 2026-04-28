@@ -77,6 +77,39 @@ describe("E-service read model writer tests", async () => {
     } satisfies WithMetadata<Eservice>);
   });
 
+  it("EserviceVersionArchivedV1", async () => {
+    const eservice = getMockEservice({
+      latestVersionState: EserviceVersionState.enum.Archived,
+    });
+
+    const eventData = protobufBinaryCodec(
+      eserviceEvents.EserviceVersionArchivedV1,
+    ).encode({
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId: generateId(),
+    });
+
+    const metadataVersion = 0;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "EserviceVersionArchivedV1",
+      metadataVersion,
+      producer,
+      streamId: eservice.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedEservices = await getAllEservices(readmodelDb);
+
+    expect(retrievedEservices.length).toBe(1);
+    expect(retrievedEservices[0]).toEqual({
+      data: toExpectEservice(eservice),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Eservice>);
+  });
+
   it("EserviceVersionReactivatedV1", async () => {
     const eservice = getMockEservice();
 

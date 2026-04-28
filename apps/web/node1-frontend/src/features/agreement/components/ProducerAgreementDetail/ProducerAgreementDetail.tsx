@@ -1,7 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Button } from "@knodia/ui-kit/ui";
+import { Banner, Button } from "@knodia/ui-kit/ui";
+import { useState } from "react";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
@@ -11,7 +12,13 @@ import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
+import { useReactivateProducerAgreement } from "../../hooks/useReactivateProducerAgreement";
+import { useSuspendProducerAgreement } from "../../hooks/useSuspendProducerAgreement";
 import { AgreementStateChip } from "../AgreementStateChip";
+import {
+  ProducerSuspendAgreementBody,
+  SuspendAgreementModal,
+} from "../SuspendAgreementModal";
 import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
@@ -26,7 +33,7 @@ export function ProducerAgreementDetail({
       <PageHeader
         actions={
           canManageAgreementState && (
-            <AgreementActionButton state={agreement.state} />
+            <AgreementActionButton agreement={agreement} />
           )
         }
         resourceStatusChip={
@@ -34,6 +41,15 @@ export function ProducerAgreementDetail({
         }
         title="Agreement request"
       />
+
+      {canManageAgreementState &&
+        agreement.state === "Suspended" &&
+        agreement.suspendedByConsumerAt !== null &&
+        agreement.suspendedByProducerAt === null && (
+          <ConsumerSuspendedBanner
+            agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+          />
+        )}
 
       <div className="flex flex-col gap-4">
         <SettingsCard label="E-Service">
@@ -71,30 +87,112 @@ export function ProducerAgreementDetail({
 }
 
 function AgreementActionButton({
-  state,
+  agreement,
 }: {
-  state: bffApi.ProducerAgreementDetails["state"];
+  agreement: bffApi.ProducerAgreementDetails;
 }) {
+  return match(agreement.state)
+    .with("Active", () => (
+      <SuspendProducerAgreementButton
+        agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+      />
+    ))
+    .with("Suspended", () =>
+      agreement.suspendedByProducerAt !== null ? (
+        <ReactivateProducerAgreementButton
+          agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+        />
+      ) : null,
+    )
+    .with("Archived", "PendingConsumerOperatorIdentification", () => null)
+    .exhaustive();
+}
+
+function ConsumerSuspendedBanner({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendAgreement } =
+    useSuspendProducerAgreement(agreementId);
+
   return (
-    match(state)
-      .with("Active", () => (
-        // TODO: Suspend button is always disabled — implement suspend logic
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-      ))
-      .with("Suspended", () => (
-        // TODO: Reactivate button is always disabled — implement reactivate logic.
-        // If the agreement was suspended by the consumer, no button should be shown.
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Reactivate
-        </Button>
-      ))
-      // TODO: Only Active and Suspended states are supported. Archived and PendingConsumerOperatorIdentification are not handled yet.
-      .with("Archived", "PendingConsumerOperatorIdentification", (state) => {
-        console.warn(`Unhandled agreement state: ${state}`);
-        return null;
-      })
-      .exhaustive()
+    <>
+      <Banner
+        action={{
+          label: "Suspend to prevent reactivation",
+          onPress: () => setIsOpen(true),
+        }}
+        kind="warning"
+        size="md"
+        title="The Consumer suspended this Agreement"
+      >
+        You can also suspend the Agreement on your side to prevent the Consumer
+        from reactivating it.
+      </Banner>
+      <SuspendAgreementModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendAgreement}
+        onOpenChange={setIsOpen}
+      >
+        <ProducerSuspendAgreementBody />
+      </SuspendAgreementModal>
+    </>
+  );
+}
+
+function ReactivateProducerAgreementButton({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const { isPending, reactivateAgreement } =
+    useReactivateProducerAgreement(agreementId);
+
+  return (
+    <Button
+      hierarchy="brand"
+      isPending={isPending}
+      kind="filled"
+      onPress={reactivateAgreement}
+      size="md"
+    >
+      Reactivate
+    </Button>
+  );
+}
+
+function SuspendProducerAgreementButton({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendAgreement } =
+    useSuspendProducerAgreement(agreementId);
+
+  return (
+    <>
+      <Button
+        hierarchy="danger"
+        kind="tonal"
+        onPress={() => setIsOpen(true)}
+        size="md"
+      >
+        Suspend
+      </Button>
+      <SuspendAgreementModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendAgreement}
+        onOpenChange={setIsOpen}
+      >
+        <ProducerSuspendAgreementBody />
+      </SuspendAgreementModal>
+    </>
   );
 }

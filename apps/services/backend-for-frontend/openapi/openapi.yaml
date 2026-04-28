@@ -726,9 +726,21 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           $ref: "#/components/schemas/AgreementState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - id
         - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
       additionalProperties: false
     ConsumerEserviceDetailsAccessToken:
       type: object
@@ -1093,6 +1105,87 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
+    EserviceTemplateInterface:
+      type: object
+      properties:
+        contentType:
+          type: string
+        name:
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+      required:
+        - contentType
+        - name
+        - prettyName
+      additionalProperties: false
+    EserviceTemplateEserviceFields:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        interfaceDocument:
+          $ref: "#/components/schemas/EserviceTemplateInterface"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/Attribute"
+      required:
+        - categories
+        - interfaceDocument
+        - mode
+        - requiredAttributes
+      additionalProperties: false
+    EserviceTemplateDetails:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        eserviceFields:
+          $ref: "#/components/schemas/EserviceTemplateEserviceFields"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - createdAt
+        - description
+        - eserviceFields
+        - id
+        - name
+      additionalProperties: false
+    EserviceTemplate:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - description
+        - id
+        - name
+      additionalProperties: false
+    EserviceTemplates:
+      type: array
+      items:
+        $ref: "#/components/schemas/EserviceTemplate"
     PurposeState:
       type: string
       enum:
@@ -1124,24 +1217,50 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormUiTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - en
+      additionalProperties: false
     PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
+      description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
+        texts) with their version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           type: object
           additionalProperties: {}
+        uiTexts:
+          $ref: "#/components/schemas/PurposeFormUiTexts"
         version:
           description: Version identifier for the Purpose form schema provided by the
             target Knode
           type: string
       required:
         - schema
+        - texts
         - uiSchema
+        - uiTexts
         - version
       additionalProperties: false
     KeychainLocalizedName:
@@ -1627,6 +1746,16 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/PurposeState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - agreement
         - consumer
@@ -1638,6 +1767,8 @@ components:
         - name
         - producer
         - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
       additionalProperties: false
     SessionOrganization:
       description: Organization details for the current session, including attributes
@@ -1768,6 +1899,175 @@ paths:
       responses:
         "204":
           description: Logged out successfully
+  /eserviceTemplates:
+    get:
+      operationId: getEserviceTemplates
+      tags:
+        - eserviceTemplate
+      description: Retrieve a list of E-Service Templates available for a given Knode
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+      responses:
+        "200":
+          description: E-service Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service Templates retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceTemplates"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eserviceTemplates/{eserviceTemplateId}:
+    get:
+      operationId: getEserviceTemplate
+      tags:
+        - eserviceTemplate
+      description: Retrieve an E-service Template with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceTemplateId
+          required: true
+      responses:
+        "200":
+          description: E-service Template retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service Template retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceTemplateDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service template not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service template not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eserviceTemplates/{eserviceTemplateId}/interface:
+    get:
+      operationId: downloadEserviceTemplateInterface
+      summary: Download E-service Template interface
+      tags:
+        - eserviceTemplate
+      description: Download the interface document for an E-service Template
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceTemplateId
+          required: true
+      responses:
+        "200":
+          description: E-service Template interface document downloaded successfully
+          content:
+            application/json: &a1
+              schema:
+                description: E-service Template interface document downloaded successfully
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -2038,14 +2338,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/json: &a1
+            application/json: &a2
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
-            application/yaml: *a1
-            application/x-yaml: *a1
+            application/yaml: *a2
+            application/x-yaml: *a2
         "400":
           description: Bad Request
           content:
@@ -2152,6 +2452,63 @@ paths:
       responses:
         "204":
           description: E-service reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/eservices/{eserviceId}/archive:
+    post:
+      operationId: archiveProducerEservice
+      tags:
+        - eservice
+      description: Archive an E-service
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "204":
+          description: E-service archived successfully
         "400":
           description: Bad Request
           content:
@@ -3483,14 +3840,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/json: &a2
+            application/json: &a3
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
-            application/yaml: *a2
-            application/x-yaml: *a2
+            application/yaml: *a3
+            application/x-yaml: *a3
         "400":
           description: Bad Request
           content:
@@ -4006,8 +4363,8 @@ paths:
       summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
-        with their version
+      description: Retrieve the current Purpose form schemas (JSON Schema, UI Schema,
+        legal texts, UI texts) with their version
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -4106,6 +4463,130 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/{purposeId}/reactivate:
+    post:
+      operationId: reactivatePurposeByConsumer
+      tags:
+        - purpose
+      description: Reactivate a Purpose as Consumer
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/{purposeId}/suspend:
+    post:
+      operationId: suspendPurposeByConsumer
+      tags:
+        - purpose
+      description: Suspend a Purpose as Consumer
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /session/organization:
@@ -4538,6 +5019,120 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}/reactivate:
+    post:
+      operationId: reactivatePurposeByProducer
+      tags:
+        - purpose
+      description: Reactivate a Purpose as Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose reactivated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}/suspend:
+    post:
+      operationId: suspendPurposeByProducer
+      tags:
+        - purpose
+      description: Suspend a Purpose as Producer
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "204":
+          description: Purpose suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -4558,3 +5153,5 @@ tags:
     name: purpose
   - description: User routes
     name: user
+  - description: E-service Templates routes
+    name: eserviceTemplate

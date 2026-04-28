@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -159,17 +159,6 @@ export const suspendAgreement = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
- * Create an Agreement activation magic link
- *
- * Create a magic link for a Consumer user to activate an Agreement on the Producer's frontend
- */
-export const createAgreementActivationMagicLink = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementActivationMagicLinkData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementActivationMagicLinkResponses, CreateAgreementActivationMagicLinkErrors, ThrowOnError>({
-    responseType: 'json',
-    url: '/agreements/{agreementId}/activationMagicLink',
-    ...options
-});
-
-/**
  * Get Organization
  *
  * Retrieve an Organization
@@ -216,7 +205,7 @@ export const createPurpose = <ThrowOnError extends boolean = true>(options: Opti
 /**
  * Get current Purpose form schemas
  *
- * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
+ * Retrieve the current Purpose form schemas (JSON Schema, UI Schema, legal texts, UI texts) with their version
  */
 export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true>(options?: Options<GetCurrentPurposeFormSchemasData, ThrowOnError>) => (options?.client ?? client).get<GetCurrentPurposeFormSchemasResponses, unknown, ThrowOnError>({
     responseType: 'json',
@@ -232,5 +221,27 @@ export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true
 export const getPurpose = <ThrowOnError extends boolean = true>(options: Options<GetPurposeData, ThrowOnError>) => (options.client ?? client).get<GetPurposeResponses, GetPurposeErrors, ThrowOnError>({
     responseType: 'json',
     url: '/purposes/{purposeId}',
+    ...options
+});
+
+/**
+ * Reactivate a Purpose
+ *
+ * Reactivate a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode
+ */
+export const reactivatePurpose = <ThrowOnError extends boolean = true>(options: Options<ReactivatePurposeData, ThrowOnError>) => (options.client ?? client).post<ReactivatePurposeResponses, ReactivatePurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/purposes/{purposeId}/reactivate',
+    ...options
+});
+
+/**
+ * Suspend a Purpose
+ *
+ * Suspend a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode
+ */
+export const suspendPurpose = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeResponses, SuspendPurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/purposes/{purposeId}/suspend',
     ...options
 });

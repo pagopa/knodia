@@ -6,6 +6,7 @@ import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import type { EserviceService } from "../services/eserviceService.ts";
@@ -147,11 +148,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           ctx,
         );
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${fileName}"`,
-        "Content-Type": contentType,
-      });
-      res.raw.end(buffer);
+      sendFileDownload(res, buffer, fileName, contentType);
     },
     method: "GET",
     schema: {
