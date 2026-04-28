@@ -9,6 +9,7 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import z from "zod";
 
@@ -100,8 +101,7 @@ export const API_GetConsumerAgreementsQueryParams =
   API_PaginationQueryParams.extend({
     limit: API_PaginationQueryParams.shape.limit.default(10),
     offset: API_PaginationQueryParams.shape.offset.default(0),
-    state: z
-      .array(API_AgreementState)
+    state: arrayQueryParam(API_AgreementState)
       .optional()
       .meta({ description: "Filter by Agreement State" }),
   });

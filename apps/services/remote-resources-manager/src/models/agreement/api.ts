@@ -10,6 +10,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
@@ -43,8 +44,7 @@ export type API_GetAgreementQueryParams = z.infer<
 >;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  state: z
-    .array(API_AgreementState)
+  state: arrayQueryParam(API_AgreementState)
     .optional()
     .meta({ description: "Filter by Agreement State" }),
 });

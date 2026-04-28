@@ -130,7 +130,11 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           offset: 0,
           state: [API_AgreementState.enum.Archived],
         }),
-        callRRM({ limit, offset, state: state ?? consumerVisibleStates }),
+        callRRM({
+          limit,
+          offset,
+          state: state?.length ? state : consumerVisibleStates,
+        }),
       ]);
 
       res.status(200).send({
