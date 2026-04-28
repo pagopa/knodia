@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
+import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -128,6 +128,18 @@ export const suspendAgreement = <ThrowOnError extends boolean = true>(options: O
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}/suspend',
+    ...options
+});
+
+/**
+ * Archive an Agreement
+ *
+ * Archive an Agreement on behalf of its Consumer; the Consumer must be the caller organization
+ */
+export const archiveAgreement = <ThrowOnError extends boolean = true>(options: Options<ArchiveAgreementData, ThrowOnError>) => (options.client ?? client).post<ArchiveAgreementResponses, ArchiveAgreementErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/archive',
     ...options
 });
 
