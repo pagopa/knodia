@@ -5,6 +5,7 @@ import {
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  KnodeId,
   type OrganizationId,
   type PurposeId,
   unsafeBrandId,
@@ -18,6 +19,7 @@ import {
   EXPECTED_ISSUER,
   getCtx,
   TEST_KID,
+  TEST_KNODE_ID,
 } from "./setup.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockRouter.ts
@@ -33,6 +35,7 @@ const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
 );
 
 const ENDPOINT = "/test";
+const OTHER_KNODE_ID = KnodeId.enum.Lynx;
 
 async function signToken(
   overrides: {
@@ -55,15 +58,18 @@ async function signToken(
   const now = Math.floor(Date.now() / 1000);
   const defaultPayload: Partial<EserviceAccessTokenClaims> = {
     client_id: generateId<ConsumerKeychainId>(),
-    consumer: { id: generateExternalId<OrganizationId>(), knode_id: "Lynx" },
+    consumer: {
+      id: generateExternalId<OrganizationId>(),
+      knode_id: OTHER_KNODE_ID,
+    },
     eservice: {
       id: EXPECTED_ESERVICE_ID,
-      knode_id: "Orion",
+      knode_id: TEST_KNODE_ID,
       version: EXPECTED_ESERVICE_VERSION_ID,
     },
     nbf: now,
-    producer: { id: EXPECTED_PRODUCER_ID, knode_id: "Orion" },
-    purpose: { id: generateId<PurposeId>(), knode_id: "Lynx" },
+    producer: { id: EXPECTED_PRODUCER_ID, knode_id: TEST_KNODE_ID },
+    purpose: { id: generateId<PurposeId>(), knode_id: OTHER_KNODE_ID },
   };
 
   const jwt = new SignJWT({ ...defaultPayload, ...payload })
@@ -229,7 +235,43 @@ describe("mock-eservice access-token verification", () => {
   it("returns 401 when producer.id does not match this e-service", async () => {
     const token = await signToken({
       payload: {
-        producer: { id: generateId(), knode_id: "Orion" },
+        producer: { id: generateId(), knode_id: TEST_KNODE_ID },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when eservice.knode_id does not match this knode", async () => {
+    const token = await signToken({
+      payload: {
+        eservice: {
+          id: EXPECTED_ESERVICE_ID,
+          knode_id: OTHER_KNODE_ID,
+          version: EXPECTED_ESERVICE_VERSION_ID,
+        },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when producer.knode_id does not match this knode", async () => {
+    const token = await signToken({
+      payload: {
+        producer: { id: EXPECTED_PRODUCER_ID, knode_id: OTHER_KNODE_ID },
       },
     });
     const res = await getCtx().app.inject({
