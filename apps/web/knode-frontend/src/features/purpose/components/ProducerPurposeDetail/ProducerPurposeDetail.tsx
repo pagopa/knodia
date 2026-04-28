@@ -139,10 +139,7 @@ function PurposeActionButton({ purpose }: { purpose: bffApi.PurposeDetails }) {
         <ReactivateProducerPurposeButton purposeId={purposeId} />
       ) : null,
     )
-    .with("Archived", () => {
-      console.warn("Unhandled purpose state: Archived");
-      return null;
-    })
+    .with("Archived", () => null)
     .exhaustive();
 }
 
