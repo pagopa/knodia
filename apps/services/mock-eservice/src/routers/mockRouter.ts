@@ -4,6 +4,7 @@ import { requestContext } from "@fastify/request-context";
 import {
   type EserviceId,
   type EserviceVersionId,
+  type KnodeId,
   type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -28,7 +29,14 @@ const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
 );
 
-export const mockRouter: FastifyPluginAsyncZod = async (fastify) => {
+interface MockRouterOptions {
+  knodeId: KnodeId;
+}
+
+export const mockRouter: FastifyPluginAsyncZod<MockRouterOptions> = async (
+  fastify,
+  { knodeId },
+) => {
   fastify.route({
     handler: async (_req, res) => {
       const { logger } = getContextValues(requestContext);
@@ -49,9 +57,19 @@ export const mockRouter: FastifyPluginAsyncZod = async (fastify) => {
           `eservice.version ${eservice.version} does not match ${EXPECTED_ESERVICE_VERSION_ID}`,
         );
       }
+      if (eservice.knode_id !== knodeId) {
+        mismatches.push(
+          `eservice.knode_id ${eservice.knode_id} does not match ${knodeId}`,
+        );
+      }
       if (producer.id !== EXPECTED_PRODUCER_ID) {
         mismatches.push(
           `producer.id ${producer.id} does not match ${EXPECTED_PRODUCER_ID}`,
+        );
+      }
+      if (producer.knode_id !== knodeId) {
+        mismatches.push(
+          `producer.knode_id ${producer.knode_id} does not match ${knodeId}`,
         );
       }
       if (mismatches.length > 0) {

@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
@@ -11,6 +12,7 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
         .transform((value) => value.split(",").map((a) => a.trim()))
         .pipe(z.string().array()),
       EXPECTED_ISSUER: z.url(),
+      KNODE_ID: KnodeId,
       WELL_KNOWN_URLS: z
         .string()
         .min(1)
@@ -20,6 +22,7 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
     .transform((c) => ({
       acceptedAudiences: c.ACCEPTED_AUDIENCES,
       expectedIssuer: c.EXPECTED_ISSUER,
+      knodeId: c.KNODE_ID,
       wellKnownUrls: c.WELL_KNOWN_URLS,
     })),
 );
