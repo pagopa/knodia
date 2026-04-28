@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
@@ -23,11 +24,13 @@ export function buildApp({
   config,
   expectedIssuer,
   jwksResolvers,
+  knodeId,
 }: {
   acceptedAudiences: string[];
   config: LoggerConfig;
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
+  knodeId: KnodeId;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -63,7 +66,7 @@ export function buildApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockRouter);
+    protectedApp.register(mockRouter, { knodeId });
   });
 
   return app;
@@ -77,5 +80,6 @@ export function buildAppFromConfig(config: MockEserviceConfig) {
     jwksResolvers: config.wellKnownUrls.map((url) =>
       createRemoteJWKSet(new URL(url)),
     ),
+    knodeId: config.knodeId,
   });
 }
