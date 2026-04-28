@@ -198,7 +198,7 @@ describe("GET /eservices (getEservices)", () => {
           query: {
             ...parsedDefaultQuery,
             ...(agreementState
-              ? { state: toK2KAPI_AgreementState(agreementState) }
+              ? { state: [toK2KAPI_AgreementState(agreementState)] }
               : {}),
             consumerId: TEST_ORGANIZATION_ID,
           },
