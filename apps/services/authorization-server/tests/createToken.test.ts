@@ -164,7 +164,7 @@ describe("POST /token", async () => {
     dpopProofJWT,
     keySet: dpopProofKeySet,
   } = await getMockDpopProof({
-    props: { customPayload: { htu: dpopProofHtuBaseUrl } },
+    props: { customPayload: { htu: `${dpopProofHtuBaseUrl}///?test=12345/` } }, // intentionally malformed htu to test the normalization
   });
 
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {

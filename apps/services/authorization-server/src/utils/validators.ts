@@ -278,13 +278,25 @@ function assertConsumerAttributesMeetEserviceRequirements(
 }
 
 function assertDpopProofHtuIsValid(htu: string, expectedDpopProofHtu: string) {
-  if (htu !== expectedDpopProofHtu) {
+  const normalizeHtu = (raw: string) => {
+    const url = new URL(raw);
+    return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/, "")}`;
+  };
+
+  const errorMessage = `Invalid 'htu' claim in DPoP proof. Expected '${expectedDpopProofHtu}' but got '${htu}'`;
+  let normalizedHtu: string;
+  let normalizedExpectedHtu: string;
+  try {
+    normalizedHtu = normalizeHtu(htu);
+    normalizedExpectedHtu = normalizeHtu(expectedDpopProofHtu);
+  } catch (e) {
     throw dpopClaimsValidationError(
-      new Error(
-        `Invalid 'htu' claim in DPoP proof. Expected '${expectedDpopProofHtu}' but got '${htu}'`,
-      ),
+      new Error(e instanceof Error ? e.message : errorMessage),
     );
   }
+
+  if (normalizedHtu !== normalizedExpectedHtu)
+    throw dpopClaimsValidationError(new Error(errorMessage));
 }
 
 function assertEserviceVersionUsesCorrectToken(
