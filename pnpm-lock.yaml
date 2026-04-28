@@ -732,6 +732,9 @@ importers:
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
+      '@knodia/eservice-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-template-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons

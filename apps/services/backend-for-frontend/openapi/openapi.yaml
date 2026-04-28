@@ -211,6 +211,20 @@ components:
       enum:
         - Bearer
         - DPoP
+    EserviceTemplateReference:
+      description: Reference to an E-service template
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     CompactOrganization:
       description: Organization with only id, knodeId, and name
       type: object
@@ -266,7 +280,40 @@ components:
         - name
         - prettyName
       additionalProperties: false
-    EserviceSeed:
+    InterfaceDocumentContactOverrides:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+        name:
+          type: string
+        url:
+          type: string
+      required:
+        - email
+        - name
+      additionalProperties: false
+    InterfaceDocumentOverrides:
+      type: object
+      properties:
+        contact:
+          description: OpenAPI contact overrides to apply to the template interface
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentContactOverrides"
+        serverUrls:
+          description: Server URLs override to apply to the template interface
+          type: array
+          items:
+            type: string
+        termsAndConditionsUrl:
+          type: string
+      required:
+        - contact
+        - serverUrls
+      additionalProperties: false
+    EserviceFromScratchSeed:
       type: object
       properties:
         accessTokenAudience:
@@ -286,17 +333,8 @@ components:
           default: Bearer
           allOf:
             - $ref: "#/components/schemas/AccessTokenType"
-        categories:
-          description: Categories of the E-service
-          type: array
-          items:
-            $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
-        interfaceDocument:
-          description: Interface document for the E-service
-          allOf:
-            - $ref: "#/components/schemas/InterfaceDocumentSeed"
         isSignalHubEnabled:
           description: Whether SignalHub is enabled for the E-service
           type: boolean
@@ -314,12 +352,21 @@ components:
           type: integer
           minimum: 1
           maximum: 1000000000
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        categories:
+          description: Categories of the E-service
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        interfaceDocument:
+          description: Interface document for the E-service
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentSeed"
         mode:
           description: Mode of the E-service
           allOf:
             - $ref: "#/components/schemas/EserviceMode"
-        name:
-          $ref: "#/components/schemas/LocalizedName"
         requiredAttributes:
           description: Required attributes for the E-service
           type: array
@@ -332,11 +379,71 @@ components:
         - accessTokenDuration
         - accessTokenType
         - description
-        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - name
+        - interfaceDocument
         - requiredAttributes
+      additionalProperties: false
+    EserviceFromTemplateSeed:
+      type: object
+      properties:
+        accessTokenAudience:
+          description: Audience for the access token
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in seconds
+          format: int32
+          default: 3600
+          type: integer
+          minimum: 1
+          maximum: 86400
+        accessTokenType:
+          description: Type of the access token
+          default: Bearer
+          allOf:
+            - $ref: "#/components/schemas/AccessTokenType"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        isSignalHubEnabled:
+          description: Whether SignalHub is enabled for the E-service
+          type: boolean
+        maxDailyCallsPerConsumer:
+          description: Maximum daily calls per consumer (must be less than or equal to
+            maxDailyCallsPerKnode)
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        maxDailyCallsPerKnode:
+          description: Maximum daily calls per Knode (must be greater than or equal to
+            maxDailyCallsPerConsumer)
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        interfaceDocumentOverrides:
+          description: Overrides applied to the E-service Template interface document
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentOverrides"
+        template:
+          description: Reference to the E-service Template to instantiate
+          allOf:
+            - $ref: "#/components/schemas/EserviceTemplateReference"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - description
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - name
+        - interfaceDocumentOverrides
+        - template
       additionalProperties: false
     EservicePatch:
       type: object
@@ -2079,7 +2186,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EserviceSeed"
+              $ref: "#/components/schemas/EserviceFromScratchSeed"
       responses:
         "201":
           description: E-service created successfully
@@ -2208,6 +2315,59 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/eservices/fromTemplate:
+    post:
+      operationId: createEserviceFromTemplate
+      tags:
+        - eservice
+      description: Create a new E-service from a Template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EserviceFromTemplateSeed"
+      responses:
+        "201":
+          description: E-service created successfully
+          content:
+            application/json:
+              schema:
+                description: E-service created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service template not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service template not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}:
