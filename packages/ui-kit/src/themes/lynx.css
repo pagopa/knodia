@@ -27,6 +27,7 @@
   --color-primary-light-low-contrast: var(--color-neutral-500);
   --color-primary-light-mid-contrast: var(--color-neutral-600);
   --color-primary-light-high-contrast: var(--color-neutral-700);
+  --color-on-primary-light-high-contrast: var(--color-slate-700);
   --color-primary-dark: var(--color-neutral-700);
   --color-primary-dark-decorative: var(--color-neutral-500);
   --color-primary-dark-high-contrast: var(--color-white);
