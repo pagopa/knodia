@@ -1,3 +1,4 @@
+import type { bffApi } from "@knodia/bff-client";
 import type {
   AgreementId,
   EserviceId,
@@ -19,6 +20,7 @@ import { client } from "@/libs/axios";
 const PURPOSES_PAGE_LIMIT = 9;
 const PURPOSES_SECTION_LIMIT = 50;
 const PURPOSES_LINKED_KEYCHAINS_LIMIT = 10;
+const NON_ARCHIVED_STATES: bffApi.PurposeState[] = ["Active", "Suspended"];
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -36,14 +38,33 @@ export const producerPurposeDetailsQuery = (purposeId: PurposeId) =>
 export const consumerPurposesQuery = (offset: number) =>
   getConsumerPurposesOptions({
     client,
-    query: { limit: PURPOSES_PAGE_LIMIT, offset },
+    query: {
+      limit: PURPOSES_PAGE_LIMIT,
+      offset,
+      state: NON_ARCHIVED_STATES,
+    },
+  });
+
+export const consumerArchivedPurposesQuery = (offset: number) =>
+  getConsumerPurposesOptions({
+    client,
+    query: {
+      limit: PURPOSES_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
   });
 
 // TODO: replace hardcoded limit with pagination when the number of purposes per e-service grows
 export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
   getConsumerPurposesOptions({
     client,
-    query: { eserviceId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
+    query: {
+      eserviceId,
+      limit: PURPOSES_SECTION_LIMIT,
+      offset: 0,
+      state: NON_ARCHIVED_STATES,
+    },
   });
 
 export const producerPurposesQuery = (
