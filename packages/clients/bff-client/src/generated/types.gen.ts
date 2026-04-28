@@ -866,6 +866,7 @@ export type ConsumerPurpose = {
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
+    updatedAt: string;
 };
 
 export type ConsumerPurposes = {
@@ -911,6 +912,7 @@ export type PurposeDetails = {
     state: PurposeState;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
+    updatedAt: string;
 };
 
 /**
@@ -2730,6 +2732,10 @@ export type GetConsumerPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
     };
     url: '/consumer/purposes';
 };
