@@ -378,6 +378,14 @@ export type Purpose = {
     knodeId: KnodeId;
     name: LocalizedPurposeName;
     state: PurposeState;
+    /**
+     * Timestamp when the Purpose was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Purpose was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -957,6 +965,96 @@ export type GetPurposeResponses = {
 };
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
+
+export type ReactivatePurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeError = ReactivatePurposeErrors[keyof ReactivatePurposeErrors];
+
+export type ReactivatePurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeResponse = ReactivatePurposeResponses[keyof ReactivatePurposeResponses];
+
+export type SuspendPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeError = SuspendPurposeErrors[keyof SuspendPurposeErrors];
+
+export type SuspendPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];
 
 export type GetOrganizationData = {
     body?: never;

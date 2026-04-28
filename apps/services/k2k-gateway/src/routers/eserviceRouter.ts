@@ -9,6 +9,7 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { apiTags } from "../models/apiTags.ts";
@@ -222,11 +223,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         key: metadata.path,
       });
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${metadata.name}"`,
-        "Content-Type": metadata.contentType,
-      });
-      res.raw.end(content);
+      sendFileDownload(res, content, metadata.name, metadata.contentType);
     },
     method: "GET",
     schema: {
