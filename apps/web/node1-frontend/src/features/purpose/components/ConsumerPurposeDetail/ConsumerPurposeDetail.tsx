@@ -59,7 +59,8 @@ export function ConsumerPurposeDetail({
         title={purpose.name.en}
       />
 
-      {purpose.suspendedByProducerAt !== null && <ProducerSuspendedBanner />}
+      {purpose.state === "Suspended" &&
+        purpose.suspendedByProducerAt !== null && <ProducerSuspendedBanner />}
 
       <div className="mt-10 flex flex-col gap-4">
         <PurposeEserviceCard
@@ -170,7 +171,8 @@ function PurposeActionButton({
       <SuspendConsumerPurposeButton knodeId={knodeId} purposeId={purposeId} />
     ))
     .with("Suspended", () =>
-      purpose.suspendedByConsumerAt !== null ? (
+      purpose.suspendedByConsumerAt !== null &&
+      purpose.suspendedByProducerAt === null ? (
         <ReactivateConsumerPurposeButton
           knodeId={knodeId}
           purposeId={purposeId}
