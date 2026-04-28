@@ -1,5 +1,6 @@
+import { bffApi } from "@knodia/bff-client";
 import { getCategory } from "@knodia/category-models";
-import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
+import { Banner, Chip, Divider, toastQueue } from "@knodia/ui-kit/ui";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
@@ -13,19 +14,30 @@ import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
-import { eserviceFromScratchFormSchema } from "@/features/e-service/types/eserviceCreateForm";
-import { downloadFile } from "@/utils/downloadFile";
+import {
+  eserviceFromScratchFormSchema,
+  eserviceFromTemplateFormSchema,
+} from "@/features/e-service/types/eserviceCreateForm";
+import { client } from "@/libs/axios";
+import { downloadFile, downloadResponseAsFile } from "@/utils/downloadFile";
 
 import { DocumentRecap } from "../../DocumentRecap";
 
 export function RecapStep() {
-  const { data } = useEServiceWizardContext();
+  const { data, template } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
   const { sha256Checksum } = useCalculateChecksum(data.interfaceDocument);
-  const { isError, isPending, publish } = usePublishEService();
+  const { isError, isPending, publish, publishFromTemplate } =
+    usePublishEService();
 
-  const onPublish = () =>
+  const onPublish = () => {
+    if (template) {
+      publishFromTemplate(eserviceFromTemplateFormSchema.parse(data), template);
+      return;
+    }
+
     publish(eserviceFromScratchFormSchema.parse(data), sha256Checksum);
+  };
 
   return (
     <>
@@ -52,33 +64,39 @@ export function RecapStep() {
 
         <Divider />
 
-        <DocumentsSection
-          document={data.interfaceDocument}
-          sha256Checksum={sha256Checksum}
-        />
+        {template ? (
+          <TemplateDocumentsSection data={data} template={template} />
+        ) : (
+          <DocumentsSection
+            document={data.interfaceDocument}
+            sha256Checksum={sha256Checksum}
+          />
+        )}
 
         <Divider />
 
         <AttributesSection requiredAttributes={data.requiredAttributes} />
       </div>
 
-      <Banner kind="warning">
-        Remember: once published, Technical details and Attributes cannot be
-        modified.
-      </Banner>
-
-      {isError && (
-        <Banner kind="error" size="md" title="Something went wrong">
-          Please try again. Don&apos;t refresh the page to avoid data loss.
+      <div className="flex flex-col gap-8">
+        <Banner kind="warning">
+          Remember: once published, Technical details and Attributes cannot be
+          modified.
         </Banner>
-      )}
 
-      <ModalFooter
-        confirmLabel="Publish"
-        isDisabled={isPending}
-        onCancel={prevStep}
-        onConfirm={onPublish}
-      />
+        {isError && (
+          <Banner kind="error" size="md" title="Something went wrong">
+            Please try again. Don&apos;t refresh the page to avoid data loss.
+          </Banner>
+        )}
+
+        <ModalFooter
+          confirmLabel="Publish"
+          isDisabled={isPending}
+          onCancel={prevStep}
+          onConfirm={onPublish}
+        />
+      </div>
     </>
   );
 }
@@ -208,28 +226,36 @@ function TechnicalDetailsSection({
     <>
       <SectionTitle>Technical details</SectionTitle>
 
-      <GenericInfoCard label="Mode">
+      <GenericInfoCard label="Type">
         {data.mode === "ReceiveData" ? "Receive data" : "Provide data"}
       </GenericInfoCard>
 
       <FieldGroup title="Access token settings">
         <GenericInfoCard label="Duration">
-          {data.accessTokenDuration || "-"}
+          {Number.isFinite(data.accessTokenDuration)
+            ? `${data.accessTokenDuration} minutes`
+            : "-"}
         </GenericInfoCard>
         <GenericInfoCard label="Audience">
           {data.accessTokenAudience || "-"}
         </GenericInfoCard>
         <GenericInfoCard label="Type">
-          {data.accessTokenType || "-"}
+          {data.accessTokenType === "Bearer" ? "Bearer token" : "DPoP token"}
         </GenericInfoCard>
       </FieldGroup>
 
       <FieldGroup title="Max API calls per day">
         <GenericInfoCard label="Per Knode">
-          {data.maxDailyCallsPerKnode || "-"}
+          {Number.isFinite(data.maxDailyCallsPerKnode)
+            ? new Intl.NumberFormat("it-IT").format(data.maxDailyCallsPerKnode)
+            : "-"}
         </GenericInfoCard>
         <GenericInfoCard label="Per consumer">
-          {data.maxDailyCallsPerConsumer || "-"}
+          {Number.isFinite(data.maxDailyCallsPerConsumer)
+            ? new Intl.NumberFormat("it-IT").format(
+                data.maxDailyCallsPerConsumer,
+              )
+            : "-"}
         </GenericInfoCard>
       </FieldGroup>
 
@@ -243,6 +269,85 @@ function TechnicalDetailsSection({
             showDownloadButton
           />
         )}
+      </FieldGroup>
+    </>
+  );
+}
+
+function TemplateDocumentsSection({
+  data,
+  template,
+}: {
+  data: ReturnType<typeof useEServiceWizardContext>["data"];
+  template: bffApi.EserviceTemplateDetails;
+}) {
+  const interfaceDocument = template.eserviceFields.interfaceDocument;
+
+  const handleInterfaceDownload = async () => {
+    try {
+      const response = await bffApi.downloadEserviceTemplateInterface({
+        client,
+        path: { eserviceTemplateId: template.id },
+        query: { knodeId: template.knodeId },
+      });
+
+      downloadResponseAsFile(
+        response.data,
+        interfaceDocument.name,
+        response.headers["content-type"],
+      );
+    } catch {
+      toastQueue.add({
+        description: "Retry later",
+        kind: "error",
+        title: "Download failed",
+      });
+    }
+  };
+
+  return (
+    <>
+      <SectionTitle>Documents</SectionTitle>
+
+      <DocumentRecap
+        name={interfaceDocument.prettyName.en}
+        onDownload={handleInterfaceDownload}
+        showDownloadButton
+      />
+
+      <div className="flex flex-col gap-2">
+        {data.serverUrls.map((serverUrl, index) => (
+          <GenericInfoCard
+            key={`${serverUrl}-${index}`}
+            label={index === 0 ? "Server URL" : `Server URL ${index + 1}`}
+          >
+            <span className="underline">{serverUrl}</span>
+          </GenericInfoCard>
+        ))}
+
+        <GenericInfoCard label="Terms and Conditions URL">
+          {data.termsOfServiceUrl ? (
+            <span className="underline">{data.termsOfServiceUrl}</span>
+          ) : (
+            "-"
+          )}
+        </GenericInfoCard>
+      </div>
+
+      <FieldGroup title="Contact data">
+        <GenericInfoCard label="Contact name">
+          {data.contactName || "-"}
+        </GenericInfoCard>
+        <GenericInfoCard label="Contact email">
+          {data.contactEmail || "-"}
+        </GenericInfoCard>
+        <GenericInfoCard label="Contact URL">
+          {data.contactUrl ? (
+            <span className="underline">{data.contactUrl}</span>
+          ) : (
+            "-"
+          )}
+        </GenericInfoCard>
       </FieldGroup>
     </>
   );
