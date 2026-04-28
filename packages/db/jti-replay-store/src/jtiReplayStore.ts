@@ -8,8 +8,7 @@ import { dateToSeconds } from "@knodia/common-models/utils";
 export type JtiReplayStore = ReturnType<typeof createJtiReplayStore>;
 
 /**
- * Uses DynamoDB as a set of "seen" JTIs to prevent JWT replay. Used by both
- * the refresh-token and magic-link token paths.
+ * Uses DynamoDB as a set of "seen" JTIs to prevent JWT replay.
  *
  * Each JTI is stored with a `ttl` attribute matching the token's `exp` claim,
  * so entries are automatically cleaned up by DynamoDB's native TTL.
