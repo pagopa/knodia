@@ -97,33 +97,6 @@ export const API_ProducerAgreements = z
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
 
-export const API_GetConsumerAgreementsQueryParams =
-  API_PaginationQueryParams.extend({
-    limit: API_PaginationQueryParams.shape.limit.default(10),
-    offset: API_PaginationQueryParams.shape.offset.default(0),
-    state: arrayQueryParam(API_AgreementState)
-      .optional()
-      .meta({ description: "Filter by Agreement State" }),
-  });
-export type API_GetConsumerAgreementsQueryParams = z.infer<
-  typeof API_GetConsumerAgreementsQueryParams
->;
-
-export const API_ConsumerAgreement = z
-  .strictObject({
-    consumer: API_AgreementConsumer,
-    eserviceId: z.uuid(),
-    eserviceVersionId: z.uuid(),
-    id: z.uuid(),
-    producerId: API_OrganizationId,
-    state: API_AgreementState,
-    suspendedByConsumerAt: z.iso.datetime().nullable(),
-    suspendedByProducerAt: z.iso.datetime().nullable(),
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({ id: "ConsumerAgreement" });
-export type API_ConsumerAgreement = z.infer<typeof API_ConsumerAgreement>;
-
 export const API_ConsumerAgreements = z
   .strictObject({
     counters: z.strictObject({
@@ -141,8 +114,43 @@ export const API_ConsumerAgreements = z
         format: "int32",
       }),
     }),
-    pagination: API_Pagination,
-    results: z.array(API_ConsumerAgreement),
   })
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
+
+export const API_GetConsumerAgreementsListQueryParams =
+  API_PaginationQueryParams.extend({
+    limit: API_PaginationQueryParams.shape.limit.default(10),
+    offset: API_PaginationQueryParams.shape.offset.default(0),
+    state: arrayQueryParam(API_AgreementState)
+      .optional()
+      .meta({ description: "Filter by Agreement State" }),
+  });
+export type API_GetConsumerAgreementsListQueryParams = z.infer<
+  typeof API_GetConsumerAgreementsListQueryParams
+>;
+
+export const API_ConsumerAgreement = z
+  .strictObject({
+    consumer: API_AgreementConsumer,
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    id: z.uuid(),
+    producerId: API_OrganizationId,
+    state: API_AgreementState,
+    suspendedByConsumerAt: z.iso.datetime().nullable(),
+    suspendedByProducerAt: z.iso.datetime().nullable(),
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "ConsumerAgreement" });
+export type API_ConsumerAgreement = z.infer<typeof API_ConsumerAgreement>;
+
+export const API_ConsumerAgreementsList = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerAgreement),
+  })
+  .meta({ id: "ConsumerAgreementsList" });
+export type API_ConsumerAgreementsList = z.infer<
+  typeof API_ConsumerAgreementsList
+>;

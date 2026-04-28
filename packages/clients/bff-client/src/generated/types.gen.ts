@@ -500,18 +500,6 @@ export type ProducerAgreements = {
     results: Array<ProducerAgreement>;
 };
 
-export type ConsumerAgreement = {
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
-    id: string;
-    producerId: OrganizationId;
-    state: AgreementState;
-    suspendedByConsumerAt: string | null;
-    suspendedByProducerAt: string | null;
-    updatedAt: string;
-};
-
 export type ConsumerAgreements = {
     counters: {
         /**
@@ -527,6 +515,21 @@ export type ConsumerAgreements = {
          */
         suspendedAgreements: number;
     };
+};
+
+export type ConsumerAgreement = {
+    consumer: AgreementConsumer;
+    eserviceId: string;
+    eserviceVersionId: string;
+    id: string;
+    producerId: OrganizationId;
+    state: AgreementState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
+    updatedAt: string;
+};
+
+export type ConsumerAgreementsList = {
     pagination: Pagination;
     results: Array<ConsumerAgreement>;
 };
@@ -2353,20 +2356,7 @@ export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof G
 export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
-    query?: {
-        /**
-         * Maximum number of items returned
-         */
-        limit?: number;
-        /**
-         * Pagination starting position
-         */
-        offset?: number;
-        /**
-         * Filter by Agreement State
-         */
-        state?: Array<AgreementState>;
-    };
+    query?: never;
     url: '/consumer/agreements';
 };
 
@@ -2389,7 +2379,7 @@ export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetCo
 
 export type GetConsumerAgreementsResponses = {
     /**
-     * Consumer Agreements retrieved successfully
+     * Consumer Agreement counters retrieved successfully
      */
     200: ConsumerAgreements;
 };
@@ -2428,6 +2418,52 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type ListConsumerAgreementsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Maximum number of items returned
+         */
+        limit?: number;
+        /**
+         * Pagination starting position
+         */
+        offset?: number;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
+    };
+    url: '/consumer/agreements/list';
+};
+
+export type ListConsumerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type ListConsumerAgreementsError = ListConsumerAgreementsErrors[keyof ListConsumerAgreementsErrors];
+
+export type ListConsumerAgreementsResponses = {
+    /**
+     * Consumer Agreements retrieved successfully
+     */
+    200: ConsumerAgreementsList;
+};
+
+export type ListConsumerAgreementsResponse = ListConsumerAgreementsResponses[keyof ListConsumerAgreementsResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;

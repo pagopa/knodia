@@ -21,7 +21,8 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
-  API_GetConsumerAgreementsQueryParams,
+  API_ConsumerAgreementsList,
+  API_GetConsumerAgreementsListQueryParams,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { toAPI_ConsumerAgreement } from "../../models/agreement/apiConverter.ts";
@@ -92,11 +93,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: consumerId } = getUISessionAuthData(authData);
-      const { limit, offset, state } = req.query;
 
       logger.info(
-        { requestQuery: req.query },
-        `Getting Consumer Agreements for Consumer ID ${consumerId}`,
+        `Getting Consumer Agreement counters for Consumer ID ${consumerId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -112,30 +111,12 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         return data.pagination.total;
       };
 
-      const listAgreements = (
-        query: remoteResourcesManagerApi.GetAgreementsData["query"],
-      ) =>
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers,
-          query,
-        });
-
-      const [
-        activeAgreements,
-        suspendedAgreements,
-        archivedAgreements,
-        { data: filteredAgreements },
-      ] = await Promise.all([
-        countAgreementsByState(API_AgreementState.enum.Active),
-        countAgreementsByState(API_AgreementState.enum.Suspended),
-        countAgreementsByState(API_AgreementState.enum.Archived),
-        listAgreements({
-          limit,
-          offset,
-          state: state?.length ? state : consumerVisibleStates,
-        }),
-      ]);
+      const [activeAgreements, suspendedAgreements, archivedAgreements] =
+        await Promise.all([
+          countAgreementsByState(API_AgreementState.enum.Active),
+          countAgreementsByState(API_AgreementState.enum.Suspended),
+          countAgreementsByState(API_AgreementState.enum.Archived),
+        ]);
 
       res.status(200).send({
         counters: {
@@ -143,19 +124,15 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           archivedAgreements,
           suspendedAgreements,
         },
-        pagination: filteredAgreements.pagination,
-        results: filteredAgreements.results.map(toAPI_ConsumerAgreement),
       });
     },
     method: "GET",
     schema: {
-      description:
-        "Retrieve Consumer Agreement counters and a paginated list, optionally filtered by state",
+      description: "Retrieve Consumer Agreement counters per state",
       operationId: "getConsumerAgreements",
-      querystring: API_GetConsumerAgreementsQueryParams,
       response: {
         200: API_ConsumerAgreements.meta({
-          description: "Consumer Agreements retrieved successfully",
+          description: "Consumer Agreement counters retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -164,6 +141,52 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+      const { limit, offset, state } = req.query;
+
+      logger.info(
+        { requestQuery: req.query },
+        `Listing Consumer Agreements for Consumer ID ${consumerId}`,
+      );
+
+      const { data } = await remoteResourcesManagerApi.getAgreements({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: {
+          limit,
+          offset,
+          state: state?.length ? state : consumerVisibleStates,
+        },
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_ConsumerAgreement),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of Consumer Agreements, optionally filtered by state",
+      operationId: "listConsumerAgreements",
+      querystring: API_GetConsumerAgreementsListQueryParams,
+      response: {
+        200: API_ConsumerAgreementsList.meta({
+          description: "Consumer Agreements retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/list",
   });
 
   fastify.route({

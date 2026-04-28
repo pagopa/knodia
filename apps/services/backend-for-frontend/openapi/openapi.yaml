@@ -1056,6 +1056,38 @@ components:
         - pagination
         - results
       additionalProperties: false
+    ConsumerAgreements:
+      type: object
+      properties:
+        counters:
+          type: object
+          properties:
+            activeAgreements:
+              description: Number of active agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            archivedAgreements:
+              description: Number of archived agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            suspendedAgreements:
+              description: Number of suspended agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+          required:
+            - activeAgreements
+            - archivedAgreements
+            - suspendedAgreements
+          additionalProperties: false
+      required:
+        - counters
+      additionalProperties: false
     ConsumerAgreement:
       type: object
       properties:
@@ -1102,35 +1134,9 @@ components:
         - suspendedByProducerAt
         - updatedAt
       additionalProperties: false
-    ConsumerAgreements:
+    ConsumerAgreementsList:
       type: object
       properties:
-        counters:
-          type: object
-          properties:
-            activeAgreements:
-              description: Number of active agreements
-              format: int32
-              type: integer
-              minimum: 0
-              maximum: 9007199254740991
-            archivedAgreements:
-              description: Number of archived agreements
-              format: int32
-              type: integer
-              minimum: 0
-              maximum: 9007199254740991
-            suspendedAgreements:
-              description: Number of suspended agreements
-              format: int32
-              type: integer
-              minimum: 0
-              maximum: 9007199254740991
-          required:
-            - activeAgreements
-            - archivedAgreements
-            - suspendedAgreements
-          additionalProperties: false
         pagination:
           $ref: "#/components/schemas/Pagination"
         results:
@@ -1138,7 +1144,6 @@ components:
           items:
             $ref: "#/components/schemas/ConsumerAgreement"
       required:
-        - counters
         - pagination
         - results
       additionalProperties: false
@@ -4055,8 +4060,47 @@ paths:
       operationId: getConsumerAgreements
       tags:
         - agreement
-      description: Retrieve Consumer Agreement counters and a paginated list,
-        optionally filtered by state
+      description: Retrieve Consumer Agreement counters per state
+      responses:
+        "200":
+          description: Consumer Agreement counters retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreement counters retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements/list:
+    get:
+      operationId: listConsumerAgreements
+      tags:
+        - agreement
+      description: Retrieve a paginated list of Consumer Agreements, optionally
+        filtered by state
       parameters:
         - schema:
             default: 10
@@ -4093,7 +4137,7 @@ paths:
               schema:
                 description: Consumer Agreements retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerAgreements"
+                  - $ref: "#/components/schemas/ConsumerAgreementsList"
         "400":
           description: Bad Request
           content:

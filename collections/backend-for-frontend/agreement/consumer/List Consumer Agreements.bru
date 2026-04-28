@@ -1,0 +1,20 @@
+meta {
+  name: List Consumer Agreements
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/agreements/list?limit=10&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 10
+  offset: 0
+  ~state: Active
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
