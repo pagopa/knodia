@@ -2,7 +2,7 @@ import z from "zod";
 
 const DPOP_PROOF_HEADER = "dpop";
 
-export const DpopHeader = z.looseObject({
+export const AuthServerHeaders = z.looseObject({
   [DPOP_PROOF_HEADER]: z
     .string()
     .refine((v) => !v.includes(","), "Only a single DPoP proof is allowed")

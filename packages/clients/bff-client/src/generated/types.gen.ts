@@ -515,6 +515,35 @@ export type SessionResponse = {
     uiSessionToken: string;
 };
 
+export type EserviceTemplateInterface = {
+    contentType: string;
+    name: string;
+    prettyName: LocalizedInterfacePrettyName;
+};
+
+export type EserviceTemplateEserviceFields = {
+    categories: Array<EserviceCategory>;
+    interfaceDocument: EserviceTemplateInterface;
+    mode: EserviceMode;
+    requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceTemplateDetails = {
+    createdAt: string;
+    description: LocalizedDescription;
+    eserviceFields: EserviceTemplateEserviceFields;
+    id: string;
+    name: LocalizedName;
+};
+
+export type EserviceTemplate = {
+    description: LocalizedDescription;
+    id: string;
+    name: LocalizedName;
+};
+
+export type EserviceTemplates = Array<EserviceTemplate>;
+
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -772,6 +801,8 @@ export type PurposeDetails = {
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
 };
 
 /**
@@ -869,6 +900,123 @@ export type LogoutResponses = {
 };
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type GetEserviceTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates';
+};
+
+export type GetEserviceTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetEserviceTemplatesError = GetEserviceTemplatesErrors[keyof GetEserviceTemplatesErrors];
+
+export type GetEserviceTemplatesResponses = {
+    /**
+     * E-service Templates retrieved successfully
+     */
+    200: EserviceTemplates;
+};
+
+export type GetEserviceTemplatesResponse = GetEserviceTemplatesResponses[keyof GetEserviceTemplatesResponses];
+
+export type GetEserviceTemplateData = {
+    body?: never;
+    path: {
+        eserviceTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{eserviceTemplateId}';
+};
+
+export type GetEserviceTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceTemplateError = GetEserviceTemplateErrors[keyof GetEserviceTemplateErrors];
+
+export type GetEserviceTemplateResponses = {
+    /**
+     * E-service Template retrieved successfully
+     */
+    200: EserviceTemplateDetails;
+};
+
+export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
+
+export type DownloadEserviceTemplateInterfaceData = {
+    body?: never;
+    path: {
+        eserviceTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{eserviceTemplateId}/interface';
+};
+
+export type DownloadEserviceTemplateInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
+
+export type DownloadEserviceTemplateInterfaceResponses = {
+    /**
+     * E-service Template interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -2501,6 +2649,96 @@ export type GetConsumerPurposeDetailsResponses = {
 
 export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
 
+export type ReactivatePurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByConsumerError = ReactivatePurposeByConsumerErrors[keyof ReactivatePurposeByConsumerErrors];
+
+export type ReactivatePurposeByConsumerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivatePurposeByConsumerResponse = ReactivatePurposeByConsumerResponses[keyof ReactivatePurposeByConsumerResponses];
+
+export type SuspendPurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByConsumerError = SuspendPurposeByConsumerErrors[keyof SuspendPurposeByConsumerErrors];
+
+export type SuspendPurposeByConsumerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendPurposeByConsumerResponse = SuspendPurposeByConsumerResponses[keyof SuspendPurposeByConsumerResponses];
+
 export type GetSessionOrganizationData = {
     body?: never;
     path?: never;
@@ -2805,3 +3043,89 @@ export type GetProducerPurposeDetailsResponses = {
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
+
+export type ReactivatePurposeByProducerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByProducerError = ReactivatePurposeByProducerErrors[keyof ReactivatePurposeByProducerErrors];
+
+export type ReactivatePurposeByProducerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivatePurposeByProducerResponse = ReactivatePurposeByProducerResponses[keyof ReactivatePurposeByProducerResponses];
+
+export type SuspendPurposeByProducerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByProducerError = SuspendPurposeByProducerErrors[keyof SuspendPurposeByProducerErrors];
+
+export type SuspendPurposeByProducerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses[keyof SuspendPurposeByProducerResponses];

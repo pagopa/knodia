@@ -20,7 +20,10 @@ import {
   purposeWriterServiceBuilder,
 } from "@knodia/db-readmodel-purpose/writer";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { resetTestDatabase } from "@knodia/test-commons/utils";
+import {
+  resetDynamoTable,
+  resetTestDatabase,
+} from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
@@ -33,6 +36,7 @@ let purposeWriterService: PurposeWriterService;
 let dynamoClient: DynamoDBClient;
 const producerKnodeId: KnodeId = "Orion";
 const dpopProofHtuBaseUrl = "https://test.knodia.org/token";
+const dynamoDbDpopProofsTable = "knodia-auth-server-dpop-proofs";
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -42,6 +46,7 @@ async function resetTestDatabases() {
       readmodelEservice,
       readmodelPurpose,
     ),
+    resetDynamoTable(dynamoDbDpopProofsTable, "jti", dynamoClient),
   ]);
 }
 
@@ -64,7 +69,7 @@ beforeAll(async () => {
       consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
-      dynamoDbDpopProofsTable: "knodia-auth-server-dpop-proofs",
+      dynamoDbDpopProofsTable,
       eserviceAccessTokenJwtKid: "test-kid",
       generatedEserviceAccessTokenIssuer: "knodia.org",
       host: "test_host",
@@ -107,6 +112,8 @@ export {
   agreementWriterService,
   app,
   dpopProofHtuBaseUrl,
+  dynamoClient,
+  dynamoDbDpopProofsTable,
   eserviceWriterService,
   producerKnodeId,
   purposeWriterService,
