@@ -49,6 +49,10 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
+export const API_SuspendReactivateConsumerPurposeQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+
 export const API_GetConsumerPurposesQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z
@@ -151,6 +155,8 @@ export const API_PurposeDetails = z
     name: API_LocalizedPurposeName,
     producer: API_CompactOrganization,
     state: API_PurposeState,
+    suspendedByConsumerAt: z.iso.datetime().nullable(),
+    suspendedByProducerAt: z.iso.datetime().nullable(),
   })
   .meta({ id: "PurposeDetails" });
 export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;

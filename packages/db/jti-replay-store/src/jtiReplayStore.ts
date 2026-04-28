@@ -3,13 +3,13 @@ import {
   type DynamoDBClient,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
-import { dateToSeconds } from "@knodia/common-models/utils";
+
+import { storeJti } from "./utils/utils.ts";
 
 export type JtiReplayStore = ReturnType<typeof createJtiReplayStore>;
 
 /**
- * Uses DynamoDB as a set of "seen" JTIs to prevent JWT replay. Used by both
- * the refresh-token and magic-link token paths.
+ * Uses DynamoDB as a set of "seen" JTIs to prevent JWT replay.
  *
  * Each JTI is stored with a `ttl` attribute matching the token's `exp` claim,
  * so entries are automatically cleaned up by DynamoDB's native TTL.
@@ -33,22 +33,8 @@ export function createJtiReplayStore(
       iat: number,
       expireAtSec: number,
     ): Promise<boolean> {
-      const nowSec = dateToSeconds(new Date());
       try {
-        await dynamoClient.send(
-          new PutItemCommand({
-            ConditionExpression: "attribute_not_exists(jti) OR #ttl < :now",
-            // "ttl" is a DynamoDB reserved word — must use a #placeholder
-            ExpressionAttributeNames: { "#ttl": "ttl" },
-            ExpressionAttributeValues: { ":now": { N: String(nowSec) } },
-            Item: {
-              iat: { N: String(iat) },
-              jti: { S: jti },
-              ttl: { N: String(expireAtSec) },
-            },
-            TableName: tableName,
-          }),
-        );
+        await storeJti({ dynamoClient, expireAtSec, iat, jti, tableName });
         return true;
       } catch (err) {
         if (err instanceof ConditionalCheckFailedException) {

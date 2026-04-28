@@ -19,6 +19,7 @@
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/jtiReplayStore.ts"
+    ".": "./src/jtiReplayStore.ts",
+    "./utils": "./src/utils/utils.ts"
   }
 }

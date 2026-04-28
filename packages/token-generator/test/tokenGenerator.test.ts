@@ -136,7 +136,7 @@ const testCases = [
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,
       }),
-    name: "generateEserviceAccessToken",
+    name: "generateBearerEserviceAccessToken",
     tokenDuration: eserviceVersion.accessTokenDuration,
   },
   {
@@ -176,7 +176,7 @@ const testCases = [
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,
       }),
-    name: "generateEserviceAccessToken",
+    name: "generateDpopEserviceAccessToken",
     tokenDuration: eserviceVersion.accessTokenDuration,
   },
 ] as const;

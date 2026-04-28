@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
 import type { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
@@ -7,6 +8,8 @@ import type { Purpose } from "@knodia/purpose-models";
 
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import { dateToSeconds } from "@knodia/common-models/utils";
+import { storeJti } from "@knodia/db-jti-replay-store/utils";
 import {
   type Eservice,
   EserviceAccessTokenType,
@@ -42,6 +45,8 @@ import {
   agreementWriterService,
   app,
   dpopProofHtuBaseUrl,
+  dynamoClient,
+  dynamoDbDpopProofsTable,
   eserviceWriterService,
   producerKnodeId,
   purposeWriterService,
@@ -159,7 +164,7 @@ describe("POST /token", async () => {
     dpopProofJWT,
     keySet: dpopProofKeySet,
   } = await getMockDpopProof({
-    props: { customPayload: { htu: dpopProofHtuBaseUrl } },
+    props: { customPayload: { htu: `${dpopProofHtuBaseUrl}///?test=12345/` } }, // intentionally malformed htu to test the normalization
   });
 
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
@@ -203,6 +208,41 @@ describe("POST /token", async () => {
     });
   }
 
+  async function seedTestData(tokenType: EserviceAccessTokenType) {
+    const archivedAgreement1: Agreement = {
+      ...getMockAgreement({ seed: 1 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-01-01"),
+    };
+    const archivedAgreement2: Agreement = {
+      ...getMockAgreement({ seed: 2 }),
+      consumer: purpose.consumer,
+      eserviceId: purpose.eserviceId,
+      state: "Archived",
+      updatedAt: new Date("2026-02-01"),
+    };
+
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement1, 0),
+      agreementWriterService.upsertAgreement(archivedAgreement2, 0),
+      eserviceWriterService.upsertEservice(
+        {
+          ...eservice,
+          versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
+        },
+        0,
+      ),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+  }
+
   beforeEach(() => {
     getClientAssertionVerificationDataMock.mockReset();
   });
@@ -210,38 +250,7 @@ describe("POST /token", async () => {
   it.each(EserviceAccessTokenType.options)(
     "should return 200 and a valid %s token",
     async (tokenType) => {
-      const archivedAgreement1: Agreement = {
-        ...getMockAgreement({ seed: 1 }),
-        consumer: purpose.consumer,
-        eserviceId: purpose.eserviceId,
-        state: "Archived",
-        updatedAt: new Date("2026-01-01"),
-      };
-      const archivedAgreement2: Agreement = {
-        ...getMockAgreement({ seed: 2 }),
-        consumer: purpose.consumer,
-        eserviceId: purpose.eserviceId,
-        state: "Archived",
-        updatedAt: new Date("2026-02-01"),
-      };
-
-      await Promise.all([
-        agreementWriterService.upsertAgreement(agreement, 0),
-        agreementWriterService.upsertAgreement(archivedAgreement1, 0),
-        agreementWriterService.upsertAgreement(archivedAgreement2, 0),
-        eserviceWriterService.upsertEservice(
-          {
-            ...eservice,
-            versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
-          },
-          0,
-        ),
-        purposeWriterService.upsertPurpose(purpose, 0),
-      ]);
-
-      getClientAssertionVerificationDataMock.mockResolvedValue({
-        data: mockK2KResponse,
-      });
+      await seedTestData(tokenType);
 
       const response = await createToken({
         requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
@@ -870,5 +879,26 @@ describe("POST /token", async () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 401 if the DPoP proof JTI has been replayed", async () => {
+    await seedTestData("DPoP");
+
+    await storeJti({
+      dynamoClient,
+      expireAtSec: dateToSeconds(new Date()) + 60,
+      iat: dpopProofJWT.payload.iat!,
+      jti: dpopProofJWT.payload.jti!,
+      tableName: dynamoDbDpopProofsTable,
+    });
+
+    const response = await createToken({
+      requestDpopProofJWS: dpopProofJWS,
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json<API_Problem>().errors?.[0]?.detail).toEqual(
+      "DPoP proof already used",
+    );
   });
 });
