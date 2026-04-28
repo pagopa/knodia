@@ -4059,9 +4059,9 @@ paths:
         optionally filtered by state
       parameters:
         - schema:
-            format: int32
             default: 10
-            type: integer
+            format: int32
+            type: number
             minimum: 1
             maximum: 50
           in: query
@@ -4069,11 +4069,10 @@ paths:
           required: false
           description: Maximum number of items returned
         - schema:
-            format: int32
             default: 0
-            type: integer
+            format: int32
+            type: number
             minimum: 0
-            maximum: 9007199254740991
           in: query
           name: offset
           required: false

@@ -96,25 +96,15 @@ export const API_ProducerAgreements = z
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
 
-export const API_GetConsumerAgreementsQueryParams = z.strictObject({
-  limit: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(50)
-    .default(10)
-    .meta({ description: "Maximum number of items returned", format: "int32" }),
-  offset: z.coerce
-    .number()
-    .int()
-    .min(0)
-    .default(0)
-    .meta({ description: "Pagination starting position", format: "int32" }),
-  state: z
-    .array(API_AgreementState)
-    .optional()
-    .meta({ description: "Filter by Agreement State" }),
-});
+export const API_GetConsumerAgreementsQueryParams =
+  API_PaginationQueryParams.extend({
+    limit: API_PaginationQueryParams.shape.limit.default(10),
+    offset: API_PaginationQueryParams.shape.offset.default(0),
+    state: z
+      .array(API_AgreementState)
+      .optional()
+      .meta({ description: "Filter by Agreement State" }),
+  });
 export type API_GetConsumerAgreementsQueryParams = z.infer<
   typeof API_GetConsumerAgreementsQueryParams
 >;

@@ -114,6 +114,30 @@ describe("GET /agreements (getAgreements)", () => {
     });
   });
 
+  it("forwards a multi-state filter to the k2k-gateway as an array", async () => {
+    getAgreementsMock.mockResolvedValue({
+      data: { ...mockK2KResponse, results: [] },
+    });
+
+    await remoteResourceDbService.insertAgreement(remoteAgreement);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/agreements")
+      .query({ ...defaultQuery, state: ["Active", "Suspended"] });
+
+    expect(response.statusCode).toBe(200);
+    expect(getAgreementsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          state: [
+            toK2KAPI_AgreementState("Active"),
+            toK2KAPI_AgreementState("Suspended"),
+          ],
+        }),
+      }),
+    );
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

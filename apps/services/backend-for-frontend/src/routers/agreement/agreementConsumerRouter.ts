@@ -2,7 +2,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -28,6 +31,14 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 interface AgreementConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
+
+// PendingConsumerOperatorIdentification is excluded: counters cover only
+// visible states and the default list must agree with the counters.
+const consumerVisibleStates = [
+  API_AgreementState.enum.Active,
+  API_AgreementState.enum.Suspended,
+  API_AgreementState.enum.Archived,
+];
 
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
@@ -104,10 +115,22 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         { data: archivedAgreements },
         { data: filteredAgreements },
       ] = await Promise.all([
-        callRRM({ limit: 1, offset: 0, state: ["Active"] }),
-        callRRM({ limit: 1, offset: 0, state: ["Suspended"] }),
-        callRRM({ limit: 1, offset: 0, state: ["Archived"] }),
-        callRRM({ limit, offset, state }),
+        callRRM({
+          limit: 1,
+          offset: 0,
+          state: [API_AgreementState.enum.Active],
+        }),
+        callRRM({
+          limit: 1,
+          offset: 0,
+          state: [API_AgreementState.enum.Suspended],
+        }),
+        callRRM({
+          limit: 1,
+          offset: 0,
+          state: [API_AgreementState.enum.Archived],
+        }),
+        callRRM({ limit, offset, state: state ?? consumerVisibleStates }),
       ]);
 
       res.status(200).send({
