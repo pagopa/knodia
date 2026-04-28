@@ -211,6 +211,9 @@
   /* Empty icon */
   --radius-empty-icon: 100px;
 
+  /* Empty state */
+  --container-empty: 400px;
+
   /* List item */
   --radius-list-item: 0;
 

@@ -222,6 +222,9 @@
   /* Empty icon */
   --radius-empty-icon: 10px;
 
+  /* Empty state */
+  --container-empty: 240px;
+
   /* List item */
   --radius-list-item: 6px;
 
