@@ -42,6 +42,7 @@ import {
   createAgreementSuspendedByConsumerV1Event,
   createAgreementSuspendedByProducerV1Event,
 } from "../models/agreementEventFactory.ts";
+import { toAPI_AgreementActivationClaims } from "../models/apiConverter.ts";
 import {
   retrieveAgreement,
   retrieveEservice,
@@ -228,19 +229,7 @@ export function agreementServiceBuilder(
       );
       assertAgreementIsPendingConsumerOperatorIdentification(agreement);
 
-      return {
-        agreement: { id: agreement.id, knodeId: currentKnodeId },
-        consumer: {
-          id: agreement.consumer.id,
-          knodeId: agreement.consumer.knodeId,
-        },
-        eservice: {
-          id: agreement.eserviceId,
-          knodeId: currentKnodeId,
-          version: agreement.eserviceVersionId,
-        },
-        producer: { id: agreement.producerId, knodeId: currentKnodeId },
-      };
+      return toAPI_AgreementActivationClaims(agreement, currentKnodeId);
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
