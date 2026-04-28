@@ -167,19 +167,19 @@ export const buttonStyles = tv({
       kind: "outlined",
       hierarchy: "brand",
       class:
-        "border-brand-200 text-brand-700 hover:bg-brand-50 pressed:bg-brand-50",
+        "border-brand-200 text-brand-700 hover:border-brand-400 hover:bg-button-outlined-brand-bg-hover pressed:bg-brand-50",
     },
     {
       kind: "outlined",
       hierarchy: "danger",
       class:
-        "border-error-200 text-error-600 hover:bg-error-50 pressed:bg-error-50",
+        "border-error-200 text-error-600 hover:border-error-400 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "outlined",
       hierarchy: "neutral",
       class:
-        "pressed:bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-50",
+        "pressed:bg-neutral-50 border-neutral-200 text-neutral-700 hover:border-button-outlined-neutral-border-hover hover:bg-button-outlined-neutral-bg-hover",
     },
 
     // --- TONAL buttons ---

@@ -127,6 +127,11 @@
   --color-button-tonal-neutral-bg-hover: var(--color-neutral-50);
   --color-button-tonal-neutral-border: var(--color-neutral-200);
 
+  /* Outlined button — hover (per hierarchy where token diverges across themes) */
+  --color-button-outlined-neutral-border-hover: var(--color-neutral-400);
+  --color-button-outlined-neutral-bg-hover: var(--color-neutral-50);
+  --color-button-outlined-brand-bg-hover: var(--color-brand-100);
+
   /* Org consumption status */
   --radius-org-consumption-status-card: 0;
   --shadow-org-consumption-status: none;
