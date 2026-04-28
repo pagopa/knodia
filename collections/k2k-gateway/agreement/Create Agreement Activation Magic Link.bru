@@ -1,0 +1,17 @@
+meta {
+  name: Create Agreement Activation Magic Link
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements/:agreementId/activationMagicLink
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  ~Authorization:
+}

@@ -40,6 +40,20 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -2491,6 +2505,51 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type CreateAgreementConsumerActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementConsumerActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkError = CreateAgreementConsumerActivationMagicLinkErrors[keyof CreateAgreementConsumerActivationMagicLinkErrors];
+
+export type CreateAgreementConsumerActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkResponse = CreateAgreementConsumerActivationMagicLinkResponses[keyof CreateAgreementConsumerActivationMagicLinkResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;
