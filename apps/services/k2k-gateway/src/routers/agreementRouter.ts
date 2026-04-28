@@ -13,7 +13,7 @@ import { ExternalUISessionScope } from "@knodia/common-models/auth";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type CorrelationId,
-  type KnodeId,
+  KnodeId,
   type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -64,23 +64,23 @@ async function buildActivationMagicLink(
     await tokenGenerator.generateExternalUISessionMagicLinkToken({
       agreement: {
         id: unsafeBrandId(claims.agreement.id),
-        knodeId: claims.agreement.knodeId,
+        knodeId: KnodeId.parse(claims.agreement.knodeId),
       },
       audience: magicLinkConfig.audience,
       consumer: {
         id: unsafeBrandExternalId<OrganizationId>(claims.consumer.id),
-        knodeId: claims.consumer.knodeId,
+        knodeId: KnodeId.parse(claims.consumer.knodeId),
       },
       eservice: {
         id: unsafeBrandId(claims.eservice.id),
-        knodeId: claims.eservice.knodeId,
+        knodeId: KnodeId.parse(claims.eservice.knodeId),
         version: unsafeBrandId(claims.eservice.version),
       },
       issuer: magicLinkConfig.issuer,
       kid: magicLinkConfig.kid,
       producer: {
         id: unsafeBrandId(claims.producer.id),
-        knodeId: claims.producer.knodeId,
+        knodeId: KnodeId.parse(claims.producer.knodeId),
       },
       scope: ExternalUISessionScope.enum["agreement-activation"],
       secondsDuration: magicLinkConfig.secondsDuration,
