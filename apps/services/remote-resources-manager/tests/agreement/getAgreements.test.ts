@@ -94,7 +94,7 @@ describe("GET /agreements (getAgreements)", () => {
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get("/agreements")
-      .query({ ...defaultQuery, state: expectedApiResult.state });
+      .query({ ...defaultQuery, state: [expectedApiResult.state] });
 
     expect(response.statusCode).toBe(200);
 

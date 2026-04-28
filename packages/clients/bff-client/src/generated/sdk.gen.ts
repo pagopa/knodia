@@ -428,7 +428,7 @@ export const getConsumerEservices = <ThrowOnError extends boolean = true>(option
 });
 
 /**
- * Retrieve a list of Consumer Agreements
+ * Retrieve Consumer Agreement counters and a paginated list, optionally filtered by state
  */
 export const getConsumerAgreements = <ThrowOnError extends boolean = true>(options?: Options<GetConsumerAgreementsData, ThrowOnError>) => (options?.client ?? client).get<GetConsumerAgreementsResponses, GetConsumerAgreementsErrors, ThrowOnError>({
     responseType: 'json',

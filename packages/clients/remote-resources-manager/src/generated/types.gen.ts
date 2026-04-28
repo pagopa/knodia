@@ -596,7 +596,7 @@ export type GetAgreementsData = {
         /**
          * Filter by Agreement State
          */
-        state?: AgreementState;
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };

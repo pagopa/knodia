@@ -43,9 +43,10 @@ export type API_GetAgreementQueryParams = z.infer<
 >;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  state: API_AgreementState.optional().meta({
-    description: "Filter by Agreement State",
-  }),
+  state: z
+    .array(API_AgreementState)
+    .optional()
+    .meta({ description: "Filter by Agreement State" }),
 });
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams

@@ -1273,8 +1273,9 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
+            type: array
+            items:
+              $ref: "#/components/schemas/AgreementState"
           in: query
           name: state
           required: false

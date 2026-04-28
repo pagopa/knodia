@@ -1,5 +1,9 @@
-import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
+  API_AgreementConsumer,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
+import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -92,6 +96,44 @@ export const API_ProducerAgreements = z
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
 
+export const API_GetConsumerAgreementsQueryParams = z.strictObject({
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(10)
+    .meta({ description: "Maximum number of items returned", format: "int32" }),
+  offset: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .default(0)
+    .meta({ description: "Pagination starting position", format: "int32" }),
+  state: z
+    .array(API_AgreementState)
+    .optional()
+    .meta({ description: "Filter by Agreement State" }),
+});
+export type API_GetConsumerAgreementsQueryParams = z.infer<
+  typeof API_GetConsumerAgreementsQueryParams
+>;
+
+export const API_ConsumerAgreement = z
+  .strictObject({
+    consumer: API_AgreementConsumer,
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    id: z.uuid(),
+    producerId: API_OrganizationId,
+    state: API_AgreementState,
+    suspendedByConsumerAt: z.iso.datetime().nullable(),
+    suspendedByProducerAt: z.iso.datetime().nullable(),
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "ConsumerAgreement" });
+export type API_ConsumerAgreement = z.infer<typeof API_ConsumerAgreement>;
+
 export const API_ConsumerAgreements = z
   .strictObject({
     counters: z.strictObject({
@@ -109,7 +151,8 @@ export const API_ConsumerAgreements = z
         format: "int32",
       }),
     }),
-    // TODO: add results (agreements with needed action)
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerAgreement),
   })
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;

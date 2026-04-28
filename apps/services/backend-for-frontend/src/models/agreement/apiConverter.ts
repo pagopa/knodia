@@ -4,11 +4,26 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 
 import type { OrganizationWithKnode } from "../organization/types.ts";
 import type {
+  API_ConsumerAgreement,
   API_ProducerAgreement,
   API_ProducerAgreementDetails,
 } from "./api.ts";
 
 import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
+export const toAPI_ConsumerAgreement = (
+  agreement: remoteResourcesManagerApi.Agreement,
+): API_ConsumerAgreement => ({
+  consumer: agreement.consumer,
+  eserviceId: agreement.eserviceId,
+  eserviceVersionId: agreement.eserviceVersionId,
+  id: agreement.id,
+  producerId: agreement.producerId,
+  state: agreement.state,
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+  suspendedByProducerAt: agreement.suspendedByProducerAt,
+  updatedAt: agreement.updatedAt,
+});
 
 export const toAPI_ProducerAgreement = ({
   agreement,

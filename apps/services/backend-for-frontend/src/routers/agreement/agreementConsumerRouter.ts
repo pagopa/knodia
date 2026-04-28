@@ -18,8 +18,10 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
+  API_GetConsumerAgreementsQueryParams,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
+import { toAPI_ConsumerAgreement } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
@@ -79,41 +81,33 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: consumerId } = getUISessionAuthData(authData);
+      const { limit, offset, state } = req.query;
 
-      logger.info(`Getting Consumer Agreements for Consumer ID ${consumerId}`);
+      logger.info(
+        { requestQuery: req.query },
+        `Getting Consumer Agreements for Consumer ID ${consumerId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+      const callRRM = (
+        query: remoteResourcesManagerApi.GetAgreementsData["query"],
+      ) =>
+        remoteResourcesManagerApi.getAgreements({
+          client: remoteResourcesManagerClient,
+          headers,
+          query,
+        });
 
       const [
         { data: activeAgreements },
         { data: suspendedAgreements },
         { data: archivedAgreements },
+        { data: filteredAgreements },
       ] = await Promise.all([
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Active",
-          },
-        }),
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Suspended",
-          },
-        }),
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Archived",
-          },
-        }),
+        callRRM({ limit: 1, offset: 0, state: ["Active"] }),
+        callRRM({ limit: 1, offset: 0, state: ["Suspended"] }),
+        callRRM({ limit: 1, offset: 0, state: ["Archived"] }),
+        callRRM({ limit, offset, state }),
       ]);
 
       res.status(200).send({
@@ -122,12 +116,16 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           archivedAgreements: archivedAgreements.pagination.total,
           suspendedAgreements: suspendedAgreements.pagination.total,
         },
+        pagination: filteredAgreements.pagination,
+        results: filteredAgreements.results.map(toAPI_ConsumerAgreement),
       });
     },
     method: "GET",
     schema: {
-      description: "Retrieve a list of Consumer Agreements",
+      description:
+        "Retrieve Consumer Agreement counters and a paginated list, optionally filtered by state",
       operationId: "getConsumerAgreements",
+      querystring: API_GetConsumerAgreementsQueryParams,
       response: {
         200: API_ConsumerAgreements.meta({
           description: "Consumer Agreements retrieved successfully",

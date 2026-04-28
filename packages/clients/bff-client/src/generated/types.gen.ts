@@ -40,6 +40,11 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
+export type AgreementConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -50,6 +55,11 @@ export type Pagination = {
  * Binary file content
  */
 export type FileDownload = Blob | File;
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
 
 /**
  * Unique identifier of the User
@@ -490,6 +500,18 @@ export type ProducerAgreements = {
     results: Array<ProducerAgreement>;
 };
 
+export type ConsumerAgreement = {
+    consumer: AgreementConsumer;
+    eserviceId: string;
+    eserviceVersionId: string;
+    id: string;
+    producerId: OrganizationId;
+    state: AgreementState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
+    updatedAt: string;
+};
+
 export type ConsumerAgreements = {
     counters: {
         /**
@@ -505,6 +527,8 @@ export type ConsumerAgreements = {
          */
         suspendedAgreements: number;
     };
+    pagination: Pagination;
+    results: Array<ConsumerAgreement>;
 };
 
 export type SessionRequest = {
@@ -2329,7 +2353,20 @@ export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof G
 export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items returned
+         */
+        limit?: number;
+        /**
+         * Pagination starting position
+         */
+        offset?: number;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
+    };
     url: '/consumer/agreements';
 };
 

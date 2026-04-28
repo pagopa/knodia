@@ -941,7 +941,7 @@ export const getConsumerEservicesInfiniteOptions = (options: Options<GetConsumer
 export const getConsumerAgreementsQueryKey = (options?: Options<GetConsumerAgreementsData>) => createQueryKey('getConsumerAgreements', options);
 
 /**
- * Retrieve a list of Consumer Agreements
+ * Retrieve Consumer Agreement counters and a paginated list, optionally filtered by state
  */
 export const getConsumerAgreementsOptions = (options?: Options<GetConsumerAgreementsData>) => queryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, GetConsumerAgreementsResponse, ReturnType<typeof getConsumerAgreementsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -954,6 +954,33 @@ export const getConsumerAgreementsOptions = (options?: Options<GetConsumerAgreem
         return data;
     },
     queryKey: getConsumerAgreementsQueryKey(options)
+});
+
+export const getConsumerAgreementsInfiniteQueryKey = (options?: Options<GetConsumerAgreementsData>): QueryKey<Options<GetConsumerAgreementsData>> => createQueryKey('getConsumerAgreements', options, true);
+
+/**
+ * Retrieve Consumer Agreement counters and a paginated list, optionally filtered by state
+ */
+export const getConsumerAgreementsInfiniteOptions = (options?: Options<GetConsumerAgreementsData>) => infiniteQueryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, InfiniteData<GetConsumerAgreementsResponse>, QueryKey<Options<GetConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getConsumerAgreements({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getConsumerAgreementsInfiniteQueryKey(options)
 });
 
 /**
