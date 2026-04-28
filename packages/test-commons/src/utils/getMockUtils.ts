@@ -1,5 +1,14 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
 import {
+  type ClientAssertionHeader,
+  type ClientAssertionRawPayload,
+} from "@knodia/authorization-models/clientAssertion";
+import {
+  type DpopProof,
+  type DpopProofHeader,
+  type DpopProofPayload,
+} from "@knodia/authorization-models/dpop";
+import {
   Algorithm,
   PublicKeyJwkES256,
   PublicKeyJwkRS256,
@@ -10,7 +19,7 @@ import {
   type EserviceTemplateId,
   generateId,
   generateUserId,
-  type PurposeId,
+  type KeyId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
@@ -27,7 +36,6 @@ import {
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
-import { type JWTHeaderParameters, type JWTPayload } from "jose";
 import { match } from "ts-pattern";
 import { zocker } from "zocker";
 
@@ -150,11 +158,11 @@ export const MOCK_PURPOSE_FORM_ANSWERS = {
 export async function getMockClientAssertion(props?: {
   customClaims?: Record<string, unknown>;
   customHeader?: Record<string, unknown>;
-  standardClaimsOverride?: Partial<JWTPayload>;
+  standardClaimsOverride?: Partial<ClientAssertionRawPayload>;
 }): Promise<{
   clientAssertion: {
-    headers: JWTHeaderParameters;
-    payload: JWTPayload;
+    headers: ClientAssertionHeader;
+    payload: ClientAssertionRawPayload;
   };
   clientAssertionJWS: string;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
@@ -166,7 +174,7 @@ export async function getMockClientAssertion(props?: {
   threeHourLater.setHours(threeHourLater.getHours() + 3);
 
   const consumerKeychainId = generateId<ConsumerKeychainId>();
-  const defaultPayload: JWTPayload & { purpose_id: PurposeId } = {
+  const defaultPayload: ClientAssertionRawPayload = {
     aud: ["test.knodia.com"],
     exp: dateToSeconds(threeHourLater),
     iat: dateToSeconds(new Date()),
@@ -176,15 +184,15 @@ export async function getMockClientAssertion(props?: {
     sub: consumerKeychainId,
   };
 
-  const actualPayload: JWTPayload = {
+  const actualPayload: ClientAssertionRawPayload = {
     ...defaultPayload,
     ...props?.standardClaimsOverride,
     ...props?.customClaims,
   };
 
-  const headers: JWTHeaderParameters = {
+  const headers: ClientAssertionHeader = {
     alg: Algorithm.enum.RS256,
-    kid: "kid",
+    kid: "kid" as KeyId,
     typ: "JWT",
     ...props?.customHeader,
   };
@@ -222,15 +230,12 @@ export async function getMockDpopProof({
   };
 } = {}): Promise<{
   dpopProofJWS: string;
-  dpopProofJWT: {
-    headers: JWTHeaderParameters;
-    payload: JWTPayload;
-  };
+  dpopProofJWT: DpopProof;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
 }> {
   const { keySet, publicKeyJwk } = generateKeySet(alg);
 
-  const payload: JWTPayload = {
+  const payload: DpopProofPayload = {
     htm: "POST",
     htu: "https://test.knodia.org/token",
     iat: dateToSeconds(new Date()),
@@ -243,7 +248,7 @@ export async function getMockDpopProof({
     .with(Algorithm.enum.RS256, () => PublicKeyJwkRS256.parse(publicKeyJwk))
     .exhaustive();
 
-  const headers: JWTHeaderParameters = {
+  const headers: DpopProofHeader = {
     alg,
     jwk,
     typ: "dpop+jwt",

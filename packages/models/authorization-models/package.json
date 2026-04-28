@@ -1,0 +1,26 @@
+{
+  "name": "@knodia/authorization-models",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    "./dpop": "./src/dpop.ts",
+    "./clientAssertion": "./src/clientAssertion.ts"
+  },
+  "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

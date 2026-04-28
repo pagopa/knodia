@@ -8,6 +8,7 @@ import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { EXPECTED_DPOP_PROOF_HTM } from "../models/constants.ts";
 import {
   assertDpopProofNotReplayed,
   validatePlatformObjects,
@@ -56,8 +57,11 @@ export function tokenServiceBuilder({
       // Verify DPoP proof signature and claims if a DPoP proof is provided in the request headers
       const dpopProofJWT = await verifyDpopProofSignature(
         dpopProofJWS,
-        dpopProofMaxTokenAgeSeconds,
-        dpopProofHtuBaseUrl,
+        {
+          expectedHtm: EXPECTED_DPOP_PROOF_HTM,
+          expectedHtu: dpopProofHtuBaseUrl,
+          maxTokenAgeSeconds: dpopProofMaxTokenAgeSeconds,
+        },
         logger,
       );
 
@@ -95,7 +99,7 @@ export function tokenServiceBuilder({
         audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,
         consumerKeychainId,
-        dpopJWK: dpopProofJWT?.header.jwk,
+        dpopJWK: dpopProofJWT?.headers.jwk,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,

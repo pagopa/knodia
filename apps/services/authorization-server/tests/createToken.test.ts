@@ -5,6 +5,7 @@ import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
+import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "@knodia/authorization-models/clientAssertion";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import {
@@ -27,7 +28,6 @@ import { unknown } from "zod";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
-import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
   accessTokenTypeMismatch,
   clientAssertionClaimsValidationError,
@@ -246,6 +246,7 @@ describe("POST /token", async () => {
       const response = await createToken({
         requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
       });
+      console.log("🚀 ~ response:", response);
 
       const responseBody = response.json<API_TokenResponse>();
 

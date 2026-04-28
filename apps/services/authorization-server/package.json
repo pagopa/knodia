@@ -28,6 +28,7 @@
     "@fastify/request-context": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
+    "@knodia/authorization-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/crypto": "workspace:*",
     "@knodia/db-jti-replay-store": "workspace:*",
