@@ -18,7 +18,7 @@
 import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
-const FrontendNode1Config = z.object({
+const KnodeFrontendConfig = z.object({
   BFF_URL: z.string().min(1, "BFF_URL is required"),
   COGNITO_AUTHORITY: z.string().min(1, "COGNITO_AUTHORITY is required"),
   COGNITO_CLIENT_ID: z.string().min(1, "COGNITO_CLIENT_ID is required"),
@@ -32,7 +32,7 @@ const FrontendNode1Config = z.object({
     .min(1, "MAX_KEYS_PER_KEYCHAIN must be at least 1"),
 });
 
-const parsed = FrontendNode1Config.safeParse(window.env);
+const parsed = KnodeFrontendConfig.safeParse(window.env);
 
 if (!parsed.success) {
   console.error(
