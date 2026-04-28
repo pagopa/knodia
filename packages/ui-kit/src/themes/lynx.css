@@ -205,6 +205,9 @@
   /* Dropdown */
   --radius-dropdown: 0;
 
+  /* Popover */
+  --radius-popover: 0;
+
   /* Empty icon */
   --radius-empty-icon: 100px;
 
