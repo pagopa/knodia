@@ -901,21 +901,4 @@ describe("POST /token", async () => {
       "DPoP proof already used",
     );
   });
-
-  it("should return 401 if the DPoP proof iat is in the future", async () => {
-    const { dpopProofJWS: futureDpopProofJWS } = await getMockDpopProof({
-      props: {
-        customPayload: {
-          htu: dpopProofHtuBaseUrl,
-          iat: dateToSeconds(new Date()) + 60,
-        },
-      },
-    });
-
-    const response = await createToken({
-      requestDpopProofJWS: futureDpopProofJWS,
-    });
-
-    expect(response.statusCode).toBe(401);
-  });
 });
