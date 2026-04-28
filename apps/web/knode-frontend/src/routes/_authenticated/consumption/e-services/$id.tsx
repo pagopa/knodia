@@ -168,7 +168,7 @@ function RouteComponent() {
           />
           <OrganizationContactPopover organization={eservice.producer} />
         </div>
-        <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
+        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
           {eservice.description}
         </p>
       </PageHeader>
