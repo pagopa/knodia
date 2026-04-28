@@ -24,12 +24,16 @@ import {
 describe("AgreementEventV1 codec", () => {
   const agreement = zocker(Agreement).generate();
 
-  // Suspend/reactivate events carry agreements with non-null suspendedBy*At dates,
-  // ensuring the Date serialization path is always exercised
-  const suspendedAgreement: Agreement = {
+  const consumerOnlySuspendedAgreement: Agreement = {
     ...zocker(Agreement).generate(),
     state: AgreementState.enum.Suspended,
     suspendedByConsumerAt: new Date(),
+    suspendedByProducerAt: null,
+  };
+  const producerOnlySuspendedAgreement: Agreement = {
+    ...zocker(Agreement).generate(),
+    state: AgreementState.enum.Suspended,
+    suspendedByConsumerAt: null,
     suspendedByProducerAt: new Date(),
   };
 
@@ -41,7 +45,12 @@ describe("AgreementEventV1 codec", () => {
   };
 
   const defaultData = { agreement: toAgreementV1(agreement) };
-  const suspendedData = { agreement: toAgreementV1(suspendedAgreement) };
+  const consumerOnlySuspendedData = {
+    agreement: toAgreementV1(consumerOnlySuspendedAgreement),
+  };
+  const producerOnlySuspendedData = {
+    agreement: toAgreementV1(producerOnlySuspendedAgreement),
+  };
   const archivedData = { agreement: toAgreementV1(archivedAgreement) };
 
   const cases = [
@@ -51,22 +60,22 @@ describe("AgreementEventV1 codec", () => {
       type: "AgreementActivatedV1" as const,
     },
     {
-      data: suspendedData,
+      data: consumerOnlySuspendedData,
       message: AgreementSuspendedByConsumerV1,
       type: "AgreementSuspendedByConsumerV1" as const,
     },
     {
-      data: suspendedData,
+      data: producerOnlySuspendedData,
       message: AgreementSuspendedByProducerV1,
       type: "AgreementSuspendedByProducerV1" as const,
     },
     {
-      data: suspendedData,
+      data: producerOnlySuspendedData,
       message: AgreementReactivatedByConsumerV1,
       type: "AgreementReactivatedByConsumerV1" as const,
     },
     {
-      data: suspendedData,
+      data: consumerOnlySuspendedData,
       message: AgreementReactivatedByProducerV1,
       type: "AgreementReactivatedByProducerV1" as const,
     },

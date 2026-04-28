@@ -282,7 +282,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
           eserviceId,
           limit,
           offset,
-          state: state ? [toProcessAPI_AgreementState(state)] : undefined,
+          state: state?.map(toProcessAPI_AgreementState),
         },
       });
 

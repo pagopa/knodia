@@ -1,4 +1,3 @@
-import { Button } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
@@ -56,10 +55,14 @@ function RouteComponent() {
       <PageHeader
         actions={
           <>
-            <Button hierarchy="neutral" kind="ghost">
+            <ButtonLinkWithPreload
+              hierarchy="neutral"
+              kind="ghost"
+              to="/production/e-services/archive"
+            >
               <ArchiveIcon />
               Archive
-            </Button>
+            </ButtonLinkWithPreload>
             {canPublishEservices && (
               <ButtonLinkWithPreload
                 hierarchy="brand"

@@ -13,6 +13,10 @@ import {
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
+import {
+  type PurposeWriterService,
+  purposeWriterServiceBuilder,
+} from "@knodia/db-readmodel-purpose/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
@@ -25,6 +29,7 @@ let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let eserviceWriterService: EserviceWriterService;
 let agreementWriterService: AgreementWriterService;
+let purposeWriterService: PurposeWriterService;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -50,6 +55,7 @@ beforeAll(async () => {
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
+      purposeFormsDir: "schemas-withriskanalysis",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
     eventStoreDb,
@@ -58,6 +64,7 @@ beforeAll(async () => {
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
+  purposeWriterService = purposeWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -73,5 +80,6 @@ export {
   app,
   eserviceWriterService,
   eventStoreDb,
+  purposeWriterService,
   readmodelDb,
 };

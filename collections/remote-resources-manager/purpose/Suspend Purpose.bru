@@ -1,0 +1,19 @@
+meta {
+  name: Suspend Purpose
+  type: http
+}
+
+post {
+  url: {{host-remote-resources-manager}}/purposes/:purposeId/suspend?knodeId={{other-knode-id}}
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}

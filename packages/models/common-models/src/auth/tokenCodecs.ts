@@ -29,7 +29,7 @@ const UserTokenClaims = BaseJwtClaims.extend({
   username: z.string(),
 });
 
-const EserviceAccessTokenClaims = BaseJwtClaims.extend({
+export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
   consumer: z.strictObject({
     id: ExternalId<OrganizationId>(),
