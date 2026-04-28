@@ -16,3 +16,20 @@ export const bearerAuthSecurityScheme: Record<
 export const bearerAuthSecurity: OpenAPIV3.SecurityRequirementObject[] = [
   { bearerAuth: [] },
 ];
+
+export const dpopAuthSecurityScheme: Record<
+  string,
+  OpenAPIV3.SecuritySchemeObject
+> = {
+  dpopAuth: {
+    bearerFormat: "DPoP",
+    description:
+      "A DPoP-bound access token conforming to RFC 9449 (https://www.rfc-editor.org/rfc/rfc9449.html)",
+    scheme: "bearer",
+    type: "http",
+  },
+};
+
+export const dpopAuthSecurity: OpenAPIV3.SecurityRequirementObject[] = [
+  { dpopAuth: [] },
+];

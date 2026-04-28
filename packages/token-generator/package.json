@@ -11,6 +11,7 @@
     "@aws-sdk/client-kms": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/crypto": "workspace:*",
+    "jose": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

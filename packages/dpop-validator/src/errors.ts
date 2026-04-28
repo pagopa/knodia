@@ -11,6 +11,7 @@ const { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_UNAUTHORIZED } =
 
 export type DpopErrorKey =
   | "DPOP_CLAIMS_VALIDATION_ERROR"
+  | "DPOP_PROOF_ALREADY_USED"
   | "DPOP_PROOF_EXPIRED"
   | "INVALID_DPOP_PROOF_JWS"
   | "INVALID_DPOP_PROOF_SIGNATURE"
@@ -27,6 +28,15 @@ export function dpopClaimsValidationError(error: unknown) {
         : error instanceof Error
           ? [error]
           : [],
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function dpopProofAlreadyUsed() {
+  return createApiError<DpopErrorCodes>({
+    code: "DPOP_PROOF_ALREADY_USED",
+    detail: "DPoP proof already used",
     status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_dpop_proof",
   });

@@ -21,6 +21,7 @@ import type z from "zod";
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
+import { calculateJwkThumbprint } from "jose";
 import { randomUUID } from "node:crypto";
 
 import type {
@@ -29,8 +30,6 @@ import type {
   UISessionRefreshToken,
   UISessionToken,
 } from "./models.ts";
-
-import { calculateDpopThumbprint } from "./utils/utils.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";
@@ -146,7 +145,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         aud: input.audience,
         client_id: input.consumerKeychainId,
         cnf: input.dpopJWK
-          ? { jkt: calculateDpopThumbprint(input.dpopJWK) }
+          ? { jkt: await calculateJwkThumbprint(input.dpopJWK) }
           : undefined,
         consumer: { id: input.consumer.id, knode_id: input.consumer.knodeId },
         eservice: {

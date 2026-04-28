@@ -14,6 +14,12 @@ components:
         8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
       scheme: bearer
       type: http
+    dpopAuth:
+      bearerFormat: DPoP
+      description: A DPoP-bound access token conforming to RFC 9449
+        (https://www.rfc-editor.org/rfc/rfc9449.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -126,11 +132,44 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /testDpop:
+    get:
+      operationId: testDpop
+      summary: Mock e-service DPoP endpoint
+      tags:
+        - mock
+      description: Validates the incoming DPoP access token and returns a static
+        success response
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: dpop
+          required: false
+          description: DPoP proof JWT
+      responses:
+        "200":
+          description: Access token accepted
+          content:
+            application/json:
+              schema:
+                description: Access token accepted
+                allOf:
+                  - $ref: "#/components/schemas/TestResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Mock E-service API
     url: /
 security:
   - bearerAuth: []
+  - dpopAuth: []
 tags:
   - description: Health check routes
     name: health

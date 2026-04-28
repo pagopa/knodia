@@ -57,6 +57,7 @@ const errorCodes = {
   INVALID_DPOP_PROOF_JWS: "0020",
   INVALID_DPOP_PROOF_SIGNATURE: "0021",
   DPOP_PROOF_EXPIRED: "0022",
+  DPOP_PROOF_ALREADY_USED: "0023",
 } satisfies Record<DpopErrorKey, string> & Record<string, string>;
 /* eslint-enable perfectionist/sort-objects */
 

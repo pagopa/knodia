@@ -25,19 +25,23 @@ const DEFAULT_HTU = "https://test.knodia.org/token";
 const { values } = parseArgs({
   options: {
     alg: { type: "string", default: "ES256" },
+    ath: { type: "string" },
+    htm: { type: "string", default: "POST" },
     htu: { type: "string", default: DEFAULT_HTU },
     key: { type: "string" },
   },
   strict: true,
 });
 
-const { key: keyPath, htu, alg } = values;
+const { key: keyPath, htu, htm, alg } = values;
 
 if (!values.key) {
   console.error(`Usage: node scripts/local-auth/generate-dpop-proof.ts \\
   --alg <ES256|RS256> \\
+  --ath <expected-ath-for-resource-server> \\
   --key <path-to-pem-private-key> \\
   --htu <expected-htu-from-env> \\
+  --htm <expected-htm-from-env> \\
 
 Use \`pnpm generate-keypair --alg <RS256|ES256>\` first if you don't have a keypair yet.`);
   process.exit(1);
@@ -57,7 +61,10 @@ const now = Math.floor(Date.now() / 1000);
 const header = b64url(JSON.stringify({ alg, jwk: publicKeyJwk, typ: "dpop+jwt" }));
 const payload = b64url(
   JSON.stringify({
-    htm: "POST",
+    ath: values.ath
+      ? createHash("sha256").update(values.ath).digest("base64url")
+      : undefined,
+    htm,
     htu,
     iat: now,
     jti: randomUUID(),

@@ -5,10 +5,7 @@ import {
   DpopProof,
   EXPECTED_DPOP_PROOF_TYP,
 } from "@knodia/authorization-models/dpop";
-import {
-  ApiError,
-  unauthorizedError,
-} from "@knodia/fastify-zod-api-commons/models";
+import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import { decodeJwt, decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import {
   JWSInvalid,
@@ -21,6 +18,7 @@ import { ZodError } from "zod";
 
 import {
   dpopClaimsValidationError,
+  dpopProofAlreadyUsed,
   dpopProofExpired,
   invalidDpopProofJWS,
   invalidDpopProofSignature,
@@ -44,7 +42,7 @@ export async function assertDpopProofNotReplayed(
     dpopProofJWT.payload.iat + dpopProofMaxTokenAgeSeconds,
   );
   if (!firstUse) {
-    throw unauthorizedError("DPoP proof already used");
+    throw dpopProofAlreadyUsed();
   }
 }
 
