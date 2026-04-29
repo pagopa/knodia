@@ -1212,6 +1212,27 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
+    ExternalUiSessionExchangeRequest:
+      type: object
+      properties:
+        magicLinkToken:
+          type: string
+      required:
+        - magicLinkToken
+      additionalProperties: false
+    ExternalUiSessionExchangeResponse:
+      type: object
+      properties:
+        agreementId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        externalUiSessionToken:
+          type: string
+      required:
+        - agreementId
+        - externalUiSessionToken
+      additionalProperties: false
     EserviceTemplateInterface:
       type: object
       properties:
@@ -2006,6 +2027,45 @@ paths:
       responses:
         "204":
           description: Logged out successfully
+  /auth/externalUiSession:
+    post:
+      operationId: exchangeExternalUiSession
+      tags:
+        - auth
+      description: Validate a single-use magic-link token and mint a short-lived
+        external-ui-session token scoped to the action in the magic link.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExternalUiSessionExchangeRequest"
+      security: []
+      responses:
+        "200":
+          description: Token exchanged successfully
+          content:
+            application/json:
+              schema:
+                description: Token exchanged successfully
+                allOf:
+                  - $ref: "#/components/schemas/ExternalUiSessionExchangeResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eserviceTemplates:
     get:
       operationId: getEserviceTemplates
@@ -5261,6 +5321,65 @@ paths:
       responses:
         "204":
           description: Purpose suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /external/agreements/{agreementId}/activate:
+    post:
+      operationId: activateAgreement
+      summary: Activate an Agreement
+      tags:
+        - agreement
+      description: Activate an Agreement using a scoped external-ui-session token
+        obtained from the magic-link exchange
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "204":
+          description: Agreement activated successfully
         "400":
           description: Bad Request
           content:
