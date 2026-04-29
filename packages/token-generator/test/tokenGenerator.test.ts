@@ -2,6 +2,8 @@
 
 import type {
   EserviceAccessTokenClaims,
+  ExternalUISessionMagicLinkTokenClaims,
+  ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
@@ -12,11 +14,15 @@ import { type SignCommand } from "@aws-sdk/client-kms";
 import {
   type ExternalResource,
   generateExternalId,
+  unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import {
+  type AgreementId,
   type ConsumerKeychainId,
+  type EserviceId,
+  type EserviceVersionId,
   generateId,
-  type KnodeId,
+  KnodeId,
   type OrganizationId,
   type PurposeId,
   unsafeBrandId,
@@ -53,6 +59,56 @@ const eserviceVersion = eservice.versions[0]!;
 const purposeId = generateId<PurposeId>();
 
 const { dpopProofJWT } = await getMockDpopProof();
+
+// External-ui-session resource fields shared by the regular and magic-link variants
+const externalUISessionResourceInput = {
+  agreement: {
+    id: unsafeBrandId<AgreementId>("770e8400-e29b-41d4-a716-446655440000"),
+    knodeId: KnodeId.enum.Orion,
+  },
+  consumer: {
+    id: unsafeBrandExternalId<OrganizationId>(
+      "880e8400-e29b-41d4-a716-446655440000",
+    ),
+    knodeId: KnodeId.enum.Lynx,
+  },
+  eservice: {
+    id: unsafeBrandId<EserviceId>("990e8400-e29b-41d4-a716-446655440000"),
+    knodeId: KnodeId.enum.Orion,
+    version: unsafeBrandId<EserviceVersionId>(
+      "aa0e8400-e29b-41d4-a716-446655440000",
+    ),
+  },
+  producer: {
+    id: unsafeBrandId<OrganizationId>("bb0e8400-e29b-41d4-a716-446655440000"),
+    knodeId: KnodeId.enum.Orion,
+  },
+  scope: "agreement-activation" as const,
+};
+
+const externalUISessionExpectedResourceClaims = {
+  agreement: {
+    id: externalUISessionResourceInput.agreement.id,
+    knode_id: externalUISessionResourceInput.agreement.knodeId,
+  },
+  aud: "my-audience",
+  consumer: {
+    id: externalUISessionResourceInput.consumer.id,
+    knode_id: externalUISessionResourceInput.consumer.knodeId,
+  },
+  eservice: {
+    id: externalUISessionResourceInput.eservice.id,
+    knode_id: externalUISessionResourceInput.eservice.knodeId,
+    version: externalUISessionResourceInput.eservice.version,
+  },
+  iss: "my-issuer",
+  producer: {
+    id: externalUISessionResourceInput.producer.id,
+    knode_id: externalUISessionResourceInput.producer.knodeId,
+  },
+  scope: externalUISessionResourceInput.scope,
+  sub: "770e8400-e29b-41d4-a716-446655440000",
+};
 
 const testCases = [
   {
@@ -178,6 +234,46 @@ const testCases = [
       }),
     name: "generateDpopEserviceAccessToken",
     tokenDuration: eserviceVersion.accessTokenDuration,
+  },
+  {
+    expectedPayload: {
+      ...externalUISessionExpectedResourceClaims,
+      exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
+      iat: MOCK_NOW_SECONDS,
+      jti: expect.any(String),
+      type: "external-ui-session",
+    } satisfies ExternalUISessionTokenClaims,
+    generate: () =>
+      generator.generateExternalUISessionToken({
+        ...externalUISessionResourceInput,
+        audience: "my-audience",
+        issuer: "my-issuer",
+        kid: KID,
+        secondsDuration: SECONDS_DURATION,
+        subject: "770e8400-e29b-41d4-a716-446655440000",
+      }),
+    name: "generateExternalUISessionToken",
+    tokenDuration: SECONDS_DURATION,
+  },
+  {
+    expectedPayload: {
+      ...externalUISessionExpectedResourceClaims,
+      exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
+      iat: MOCK_NOW_SECONDS,
+      jti: expect.any(String),
+      type: "external-ui-session-magic-link",
+    } satisfies ExternalUISessionMagicLinkTokenClaims,
+    generate: () =>
+      generator.generateExternalUISessionMagicLinkToken({
+        ...externalUISessionResourceInput,
+        audience: "my-audience",
+        issuer: "my-issuer",
+        kid: KID,
+        secondsDuration: SECONDS_DURATION,
+        subject: "770e8400-e29b-41d4-a716-446655440000",
+      }),
+    name: "generateExternalUISessionMagicLinkToken",
+    tokenDuration: SECONDS_DURATION,
   },
 ] as const;
 

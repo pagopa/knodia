@@ -1,6 +1,7 @@
 import type { Agreement } from "@knodia/agreement-models";
+import type { KnodeId } from "@knodia/common-models/ids";
 
-import type { API_Agreement } from "./api.ts";
+import type { API_Agreement, API_AgreementActivationClaims } from "./api.ts";
 
 export const toAPI_Agreement = (agreement: Agreement): API_Agreement => ({
   attributes: agreement.attributes,
@@ -14,4 +15,21 @@ export const toAPI_Agreement = (agreement: Agreement): API_Agreement => ({
   suspendedByConsumerAt: agreement.suspendedByConsumerAt?.toISOString() ?? null,
   suspendedByProducerAt: agreement.suspendedByProducerAt?.toISOString() ?? null,
   updatedAt: agreement.updatedAt.toISOString(),
+});
+
+export const toAPI_AgreementActivationClaims = (
+  agreement: Agreement,
+  currentKnodeId: KnodeId,
+): API_AgreementActivationClaims => ({
+  agreement: { id: agreement.id, knodeId: currentKnodeId },
+  consumer: {
+    id: agreement.consumer.id,
+    knodeId: agreement.consumer.knodeId,
+  },
+  eservice: {
+    id: agreement.eserviceId,
+    knodeId: currentKnodeId,
+    version: agreement.eserviceVersionId,
+  },
+  producer: { id: agreement.producerId, knodeId: currentKnodeId },
 });

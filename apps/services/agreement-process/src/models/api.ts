@@ -53,6 +53,22 @@ export const API_Agreements = z
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
 
+export const API_AgreementActivationClaims = z
+  .strictObject({
+    agreement: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }),
+    consumer: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }),
+    eservice: z.strictObject({
+      id: z.uuid(),
+      knodeId: API_KnodeId,
+      version: z.uuid(),
+    }),
+    producer: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }),
+  })
+  .meta({ id: "AgreementActivationClaims" });
+export type API_AgreementActivationClaims = z.infer<
+  typeof API_AgreementActivationClaims
+>;
+
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
   consumerId: API_OrganizationId.optional().meta({
     description: "Filter by Consumer ID",

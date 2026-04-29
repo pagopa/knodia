@@ -1,5 +1,7 @@
 import type {
   EserviceAccessTokenClaims,
+  ExternalUISessionMagicLinkTokenClaims,
+  ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
@@ -7,6 +9,16 @@ import type {
 
 export interface EserviceAccessToken extends BaseToken {
   payload: EserviceAccessTokenClaims;
+}
+
+export interface ExternalUISessionMagicLinkToken extends BaseToken {
+  payload: ExternalUISessionMagicLinkTokenClaims;
+  type: "external-ui-session-magic-link";
+}
+
+export interface ExternalUISessionToken extends BaseToken {
+  payload: ExternalUISessionTokenClaims;
+  type: "external-ui-session";
 }
 
 export interface InternalToken extends BaseToken {

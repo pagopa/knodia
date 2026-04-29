@@ -38,6 +38,11 @@ export const API_SuspendReactivateConsumerAgreementQueryParams = z.strictObject(
   },
 );
 
+export const API_CreateAgreementConsumerActivationMagicLinkQueryParams =
+  z.strictObject({
+    knodeId: API_KnodeId,
+  });
+
 export const API_GetProducerAgreementsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z

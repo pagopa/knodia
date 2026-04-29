@@ -1,10 +1,12 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
+  AgreementId,
   EserviceId,
   EserviceVersionId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
+import type { ExternalUISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import {
   type Agreement,
@@ -26,11 +28,14 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
+  agreementNotInActivatableState,
   agreementNotInReactivatableState,
   agreementNotInSuspendableState,
+  agreementTokenClaimMismatch,
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
+  type ExternalUISessionClaimField,
   organizationNotAgreementProducer,
 } from "../models/errors.ts";
 import {
@@ -201,3 +206,86 @@ export const assertNoConflictingAgreementsExist = async ({
     });
   }
 };
+
+export function assertAgreementIsPendingConsumerOperatorIdentification(
+  agreement: Agreement,
+): void {
+  if (
+    agreement.state !==
+    AgreementState.enum.PendingConsumerOperatorIdentification
+  ) {
+    throw agreementNotInActivatableState(agreement.id, agreement.state);
+  }
+}
+
+export function assertTokenAgreementIdMatchesPathParam(
+  authData: ExternalUISessionAuthData,
+  pathAgreementId: AgreementId,
+): void {
+  if (authData.agreement.id !== pathAgreementId) {
+    throw agreementTokenClaimMismatch(
+      "agreement.id",
+      authData.agreement.id,
+      pathAgreementId,
+    );
+  }
+}
+
+export function assertTokenResourceClaimsMatchAgreement(
+  authData: ExternalUISessionAuthData,
+  agreement: Agreement,
+  currentKnodeId: KnodeId,
+): void {
+  const checks: {
+    expectedValue: string;
+    field: ExternalUISessionClaimField;
+    tokenValue: string;
+  }[] = [
+    {
+      expectedValue: currentKnodeId,
+      field: "agreement.knodeId",
+      tokenValue: authData.agreement.knodeId,
+    },
+    {
+      expectedValue: agreement.consumer.id,
+      field: "consumer.id",
+      tokenValue: authData.consumer.id,
+    },
+    {
+      expectedValue: agreement.consumer.knodeId,
+      field: "consumer.knodeId",
+      tokenValue: authData.consumer.knodeId,
+    },
+    {
+      expectedValue: agreement.eserviceId,
+      field: "eservice.id",
+      tokenValue: authData.eservice.id,
+    },
+    {
+      expectedValue: currentKnodeId,
+      field: "eservice.knodeId",
+      tokenValue: authData.eservice.knodeId,
+    },
+    {
+      expectedValue: agreement.eserviceVersionId,
+      field: "eservice.version",
+      tokenValue: authData.eservice.version,
+    },
+    {
+      expectedValue: agreement.producerId,
+      field: "producer.id",
+      tokenValue: authData.producer.id,
+    },
+    {
+      expectedValue: currentKnodeId,
+      field: "producer.knodeId",
+      tokenValue: authData.producer.knodeId,
+    },
+  ];
+
+  for (const { expectedValue, field, tokenValue } of checks) {
+    if (tokenValue !== expectedValue) {
+      throw agreementTokenClaimMismatch(field, tokenValue, expectedValue);
+    }
+  }
+}
