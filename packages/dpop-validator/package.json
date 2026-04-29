@@ -24,6 +24,7 @@
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/index.ts"
+    "./errors": "./src/models/errors.ts",
+    ".": "./src/utils/validators.ts"
   }
 }

@@ -1,4 +1,4 @@
--- Seeds the producer-side rows for the mock e-service (eservice + version
+-- Seeds the producer-side rows for the mock Bearer e-service (eservice + version
 -- + interface + required attribute + category).
 
 INSERT INTO ${NAMESPACE}_eservice."eservice" (

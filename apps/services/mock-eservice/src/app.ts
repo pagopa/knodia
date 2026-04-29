@@ -66,7 +66,7 @@ export function buildApp({
   // Public routes (no auth required)
   app.register(healthRouter);
 
-  // Protected routes — accessTokenAuthPlugin is scoped to this context only.
+  // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
   app.register(async (protectedApp) => {
     protectedApp.register(bearerAccessTokenAuthPlugin, {
       acceptedAudiences,

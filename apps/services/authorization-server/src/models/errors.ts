@@ -11,7 +11,7 @@ import type {
 import type { PurposeState } from "@knodia/purpose-models";
 import type { AxiosError } from "axios";
 
-import { type DpopErrorKey } from "@knodia/dpop-validator";
+import { type DpopErrorKey } from "@knodia/dpop-validator/errors";
 import {
   EserviceAccessTokenType,
   type EserviceVersion,

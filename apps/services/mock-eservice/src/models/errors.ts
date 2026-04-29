@@ -1,4 +1,4 @@
-import { type DpopErrorKey } from "@knodia/dpop-validator";
+import { type DpopErrorKey } from "@knodia/dpop-validator/errors";
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 

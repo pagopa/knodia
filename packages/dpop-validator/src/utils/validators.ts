@@ -23,7 +23,7 @@ import {
   invalidDpopProofJWS,
   invalidDpopProofSignature,
   unexpectedDpopProofSignatureVerificationError,
-} from "./errors.ts";
+} from "../models/errors.ts";
 
 interface VerifyDpopProofSignatureOptions {
   expectedHtm: string;
