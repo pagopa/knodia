@@ -115,7 +115,7 @@ describe("ConsumerPurposeDetail — action button gating", () => {
     ).toBeVisible();
   });
 
-  it("shows Reactivate + Archive when both have suspended; banner hidden", () => {
+  it("shows Archive and hides Reactivate when both have suspended", () => {
     mockEmptyKeychains();
 
     renderWithProviders(
@@ -130,11 +130,10 @@ describe("ConsumerPurposeDetail — action button gating", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Reactivate" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Archive" })).toBeVisible();
     expect(
-      screen.queryByText("The Producer suspended this Purpose"),
+      screen.queryByRole("button", { name: "Reactivate" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive" })).toBeVisible();
   });
 
   it("renders no action buttons on Archived purposes; shows Archived chip; no banner; keychains section still visible", () => {
