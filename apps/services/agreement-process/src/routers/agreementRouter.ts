@@ -19,6 +19,7 @@ import type { AgreementService } from "../services/agreementService.ts";
 
 import {
   API_Agreement,
+  API_AgreementActivationClaims,
   API_Agreements,
   API_AgreementSeed,
   API_GetAgreementsQueryParams,
@@ -160,6 +161,41 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const claims = await agreementService.getAgreementActivationClaims(
+        req.params.agreementId,
+        ctx,
+      );
+
+      res.status(200).send(claims);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the activation-claims projection for a pending Agreement. Used by k2k-gateway to mint magic-link tokens.",
+      headers: KnodiaServiceHeaders,
+      operationId: "getAgreementActivationClaims",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_AgreementActivationClaims.meta({
+          description: "Activation claims retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/activationClaims",
   });
 
   fastify.route({
