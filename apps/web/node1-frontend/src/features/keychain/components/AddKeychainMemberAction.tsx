@@ -6,6 +6,7 @@ import {
   getOrganizationUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
+import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -107,7 +108,7 @@ function AddKeychainMemberModal({
     organizationUsers.map((user) => [user.id, user.role]),
   );
 
-  const handleAddKeychainMember = (userId: string) => {
+  const handleAddKeychainMember = (userId: UserId) => {
     match(keychainType)
       .with("consumption", () =>
         addConsumerKeychainMember({
@@ -124,7 +125,7 @@ function AddKeychainMemberModal({
       .exhaustive();
   };
 
-  const checkUserKeychainMembership = async (userId: string) => {
+  const checkUserKeychainMembership = async (userId: UserId) => {
     const {
       data: { isMember },
     } = await match(keychainType)
@@ -151,7 +152,7 @@ function AddKeychainMemberModal({
     },
     onSubmit: async ({ value }) => {
       if (!value.userId) return;
-      handleAddKeychainMember(value.userId);
+      handleAddKeychainMember(unsafeBrandUserId(value.userId));
     },
     validationLogic: revalidateLogic(),
     validators: {
@@ -169,7 +170,9 @@ function AddKeychainMemberModal({
       }),
       onSubmitAsync: async ({ value: { userId } }) => {
         if (!userId) return undefined;
-        const isMember = await checkUserKeychainMembership(userId);
+        const isMember = await checkUserKeychainMembership(
+          unsafeBrandUserId(userId),
+        );
 
         if (isMember) {
           return {
