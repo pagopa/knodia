@@ -59,10 +59,10 @@ export function toConsumptionEserviceDetail(
   };
 }
 
-export async function toEserviceSeed(
+export async function toEserviceFromScratchSeed(
   data: EServiceFormData,
   checksum: string,
-): Promise<bffApi.EserviceSeed> {
+): Promise<bffApi.EserviceFromScratchSeed> {
   const { interfaceDocument } = data;
   const arrayBuffer = await interfaceDocument.arrayBuffer();
   const content = arrayBufferToBase64(arrayBuffer);

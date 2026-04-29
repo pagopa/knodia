@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
-import { toEserviceSeed } from "@/features/e-service/services/api-converters";
+import { toEserviceFromScratchSeed } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
 
 export function usePublishEService() {
@@ -22,7 +22,7 @@ export function usePublishEService() {
   });
 
   const publish = async (data: EServiceFormData, checksum: string) => {
-    const body = await toEserviceSeed(data, checksum);
+    const body = await toEserviceFromScratchSeed(data, checksum);
     mutate({ body });
   };
 

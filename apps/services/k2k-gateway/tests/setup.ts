@@ -26,6 +26,14 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
     },
+    magicLinkConfig: {
+      audience: "test-magic-link-audience",
+      frontendActivationPath: "/activate",
+      frontendBaseUrl: "https://test-frontend.example",
+      issuer: "test-magic-link-issuer",
+      kid: "test-magic-link-kid",
+      secondsDuration: 120,
+    },
     organizationProcessUrl: "http://localhost:0",
     pollingService: pollingServiceBuilder({
       defaultPollingMaxRetries: 1,
