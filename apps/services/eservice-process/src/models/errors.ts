@@ -1,7 +1,9 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
+  EserviceTemplateId,
   EserviceVersionId,
+  KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type { EserviceVersionState } from "@knodia/eservice-models";
@@ -29,6 +31,7 @@ const errorCodes = {
   ORGANIZATION_NOT_FOUND: "0008",
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0009",
   NOT_ESERVICE_PRODUCER: "0010",
+  ESERVICE_TEMPLATE_NOT_FOUND: "0011",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -53,6 +56,18 @@ export function eserviceNotFound(id: EserviceId) {
     detail: `E-service with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Not Found",
+  });
+}
+
+export function eserviceTemplateNotFound(
+  templateId: EserviceTemplateId,
+  knodeId: KnodeId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_TEMPLATE_NOT_FOUND",
+    detail: `E-service template with id ${templateId} not found for knode ${knodeId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "E-service Template Not Found",
   });
 }
 

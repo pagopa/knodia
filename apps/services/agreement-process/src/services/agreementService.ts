@@ -27,7 +27,10 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
-import type { API_GetAgreementsQueryParams } from "../models/api.ts";
+import type {
+  API_AgreementActivationClaims,
+  API_GetAgreementsQueryParams,
+} from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -39,6 +42,7 @@ import {
   createAgreementSuspendedByConsumerV1Event,
   createAgreementSuspendedByProducerV1Event,
 } from "../models/agreementEventFactory.ts";
+import { toAPI_AgreementActivationClaims } from "../models/apiConverter.ts";
 import {
   retrieveAgreement,
   retrieveEservice,
@@ -210,6 +214,22 @@ export function agreementServiceBuilder(
       const agreement = await retrieveAgreement(agreementId, readmodelService);
 
       return agreement;
+    },
+    async getAgreementActivationClaims(
+      agreementId: AgreementId,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<API_AgreementActivationClaims> {
+      logger.info(
+        `Getting activation claims for Agreement with ID ${agreementId}`,
+      );
+
+      const { data: agreement } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+      assertAgreementIsPendingConsumerOperatorIdentification(agreement);
+
+      return toAPI_AgreementActivationClaims(agreement, currentKnodeId);
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,

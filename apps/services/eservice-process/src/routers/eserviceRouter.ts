@@ -107,6 +107,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service template not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],

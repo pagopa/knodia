@@ -1,6 +1,7 @@
 import type { AgreementId, EserviceId } from "@knodia/common-models/ids";
 
 import {
+  getPendingConsumerAgreementsOptions,
   getProducerAgreementDetailsOptions,
   getProducerAgreementsOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -14,6 +15,12 @@ export const producerAgreementDetailsQuery = (agreementId: AgreementId) =>
   getProducerAgreementDetailsOptions({
     client,
     path: { agreementId },
+  });
+
+export const pendingConsumerAgreementsQuery = (offset: number) =>
+  getPendingConsumerAgreementsOptions({
+    client,
+    query: { limit: AGREEMENTS_PAGE_LIMIT, offset },
   });
 
 export const producerAgreementsQuery = (
