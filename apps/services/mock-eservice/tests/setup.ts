@@ -46,15 +46,23 @@ beforeAll(async () => {
   });
 
   const app = buildApp({
-    acceptedAudiences: ACCEPTED_AUDIENCES,
-    config: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
-    dpopProofHtuBaseUrl: "http://localhost",
-    dpopProofMaxTokenAgeSeconds: 60,
-    dynamoDbDpopProofsTable,
-    expectedIssuer: EXPECTED_ISSUER,
+    config: {
+      acceptedAudiences: ACCEPTED_AUDIENCES,
+      dpopProofHtuBaseUrl: "http://localhost",
+      dpopProofMaxTokenAgeSeconds: 60,
+      dynamoDbDpopProofsTable,
+      expectedIssuer: EXPECTED_ISSUER,
+      host: "test-host",
+      isProduction: false,
+      jwtClockToleranceSeconds: 30,
+      knodeId: TEST_KNODE_ID,
+      logLevel: "silent",
+      nodeEnv: "test",
+      port: 0,
+      wellKnownUrls: [],
+    },
+    dynamoClient,
     jwksResolvers: [createLocalJWKSet({ keys: [jwk] })],
-    knodeId: TEST_KNODE_ID,
-    sharedDynamoClient: dynamoClient,
   });
   await app.ready();
 

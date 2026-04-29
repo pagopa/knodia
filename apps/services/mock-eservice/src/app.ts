@@ -1,7 +1,6 @@
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { LoggerConfig } from "@knodia/logger/config";
 
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -26,35 +25,28 @@ import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 
-interface BaseOptions {
-  acceptedAudiences: string[];
-  config: LoggerConfig;
-  expectedIssuer: string;
-  jwksResolvers: JWTVerifyGetKey[];
-  knodeId: KnodeId;
-}
-
-interface DpopOptions {
-  dpopProofHtuBaseUrl: string;
-  dpopProofMaxTokenAgeSeconds: number;
-  dynamoDbDpopProofsTable: string;
-  sharedDynamoClient: DynamoDBClient;
-}
-
 export function buildApp({
-  acceptedAudiences,
   config,
-  dpopProofHtuBaseUrl,
-  dpopProofMaxTokenAgeSeconds,
-  dynamoDbDpopProofsTable,
-  expectedIssuer,
+  dynamoClient,
   jwksResolvers,
-  knodeId,
-  sharedDynamoClient,
-}: BaseOptions & DpopOptions) {
+}: {
+  config: MockEserviceConfig;
+  dynamoClient?: DynamoDBClient;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const {
+    acceptedAudiences,
+    dpopProofHtuBaseUrl,
+    dpopProofMaxTokenAgeSeconds,
+    dynamoDbDpopProofsTable,
+    expectedIssuer,
+    jwtClockToleranceSeconds,
+    knodeId,
+  } = config;
+
   const dpopProofStore = createJtiReplayStore(
     dynamoDbDpopProofsTable,
-    sharedDynamoClient,
+    dynamoClient,
   );
 
   const app = createMockFastifyApp(
@@ -85,6 +77,7 @@ export function buildApp({
       dpopProofStore,
       expectedIssuer,
       jwksResolvers,
+      jwtClockToleranceSeconds,
     });
     protectedApp.register(mockDpopRouter, { knodeId });
   });
@@ -92,61 +85,36 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(
-  config: MockEserviceConfig,
-  injectedDynamoClient?: DynamoDBClient,
-) {
-  const sharedDynamoClient = injectedDynamoClient ?? new DynamoDBClient();
-
+export function buildAppFromConfig(config: MockEserviceConfig) {
   return buildApp({
-    acceptedAudiences: config.acceptedAudiences,
     config,
-    dpopProofHtuBaseUrl: config.dpopProofHtuBaseUrl,
-    dpopProofMaxTokenAgeSeconds: config.dpopProofMaxTokenAgeSeconds,
-    dynamoDbDpopProofsTable: config.dynamoDbDpopProofsTable,
-    expectedIssuer: config.expectedIssuer,
     jwksResolvers: resolveJwksResolvers(config),
-    knodeId: config.knodeId,
-    sharedDynamoClient,
   });
 }
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
-    acceptedAudiences: config.acceptedAudiences,
     config,
-    expectedIssuer: config.expectedIssuer,
     jwksResolvers: resolveJwksResolvers(config),
-    knodeId: config.knodeId,
   });
 }
 
-export function buildDpopAppFromConfig(
-  config: MockEserviceConfig,
-  injectedDynamoClient?: DynamoDBClient,
-) {
-  const sharedDynamoClient = injectedDynamoClient ?? new DynamoDBClient();
-
+export function buildDpopAppFromConfig(config: MockEserviceConfig) {
   return buildDpopApp({
-    acceptedAudiences: config.acceptedAudiences,
     config,
-    dpopProofHtuBaseUrl: config.dpopProofHtuBaseUrl,
-    dpopProofMaxTokenAgeSeconds: config.dpopProofMaxTokenAgeSeconds,
-    dynamoDbDpopProofsTable: config.dynamoDbDpopProofsTable,
-    expectedIssuer: config.expectedIssuer,
     jwksResolvers: resolveJwksResolvers(config),
-    knodeId: config.knodeId,
-    sharedDynamoClient,
   });
 }
 
 function buildBearerApp({
-  acceptedAudiences,
   config,
-  expectedIssuer,
   jwksResolvers,
-  knodeId,
-}: BaseOptions) {
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
   const app = createMockFastifyApp(
     config,
     bearerAuthSecurityScheme,
@@ -168,19 +136,27 @@ function buildBearerApp({
 }
 
 function buildDpopApp({
-  acceptedAudiences,
   config,
-  dpopProofHtuBaseUrl,
-  dpopProofMaxTokenAgeSeconds,
-  dynamoDbDpopProofsTable,
-  expectedIssuer,
+  dynamoClient,
   jwksResolvers,
-  knodeId,
-  sharedDynamoClient,
-}: BaseOptions & DpopOptions) {
+}: {
+  config: MockEserviceConfig;
+  dynamoClient?: DynamoDBClient;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const {
+    acceptedAudiences,
+    dpopProofHtuBaseUrl,
+    dpopProofMaxTokenAgeSeconds,
+    dynamoDbDpopProofsTable,
+    expectedIssuer,
+    jwtClockToleranceSeconds,
+    knodeId,
+  } = config;
+
   const dpopProofStore = createJtiReplayStore(
     dynamoDbDpopProofsTable,
-    sharedDynamoClient,
+    dynamoClient,
   );
 
   const app = createMockFastifyApp(
@@ -199,6 +175,7 @@ function buildDpopApp({
       dpopProofStore,
       expectedIssuer,
       jwksResolvers,
+      jwtClockToleranceSeconds,
     });
     protectedApp.register(mockDpopRouter, { knodeId });
   });
