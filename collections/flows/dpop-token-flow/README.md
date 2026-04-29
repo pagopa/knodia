@@ -1,4 +1,4 @@
-# bearer-token-flow
+# dpop-token-flow
 
 End-to-end exercise of the `/token` endpoint: sets up an eservice chain,
 signs a client assertion, signs a DPoP proof and exchanges it for a DPoP access token.

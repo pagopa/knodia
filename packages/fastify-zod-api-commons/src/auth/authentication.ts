@@ -66,6 +66,9 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         .with({ tokenType: "internal" }, () => ({
           correlationId,
         }))
+        .with({ tokenType: "external-ui-session" }, () => ({
+          correlationId,
+        }))
         .exhaustive();
       const logger = request.log.child(loggerMetadata);
       request.log = logger;
