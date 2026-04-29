@@ -63,7 +63,7 @@ function RouteComponent() {
         <Breadcrumb>Archive</Breadcrumb>
       </Breadcrumbs>
 
-      <PageHeader title="Purposes" />
+      <PageHeader title="Archive" />
 
       {isEmpty ? (
         <Empty
