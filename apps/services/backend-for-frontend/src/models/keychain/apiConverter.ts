@@ -7,6 +7,7 @@ import type {
   API_Keychain,
   API_KeychainDetails,
   API_KeychainKey,
+  API_OrganizationUser,
   API_User,
 } from "./api.ts";
 
@@ -57,7 +58,7 @@ export const toAPI_ConsumerKeychainPurpose = (
 
 export const toAPI_KeychainKey = (
   key: keychainProcessApi.KeychainKey,
-  users: keychainProcessApi.Users,
+  users: keychainProcessApi.OrganizationUsers,
 ): API_KeychainKey => {
   const owner = users.find((user) => user.id === key.userId);
 
@@ -72,5 +73,14 @@ export const toAPI_KeychainKey = (
 export const toAPI_User = (user: keychainProcessApi.User): API_User => ({
   email: user.email,
   id: user.id,
+  username: user.username,
+});
+
+export const toAPI_OrganizationUser = (
+  user: keychainProcessApi.OrganizationUser,
+): API_OrganizationUser => ({
+  email: user.email,
+  id: user.id,
+  role: user.role,
   username: user.username,
 });

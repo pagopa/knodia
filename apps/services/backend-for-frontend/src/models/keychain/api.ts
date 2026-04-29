@@ -3,6 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
+  API_UserRole,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
@@ -246,8 +247,15 @@ export const API_User = z
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;
 
-export const API_Users = z.array(API_User).meta({ id: "Users" });
-export type API_Users = z.infer<typeof API_Users>;
+export const API_OrganizationUser = API_User.extend({
+  role: API_UserRole,
+}).meta({ id: "OrganizationUser" });
+export type API_OrganizationUser = z.infer<typeof API_OrganizationUser>;
+
+export const API_OrganizationUsers = z
+  .array(API_OrganizationUser)
+  .meta({ id: "OrganizationUsers" });
+export type API_OrganizationUsers = z.infer<typeof API_OrganizationUsers>;
 
 export const API_KeychainMembers = z
   .strictObject({

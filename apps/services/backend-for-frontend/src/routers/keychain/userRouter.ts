@@ -12,8 +12,8 @@ import {
 } from "@knodia/keychain-process-client";
 
 import { apiTags } from "../../models/apiTags.ts";
-import { API_Users } from "../../models/keychain/api.ts";
-import { toAPI_User } from "../../models/keychain/apiConverter.ts";
+import { API_OrganizationUsers } from "../../models/keychain/api.ts";
+import { toAPI_OrganizationUser } from "../../models/keychain/apiConverter.ts";
 
 interface UserRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -27,23 +27,23 @@ export const userRouter: FastifyPluginAsyncZod<UserRouterOptions> = async (
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info("Getting technical users of the requesting organization");
+      logger.info("Getting users of the requesting organization");
 
-      const { data } = await keychainProcessApi.getTechnicalUsers({
+      const { data } = await keychainProcessApi.getOrganizationUsers({
         client: keychainProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
 
-      res.send(data.map(toAPI_User));
+      res.send(data.map(toAPI_OrganizationUser));
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve technical users of the requesting User's Organization",
-      operationId: "getTechnicalUsers",
+        "Retrieve users of the requesting User's Organization, including their role",
+      operationId: "getOrganizationUsers",
       response: {
-        200: API_Users.meta({
-          description: "Technical Users retrieved successfully",
+        200: API_OrganizationUsers.meta({
+          description: "Organization Users retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -51,6 +51,6 @@ export const userRouter: FastifyPluginAsyncZod<UserRouterOptions> = async (
       },
       tags: [apiTags.user],
     },
-    url: "/users/technical",
+    url: "/users",
   });
 };

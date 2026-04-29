@@ -57,6 +57,11 @@ export type FileDownload = Blob | File;
 export type UserId = string;
 
 /**
+ * Role of the User within the Organization
+ */
+export type UserRole = 'administrative' | 'technical';
+
+/**
  * Unique identifier of the Key
  */
 export type KeyId = string;
@@ -713,7 +718,14 @@ export type User = {
     username: string;
 };
 
-export type Users = Array<User>;
+export type OrganizationUser = {
+    email: string;
+    id: UserId;
+    username: string;
+    role: UserRole;
+};
+
+export type OrganizationUsers = Array<OrganizationUser>;
 
 export type KeychainMembers = {
     pagination: Pagination;
@@ -2122,14 +2134,14 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetTechnicalUsersData = {
+export type GetOrganizationUsersData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/users/technical';
+    url: '/users';
 };
 
-export type GetTechnicalUsersErrors = {
+export type GetOrganizationUsersErrors = {
     /**
      * Bad Request
      */
@@ -2144,16 +2156,16 @@ export type GetTechnicalUsersErrors = {
     403: Problem;
 };
 
-export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
 
-export type GetTechnicalUsersResponses = {
+export type GetOrganizationUsersResponses = {
     /**
-     * Technical Users retrieved successfully
+     * Organization Users retrieved successfully
      */
-    200: Users;
+    200: OrganizationUsers;
 };
 
-export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
+export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
