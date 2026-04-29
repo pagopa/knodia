@@ -1,27 +1,20 @@
 import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 
-import { reactivatePurposeByConsumerMutation } from "@knodia/bff-client/tanstack-query";
-import { toastQueue } from "@knodia/ui-kit/ui";
+import { suspendPurposeByConsumerMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
 
 import { consumerPurposeDetailsQuery } from "../services/queries";
 
-export function useReactivateConsumerPurpose(
+export function useSuspendPurposeByConsumer(
   purposeId: PurposeId,
   knodeId: KnodeId,
 ) {
   const queryClient = useQueryClient();
 
-  const { isPending, mutate } = useMutation({
-    ...reactivatePurposeByConsumerMutation({ client }),
-    onError: () =>
-      toastQueue.add({
-        description: "Please try again later.",
-        kind: "error",
-        title: "Unable to reactivate Purpose",
-      }),
+  const { isError, isPending, mutate } = useMutation({
+    ...suspendPurposeByConsumerMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         consumerPurposeDetailsQuery(purposeId, knodeId),
@@ -29,9 +22,9 @@ export function useReactivateConsumerPurpose(
     },
   });
 
-  const reactivatePurpose = () => {
+  const suspendPurpose = () => {
     mutate({ path: { purposeId }, query: { knodeId } });
   };
 
-  return { isPending, reactivatePurpose };
+  return { isError, isPending, suspendPurpose };
 }

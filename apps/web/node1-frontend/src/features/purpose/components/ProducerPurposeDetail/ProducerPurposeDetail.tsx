@@ -14,12 +14,9 @@ import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgree
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-import {
-  ProducerSuspendPurposeBody,
-  SuspendPurposeModal,
-} from "@/features/purpose/components/SuspendPurposeModal";
-import { useReactivateProducerPurpose } from "@/features/purpose/hooks/useReactivateProducerPurpose";
-import { useSuspendProducerPurpose } from "@/features/purpose/hooks/useSuspendProducerPurpose";
+import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
+import { useReactivatePurposeByProducer } from "@/features/purpose/hooks/useReactivatePurposeByProducer";
+import { useSuspendPurposeByProducer } from "@/features/purpose/hooks/useSuspendPurposeByProducer";
 
 export function ProducerPurposeDetail({
   purpose,
@@ -102,7 +99,7 @@ export function ProducerPurposeDetail({
 function ConsumerSuspendedBanner({ purposeId }: { purposeId: PurposeId }) {
   const [isOpen, setIsOpen] = useState(false);
   const { isError, isPending, suspendPurpose } =
-    useSuspendProducerPurpose(purposeId);
+    useSuspendPurposeByProducer(purposeId);
 
   return (
     <>
@@ -124,9 +121,8 @@ function ConsumerSuspendedBanner({ purposeId }: { purposeId: PurposeId }) {
         isPending={isPending}
         onConfirm={suspendPurpose}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendPurposeBody />
-      </SuspendPurposeModal>
+        suspendActor="producer"
+      />
     </>
   );
 }
@@ -136,7 +132,7 @@ function PurposeActionButton({ purpose }: { purpose: bffApi.PurposeDetails }) {
 
   return match(purpose.state)
     .with("Active", () => (
-      <SuspendProducerPurposeButton purposeId={purposeId} />
+      <SuspendPurposeByProducerButton purposeId={purposeId} />
     ))
     .with("Suspended", () =>
       purpose.suspendedByProducerAt !== null ? (
@@ -156,7 +152,7 @@ function ReactivateProducerPurposeButton({
   purposeId: PurposeId;
 }) {
   const { isPending, reactivatePurpose } =
-    useReactivateProducerPurpose(purposeId);
+    useReactivatePurposeByProducer(purposeId);
 
   return (
     <Button
@@ -171,10 +167,14 @@ function ReactivateProducerPurposeButton({
   );
 }
 
-function SuspendProducerPurposeButton({ purposeId }: { purposeId: PurposeId }) {
+function SuspendPurposeByProducerButton({
+  purposeId,
+}: {
+  purposeId: PurposeId;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const { isError, isPending, suspendPurpose } =
-    useSuspendProducerPurpose(purposeId);
+    useSuspendPurposeByProducer(purposeId);
 
   return (
     <>
@@ -192,9 +192,8 @@ function SuspendProducerPurposeButton({ purposeId }: { purposeId: PurposeId }) {
         isPending={isPending}
         onConfirm={suspendPurpose}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendPurposeBody />
-      </SuspendPurposeModal>
+        suspendActor="producer"
+      />
     </>
   );
 }

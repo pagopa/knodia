@@ -8,7 +8,7 @@ import { client } from "@/libs/axios";
 
 import { producerPurposeDetailsQuery } from "../services/queries";
 
-export function useReactivateProducerPurpose(purposeId: PurposeId) {
+export function useReactivatePurposeByProducer(purposeId: PurposeId) {
   const queryClient = useQueryClient();
 
   const { isPending, mutate } = useMutation({

@@ -1,43 +1,20 @@
-import type { ReactNode } from "react";
-
 import { Modal } from "@knodia/ui-kit/ui";
-
-export function ConsumerSuspendPurposeBody() {
-  return (
-    <p className="body-md">
-      If you suspend it, you will no longer be able to use the associated
-      E-Service for this Purpose. Are you sure you want to suspend this Purpose?
-      <br />
-      You will be able to reactivate it later.
-    </p>
-  );
-}
-
-export function ProducerSuspendPurposeBody() {
-  return (
-    <p className="body-md">
-      If you suspend it, the Consumer won&apos;t be able to use the associated
-      E-Service for this Purpose. Are you sure you want to suspend this Purpose?
-      <br />
-      You will be able to reactivate it later.
-    </p>
-  );
-}
+import { match } from "ts-pattern";
 
 export function SuspendPurposeModal({
-  children,
   isError,
   isOpen,
   isPending,
   onConfirm,
   onOpenChange,
+  suspendActor,
 }: {
-  children: ReactNode;
   isError: boolean;
   isOpen: boolean;
   isPending: boolean;
   onConfirm: () => void;
   onOpenChange: (isOpen: boolean) => void;
+  suspendActor: "consumer" | "producer";
 }) {
   return (
     <Modal
@@ -52,7 +29,32 @@ export function SuspendPurposeModal({
       showErrorBanner={isError}
       title="Suspend Purpose"
     >
-      {children}
+      {match(suspendActor)
+        .with("consumer", () => <SuspendPurposeByConsumerBody />)
+        .with("producer", () => <SuspendPurposeByProducerBody />)
+        .exhaustive()}
     </Modal>
+  );
+}
+
+function SuspendPurposeByConsumerBody() {
+  return (
+    <p className="body-md">
+      If you suspend it, you will no longer be able to use the associated
+      E-Service for this Purpose. Are you sure you want to suspend this Purpose?
+      <br />
+      You will be able to reactivate it later.
+    </p>
+  );
+}
+
+function SuspendPurposeByProducerBody() {
+  return (
+    <p className="body-md">
+      If you suspend it, the Consumer won&apos;t be able to use the associated
+      E-Service for this Purpose. Are you sure you want to suspend this Purpose?
+      <br />
+      You will be able to reactivate it later.
+    </p>
   );
 }

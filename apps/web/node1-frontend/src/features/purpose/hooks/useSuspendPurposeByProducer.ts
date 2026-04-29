@@ -7,7 +7,7 @@ import { client } from "@/libs/axios";
 
 import { producerPurposeDetailsQuery } from "../services/queries";
 
-export function useSuspendProducerPurpose(purposeId: PurposeId) {
+export function useSuspendPurposeByProducer(purposeId: PurposeId) {
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({

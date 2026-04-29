@@ -20,12 +20,9 @@ import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgree
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-import {
-  ConsumerSuspendPurposeBody,
-  SuspendPurposeModal,
-} from "@/features/purpose/components/SuspendPurposeModal";
-import { useReactivateConsumerPurpose } from "@/features/purpose/hooks/useReactivateConsumerPurpose";
-import { useSuspendConsumerPurpose } from "@/features/purpose/hooks/useSuspendConsumerPurpose";
+import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
+import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
+import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
 
 import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
 import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
@@ -168,12 +165,12 @@ function PurposeActionButton({
 
   return match(purpose.state)
     .with("Active", () => (
-      <SuspendConsumerPurposeButton knodeId={knodeId} purposeId={purposeId} />
+      <SuspendPurposeByConsumerButton knodeId={knodeId} purposeId={purposeId} />
     ))
     .with("Suspended", () =>
       purpose.suspendedByConsumerAt !== null &&
       purpose.suspendedByProducerAt === null ? (
-        <ReactivateConsumerPurposeButton
+        <ReactivatePurposeByConsumerButton
           knodeId={knodeId}
           purposeId={purposeId}
         />
@@ -186,14 +183,14 @@ function PurposeActionButton({
     .exhaustive();
 }
 
-function ReactivateConsumerPurposeButton({
+function ReactivatePurposeByConsumerButton({
   knodeId,
   purposeId,
 }: {
   knodeId: KnodeId;
   purposeId: PurposeId;
 }) {
-  const { isPending, reactivatePurpose } = useReactivateConsumerPurpose(
+  const { isPending, reactivatePurpose } = useReactivatePurposeByConsumer(
     purposeId,
     knodeId,
   );
@@ -211,7 +208,7 @@ function ReactivateConsumerPurposeButton({
   );
 }
 
-function SuspendConsumerPurposeButton({
+function SuspendPurposeByConsumerButton({
   knodeId,
   purposeId,
 }: {
@@ -219,7 +216,7 @@ function SuspendConsumerPurposeButton({
   purposeId: PurposeId;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isError, isPending, suspendPurpose } = useSuspendConsumerPurpose(
+  const { isError, isPending, suspendPurpose } = useSuspendPurposeByConsumer(
     purposeId,
     knodeId,
   );
@@ -240,9 +237,8 @@ function SuspendConsumerPurposeButton({
         isPending={isPending}
         onConfirm={suspendPurpose}
         onOpenChange={setIsOpen}
-      >
-        <ConsumerSuspendPurposeBody />
-      </SuspendPurposeModal>
+        suspendActor="consumer"
+      />
     </>
   );
 }
