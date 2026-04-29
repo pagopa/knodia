@@ -15,6 +15,7 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
+    "@types/js-yaml": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
@@ -40,16 +41,18 @@
     "@knodia/logger": "workspace:*",
     "@knodia/organization-models": "workspace:*",
     "@knodia/organization-process-client": "workspace:*",
+    "@knodia/polling": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/purpose-process-client": "workspace:*",
-    "@knodia/polling": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
+    "js-yaml": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
