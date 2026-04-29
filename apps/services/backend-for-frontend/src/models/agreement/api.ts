@@ -4,7 +4,12 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import {
+  API_EserviceCategory,
+  API_EserviceMode,
+  API_EserviceVersionState,
+  API_LocalizedName,
+} from "@knodia/eservice-models/api";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import z from "zod";
 
@@ -114,7 +119,43 @@ export const API_ConsumerAgreements = z
         format: "int32",
       }),
     }),
-    // TODO: add results (agreements with needed action)
   })
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
+
+export const API_PendingConsumerAgreement = z
+  .strictObject({
+    eservice: z.strictObject({
+      categories: z.array(API_EserviceCategory),
+      id: z.uuid(),
+      mode: API_EserviceMode,
+      name: API_LocalizedName,
+      state: API_EserviceVersionState,
+    }),
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the Agreement or its E-service has been recently updated",
+    }),
+    id: z.uuid(),
+    producer: API_CompactOrganization,
+  })
+  .meta({ id: "PendingConsumerAgreement" });
+export type API_PendingConsumerAgreement = z.infer<
+  typeof API_PendingConsumerAgreement
+>;
+
+export const API_PendingConsumerAgreements = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_PendingConsumerAgreement),
+  })
+  .meta({ id: "PendingConsumerAgreements" });
+export type API_PendingConsumerAgreements = z.infer<
+  typeof API_PendingConsumerAgreements
+>;
+
+export const API_GetPendingConsumerAgreementsQueryParams =
+  API_PaginationQueryParams;
+export type API_GetPendingConsumerAgreementsQueryParams = z.infer<
+  typeof API_GetPendingConsumerAgreementsQueryParams
+>;

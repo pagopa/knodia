@@ -11,6 +11,7 @@ import {
   CaretDownIcon,
   CaretUpIcon,
   SelectionIcon,
+  WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useContext, useState } from "react";
 import {
@@ -61,18 +62,22 @@ export function OrgConsumptionStatusSection({
           knodeId={knodeId}
         />
 
-        <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
+        {agreement.state !== "PendingConsumerOperatorIdentification" && (
+          <>
+            <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
 
-        <div className="mt-4 flex flex-col gap-4">
-          <h3 className="title-md-em text-primary-light-low-contrast">
-            Keychains
-          </h3>
-          <Banner icon={<SelectionIcon />} kind="neutral">
-            To request an access token for this E-Service, associate a Keychain
-            to a Purpose from the Purpose page. Associated Keychain will appear
-            here.
-          </Banner>
-        </div>
+            <div className="mt-4 flex flex-col gap-4">
+              <h3 className="title-md-em text-primary-light-low-contrast">
+                Keychains
+              </h3>
+              <Banner icon={<SelectionIcon />} kind="neutral">
+                To request an access token for this E-Service, associate a
+                Keychain to a Purpose from the Purpose page. Associated
+                Keychains will appear here.
+              </Banner>
+            </div>
+          </>
+        )}
       </DisclosurePanel>
     </Disclosure>
   );
@@ -161,12 +166,16 @@ function AgreementStatusBanner({
       );
       return null;
     })
-    .with("PendingConsumerOperatorIdentification", () => {
-      console.warn(
-        "Unhandled agreement state: PendingConsumerOperatorIdentification",
-      );
-      return null;
-    })
+    .with("PendingConsumerOperatorIdentification", () => (
+      <Banner
+        icon={<WarningCircleIcon />}
+        kind="informative"
+        size="md"
+        title="Action needed"
+      >
+        To activate the Agreement, you must log in to the Producer Knode.
+      </Banner>
+    ))
     .exhaustive();
 
   if (!banner) return null;

@@ -49,10 +49,10 @@ export function tokenServiceBuilder({
       },
       {
         clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
         dpopProofHtuBaseUrl,
         dpopProofMaxTokenAgeSeconds,
+        jwtClockToleranceSeconds,
       }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
@@ -62,6 +62,7 @@ export function tokenServiceBuilder({
         {
           expectedHtm: EXPECTED_DPOP_PROOF_HTM,
           expectedHtu: dpopProofHtuBaseUrl,
+          jwtClockToleranceSeconds,
           maxTokenAgeSeconds: dpopProofMaxTokenAgeSeconds,
         },
         logger,
@@ -72,11 +73,21 @@ export function tokenServiceBuilder({
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
           clientAssertionAcceptedAudiences,
-          clientAssertionClockToleranceSeconds,
+          jwtClockToleranceSeconds,
           clientAssertionMaxTokenAgeSeconds,
           k2kGatewayClient,
           logger,
         );
+
+      // Check that the DPoP proof has not been replayed if the request is using DPoP
+      if (dpopProofJWT) {
+        await assertDpopProofNotReplayed(
+          dpopProofJWT,
+          dpopProofMaxTokenAgeSeconds,
+          dpopProofStore,
+          jwtClockToleranceSeconds,
+        );
+      }
 
       // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion, purpose } =
@@ -86,15 +97,6 @@ export function tokenServiceBuilder({
           dpopProofJWT,
           readmodelService,
         );
-
-      // Check that the DPoP proof has not been replayed if the request is using DPoP
-      if (dpopProofJWT) {
-        await assertDpopProofNotReplayed(
-          dpopProofJWT,
-          dpopProofMaxTokenAgeSeconds,
-          dpopProofStore,
-        );
-      }
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({

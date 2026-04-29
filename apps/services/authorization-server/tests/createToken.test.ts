@@ -545,6 +545,20 @@ describe("POST /token", async () => {
       },
     ],
     [
+      "invalid jwk claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          jwk: {
+            ...dpopProofJWT.headers.jwk,
+            x: "invalid",
+            y: "invalid",
+          },
+        },
+      },
+    ],
+    [
       "invalid htm claim in dpop proof payload",
       {
         ...dpopProofJWT,
@@ -889,7 +903,6 @@ describe("POST /token", async () => {
     await storeJti({
       dynamoClient,
       expireAtSec: dateToSeconds(new Date()) + 60,
-      iat: dpopProofJWT.payload.iat!,
       jti: dpopProofJWT.payload.jti!,
       tableName: dynamoDbDpopProofsTable,
     });

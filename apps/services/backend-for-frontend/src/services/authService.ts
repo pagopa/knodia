@@ -147,7 +147,6 @@ export function authServiceBuilder(
 
     const firstUse = await refreshTokenStore.consume(
       parsed.data.jti,
-      parsed.data.iat,
       parsed.data.exp,
     );
     if (!firstUse) {

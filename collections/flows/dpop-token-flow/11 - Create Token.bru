@@ -33,15 +33,17 @@ assert {
 script:post-response {
   if (res.status === 200) return
   
-  const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH") || "<path-to-private-key>"
+  const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-rsa-key>"
+  const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH") || "<path-to-private-ec-key>"
+  const dpopAlg = ecKeyPath === "<path-to-private-ec-key>" ? "<RS256|ES256>" : "ES256";
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
   throw new Error(
     `Request failed with status ${res.status}.\n\n` +
     `1. Regenerate the client assertion (if missing or stale):\n` +
-    `   pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
+    `   pnpm generate-client-assertion --key ${rsaKeyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
     `2. Regenerate the DPoP proof (if missing or stale):\n` +
-    `   pnpm generate-dpop-proof --key <path-to-RS256-or-ES256-private-key> --alg <RS256|ES256> --htu <htu>\n\n` +
+    `   pnpm generate-dpop-proof --key ${ecKeyPath} --alg ${dpopAlg} [--htu <htu> // default: https://test.knodia.org/token]\n\n` +
     `Then re-run this call.`
   )
 }

@@ -103,7 +103,7 @@ export async function verifyClientAssertionSignature(
     consumerKeychainId: ConsumerKeychainId;
   },
   clientAssertionAcceptedAudiences: string[],
-  clientAssertionClockToleranceSeconds: number,
+  jwtClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
   k2kGatewayClient: K2K2GatewayApiClient,
   logger: FastifyBaseLogger,
@@ -147,7 +147,7 @@ export async function verifyClientAssertionSignature(
     await jwtVerify(clientAssertionJWS, verificationKey, {
       algorithms: [publicKey.algorithm],
       audience: clientAssertionAcceptedAudiences,
-      clockTolerance: clientAssertionClockToleranceSeconds,
+      clockTolerance: jwtClockToleranceSeconds,
       issuer: consumerKeychainId,
       maxTokenAge: clientAssertionMaxTokenAgeSeconds,
       subject: consumerKeychainId,
