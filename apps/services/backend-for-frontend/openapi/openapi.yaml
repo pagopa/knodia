@@ -2615,7 +2615,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/suspend:
     post:
-      operationId: suspendProducerEservice
+      operationId: suspendEservice
       tags:
         - eservice
       description: Suspend an E-service
@@ -2672,7 +2672,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/reactivate:
     post:
-      operationId: reactivateProducerEservice
+      operationId: reactivateEservice
       tags:
         - eservice
       description: Reactivate a suspended E-service
@@ -4401,7 +4401,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/reactivate:
     post:
-      operationId: reactivateConsumerAgreement
+      operationId: reactivateAgreementByConsumer
       tags:
         - agreement
       description: Reactivate an Agreement as Consumer
@@ -4463,7 +4463,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/suspend:
     post:
-      operationId: suspendConsumerAgreement
+      operationId: suspendAgreementByConsumer
       tags:
         - agreement
       description: Suspend an Agreement as Consumer
@@ -5061,7 +5061,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements/{agreementId}/reactivate:
     post:
-      operationId: reactivateProducerAgreement
+      operationId: reactivateAgreementByProducer
       tags:
         - agreement
       description: Reactivate an Agreement as Producer
@@ -5118,7 +5118,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements/{agreementId}/suspend:
     post:
-      operationId: suspendProducerAgreement
+      operationId: suspendAgreementByProducer
       tags:
         - agreement
       description: Suspend an Agreement as Producer
