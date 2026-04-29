@@ -5,6 +5,7 @@ import {
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { UserRole } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type OrganizationId,
@@ -22,6 +23,10 @@ export interface IdmUser {
   email: string;
   id: UserId;
   username: string;
+}
+
+export interface OrganizationUser extends IdmUser {
+  role: UserRole;
 }
 
 export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
@@ -49,17 +54,22 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   }
 
   return {
-    async getOrganizationTechnicalUsers(
+    async getOrganizationUsers(
       organizationId: OrganizationId,
-    ): Promise<IdmUser[]> {
-      const organizationUsers = await listUsersInGroup(
-        getOrganizationGroupName(organizationId),
-      );
-      const technicalUsers = await listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME);
+    ): Promise<OrganizationUser[]> {
+      const [organizationUsers, technicalUsers] = await Promise.all([
+        listUsersInGroup(getOrganizationGroupName(organizationId)),
+        listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME),
+      ]);
 
       const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
 
-      return organizationUsers.filter((user) => technicalUserIds.has(user.id));
+      return organizationUsers.map((user) => ({
+        ...user,
+        role: technicalUserIds.has(user.id)
+          ? UserRole.enum.technical
+          : UserRole.enum.administrative,
+      }));
     },
 
     async getUserById(userId: UserId): Promise<IdmUser | undefined> {

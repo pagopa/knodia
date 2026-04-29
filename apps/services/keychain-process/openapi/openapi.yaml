@@ -170,6 +170,12 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
+    UserRole:
+      description: Role of the User within the Organization
+      type: string
+      enum:
+        - administrative
+        - technical
     KeyId:
       description: Unique identifier of the Key
       type: string
@@ -303,10 +309,27 @@ components:
         - id
         - username
       additionalProperties: false
-    Users:
+    OrganizationUser:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+      required:
+        - email
+        - id
+        - username
+        - role
+      additionalProperties: false
+    OrganizationUsers:
       type: array
       items:
-        $ref: "#/components/schemas/User"
+        $ref: "#/components/schemas/OrganizationUser"
     KeychainMemberSeed:
       type: object
       properties:
@@ -1626,12 +1649,13 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users/technical:
+  /users:
     get:
-      operationId: getTechnicalUsers
+      operationId: getOrganizationUsers
       tags:
         - user
-      description: Retrieve technical users of the requesting User's Organization
+      description: Retrieve users of the requesting User's Organization, including
+        their role
       parameters:
         - schema:
             allOf:
@@ -1642,13 +1666,13 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Technical Users retrieved successfully
+          description: Organization Users retrieved successfully
           content:
             application/json:
               schema:
-                description: Technical Users retrieved successfully
+                description: Organization Users retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Users"
+                  - $ref: "#/components/schemas/OrganizationUsers"
         "400":
           description: Bad Request
           content:

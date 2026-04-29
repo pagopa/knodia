@@ -10,8 +10,8 @@ import {
 
 import type { UserService } from "../services/userService.ts";
 
-import { API_Users } from "../models/api.ts";
-import { toAPI_User } from "../models/apiConverter.ts";
+import { API_OrganizationUsers } from "../models/api.ts";
+import { toAPI_OrganizationUser } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const userRouter: FastifyPluginAsyncZod<UserService> = async (
@@ -24,21 +24,21 @@ export const userRouter: FastifyPluginAsyncZod<UserService> = async (
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const technicalUsers = await userService.getOrganizationTechnicalUsers(
+      const organizationUsers = await userService.getOrganizationUsers(
         ctx.authData.organizationId,
       );
 
-      res.status(200).send(technicalUsers.map(toAPI_User));
+      res.status(200).send(organizationUsers.map(toAPI_OrganizationUser));
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve technical users of the requesting User's Organization",
+        "Retrieve users of the requesting User's Organization, including their role",
       headers: KnodiaServiceHeaders,
-      operationId: "getTechnicalUsers",
+      operationId: "getOrganizationUsers",
       response: {
-        200: API_Users.meta({
-          description: "Technical Users retrieved successfully",
+        200: API_OrganizationUsers.meta({
+          description: "Organization Users retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -46,6 +46,6 @@ export const userRouter: FastifyPluginAsyncZod<UserService> = async (
       },
       tags: [apiTags.user],
     },
-    url: "/users/technical",
+    url: "/users",
   });
 };
