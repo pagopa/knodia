@@ -3,7 +3,7 @@ import {
   addConsumerKeychainMemberMutation,
   getConsumerKeychainMembershipQueryKey,
   getConsumerKeychainMembersQueryKey,
-  getTechnicalUsersOptions,
+  getOrganizationUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
@@ -93,12 +93,19 @@ function AddKeychainMemberModal({
     },
   });
 
-  const { data = [] } = useQuery(getTechnicalUsersOptions({ client }));
+  const { data: organizationUsers = [] } = useQuery(
+    getOrganizationUsersOptions({ client }),
+  );
 
-  const technicalUsersOptions = data.map((user) => ({
+  const userOptions = organizationUsers.map((user) => ({
     id: user.id,
     label: user.username,
+    role: user.role,
   }));
+
+  const userRoleById = new Map(
+    organizationUsers.map((user) => [user.id, user.role]),
+  );
 
   const handleAddKeychainMember = (userId: string) => {
     match(keychainType)
@@ -152,7 +159,12 @@ function AddKeychainMemberModal({
         userId: z
           .guid("Invalid user")
           .nullable()
-          .refine((value) => value !== null, "Select an operator"),
+          .refine((value) => value !== null, "Select an operator")
+          .refine(
+            (value) =>
+              value === null || userRoleById.get(value) === "technical",
+            "Only Technical operators can be added as members.",
+          ),
       }),
       onSubmitAsync: async ({ value: { userId } }) => {
         if (!userId) return undefined;
@@ -210,7 +222,7 @@ function AddKeychainMemberModal({
               placeholder="Select an option..."
               value={field.state.value}
             >
-              {technicalUsersOptions.map((option) => (
+              {userOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
