@@ -10,13 +10,11 @@ import { dateToSeconds } from "@knodia/common-models/utils";
 export async function storeJti({
   dynamoClient,
   expireAtSec,
-  iat,
   jti,
   tableName,
 }: {
   dynamoClient: DynamoDBClient;
   expireAtSec: number;
-  iat: number;
   jti: string;
   tableName: string;
 }): Promise<void> {
@@ -29,7 +27,6 @@ export async function storeJti({
       ExpressionAttributeNames: { "#ttl": "ttl" },
       ExpressionAttributeValues: { ":now": { N: String(nowSec) } },
       Item: {
-        iat: { N: String(iat) },
         jti: { S: jti },
         ttl: { N: String(expireAtSec) },
       },

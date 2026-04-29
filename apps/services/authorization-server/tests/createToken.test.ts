@@ -887,7 +887,6 @@ describe("POST /token", async () => {
     await storeJti({
       dynamoClient,
       expireAtSec: dateToSeconds(new Date()) + 60,
-      iat: dpopProofJWT.payload.iat!,
       jti: dpopProofJWT.payload.jti!,
       tableName: dynamoDbDpopProofsTable,
     });

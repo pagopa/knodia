@@ -80,7 +80,6 @@ export async function assertDpopProofNotReplayed(
 ) {
   const firstUse = await dpopProofStore.consume(
     dpopProofJWT.payload.jti,
-    dpopProofJWT.payload.iat,
     dpopProofJWT.payload.iat + dpopProofMaxTokenAgeSeconds,
   );
   if (!firstUse) {

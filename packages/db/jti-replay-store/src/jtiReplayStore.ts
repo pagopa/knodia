@@ -23,13 +23,9 @@ export function createJtiReplayStore(
      * Marks a JTI as used. Returns `true` if this is the first use,
      * `false` if the JTI was already seen (replay attempt).
      */
-    async consume(
-      jti: string,
-      iat: number,
-      expireAtSec: number,
-    ): Promise<boolean> {
+    async consume(jti: string, expireAtSec: number): Promise<boolean> {
       try {
-        await storeJti({ dynamoClient, expireAtSec, iat, jti, tableName });
+        await storeJti({ dynamoClient, expireAtSec, jti, tableName });
         return true;
       } catch (err) {
         if (err instanceof ConditionalCheckFailedException) {
