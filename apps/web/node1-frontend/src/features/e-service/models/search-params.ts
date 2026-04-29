@@ -119,7 +119,3 @@ export const eserviceTemplateSearchSchema = z.object({
     .optional()
     .catch(eserviceTemplateSearchDefaultValues.templateId),
 });
-
-export type EserviceTemplateSearchParams = z.infer<
-  typeof eserviceTemplateSearchSchema
->;
