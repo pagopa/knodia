@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { API_MagicLink } from "@knodia/agreement-models/api";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
@@ -64,6 +65,35 @@ export function agreementServiceBuilder(
       });
 
       return toAPI_Agreement(data);
+    },
+
+    async createActivationMagicLink(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_MagicLink> {
+      logger.info(
+        `Creating activation magic link for Agreement ${agreementId} on Knode ${knodeId}`,
+      );
+
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+        agreementId,
+        knodeId,
+      );
+
+      assertAgreementExists(remoteAgreement, agreementId);
+      assertOrganizationIsAgreementConsumer(
+        remoteAgreement,
+        agreementId,
+        authData.organizationId,
+      );
+
+      const { data } = await k2kGatewayApi.createAgreementActivationMagicLink({
+        client: k2kGatewayClient,
+        path: { agreementId },
+      });
+
+      return data;
     },
 
     async createAgreement(

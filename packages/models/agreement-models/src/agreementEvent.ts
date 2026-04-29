@@ -3,6 +3,7 @@ import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { z } from "zod";
 
 import {
+  AgreementActivatedByConsumerOperatorV1,
   AgreementActivatedV1,
   AgreementArchivedV1,
   AgreementCreatedPendingConsumerOperatorIdentificationV1,
@@ -22,6 +23,10 @@ export const AgreementEventV1 = z.discriminatedUnion("type", [
       AgreementCreatedPendingConsumerOperatorIdentificationV1,
     ),
     type: z.literal("AgreementCreatedPendingConsumerOperatorIdentificationV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(AgreementActivatedByConsumerOperatorV1),
+    type: z.literal("AgreementActivatedByConsumerOperatorV1"),
   }),
   z.object({
     data: protobufBinaryCodec(AgreementSuspendedByConsumerV1),

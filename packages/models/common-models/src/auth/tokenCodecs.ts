@@ -2,6 +2,7 @@ import z from "zod";
 
 import { ExternalId } from "../externalResource.ts";
 import {
+  AgreementId,
   ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
@@ -66,10 +67,45 @@ export type UISessionRefreshTokenClaims = z.infer<
   typeof UISessionRefreshTokenClaims
 >;
 
+export const ExternalUISessionScope = z.enum(["agreement-activation"]);
+export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
+
+const ExternalUISessionResourceClaims = BaseJwtClaims.extend({
+  agreement: z.strictObject({ id: AgreementId, knode_id: KnodeId }),
+  consumer: z.strictObject({
+    id: ExternalId<OrganizationId>(),
+    knode_id: KnodeId,
+  }),
+  eservice: z.strictObject({
+    id: EserviceId,
+    knode_id: KnodeId,
+    version: EserviceVersionId,
+  }),
+  producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
+  scope: ExternalUISessionScope,
+});
+
+export const ExternalUISessionTokenClaims =
+  ExternalUISessionResourceClaims.extend({
+    type: z.literal("external-ui-session"),
+  });
+export type ExternalUISessionTokenClaims = z.infer<
+  typeof ExternalUISessionTokenClaims
+>;
+
+export const ExternalUISessionMagicLinkTokenClaims =
+  ExternalUISessionResourceClaims.extend({
+    type: z.literal("external-ui-session-magic-link"),
+  });
+export type ExternalUISessionMagicLinkTokenClaims = z.infer<
+  typeof ExternalUISessionMagicLinkTokenClaims
+>;
+
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
+  ExternalUISessionTokenClaims,
 ]);
 export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;

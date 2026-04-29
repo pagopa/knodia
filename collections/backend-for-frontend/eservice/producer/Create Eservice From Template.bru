@@ -1,0 +1,53 @@
+meta {
+  name: Create Eservice From Template
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producer/eservices/fromTemplate
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{randomName}}"
+    },
+    "description": {
+      "en": "This is a test e-service created from template"
+    },
+    "accessTokenAudience": ["https://api.example.com"],
+    "accessTokenDuration": 3600,
+    "accessTokenType": "Bearer",
+    "maxDailyCallsPerConsumer": 1000,
+    "maxDailyCallsPerKnode": 10000,
+    "isSignalHubEnabled": false,
+    "template": {
+      "id": "{{eserviceTemplateId}}",
+      "knodeId": "{{knodeId}}"
+    },
+    "interfaceDocumentOverrides": {
+      "serverUrls": ["https://api.example.com/templated"],
+      "contact": {
+        "email": "support@example.com",
+        "name": "Template Support",
+        "url": "https://example.com/support"
+      },
+      "termsAndConditionsUrl": "https://example.com/terms"
+    }
+  }
+}
+
+vars:post-response {
+  eserviceId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomName", `Test Eservice From Template ${random}`)
+}

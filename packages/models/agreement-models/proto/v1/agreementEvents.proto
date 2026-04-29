@@ -28,6 +28,10 @@ message AgreementReactivatedByProducerV1 {
   AgreementV1 agreement = 1;
 }
 
+message AgreementActivatedByConsumerOperatorV1 {
+  AgreementV1 agreement = 1;
+}
+
 message AgreementArchivedV1 {
   AgreementV1 agreement = 1;
 }

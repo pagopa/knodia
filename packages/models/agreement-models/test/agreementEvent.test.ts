@@ -12,6 +12,7 @@ import { Agreement, AgreementState } from "../src/agreement.ts";
 import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
 import {
+  AgreementActivatedByConsumerOperatorV1,
   AgreementActivatedV1,
   AgreementArchivedV1,
   AgreementCreatedPendingConsumerOperatorIdentificationV1,
@@ -157,6 +158,33 @@ describe("AgreementEventV1 codec", () => {
     const codec = protobufBinaryCodec(
       AgreementCreatedPendingConsumerOperatorIdentificationV1,
     );
+    const value = {
+      agreement: toAgreementV1(agreement),
+    };
+    const bytes = codec.encode(value);
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(codec.decode(bytes)).toEqual(value);
+  });
+
+  it("encodes and decodes an AgreementActivatedByConsumerOperatorV1 payload (AgreementEventV1 full codec)", () => {
+    const event: AgreementEventV1 = {
+      data: {
+        agreement: toAgreementV1(agreement),
+      },
+      type: "AgreementActivatedByConsumerOperatorV1",
+    };
+    const encoded = AgreementEventV1.encode(event);
+    expect(encoded).toMatchObject({
+      type: "AgreementActivatedByConsumerOperatorV1",
+    });
+    expect(encoded.data).toBeInstanceOf(Uint8Array);
+
+    const decoded = AgreementEventV1.decode(encoded);
+    expect(decoded).toMatchObject(event);
+  });
+
+  it("encodes and decodes an AgreementActivatedByConsumerOperatorV1 payload (protobufBinaryCodec-only)", () => {
+    const codec = protobufBinaryCodec(AgreementActivatedByConsumerOperatorV1);
     const value = {
       agreement: toAgreementV1(agreement),
     };

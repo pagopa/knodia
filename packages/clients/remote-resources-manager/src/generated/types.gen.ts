@@ -45,6 +45,20 @@ export type AgreementConsumer = {
     knodeId: KnodeId;
 };
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type Attribute = {
     code: string;
     scheme: string;
@@ -843,6 +857,51 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type CreateAgreementActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementActivationMagicLinkError = CreateAgreementActivationMagicLinkErrors[keyof CreateAgreementActivationMagicLinkErrors];
+
+export type CreateAgreementActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementActivationMagicLinkResponse = CreateAgreementActivationMagicLinkResponses[keyof CreateAgreementActivationMagicLinkResponses];
 
 export type GetPurposesData = {
     body?: never;

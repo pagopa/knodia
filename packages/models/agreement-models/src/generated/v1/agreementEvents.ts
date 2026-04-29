@@ -34,6 +34,10 @@ export interface AgreementReactivatedByProducerV1 {
   agreement: AgreementV1 | undefined;
 }
 
+export interface AgreementActivatedByConsumerOperatorV1 {
+  agreement: AgreementV1 | undefined;
+}
+
 export interface AgreementArchivedV1 {
   agreement: AgreementV1 | undefined;
 }
@@ -412,6 +416,70 @@ export const AgreementReactivatedByProducerV1: MessageFns<AgreementReactivatedBy
     object: I,
   ): AgreementReactivatedByProducerV1 {
     const message = createBaseAgreementReactivatedByProducerV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementActivatedByConsumerOperatorV1(): AgreementActivatedByConsumerOperatorV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementActivatedByConsumerOperatorV1: MessageFns<AgreementActivatedByConsumerOperatorV1> = {
+  encode(message: AgreementActivatedByConsumerOperatorV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementActivatedByConsumerOperatorV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementActivatedByConsumerOperatorV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementActivatedByConsumerOperatorV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementActivatedByConsumerOperatorV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementActivatedByConsumerOperatorV1>, I>>(
+    base?: I,
+  ): AgreementActivatedByConsumerOperatorV1 {
+    return AgreementActivatedByConsumerOperatorV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementActivatedByConsumerOperatorV1>, I>>(
+    object: I,
+  ): AgreementActivatedByConsumerOperatorV1 {
+    const message = createBaseAgreementActivatedByConsumerOperatorV1();
     message.agreement = (object.agreement !== undefined && object.agreement !== null)
       ? AgreementV1.fromPartial(object.agreement)
       : undefined;

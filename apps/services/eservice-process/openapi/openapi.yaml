@@ -152,6 +152,20 @@ components:
         - id
         - knodeId
       additionalProperties: false
+    EserviceTemplateReference:
+      description: Reference to an E-service template
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     Attribute:
       type: object
       properties:
@@ -388,7 +402,7 @@ components:
         - path
         - prettyName
       additionalProperties: false
-    EserviceSeed:
+    EserviceFromScratchSeed:
       type: object
       properties:
         accessTokenAudience:
@@ -408,11 +422,6 @@ components:
           default: Bearer
           allOf:
             - $ref: "#/components/schemas/AccessTokenType"
-        categories:
-          description: Categories of the E-service
-          type: array
-          items:
-            $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
         interfaceDocument:
@@ -436,12 +445,17 @@ components:
           type: integer
           minimum: 1
           maximum: 1000000000
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        categories:
+          description: Categories of the E-service
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
         mode:
           description: Mode of the E-service
           allOf:
             - $ref: "#/components/schemas/EserviceMode"
-        name:
-          $ref: "#/components/schemas/LocalizedName"
         requiredAttributes:
           description: Required attributes for the E-service
           type: array
@@ -460,6 +474,68 @@ components:
         - name
         - requiredAttributes
       additionalProperties: false
+    EserviceFromTemplateSeed:
+      type: object
+      properties:
+        accessTokenAudience:
+          description: Audience for the access token
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in seconds
+          format: int32
+          default: 3600
+          type: integer
+          minimum: 1
+          maximum: 86400
+        accessTokenType:
+          description: Type of the access token
+          default: Bearer
+          allOf:
+            - $ref: "#/components/schemas/AccessTokenType"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        interfaceDocument:
+          description: Interface document
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentSeed"
+        isSignalHubEnabled:
+          description: Whether SignalHub is enabled for the E-service
+          type: boolean
+        maxDailyCallsPerConsumer:
+          description: Maximum daily calls per consumer (must be less than or equal to
+            maxDailyCallsPerKnode)
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        maxDailyCallsPerKnode:
+          description: Maximum daily calls per Knode (must be greater than or equal to
+            maxDailyCallsPerConsumer)
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        template:
+          $ref: "#/components/schemas/EserviceTemplateReference"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - description
+        - interfaceDocument
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - name
+        - template
+      additionalProperties: false
+    EserviceSeed:
+      anyOf:
+        - $ref: "#/components/schemas/EserviceFromScratchSeed"
+        - $ref: "#/components/schemas/EserviceFromTemplateSeed"
     EservicePatch:
       type: object
       properties:
@@ -704,6 +780,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service template not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service template not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "409":

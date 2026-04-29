@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
+import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -152,6 +152,18 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Create an Agreement activation magic link
+ *
+ * Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend
+ */
+export const createAgreementActivationMagicLink = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementActivationMagicLinkData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementActivationMagicLinkResponses, CreateAgreementActivationMagicLinkErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements/{agreementId}/activationMagicLink',
     ...options
 });
 

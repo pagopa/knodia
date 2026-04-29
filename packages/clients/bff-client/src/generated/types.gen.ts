@@ -45,6 +45,20 @@ export type AgreementConsumer = {
     knodeId: KnodeId;
 };
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -111,6 +125,14 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
+ * Reference to an E-service template
+ */
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
@@ -144,7 +166,25 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceSeed = {
+export type InterfaceDocumentContactOverrides = {
+    email: string;
+    name: string;
+    url?: string;
+};
+
+export type InterfaceDocumentOverrides = {
+    /**
+     * OpenAPI contact overrides to apply to the template interface
+     */
+    contact: InterfaceDocumentContactOverrides;
+    /**
+     * Server URLs override to apply to the template interface
+     */
+    serverUrls: Array<string>;
+    termsAndConditionsUrl?: string;
+};
+
+export type EserviceFromScratchSeed = {
     /**
      * Audience for the access token
      */
@@ -157,15 +197,7 @@ export type EserviceSeed = {
      * Type of the access token
      */
     accessTokenType: AccessTokenType;
-    /**
-     * Categories of the E-service
-     */
-    categories?: Array<EserviceCategory>;
     description: LocalizedDescription;
-    /**
-     * Interface document for the E-service
-     */
-    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Whether SignalHub is enabled for the E-service
      */
@@ -178,15 +210,60 @@ export type EserviceSeed = {
      * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
      */
     maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    /**
+     * Interface document for the E-service
+     */
+    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Mode of the E-service
      */
     mode?: EserviceMode;
-    name: LocalizedName;
     /**
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceFromTemplateSeed = {
+    /**
+     * Audience for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    /**
+     * Type of the access token
+     */
+    accessTokenType: AccessTokenType;
+    description: LocalizedDescription;
+    /**
+     * Whether SignalHub is enabled for the E-service
+     */
+    isSignalHubEnabled?: boolean;
+    /**
+     * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+     */
+    maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Overrides applied to the E-service Template interface document
+     */
+    interfaceDocumentOverrides: InterfaceDocumentOverrides;
+    /**
+     * Reference to the E-service Template to instantiate
+     */
+    template: EserviceTemplateReference;
 };
 
 export type EservicePatch = {
@@ -1108,7 +1185,7 @@ export type GetProducerEservicesResponses = {
 export type GetProducerEservicesResponse = GetProducerEservicesResponses[keyof GetProducerEservicesResponses];
 
 export type CreateEserviceData = {
-    body: EserviceSeed;
+    body: EserviceFromScratchSeed;
     path?: never;
     query?: never;
     url: '/producer/eservices';
@@ -1139,6 +1216,43 @@ export type CreateEserviceResponses = {
 };
 
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
+
+export type CreateEserviceFromTemplateData = {
+    body: EserviceFromTemplateSeed;
+    path?: never;
+    query?: never;
+    url: '/producer/eservices/fromTemplate';
+};
+
+export type CreateEserviceFromTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type CreateEserviceFromTemplateError = CreateEserviceFromTemplateErrors[keyof CreateEserviceFromTemplateErrors];
+
+export type CreateEserviceFromTemplateResponses = {
+    /**
+     * E-service created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateEserviceFromTemplateResponse = CreateEserviceFromTemplateResponses[keyof CreateEserviceFromTemplateResponses];
 
 export type GetProducerEserviceDetailsData = {
     body?: never;
@@ -2464,6 +2578,51 @@ export type ListConsumerAgreementsResponses = {
 };
 
 export type ListConsumerAgreementsResponse = ListConsumerAgreementsResponses[keyof ListConsumerAgreementsResponses];
+
+export type CreateAgreementConsumerActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementConsumerActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkError = CreateAgreementConsumerActivationMagicLinkErrors[keyof CreateAgreementConsumerActivationMagicLinkErrors];
+
+export type CreateAgreementConsumerActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkResponse = CreateAgreementConsumerActivationMagicLinkResponses[keyof CreateAgreementConsumerActivationMagicLinkResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;
