@@ -1,16 +1,10 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Empty } from "@knodia/ui-kit/ui";
-import {
-  ArchiveIcon,
-  CheckIcon,
-  ProhibitIcon,
-  SelectionPlusIcon,
-} from "@phosphor-icons/react";
+import { Button } from "@knodia/ui-kit/ui";
+import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
-import { useHasRole } from "@/contexts/auth";
 import { formatNumber } from "@/utils/formatters";
 
 export function ConsumerAgreementsSummary({
@@ -20,76 +14,40 @@ export function ConsumerAgreementsSummary({
 }) {
   const navigate = useNavigate();
 
-  const canManageAgreements = useHasRole("administrative");
-  const { activeAgreements, archivedAgreements, suspendedAgreements } =
-    counters;
-  const hasAgreements =
-    activeAgreements + suspendedAgreements + archivedAgreements > 0;
-
-  if (!hasAgreements) {
-    return (
-      <Empty
-        action={
-          canManageAgreements
-            ? {
-                as: "button",
-                hierarchy: "brand",
-                kind: "filled",
-                label: "Search new E-Services",
-                onClick: () =>
-                  navigate({ to: "/consumption/e-services/search" }),
-              }
-            : undefined
-        }
-        description={
-          canManageAgreements
-            ? "Search for an E-Service to request an Agreement."
-            : undefined
-        }
-        icon={<SelectionPlusIcon />}
-        title="You don't have any Agreements yet."
-      />
-    );
-  }
-
   return (
-    <>
-      <div className="grid grid-cols-3 gap-4">
-        <AgreementCounterCard
-          count={activeAgreements}
-          icon={<CheckIcon />}
-          kind="success"
-          label="Active"
-          onViewAll={() =>
-            navigate({
-              search: { agreementState: "Active" },
-              to: "/consumption/e-services",
-            })
-          }
-        />
-        <AgreementCounterCard
-          count={suspendedAgreements}
-          icon={<ProhibitIcon />}
-          kind="error"
-          label="Suspended"
-          onViewAll={() =>
-            navigate({
-              search: { agreementState: "Suspended" },
-              to: "/consumption/e-services",
-            })
-          }
-        />
-        <AgreementCounterCard
-          count={archivedAgreements}
-          icon={<ArchiveIcon />}
-          kind="neutral"
-          label="Archived"
-          onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
-        />
-      </div>
-
-      {/* TODO: Implement "Action needed" section */}
-    </>
+    <div className="grid grid-cols-3 gap-4">
+      <AgreementCounterCard
+        count={counters.activeAgreements}
+        icon={<CheckIcon />}
+        kind="success"
+        label="Active"
+        onViewAll={() =>
+          navigate({
+            search: { agreementState: "Active" },
+            to: "/consumption/e-services",
+          })
+        }
+      />
+      <AgreementCounterCard
+        count={counters.suspendedAgreements}
+        icon={<ProhibitIcon />}
+        kind="error"
+        label="Suspended"
+        onViewAll={() =>
+          navigate({
+            search: { agreementState: "Suspended" },
+            to: "/consumption/e-services",
+          })
+        }
+      />
+      <AgreementCounterCard
+        count={counters.archivedAgreements}
+        icon={<ArchiveIcon />}
+        kind="neutral"
+        label="Archived"
+        onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
+      />
+    </div>
   );
 }
 
