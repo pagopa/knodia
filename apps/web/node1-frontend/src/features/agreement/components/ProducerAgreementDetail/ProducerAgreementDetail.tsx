@@ -15,10 +15,7 @@ import { EserviceStateChip } from "@/features/e-service/components/EserviceState
 import { useReactivateAgreementByProducer } from "../../hooks/useReactivateAgreementByProducer";
 import { useSuspendAgreementByProducer } from "../../hooks/useSuspendAgreementByProducer";
 import { AgreementStateChip } from "../AgreementStateChip";
-import {
-  ProducerSuspendAgreementBody,
-  SuspendAgreementModal,
-} from "../SuspendAgreementModal";
+import { SuspendAgreementModal } from "../SuspendAgreementModal";
 import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
@@ -137,9 +134,8 @@ function ConsumerSuspendedBanner({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="producer"
+      />
     </>
   );
 }
@@ -190,9 +186,8 @@ function SuspendAgreementByProducerButton({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="producer"
+      />
     </>
   );
 }

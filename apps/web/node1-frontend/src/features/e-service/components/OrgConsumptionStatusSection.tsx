@@ -25,10 +25,7 @@ import { match } from "ts-pattern";
 
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
-import {
-  ConsumerSuspendAgreementBody,
-  SuspendAgreementModal,
-} from "@/features/agreement/components/SuspendAgreementModal";
+import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
@@ -254,9 +251,8 @@ function SuspendAgreementByConsumerButton({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ConsumerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="consumer"
+      />
     </>
   );
 }
