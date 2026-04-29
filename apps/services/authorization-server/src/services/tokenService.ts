@@ -73,15 +73,6 @@ export function tokenServiceBuilder({
           logger,
         );
 
-      // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
-      const { agreement, eserviceVersion, purpose } =
-        await validatePlatformObjects(
-          purposeId,
-          consumerAttributes,
-          dpopProofJWT,
-          readmodelService,
-        );
-
       // Check that the DPoP proof has not been replayed if the request is using DPoP
       if (dpopProofJWT) {
         await assertDpopProofNotReplayed(
@@ -91,6 +82,15 @@ export function tokenServiceBuilder({
           jwtClockToleranceSeconds,
         );
       }
+
+      // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
+      const { agreement, eserviceVersion, purpose } =
+        await validatePlatformObjects(
+          purposeId,
+          consumerAttributes,
+          dpopProofJWT,
+          readmodelService,
+        );
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
