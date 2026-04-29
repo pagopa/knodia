@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { UserRole } from "../auth/roles.ts";
+
 export const API_Pagination = z
   .strictObject({
     limit: z.number().min(1).max(50).meta({ format: "int32" }),
@@ -40,7 +42,7 @@ export const API_UserId = z.guid().toLowerCase().meta({
   id: "UserId",
 });
 
-export const API_UserRole = z.enum(["administrative", "technical"]).meta({
+export const API_UserRole = UserRole.meta({
   description: "Role of the User within the Organization",
   id: "UserRole",
 });
