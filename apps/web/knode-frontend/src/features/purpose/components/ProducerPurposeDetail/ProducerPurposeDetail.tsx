@@ -1,8 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Banner, Button, Chip } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import { Banner, Button } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { match } from "ts-pattern";
 
@@ -17,7 +17,6 @@ import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip
 import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
 import { useReactivatePurposeByProducer } from "@/features/purpose/hooks/useReactivatePurposeByProducer";
 import { useSuspendPurposeByProducer } from "@/features/purpose/hooks/useSuspendPurposeByProducer";
-import { formatNumericDate } from "@/utils/formatters";
 
 export function ProducerPurposeDetail({
   purpose,
@@ -33,11 +32,9 @@ export function ProducerPurposeDetail({
       <PageHeader
         actions={
           isArchived ? (
-            <Chip
-              icon={<ArchiveIcon />}
-              kind="neutral"
-              label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
-              type="light"
+            <PurposeStateChip
+              archivedAt={purpose.updatedAt}
+              state={purpose.state}
             />
           ) : (
             canManagePurposeState && <PurposeActionButton purpose={purpose} />

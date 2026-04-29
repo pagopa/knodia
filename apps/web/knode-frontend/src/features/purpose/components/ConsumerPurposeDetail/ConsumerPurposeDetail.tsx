@@ -5,8 +5,8 @@ import {
   type PurposeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { Banner, Button, Chip, Pagination } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import { Banner, Button, Pagination } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { match } from "ts-pattern";
@@ -25,7 +25,6 @@ import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurpos
 import { useArchiveConsumerPurpose } from "@/features/purpose/hooks/useArchiveConsumerPurpose";
 import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
 import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
-import { formatNumericDate } from "@/utils/formatters";
 
 import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
 import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
@@ -52,11 +51,9 @@ export function ConsumerPurposeDetail({
       <PageHeader
         actions={
           isArchived ? (
-            <Chip
-              icon={<ArchiveIcon />}
-              kind="neutral"
-              label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
-              type="light"
+            <PurposeStateChip
+              archivedAt={purpose.updatedAt}
+              state={purpose.state}
             />
           ) : (
             canManagePurpose && (
