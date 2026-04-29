@@ -94,18 +94,7 @@ function AgreementStatusBanner({
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }) {
-  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
-
-  const {
-    isError: isSuspendError,
-    isPending: isSuspendPending,
-    suspendAgreement,
-  } = useSuspendConsumerAgreement({
-    agreementId,
-    eserviceId,
-    knodeId,
-  });
 
   const { isPending: isReactivatePending, reactivateAgreement } =
     useReactivateConsumerAgreement({
@@ -115,32 +104,17 @@ function AgreementStatusBanner({
     });
 
   const banner = match(agreement.state)
-    .with("Active", () => (
-      <>
-        <Banner
-          action={
-            canManageAgreement
-              ? {
-                  label: "Suspend",
-                  onPress: () => setIsSuspendModalOpen(true),
-                }
-              : undefined
-          }
-          kind="success"
-        >
-          Active
-        </Banner>
-        <SuspendAgreementModal
-          isError={isSuspendError}
-          isOpen={isSuspendModalOpen}
-          isPending={isSuspendPending}
-          onConfirm={suspendAgreement}
-          onOpenChange={setIsSuspendModalOpen}
-        >
-          <ConsumerSuspendAgreementBody />
-        </SuspendAgreementModal>
-      </>
-    ))
+    .with("Active", () =>
+      canManageAgreement ? (
+        <SuspendConsumerAgreementButton
+          agreementId={agreementId}
+          eserviceId={eserviceId}
+          knodeId={knodeId}
+        />
+      ) : (
+        <Banner kind="success">Active</Banner>
+      ),
+    )
     .with("Suspended", () =>
       agreement.suspendedByProducerAt !== null ? (
         <Banner
@@ -246,5 +220,42 @@ function CollapseTrigger({
         </span>
       </Button>
     </Heading>
+  );
+}
+
+function SuspendConsumerAgreementButton({
+  agreementId,
+  eserviceId,
+  knodeId,
+}: {
+  agreementId: AgreementId;
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendAgreement } = useSuspendConsumerAgreement({
+    agreementId,
+    eserviceId,
+    knodeId,
+  });
+
+  return (
+    <>
+      <Banner
+        action={{ label: "Suspend", onPress: () => setIsOpen(true) }}
+        kind="success"
+      >
+        Active
+      </Banner>
+      <SuspendAgreementModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendAgreement}
+        onOpenChange={setIsOpen}
+      >
+        <ConsumerSuspendAgreementBody />
+      </SuspendAgreementModal>
+    </>
   );
 }

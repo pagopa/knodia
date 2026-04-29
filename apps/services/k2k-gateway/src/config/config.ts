@@ -13,6 +13,16 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
         CALLER_KNODE_ID: KnodeId,
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_AUDIENCE: z.string(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_ISSUER: z.string(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID: z.string(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION: z.coerce
+          .number()
+          .int()
+          .positive()
+          .default(120),
+        FRONTEND_ACTIVATION_PATH: z.string().default("/activate"),
+        FRONTEND_BASE_URL: z.url(),
         INTERNAL_JWT_AUDIENCE: z.string(),
         INTERNAL_JWT_ISSUER: z.string(),
         INTERNAL_JWT_KID: z.string(),
@@ -39,6 +49,15 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
           subject: c.INTERNAL_JWT_SUBJECT,
         },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
+        magicLinkConfig: {
+          audience: c.EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_AUDIENCE,
+          frontendActivationPath: c.FRONTEND_ACTIVATION_PATH,
+          frontendBaseUrl: c.FRONTEND_BASE_URL,
+          issuer: c.EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_ISSUER,
+          kid: c.EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID,
+          secondsDuration:
+            c.EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION,
+        },
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         purposeProcessUrl: c.PURPOSE_PROCESS_URL,
       })),

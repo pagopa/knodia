@@ -7,10 +7,10 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { server } from "@/test/msw/server";
-import { renderWithProviders, screen } from "@/test/utils";
+import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { OrgConsumptionStatusSection } from "./OrgConsumptionStatusSection";
 
@@ -245,5 +245,62 @@ describe("OrgConsumptionStatusSection — Suspended state", () => {
     await user.click(screen.getByRole("button", { name: "Reactivate" }));
 
     expect(capturedKnodeId).toBe(KNODE_ID);
+  });
+});
+
+describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
+  it("does not reopen the suspend modal after suspend → reactivate", async () => {
+    const suspendHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));
+    server.use(
+      http.post(
+        `${BASE_URL}/consumer/agreements/${AGREEMENT_ID}/suspend`,
+        suspendHandler,
+      ),
+    );
+
+    const eserviceId = unsafeBrandId<EserviceId>(crypto.randomUUID());
+
+    const { rerender, user } = renderWithProviders(
+      <OrgConsumptionStatusSection
+        agreement={defaultAgreement}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Suspend" }));
+    await user.click(screen.getByRole("button", { name: "Suspend anyway" }));
+
+    await waitFor(() => {
+      expect(suspendHandler).toHaveBeenCalledTimes(1);
+    });
+
+    rerender(
+      <OrgConsumptionStatusSection
+        agreement={{
+          ...defaultAgreement,
+          state: "Suspended",
+          suspendedByConsumerAt: "2026-01-01T00:00:00Z",
+        }}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    rerender(
+      <OrgConsumptionStatusSection
+        agreement={defaultAgreement}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    expect(screen.queryByText("Suspend Agreement")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Suspend anyway" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -7,6 +7,7 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
@@ -22,13 +23,18 @@ import {
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  type KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
-import type { API_GetAgreementsQueryParams } from "../models/api.ts";
+import type {
+  API_AgreementActivationClaims,
+  API_GetAgreementsQueryParams,
+} from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
+  createAgreementActivatedByConsumerOperatorV1Event,
   createAgreementActivatedV1Event,
   createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
   createAgreementReactivatedByConsumerV1Event,
@@ -36,6 +42,7 @@ import {
   createAgreementSuspendedByConsumerV1Event,
   createAgreementSuspendedByProducerV1Event,
 } from "../models/agreementEventFactory.ts";
+import { toAPI_AgreementActivationClaims } from "../models/apiConverter.ts";
 import {
   retrieveAgreement,
   retrieveEservice,
@@ -43,11 +50,14 @@ import {
 import {
   assertAgreementCanBeReactivatedBy,
   assertAgreementCanBeSuspendedBy,
+  assertAgreementIsPendingConsumerOperatorIdentification,
   assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
   assertNoConflictingAgreementsExist,
   assertOrganizationIsAgreementProducer,
+  assertTokenAgreementIdMatchesPathParam,
+  assertTokenResourceClaimsMatchAgreement,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -68,8 +78,49 @@ type CallerIdentity =
 export function agreementServiceBuilder(
   eventStoreWriter: AgreementEventStoreWriter,
   readmodelService: ReadmodelService,
+  currentKnodeId: KnodeId,
 ) {
   return {
+    async activateAgreement(
+      agreementId: AgreementId,
+      {
+        authData,
+        correlationId,
+        logger,
+      }: AuthorizedContext<ExternalUISessionAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Activating Agreement ${agreementId}`);
+
+      assertTokenAgreementIdMatchesPathParam(authData, agreementId);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await retrieveAgreement(agreementId, readmodelService);
+
+      assertTokenResourceClaimsMatchAgreement(
+        authData,
+        agreement,
+        currentKnodeId,
+      );
+      assertAgreementIsPendingConsumerOperatorIdentification(agreement);
+
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: AgreementState.enum.Active,
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createAgreementActivatedByConsumerOperatorV1Event(
+          updatedAgreement,
+          version,
+          correlationId,
+        ),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
+    },
     async createAgreement(
       {
         consumer,
@@ -163,6 +214,22 @@ export function agreementServiceBuilder(
       const agreement = await retrieveAgreement(agreementId, readmodelService);
 
       return agreement;
+    },
+    async getAgreementActivationClaims(
+      agreementId: AgreementId,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<API_AgreementActivationClaims> {
+      logger.info(
+        `Getting activation claims for Agreement with ID ${agreementId}`,
+      );
+
+      const { data: agreement } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+      assertAgreementIsPendingConsumerOperatorIdentification(agreement);
+
+      return toAPI_AgreementActivationClaims(agreement, currentKnodeId);
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,

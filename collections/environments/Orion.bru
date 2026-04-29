@@ -5,11 +5,13 @@ vars {
   host-eservice-process: http://localhost:3001
   host-k2k-gateway: http://localhost:3101
   host-keychain-process: http://localhost:3301
+  host-mock-eservice: http://localhost:9991
   host-organization-process: http://localhost:3401
   host-purpose-process: http://localhost:3501
   host-remote-resources-manager: http://localhost:4901
   correlation-id: b8ceb76b-ecb9-4dd9-9c92-54c89c92616f
   ui-session-jwt: Bearer {{process.env.UI_SESSION_JWT}}
   internal-jwt: Bearer {{process.env.INTERNAL_JWT}}
+  external-ui-session-jwt: Bearer {{process.env.EXTERNAL_UI_SESSION_JWT}}
   other-knode-id: Lynx
 }

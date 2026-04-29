@@ -95,6 +95,26 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
+export type AgreementActivationClaims = {
+    agreement: {
+        id: string;
+        knodeId: KnodeId;
+    };
+    consumer: {
+        id: string;
+        knodeId: KnodeId;
+    };
+    eservice: {
+        id: string;
+        knodeId: KnodeId;
+        version: string;
+    };
+    producer: {
+        id: string;
+        knodeId: KnodeId;
+    };
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -274,6 +294,104 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetAgreementActivationClaimsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activationClaims';
+};
+
+export type GetAgreementActivationClaimsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type GetAgreementActivationClaimsError = GetAgreementActivationClaimsErrors[keyof GetAgreementActivationClaimsErrors];
+
+export type GetAgreementActivationClaimsResponses = {
+    /**
+     * Activation claims retrieved successfully
+     */
+    200: AgreementActivationClaims;
+};
+
+export type GetAgreementActivationClaimsResponse = GetAgreementActivationClaimsResponses[keyof GetAgreementActivationClaimsResponses];
+
+export type ActivateAgreementData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activate';
+};
+
+export type ActivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ActivateAgreementError = ActivateAgreementErrors[keyof ActivateAgreementErrors];
+
+export type ActivateAgreementResponses = {
+    /**
+     * Agreement activated successfully
+     */
+    200: Agreement;
+};
+
+export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
 
 export type SuspendAgreementByConsumerData = {
     body?: never;

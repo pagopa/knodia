@@ -1,4 +1,6 @@
 import type {
+  ExternalUISessionScope,
+  ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionTokenClaims,
   UserRole,
@@ -6,6 +8,14 @@ import type {
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import {
+  type ExternalId,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
+import {
+  type AgreementId,
+  type EserviceId,
+  type EserviceVersionId,
+  KnodeId,
   type OrganizationId,
   unsafeBrandId,
   unsafeBrandUserId,
@@ -20,8 +30,36 @@ export const TEST_USER_ID = unsafeBrandUserId(
 export const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
+const TEST_AGREEMENT_ID = unsafeBrandId<AgreementId>(
+  "30000000-3000-1000-8000-000000000003",
+);
+const TEST_CONSUMER_ID = unsafeBrandExternalId<OrganizationId>(
+  "40000000-4000-1000-8000-000000000004",
+);
+const TEST_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "50000000-5000-1000-8000-000000000005",
+);
+const TEST_PRODUCER_ID = unsafeBrandId<OrganizationId>(
+  "60000000-6000-1000-8000-000000000006",
+);
+const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
+  "70000000-7000-1000-8000-000000000007",
+);
 
 export type TestToken =
+  | {
+      agreementId?: AgreementId;
+      agreementKnodeId?: KnodeId;
+      consumerId?: ExternalId<OrganizationId>;
+      consumerKnodeId?: KnodeId;
+      eserviceId?: EserviceId;
+      eserviceKnodeId?: KnodeId;
+      eserviceVersionId?: EserviceVersionId;
+      producerId?: OrganizationId;
+      producerKnodeId?: KnodeId;
+      scope?: ExternalUISessionScope;
+      type: "external-ui-session";
+    }
   | {
       organizationId?: OrganizationId;
       roles?: NonEmptyArray<UserRole>;
@@ -48,8 +86,54 @@ export function createTestTokenPayload(spec: TestToken): string {
         }),
     )
     .with({ type: "internal" }, getTestInternalTokenClaims)
+    .with({ type: "external-ui-session" }, (props) =>
+      getTestExternalUISessionTokenClaims(props),
+    )
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
+}
+
+export function getTestExternalUISessionTokenClaims(
+  props: {
+    agreementId?: AgreementId;
+    agreementKnodeId?: KnodeId;
+    consumerId?: ExternalId<OrganizationId>;
+    consumerKnodeId?: KnodeId;
+    eserviceId?: EserviceId;
+    eserviceKnodeId?: KnodeId;
+    eserviceVersionId?: EserviceVersionId;
+    producerId?: OrganizationId;
+    producerKnodeId?: KnodeId;
+    scope?: ExternalUISessionScope;
+  } = {},
+): ExternalUISessionTokenClaims {
+  return {
+    agreement: {
+      id: props.agreementId ?? TEST_AGREEMENT_ID,
+      knode_id: props.agreementKnodeId ?? KnodeId.enum.Orion,
+    },
+    aud: "test-audience",
+    consumer: {
+      id: props.consumerId ?? TEST_CONSUMER_ID,
+      knode_id: props.consumerKnodeId ?? KnodeId.enum.Orion,
+    },
+    eservice: {
+      id: props.eserviceId ?? TEST_ESERVICE_ID,
+      knode_id: props.eserviceKnodeId ?? KnodeId.enum.Orion,
+      version: props.eserviceVersionId ?? TEST_ESERVICE_VERSION_ID,
+    },
+    exp: 9999999999,
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    producer: {
+      id: props.producerId ?? TEST_PRODUCER_ID,
+      knode_id: props.producerKnodeId ?? KnodeId.enum.Orion,
+    },
+    scope: props.scope ?? "agreement-activation",
+    sub: "test-external-user",
+    type: "external-ui-session",
+  };
 }
 
 export function getTestInternalTokenClaims(): InternalTokenClaims {

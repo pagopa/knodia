@@ -1,0 +1,19 @@
+meta {
+  name: Get Agreement Activation Claims
+  type: http
+}
+
+get {
+  url: {{host-agreement-process}}/agreements/:agreementId/activationClaims
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
