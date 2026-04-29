@@ -4,7 +4,6 @@ import {
   archivePurposeByConsumerMutation,
   getConsumerPurposesQueryKey,
 } from "@knodia/bff-client/tanstack-query";
-import { toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
@@ -19,12 +18,6 @@ export function useArchiveConsumerPurpose(
 
   const { isError, isPending, mutate } = useMutation({
     ...archivePurposeByConsumerMutation({ client }),
-    onError: () =>
-      toastQueue.add({
-        description: "Please try again later.",
-        kind: "error",
-        title: "Unable to archive Purpose",
-      }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         consumerPurposeDetailsQuery(purposeId, knodeId),
