@@ -107,18 +107,18 @@ function RouteComponent() {
   const onClose = () =>
     navigate({ replace: true, to: "/production/e-services" });
 
-  const { templateId } = Route.useSearch();
+  const { knodeId, templateId } = Route.useSearch();
 
   const { data: templateDetails, isLoading: isLoadingTemplateDetails } =
     useQuery({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      ...eserviceTemplateDetailsQuery(templateId!, config.knodeId),
+      ...eserviceTemplateDetailsQuery(templateId!, knodeId),
       enabled: !!templateId,
     });
 
   const handleSelectTemplate = (templateId: string) => {
     navigate({
-      search: { templateId },
+      search: (prev) => ({ knodeId: prev.knodeId, templateId }),
     });
   };
 
