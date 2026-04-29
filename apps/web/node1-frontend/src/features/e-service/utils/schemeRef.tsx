@@ -13,7 +13,7 @@ export function formatSchemeRefLabels(
   { type = "conjunction" }: { type?: "conjunction" | "disjunction" } = {},
 ) {
   const labels = refs.map((ref) => data[ref.scheme]?.[ref.code] ?? ref.code);
-  const separator = type === "disjunction" ? "or" : "and";
+  const separator = type === "disjunction" ? "or" : ", ";
 
   if (labels.length <= 2) {
     return labels.join(` ${separator} `);

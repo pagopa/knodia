@@ -683,6 +683,9 @@ components:
           description: Purpose counters
           allOf:
             - $ref: "#/components/schemas/ProducerEserviceDetailsPurposeCounters"
+        template:
+          allOf:
+            - $ref: "#/components/schemas/EserviceTemplateReference"
         updatedAt:
           type: string
           format: date-time
@@ -2545,6 +2548,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:

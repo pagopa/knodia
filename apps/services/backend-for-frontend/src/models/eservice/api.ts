@@ -318,6 +318,7 @@ export const API_ProducerEserviceDetails = z
     purposes: API_ProducerEserviceDetailsPurposeCounters.meta({
       description: "Purpose counters",
     }),
+    template: API_EserviceTemplateReference.optional(),
     updatedAt: z.iso.datetime(),
     version: API_ProducerEserviceVersionDetails.meta({
       description: "Latest version details",

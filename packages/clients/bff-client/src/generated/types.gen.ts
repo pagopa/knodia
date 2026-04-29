@@ -384,6 +384,7 @@ export type ProducerEserviceDetails = {
      * Purpose counters
      */
     purposes: ProducerEserviceDetailsPurposeCounters;
+    template?: EserviceTemplateReference;
     updatedAt: string;
     /**
      * Latest version details
@@ -1316,6 +1317,10 @@ export type UpdateProducerEserviceErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];

@@ -15,10 +15,12 @@ import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { generalStepSchema } from "../types/eserviceCreateForm";
 import {
+  formatSchemeRefLabels,
   parseSchemeRefKeys,
   renderSchemeRefItems,
   toSchemeRefKey,
 } from "../utils/schemeRef";
+import { DefinedByTemplateReadOnlyField } from "./CreateEServiceForm/components/DefinedByTemplateReadOnlyField";
 
 interface EditEServiceModalProps {
   eservice: bffApi.ProducerEserviceDetails;
@@ -32,6 +34,8 @@ export function EditEServiceModal({
   onClose,
 }: EditEServiceModalProps) {
   const queryClient = useQueryClient();
+
+  const isTemplateInstance = !!eservice.template;
 
   const {
     isError,
@@ -65,7 +69,7 @@ export function EditEServiceModal({
     },
     onSubmit: ({ value }) => {
       const body: bffApi.EservicePatch = {
-        categories: value.categories,
+        categories: isTemplateInstance ? undefined : value.categories,
         description: { en: value.description },
         name: { en: value.name },
       };
@@ -139,18 +143,37 @@ export function EditEServiceModal({
         </form.Field>
 
         <form.Field name="categories">
-          {(field) => (
-            <Select
-              label="Categories (optional)"
-              name={field.name}
-              onChange={(keys) => field.handleChange(parseSchemeRefKeys(keys))}
-              placeholder="Select categories"
-              selectionMode="multiple"
-              value={field.state.value?.map(toSchemeRefKey) ?? []}
-            >
-              {renderSchemeRefItems(categories)}
-            </Select>
-          )}
+          {(field) => {
+            const value = field.state.value;
+            const label = "Categories (optional)";
+
+            if (isTemplateInstance) {
+              return (
+                <DefinedByTemplateReadOnlyField
+                  label={label}
+                  name={field.name}
+                  value={formatSchemeRefLabels(value, categories, {
+                    type: "conjunction",
+                  })}
+                />
+              );
+            }
+
+            return (
+              <Select
+                label={label}
+                name={field.name}
+                onChange={(keys) =>
+                  field.handleChange(parseSchemeRefKeys(keys))
+                }
+                placeholder="Select categories"
+                selectionMode="multiple"
+                value={value.map(toSchemeRefKey)}
+              >
+                {renderSchemeRefItems(categories)}
+              </Select>
+            );
+          }}
         </form.Field>
       </form>
     </Modal>
