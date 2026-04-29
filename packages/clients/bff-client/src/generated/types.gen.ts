@@ -181,7 +181,7 @@ export type InterfaceDocumentOverrides = {
      * Server URLs override to apply to the template interface
      */
     serverUrls: Array<string>;
-    termsAndConditionsUrl?: string;
+    termsOfService?: string;
 };
 
 export type EserviceFromScratchSeed = {
