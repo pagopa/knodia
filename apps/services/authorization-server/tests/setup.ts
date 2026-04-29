@@ -88,8 +88,8 @@ beforeAll(async () => {
       readmodelDbUser: "test_db_user",
       readmodelDbUseSsl: false,
     },
+    dynamoClient,
     readmodelDb,
-    sharedDynamoClient: dynamoClient,
   });
 
   await app.ready();
