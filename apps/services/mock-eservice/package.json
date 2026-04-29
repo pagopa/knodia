@@ -27,7 +27,6 @@
     "@fastify/request-context": "catalog:",
     "@knodia/authorization-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
-    "@knodia/crypto": "workspace:*",
     "@knodia/db-jti-replay-store": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

@@ -1145,9 +1145,6 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
-      '@knodia/crypto':
-        specifier: workspace:*
-        version: link:../../../packages/crypto
       '@knodia/db-jti-replay-store':
         specifier: workspace:*
         version: link:../../../packages/db/jti-replay-store
@@ -3368,9 +3365,6 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
-      '@knodia/crypto':
-        specifier: workspace:*
-        version: link:../crypto
       jose:
         specifier: 'catalog:'
         version: 6.1.3
