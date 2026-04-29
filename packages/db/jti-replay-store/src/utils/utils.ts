@@ -1,6 +1,12 @@
 import { type DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { dateToSeconds } from "@knodia/common-models/utils";
 
+/**
+ * Uses conditional put for atomicity. The `OR ttl < :now` clause
+ * allows overwriting records whose TTL has expired but that DynamoDB
+ * hasn't physically deleted yet (TTL cleanup is best-effort and can
+ * lag behind), preventing stale records from blocking valid writes.
+ */
 export async function storeJti({
   dynamoClient,
   expireAtSec,

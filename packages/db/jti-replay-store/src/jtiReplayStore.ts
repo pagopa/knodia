@@ -22,11 +22,6 @@ export function createJtiReplayStore(
     /**
      * Marks a JTI as used. Returns `true` if this is the first use,
      * `false` if the JTI was already seen (replay attempt).
-     *
-     * Uses conditional put for atomicity. The `OR ttl < :now` clause
-     * allows overwriting records whose TTL has expired but that DynamoDB
-     * hasn't physically deleted yet (TTL cleanup is best-effort and can
-     * lag behind), preventing stale records from blocking valid writes.
      */
     async consume(
       jti: string,

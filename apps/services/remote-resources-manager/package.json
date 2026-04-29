@@ -17,6 +17,7 @@
     "@knodia/test-commons": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
+    "axios": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
