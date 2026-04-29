@@ -14,7 +14,7 @@ import { storeJti } from "@knodia/db-jti-replay-store/utils";
 import {
   dpopClaimsValidationError,
   invalidDpopProofSignature,
-} from "@knodia/dpop-validator";
+} from "@knodia/dpop-validator/errors";
 import {
   type Eservice,
   EserviceAccessTokenType,
