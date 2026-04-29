@@ -1196,6 +1196,62 @@ components:
       required:
         - counters
       additionalProperties: false
+    PendingConsumerAgreement:
+      type: object
+      properties:
+        eservice:
+          type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/EserviceCategory"
+            id:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            mode:
+              $ref: "#/components/schemas/EserviceMode"
+            name:
+              $ref: "#/components/schemas/LocalizedName"
+            state:
+              $ref: "#/components/schemas/EserviceVersionState"
+          required:
+            - categories
+            - id
+            - mode
+            - name
+            - state
+          additionalProperties: false
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Agreement or its E-service has been recently
+            updated
+          type: boolean
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - eservice
+        - hasRecentlyBeenUpdated
+        - id
+        - producer
+      additionalProperties: false
+    PendingConsumerAgreements:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/PendingConsumerAgreement"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     SessionRequest:
       type: object
       properties:
@@ -4191,6 +4247,63 @@ paths:
                 description: Consumer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements/pending:
+    get:
+      operationId: getPendingConsumerAgreements
+      tags:
+        - agreement
+      description: Retrieve a paginated list of Consumer Agreements pending action
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Pending Consumer Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Pending Consumer Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PendingConsumerAgreements"
         "400":
           description: Bad Request
           content:
