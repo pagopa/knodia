@@ -3,7 +3,6 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
-  API_UserRole,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
@@ -248,7 +247,10 @@ export const API_User = z
 export type API_User = z.infer<typeof API_User>;
 
 export const API_OrganizationUser = API_User.extend({
-  role: API_UserRole,
+  isTechnical: z.boolean().meta({
+    description:
+      "Whether the User has the technical role within the Organization",
+  }),
 }).meta({ id: "OrganizationUser" });
 export type API_OrganizationUser = z.infer<typeof API_OrganizationUser>;
 

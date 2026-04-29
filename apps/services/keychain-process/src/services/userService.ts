@@ -5,7 +5,6 @@ import {
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { UserRole } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type OrganizationId,
@@ -26,7 +25,7 @@ export interface IdmUser {
 }
 
 export interface OrganizationUser extends IdmUser {
-  role: UserRole;
+  isTechnical: boolean;
 }
 
 export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
@@ -66,9 +65,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
 
       return organizationUsers.map((user) => ({
         ...user,
-        role: technicalUserIds.has(user.id)
-          ? UserRole.enum.technical
-          : UserRole.enum.administrative,
+        isTechnical: technicalUserIds.has(user.id),
       }));
     },
 

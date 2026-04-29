@@ -135,12 +135,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
-    UserRole:
-      description: Role of the User within the Organization
-      type: string
-      enum:
-        - administrative
-        - technical
     KeyId:
       description: Unique identifier of the Key
       type: string
@@ -1661,13 +1655,14 @@ components:
           $ref: "#/components/schemas/UserId"
         username:
           type: string
-        role:
-          $ref: "#/components/schemas/UserRole"
+        isTechnical:
+          description: Whether the User has the technical role within the Organization
+          type: boolean
       required:
         - email
         - id
         - username
-        - role
+        - isTechnical
       additionalProperties: false
     OrganizationUsers:
       type: array

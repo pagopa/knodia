@@ -46,7 +46,7 @@ export const toAPI_OrganizationUser = (
   user: OrganizationUser,
 ): API_OrganizationUser => ({
   ...toAPI_User(user),
-  role: user.role,
+  isTechnical: user.isTechnical,
 });
 
 export const toAPI_ConsumerKeychainPurpose = (

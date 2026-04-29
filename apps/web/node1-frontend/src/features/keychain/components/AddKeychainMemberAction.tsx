@@ -5,7 +5,6 @@ import {
   getConsumerKeychainMembersQueryKey,
   getOrganizationUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
-import { UserRole } from "@knodia/common-models/auth";
 import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
@@ -104,8 +103,8 @@ function AddKeychainMemberModal({
     label: user.username,
   }));
 
-  const userRoleById = new Map(
-    organizationUsers.map((user) => [user.id, user.role]),
+  const isTechnicalById = new Map(
+    organizationUsers.map((user) => [user.id, user.isTechnical]),
   );
 
   const handleAddKeychainMember = (userId: UserId) => {
@@ -162,9 +161,7 @@ function AddKeychainMemberModal({
           .nullable()
           .refine((value) => value !== null, "Select an operator")
           .refine(
-            (value) =>
-              value === null ||
-              userRoleById.get(value) === UserRole.enum.technical,
+            (value) => value === null || isTechnicalById.get(value) === true,
             "Only Technical operators can be added as members.",
           ),
       }),

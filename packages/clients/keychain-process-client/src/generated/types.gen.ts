@@ -90,11 +90,6 @@ export type OrganizationId = string;
 export type UserId = string;
 
 /**
- * Role of the User within the Organization
- */
-export type UserRole = 'administrative' | 'technical';
-
-/**
  * Unique identifier of the Key
  */
 export type KeyId = string;
@@ -153,7 +148,10 @@ export type OrganizationUser = {
     email: string;
     id: UserId;
     username: string;
-    role: UserRole;
+    /**
+     * Whether the User has the technical role within the Organization
+     */
+    isTechnical: boolean;
 };
 
 export type OrganizationUsers = Array<OrganizationUser>;

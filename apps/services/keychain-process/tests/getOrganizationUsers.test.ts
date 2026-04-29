@@ -40,7 +40,7 @@ describe("GET /users (getOrganizationUsers)", () => {
     sendMock.mockReset();
   });
 
-  it("should return all organization users with their role", async () => {
+  it("should return all organization users with their technical flag", async () => {
     sendMock.mockImplementation(
       async (command: { input: { GroupName: string; NextToken?: string } }) => {
         if (
@@ -125,19 +125,19 @@ describe("GET /users (getOrganizationUsers)", () => {
       {
         email: "mario.rossi@example.com",
         id: "10000000-1000-1000-8000-000000000011",
-        role: "technical",
+        isTechnical: true,
         username: "Mario Rossi",
       },
       {
         email: "giulia.bianchi@example.com",
         id: "10000000-1000-1000-8000-000000000012",
-        role: "administrative",
+        isTechnical: false,
         username: "Giulia Bianchi",
       },
       {
         email: "luca.neri@example.com",
         id: "10000000-1000-1000-8000-000000000013",
-        role: "technical",
+        isTechnical: true,
         username: "Luca Neri",
       },
     ]);
