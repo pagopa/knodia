@@ -30,22 +30,22 @@ export function applyInterfaceDocumentOverrides({
   fileName: string;
   overrides: API_InterfaceDocumentOverrides;
 }) {
-  const { interfaceObj, serialize } = match(fileName.toLowerCase())
-    .with(P.string.endsWith(".json"), () => ({
-      interfaceObj: JSON.parse(content.toString("utf-8")),
-      serialize: (obj: unknown) => JSON.stringify(obj, null, 2),
-    }))
-    .with(P.string.endsWith(".yaml"), P.string.endsWith(".yml"), () => ({
-      interfaceObj: yaml.load(content.toString("utf-8")),
-      serialize: (obj: unknown) => yaml.dump(obj),
-    }))
-    .otherwise(() => {
-      throw genericInternalError(
-        `Unsupported interface file type: ${fileName}`,
-      );
-    });
-
   try {
+    const { interfaceObj, serialize } = match(fileName.toLowerCase())
+      .with(P.string.endsWith(".json"), () => ({
+        interfaceObj: JSON.parse(content.toString("utf-8")),
+        serialize: (obj: unknown) => JSON.stringify(obj, null, 2),
+      }))
+      .with(P.string.endsWith(".yaml"), P.string.endsWith(".yml"), () => ({
+        interfaceObj: yaml.load(content.toString("utf-8")),
+        serialize: (obj: unknown) => yaml.dump(obj),
+      }))
+      .otherwise(() => {
+        throw genericInternalError(
+          `Unsupported interface file type: ${fileName}`,
+        );
+      });
+
     if (!interfaceObj.info) {
       interfaceObj.info = {};
     }
