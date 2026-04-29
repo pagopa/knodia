@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import formBody from "@fastify/formbody";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -76,6 +76,10 @@ export function buildApp({
     }),
   });
 
+  app.addHook("onClose", async () => {
+    await dpopProofStore.close();
+  });
+
   return app;
 }
 
@@ -83,16 +87,13 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
 
-  const dynamoClient = new DynamoDBClient();
-
   const app = buildApp({
     config,
-    dynamoClient,
     readmodelDb,
   });
 
   app.addHook("onClose", async () => {
-    await Promise.all([readmodelPool.end(), dynamoClient.destroy()]);
+    await readmodelPool.end();
   });
 
   return app;
