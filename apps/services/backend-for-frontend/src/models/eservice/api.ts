@@ -59,10 +59,10 @@ export const API_InterfaceDocumentOverrides = z
       description:
         "OpenAPI contact overrides to apply to the template interface",
     }),
-    serverUrls: z.array(z.string()).meta({
+    serverUrls: z.array(z.string()).min(1).meta({
       description: "Server URLs override to apply to the template interface",
     }),
-    termsAndConditionsUrl: z.string().optional(),
+    termsOfService: z.string().optional(),
   })
   .meta({ id: "InterfaceDocumentOverrides" });
 export type API_InterfaceDocumentOverrides = z.infer<
