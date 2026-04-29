@@ -61,6 +61,16 @@ describe("AgreementEventV1 codec", () => {
       type: "AgreementActivatedV1" as const,
     },
     {
+      data: defaultData,
+      message: AgreementActivatedByConsumerOperatorV1,
+      type: "AgreementActivatedByConsumerOperatorV1" as const,
+    },
+    {
+      data: defaultData,
+      message: AgreementCreatedPendingConsumerOperatorIdentificationV1,
+      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" as const,
+    },
+    {
       data: consumerOnlySuspendedData,
       message: AgreementSuspendedByConsumerV1,
       type: "AgreementSuspendedByConsumerV1" as const,
@@ -102,6 +112,8 @@ describe("AgreementEventV1 codec", () => {
       match(caseItem)
         .with(
           { type: "AgreementActivatedV1" },
+          { type: "AgreementActivatedByConsumerOperatorV1" },
+          { type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" },
           { type: "AgreementSuspendedByConsumerV1" },
           { type: "AgreementSuspendedByProducerV1" },
           { type: "AgreementReactivatedByConsumerV1" },
@@ -126,6 +138,8 @@ describe("AgreementEventV1 codec", () => {
       match(caseItem)
         .with(
           { type: "AgreementActivatedV1" },
+          { type: "AgreementActivatedByConsumerOperatorV1" },
+          { type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" },
           { type: "AgreementSuspendedByConsumerV1" },
           { type: "AgreementSuspendedByProducerV1" },
           { type: "AgreementReactivatedByConsumerV1" },
@@ -136,62 +150,6 @@ describe("AgreementEventV1 codec", () => {
         .exhaustive();
     },
   );
-
-  it("encodes and decodes an AgreementCreatedPendingConsumerOperatorIdentificationV1 payload (AgreementEventV1 full codec)", () => {
-    const event: AgreementEventV1 = {
-      data: {
-        agreement: toAgreementV1(agreement),
-      },
-      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1",
-    };
-    const encoded = AgreementEventV1.encode(event);
-    expect(encoded).toMatchObject({
-      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1",
-    });
-    expect(encoded.data).toBeInstanceOf(Uint8Array);
-
-    const decoded = AgreementEventV1.decode(encoded);
-    expect(decoded).toMatchObject(event);
-  });
-
-  it("encodes and decodes an AgreementCreatedPendingConsumerOperatorIdentificationV1 payload (protobufBinaryCodec-only)", () => {
-    const codec = protobufBinaryCodec(
-      AgreementCreatedPendingConsumerOperatorIdentificationV1,
-    );
-    const value = {
-      agreement: toAgreementV1(agreement),
-    };
-    const bytes = codec.encode(value);
-    expect(bytes).toBeInstanceOf(Uint8Array);
-    expect(codec.decode(bytes)).toEqual(value);
-  });
-
-  it("encodes and decodes an AgreementActivatedByConsumerOperatorV1 payload (AgreementEventV1 full codec)", () => {
-    const event: AgreementEventV1 = {
-      data: {
-        agreement: toAgreementV1(agreement),
-      },
-      type: "AgreementActivatedByConsumerOperatorV1",
-    };
-    const encoded = AgreementEventV1.encode(event);
-    expect(encoded).toMatchObject({
-      type: "AgreementActivatedByConsumerOperatorV1",
-    });
-    expect(encoded.data).toBeInstanceOf(Uint8Array);
-
-    const decoded = AgreementEventV1.decode(encoded);
-    expect(decoded).toMatchObject(event);
-  });
-
-  it("encodes and decodes an AgreementActivatedByConsumerOperatorV1 payload (protobufBinaryCodec-only)", () => {
-    const codec = protobufBinaryCodec(AgreementActivatedByConsumerOperatorV1);
-    const value = {
-      agreement: toAgreementV1(agreement),
-    };
-    const bytes = codec.encode(value);
-    expect(bytes).toBeInstanceOf(Uint8Array);
-    expect(codec.decode(bytes)).toEqual(value);
-  });
 
   it("decodes a KafkaMessageEnvelope with AgreementEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
