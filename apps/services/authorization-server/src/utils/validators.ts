@@ -259,6 +259,11 @@ export async function verifyDpopProofSignature(
         P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
         (e) => dpopClaimsValidationError(e),
       )
+      .with(
+        P.instanceOf(DOMException),
+        (e) => e.name === "DataError",
+        (e) => dpopClaimsValidationError(e),
+      )
       .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
         invalidDpopProofSignature(),
       )

@@ -543,6 +543,20 @@ describe("POST /token", async () => {
       },
     ],
     [
+      "invalid jwk claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          jwk: {
+            ...dpopProofJWT.headers.jwk,
+            x: "invalid",
+            y: "invalid",
+          },
+        },
+      },
+    ],
+    [
       "invalid htm claim in dpop proof payload",
       {
         ...dpopProofJWT,
