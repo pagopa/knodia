@@ -27,6 +27,7 @@ interface DpopAccessTokenAuthPluginOptions {
   dpopProofStore: JtiReplayStore;
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
+  jwtClockToleranceSeconds: number;
 }
 
 export const dpopAccessTokenAuthPlugin =
@@ -54,6 +55,7 @@ export const dpopAccessTokenAuthPlugin =
         {
           expectedHtm: request.method,
           expectedHtu,
+          jwtClockToleranceSeconds: opts.jwtClockToleranceSeconds,
           maxTokenAgeSeconds: opts.dpopProofMaxTokenAgeSeconds,
         },
         request.log,
@@ -75,6 +77,7 @@ export const dpopAccessTokenAuthPlugin =
         dpopProofJWT,
         opts.dpopProofMaxTokenAgeSeconds,
         opts.dpopProofStore,
+        opts.jwtClockToleranceSeconds,
       );
 
       requestContext.set("accessTokenClaims", claims);
