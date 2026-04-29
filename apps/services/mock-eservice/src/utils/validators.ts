@@ -108,14 +108,14 @@ export async function verifyEserviceAccessToken(
   if (requireDpopBinding) {
     if (!parsed.data.cnf?.jkt) {
       throw unauthorizedError(
-        "DPoP bound access token is missing DPoP key binding (cnf.jkt)",
+        "DPoP bound access token is missing DPoP thumbprint claim (cnf.jkt)",
       );
     }
     return parsed.data;
   } else {
     if (parsed.data.cnf?.jkt) {
       throw unauthorizedError(
-        "Bearer access tokens must not contain DPoP thumbprint (cnf.jkt) claim",
+        "Bearer access tokens must not contain DPoP thumbprint claim (cnf.jkt)",
       );
     }
   }
