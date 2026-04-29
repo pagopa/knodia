@@ -79,8 +79,6 @@ export const toAPI_User = (user: keychainProcessApi.User): API_User => ({
 export const toAPI_OrganizationUser = (
   user: keychainProcessApi.OrganizationUser,
 ): API_OrganizationUser => ({
-  email: user.email,
-  id: user.id,
+  ...toAPI_User(user),
   role: user.role,
-  username: user.username,
 });
