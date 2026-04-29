@@ -577,7 +577,7 @@ export type ProducerAgreements = {
     results: Array<ProducerAgreement>;
 };
 
-export type ConsumerAgreements = {
+export type ConsumerAgreementCounters = {
     counters: {
         /**
          * Number of active agreements
@@ -606,7 +606,7 @@ export type ConsumerAgreement = {
     updatedAt: string;
 };
 
-export type ConsumerAgreementsList = {
+export type ConsumerAgreements = {
     pagination: Pagination;
     results: Array<ConsumerAgreement>;
 };
@@ -2470,7 +2470,20 @@ export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof G
 export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items returned
+         */
+        limit?: number;
+        /**
+         * Pagination starting position
+         */
+        offset?: number;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
+    };
     url: '/consumer/agreements';
 };
 
@@ -2493,7 +2506,7 @@ export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetCo
 
 export type GetConsumerAgreementsResponses = {
     /**
-     * Consumer Agreement counters retrieved successfully
+     * Consumer Agreements retrieved successfully
      */
     200: ConsumerAgreements;
 };
@@ -2533,27 +2546,14 @@ export type CreateConsumerAgreementResponses = {
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
-export type ListConsumerAgreementsData = {
+export type GetConsumerAgreementCountersData = {
     body?: never;
     path?: never;
-    query?: {
-        /**
-         * Maximum number of items returned
-         */
-        limit?: number;
-        /**
-         * Pagination starting position
-         */
-        offset?: number;
-        /**
-         * Filter by Agreement State
-         */
-        state?: Array<AgreementState>;
-    };
-    url: '/consumer/agreements/list';
+    query?: never;
+    url: '/consumer/agreements/counters';
 };
 
-export type ListConsumerAgreementsErrors = {
+export type GetConsumerAgreementCountersErrors = {
     /**
      * Bad Request
      */
@@ -2568,16 +2568,16 @@ export type ListConsumerAgreementsErrors = {
     403: Problem;
 };
 
-export type ListConsumerAgreementsError = ListConsumerAgreementsErrors[keyof ListConsumerAgreementsErrors];
+export type GetConsumerAgreementCountersError = GetConsumerAgreementCountersErrors[keyof GetConsumerAgreementCountersErrors];
 
-export type ListConsumerAgreementsResponses = {
+export type GetConsumerAgreementCountersResponses = {
     /**
-     * Consumer Agreements retrieved successfully
+     * Consumer Agreement counters retrieved successfully
      */
-    200: ConsumerAgreementsList;
+    200: ConsumerAgreementCounters;
 };
 
-export type ListConsumerAgreementsResponse = ListConsumerAgreementsResponses[keyof ListConsumerAgreementsResponses];
+export type GetConsumerAgreementCountersResponse = GetConsumerAgreementCountersResponses[keyof GetConsumerAgreementCountersResponses];
 
 export type CreateAgreementConsumerActivationMagicLinkData = {
     body?: never;

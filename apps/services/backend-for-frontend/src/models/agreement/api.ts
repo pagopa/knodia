@@ -102,7 +102,7 @@ export const API_ProducerAgreements = z
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
 
-export const API_ConsumerAgreements = z
+export const API_ConsumerAgreementCounters = z
   .strictObject({
     counters: z.strictObject({
       activeAgreements: z
@@ -120,10 +120,12 @@ export const API_ConsumerAgreements = z
       }),
     }),
   })
-  .meta({ id: "ConsumerAgreements" });
-export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
+  .meta({ id: "ConsumerAgreementCounters" });
+export type API_ConsumerAgreementCounters = z.infer<
+  typeof API_ConsumerAgreementCounters
+>;
 
-export const API_GetConsumerAgreementsListQueryParams =
+export const API_GetConsumerAgreementsQueryParams =
   API_PaginationQueryParams.extend({
     limit: API_PaginationQueryParams.shape.limit.default(10),
     offset: API_PaginationQueryParams.shape.offset.default(0),
@@ -131,8 +133,8 @@ export const API_GetConsumerAgreementsListQueryParams =
       .optional()
       .meta({ description: "Filter by Agreement State" }),
   });
-export type API_GetConsumerAgreementsListQueryParams = z.infer<
-  typeof API_GetConsumerAgreementsListQueryParams
+export type API_GetConsumerAgreementsQueryParams = z.infer<
+  typeof API_GetConsumerAgreementsQueryParams
 >;
 
 export const API_ConsumerAgreement = z
@@ -150,12 +152,10 @@ export const API_ConsumerAgreement = z
   .meta({ id: "ConsumerAgreement" });
 export type API_ConsumerAgreement = z.infer<typeof API_ConsumerAgreement>;
 
-export const API_ConsumerAgreementsList = z
+export const API_ConsumerAgreements = z
   .strictObject({
     pagination: API_Pagination,
     results: z.array(API_ConsumerAgreement),
   })
-  .meta({ id: "ConsumerAgreementsList" });
-export type API_ConsumerAgreementsList = z.infer<
-  typeof API_ConsumerAgreementsList
->;
+  .meta({ id: "ConsumerAgreements" });
+export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;

@@ -1182,7 +1182,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerAgreements:
+    ConsumerAgreementCounters:
       type: object
       properties:
         counters:
@@ -1260,7 +1260,7 @@ components:
         - suspendedByProducerAt
         - updatedAt
       additionalProperties: false
-    ConsumerAgreementsList:
+    ConsumerAgreements:
       type: object
       properties:
         pagination:
@@ -4239,45 +4239,6 @@ paths:
       operationId: getConsumerAgreements
       tags:
         - agreement
-      description: Retrieve Consumer Agreement counters per state
-      responses:
-        "200":
-          description: Consumer Agreement counters retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Consumer Agreement counters retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/ConsumerAgreements"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /consumer/agreements/list:
-    get:
-      operationId: listConsumerAgreements
-      tags:
-        - agreement
       description: Retrieve a paginated list of Consumer Agreements, optionally
         filtered by state
       parameters:
@@ -4316,7 +4277,46 @@ paths:
               schema:
                 description: Consumer Agreements retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerAgreementsList"
+                  - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements/counters:
+    get:
+      operationId: getConsumerAgreementCounters
+      tags:
+        - agreement
+      description: Retrieve Consumer Agreement counters per state
+      responses:
+        "200":
+          description: Consumer Agreement counters retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreement counters retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreementCounters"
         "400":
           description: Bad Request
           content:

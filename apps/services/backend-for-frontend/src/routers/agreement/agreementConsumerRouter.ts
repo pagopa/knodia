@@ -21,10 +21,10 @@ import z from "zod";
 
 import {
   API_AgreementSeed,
+  API_ConsumerAgreementCounters,
   API_ConsumerAgreements,
-  API_ConsumerAgreementsList,
   API_CreateAgreementConsumerActivationMagicLinkQueryParams,
-  API_GetConsumerAgreementsListQueryParams,
+  API_GetConsumerAgreementsQueryParams,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { toAPI_ConsumerAgreement } from "../../models/agreement/apiConverter.ts";
@@ -131,9 +131,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description: "Retrieve Consumer Agreement counters per state",
-      operationId: "getConsumerAgreements",
+      operationId: "getConsumerAgreementCounters",
       response: {
-        200: API_ConsumerAgreements.meta({
+        200: API_ConsumerAgreementCounters.meta({
           description: "Consumer Agreement counters retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -142,7 +142,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/consumer/agreements",
+    url: "/consumer/agreements/counters",
   });
 
   fastify.route({
@@ -176,10 +176,10 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Retrieve a paginated list of Consumer Agreements, optionally filtered by state",
-      operationId: "listConsumerAgreements",
-      querystring: API_GetConsumerAgreementsListQueryParams,
+      operationId: "getConsumerAgreements",
+      querystring: API_GetConsumerAgreementsQueryParams,
       response: {
-        200: API_ConsumerAgreementsList.meta({
+        200: API_ConsumerAgreements.meta({
           description: "Consumer Agreements retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -188,7 +188,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/consumer/agreements/list",
+    url: "/consumer/agreements",
   });
 
   fastify.route({
