@@ -33,10 +33,10 @@ export function dpopClaimsValidationError(error: unknown) {
   });
 }
 
-export function dpopProofAlreadyUsed() {
+export function dpopProofAlreadyUsed(jti: string) {
   return createApiError<DpopErrorCodes>({
     code: "DPOP_PROOF_ALREADY_USED",
-    detail: "DPoP proof already used",
+    detail: `DPoP proof with JTI=${jti} already used`,
     status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_dpop_proof",
   });

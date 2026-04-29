@@ -45,7 +45,7 @@ export async function assertDpopProofNotReplayed(
       jwtClockToleranceSeconds,
   );
   if (!firstUse) {
-    throw dpopProofAlreadyUsed();
+    throw dpopProofAlreadyUsed(dpopProofJWT.payload.jti);
   }
 }
 
@@ -64,6 +64,7 @@ export async function verifyDpopProofSignature(
   {
     expectedHtm,
     expectedHtu,
+    jwtClockToleranceSeconds,
     maxTokenAgeSeconds,
   }: VerifyDpopProofSignatureOptions,
   logger: FastifyBaseLogger,
@@ -95,6 +96,7 @@ export async function verifyDpopProofSignature(
 
     await jwtVerify(dpopProofJWS, verificationKey, {
       algorithms: [dpopProofAlg],
+      clockTolerance: jwtClockToleranceSeconds,
       maxTokenAge: maxTokenAgeSeconds,
       typ: EXPECTED_DPOP_PROOF_TYP,
     });
@@ -105,6 +107,11 @@ export async function verifyDpopProofSignature(
       .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
       .with(
         P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        (e) => dpopClaimsValidationError(e),
+      )
+      .with(
+        P.instanceOf(DOMException),
+        (e) => e.name === "DataError",
         (e) => dpopClaimsValidationError(e),
       )
       .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
