@@ -2,6 +2,8 @@ import { categories } from "@knodia/category-models";
 import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
+import type { SchemeRef } from "@/types/schemeRef";
+
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
@@ -111,11 +113,7 @@ function CategoriesField({
               <div className="label-sm text-primary-light-low-contrast mb-2">
                 Categories
               </div>
-              <div className="flex flex-wrap gap-2">
-                {selectedCategories.map((category, i) => (
-                  <CategoryChip key={i} showIcon={false} {...category} />
-                ))}
-              </div>
+              <ReadOnlyCategoriesList categories={selectedCategories} />
             </div>
           );
         }
@@ -141,5 +139,21 @@ function CategoriesField({
         );
       }}
     </form.Field>
+  );
+}
+
+function ReadOnlyCategoriesList({ categories }: { categories: SchemeRef[] }) {
+  return (
+    <ul
+      aria-label="Selected categories"
+      className="flex flex-wrap gap-2"
+      role="list"
+    >
+      {categories.map((category, i) => (
+        <li key={i}>
+          <CategoryChip showIcon={false} {...category} />
+        </li>
+      ))}
+    </ul>
   );
 }

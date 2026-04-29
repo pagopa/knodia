@@ -150,6 +150,7 @@ function DataModeSection({
             return (
               <DefinedByTemplateReadOnlyField
                 label="Data mode"
+                name={field.name}
                 value={labels[value]}
               />
             );

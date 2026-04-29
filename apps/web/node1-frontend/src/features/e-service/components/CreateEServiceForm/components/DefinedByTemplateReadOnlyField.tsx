@@ -4,9 +4,11 @@ import { Focusable, TooltipTrigger } from "react-aria-components";
 
 export function DefinedByTemplateReadOnlyField({
   label,
+  name,
   value,
 }: {
   label: string;
+  name: string;
   value: string;
 }) {
   return (
@@ -14,6 +16,7 @@ export function DefinedByTemplateReadOnlyField({
       endIcon={<DefinedByTemplateIconTooltip />}
       isReadOnly
       label={label}
+      name={name}
       size="lg"
       value={value}
     />

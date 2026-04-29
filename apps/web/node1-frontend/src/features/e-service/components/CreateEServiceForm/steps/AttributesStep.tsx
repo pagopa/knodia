@@ -139,6 +139,7 @@ function AttributesField({
           return (
             <DefinedByTemplateReadOnlyField
               label="Attributes"
+              name={groupField.name}
               value={formatSchemeRefLabels(value, attributes, {
                 type: "disjunction",
               })}
