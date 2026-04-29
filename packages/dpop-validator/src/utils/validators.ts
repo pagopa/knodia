@@ -28,6 +28,7 @@ import {
 interface VerifyDpopProofSignatureOptions {
   expectedHtm: string;
   expectedHtu: string;
+  jwtClockToleranceSeconds: number;
   maxTokenAgeSeconds: number;
 }
 
@@ -35,11 +36,13 @@ export async function assertDpopProofNotReplayed(
   dpopProofJWT: DpopProof,
   dpopProofMaxTokenAgeSeconds: number,
   dpopProofStore: JtiReplayStore,
+  jwtClockToleranceSeconds: number,
 ) {
   const firstUse = await dpopProofStore.consume(
     dpopProofJWT.payload.jti,
-    dpopProofJWT.payload.iat,
-    dpopProofJWT.payload.iat + dpopProofMaxTokenAgeSeconds,
+    dpopProofJWT.payload.iat +
+      dpopProofMaxTokenAgeSeconds +
+      jwtClockToleranceSeconds,
   );
   if (!firstUse) {
     throw dpopProofAlreadyUsed();
