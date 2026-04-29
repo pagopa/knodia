@@ -40,6 +40,12 @@ export const API_UserId = z.guid().toLowerCase().meta({
   id: "UserId",
 });
 
+export const API_UserRole = z.enum(["administrative", "technical"]).meta({
+  description: "Role of the User within the Organization",
+  id: "UserRole",
+});
+export type API_UserRole = z.infer<typeof API_UserRole>;
+
 export const API_KeyId = z.base64url().meta({
   description: "Unique identifier of the Key",
   id: "KeyId",
