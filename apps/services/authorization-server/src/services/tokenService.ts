@@ -46,10 +46,10 @@ export function tokenServiceBuilder({
       },
       {
         clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
         dpopProofHtuBaseUrl,
         dpopProofMaxTokenAgeSeconds,
+        jwtClockToleranceSeconds,
       }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
@@ -57,6 +57,7 @@ export function tokenServiceBuilder({
       const dpopProofJWT = await verifyDpopProofSignature(
         dpopProofJWS,
         dpopProofMaxTokenAgeSeconds,
+        jwtClockToleranceSeconds,
         dpopProofHtuBaseUrl,
         logger,
       );
@@ -66,7 +67,7 @@ export function tokenServiceBuilder({
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
           clientAssertionAcceptedAudiences,
-          clientAssertionClockToleranceSeconds,
+          jwtClockToleranceSeconds,
           clientAssertionMaxTokenAgeSeconds,
           k2kGatewayClient,
           logger,
@@ -87,6 +88,7 @@ export function tokenServiceBuilder({
           dpopProofJWT,
           dpopProofMaxTokenAgeSeconds,
           dpopProofStore,
+          jwtClockToleranceSeconds,
         );
       }
 

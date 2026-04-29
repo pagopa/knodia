@@ -64,7 +64,6 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
-      clientAssertionClockToleranceSeconds: 30,
       clientAssertionMaxTokenAgeSeconds: 300,
       consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
@@ -74,6 +73,7 @@ beforeAll(async () => {
       generatedEserviceAccessTokenIssuer: "knodia.org",
       host: "test_host",
       isProduction: false,
+      jwtClockToleranceSeconds: 30,
       knodeId: producerKnodeId,
       logLevel: "silent",
       nodeEnv: "test",
