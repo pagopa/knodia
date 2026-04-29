@@ -6,10 +6,10 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 import { buildAppFromConfig } from "../src/app.ts";
 
 // Must match a schema file under dynamo-tables/
-export const refreshTokenTableName = "knodia-bff-refresh-tokens";
+const refreshTokenTableName = "knodia-bff-refresh-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
-export let dynamoClient: DynamoDBClient;
+let dynamoClient: DynamoDBClient;
 
 beforeAll(async () => {
   dynamoClient = new DynamoDBClient({
