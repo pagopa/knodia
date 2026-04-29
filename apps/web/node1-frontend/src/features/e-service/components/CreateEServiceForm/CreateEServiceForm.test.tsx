@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
@@ -7,6 +9,40 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 import { CreateEServiceForm } from "./CreateEServiceForm";
 
 const BASE_URL = "http://localhost:3000/bff";
+
+const TEST_TEMPLATE: bffApi.EserviceTemplateDetails = {
+  createdAt: "2025-01-02T00:00:00.000Z",
+  description: {
+    en: "Provides citizen residence information including digital domicile and residence place.",
+  },
+  eserviceFields: {
+    categories: [
+      {
+        code: "citizen.residence.residence_place",
+        scheme: "vc_example_eservice_categories",
+      },
+      {
+        code: "citizen.residence.digital_domicile",
+        scheme: "vc_example_eservice_categories",
+      },
+    ],
+    interfaceDocument: {
+      contentType: "application/yaml",
+      name: "openapi.yaml",
+      prettyName: { en: "API Interface" },
+    },
+    mode: "ProvideData",
+    requiredAttributes: [
+      [
+        { code: "nuts2", scheme: "vc_territorial_units" },
+        { code: "nuts1", scheme: "vc_territorial_units" },
+      ],
+    ],
+  },
+  id: "f0cec351-d498-4666-8d46-b2a6dfb821aa",
+  knodeId: "Lynx",
+  name: { en: "Citizen Residence Data Provider" },
+};
 
 /** Helper: select first attribute on AttributesStep and click Next */
 async function fillAttributesStep(
@@ -95,12 +131,67 @@ async function fillTechnicalStep(
   ).toBeInTheDocument();
 }
 
-function renderWizard(onLeave = vi.fn()) {
+async function fillTemplateAttributesStep(
+  user: ReturnType<typeof renderWizard>["user"],
+) {
+  expect(screen.getByDisplayValue("NUTS 2 or NUTS 1")).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /attributes/i }),
+  ).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Next" }));
+  await waitFor(() => {
+    expect(screen.getByRole("heading", { name: "Recap" })).toBeInTheDocument();
+  });
+}
+
+async function fillTemplateDocsStep(
+  user: ReturnType<typeof renderWizard>["user"],
+) {
+  expect(screen.getByText("API Interface")).toBeInTheDocument();
+  expect(document.querySelector("input[type='file']")).not.toBeInTheDocument();
+
+  await user.type(
+    screen.getByLabelText("Server URL"),
+    "https://server.rigel.com",
+  );
+  await user.type(
+    screen.getByLabelText("Terms and Conditions URL (optional)"),
+    "https://rigel.com/terms",
+  );
+  await user.type(screen.getByLabelText("Contact name"), "John Smith");
+  await user.type(
+    screen.getByLabelText("Contact email"),
+    "johnsmith@rigel.com",
+  );
+  await user.type(
+    screen.getByLabelText("Contact URL (optional)"),
+    "https://rigel.com/contact",
+  );
+
+  await user.click(screen.getByRole("button", { name: "Next" }));
+  await waitFor(() => {
+    expect(
+      screen.getByRole("heading", { name: "Attributes" }),
+    ).toBeInTheDocument();
+  });
+}
+
+function renderWizard({
+  onLeave = vi.fn(),
+  template,
+}: {
+  onLeave?: () => void;
+  template?: bffApi.EserviceTemplateDetails;
+} = {}) {
   return {
     onLeave,
-    ...renderWithProviders(<CreateEServiceForm onLeave={onLeave} />, {
-      routes: [{ path: "/production/e-services/$id" }],
-    }),
+    ...renderWithProviders(
+      <CreateEServiceForm onLeave={onLeave} template={template} />,
+      {
+        routes: [{ path: "/production/e-services/$id" }],
+      },
+    ),
   };
 }
 
@@ -258,6 +349,59 @@ describe("CreateEServiceForm — file upload", () => {
   });
 });
 
+describe("CreateEServiceForm — template flow", () => {
+  it("renders template documents fields instead of the scratch file upload", async () => {
+    const { user } = renderWizard({ template: TEST_TEMPLATE });
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+
+    expect(screen.getByText("API Interface")).toBeInTheDocument();
+    expect(screen.getByLabelText("Server URL")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Terms and Conditions URL (optional)"),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Contact name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Contact email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Contact URL (optional)")).toBeInTheDocument();
+    expect(
+      document.querySelector("input[type='file']"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses template attributes as read-only values and reaches the recap without selecting attributes", async () => {
+    const { user } = renderWizard({ template: TEST_TEMPLATE });
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillTemplateDocsStep(user);
+    await fillTemplateAttributesStep(user);
+
+    expect(screen.getByText("NUTS 2")).toBeInTheDocument();
+    expect(screen.getByText("NUTS 1")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /attributes/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows template documents and contact data in the recap", async () => {
+    const { user } = renderWizard({ template: TEST_TEMPLATE });
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillTemplateDocsStep(user);
+    await fillTemplateAttributesStep(user);
+
+    expect(screen.getByText("API Interface")).toBeInTheDocument();
+    expect(screen.getByText("https://server.rigel.com")).toBeInTheDocument();
+    expect(screen.getByText("https://rigel.com/terms")).toBeInTheDocument();
+    expect(screen.getByText("John Smith")).toBeInTheDocument();
+    expect(screen.getByText("johnsmith@rigel.com")).toBeInTheDocument();
+    expect(screen.getByText("https://rigel.com/contact")).toBeInTheDocument();
+    expect(screen.queryByText("File checksum")).not.toBeInTheDocument();
+  });
+});
+
 describe("CreateEServiceForm — publish flow", () => {
   it("completes the full wizard flow and navigates to the detail page", async () => {
     server.use(
@@ -318,6 +462,86 @@ describe("CreateEServiceForm — publish flow", () => {
     expect(
       screen.getByText(/Don't refresh the page to avoid data loss/),
     ).toBeInTheDocument();
+  });
+
+  it("publishes an E-Service from template with interface overrides", async () => {
+    let capturedBody: unknown;
+
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/eservices/fromTemplate`,
+        async ({ request }) => {
+          capturedBody = await request.json();
+          return HttpResponse.json({ id: "new-eservice-123" }, { status: 201 });
+        },
+      ),
+    );
+
+    const { router, user } = renderWizard({ template: TEST_TEMPLATE });
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillTemplateDocsStep(user);
+    await fillTemplateAttributesStep(user);
+
+    await user.click(screen.getByRole("button", { name: "Publish" }));
+
+    await waitFor(() => {
+      expect(capturedBody).toEqual({
+        accessTokenAudience: ["https://api.test.com"],
+        accessTokenDuration: 60 * 60,
+        accessTokenType: "Bearer",
+        description: { en: "A complete test description for the e-service" },
+        interfaceDocumentOverrides: {
+          contact: {
+            email: "johnsmith@rigel.com",
+            name: "John Smith",
+            url: "https://rigel.com/contact",
+          },
+          serverUrls: ["https://server.rigel.com"],
+          termsOfService: "https://rigel.com/terms",
+        },
+        isSignalHubEnabled: false,
+        maxDailyCallsPerConsumer: 100,
+        maxDailyCallsPerKnode: 1000,
+        name: { en: "My Test E-Service" },
+        template: {
+          id: "f0cec351-d498-4666-8d46-b2a6dfb821aa",
+          knodeId: "Lynx",
+        },
+      });
+      expect(router.state.location.pathname).toBe(
+        "/production/e-services/new-eservice-123",
+      );
+    });
+  });
+
+  it("shows error banner when template BFF mutation fails", async () => {
+    server.use(
+      http.post(`${BASE_URL}/producer/eservices/fromTemplate`, () =>
+        HttpResponse.json(
+          {
+            correlationId: "test",
+            status: 500,
+            title: "Internal Server Error",
+          },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    const { user } = renderWizard({ template: TEST_TEMPLATE });
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillTemplateDocsStep(user);
+    await fillTemplateAttributesStep(user);
+
+    await user.click(screen.getByRole("button", { name: "Publish" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    });
   });
 });
 

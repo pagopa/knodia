@@ -21,7 +21,7 @@ export function CreateEServiceForm({
   template,
 }: {
   onLeave: () => void;
-  template: bffApi.EserviceTemplateDetails;
+  template?: bffApi.EserviceTemplateDetails;
 }) {
   const steps: StepConfig[] = [
     {

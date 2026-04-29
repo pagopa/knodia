@@ -22,7 +22,7 @@ export function EServiceFormProvider({
   template,
 }: {
   children: React.ReactNode;
-  template: bffApi.EserviceTemplateDetails;
+  template: bffApi.EserviceTemplateDetails | undefined;
 }) {
   const [data, setData] = useState<EServiceFormDraftData>({
     ...ESERVICE_FORM_DEFAULTS,
