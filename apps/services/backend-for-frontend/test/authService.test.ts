@@ -7,16 +7,28 @@ import {
 } from "@knodia/common-models/auth";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { joseMockFactory, kmsMockFactory } from "./mocks/authMocks.ts";
+const mockJwtVerify = vi.hoisted(() => vi.fn());
+const mockDecodeJwt = vi.hoisted(() => vi.fn());
+const mockKmsSend = vi.hoisted(() => vi.fn());
 
-const { mockDecodeJwt, mockJwtVerify, mockKmsSend } = vi.hoisted(() => ({
-  mockDecodeJwt: vi.fn<(...args: unknown[]) => unknown>(),
-  mockJwtVerify: vi.fn<(...args: unknown[]) => unknown>(),
-  mockKmsSend: vi.fn<(...args: unknown[]) => unknown>(),
+vi.mock("jose", () => ({
+  // URL-keyed so tests can distinguish the Cognito JWKS from the BFF
+  // well-known JWKSs when pinning jwtVerify's jwks argument.
+  createRemoteJWKSet: vi.fn((url: string | URL) => `mock-jwks:${String(url)}`),
+  decodeJwt: (...args: unknown[]) => mockDecodeJwt(...args),
+  jwtVerify: mockJwtVerify,
 }));
 
-vi.mock("jose", () => joseMockFactory({ mockDecodeJwt, mockJwtVerify }));
-vi.mock("@aws-sdk/client-kms", () => kmsMockFactory({ mockKmsSend }));
+vi.mock("@aws-sdk/client-kms", () => ({
+  KMSClient: function MockKMSClient() {
+    return { send: mockKmsSend };
+  },
+  SignCommand: function MockSignCommand(
+    input: Record<string, unknown>,
+  ): Record<string, unknown> {
+    return { ...input };
+  },
+}));
 
 import { app } from "./setup.ts";
 
@@ -662,8 +674,7 @@ describe("auth integration", () => {
 
       // Pin the magic-link verifier inputs: a regression that drops the
       // issuer/audience/algorithm check or points at the Cognito JWKS (or
-      // any other non-BFF JWKS) would otherwise pass silently. The JWKS
-      // return value is URL-keyed by the shared authMocks factory.
+      // any other non-BFF JWKS) would otherwise pass silently.
       expect(mockJwtVerify).toHaveBeenCalledWith(
         "valid.magic.link",
         expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[01]\//),
