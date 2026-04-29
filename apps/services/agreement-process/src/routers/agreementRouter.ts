@@ -129,6 +129,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
         { tokenType: "internal" },
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
       ]);
 
       const {

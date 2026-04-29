@@ -4,16 +4,16 @@ import { afterAll, beforeAll, inject } from "vitest";
 
 import { buildAppFromConfig } from "../src/app.ts";
 import {
-  createRefreshTokenStore,
-  type RefreshTokenStore,
-} from "../src/services/refreshTokenStore.ts";
+  createJtiReplayStore,
+  type JtiReplayStore,
+} from "../src/services/jtiReplayStore.ts";
 
 // Must match a schema file under dynamo-tables/
 export const refreshTokenTableName = "knodia-bff-refresh-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
 export let dynamoClient: DynamoDBClient;
-export let refreshTokenStore: RefreshTokenStore;
+export let refreshTokenStore: JtiReplayStore;
 
 beforeAll(async () => {
   dynamoClient = new DynamoDBClient({
@@ -21,10 +21,7 @@ beforeAll(async () => {
     endpoint: inject("DYNAMODB_CONNECTION_STRING"),
     region: "eu-south-1",
   });
-  refreshTokenStore = createRefreshTokenStore(
-    refreshTokenTableName,
-    dynamoClient,
-  );
+  refreshTokenStore = createJtiReplayStore(refreshTokenTableName, dynamoClient);
 
   app = buildAppFromConfig(
     {
@@ -40,9 +37,20 @@ beforeAll(async () => {
       },
       defaultPollingMaxRetries: 5,
       defaultPollingRetryDelay: 400,
+      dynamoDbMagicLinkTokensTable: "knodia-bff-magic-link-tokens",
       dynamoDbRefreshTokensTable: refreshTokenTableName,
       eserviceInterfacesS3Bucket: "test-bucket",
       eserviceProcessUrl: "http://localhost:0",
+      externalUiSessionJwt: {
+        audience: "test-external-ui-session-audience",
+        issuer: "test-issuer",
+        kid: "alias/test-kid",
+        secondsDuration: 300,
+      },
+      externalUiSessionMagicLinkAccepted: {
+        audience: "test-magic-link-audience",
+        issuer: "test-issuer",
+      },
       host: "0.0.0.0",
       isProduction: false,
       keychainProcessUrl: "http://localhost:0",

@@ -1,6 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { requestContext } from "@fastify/request-context";
+import { AgreementId } from "@knodia/common-models/ids";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   unauthorizedError,
@@ -33,6 +36,19 @@ const API_SessionResponse = z
     uiSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
+
+const API_ExternalUiSessionExchangeRequest = z
+  .strictObject({
+    magicLinkToken: z.string(),
+  })
+  .meta({ id: "ExternalUiSessionExchangeRequest" });
+
+const API_ExternalUiSessionExchangeResponse = z
+  .strictObject({
+    agreementId: AgreementId,
+    externalUiSessionToken: z.string(),
+  })
+  .meta({ id: "ExternalUiSessionExchangeResponse" });
 
 const API_RefreshCookie = z.object({
   refresh: z
@@ -152,5 +168,33 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       tags: [apiTags.auth],
     },
     url: "/auth/logout",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+      logger.info("Exchanging magic-link token for external-ui-session token");
+
+      const { agreementId, externalUiSessionToken } =
+        await authService.exchangeMagicLinkToken(req.body.magicLinkToken);
+      res.send({ agreementId, externalUiSessionToken });
+    },
+    method: "POST",
+    schema: {
+      body: API_ExternalUiSessionExchangeRequest,
+      description:
+        "Validate a single-use magic-link token and mint a short-lived external-ui-session token scoped to the action in the magic link.",
+      operationId: "exchangeExternalUiSession",
+      response: {
+        200: API_ExternalUiSessionExchangeResponse.meta({
+          description: "Token exchanged successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      security: [],
+      tags: [apiTags.auth],
+    },
+    url: "/auth/externalUiSession",
   });
 };

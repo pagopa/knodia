@@ -1,0 +1,7 @@
+{
+  "TableName": "knodia-bff-magic-link-tokens",
+  "TimeToLiveSpecification": {
+    "Enabled": true,
+    "AttributeName": "ttl"
+  }
+}

@@ -19,11 +19,24 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COOKIE_DOMAIN: z.string().optional(),
         COOKIE_PATH_PREFIX: z.string(),
         COOKIE_SECURE: z.coerce.boolean().default(true),
+        DYNAMODB_MAGIC_LINK_TOKENS_TABLE: z
+          .string()
+          .default("knodia-bff-magic-link-tokens"),
         DYNAMODB_REFRESH_TOKENS_TABLE: z
           .string()
           .default("knodia-bff-refresh-tokens"),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        EXTERNAL_UI_SESSION_JWT_AUDIENCE: z.string(),
+        EXTERNAL_UI_SESSION_JWT_ISSUER: z.string(),
+        EXTERNAL_UI_SESSION_JWT_KID: z.string(),
+        EXTERNAL_UI_SESSION_JWT_SECONDS_DURATION: z.coerce
+          .number()
+          .int()
+          .positive()
+          .default(300),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE: z.string(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER: z.string(),
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
@@ -53,9 +66,20 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           pathPrefix: c.COOKIE_PATH_PREFIX,
           secure: c.COOKIE_SECURE,
         },
+        dynamoDbMagicLinkTokensTable: c.DYNAMODB_MAGIC_LINK_TOKENS_TABLE,
         dynamoDbRefreshTokensTable: c.DYNAMODB_REFRESH_TOKENS_TABLE,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        externalUiSessionJwt: {
+          audience: c.EXTERNAL_UI_SESSION_JWT_AUDIENCE,
+          issuer: c.EXTERNAL_UI_SESSION_JWT_ISSUER,
+          kid: c.EXTERNAL_UI_SESSION_JWT_KID,
+          secondsDuration: c.EXTERNAL_UI_SESSION_JWT_SECONDS_DURATION,
+        },
+        externalUiSessionMagicLinkAccepted: {
+          audience: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE,
+          issuer: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER,
+        },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,

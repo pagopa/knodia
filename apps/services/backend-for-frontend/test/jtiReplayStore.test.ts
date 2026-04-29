@@ -8,7 +8,7 @@ import {
   refreshTokenTableName as tableName,
 } from "./setup.ts";
 
-describe("refreshTokenStore", () => {
+describe("jtiReplayStore", () => {
   async function getItem(jti: string) {
     const result = await dynamoClient.send(
       new GetItemCommand({

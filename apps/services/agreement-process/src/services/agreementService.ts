@@ -207,9 +207,18 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<
+        ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
+      >,
     ): Promise<WithMetadata<Agreement>> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
+
+      if (authData.tokenType === "external-ui-session") {
+        assertTokenAgreementIdMatchesPathParam(authData, agreementId);
+      }
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);
 
