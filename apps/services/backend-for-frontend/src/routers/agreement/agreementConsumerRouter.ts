@@ -1,7 +1,11 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_MagicLink,
+} from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -17,6 +21,7 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
+  API_CreateAgreementConsumerActivationMagicLinkQueryParams,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -138,6 +143,49 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        `Creating activation magic link for Agreement ${req.params.agreementId} requested by Consumer ${consumerId} on Knode ${req.query.knodeId}`,
+      );
+
+      const { data } =
+        await remoteResourcesManagerApi.createAgreementActivationMagicLink({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { agreementId: req.params.agreementId },
+          query: { knodeId: req.query.knodeId },
+        });
+
+      res.status(200).send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
+      operationId: "createAgreementConsumerActivationMagicLink",
+      params: API_AgreementIdPathParam,
+      querystring: API_CreateAgreementConsumerActivationMagicLinkQueryParams,
+      response: {
+        200: API_MagicLink.meta({
+          description: "Magic link created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Create an Agreement activation magic link",
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/activationMagicLink",
   });
 
   fastify.route({
