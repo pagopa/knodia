@@ -145,7 +145,7 @@ paths:
             type: string
           in: header
           name: dpop
-          required: false
+          required: true
           description: DPoP proof JWT
       responses:
         "200":
