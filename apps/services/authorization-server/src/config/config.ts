@@ -18,10 +18,6 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           .min(1)
           .transform((value) => value.split(",").map((a) => a.trim()))
           .pipe(z.string().array()),
-        CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: z.coerce
-          .number()
-          .int()
-          .positive(),
         CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: z.coerce
           .number()
           .int()
@@ -32,12 +28,11 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         DYNAMODB_DPOP_PROOFS_TABLE: z.string(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
+        JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_ID: KnodeId,
       })
       .transform((c) => ({
         clientAssertionAcceptedAudiences: c.CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
-        clientAssertionClockToleranceSeconds:
-          c.CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS,
         clientAssertionMaxTokenAgeSeconds:
           c.CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS,
         consumerKnodeUrl: c.CONSUMER_KNODE_URL,
@@ -47,6 +42,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
+        jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
         knodeId: c.KNODE_ID,
       })),
   );

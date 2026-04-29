@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import formBody from "@fastify/formbody";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -22,12 +22,12 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
   config,
+  dynamoClient,
   readmodelDb,
-  sharedDynamoClient,
 }: {
   config: AuthorizationServerConfig;
+  dynamoClient?: DynamoDBClient;
   readmodelDb: NodePgDatabase;
-  sharedDynamoClient: DynamoDBClient;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     consumerKnodeUrl: config.consumerKnodeUrl,
@@ -36,7 +36,7 @@ export function buildApp({
 
   const dpopProofStore = createJtiReplayStore(
     config.dynamoDbDpopProofsTable,
-    sharedDynamoClient,
+    dynamoClient,
   );
 
   const app = createFastifyApp({
@@ -76,36 +76,24 @@ export function buildApp({
     }),
   });
 
+  app.addHook("onClose", async () => {
+    await dpopProofStore.close();
+  });
+
   return app;
 }
 
-export function buildAppFromConfig(
-  config: AuthorizationServerConfig,
-  injectedDynamoClient?: DynamoDBClient,
-) {
+export function buildAppFromConfig(config: AuthorizationServerConfig) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
-
-  // Single DynamoDBClient is shared by both JTI replay stores
-  // (refresh tokens + magic-link tokens). If the caller injected a client
-  // (tests), reuse it and leave lifecycle to the caller; otherwise create
-  // one and destroy it in onClose.
-  const sharedDynamoClient = injectedDynamoClient ?? new DynamoDBClient();
 
   const app = buildApp({
     config,
     readmodelDb,
-    sharedDynamoClient,
   });
 
   app.addHook("onClose", async () => {
     await readmodelPool.end();
-
-    // Only destroy the shared DynamoDBClient if we created it. When a client
-    // is injected by the caller (tests), leave lifecycle to the caller.
-    if (!injectedDynamoClient) {
-      sharedDynamoClient.destroy();
-    }
   });
 
   return app;

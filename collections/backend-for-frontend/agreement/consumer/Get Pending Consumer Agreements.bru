@@ -1,0 +1,19 @@
+meta {
+  name: Get Pending Consumer Agreements
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/agreements/pending?limit=10&offset=0
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+params:query {
+  limit: 10
+  offset: 0
+}

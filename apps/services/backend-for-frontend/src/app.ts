@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -35,7 +35,7 @@ import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
-  injectedDynamoClient?: DynamoDBClient,
+  dynamoClient?: DynamoDBClient,
 ) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
@@ -48,12 +48,6 @@ export function buildAppFromConfig(
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
-
-  // Single DynamoDBClient is shared by both JTI replay stores
-  // (refresh tokens + magic-link tokens). If the caller injected a client
-  // (tests), reuse it and leave lifecycle to the caller; otherwise create
-  // one and destroy it in onClose.
-  const sharedDynamoClient = injectedDynamoClient ?? new DynamoDBClient();
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -106,7 +100,7 @@ export function buildAppFromConfig(
   const pollingService = pollingServiceBuilder(config);
   const refreshTokenStore = createJtiReplayStore(
     config.dynamoDbRefreshTokensTable,
-    sharedDynamoClient,
+    dynamoClient,
   );
   const authService = authServiceBuilder(
     config,
@@ -149,6 +143,7 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementConsumerRouter, {
+      config,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
@@ -180,11 +175,7 @@ export function buildAppFromConfig(
     });
   });
 
-  // Only destroy the shared DynamoDBClient if we created it. When a client
-  // is injected by the caller (tests), leave lifecycle to the caller.
-  if (!injectedDynamoClient) {
-    app.addHook("onClose", () => sharedDynamoClient.destroy());
-  }
+  app.addHook("onClose", () => refreshTokenStore.close());
 
   return app;
 }

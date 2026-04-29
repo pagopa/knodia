@@ -1,6 +1,6 @@
 import {
   ConditionalCheckFailedException,
-  type DynamoDBClient,
+  DynamoDBClient,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
 
@@ -16,20 +16,22 @@ export type JtiReplayStore = ReturnType<typeof createJtiReplayStore>;
  */
 export function createJtiReplayStore(
   tableName: string,
-  dynamoClient: DynamoDBClient,
+  dynamoClient?: DynamoDBClient,
 ) {
+  const client = dynamoClient ?? new DynamoDBClient();
+
   return {
+    async close(): Promise<void> {
+      client.destroy();
+    },
+
     /**
      * Marks a JTI as used. Returns `true` if this is the first use,
      * `false` if the JTI was already seen (replay attempt).
      */
-    async consume(
-      jti: string,
-      iat: number,
-      expireAtSec: number,
-    ): Promise<boolean> {
+    async consume(jti: string, expireAtSec: number): Promise<boolean> {
       try {
-        await storeJti({ dynamoClient, expireAtSec, iat, jti, tableName });
+        await storeJti({ dynamoClient: client, expireAtSec, jti, tableName });
         return true;
       } catch (err) {
         if (err instanceof ConditionalCheckFailedException) {
@@ -44,7 +46,7 @@ export function createJtiReplayStore(
      * so any future consume attempt will fail.
      */
     async revoke(jti: string, expireAtSec: number): Promise<void> {
-      await dynamoClient.send(
+      await client.send(
         new PutItemCommand({
           Item: {
             jti: { S: jti },

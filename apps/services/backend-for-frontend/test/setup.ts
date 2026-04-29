@@ -1,8 +1,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
-import { afterAll, beforeAll, inject } from "vitest";
+import { resetDynamoTable } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildAppFromConfig } from "../src/app.ts";
+
+// Must match a schema file under dynamo-tables/
+const refreshTokenTableName = "knodia-bff-refresh-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
 let dynamoClient: DynamoDBClient;
@@ -28,7 +32,7 @@ beforeAll(async () => {
       },
       defaultPollingMaxRetries: 5,
       defaultPollingRetryDelay: 400,
-      dynamoDbRefreshTokensTable: "knodia-bff-refresh-tokens",
+      dynamoDbRefreshTokensTable: refreshTokenTableName,
       eserviceInterfacesS3Bucket: "test-bucket",
       eserviceProcessUrl: "http://localhost:0",
       host: "0.0.0.0",
@@ -58,6 +62,10 @@ beforeAll(async () => {
   );
 
   await app.ready();
+});
+
+afterEach(async () => {
+  await resetDynamoTable(refreshTokenTableName, "jti", dynamoClient);
 });
 
 afterAll(async () => {

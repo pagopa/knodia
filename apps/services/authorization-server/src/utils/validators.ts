@@ -77,11 +77,13 @@ export async function assertDpopProofNotReplayed(
   dpopProofJWT: DpopProof,
   dpopProofMaxTokenAgeSeconds: number,
   dpopProofStore: JtiReplayStore,
+  jwtClockToleranceSeconds: number,
 ) {
   const firstUse = await dpopProofStore.consume(
     dpopProofJWT.payload.jti,
-    dpopProofJWT.payload.iat,
-    dpopProofJWT.payload.iat + dpopProofMaxTokenAgeSeconds,
+    dpopProofJWT.payload.iat +
+      dpopProofMaxTokenAgeSeconds +
+      jwtClockToleranceSeconds,
   );
   if (!firstUse) {
     throw unauthorizedError("DPoP proof already used");
@@ -130,7 +132,7 @@ export async function verifyClientAssertionSignature(
     consumerKeychainId: ConsumerKeychainId;
   },
   clientAssertionAcceptedAudiences: string[],
-  clientAssertionClockToleranceSeconds: number,
+  jwtClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
   k2kGatewayClient: K2K2GatewayApiClient,
   logger: FastifyBaseLogger,
@@ -174,7 +176,7 @@ export async function verifyClientAssertionSignature(
     await jwtVerify(clientAssertionJWS, verificationKey, {
       algorithms: [publicKey.algorithm],
       audience: clientAssertionAcceptedAudiences,
-      clockTolerance: clientAssertionClockToleranceSeconds,
+      clockTolerance: jwtClockToleranceSeconds,
       issuer: consumerKeychainId,
       maxTokenAge: clientAssertionMaxTokenAgeSeconds,
       subject: consumerKeychainId,
@@ -213,6 +215,7 @@ export async function verifyClientAssertionSignature(
 export async function verifyDpopProofSignature(
   dpopProofJWS: string | undefined,
   dpopProofMaxTokenAgeSeconds: number,
+  jwtClockToleranceSeconds: number,
   expectedDpopProofHtu: string,
   logger: FastifyBaseLogger,
 ): Promise<DpopProof | undefined> {
@@ -243,6 +246,7 @@ export async function verifyDpopProofSignature(
 
     await jwtVerify(dpopProofJWS, verificationKey, {
       algorithms: [dpopProofAlg],
+      clockTolerance: jwtClockToleranceSeconds,
       maxTokenAge: dpopProofMaxTokenAgeSeconds,
       typ: EXPECTED_DPOP_PROOF_TYP,
     });
@@ -253,6 +257,11 @@ export async function verifyDpopProofSignature(
       .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
       .with(
         P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        (e) => dpopClaimsValidationError(e),
+      )
+      .with(
+        P.instanceOf(DOMException),
+        (e) => e.name === "DataError",
         (e) => dpopClaimsValidationError(e),
       )
       .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
