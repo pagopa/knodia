@@ -8,6 +8,7 @@ import {
 } from "@knodia/eservice-template-models";
 import yaml from "js-yaml";
 import { match, P } from "ts-pattern";
+import { z } from "zod";
 
 import type { API_InterfaceDocumentOverrides } from "../models/eservice/api.ts";
 
@@ -31,7 +32,9 @@ export function applyInterfaceDocumentOverrides({
   overrides: API_InterfaceDocumentOverrides;
 }) {
   try {
-    const { interfaceObj, serialize } = match(fileName.toLowerCase())
+    const { interfaceObj: parsedInterfaceObj, serialize } = match(
+      fileName.toLowerCase(),
+    )
       .with(P.string.endsWith(".json"), () => ({
         interfaceObj: JSON.parse(content.toString("utf-8")),
         serialize: (obj: unknown) => JSON.stringify(obj, null, 2),
@@ -46,18 +49,31 @@ export function applyInterfaceDocumentOverrides({
         );
       });
 
-    if (!interfaceObj.info) {
-      interfaceObj.info = {};
-    }
-    interfaceObj.info.contact = overrides.contact;
-    interfaceObj.info.termsOfService = overrides.termsOfService;
+    const interfaceObj = z
+      .looseObject({
+        info: z.looseObject({}).optional(),
+        servers: z.array(z.unknown()).optional(),
+      })
+      .parse(parsedInterfaceObj);
 
-    if (!interfaceObj.servers) {
-      interfaceObj.servers = [];
-    }
-    interfaceObj.servers = overrides.serverUrls.map((url) => ({ url }));
+    const info = interfaceObj.info ?? {};
 
-    return Buffer.from(serialize(interfaceObj), "utf8");
+    info["contact"] = overrides.contact;
+
+    if (overrides.termsOfService === undefined) {
+      delete info["termsOfService"];
+    } else {
+      info["termsOfService"] = overrides.termsOfService;
+    }
+
+    return Buffer.from(
+      serialize({
+        ...interfaceObj,
+        info,
+        servers: overrides.serverUrls.map((url) => ({ url })),
+      }),
+      "utf8",
+    );
   } catch (error) {
     throw genericInternalError(
       `Failed to apply interface document overrides: ${(error as Error).message}`,

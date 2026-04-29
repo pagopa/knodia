@@ -13,6 +13,11 @@ const overrides = {
   termsOfService: "https://example.com/terms",
 };
 
+const overridesWithoutTermsOfService = {
+  ...overrides,
+  termsOfService: undefined,
+};
+
 describe("applyInterfaceDocumentOverrides", () => {
   it("applies overrides to a JSON interface document", () => {
     const content = Buffer.from(
@@ -38,21 +43,23 @@ describe("applyInterfaceDocumentOverrides", () => {
       overrides,
     });
 
-    expect(JSON.parse(result.toString("utf8"))).toMatchObject({
-      info: {
-        contact: overrides.contact,
-        termsOfService: overrides.termsOfService,
-        title: "Template API",
-        version: "1.0.0",
-      },
-      openapi: "3.1.0",
-      servers: overrides.serverUrls.map((url) => ({ url })),
-    });
+    const parsed = JSON.parse(result.toString("utf8"));
+
+    expect(parsed.info.contact).toEqual(overrides.contact);
+    expect(parsed.info.termsOfService).toBe(overrides.termsOfService);
+    expect(parsed.info.title).toBe("Template API");
+    expect(parsed.info.version).toBe("1.0.0");
+    expect(parsed.openapi).toBe("3.1.0");
+    expect(parsed.servers).toEqual(
+      overrides.serverUrls.map((url) => ({ url })),
+    );
   });
 
-  it("applies overrides to a YAML interface document", () => {
-    const content = Buffer.from(
-      `
+  it.each(["openapi.yaml", "openapi.yml", "OPENAPI.YML"])(
+    "applies overrides to a YAML interface document (%s)",
+    (fileName) => {
+      const content = Buffer.from(
+        `
 openapi: 3.1.0
 info:
   title: Template API
@@ -64,25 +71,98 @@ info:
 servers:
   - url: https://old.example.com
 `,
-      "utf8",
-    );
+        "utf8",
+      );
 
+      const result = applyInterfaceDocumentOverrides({
+        content,
+        fileName,
+        overrides,
+      });
+
+      const parsed = yaml.load(result.toString("utf8")) as {
+        info: Record<string, unknown>;
+        openapi: string;
+        servers: { url: string }[];
+      };
+
+      expect(parsed.info["contact"]).toEqual(overrides.contact);
+      expect(parsed.info["termsOfService"]).toBe(overrides.termsOfService);
+      expect(parsed.info["title"]).toBe("Template API");
+      expect(parsed.info["version"]).toBe("1.0.0");
+      expect(parsed.openapi).toBe("3.1.0");
+      expect(parsed.servers).toEqual(
+        overrides.serverUrls.map((url) => ({ url })),
+      );
+    },
+  );
+
+  it("creates missing info and servers sections before applying overrides", () => {
     const result = applyInterfaceDocumentOverrides({
-      content,
-      fileName: "openapi.yaml",
+      content: Buffer.from(JSON.stringify({ openapi: "3.1.0" }), "utf8"),
+      fileName: "openapi.json",
       overrides,
     });
 
-    expect(yaml.load(result.toString("utf8"))).toMatchObject({
+    expect(JSON.parse(result.toString("utf8"))).toEqual({
       info: {
         contact: overrides.contact,
         termsOfService: overrides.termsOfService,
-        title: "Template API",
-        version: "1.0.0",
       },
       openapi: "3.1.0",
       servers: overrides.serverUrls.map((url) => ({ url })),
     });
+  });
+
+  it("removes termsOfService when the override is undefined", () => {
+    const result = applyInterfaceDocumentOverrides({
+      content: Buffer.from(
+        JSON.stringify({
+          info: {
+            termsOfService: "https://old.example.com/terms",
+          },
+          openapi: "3.1.0",
+        }),
+        "utf8",
+      ),
+      fileName: "openapi.json",
+      overrides: overridesWithoutTermsOfService,
+    });
+
+    expect(JSON.parse(result.toString("utf8"))).toEqual({
+      info: {
+        contact: overrides.contact,
+      },
+      openapi: "3.1.0",
+      servers: overrides.serverUrls.map((url) => ({ url })),
+    });
+  });
+
+  it.each([
+    ["JSON root is null", "openapi.json", "null"],
+    ["JSON root is an array", "openapi.json", "[]"],
+    ["YAML root is a scalar", "openapi.yaml", "hello"],
+  ])("rejects documents when %s", (_label, fileName, rawContent) => {
+    expect(() =>
+      applyInterfaceDocumentOverrides({
+        content: Buffer.from(rawContent, "utf8"),
+        fileName,
+        overrides,
+      }),
+    ).toThrow("Failed to apply interface document overrides");
+  });
+
+  it.each([
+    ["openapi.json", "{"],
+    ["openapi.yaml", "openapi: ["],
+  ])("rejects malformed %s documents", (fileName, rawContent) => {
+    expect(() =>
+      applyInterfaceDocumentOverrides({
+        content: Buffer.from(rawContent, "utf8"),
+        fileName,
+        overrides,
+      }),
+    ).toThrow("Failed to apply interface document overrides");
   });
 
   it("rejects unsupported interface document file types", () => {
