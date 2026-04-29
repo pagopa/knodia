@@ -35,7 +35,7 @@ const { values } = parseArgs({
   strict: true,
 });
 
-const { key, htu, alg, htm } = values;
+const { key, htu, alg, htm, ath } = values;
 
 if (!SUPPORTED_ALGS.includes(alg)) {
   console.error(`Error: --alg must be one of: ${SUPPORTED_ALGS.join(", ")}`);
@@ -70,8 +70,8 @@ const header = b64url(
 );
 const payload = b64url(
   JSON.stringify({
-    ath: values.ath
-      ? createHash("sha256").update(values.ath).digest("base64url")
+    ath: ath
+      ? createHash("sha256").update(ath).digest("base64url")
       : undefined,
     htm,
     htu,
