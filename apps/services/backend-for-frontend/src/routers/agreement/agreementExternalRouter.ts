@@ -7,7 +7,6 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
-import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -21,6 +20,7 @@ import {
 import z from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { getExternalUiSessionAuthData } from "../../utils/authData.ts";
 
 interface AgreementExternalRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -52,10 +52,9 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = validateAuthorization(
-        getContextValues(requestContext),
-        [{ scope: "agreement-activation", tokenType: "external-ui-session" }],
-      );
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getExternalUiSessionAuthData(authData);
       const { agreementId } = req.params;
 
       logger.info(`Activating Agreement ${agreementId}`);

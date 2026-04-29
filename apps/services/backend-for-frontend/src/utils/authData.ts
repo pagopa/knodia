@@ -1,5 +1,6 @@
 import type {
   AuthData,
+  ExternalUISessionAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 
@@ -10,6 +11,15 @@ export function getUISessionAuthData(
 ): UISessionAuthData {
   if (authData?.tokenType !== "ui-session") {
     throw unauthorizedError("A valid ui-session token is required");
+  }
+  return authData;
+}
+
+export function getExternalUiSessionAuthData(
+  authData: AuthData | undefined,
+): ExternalUISessionAuthData {
+  if (authData?.tokenType !== "external-ui-session") {
+    throw unauthorizedError("A valid external-ui-session token is required");
   }
   return authData;
 }

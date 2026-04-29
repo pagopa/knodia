@@ -140,7 +140,7 @@ describe("POST /external/agreements/:agreementId/activate (activateAgreement)", 
     expect(call.headers["authorization"]).toBe("Bearer my.external.token");
   });
 
-  it("returns 403 for an internal token", async () => {
+  it("returns 401 for an internal token", async () => {
     mockJwtVerify.mockResolvedValue({
       payload: {
         aud: "test-audience",
@@ -160,11 +160,11 @@ describe("POST /external/agreements/:agreementId/activate (activateAgreement)", 
       url: `/external/agreements/${AGREEMENT_ID}/activate`,
     });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(401);
     expect(activateAgreementMock).not.toHaveBeenCalled();
   });
 
-  it("returns 403 for a ui-session token", async () => {
+  it("returns 401 for a ui-session token", async () => {
     mockJwtVerify.mockResolvedValue({
       payload: {
         aud: "test-audience",
@@ -187,7 +187,7 @@ describe("POST /external/agreements/:agreementId/activate (activateAgreement)", 
       url: `/external/agreements/${AGREEMENT_ID}/activate`,
     });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(401);
     expect(activateAgreementMock).not.toHaveBeenCalled();
   });
 
