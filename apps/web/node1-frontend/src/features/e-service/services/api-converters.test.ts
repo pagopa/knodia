@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
-import { toConsumptionEserviceDetail, toEserviceSeed } from "./api-converters";
+import {
+  toConsumptionEserviceDetail,
+  toEserviceFromScratchSeed,
+} from "./api-converters";
 
 const TEST_CHECKSUM =
   "80bb7a41804be0601bbff2f0019045657757c29e5995e8eb221317cf757ba89e";
@@ -177,29 +180,41 @@ describe("toConsumptionEserviceDetail", () => {
   });
 });
 
-describe("toEserviceSeed", () => {
+describe("toEserviceFromScratchSeed", () => {
   it("wraps name and description in localized objects", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     expect(body.name).toEqual({ en: "Test E-Service" });
     expect(body.description).toEqual({ en: "Test description" });
   });
 
   it("wraps accessTokenAudience in an array", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     expect(body.accessTokenAudience).toEqual(["https://api.example.com"]);
   });
 
   it("base64-encodes file content", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     // '{"openapi":"3.0.0"}' → base64
     expect(body.interfaceDocument.content).toBe(btoa('{"openapi":"3.0.0"}'));
   });
 
   it("sets interfaceDocument metadata correctly", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     expect(body.interfaceDocument.name).toBe("spec.json");
     expect(body.interfaceDocument.contentType).toBe("application/json");
@@ -209,7 +224,7 @@ describe("toEserviceSeed", () => {
 
   it("falls back to extension-based content type when file.type is empty", async () => {
     const yamlFile = new File(["openapi: 3.0.0"], "spec.yaml", { type: "" });
-    const body = await toEserviceSeed(
+    const body = await toEserviceFromScratchSeed(
       createFormData({ interfaceDocument: yamlFile }),
       TEST_CHECKSUM,
     );
@@ -218,13 +233,19 @@ describe("toEserviceSeed", () => {
   });
 
   it("converts accessTokenDuration from minutes to seconds", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     expect(body.accessTokenDuration).toBe(60 * 60);
   });
 
   it("passes through scalar fields unchanged", async () => {
-    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+    const body = await toEserviceFromScratchSeed(
+      createFormData(),
+      TEST_CHECKSUM,
+    );
 
     expect(body.accessTokenType).toBe("Bearer");
     expect(body.mode).toBe("ProvideData");

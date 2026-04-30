@@ -7,10 +7,10 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { server } from "@/test/msw/server";
-import { renderWithProviders, screen } from "@/test/utils";
+import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { OrgConsumptionStatusSection } from "./OrgConsumptionStatusSection";
 
@@ -24,6 +24,11 @@ const defaultAgreement: bffApi.EserviceAgreementDetail = {
   suspendedByConsumerAt: null,
   suspendedByProducerAt: null,
 };
+
+const routes = [
+  { path: "/consumption/e-services/$id/purposes/new" },
+  { path: "/consumption/e-services/$id" },
+];
 
 function renderSection({
   agreement = defaultAgreement,
@@ -41,7 +46,7 @@ function renderSection({
       hasRecentlyBeenUpdated={hasRecentlyBeenUpdated}
       knodeId={KNODE_ID}
     />,
-    { roles },
+    { roles, routes },
   );
 }
 
@@ -64,6 +69,45 @@ describe("OrgConsumptionStatusSection", () => {
     renderSection({ hasRecentlyBeenUpdated: false });
 
     expect(screen.queryByText("Recent update")).not.toBeInTheDocument();
+  });
+
+  it("shows 'Action needed' banner for PendingConsumerOperatorIdentification state", () => {
+    renderSection({
+      agreement: {
+        id: crypto.randomUUID(),
+        state: "PendingConsumerOperatorIdentification",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+      },
+    });
+
+    expect(screen.getByText("Action needed")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "To activate the Agreement, you must log in to the Producer Knode.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Purposes and Keychains sections for PendingConsumerOperatorIdentification state", () => {
+    renderSection({
+      agreement: {
+        id: crypto.randomUUID(),
+        state: "PendingConsumerOperatorIdentification",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+      },
+    });
+
+    expect(screen.queryByText("Purposes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keychains")).not.toBeInTheDocument();
+  });
+
+  it("shows Purposes and Keychains sections for Active state", () => {
+    renderSection();
+
+    expect(screen.getByText("Purposes")).toBeInTheDocument();
+    expect(screen.getByText("Keychains")).toBeInTheDocument();
   });
 });
 
@@ -201,5 +245,62 @@ describe("OrgConsumptionStatusSection — Suspended state", () => {
     await user.click(screen.getByRole("button", { name: "Reactivate" }));
 
     expect(capturedKnodeId).toBe(KNODE_ID);
+  });
+});
+
+describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
+  it("does not reopen the suspend modal after suspend → reactivate", async () => {
+    const suspendHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));
+    server.use(
+      http.post(
+        `${BASE_URL}/consumer/agreements/${AGREEMENT_ID}/suspend`,
+        suspendHandler,
+      ),
+    );
+
+    const eserviceId = unsafeBrandId<EserviceId>(crypto.randomUUID());
+
+    const { rerender, user } = renderWithProviders(
+      <OrgConsumptionStatusSection
+        agreement={defaultAgreement}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Suspend" }));
+    await user.click(screen.getByRole("button", { name: "Suspend anyway" }));
+
+    await waitFor(() => {
+      expect(suspendHandler).toHaveBeenCalledTimes(1);
+    });
+
+    rerender(
+      <OrgConsumptionStatusSection
+        agreement={{
+          ...defaultAgreement,
+          state: "Suspended",
+          suspendedByConsumerAt: "2026-01-01T00:00:00Z",
+        }}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    rerender(
+      <OrgConsumptionStatusSection
+        agreement={defaultAgreement}
+        eserviceId={eserviceId}
+        hasRecentlyBeenUpdated={false}
+        knodeId={KNODE_ID}
+      />,
+    );
+
+    expect(screen.queryByText("Suspend Agreement")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Suspend anyway" }),
+    ).not.toBeInTheDocument();
   });
 });

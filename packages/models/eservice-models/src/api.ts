@@ -71,3 +71,16 @@ export const API_EserviceTemplateId = z
   })
   .meta({ id: "EserviceTemplateId" });
 export type API_EserviceTemplateId = z.infer<typeof API_EserviceTemplateId>;
+
+export const API_EserviceTemplateReference = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Reference to an E-service template",
+    id: "EserviceTemplateReference",
+  });
+export type API_EserviceTemplateReference = z.infer<
+  typeof API_EserviceTemplateReference
+>;

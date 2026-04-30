@@ -8,6 +8,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
 import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -29,6 +30,7 @@ export function buildApp({
   internalJwt,
   keychainProcessUrl,
   loggerConfig,
+  magicLinkConfig,
   organizationProcessUrl,
   pollingService,
   purposeProcessUrl,
@@ -40,6 +42,7 @@ export function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
   loggerConfig: LoggerConfig;
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"];
   organizationProcessUrl: string;
   pollingService: PollingService;
   purposeProcessUrl: string;
@@ -52,7 +55,11 @@ export function buildApp({
     purposeProcessUrl,
   });
   const fileManager = initFileManager();
-  const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
+  const tokenGenerator = tokenGeneratorBuilder();
+  const internalTokenProvider = refreshableInternalTokenGenerator(
+    internalJwt,
+    tokenGenerator,
+  );
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -102,29 +109,31 @@ export function buildApp({
     callerKnodeId,
     keychainProcessClient: clients.keychainProcessClient,
     organizationProcessClient: clients.organizationProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(eserviceRouter, {
     eserviceInterfacesS3Bucket,
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
+    internalTokenProvider,
+    magicLinkConfig,
     pollingService,
-    tokenProvider,
+    tokenGenerator,
   });
   app.register(organizationRouter, {
     organizationProcessClient: clients.organizationProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
   app.register(purposeRouter, {
     callerKnodeId,
     pollingService,
     purposeProcessClient: clients.purposeProcessClient,
-    tokenProvider,
+    tokenProvider: internalTokenProvider,
   });
 
   return app;
@@ -139,6 +148,7 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
     loggerConfig: config,
+    magicLinkConfig: config.magicLinkConfig,
     organizationProcessUrl: config.organizationProcessUrl,
     pollingService: pollingServiceBuilder(config),
     purposeProcessUrl: config.purposeProcessUrl,

@@ -11,6 +11,7 @@ import {
   CaretDownIcon,
   CaretUpIcon,
   SelectionIcon,
+  WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useContext, useState } from "react";
 import {
@@ -61,18 +62,22 @@ export function OrgConsumptionStatusSection({
           knodeId={knodeId}
         />
 
-        <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
+        {agreement.state !== "PendingConsumerOperatorIdentification" && (
+          <>
+            <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
 
-        <div className="mt-4 flex flex-col gap-4">
-          <h3 className="title-md-em text-primary-light-low-contrast">
-            Keychains
-          </h3>
-          <Banner icon={<SelectionIcon />} kind="neutral">
-            To request an access token for this E-Service, associate a Keychain
-            to a Purpose from the Purpose page. Associated Keychain will appear
-            here.
-          </Banner>
-        </div>
+            <div className="mt-4 flex flex-col gap-4">
+              <h3 className="title-md-em text-primary-light-low-contrast">
+                Keychains
+              </h3>
+              <Banner icon={<SelectionIcon />} kind="neutral">
+                To request an access token for this E-Service, associate a
+                Keychain to a Purpose from the Purpose page. Associated
+                Keychains will appear here.
+              </Banner>
+            </div>
+          </>
+        )}
       </DisclosurePanel>
     </Disclosure>
   );
@@ -89,18 +94,7 @@ function AgreementStatusBanner({
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }) {
-  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
-
-  const {
-    isError: isSuspendError,
-    isPending: isSuspendPending,
-    suspendAgreement,
-  } = useSuspendConsumerAgreement({
-    agreementId,
-    eserviceId,
-    knodeId,
-  });
 
   const { isPending: isReactivatePending, reactivateAgreement } =
     useReactivateConsumerAgreement({
@@ -110,32 +104,17 @@ function AgreementStatusBanner({
     });
 
   const banner = match(agreement.state)
-    .with("Active", () => (
-      <>
-        <Banner
-          action={
-            canManageAgreement
-              ? {
-                  label: "Suspend",
-                  onPress: () => setIsSuspendModalOpen(true),
-                }
-              : undefined
-          }
-          kind="success"
-        >
-          Active
-        </Banner>
-        <SuspendAgreementModal
-          isError={isSuspendError}
-          isOpen={isSuspendModalOpen}
-          isPending={isSuspendPending}
-          onConfirm={suspendAgreement}
-          onOpenChange={setIsSuspendModalOpen}
-        >
-          <ConsumerSuspendAgreementBody />
-        </SuspendAgreementModal>
-      </>
-    ))
+    .with("Active", () =>
+      canManageAgreement ? (
+        <SuspendConsumerAgreementButton
+          agreementId={agreementId}
+          eserviceId={eserviceId}
+          knodeId={knodeId}
+        />
+      ) : (
+        <Banner kind="success">Active</Banner>
+      ),
+    )
     .with("Suspended", () =>
       agreement.suspendedByProducerAt !== null ? (
         <Banner
@@ -187,12 +166,16 @@ function AgreementStatusBanner({
       );
       return null;
     })
-    .with("PendingConsumerOperatorIdentification", () => {
-      console.warn(
-        "Unhandled agreement state: PendingConsumerOperatorIdentification",
-      );
-      return null;
-    })
+    .with("PendingConsumerOperatorIdentification", () => (
+      <Banner
+        icon={<WarningCircleIcon />}
+        kind="informative"
+        size="md"
+        title="Action needed"
+      >
+        To activate the Agreement, you must log in to the Producer Knode.
+      </Banner>
+    ))
     .exhaustive();
 
   if (!banner) return null;
@@ -237,5 +220,42 @@ function CollapseTrigger({
         </span>
       </Button>
     </Heading>
+  );
+}
+
+function SuspendConsumerAgreementButton({
+  agreementId,
+  eserviceId,
+  knodeId,
+}: {
+  agreementId: AgreementId;
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendAgreement } = useSuspendConsumerAgreement({
+    agreementId,
+    eserviceId,
+    knodeId,
+  });
+
+  return (
+    <>
+      <Banner
+        action={{ label: "Suspend", onPress: () => setIsOpen(true) }}
+        kind="success"
+      >
+        Active
+      </Banner>
+      <SuspendAgreementModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendAgreement}
+        onOpenChange={setIsOpen}
+      >
+        <ConsumerSuspendAgreementBody />
+      </SuspendAgreementModal>
+    </>
   );
 }
