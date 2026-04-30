@@ -40,7 +40,7 @@ const toRemoteResourceAgreement = (
   consumerId: apiDetail.consumer.id,
   eserviceId: apiDetail.eserviceId,
   eserviceVersionId: apiDetail.eserviceVersionId,
-  knodeId: apiDetail.consumer.knodeId,
+  knodeId: apiDetail.knodeId,
   producerId: apiDetail.producerId,
 });
 
@@ -53,9 +53,9 @@ const getAgreement = (
 describe("GET /agreements/:agreementId (getAgreement)", () => {
   const agreement = getMockAgreement();
   const k2kAgreement = toK2KAgreement(agreement);
-  const expectedApiDetail = toAPI_Agreement(k2kAgreement);
+  const knodeId = agreement.consumer.knodeId;
+  const expectedApiDetail = toAPI_Agreement(k2kAgreement, knodeId);
   const remoteResourceAgreement = toRemoteResourceAgreement(expectedApiDetail);
-  const knodeId = expectedApiDetail.consumer.knodeId;
 
   beforeAll(async () => {
     await remoteResourceDbService.insertAgreement(remoteResourceAgreement);

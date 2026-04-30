@@ -1,9 +1,5 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
-  API_AgreementConsumer,
-  API_AgreementState,
-} from "@knodia/agreement-models/api";
-import {
-  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -144,14 +140,13 @@ export type API_GetConsumerAgreementsQueryParams = z.infer<
 
 export const API_ConsumerAgreement = z
   .strictObject({
-    consumer: API_AgreementConsumer,
-    eserviceId: z.uuid(),
-    eserviceVersionId: z.uuid(),
+    eservice: z.strictObject({
+      id: z.uuid(),
+      name: API_LocalizedName,
+    }),
     id: z.uuid(),
-    producerId: API_OrganizationId,
+    producer: API_CompactOrganization,
     state: API_AgreementState,
-    suspendedByConsumerAt: z.iso.datetime().nullable(),
-    suspendedByProducerAt: z.iso.datetime().nullable(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ConsumerAgreement" });

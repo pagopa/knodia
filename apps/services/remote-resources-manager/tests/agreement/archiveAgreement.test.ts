@@ -45,7 +45,7 @@ const toRemoteResourceAgreement = (
   consumerId,
   eserviceId: apiDetail.eserviceId,
   eserviceVersionId: apiDetail.eserviceVersionId,
-  knodeId: apiDetail.consumer.knodeId,
+  knodeId: apiDetail.knodeId,
   producerId: apiDetail.producerId,
 });
 
@@ -61,16 +61,16 @@ const archiveAgreement = (
 describe("POST /agreements/:agreementId/archive (archiveAgreement)", () => {
   const agreement = getMockAgreement({ state: "Archived" });
   const k2kAgreement = toK2KAgreement(agreement);
-  const expectedApiDetail = toAPI_Agreement(k2kAgreement);
+  const knodeId = agreement.consumer.knodeId;
+  const expectedApiDetail = toAPI_Agreement(k2kAgreement, knodeId);
   const ownedAgreement = toRemoteResourceAgreement(
     expectedApiDetail,
     TEST_ORGANIZATION_ID,
   );
   const foreignAgreement = toRemoteResourceAgreement(
-    toAPI_Agreement(toK2KAgreement(getMockAgreement({ seed: 1 }))),
+    toAPI_Agreement(toK2KAgreement(getMockAgreement({ seed: 1 })), knodeId),
     generateId<OrganizationId>(),
   );
-  const knodeId = expectedApiDetail.consumer.knodeId;
 
   beforeEach(async () => {
     archiveAgreementMock.mockReset();

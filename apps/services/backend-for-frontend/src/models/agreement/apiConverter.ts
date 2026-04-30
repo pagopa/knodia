@@ -12,17 +12,24 @@ import type {
 
 import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
 
-export const toAPI_ConsumerAgreement = (
-  agreement: remoteResourcesManagerApi.Agreement,
-): API_ConsumerAgreement => ({
-  consumer: agreement.consumer,
-  eserviceId: agreement.eserviceId,
-  eserviceVersionId: agreement.eserviceVersionId,
+export const toAPI_ConsumerAgreement = ({
+  agreement,
+  eservice,
+}: {
+  agreement: remoteResourcesManagerApi.Agreement;
+  eservice: remoteResourcesManagerApi.EserviceDetails;
+}): API_ConsumerAgreement => ({
+  eservice: {
+    id: eservice.id,
+    name: eservice.name,
+  },
   id: agreement.id,
-  producerId: agreement.producerId,
+  producer: {
+    id: eservice.producer.id,
+    knodeId: eservice.producer.knodeId,
+    name: eservice.producer.name,
+  },
   state: agreement.state,
-  suspendedByConsumerAt: agreement.suspendedByConsumerAt,
-  suspendedByProducerAt: agreement.suspendedByProducerAt,
   updatedAt: agreement.updatedAt,
 });
 

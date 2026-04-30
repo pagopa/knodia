@@ -116,6 +116,10 @@ export type Agreement = {
     eserviceId: string;
     eserviceVersionId: string;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     producerId: OrganizationId;
     state: AgreementState;
     /**

@@ -8,6 +8,7 @@ import {
   API_MagicLink,
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -159,6 +160,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       const { organizationId: consumerId } = getUISessionAuthData(authData);
       const { limit, offset, state } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       logger.info(
         { requestQuery: req.query },
@@ -167,7 +169,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
 
       const { data } = await remoteResourcesManagerApi.getAgreements({
         client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: {
           limit,
           offset,
@@ -175,9 +177,22 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      const enrichedAgreements = await Promise.all(
+        data.results.map(async (agreement) => {
+          const { data: eservice } =
+            await remoteResourcesManagerApi.getEserviceDetails({
+              client: remoteResourcesManagerClient,
+              headers,
+              path: { eserviceId: agreement.eserviceId },
+              query: { knodeId: KnodeId.parse(agreement.knodeId) },
+            });
+          return { agreement, eservice };
+        }),
+      );
+
       res.status(200).send({
         pagination: data.pagination,
-        results: data.results.map(toAPI_ConsumerAgreement),
+        results: enrichedAgreements.map(toAPI_ConsumerAgreement),
       });
     },
     method: "GET",

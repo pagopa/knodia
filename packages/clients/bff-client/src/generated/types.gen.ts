@@ -40,11 +40,6 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
-export type AgreementConsumer = {
-    id: string;
-    knodeId: KnodeId;
-};
-
 /**
  * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
  */
@@ -69,11 +64,6 @@ export type Pagination = {
  * Binary file content
  */
 export type FileDownload = Blob | File;
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
 
 /**
  * Unique identifier of the User
@@ -595,14 +585,13 @@ export type ConsumerAgreementCounters = {
 };
 
 export type ConsumerAgreement = {
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
+    eservice: {
+        id: string;
+        name: LocalizedName;
+    };
     id: string;
-    producerId: OrganizationId;
+    producer: CompactOrganization;
     state: AgreementState;
-    suspendedByConsumerAt: string | null;
-    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 

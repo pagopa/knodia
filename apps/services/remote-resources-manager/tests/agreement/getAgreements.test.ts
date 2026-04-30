@@ -63,7 +63,9 @@ describe("GET /agreements (getAgreements)", () => {
     offset: 0,
   };
 
-  const expectedApiResult = zocker(API_Agreement).generate();
+  const knodeId: KnodeId = "Orion";
+
+  const expectedApiResult = { ...zocker(API_Agreement).generate(), knodeId };
   const k2kResult = toK2KResult(expectedApiResult);
 
   const mockK2KResponse: k2kGatewayApi.Agreements = {
@@ -71,7 +73,6 @@ describe("GET /agreements (getAgreements)", () => {
     results: [k2kResult],
   };
 
-  const knodeId: KnodeId = "Orion";
   const remoteAgreement: RemoteResourceAgreementSQL = {
     agreementId: expectedApiResult.id,
     consumerId: TEST_ORGANIZATION_ID,

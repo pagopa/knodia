@@ -62,6 +62,9 @@ export const API_Agreement = z
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
     producerId: API_OrganizationId,
     state: API_AgreementState,
     suspendedByConsumerAt: z.iso.datetime().nullable().meta({

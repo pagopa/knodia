@@ -64,7 +64,7 @@ export function agreementServiceBuilder(
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data);
+      return toAPI_Agreement(data, knodeId);
     },
 
     async createActivationMagicLink(
@@ -154,7 +154,7 @@ export function agreementServiceBuilder(
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data);
+      return toAPI_Agreement(data, knodeId);
     },
 
     async getAgreements(
@@ -188,7 +188,11 @@ export function agreementServiceBuilder(
         });
 
         if (results.length < limit) {
-          results = results.concat(data.results.map(toAPI_Agreement));
+          results = results.concat(
+            data.results.map((agreement) =>
+              toAPI_Agreement(agreement, knodeId),
+            ),
+          );
 
           dynamicLimit = limit - results.length;
           dynamicOffset = 0;
@@ -233,7 +237,7 @@ export function agreementServiceBuilder(
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data);
+      return toAPI_Agreement(data, knodeId);
     },
 
     async suspendAgreement(
@@ -262,7 +266,7 @@ export function agreementServiceBuilder(
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data);
+      return toAPI_Agreement(data, knodeId);
     },
   };
 }
