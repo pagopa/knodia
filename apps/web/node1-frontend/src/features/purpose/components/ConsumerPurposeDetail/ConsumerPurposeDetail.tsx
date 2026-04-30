@@ -1,11 +1,14 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { KnodeId } from "@knodia/common-models/ids";
 
-import { Button, Modal, Pagination } from "@knodia/ui-kit/ui";
+import {
+  type KnodeId,
+  type PurposeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
+import { Banner, Button, Pagination } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
@@ -17,6 +20,9 @@ import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgree
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
+import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
+import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
 
 import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
 import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
@@ -41,12 +47,17 @@ export function ConsumerPurposeDetail({
     <>
       <PageHeader
         actions={
-          canManagePurpose && <PurposeActionButton state={purpose.state} />
+          canManagePurpose && (
+            <PurposeActionButton knodeId={knodeId} purpose={purpose} />
+          )
         }
         description={purpose.description.en}
         resourceStatusChip={<PurposeStateChip state={purpose.state} />}
         title={purpose.name.en}
       />
+
+      {purpose.state === "Suspended" &&
+        purpose.suspendedByProducerAt !== null && <ProducerSuspendedBanner />}
 
       <div className="mt-10 flex flex-col gap-4">
         <PurposeEserviceCard
@@ -130,33 +141,104 @@ export function ConsumerPurposeDetail({
   );
 }
 
-function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
-  return match(state)
+function ProducerSuspendedBanner() {
+  return (
+    <Banner
+      kind="warning"
+      size="md"
+      title="The Producer suspended this Purpose"
+    >
+      You can&apos;t reactivate this Purpose because it was suspended by the
+      Producer, but you can create a new Purpose for the same E-Service.
+    </Banner>
+  );
+}
+
+function PurposeActionButton({
+  knodeId,
+  purpose,
+}: {
+  knodeId: KnodeId;
+  purpose: bffApi.PurposeDetails;
+}) {
+  const purposeId = unsafeBrandId<PurposeId>(purpose.id);
+
+  return match(purpose.state)
     .with("Active", () => (
-      <DialogTrigger>
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-        <Modal
-          actionLabel="Suspend anyway"
-          cancelLabel="Cancel"
-          description="If you suspend it, you will no longer be able to use the associated E-Service for this Purpose. Are you sure you want to suspend this Purpose? You will be able to reactivate it later."
-          isDismissable
-          kind="destructive"
-          // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO: implement suspend mutation
-          onConfirm={() => {}}
-          title="Suspend Purpose"
+      <SuspendPurposeByConsumerButton knodeId={knodeId} purposeId={purposeId} />
+    ))
+    .with("Suspended", () =>
+      purpose.suspendedByConsumerAt !== null &&
+      purpose.suspendedByProducerAt === null ? (
+        <ReactivatePurposeByConsumerButton
+          knodeId={knodeId}
+          purposeId={purposeId}
         />
-      </DialogTrigger>
-    ))
-    .with("Suspended", () => (
-      <Button hierarchy="brand" isDisabled kind="filled" size="md">
-        Reactivate
-      </Button>
-    ))
+      ) : null,
+    )
     .with("Archived", () => {
       console.warn("Unhandled purpose state: Archived");
       return null;
     })
     .exhaustive();
+}
+
+function ReactivatePurposeByConsumerButton({
+  knodeId,
+  purposeId,
+}: {
+  knodeId: KnodeId;
+  purposeId: PurposeId;
+}) {
+  const { isPending, reactivatePurpose } = useReactivatePurposeByConsumer(
+    purposeId,
+    knodeId,
+  );
+
+  return (
+    <Button
+      hierarchy="brand"
+      isPending={isPending}
+      kind="filled"
+      onPress={reactivatePurpose}
+      size="md"
+    >
+      Reactivate
+    </Button>
+  );
+}
+
+function SuspendPurposeByConsumerButton({
+  knodeId,
+  purposeId,
+}: {
+  knodeId: KnodeId;
+  purposeId: PurposeId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendPurpose } = useSuspendPurposeByConsumer(
+    purposeId,
+    knodeId,
+  );
+
+  return (
+    <>
+      <Button
+        hierarchy="danger"
+        kind="tonal"
+        onPress={() => setIsOpen(true)}
+        size="md"
+      >
+        Suspend
+      </Button>
+      <SuspendPurposeModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendPurpose}
+        onOpenChange={setIsOpen}
+        suspendActor="consumer"
+      />
+    </>
+  );
 }
