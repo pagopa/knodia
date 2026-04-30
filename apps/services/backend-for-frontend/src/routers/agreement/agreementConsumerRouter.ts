@@ -27,7 +27,7 @@ import {
   API_CreateAgreementConsumerActivationMagicLinkQueryParams,
   API_GetPendingConsumerAgreementsQueryParams,
   API_PendingConsumerAgreements,
-  API_SuspendReactivateConsumerAgreementQueryParams,
+  API_SuspendReactivateAgreementByConsumerQueryParams,
 } from "../../models/agreement/api.ts";
 import { toAPI_PendingConsumerAgreement } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -270,7 +270,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Reactivate an Agreement as Consumer",
       operationId: "reactivateAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement reactivated successfully",
@@ -310,7 +310,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Suspend an Agreement as Consumer",
       operationId: "suspendAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement suspended successfully",
