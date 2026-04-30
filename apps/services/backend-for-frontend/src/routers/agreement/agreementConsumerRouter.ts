@@ -24,13 +24,13 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import {
   API_AgreementSeed,
+  API_ConsumerAgreementActionQueryParams,
   API_ConsumerAgreementCounters,
   API_ConsumerAgreements,
   API_CreateAgreementConsumerActivationMagicLinkQueryParams,
   API_GetConsumerAgreementsQueryParams,
   API_GetPendingConsumerAgreementsQueryParams,
   API_PendingConsumerAgreements,
-  API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import {
   toAPI_ConsumerAgreement,
@@ -332,7 +332,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Reactivate an Agreement as Consumer",
       operationId: "reactivateConsumerAgreement",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_ConsumerAgreementActionQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement reactivated successfully",
@@ -372,7 +372,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Suspend an Agreement as Consumer",
       operationId: "suspendConsumerAgreement",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_ConsumerAgreementActionQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement suspended successfully",
@@ -412,7 +412,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Archive an Agreement as Consumer",
       operationId: "archiveConsumerAgreement",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_ConsumerAgreementActionQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement archived successfully",
