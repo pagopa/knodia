@@ -390,8 +390,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         { data: eservice },
         { data: latestVersion },
         { data: latestVersionInterface },
-        { data: allAgreements },
         { data: activeAgreements },
+        { data: suspendedAgreements },
         { data: allPurposes },
         { data: activePurposes },
         { data: totalDailyCalls },
@@ -418,6 +418,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
+            state: [API_AgreementState.enum.Active],
           },
         }),
         agreementProcessApi.getAgreements({
@@ -427,7 +428,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
-            state: [API_AgreementState.enum.Active],
+            state: [API_AgreementState.enum.Suspended],
           },
         }),
         purposeProcessApi.getPurposes({
@@ -464,7 +465,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           counters: {
             agreements: {
               active: activeAgreements.pagination.total,
-              total: allAgreements.pagination.total,
+              suspended: suspendedAgreements.pagination.total,
             },
             purposes: {
               active: activePurposes.pagination.total,

@@ -44,7 +44,7 @@ export const toAPI_ProducerEserviceDetails = ({
   latestVersionInterface,
 }: {
   counters: {
-    agreements: { active: number; total: number };
+    agreements: { active: number; suspended: number };
     purposes: { active: number; total: number; totalApiCallsPerDay: number };
   };
   eservice: eserviceProcessApi.Eservice;

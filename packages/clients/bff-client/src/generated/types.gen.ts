@@ -340,28 +340,28 @@ export type ProducerEserviceVersionDetails = {
     versionNumber: number;
 };
 
-export type ProducerEserviceDetailsCounters = {
+export type ProducerEserviceDetailsAgreementCounters = {
     /**
-     * Number of active items
+     * Number of Active Agreements
      */
     active: number;
     /**
-     * Total number of items
+     * Number of Suspended Agreements
      */
-    total: number;
+    suspended: number;
 };
 
 export type ProducerEserviceDetailsPurposeCounters = {
     /**
-     * Number of active items
+     * Number of active Purposes
      */
     active: number;
     /**
-     * Total number of items
+     * Total number of Purposes
      */
     total: number;
     /**
-     * Total API calls per day across all Active purposes
+     * Total API calls per day across all Active Purposes
      */
     totalApiCallsPerDay: number;
 };
@@ -370,7 +370,7 @@ export type ProducerEserviceDetails = {
     /**
      * Agreement counters
      */
-    agreements: ProducerEserviceDetailsCounters;
+    agreements: ProducerEserviceDetailsAgreementCounters;
     categories: Array<EserviceCategory>;
     createdAt: string;
     description: LocalizedDescription;
