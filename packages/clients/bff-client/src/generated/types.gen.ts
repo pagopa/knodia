@@ -613,11 +613,11 @@ export type SessionResponse = {
     uiSessionToken: string;
 };
 
-export type ExternalUiSessionExchangeRequest = {
+export type ExternalSessionRequest = {
     magicLinkToken: string;
 };
 
-export type ExternalUiSessionExchangeResponse = {
+export type ExternalSessionResponse = {
     agreementId: string;
     externalUiSessionToken: string;
 };
@@ -1008,14 +1008,14 @@ export type LogoutResponses = {
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
-export type ExchangeExternalUiSessionData = {
-    body: ExternalUiSessionExchangeRequest;
+export type CreateExternalSessionData = {
+    body: ExternalSessionRequest;
     path?: never;
     query?: never;
     url: '/auth/externalUiSession';
 };
 
-export type ExchangeExternalUiSessionErrors = {
+export type CreateExternalSessionErrors = {
     /**
      * Bad Request
      */
@@ -1026,16 +1026,16 @@ export type ExchangeExternalUiSessionErrors = {
     401: Problem;
 };
 
-export type ExchangeExternalUiSessionError = ExchangeExternalUiSessionErrors[keyof ExchangeExternalUiSessionErrors];
+export type CreateExternalSessionError = CreateExternalSessionErrors[keyof CreateExternalSessionErrors];
 
-export type ExchangeExternalUiSessionResponses = {
+export type CreateExternalSessionResponses = {
     /**
-     * Token exchanged successfully
+     * External session created successfully
      */
-    200: ExternalUiSessionExchangeResponse;
+    200: ExternalSessionResponse;
 };
 
-export type ExchangeExternalUiSessionResponse = ExchangeExternalUiSessionResponses[keyof ExchangeExternalUiSessionResponses];
+export type CreateExternalSessionResponse = CreateExternalSessionResponses[keyof CreateExternalSessionResponses];
 
 export type GetEserviceTemplatesData = {
     body?: never;

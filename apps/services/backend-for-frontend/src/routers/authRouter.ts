@@ -37,18 +37,18 @@ const API_SessionResponse = z
   })
   .meta({ id: "SessionResponse" });
 
-const API_ExternalUiSessionExchangeRequest = z
+const API_ExternalSessionRequest = z
   .strictObject({
     magicLinkToken: z.string(),
   })
-  .meta({ id: "ExternalUiSessionExchangeRequest" });
+  .meta({ id: "ExternalSessionRequest" });
 
-const API_ExternalUiSessionExchangeResponse = z
+const API_ExternalSessionResponse = z
   .strictObject({
     agreementId: AgreementId,
     externalUiSessionToken: z.string(),
   })
-  .meta({ id: "ExternalUiSessionExchangeResponse" });
+  .meta({ id: "ExternalSessionResponse" });
 
 const API_RefreshCookie = z.object({
   refresh: z
@@ -181,13 +181,13 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     },
     method: "POST",
     schema: {
-      body: API_ExternalUiSessionExchangeRequest,
+      body: API_ExternalSessionRequest,
       description:
         "Validate a single-use magic-link token and mint a short-lived external-ui-session token scoped to the action in the magic link.",
-      operationId: "exchangeExternalUiSession",
+      operationId: "createExternalSession",
       response: {
-        200: API_ExternalUiSessionExchangeResponse.meta({
-          description: "Token exchanged successfully",
+        200: API_ExternalSessionResponse.meta({
+          description: "External session created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

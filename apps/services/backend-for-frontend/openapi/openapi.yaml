@@ -1268,7 +1268,7 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
-    ExternalUiSessionExchangeRequest:
+    ExternalSessionRequest:
       type: object
       properties:
         magicLinkToken:
@@ -1276,7 +1276,7 @@ components:
       required:
         - magicLinkToken
       additionalProperties: false
-    ExternalUiSessionExchangeResponse:
+    ExternalSessionResponse:
       type: object
       properties:
         agreementId:
@@ -2085,7 +2085,7 @@ paths:
           description: Logged out successfully
   /auth/externalUiSession:
     post:
-      operationId: exchangeExternalUiSession
+      operationId: createExternalSession
       tags:
         - auth
       description: Validate a single-use magic-link token and mint a short-lived
@@ -2095,17 +2095,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ExternalUiSessionExchangeRequest"
+              $ref: "#/components/schemas/ExternalSessionRequest"
       security: []
       responses:
         "200":
-          description: Token exchanged successfully
+          description: External session created successfully
           content:
             application/json:
               schema:
-                description: Token exchanged successfully
+                description: External session created successfully
                 allOf:
-                  - $ref: "#/components/schemas/ExternalUiSessionExchangeResponse"
+                  - $ref: "#/components/schemas/ExternalSessionResponse"
         "400":
           description: Bad Request
           content:
