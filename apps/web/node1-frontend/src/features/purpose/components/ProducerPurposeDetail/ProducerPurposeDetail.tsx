@@ -1,8 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Modal } from "@knodia/ui-kit/ui";
+import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { Banner, Button } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { DialogTrigger } from "react-aria-components";
+import { useState } from "react";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
@@ -13,6 +14,9 @@ import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgree
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
+import { useReactivatePurposeByProducer } from "@/features/purpose/hooks/useReactivatePurposeByProducer";
+import { useSuspendPurposeByProducer } from "@/features/purpose/hooks/useSuspendPurposeByProducer";
 
 export function ProducerPurposeDetail({
   purpose,
@@ -20,17 +24,25 @@ export function ProducerPurposeDetail({
   purpose: bffApi.PurposeDetails;
 }) {
   const canManagePurposeState = useHasRole("administrative");
+  const purposeId = unsafeBrandId<PurposeId>(purpose.id);
 
   return (
     <>
       <PageHeader
         actions={
-          canManagePurposeState && <PurposeActionButton state={purpose.state} />
+          canManagePurposeState && <PurposeActionButton purpose={purpose} />
         }
         description={purpose.description.en}
         resourceStatusChip={<PurposeStateChip state={purpose.state} />}
         title={purpose.name.en}
       />
+
+      {canManagePurposeState &&
+        purpose.state === "Suspended" &&
+        purpose.suspendedByConsumerAt !== null &&
+        purpose.suspendedByProducerAt === null && (
+          <ConsumerSuspendedBanner purposeId={purposeId} />
+        )}
 
       <div className="mt-10 flex flex-col gap-4">
         <PurposeEserviceCard
@@ -84,33 +96,104 @@ export function ProducerPurposeDetail({
   );
 }
 
-function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
-  return match(state)
+function ConsumerSuspendedBanner({ purposeId }: { purposeId: PurposeId }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendPurpose } =
+    useSuspendPurposeByProducer(purposeId);
+
+  return (
+    <>
+      <Banner
+        action={{
+          label: "Suspend to prevent reactivation",
+          onPress: () => setIsOpen(true),
+        }}
+        kind="warning"
+        size="md"
+        title="The Consumer suspended this Purpose"
+      >
+        You can also suspend the Purpose on your side to prevent the Consumer
+        from reactivating it.
+      </Banner>
+      <SuspendPurposeModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendPurpose}
+        onOpenChange={setIsOpen}
+        suspendActor="producer"
+      />
+    </>
+  );
+}
+
+function PurposeActionButton({ purpose }: { purpose: bffApi.PurposeDetails }) {
+  const purposeId = unsafeBrandId<PurposeId>(purpose.id);
+
+  return match(purpose.state)
     .with("Active", () => (
-      <DialogTrigger>
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-        <Modal
-          actionLabel="Suspend anyway"
-          cancelLabel="Cancel"
-          description="If you suspend it, the Consumer won't be able to use the associated E-Service for this Purpose. Are you sure you want to suspend this Purpose? You will be able to reactivate it later."
-          isDismissable
-          kind="destructive"
-          // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO: implement suspend mutation
-          onConfirm={() => {}}
-          title="Suspend Purpose"
-        />
-      </DialogTrigger>
+      <SuspendPurposeByProducerButton purposeId={purposeId} />
     ))
-    .with("Suspended", () => (
-      <Button hierarchy="brand" isDisabled kind="filled" size="md">
-        Reactivate
-      </Button>
-    ))
+    .with("Suspended", () =>
+      purpose.suspendedByProducerAt !== null ? (
+        <ReactivateProducerPurposeButton purposeId={purposeId} />
+      ) : null,
+    )
     .with("Archived", () => {
       console.warn("Unhandled purpose state: Archived");
       return null;
     })
     .exhaustive();
+}
+
+function ReactivateProducerPurposeButton({
+  purposeId,
+}: {
+  purposeId: PurposeId;
+}) {
+  const { isPending, reactivatePurpose } =
+    useReactivatePurposeByProducer(purposeId);
+
+  return (
+    <Button
+      hierarchy="brand"
+      isPending={isPending}
+      kind="filled"
+      onPress={reactivatePurpose}
+      size="md"
+    >
+      Reactivate
+    </Button>
+  );
+}
+
+function SuspendPurposeByProducerButton({
+  purposeId,
+}: {
+  purposeId: PurposeId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendPurpose } =
+    useSuspendPurposeByProducer(purposeId);
+
+  return (
+    <>
+      <Button
+        hierarchy="danger"
+        kind="tonal"
+        onPress={() => setIsOpen(true)}
+        size="md"
+      >
+        Suspend
+      </Button>
+      <SuspendPurposeModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={suspendPurpose}
+        onOpenChange={setIsOpen}
+        suspendActor="producer"
+      />
+    </>
+  );
 }

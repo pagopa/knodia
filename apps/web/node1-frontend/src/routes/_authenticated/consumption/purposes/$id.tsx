@@ -1,5 +1,6 @@
 import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ConsumerPurposeDetail } from "@/features/purpose/components/ConsumerPurposeDetail/ConsumerPurposeDetail";
@@ -24,8 +25,11 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const purpose = Route.useLoaderData();
+  const { id } = Route.useParams();
   const { knodeId } = Route.useSearch();
+  const { data: purpose } = useSuspenseQuery(
+    consumerPurposeDetailsQuery(unsafeBrandId<PurposeId>(id), knodeId),
+  );
 
   return (
     <>
