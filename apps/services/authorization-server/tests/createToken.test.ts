@@ -13,6 +13,7 @@ import { dateToSeconds } from "@knodia/common-models/utils";
 import { storeJti } from "@knodia/db-jti-replay-store/utils";
 import {
   dpopClaimsValidationError,
+  dpopProofAlreadyUsed,
   invalidDpopProofSignature,
 } from "@knodia/dpop-validator/errors";
 import {
@@ -903,7 +904,7 @@ describe("POST /token", async () => {
     await storeJti({
       dynamoClient,
       expireAtSec: dateToSeconds(new Date()) + 60,
-      jti: dpopProofJWT.payload.jti!,
+      jti: dpopProofJWT.payload.jti,
       tableName: dynamoDbDpopProofsTable,
     });
 
@@ -911,9 +912,11 @@ describe("POST /token", async () => {
       requestDpopProofJWS: dpopProofJWS,
     });
 
+    const error = dpopProofAlreadyUsed(dpopProofJWT.payload.jti);
+
     expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().errors?.[0]?.detail).toEqual(
-      "DPoP proof already used",
+      error.errors[0]!.detail,
     );
   });
 });
