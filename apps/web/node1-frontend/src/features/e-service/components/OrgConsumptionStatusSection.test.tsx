@@ -32,10 +32,12 @@ const routes = [
 
 function renderSection({
   agreement = defaultAgreement,
+  eserviceState = "Active",
   hasRecentlyBeenUpdated = false,
   roles,
 }: {
   agreement?: bffApi.EserviceAgreementDetail;
+  eserviceState?: bffApi.EserviceVersionState;
   hasRecentlyBeenUpdated?: boolean;
   roles?: readonly UserRole[];
 } = {}) {
@@ -43,6 +45,7 @@ function renderSection({
     <OrgConsumptionStatusSection
       agreement={agreement}
       eserviceId={unsafeBrandId<EserviceId>(crypto.randomUUID())}
+      eserviceState={eserviceState}
       hasRecentlyBeenUpdated={hasRecentlyBeenUpdated}
       knodeId={KNODE_ID}
     />,
@@ -343,6 +346,88 @@ describe("OrgConsumptionStatusSection — Archived state", () => {
   });
 });
 
+describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
+  function mockEmptyPurposes() {
+    server.use(
+      http.get(`${BASE_URL}/consumer/purposes`, () =>
+        HttpResponse.json({
+          pagination: { limit: 50, offset: 0, total: 0 },
+          results: [],
+        }),
+      ),
+    );
+  }
+
+  it("opens the eservice-archived modal when eservice state is Archived", async () => {
+    mockEmptyPurposes();
+
+    const { user } = renderSection({ eserviceState: "Archived" });
+
+    await user.click(
+      await screen.findByRole("button", { name: "Create Purpose" }),
+    );
+
+    expect(screen.getByText("This E-Service is Archived")).toBeInTheDocument();
+    expect(
+      screen.getByText("You can't create Purposes for an archived E-Service."),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the agreement-archived modal when agreement state is Archived", async () => {
+    mockEmptyPurposes();
+
+    const { user } = renderSection({
+      agreement: { ...defaultAgreement, state: "Archived" },
+    });
+
+    await user.click(
+      await screen.findByRole("button", { name: "Create Purpose" }),
+    );
+
+    expect(screen.getByText("You don't have an Agreement")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "To create a Purpose, you should have an Agreement for this E-Service.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("prefers eservice-archived over agreement-archived when both are archived", async () => {
+    mockEmptyPurposes();
+
+    const { user } = renderSection({
+      agreement: { ...defaultAgreement, state: "Archived" },
+      eserviceState: "Archived",
+    });
+
+    await user.click(
+      await screen.findByRole("button", { name: "Create Purpose" }),
+    );
+
+    expect(screen.getByText("This E-Service is Archived")).toBeInTheDocument();
+    expect(
+      screen.queryByText("You don't have an Agreement"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show the blocked modal when eservice and agreement are both Active", async () => {
+    mockEmptyPurposes();
+
+    const { user } = renderSection();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Create Purpose" }),
+    );
+
+    expect(
+      screen.queryByText("This E-Service is Archived"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("You don't have an Agreement"),
+    ).not.toBeInTheDocument();
+  });
+});
+
 describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
   it("does not reopen the suspend modal after suspend → reactivate", async () => {
     const suspendHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));
@@ -359,6 +444,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
       />,
@@ -379,6 +465,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
           suspendedByConsumerAt: "2026-01-01T00:00:00Z",
         }}
         eserviceId={eserviceId}
+        eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
       />,
@@ -388,6 +475,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
       />,
