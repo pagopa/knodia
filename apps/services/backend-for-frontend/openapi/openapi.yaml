@@ -304,10 +304,11 @@ components:
             - $ref: "#/components/schemas/InterfaceDocumentContactOverrides"
         serverUrls:
           description: Server URLs override to apply to the template interface
+          minItems: 1
           type: array
           items:
             type: string
-        termsAndConditionsUrl:
+        termsOfService:
           type: string
       required:
         - contact
