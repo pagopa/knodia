@@ -673,17 +673,33 @@ describe("auth integration", () => {
       expect(payload["sub"]).toBe(AGREEMENT_ID);
 
       // Pin the magic-link verifier inputs: a regression that drops the
-      // issuer/audience/algorithm check or points at the Cognito JWKS (or
-      // any other non-BFF JWKS) would otherwise pass silently.
+      // issuer/audience/algorithm check or points at any non-magic-link JWKS
+      // (Cognito or BFF refresh-token JWKS) would otherwise pass silently.
       expect(mockJwtVerify).toHaveBeenCalledWith(
         "valid.magic.link",
-        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[01]\//),
+        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[23]\//),
         {
           algorithms: ["RS256"],
           audience: "test-magic-link-audience",
           issuer: "test-issuer",
         },
       );
+    });
+
+    it("does not invoke the BFF refresh-token JWKS for magic-link verification", async () => {
+      setupValidMagicLinkToken();
+      setupKmsSignature();
+
+      await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "valid.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+
+      const jwksUrls = mockJwtVerify.mock.calls.map(([, jwks]) => jwks);
+      expect(
+        jwksUrls.every((url) => !/localhost:450[01]/.test(String(url))),
+      ).toBe(true);
     });
 
     it("does not set a refresh cookie (one-shot session)", async () => {

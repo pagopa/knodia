@@ -50,6 +50,10 @@ beforeAll(async () => {
       externalUiSessionMagicLinkAccepted: {
         audience: "test-magic-link-audience",
         issuer: "test-issuer",
+        wellKnownUrls: [
+          "http://localhost:4502/knodia/.well-known/jwks.json",
+          "http://localhost:4503/knodia/.well-known/jwks.json",
+        ],
       },
       host: "0.0.0.0",
       isProduction: false,

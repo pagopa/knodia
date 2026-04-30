@@ -558,6 +558,7 @@ services:
       EXTERNAL_UI_SESSION_JWT_SECONDS_DURATION: "300"
       EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE: "local.knodia.test/external-ui-session-magic-link"
       EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER: "local-knodia"
+      EXTERNAL_UI_SESSION_MAGIC_LINK_WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1158,6 +1159,7 @@ services:
       EXTERNAL_UI_SESSION_JWT_SECONDS_DURATION: "300"
       EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE: "local.knodia.test/external-ui-session-magic-link"
       EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER: "local-knodia"
+      EXTERNAL_UI_SESSION_MAGIC_LINK_WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret

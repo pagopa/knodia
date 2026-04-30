@@ -45,6 +45,10 @@ export function authServiceBuilder(
   const bffJwksSets = config.wellKnownUrls.map((url) =>
     createRemoteJWKSet(new URL(url)),
   );
+  const magicLinkJwksSets =
+    config.externalUiSessionMagicLinkAccepted.wellKnownUrls.map((url) =>
+      createRemoteJWKSet(new URL(url)),
+    );
 
   const tokenParams = {
     audience: config.uiSessionJwt.audience,
@@ -173,7 +177,7 @@ export function authServiceBuilder(
       audience: config.externalUiSessionMagicLinkAccepted.audience,
       errorMessage: "Magic-link token verification failed",
       issuer: config.externalUiSessionMagicLinkAccepted.issuer,
-      jwksSets: bffJwksSets,
+      jwksSets: magicLinkJwksSets,
       token,
     });
 

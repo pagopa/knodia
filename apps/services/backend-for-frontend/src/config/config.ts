@@ -37,6 +37,11 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .default(300),
         EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE: z.string(),
         EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER: z.string(),
+        EXTERNAL_UI_SESSION_MAGIC_LINK_WELL_KNOWN_URLS: z
+          .string()
+          .min(1)
+          .transform((value) => value.split(",").map((u) => u.trim()))
+          .pipe(z.string().array()),
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
@@ -79,6 +84,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         externalUiSessionMagicLinkAccepted: {
           audience: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_AUDIENCE,
           issuer: c.EXTERNAL_UI_SESSION_MAGIC_LINK_ACCEPTED_ISSUER,
+          wellKnownUrls: c.EXTERNAL_UI_SESSION_MAGIC_LINK_WELL_KNOWN_URLS,
         },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
