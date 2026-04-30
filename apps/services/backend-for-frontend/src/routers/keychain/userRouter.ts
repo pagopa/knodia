@@ -39,7 +39,7 @@ export const userRouter: FastifyPluginAsyncZod<UserRouterOptions> = async (
     method: "GET",
     schema: {
       description:
-        "Retrieve users of the requesting User's Organization, including their role",
+        "Retrieve users of the requesting User's Organization, including whether they have the technical role",
       operationId: "getOrganizationUsers",
       response: {
         200: API_OrganizationUsers.meta({

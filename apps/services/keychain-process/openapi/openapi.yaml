@@ -1650,7 +1650,7 @@ paths:
       tags:
         - user
       description: Retrieve users of the requesting User's Organization, including
-        their role
+        whether they have the technical role
       parameters:
         - schema:
             allOf:

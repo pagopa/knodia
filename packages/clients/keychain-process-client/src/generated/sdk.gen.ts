@@ -214,7 +214,7 @@ export const getConsumerKeychainPurpose = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Retrieve users of the requesting User's Organization, including their role
+ * Retrieve users of the requesting User's Organization, including whether they have the technical role
  */
 export const getOrganizationUsers = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationUsersData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationUsersResponses, GetOrganizationUsersErrors, ThrowOnError>({
     responseType: 'json',

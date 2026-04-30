@@ -832,7 +832,7 @@ export const getConsumerKeychainPurposeLinkOptions = (options: Options<GetConsum
 export const getOrganizationUsersQueryKey = (options?: Options<GetOrganizationUsersData>) => createQueryKey('getOrganizationUsers', options);
 
 /**
- * Retrieve users of the requesting User's Organization, including their role
+ * Retrieve users of the requesting User's Organization, including whether they have the technical role
  */
 export const getOrganizationUsersOptions = (options?: Options<GetOrganizationUsersData>) => queryOptions<GetOrganizationUsersResponse, AxiosError<GetOrganizationUsersError>, GetOrganizationUsersResponse, ReturnType<typeof getOrganizationUsersQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
