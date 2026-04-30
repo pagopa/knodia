@@ -264,10 +264,12 @@ function SuspendedAgreementBanner({
           size="md"
           title="Suspended by Producer"
         >
-          You can&apos;t reactivate this Agreement because it was suspended by
-          the Producer. If you believe this is a mistake, contact the Producer
-          to request the reactivation, or archive it and request a new
-          Agreement.
+          <span className="block max-w-160">
+            You can&apos;t reactivate this Agreement because it was suspended by
+            the Producer. If you believe this is a mistake, contact the Producer
+            to request the reactivation, or archive it and request a new
+            Agreement.
+          </span>
         </Banner>
       ) : (
         <Banner
