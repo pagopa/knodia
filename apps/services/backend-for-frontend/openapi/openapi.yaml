@@ -1703,10 +1703,28 @@ components:
         - id
         - username
       additionalProperties: false
-    Users:
+    OrganizationUser:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+        isTechnical:
+          description: Whether the User has the technical role within the Organization
+          type: boolean
+      required:
+        - email
+        - id
+        - username
+        - isTechnical
+      additionalProperties: false
+    OrganizationUsers:
       type: array
       items:
-        $ref: "#/components/schemas/User"
+        $ref: "#/components/schemas/OrganizationUser"
     KeychainMembers:
       type: object
       properties:
@@ -3866,21 +3884,22 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users/technical:
+  /users:
     get:
-      operationId: getTechnicalUsers
+      operationId: getOrganizationUsers
       tags:
         - user
-      description: Retrieve technical users of the requesting User's Organization
+      description: Retrieve users of the requesting User's Organization, including
+        whether they have the technical role
       responses:
         "200":
-          description: Technical Users retrieved successfully
+          description: Organization Users retrieved successfully
           content:
             application/json:
               schema:
-                description: Technical Users retrieved successfully
+                description: Organization Users retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Users"
+                  - $ref: "#/components/schemas/OrganizationUsers"
         "400":
           description: Bad Request
           content:
