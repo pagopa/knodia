@@ -29,7 +29,6 @@ import {
   jwtVerify,
 } from "jose";
 import {
-  JOSENotSupported,
   JWSInvalid,
   JWSSignatureVerificationFailed,
   JWTClaimValidationFailed,

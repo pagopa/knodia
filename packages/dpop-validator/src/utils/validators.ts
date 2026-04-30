@@ -8,6 +8,7 @@ import {
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import { decodeJwt, decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import {
+  JOSENotSupported,
   JWSInvalid,
   JWSSignatureVerificationFailed,
   JWTClaimValidationFailed,
@@ -106,7 +107,11 @@ export async function verifyDpopProofSignature(
     throw match(error)
       .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
       .with(
-        P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+        P.union(
+          P.instanceOf(JWTClaimValidationFailed),
+          P.instanceOf(ZodError),
+          P.instanceOf(JOSENotSupported),
+        ),
         (e) => dpopClaimsValidationError(e),
       )
       .with(
