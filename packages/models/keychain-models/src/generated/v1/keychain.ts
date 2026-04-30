@@ -118,25 +118,10 @@ export interface KnodeApiKeychainV1 {
   name: LocalizedTextV1 | undefined;
   description?: LocalizedTextV1 | undefined;
   ownerId: string;
-  users: KnodeApiKeychainUserV1[];
-  keys: KnodeApiKeychainKeyV1[];
+  users: ConsumerKeychainUserV1[];
+  keys: ConsumerKeychainKeyV1[];
   createdAt: number;
   updatedAt: number;
-}
-
-export interface KnodeApiKeychainKeyV1 {
-  kid: string;
-  name: LocalizedTextV1 | undefined;
-  algorithm: KeyAlgorithmV1;
-  encodedPem: string;
-  format: KeyFormatV1;
-  userId: string;
-  createdAt: number;
-}
-
-export interface KnodeApiKeychainUserV1 {
-  userId: string;
-  addedAt: number;
 }
 
 function createBaseConsumerKeychainV1(): ConsumerKeychainV1 {
@@ -726,10 +711,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       writer.uint32(34).string(message.ownerId);
     }
     for (const v of message.users) {
-      KnodeApiKeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
+      ConsumerKeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
     }
     for (const v of message.keys) {
-      KnodeApiKeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
+      ConsumerKeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
     }
     if (message.createdAt !== 0) {
       writer.uint32(56).int64(message.createdAt);
@@ -784,7 +769,7 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
             break;
           }
 
-          message.users.push(KnodeApiKeychainUserV1.decode(reader, reader.uint32()));
+          message.users.push(ConsumerKeychainUserV1.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -792,7 +777,7 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
             break;
           }
 
-          message.keys.push(KnodeApiKeychainKeyV1.decode(reader, reader.uint32()));
+          message.keys.push(ConsumerKeychainKeyV1.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -827,10 +812,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
       users: globalThis.Array.isArray(object?.users)
-        ? object.users.map((e: any) => KnodeApiKeychainUserV1.fromJSON(e))
+        ? object.users.map((e: any) => ConsumerKeychainUserV1.fromJSON(e))
         : [],
       keys: globalThis.Array.isArray(object?.keys)
-        ? object.keys.map((e: any) => KnodeApiKeychainKeyV1.fromJSON(e))
+        ? object.keys.map((e: any) => ConsumerKeychainKeyV1.fromJSON(e))
         : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
@@ -852,10 +837,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       obj.ownerId = message.ownerId;
     }
     if (message.users?.length) {
-      obj.users = message.users.map((e) => KnodeApiKeychainUserV1.toJSON(e));
+      obj.users = message.users.map((e) => ConsumerKeychainUserV1.toJSON(e));
     }
     if (message.keys?.length) {
-      obj.keys = message.keys.map((e) => KnodeApiKeychainKeyV1.toJSON(e));
+      obj.keys = message.keys.map((e) => ConsumerKeychainKeyV1.toJSON(e));
     }
     if (message.createdAt !== 0) {
       obj.createdAt = Math.round(message.createdAt);
@@ -879,244 +864,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       ? LocalizedTextV1.fromPartial(object.description)
       : undefined;
     message.ownerId = object.ownerId ?? "";
-    message.users = object.users?.map((e) => KnodeApiKeychainUserV1.fromPartial(e)) || [];
-    message.keys = object.keys?.map((e) => KnodeApiKeychainKeyV1.fromPartial(e)) || [];
+    message.users = object.users?.map((e) => ConsumerKeychainUserV1.fromPartial(e)) || [];
+    message.keys = object.keys?.map((e) => ConsumerKeychainKeyV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
-    return message;
-  },
-};
-
-function createBaseKnodeApiKeychainKeyV1(): KnodeApiKeychainKeyV1 {
-  return { kid: "", name: undefined, algorithm: 0, encodedPem: "", format: 0, userId: "", createdAt: 0 };
-}
-
-export const KnodeApiKeychainKeyV1: MessageFns<KnodeApiKeychainKeyV1> = {
-  encode(message: KnodeApiKeychainKeyV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.kid !== "") {
-      writer.uint32(10).string(message.kid);
-    }
-    if (message.name !== undefined) {
-      LocalizedTextV1.encode(message.name, writer.uint32(18).fork()).join();
-    }
-    if (message.algorithm !== 0) {
-      writer.uint32(24).int32(message.algorithm);
-    }
-    if (message.encodedPem !== "") {
-      writer.uint32(34).string(message.encodedPem);
-    }
-    if (message.format !== 0) {
-      writer.uint32(40).int32(message.format);
-    }
-    if (message.userId !== "") {
-      writer.uint32(50).string(message.userId);
-    }
-    if (message.createdAt !== 0) {
-      writer.uint32(56).int64(message.createdAt);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): KnodeApiKeychainKeyV1 {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseKnodeApiKeychainKeyV1();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.kid = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.name = LocalizedTextV1.decode(reader, reader.uint32());
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.algorithm = reader.int32() as any;
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.encodedPem = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.format = reader.int32() as any;
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.createdAt = longToNumber(reader.int64());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): KnodeApiKeychainKeyV1 {
-    return {
-      kid: isSet(object.kid) ? globalThis.String(object.kid) : "",
-      name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
-      algorithm: isSet(object.algorithm) ? keyAlgorithmV1FromJSON(object.algorithm) : 0,
-      encodedPem: isSet(object.encodedPem) ? globalThis.String(object.encodedPem) : "",
-      format: isSet(object.format) ? keyFormatV1FromJSON(object.format) : 0,
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
-    };
-  },
-
-  toJSON(message: KnodeApiKeychainKeyV1): unknown {
-    const obj: any = {};
-    if (message.kid !== "") {
-      obj.kid = message.kid;
-    }
-    if (message.name !== undefined) {
-      obj.name = LocalizedTextV1.toJSON(message.name);
-    }
-    if (message.algorithm !== 0) {
-      obj.algorithm = keyAlgorithmV1ToJSON(message.algorithm);
-    }
-    if (message.encodedPem !== "") {
-      obj.encodedPem = message.encodedPem;
-    }
-    if (message.format !== 0) {
-      obj.format = keyFormatV1ToJSON(message.format);
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    if (message.createdAt !== 0) {
-      obj.createdAt = Math.round(message.createdAt);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<KnodeApiKeychainKeyV1>, I>>(base?: I): KnodeApiKeychainKeyV1 {
-    return KnodeApiKeychainKeyV1.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainKeyV1>, I>>(object: I): KnodeApiKeychainKeyV1 {
-    const message = createBaseKnodeApiKeychainKeyV1();
-    message.kid = object.kid ?? "";
-    message.name = (object.name !== undefined && object.name !== null)
-      ? LocalizedTextV1.fromPartial(object.name)
-      : undefined;
-    message.algorithm = object.algorithm ?? 0;
-    message.encodedPem = object.encodedPem ?? "";
-    message.format = object.format ?? 0;
-    message.userId = object.userId ?? "";
-    message.createdAt = object.createdAt ?? 0;
-    return message;
-  },
-};
-
-function createBaseKnodeApiKeychainUserV1(): KnodeApiKeychainUserV1 {
-  return { userId: "", addedAt: 0 };
-}
-
-export const KnodeApiKeychainUserV1: MessageFns<KnodeApiKeychainUserV1> = {
-  encode(message: KnodeApiKeychainUserV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
-    }
-    if (message.addedAt !== 0) {
-      writer.uint32(16).int64(message.addedAt);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): KnodeApiKeychainUserV1 {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseKnodeApiKeychainUserV1();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.addedAt = longToNumber(reader.int64());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): KnodeApiKeychainUserV1 {
-    return {
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      addedAt: isSet(object.addedAt) ? globalThis.Number(object.addedAt) : 0,
-    };
-  },
-
-  toJSON(message: KnodeApiKeychainUserV1): unknown {
-    const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    if (message.addedAt !== 0) {
-      obj.addedAt = Math.round(message.addedAt);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<KnodeApiKeychainUserV1>, I>>(base?: I): KnodeApiKeychainUserV1 {
-    return KnodeApiKeychainUserV1.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainUserV1>, I>>(object: I): KnodeApiKeychainUserV1 {
-    const message = createBaseKnodeApiKeychainUserV1();
-    message.userId = object.userId ?? "";
-    message.addedAt = object.addedAt ?? 0;
     return message;
   },
 };

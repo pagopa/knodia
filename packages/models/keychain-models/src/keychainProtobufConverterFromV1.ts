@@ -12,8 +12,6 @@ import {
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
-  type KnodeApiKeychainKeyV1,
-  type KnodeApiKeychainUserV1,
   type KnodeApiKeychainV1,
 } from "./generated/v1/keychain.ts";
 import {
@@ -23,8 +21,6 @@ import {
   KeyAlgorithm,
   KeyFormat,
   type KnodeApiKeychain,
-  type KnodeApiKeychainKey,
-  type KnodeApiKeychainUser,
 } from "./keychain.ts";
 
 export const fromConsumerKeychainV1 = (
@@ -93,33 +89,10 @@ export const fromKnodeApiKeychainV1 = (
     ...input,
     createdAt: new Date(input.createdAt),
     id: unsafeBrandId(input.id),
-    keys: input.keys.map(fromKnodeApiKeychainKeyV1),
+    keys: input.keys.map(fromConsumerKeychainKeyV1),
     name: input.name,
     ownerId: unsafeBrandId(input.ownerId),
     updatedAt: new Date(input.updatedAt),
-    users: input.users.map(fromKnodeApiKeychainUserV1),
+    users: input.users.map(fromConsumerKeychainUserV1),
   };
 };
-
-const fromKnodeApiKeychainKeyV1 = (
-  input: KnodeApiKeychainKeyV1,
-): KnodeApiKeychainKey => {
-  assertRequired(input.name, "Key name is undefined");
-
-  return {
-    ...input,
-    algorithm: fromKeyAlgorithmV1(input.algorithm),
-    createdAt: new Date(input.createdAt),
-    format: fromKeyFormatV1(input.format),
-    kid: unsafeBrandKeyId(input.kid),
-    name: input.name,
-    userId: unsafeBrandUserId(input.userId),
-  };
-};
-
-const fromKnodeApiKeychainUserV1 = (
-  input: KnodeApiKeychainUserV1,
-): KnodeApiKeychainUser => ({
-  addedAt: new Date(input.addedAt),
-  userId: unsafeBrandUserId(input.userId),
-});

@@ -73,22 +73,12 @@ export const ConsumerKeychainPurpose = z.strictObject({
 });
 export type ConsumerKeychainPurpose = z.infer<typeof ConsumerKeychainPurpose>;
 
-export const KnodeApiKeychainKey = z.strictObject({
-  algorithm: KeyAlgorithm,
-  createdAt: z.coerce.date(),
-  encodedPem: z.string(),
-  format: KeyFormat,
-  kid: KeyId,
-  name: LocalizedName,
-  userId: UserId,
-});
-export type KnodeApiKeychainKey = z.infer<typeof KnodeApiKeychainKey>;
+// KnodeApiKeychain shares the per-key and per-user shape with ConsumerKeychain.
+export const KnodeApiKeychainKey = ConsumerKeychainKey;
+export type KnodeApiKeychainKey = ConsumerKeychainKey;
 
-export const KnodeApiKeychainUser = z.strictObject({
-  addedAt: z.coerce.date(),
-  userId: UserId,
-});
-export type KnodeApiKeychainUser = z.infer<typeof KnodeApiKeychainUser>;
+export const KnodeApiKeychainUser = ConsumerKeychainUser;
+export type KnodeApiKeychainUser = ConsumerKeychainUser;
 
 export const KnodeApiKeychain = z.strictObject({
   createdAt: z.coerce.date(),
