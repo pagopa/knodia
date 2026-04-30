@@ -13,8 +13,11 @@ packages:
 allowBuilds:
   "@bufbuild/buf": true
   "@confluentinc/kafka-javascript": true
+  cpu-features: false
   esbuild: true
   msw: true
+  protobufjs: false
+  ssh2: false
 
 catalog:
   "@aws-sdk/client-cognito-identity-provider": 3.1023.0
