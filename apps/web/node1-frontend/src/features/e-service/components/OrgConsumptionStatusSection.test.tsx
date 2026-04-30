@@ -248,6 +248,101 @@ describe("OrgConsumptionStatusSection — Suspended state", () => {
   });
 });
 
+describe("OrgConsumptionStatusSection — archive flow", () => {
+  const suspendedAgreement: bffApi.EserviceAgreementDetail = {
+    ...defaultAgreement,
+    state: "Suspended",
+    suspendedByConsumerAt: "2026-01-01T00:00:00Z",
+  };
+
+  it("opens the archive confirmation modal when Archive is clicked", async () => {
+    const { user } = renderSection({ agreement: suspendedAgreement });
+
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+
+    expect(screen.getByText("Archive Agreement")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Are you sure you want to archive this Agreement\?/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/This action cannot be undone\./),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("hides Archive action for technical-only users", () => {
+    renderSection({ agreement: suspendedAgreement, roles: ["technical"] });
+
+    expect(
+      screen.queryByRole("button", { name: "Archive" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls the archive endpoint with the agreement id and knodeId on confirm", async () => {
+    let capturedKnodeId: null | string = null;
+
+    server.use(
+      http.post(
+        `${BASE_URL}/consumer/agreements/${AGREEMENT_ID}/archive`,
+        ({ request }) => {
+          capturedKnodeId = new URL(request.url).searchParams.get("knodeId");
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
+    const { user } = renderSection({ agreement: suspendedAgreement });
+
+    // banner Archive button: opens the modal
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+    // modal Archive button: confirms (the banner button is now aria-hidden by the focus trap)
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+
+    await waitFor(() => {
+      expect(capturedKnodeId).toBe(KNODE_ID);
+    });
+  });
+});
+
+describe("OrgConsumptionStatusSection — Archived state", () => {
+  const archivedAgreement: bffApi.EserviceAgreementDetail = {
+    ...defaultAgreement,
+    state: "Archived",
+  };
+
+  it("renders the archived card with label and descriptive text", () => {
+    renderSection({ agreement: archivedAgreement });
+
+    expect(screen.getByText("Archived")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You can't restore an archived Agreement. If your organization has the required attributes, you can request a new one.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows Purposes and Keychains sections for Archived state", () => {
+    renderSection({ agreement: archivedAgreement });
+
+    expect(screen.getByText("Purposes")).toBeInTheDocument();
+    expect(screen.getByText("Keychains")).toBeInTheDocument();
+  });
+
+  it("does not render Suspend, Reactivate, or Archive actions for Archived state", () => {
+    renderSection({ agreement: archivedAgreement });
+
+    expect(
+      screen.queryByRole("button", { name: "Suspend" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Reactivate" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Archive" }),
+    ).not.toBeInTheDocument();
+  });
+});
+
 describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
   it("does not reopen the suspend modal after suspend → reactivate", async () => {
     const suspendHandler = vi.fn(() => new HttpResponse(null, { status: 204 }));

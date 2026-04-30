@@ -76,7 +76,12 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
-    state: ["ACTIVE", "SUSPENDED", "PENDING_CONSUMER_OPERATOR_IDENTIFICATION"],
+    state: [
+      "ACTIVE",
+      "SUSPENDED",
+      "ARCHIVED",
+      "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
+    ],
   };
 
   const buildK2KAgreement = (
@@ -147,6 +152,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   it.each([
     { apiState: "Active", k2kState: "ACTIVE" },
     { apiState: "Suspended", k2kState: "SUSPENDED" },
+    { apiState: "Archived", k2kState: "ARCHIVED" },
     {
       apiState: "PendingConsumerOperatorIdentification",
       k2kState: "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",

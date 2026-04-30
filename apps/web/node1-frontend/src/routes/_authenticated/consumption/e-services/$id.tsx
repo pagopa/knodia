@@ -129,7 +129,8 @@ function RouteComponent() {
   );
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const { agreement } = eservice;
-  const hasAgreement = agreement !== undefined;
+  const hasAgreement =
+    agreement !== undefined && agreement.state !== "Archived";
 
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({

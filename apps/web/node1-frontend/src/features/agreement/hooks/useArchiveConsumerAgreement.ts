@@ -1,0 +1,46 @@
+import type {
+  AgreementId,
+  EserviceId,
+  KnodeId,
+} from "@knodia/common-models/ids";
+
+import {
+  archiveConsumerAgreementMutation,
+  getConsumerAgreementsQueryKey,
+} from "@knodia/bff-client/tanstack-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
+import { client } from "@/libs/axios";
+
+interface UseArchiveConsumerAgreementParams {
+  agreementId: AgreementId;
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
+}
+
+export function useArchiveConsumerAgreement({
+  agreementId,
+  eserviceId,
+  knodeId,
+}: UseArchiveConsumerAgreementParams) {
+  const queryClient = useQueryClient();
+
+  const { isError, isPending, mutate } = useMutation({
+    ...archiveConsumerAgreementMutation({ client }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(
+        consumerEserviceDetailsQuery(eserviceId, knodeId),
+      );
+      queryClient.invalidateQueries({
+        queryKey: getConsumerAgreementsQueryKey({ client }),
+      });
+    },
+  });
+
+  const archiveAgreement = () => {
+    mutate({ path: { agreementId }, query: { knodeId } });
+  };
+
+  return { archiveAgreement, isError, isPending };
+}

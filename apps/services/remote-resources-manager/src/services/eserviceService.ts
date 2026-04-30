@@ -146,6 +146,7 @@ export function eserviceServiceBuilder(
               state: [
                 toK2KAPI_AgreementState(API_AgreementState.enum.Active),
                 toK2KAPI_AgreementState(API_AgreementState.enum.Suspended),
+                toK2KAPI_AgreementState(API_AgreementState.enum.Archived),
                 toK2KAPI_AgreementState(
                   API_AgreementState.enum.PendingConsumerOperatorIdentification,
                 ),
