@@ -4,9 +4,13 @@ import { Chip } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
+import { formatNumericDate } from "@/utils/formatters";
+
 export function EserviceStateChip({
+  archivedAt,
   state,
 }: {
+  archivedAt?: string;
   state: bffApi.EserviceVersionState;
 }) {
   return match(state)
@@ -25,7 +29,9 @@ export function EserviceStateChip({
       <Chip
         icon={<ArchiveIcon />}
         kind="neutral"
-        label="Archived"
+        label={
+          archivedAt ? `Archived ${formatNumericDate(archivedAt)}` : "Archived"
+        }
         type="light"
       />
     ))

@@ -157,7 +157,12 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        resourceStatusChip={<EserviceStateChip state={eservice.state} />}
+        resourceStatusChip={
+          <EserviceStateChip
+            archivedAt={eservice.latestVersionUpdatedAt}
+            state={eservice.state}
+          />
+        }
         title={eservice.name}
       >
         <div className="flex items-center gap-3 mt-3">

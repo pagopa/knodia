@@ -220,6 +220,7 @@ export type EserviceVersionDetails = {
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
+    updatedAt: string;
 };
 
 export type EserviceDetailsInterfaceDocument = {

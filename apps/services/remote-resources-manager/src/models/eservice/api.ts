@@ -109,6 +109,7 @@ const API_EserviceVersionDetails = z
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "EserviceVersionDetails" });
 

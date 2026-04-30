@@ -476,6 +476,10 @@ export type ConsumerEserviceDetails = {
      * Unique identifier of the latest E-service version
      */
     latestVersionId: string;
+    /**
+     * Timestamp of the last update applied to the latest E-service version
+     */
+    latestVersionUpdatedAt: string;
     maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
     mode: EserviceMode;
     name: LocalizedName;
