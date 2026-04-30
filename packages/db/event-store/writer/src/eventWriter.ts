@@ -3,7 +3,6 @@ import type {
   ConsumerKeychainId,
   CorrelationId,
   EserviceId,
-  KnodeApiKeychainId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -49,7 +48,6 @@ type EventStoreStreamIds =
   | AgreementId
   | ConsumerKeychainId
   | EserviceId
-  | KnodeApiKeychainId
   | OrganizationId
   | PurposeId;
 

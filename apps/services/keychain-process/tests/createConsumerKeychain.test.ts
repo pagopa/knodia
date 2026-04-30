@@ -11,7 +11,7 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { assert, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   type API_ConsumerKeychainSeed,
@@ -66,9 +66,8 @@ describe("POST /consumerKeychains (createConsumerKeychain)", () => {
       version: 0,
     });
 
-    const parsedEvent = KeychainEventV1.parse(createdEvent);
-    assert(parsedEvent.type === "ConsumerKeychainCreatedV1");
-    expect(parsedEvent.data.consumerKeychain).toMatchObject(
+    const createdEventData = KeychainEventV1.parse(createdEvent).data;
+    expect(createdEventData.consumerKeychain).toMatchObject(
       toConsumerKeychainV1(expectedConsumerKeychain),
     );
   });

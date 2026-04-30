@@ -77,21 +77,5 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
-    .with(
-      {
-        type: P.union(
-          "KnodeApiKeychainCreatedV1",
-          "KnodeApiKeychainDeletedV1",
-          "KnodeApiKeychainUpdatedV1",
-          "KnodeApiKeychainMemberAddedV1",
-          "KnodeApiKeychainMemberRemovedV1",
-          "KnodeApiKeychainKeyAddedV1",
-          "KnodeApiKeychainKeyRemovedV1",
-        ),
-      },
-      async () => {
-        // KnodeApiKeychain events are not yet projected into the read model.
-      },
-    )
     .exhaustive();
 }
