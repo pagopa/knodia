@@ -1,5 +1,6 @@
 import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProducerPurposeDetail } from "@/features/purpose/components/ProducerPurposeDetail/ProducerPurposeDetail";
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/_authenticated/production/purposes/$id")(
 );
 
 function RouteComponent() {
-  const purpose = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { data: purpose } = useSuspenseQuery(
+    producerPurposeDetailsQuery(unsafeBrandId<PurposeId>(id)),
+  );
 
   return (
     <>
