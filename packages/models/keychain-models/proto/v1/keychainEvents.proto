@@ -46,3 +46,35 @@ message ConsumerKeychainKeyRemovedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   string kid = 2;
 }
+
+message KnodeApiKeychainCreatedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+}
+
+message KnodeApiKeychainDeletedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+}
+
+message KnodeApiKeychainUpdatedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+}
+
+message KnodeApiKeychainMemberAddedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string userId = 2;
+}
+
+message KnodeApiKeychainMemberRemovedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string userId = 2;
+}
+
+message KnodeApiKeychainKeyAddedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string kid = 2;
+}
+
+message KnodeApiKeychainKeyRemovedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string kid = 2;
+}

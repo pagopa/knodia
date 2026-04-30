@@ -8,6 +8,7 @@ export type IDS =
   | EserviceInterfaceId
   | EserviceTemplateId
   | EserviceVersionId
+  | KnodeApiKeychainId
   | OrganizationId
   | PurposeId;
 
@@ -31,6 +32,9 @@ export type AgreementId = z.infer<typeof AgreementId>;
 
 export const ConsumerKeychainId = z.uuid().brand<"ConsumerKeychainId">();
 export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
+
+export const KnodeApiKeychainId = z.uuid().brand<"KnodeApiKeychainId">();
+export type KnodeApiKeychainId = z.infer<typeof KnodeApiKeychainId>;
 
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;

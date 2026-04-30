@@ -30,7 +30,7 @@ import {
   rsaX509CertificatePem,
   toBase64,
 } from "@knodia/test-commons/utils";
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 
 import type {
   API_KeychainKey,
@@ -130,7 +130,9 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       version: 1,
     });
 
-    const addedEventData = KeychainEventV1.parse(addedEvent).data;
+    const parsedEvent = KeychainEventV1.parse(addedEvent);
+    assert(parsedEvent.type === "ConsumerKeychainKeyAddedV1");
+    const addedEventData = parsedEvent.data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: [...consumerKeychain.keys, expectedKey],

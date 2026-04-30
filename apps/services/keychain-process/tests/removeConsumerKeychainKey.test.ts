@@ -16,7 +16,7 @@ import {
   getMockConsumerKeychain,
   getMockConsumerKeychainKey,
 } from "@knodia/test-commons/utils";
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 
 import {
   getAllKeychainEvents,
@@ -70,7 +70,9 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       version: 1,
     });
 
-    const removedEventData = KeychainEventV1.parse(removedEvent).data;
+    const parsedEvent = KeychainEventV1.parse(removedEvent);
+    assert(parsedEvent.type === "ConsumerKeychainKeyRemovedV1");
+    const removedEventData = parsedEvent.data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       keys: [],
