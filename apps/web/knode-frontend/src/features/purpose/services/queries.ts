@@ -73,14 +73,24 @@ export const producerPurposesQuery = (
 ) =>
   getProducerPurposesOptions({
     client,
-    query: { eserviceId, limit: PURPOSES_PAGE_LIMIT, offset },
+    query: {
+      eserviceId,
+      limit: PURPOSES_PAGE_LIMIT,
+      offset,
+      state: NON_ARCHIVED_STATES,
+    },
   });
 
 // TODO: replace hardcoded limit with pagination when the number of purposes per agreement grows
 export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
   getProducerPurposesOptions({
     client,
-    query: { agreementId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
+    query: {
+      agreementId,
+      limit: PURPOSES_SECTION_LIMIT,
+      offset: 0,
+      state: NON_ARCHIVED_STATES,
+    },
   });
 
 // TODO: replace hardcoded limit with pagination when the number of recently updated purposes per e-service grows
@@ -92,6 +102,7 @@ export const producerRecentPurposesByEserviceQuery = (eserviceId: EserviceId) =>
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
       recentlyUpdated: "true",
+      state: NON_ARCHIVED_STATES,
     },
   });
 
