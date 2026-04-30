@@ -39,7 +39,7 @@ const errorCodes = {
   PURPOSE_NOT_IN_SUSPENDABLE_STATE: "0008",
   PURPOSE_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_PURPOSE_PRODUCER: "0010",
-  PURPOSE_NOT_IN_ARCHIVABLE_STATE: "0011",
+  PURPOSE_NOT_IN_EXPECTED_STATES: "0011",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -154,18 +154,20 @@ export function purposeNotFound(id: PurposeId) {
   });
 }
 
-export function purposeNotInArchivableState({
+export function purposeNotInExpectedStates({
+  allowedStates,
   purposeId,
   state,
 }: {
+  allowedStates: PurposeState[];
   purposeId: PurposeId;
   state: PurposeState;
 }) {
   return createApiError<ErrorCodes>({
-    code: "PURPOSE_NOT_IN_ARCHIVABLE_STATE",
-    detail: `Purpose ${purposeId} cannot be archived (state=${state})`,
+    code: "PURPOSE_NOT_IN_EXPECTED_STATES",
+    detail: `Purpose ${purposeId} is in state ${state}, expected one of [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
-    title: "Purpose Not In Archivable State",
+    title: "Purpose Not in Expected States",
   });
 }
 

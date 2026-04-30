@@ -24,7 +24,7 @@ import {
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
-  purposeNotInArchivableState,
+  purposeNotInExpectedStates,
   purposeNotInReactivatableState,
   purposeNotInSuspendableState,
 } from "../models/errors.ts";
@@ -151,7 +151,8 @@ export function assertPurposeCanBeSuspendedBy(
 
 export function assertPurposeIsSuspended(purpose: Purpose): void {
   if (purpose.state !== PurposeState.enum.Suspended) {
-    throw purposeNotInArchivableState({
+    throw purposeNotInExpectedStates({
+      allowedStates: [PurposeState.enum.Suspended],
       purposeId: purpose.id,
       state: purpose.state,
     });
