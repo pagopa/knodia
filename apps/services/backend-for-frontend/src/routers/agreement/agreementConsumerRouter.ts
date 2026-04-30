@@ -8,12 +8,17 @@ import {
   API_MagicLink,
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -177,22 +182,38 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      const enrichedAgreements = await Promise.all(
-        data.results.map(async (agreement) => {
-          const { data: eservice } =
-            await remoteResourcesManagerApi.getEserviceDetails({
-              client: remoteResourcesManagerClient,
-              headers,
-              path: { eserviceId: agreement.eserviceId },
-              query: { knodeId: KnodeId.parse(agreement.knodeId) },
-            });
-          return { agreement, eservice };
-        }),
-      );
+      const eservicesMap = await getExternalEntitiesMap({
+        fetchFn: ({ entityIds, knodeId }) =>
+          Promise.all(
+            entityIds.map((eserviceId) =>
+              remoteResourcesManagerApi
+                .getEserviceDetails({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { eserviceId },
+                  query: { knodeId },
+                })
+                .then((res) => res.data),
+            ),
+          ),
+        getEntityId: (agreement) => agreement.eserviceId,
+        getKnodeId: (agreement) => KnodeId.parse(agreement.knodeId),
+        items: data.results,
+      });
 
       res.status(200).send({
         pagination: data.pagination,
-        results: enrichedAgreements.map(toAPI_ConsumerAgreement),
+        results: data.results.map((agreement) =>
+          toAPI_ConsumerAgreement({
+            agreement,
+            eservice: assertEntityExists(
+              eservicesMap
+                .get(KnodeId.parse(agreement.knodeId))
+                ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+              `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+            ),
+          }),
+        ),
       });
     },
     method: "GET",
