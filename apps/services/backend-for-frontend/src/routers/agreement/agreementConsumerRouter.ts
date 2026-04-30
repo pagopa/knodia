@@ -229,8 +229,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
-          agreementState:
+          agreementStates: [
             API_AgreementState.enum.PendingConsumerOperatorIdentification,
+          ],
           limit: req.query.limit,
           offset: req.query.offset,
         },

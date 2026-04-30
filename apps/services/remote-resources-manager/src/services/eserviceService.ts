@@ -179,7 +179,8 @@ export function eserviceServiceBuilder(
         `Getting Consumer E-services with query parameters`,
       );
 
-      const { agreementState, limit, offset } = reqQuery;
+      const { agreementStates, limit, offset } = reqQuery;
+      const k2kAgreementStates = agreementStates?.map(toK2KAPI_AgreementState);
 
       let totalCount = 0;
       let dynamicLimit = limit;
@@ -200,9 +201,7 @@ export function eserviceServiceBuilder(
             consumerId: authData.organizationId,
             limit: dynamicLimit,
             offset: dynamicOffset,
-            state: agreementState
-              ? [toK2KAPI_AgreementState(agreementState)]
-              : undefined,
+            state: k2kAgreementStates,
           },
         });
 

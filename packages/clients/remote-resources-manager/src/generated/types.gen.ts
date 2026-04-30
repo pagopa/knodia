@@ -523,7 +523,10 @@ export type GetEservicesData = {
          * Pagination starting position
          */
         offset: number;
-        agreementState?: AgreementState;
+        /**
+         * Filter by Agreement State
+         */
+        agreementStates?: Array<AgreementState>;
     };
     url: '/eservices';
 };

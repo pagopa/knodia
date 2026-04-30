@@ -149,10 +149,16 @@ describe("GET /eservices (getEservices)", () => {
     getOrganizationsMock.mockReset();
   });
 
-  const agreementStateQueryParams = [...agreementStates, undefined] as const;
-  it.each(agreementStateQueryParams)(
-    "should return 200 with converted results on success (agreementState=%s)",
-    async (agreementState) => {
+  const stateFilterCases: readonly (readonly AgreementState[] | undefined)[] = [
+    ...agreementStates.map((s) => [s] as const),
+    undefined,
+  ];
+  it.each(stateFilterCases)(
+    "should return 200 with converted results on success (agreementStates=%s)",
+    async (currentStates) => {
+      // For the no-filter case, pick the first state deterministically — k2k
+      // returns one matching agreement and the test only verifies passthrough.
+      const fixtureState = currentStates?.[0] ?? agreementStates[0];
       const {
         agreement,
         expectedApiResult,
@@ -161,10 +167,7 @@ describe("GET /eservices (getEservices)", () => {
         k2kEserviceVersion,
         k2kOrganizations,
         remoteAgreement,
-      } =
-        agreementState === undefined
-          ? testCases[Math.floor(Math.random() * testCases.length)]!
-          : testCases.find((tc) => tc.agreement.state === agreementState)!;
+      } = testCases.find((tc) => tc.agreement.state === fixtureState)!;
 
       await remoteResourceDbService.insertAgreement(remoteAgreement);
 
@@ -188,24 +191,24 @@ describe("GET /eservices (getEservices)", () => {
         .get("/eservices")
         .query({
           ...defaultQuery,
-          ...(agreementState ? { agreementState } : {}),
+          ...(currentStates ? { agreementStates: [...currentStates] } : {}),
         });
 
       expect(response.statusCode).toBe(200);
+
+      const expectedStateFilter = currentStates?.map(toK2KAPI_AgreementState);
 
       expect(getAgreementsMock).toHaveBeenCalledWith(
         expect.objectContaining({
           query: {
             ...parsedDefaultQuery,
-            ...(agreementState
-              ? { state: [toK2KAPI_AgreementState(agreementState)] }
-              : {}),
             consumerId: TEST_ORGANIZATION_ID,
+            state: expectedStateFilter,
           },
         }),
       );
 
-      if (!agreementState) {
+      if (!currentStates) {
         expect(getEservicesMock).toHaveBeenCalledWith(
           expect.objectContaining({
             query: {
@@ -260,7 +263,7 @@ describe("GET /eservices (getEservices)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    { ...defaultQuery, agreementState: "InvalidState" },
+    { ...defaultQuery, agreementStates: ["InvalidState"] },
     {
       ...defaultQuery,
       invalidParam: "invalid",
