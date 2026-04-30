@@ -66,8 +66,11 @@ describe("POST /consumerKeychains (createConsumerKeychain)", () => {
       version: 0,
     });
 
-    const createdEventData = KeychainEventV1.parse(createdEvent).data;
-    expect(createdEventData.consumerKeychain).toMatchObject(
+    const parsedEvent = KeychainEventV1.parse(createdEvent);
+    if (parsedEvent.type !== "ConsumerKeychainCreatedV1") {
+      throw new Error("Unexpected event type");
+    }
+    expect(parsedEvent.data.consumerKeychain).toMatchObject(
       toConsumerKeychainV1(expectedConsumerKeychain),
     );
   });

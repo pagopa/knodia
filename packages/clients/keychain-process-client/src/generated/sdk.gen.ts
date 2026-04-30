@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainKeyData, GetConsumerKeychainKeyErrors, GetConsumerKeychainKeyResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMemberData, GetConsumerKeychainMemberErrors, GetConsumerKeychainMemberResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposeData, GetConsumerKeychainPurposeErrors, GetConsumerKeychainPurposeResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, AddKnodiaApiKeychainMemberData, AddKnodiaApiKeychainMemberErrors, AddKnodiaApiKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateKnodiaApiKeychainData, CreateKnodiaApiKeychainErrors, CreateKnodiaApiKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DeleteKnodiaApiKeychainData, DeleteKnodiaApiKeychainErrors, DeleteKnodiaApiKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainKeyData, GetConsumerKeychainKeyErrors, GetConsumerKeychainKeyResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMemberData, GetConsumerKeychainMemberErrors, GetConsumerKeychainMemberResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposeData, GetConsumerKeychainPurposeErrors, GetConsumerKeychainPurposeResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetKnodiaApiKeychainData, GetKnodiaApiKeychainErrors, GetKnodiaApiKeychainKeyData, GetKnodiaApiKeychainKeyErrors, GetKnodiaApiKeychainKeyResponses, GetKnodiaApiKeychainKeysData, GetKnodiaApiKeychainKeysErrors, GetKnodiaApiKeychainKeysResponses, GetKnodiaApiKeychainMemberData, GetKnodiaApiKeychainMemberErrors, GetKnodiaApiKeychainMemberResponses, GetKnodiaApiKeychainMembersData, GetKnodiaApiKeychainMembersErrors, GetKnodiaApiKeychainMembersResponses, GetKnodiaApiKeychainResponses, GetKnodiaApiKeychainsData, GetKnodiaApiKeychainsErrors, GetKnodiaApiKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, RemoveKnodiaApiKeychainKeyData, RemoveKnodiaApiKeychainKeyErrors, RemoveKnodiaApiKeychainKeyResponses, RemoveKnodiaApiKeychainMemberData, RemoveKnodiaApiKeychainMemberErrors, RemoveKnodiaApiKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateKnodiaApiKeychainData, UpdateKnodiaApiKeychainErrors, UpdateKnodiaApiKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses, UploadKnodiaApiKeychainKeyData, UploadKnodiaApiKeychainKeyErrors, UploadKnodiaApiKeychainKeyResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -210,6 +210,150 @@ export const getConsumerKeychainPurpose = <ThrowOnError extends boolean = true>(
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}',
+    ...options
+});
+
+/**
+ * Retrieve a list of Knodia API Keychains
+ */
+export const getKnodiaApiKeychains = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainsResponses, GetKnodiaApiKeychainsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains',
+    ...options
+});
+
+/**
+ * Create a new Knodia API Keychain
+ */
+export const createKnodiaApiKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateKnodiaApiKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateKnodiaApiKeychainResponses, CreateKnodiaApiKeychainErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete a Knodia API Keychain
+ */
+export const deleteKnodiaApiKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteKnodiaApiKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteKnodiaApiKeychainResponses, DeleteKnodiaApiKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}',
+    ...options
+});
+
+/**
+ * Retrieve a Knodia API Keychain by its ID
+ */
+export const getKnodiaApiKeychain = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainResponses, GetKnodiaApiKeychainErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}',
+    ...options
+});
+
+/**
+ * Update a Knodia API Keychain
+ */
+export const updateKnodiaApiKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateKnodiaApiKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateKnodiaApiKeychainResponses, UpdateKnodiaApiKeychainErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/merge-patch+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Retrieve members of a Knodia API Keychain
+ */
+export const getKnodiaApiKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainMembersResponses, GetKnodiaApiKeychainMembersErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members',
+    ...options
+});
+
+/**
+ * Add a member to a Knodia API Keychain
+ */
+export const addKnodiaApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddKnodiaApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddKnodiaApiKeychainMemberResponses, AddKnodiaApiKeychainMemberErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove a member from a Knodia API Keychain
+ */
+export const removeKnodiaApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodiaApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodiaApiKeychainMemberResponses, RemoveKnodiaApiKeychainMemberErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members/{userId}',
+    ...options
+});
+
+/**
+ * Retrieve a Knodia API Keychain Member by user ID
+ */
+export const getKnodiaApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainMemberResponses, GetKnodiaApiKeychainMemberErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members/{userId}',
+    ...options
+});
+
+/**
+ * Retrieve keys of a Knodia API Keychain
+ */
+export const getKnodiaApiKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainKeysResponses, GetKnodiaApiKeychainKeysErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys',
+    ...options
+});
+
+/**
+ * Upload a key to a Knodia API Keychain
+ */
+export const uploadKnodiaApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadKnodiaApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadKnodiaApiKeychainKeyResponses, UploadKnodiaApiKeychainKeyErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove a key from a Knodia API Keychain
+ */
+export const removeKnodiaApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodiaApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodiaApiKeychainKeyResponses, RemoveKnodiaApiKeychainKeyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys/{keyId}',
+    ...options
+});
+
+/**
+ * Retrieve a Knodia API Keychain Key by kid
+ */
+export const getKnodiaApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<GetKnodiaApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<GetKnodiaApiKeychainKeyResponses, GetKnodiaApiKeychainKeyErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys/{keyId}',
     ...options
 });
 

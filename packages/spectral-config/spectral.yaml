@@ -8,6 +8,7 @@ rules:
   has-x-summary: off # we don't use the x-summary custom field, unsupported in our setup
   servers-use-https: off # we use http in local/dev environments
   paths-kebab-case: off # we use camelCase for our paths
+  sec-credentials-parameters: off # false positive: "knodiaApiKeychainId" matches the "apikey" substring although it is not a credential
 
   # Warnings
   paths-status-problem-schema:

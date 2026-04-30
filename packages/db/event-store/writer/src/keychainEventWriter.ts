@@ -1,4 +1,7 @@
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KnodiaApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { KeychainEventV1 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -14,7 +17,7 @@ export type KeychainEventStoreWriter = ReturnType<
 >;
 export type NewEventStoreKeychainEvent = NewEventStoreEvent<
   KeychainEventV1,
-  ConsumerKeychainId
+  ConsumerKeychainId | KnodiaApiKeychainId
 >;
 
 export const keychainEventStoreWriterBuilder = (db: NodePgDatabase) =>

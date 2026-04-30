@@ -1,4 +1,8 @@
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+/* eslint-disable max-lines-per-function */
+import type {
+  ConsumerKeychainId,
+  KnodiaApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -8,6 +12,7 @@ import {
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
+  type KnodiaApiKeychain,
 } from "@knodia/keychain-models";
 import { and, eq, lte } from "drizzle-orm";
 
@@ -19,10 +24,17 @@ import {
   readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
+import { splitKnodiaApiKeychainIntoObjectsSQL } from "../converters/knodiaApiKeychainSplitters.ts";
 import {
   splitConsumerKeychainIntoObjectsSQL,
   toConsumerKeychainPurposeSQL,
 } from "../converters/splitters.ts";
+import {
+  knodiaApiKeychainSubTables,
+  readmodelKnodiaApiKeychain,
+  readmodelKnodiaApiKeychainKey,
+  readmodelKnodiaApiKeychainUser,
+} from "../knodiaApiKeychain.ts";
 
 export type KeychainWriterService = ReturnType<
   typeof keychainWriterServiceBuilder
@@ -95,6 +107,19 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
           tables: consumerKeychainTables,
         });
       });
+    },
+    async deleteKnodiaApiKeychain(
+      knodiaApiKeychainId: KnodiaApiKeychainId,
+      metadataVersion: number,
+    ): Promise<void> {
+      await db
+        .delete(readmodelKnodiaApiKeychain)
+        .where(
+          and(
+            eq(readmodelKnodiaApiKeychain.id, knodiaApiKeychainId),
+            lte(readmodelKnodiaApiKeychain.metadataVersion, metadataVersion),
+          ),
+        );
     },
     async upsertConsumerKeychain(
       consumerKeychain: ConsumerKeychain,
@@ -215,6 +240,60 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
             tables: consumerKeychainTables,
           }),
         ]);
+      });
+    },
+    async upsertKnodiaApiKeychain(
+      knodiaApiKeychain: KnodiaApiKeychain,
+      metadataVersion: number,
+    ): Promise<void> {
+      return db.transaction(async (tx) => {
+        const shouldUpsert = await checkMetadataVersion(
+          tx,
+          readmodelKnodiaApiKeychain,
+          metadataVersion,
+          knodiaApiKeychain.id,
+        );
+
+        if (!shouldUpsert) {
+          return;
+        }
+
+        await Promise.all(
+          knodiaApiKeychainSubTables.map((table) =>
+            tx
+              .delete(table)
+              .where(eq(table.knodiaApiKeychainId, knodiaApiKeychain.id)),
+          ),
+        );
+
+        const {
+          knodiaApiKeychainKeysSQL,
+          knodiaApiKeychainSQL,
+          knodiaApiKeychainUsersSQL,
+        } = splitKnodiaApiKeychainIntoObjectsSQL(
+          knodiaApiKeychain,
+          metadataVersion,
+        );
+
+        await tx
+          .insert(readmodelKnodiaApiKeychain)
+          .values(knodiaApiKeychainSQL)
+          .onConflictDoUpdate({
+            set: knodiaApiKeychainSQL,
+            target: [readmodelKnodiaApiKeychain.id],
+          });
+
+        if (knodiaApiKeychainUsersSQL.length > 0) {
+          await tx
+            .insert(readmodelKnodiaApiKeychainUser)
+            .values(knodiaApiKeychainUsersSQL);
+        }
+
+        if (knodiaApiKeychainKeysSQL.length > 0) {
+          await tx
+            .insert(readmodelKnodiaApiKeychainKey)
+            .values(knodiaApiKeychainKeysSQL);
+        }
       });
     },
   };

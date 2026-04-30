@@ -2,6 +2,7 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   KeyId,
+  KnodiaApiKeychainId,
   OrganizationId,
   PurposeId,
   UserId,
@@ -9,6 +10,8 @@ import type {
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { ConsumerKeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
+
+type KeychainId = ConsumerKeychainId | KnodiaApiKeychainId;
 
 import { UserRole } from "@knodia/common-models/auth";
 import { isX509Certificate } from "@knodia/fastify-zod-api-commons/crypto";
@@ -91,7 +94,7 @@ export function assertUserHasTechnicalRole(
 
 export function assertUserIsAllowedToPerformKeychainOperation(
   userId: UserId,
-  keychainId: ConsumerKeychainId,
+  keychainId: KeychainId,
   members: ConsumerKeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
@@ -102,7 +105,7 @@ export function assertUserIsAllowedToPerformKeychainOperation(
 
 export function assertUserIsAllowedToRemoveKey(
   authData: UISessionAuthData,
-  keychainId: ConsumerKeychainId,
+  keychainId: KeychainId,
   members: ConsumerKeychainUser[],
 ): void {
   const { userId, userRoles } = authData;
@@ -116,7 +119,7 @@ export function assertUserIsAllowedToRemoveKey(
 
 export function assertUserIsMemberOfKeychain(
   userId: UserId,
-  keychainId: ConsumerKeychainId,
+  keychainId: KeychainId,
   members: ConsumerKeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
@@ -126,7 +129,7 @@ export function assertUserIsMemberOfKeychain(
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
-  keychainId: ConsumerKeychainId,
+  keychainId: KeychainId,
   maxKeysPerKeychain: number,
   size: number,
 ): void => {

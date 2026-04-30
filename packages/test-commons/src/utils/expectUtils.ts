@@ -5,7 +5,10 @@ import {
   type EserviceInterface,
   type EserviceVersion,
 } from "@knodia/eservice-models";
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  type ConsumerKeychain,
+  type KnodiaApiKeychain,
+} from "@knodia/keychain-models";
 import { type Organization } from "@knodia/organization-models";
 import { expect } from "vitest";
 
@@ -98,6 +101,14 @@ export function toExpectEservice(eservice: Eservice) {
       eservice.versions.map(toExpectEserviceVersion),
     ),
   };
+}
+
+export function toExpectKnodiaApiKeychain(keychain: KnodiaApiKeychain) {
+  return expect.objectContaining({
+    ...keychain,
+    keys: expect.arrayContaining(keychain.keys),
+    users: expect.arrayContaining(keychain.users),
+  });
 }
 
 export function toExpectOrganization(organization: Organization) {

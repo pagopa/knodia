@@ -12,6 +12,9 @@ import {
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
+  type KnodiaApiKeychainKeyV1,
+  type KnodiaApiKeychainUserV1,
+  type KnodiaApiKeychainV1,
 } from "./generated/v1/keychain.ts";
 import {
   type ConsumerKeychain,
@@ -19,6 +22,9 @@ import {
   type ConsumerKeychainUser,
   KeyAlgorithm,
   KeyFormat,
+  type KnodiaApiKeychain,
+  type KnodiaApiKeychainKey,
+  type KnodiaApiKeychainUser,
 } from "./keychain.ts";
 
 export const fromConsumerKeychainV1 = (
@@ -77,3 +83,43 @@ const fromKeyFormatV1 = (input: KeyFormatV1): KeyFormat =>
       throw new Error("Unrecognized KeyFormatV1 value");
     })
     .exhaustive();
+
+export const fromKnodiaApiKeychainV1 = (
+  input: KnodiaApiKeychainV1,
+): KnodiaApiKeychain => {
+  assertRequired(input.name, "KnodiaApiKeychain name is undefined");
+
+  return {
+    ...input,
+    createdAt: new Date(input.createdAt),
+    id: unsafeBrandId(input.id),
+    keys: input.keys.map(fromKnodiaApiKeychainKeyV1),
+    name: input.name,
+    ownerId: unsafeBrandId(input.ownerId),
+    updatedAt: new Date(input.updatedAt),
+    users: input.users.map(fromKnodiaApiKeychainUserV1),
+  };
+};
+
+const fromKnodiaApiKeychainKeyV1 = (
+  input: KnodiaApiKeychainKeyV1,
+): KnodiaApiKeychainKey => {
+  assertRequired(input.name, "Key name is undefined");
+
+  return {
+    ...input,
+    algorithm: fromKeyAlgorithmV1(input.algorithm),
+    createdAt: new Date(input.createdAt),
+    format: fromKeyFormatV1(input.format),
+    kid: unsafeBrandKeyId(input.kid),
+    name: input.name,
+    userId: unsafeBrandUserId(input.userId),
+  };
+};
+
+const fromKnodiaApiKeychainUserV1 = (
+  input: KnodiaApiKeychainUserV1,
+): KnodiaApiKeychainUser => ({
+  addedAt: new Date(input.addedAt),
+  userId: unsafeBrandUserId(input.userId),
+});

@@ -2,10 +2,13 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   KeyId,
+  KnodiaApiKeychainId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
 import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
+
+type KeychainId = ConsumerKeychainId | KnodiaApiKeychainId;
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -33,6 +36,7 @@ const errorCodes = {
   USER_NOT_ALLOWED: "0011",
   KEY_NOT_FOUND_IN_KEYCHAIN: "0012",
   CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0013",
+  KNODIA_API_KEYCHAIN_NOT_FOUND: "0014",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -81,27 +85,30 @@ export function keyAlreadyExists(kid: string) {
   });
 }
 
-export function keychainMemberNotFound(
-  consumerKeychainId: ConsumerKeychainId,
-  userId: UserId,
-) {
+export function keychainMemberNotFound(keychainId: KeychainId, userId: UserId) {
   return createApiError<ErrorCodes>({
     code: "KEYCHAIN_MEMBER_NOT_FOUND",
-    detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
+    detail: `User ${userId} is not a member of keychain ${keychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Keychain Member Not Found",
   });
 }
 
-export function keyNotFoundInKeychain(
-  kid: KeyId,
-  keychainId: ConsumerKeychainId,
-) {
+export function keyNotFoundInKeychain(kid: KeyId, keychainId: KeychainId) {
   return createApiError<ErrorCodes>({
     code: "KEY_NOT_FOUND_IN_KEYCHAIN",
     detail: `Key with kid ${kid} not found in keychain ${keychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Key Not Found in Keychain",
+  });
+}
+
+export function knodiaApiKeychainNotFound(id: KnodiaApiKeychainId) {
+  return createApiError<ErrorCodes>({
+    code: "KNODIA_API_KEYCHAIN_NOT_FOUND",
+    detail: `Knodia API keychain with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Knodia API Keychain Not Found",
   });
 }
 
@@ -126,10 +133,7 @@ export function purposeAlreadyLinkedToConsumerKeychain(
   });
 }
 
-export function tooManyKeysPerKeychain(
-  keychainId: ConsumerKeychainId,
-  size: number,
-) {
+export function tooManyKeysPerKeychain(keychainId: KeychainId, size: number) {
   return createApiError<ErrorCodes>({
     code: "TOO_MANY_KEYS_PER_KEYCHAIN",
     detail: `Keys count (${size}) for the keychain ${keychainId} exceeds maximum allowed value`,
@@ -138,19 +142,16 @@ export function tooManyKeysPerKeychain(
   });
 }
 
-export function userAlreadyMember(
-  consumerKeychainId: ConsumerKeychainId,
-  userId: UserId,
-) {
+export function userAlreadyMember(keychainId: KeychainId, userId: UserId) {
   return createApiError<ErrorCodes>({
     code: "USER_ALREADY_MEMBER",
-    detail: `User ${userId} is already a member of consumer keychain ${consumerKeychainId}`,
+    detail: `User ${userId} is already a member of keychain ${keychainId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "User Already Member",
   });
 }
 
-export function userNotAllowed(userId: UserId, keychainId: ConsumerKeychainId) {
+export function userNotAllowed(userId: UserId, keychainId: KeychainId) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",
     detail: `User ${userId} is not allowed to perform this action on keychain ${keychainId}`,

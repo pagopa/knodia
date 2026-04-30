@@ -2,6 +2,7 @@ import type {
   ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodiaApiKeychain,
 } from "@knodia/keychain-models";
 
 import type { IdmUser } from "../services/userService.ts";
@@ -9,6 +10,7 @@ import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
   API_KeychainKey,
+  API_KnodiaApiKeychain,
   API_User,
 } from "./api.ts";
 
@@ -46,4 +48,15 @@ export const toAPI_ConsumerKeychainPurpose = (
 ): API_ConsumerKeychainPurpose => ({
   ...consumerKeychainPurpose,
   linkedAt: consumerKeychainPurpose.linkedAt.toISOString(),
+});
+
+export const toAPI_KnodiaApiKeychain = (
+  keychain: FlatKnodiaApiKeychain,
+): API_KnodiaApiKeychain => ({
+  createdAt: keychain.createdAt.toISOString(),
+  description: keychain.description,
+  id: keychain.id,
+  name: keychain.name,
+  ownerId: keychain.ownerId,
+  updatedAt: keychain.updatedAt.toISOString(),
 });

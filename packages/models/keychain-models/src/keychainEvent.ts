@@ -12,6 +12,13 @@ import {
   ConsumerKeychainPurposeLinkedV1,
   ConsumerKeychainPurposeUnlinkedV1,
   ConsumerKeychainUpdatedV1,
+  KnodiaApiKeychainCreatedV1,
+  KnodiaApiKeychainDeletedV1,
+  KnodiaApiKeychainKeyAddedV1,
+  KnodiaApiKeychainKeyRemovedV1,
+  KnodiaApiKeychainMemberAddedV1,
+  KnodiaApiKeychainMemberRemovedV1,
+  KnodiaApiKeychainUpdatedV1,
 } from "./generated/v1/keychainEvents.ts";
 
 export const KeychainEventV1 = z.discriminatedUnion("type", [
@@ -50,6 +57,34 @@ export const KeychainEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(ConsumerKeychainKeyRemovedV1),
     type: z.literal("ConsumerKeychainKeyRemovedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainCreatedV1),
+    type: z.literal("KnodiaApiKeychainCreatedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainDeletedV1),
+    type: z.literal("KnodiaApiKeychainDeletedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainUpdatedV1),
+    type: z.literal("KnodiaApiKeychainUpdatedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainMemberAddedV1),
+    type: z.literal("KnodiaApiKeychainMemberAddedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainMemberRemovedV1),
+    type: z.literal("KnodiaApiKeychainMemberRemovedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainKeyAddedV1),
+    type: z.literal("KnodiaApiKeychainKeyAddedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodiaApiKeychainKeyRemovedV1),
+    type: z.literal("KnodiaApiKeychainKeyRemovedV1"),
   }),
 ]);
 export type KeychainEventV1 = z.infer<typeof KeychainEventV1>;

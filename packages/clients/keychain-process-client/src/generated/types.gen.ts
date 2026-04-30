@@ -44,6 +44,11 @@ export type KnodeId = 'Orion' | 'Lynx';
 export type KeychainId = string;
 
 /**
+ * Unique identifier of the Knodia API Keychain
+ */
+export type KnodiaApiKeychainId = string;
+
+/**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
@@ -169,6 +174,30 @@ export type ConsumerKeychainPurposes = {
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
+};
+
+export type KnodiaApiKeychain = {
+    createdAt: string;
+    description?: KeychainLocalizedDescription;
+    id: KnodiaApiKeychainId;
+    name: KeychainLocalizedName;
+    ownerId: OrganizationId;
+    updatedAt: string;
+};
+
+export type KnodiaApiKeychains = {
+    pagination: Pagination;
+    results: Array<KnodiaApiKeychain>;
+};
+
+export type KnodiaApiKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
+};
+
+export type KnodiaApiKeychainPatch = {
+    description?: KeychainLocalizedDescription | null;
+    name?: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -1013,6 +1042,630 @@ export type GetConsumerKeychainPurposeResponses = {
 };
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
+
+export type GetKnodiaApiKeychainsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Knodia API Keychain name
+         */
+        name?: string;
+        /**
+         * Filter by owner Organization ID
+         */
+        ownerId?: OrganizationId;
+    };
+    url: '/knodiaApiKeychains';
+};
+
+export type GetKnodiaApiKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetKnodiaApiKeychainsError = GetKnodiaApiKeychainsErrors[keyof GetKnodiaApiKeychainsErrors];
+
+export type GetKnodiaApiKeychainsResponses = {
+    /**
+     * Knodia API keychains retrieved successfully
+     */
+    200: KnodiaApiKeychains;
+};
+
+export type GetKnodiaApiKeychainsResponse = GetKnodiaApiKeychainsResponses[keyof GetKnodiaApiKeychainsResponses];
+
+export type CreateKnodiaApiKeychainData = {
+    body: KnodiaApiKeychainSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/knodiaApiKeychains';
+};
+
+export type CreateKnodiaApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateKnodiaApiKeychainError = CreateKnodiaApiKeychainErrors[keyof CreateKnodiaApiKeychainErrors];
+
+export type CreateKnodiaApiKeychainResponses = {
+    /**
+     * Knodia API Keychain created successfully
+     */
+    201: KnodiaApiKeychain;
+};
+
+export type CreateKnodiaApiKeychainResponse = CreateKnodiaApiKeychainResponses[keyof CreateKnodiaApiKeychainResponses];
+
+export type DeleteKnodiaApiKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}';
+};
+
+export type DeleteKnodiaApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteKnodiaApiKeychainError = DeleteKnodiaApiKeychainErrors[keyof DeleteKnodiaApiKeychainErrors];
+
+export type DeleteKnodiaApiKeychainResponses = {
+    /**
+     * Knodia API Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteKnodiaApiKeychainResponse = DeleteKnodiaApiKeychainResponses[keyof DeleteKnodiaApiKeychainResponses];
+
+export type GetKnodiaApiKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}';
+};
+
+export type GetKnodiaApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodiaApiKeychainError = GetKnodiaApiKeychainErrors[keyof GetKnodiaApiKeychainErrors];
+
+export type GetKnodiaApiKeychainResponses = {
+    /**
+     * Knodia API Keychain retrieved successfully
+     */
+    200: KnodiaApiKeychain;
+};
+
+export type GetKnodiaApiKeychainResponse = GetKnodiaApiKeychainResponses[keyof GetKnodiaApiKeychainResponses];
+
+export type UpdateKnodiaApiKeychainData = {
+    body: KnodiaApiKeychainPatch;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}';
+};
+
+export type UpdateKnodiaApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateKnodiaApiKeychainError = UpdateKnodiaApiKeychainErrors[keyof UpdateKnodiaApiKeychainErrors];
+
+export type UpdateKnodiaApiKeychainResponses = {
+    /**
+     * Knodia API Keychain updated successfully
+     */
+    200: KnodiaApiKeychain;
+};
+
+export type UpdateKnodiaApiKeychainResponse = UpdateKnodiaApiKeychainResponses[keyof UpdateKnodiaApiKeychainResponses];
+
+export type GetKnodiaApiKeychainMembersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members';
+};
+
+export type GetKnodiaApiKeychainMembersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodiaApiKeychainMembersError = GetKnodiaApiKeychainMembersErrors[keyof GetKnodiaApiKeychainMembersErrors];
+
+export type GetKnodiaApiKeychainMembersResponses = {
+    /**
+     * Knodia API Keychain members retrieved successfully
+     */
+    200: KeychainMembers;
+};
+
+export type GetKnodiaApiKeychainMembersResponse = GetKnodiaApiKeychainMembersResponses[keyof GetKnodiaApiKeychainMembersResponses];
+
+export type AddKnodiaApiKeychainMemberData = {
+    body: KeychainMemberSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members';
+};
+
+export type AddKnodiaApiKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddKnodiaApiKeychainMemberError = AddKnodiaApiKeychainMemberErrors[keyof AddKnodiaApiKeychainMemberErrors];
+
+export type AddKnodiaApiKeychainMemberResponses = {
+    /**
+     * Knodia API Keychain member added successfully
+     */
+    200: KnodiaApiKeychain;
+};
+
+export type AddKnodiaApiKeychainMemberResponse = AddKnodiaApiKeychainMemberResponses[keyof AddKnodiaApiKeychainMemberResponses];
+
+export type RemoveKnodiaApiKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members/{userId}';
+};
+
+export type RemoveKnodiaApiKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveKnodiaApiKeychainMemberError = RemoveKnodiaApiKeychainMemberErrors[keyof RemoveKnodiaApiKeychainMemberErrors];
+
+export type RemoveKnodiaApiKeychainMemberResponses = {
+    /**
+     * Knodia API Keychain member removed successfully
+     */
+    200: KnodiaApiKeychain;
+};
+
+export type RemoveKnodiaApiKeychainMemberResponse = RemoveKnodiaApiKeychainMemberResponses[keyof RemoveKnodiaApiKeychainMemberResponses];
+
+export type GetKnodiaApiKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/members/{userId}';
+};
+
+export type GetKnodiaApiKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain Member not found
+     */
+    404: Problem;
+};
+
+export type GetKnodiaApiKeychainMemberError = GetKnodiaApiKeychainMemberErrors[keyof GetKnodiaApiKeychainMemberErrors];
+
+export type GetKnodiaApiKeychainMemberResponses = {
+    /**
+     * Knodia API Keychain Member retrieved successfully
+     */
+    200: User;
+};
+
+export type GetKnodiaApiKeychainMemberResponse = GetKnodiaApiKeychainMemberResponses[keyof GetKnodiaApiKeychainMemberResponses];
+
+export type GetKnodiaApiKeychainKeysData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys';
+};
+
+export type GetKnodiaApiKeychainKeysErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodiaApiKeychainKeysError = GetKnodiaApiKeychainKeysErrors[keyof GetKnodiaApiKeychainKeysErrors];
+
+export type GetKnodiaApiKeychainKeysResponses = {
+    /**
+     * Knodia API Keychain keys retrieved successfully
+     */
+    200: KeychainKeys;
+};
+
+export type GetKnodiaApiKeychainKeysResponse = GetKnodiaApiKeychainKeysResponses[keyof GetKnodiaApiKeychainKeysResponses];
+
+export type UploadKnodiaApiKeychainKeyData = {
+    body: KeychainKeySeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys';
+};
+
+export type UploadKnodiaApiKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadKnodiaApiKeychainKeyError = UploadKnodiaApiKeychainKeyErrors[keyof UploadKnodiaApiKeychainKeyErrors];
+
+export type UploadKnodiaApiKeychainKeyResponses = {
+    /**
+     * Knodia API Keychain Key uploaded successfully
+     */
+    201: KeychainKey;
+};
+
+export type UploadKnodiaApiKeychainKeyResponse = UploadKnodiaApiKeychainKeyResponses[keyof UploadKnodiaApiKeychainKeyResponses];
+
+export type RemoveKnodiaApiKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: string;
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys/{keyId}';
+};
+
+export type RemoveKnodiaApiKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveKnodiaApiKeychainKeyError = RemoveKnodiaApiKeychainKeyErrors[keyof RemoveKnodiaApiKeychainKeyErrors];
+
+export type RemoveKnodiaApiKeychainKeyResponses = {
+    /**
+     * Knodia API Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveKnodiaApiKeychainKeyResponse = RemoveKnodiaApiKeychainKeyResponses[keyof RemoveKnodiaApiKeychainKeyResponses];
+
+export type GetKnodiaApiKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: string;
+        knodiaApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodiaApiKeychains/{knodiaApiKeychainId}/keys/{keyId}';
+};
+
+export type GetKnodiaApiKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knodia API Keychain Key not found
+     */
+    404: Problem;
+};
+
+export type GetKnodiaApiKeychainKeyError = GetKnodiaApiKeychainKeyErrors[keyof GetKnodiaApiKeychainKeyErrors];
+
+export type GetKnodiaApiKeychainKeyResponses = {
+    /**
+     * Knodia API Keychain Key retrieved successfully
+     */
+    200: KeychainKey;
+};
+
+export type GetKnodiaApiKeychainKeyResponse = GetKnodiaApiKeychainKeyResponses[keyof GetKnodiaApiKeychainKeyResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

@@ -5,6 +5,7 @@ import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
+  fromKnodiaApiKeychainV1,
   type KeychainEventEnvelopeV1,
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
@@ -74,6 +75,32 @@ export async function handleKeychainEvent(
             knodeId: KnodeId.parse(purpose.knodeId),
           },
         },
+        message.version,
+      );
+    })
+    .with(
+      {
+        type: P.union(
+          "KnodiaApiKeychainCreatedV1",
+          "KnodiaApiKeychainUpdatedV1",
+          "KnodiaApiKeychainMemberAddedV1",
+          "KnodiaApiKeychainMemberRemovedV1",
+          "KnodiaApiKeychainKeyAddedV1",
+          "KnodiaApiKeychainKeyRemovedV1",
+        ),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "knodiaApiKeychain");
+        await keychainWriterService.upsertKnodiaApiKeychain(
+          fromKnodiaApiKeychainV1(msg.data.knodiaApiKeychain),
+          message.version,
+        );
+      },
+    )
+    .with({ type: "KnodiaApiKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "knodiaApiKeychain");
+      await keychainWriterService.deleteKnodiaApiKeychain(
+        fromKnodiaApiKeychainV1(msg.data.knodiaApiKeychain).id,
         message.version,
       );
     })

@@ -16,6 +16,8 @@ import {
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
   API_KeyFormat,
+  API_KnodiaApiKeychainId,
+  API_KnodiaApiKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -221,3 +223,86 @@ export const API_KeychainMembers = z
   })
   .meta({ id: "KeychainMembers" });
 export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;
+
+export const API_KnodiaApiKeychain = z
+  .strictObject({
+    createdAt: z.iso.datetime(),
+    description: API_KeychainLocalizedDescription.optional(),
+    id: API_KnodiaApiKeychainId,
+    name: API_KeychainLocalizedName,
+    ownerId: API_OrganizationId,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "KnodiaApiKeychain" });
+export type API_KnodiaApiKeychain = z.infer<typeof API_KnodiaApiKeychain>;
+
+export const API_KnodiaApiKeychains = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_KnodiaApiKeychain),
+  })
+  .meta({ id: "KnodiaApiKeychains" });
+export type API_KnodiaApiKeychains = z.infer<typeof API_KnodiaApiKeychains>;
+
+export const API_GetKnodiaApiKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    name: z.string().optional().meta({
+      description: "Filter by Knodia API Keychain name",
+    }),
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
+  });
+export type API_GetKnodiaApiKeychainsQueryParams = z.infer<
+  typeof API_GetKnodiaApiKeychainsQueryParams
+>;
+
+export const API_GetKnodiaApiKeychainKeysQueryParams =
+  API_PaginationQueryParams;
+export type API_GetKnodiaApiKeychainKeysQueryParams = z.infer<
+  typeof API_GetKnodiaApiKeychainKeysQueryParams
+>;
+
+export const API_GetKnodiaApiKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetKnodiaApiKeychainMembersQueryParams = z.infer<
+  typeof API_GetKnodiaApiKeychainMembersQueryParams
+>;
+
+export const API_KnodiaApiKeychainSeed = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.optional(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "KnodiaApiKeychainSeed" });
+export type API_KnodiaApiKeychainSeed = z.infer<
+  typeof API_KnodiaApiKeychainSeed
+>;
+
+export const API_KnodiaApiKeychainPatch = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.nullable().optional(),
+    name: API_KeychainLocalizedName.optional(),
+  })
+  .meta({ id: "KnodiaApiKeychainPatch" });
+export type API_KnodiaApiKeychainPatch = z.infer<
+  typeof API_KnodiaApiKeychainPatch
+>;
+
+export const API_KnodiaApiKeychainMemberPathParams = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_KnodiaApiKeychainIdPathParam.shape);
+export type API_KnodiaApiKeychainMemberPathParams = z.infer<
+  typeof API_KnodiaApiKeychainMemberPathParams
+>;
+
+export const API_KnodiaApiKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_KnodiaApiKeychainIdPathParam.shape);
+export type API_KnodiaApiKeychainKeyPathParams = z.infer<
+  typeof API_KnodiaApiKeychainKeyPathParams
+>;

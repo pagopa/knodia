@@ -6,6 +6,9 @@ import type {
   ConsumerKeychainUser,
   KeyAlgorithm,
   KeyFormat,
+  KnodiaApiKeychain,
+  KnodiaApiKeychainKey,
+  KnodiaApiKeychainUser,
 } from "./keychain.ts";
 
 import {
@@ -14,6 +17,9 @@ import {
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
+  type KnodiaApiKeychainKeyV1,
+  type KnodiaApiKeychainUserV1,
+  type KnodiaApiKeychainV1,
 } from "./generated/v1/keychain.ts";
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
@@ -51,4 +57,30 @@ export const toConsumerKeychainV1 = (
   keys: consumerKeychain.keys.map(toConsumerKeychainKeyV1),
   updatedAt: consumerKeychain.updatedAt.getTime(),
   users: consumerKeychain.users.map(toConsumerKeychainUserV1),
+});
+
+const toKnodiaApiKeychainKeyV1 = (
+  key: KnodiaApiKeychainKey,
+): KnodiaApiKeychainKeyV1 => ({
+  ...key,
+  algorithm: toKeyAlgorithm(key.algorithm),
+  createdAt: key.createdAt.getTime(),
+  format: toKeyFormatV1(key.format),
+});
+
+const toKnodiaApiKeychainUserV1 = (
+  user: KnodiaApiKeychainUser,
+): KnodiaApiKeychainUserV1 => ({
+  ...user,
+  addedAt: user.addedAt.getTime(),
+});
+
+export const toKnodiaApiKeychainV1 = (
+  knodiaApiKeychain: KnodiaApiKeychain,
+): KnodiaApiKeychainV1 => ({
+  ...knodiaApiKeychain,
+  createdAt: knodiaApiKeychain.createdAt.getTime(),
+  keys: knodiaApiKeychain.keys.map(toKnodiaApiKeychainKeyV1),
+  updatedAt: knodiaApiKeychain.updatedAt.getTime(),
+  users: knodiaApiKeychain.users.map(toKnodiaApiKeychainUserV1),
 });

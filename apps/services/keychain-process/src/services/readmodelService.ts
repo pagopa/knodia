@@ -1,10 +1,16 @@
 /* eslint-disable max-lines-per-function */
-import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KeyId,
+  KnodiaApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodiaApiKeychain,
+  KnodiaApiKeychainKey,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -17,11 +23,15 @@ import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
+  readmodelKnodiaApiKeychain,
+  readmodelKnodiaApiKeychainKey,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
+  aggregateFlatKnodiaApiKeychains,
   toConsumerKeychainKey,
   toConsumerKeychainPurpose,
+  toKnodiaApiKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
 import { and, desc, eq, exists } from "drizzle-orm";
@@ -30,6 +40,8 @@ import type {
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
+  API_GetKnodiaApiKeychainKeysQueryParams,
+  API_GetKnodiaApiKeychainsQueryParams,
 } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
@@ -44,6 +56,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .select({ kid: readmodelConsumerKeychainKey.kid })
         .from(readmodelConsumerKeychainKey)
         .where(eq(readmodelConsumerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
+    async checkKnodiaApiKeychainKeyExists(kid: KeyId) {
+      const queryResult = await readmodelDb
+        .select({ kid: readmodelKnodiaApiKeychainKey.kid })
+        .from(readmodelKnodiaApiKeychainKey)
+        .where(eq(readmodelKnodiaApiKeychainKey.kid, kid))
         .limit(1);
 
       return queryResult.length > 0;
@@ -244,6 +265,119 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await consumerKeychainReadmodelService.getFlatConsumerKeychainById(
         consumerKeychainId,
       );
+    },
+    async getFlatKnodiaApiKeychainById(
+      knodiaApiKeychainId: KnodiaApiKeychainId,
+    ) {
+      return await consumerKeychainReadmodelService.getFlatKnodiaApiKeychainById(
+        knodiaApiKeychainId,
+      );
+    },
+    async getKnodiaApiKeychainById(knodiaApiKeychainId: KnodiaApiKeychainId) {
+      return await consumerKeychainReadmodelService.getKnodiaApiKeychainById(
+        knodiaApiKeychainId,
+      );
+    },
+    async getKnodiaApiKeychainKeys(
+      knodiaApiKeychainId: KnodiaApiKeychainId,
+      params: API_GetKnodiaApiKeychainKeysQueryParams,
+    ): Promise<ListResult<KnodiaApiKeychainKey>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const createFilterQuery = () =>
+          tx
+            .select({ kid: readmodelKnodiaApiKeychainKey.kid })
+            .from(readmodelKnodiaApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodiaApiKeychainKey.knodiaApiKeychainId,
+                knodiaApiKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select()
+            .from(readmodelKnodiaApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodiaApiKeychainKey.knodiaApiKeychainId,
+                knodiaApiKeychainId,
+              ),
+            )
+            .orderBy(desc(readmodelKnodiaApiKeychainKey.createdAt))
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        return {
+          results: queryRes.map(toKnodiaApiKeychainKey),
+          totalCount,
+        };
+      });
+    },
+    async getKnodiaApiKeychains(
+      params: API_GetKnodiaApiKeychainsQueryParams,
+    ): Promise<ListResult<FlatKnodiaApiKeychain>> {
+      const { limit, name, offset, ownerId } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
+          sortOrder: "desc",
+          table: readmodelKnodiaApiKeychain,
+        });
+
+        const createFilterQuery = () =>
+          tx
+            .select({ keychainId: readmodelKnodiaApiKeychain.id })
+            .from(readmodelKnodiaApiKeychain)
+            .where(
+              and(
+                name
+                  ? ilikeJsonB({
+                      column: readmodelKnodiaApiKeychain.name,
+                      value: name,
+                    })
+                  : undefined,
+                ownerId
+                  ? eq(readmodelKnodiaApiKeychain.ownerId, ownerId)
+                  : undefined,
+              ),
+            )
+            .groupBy(readmodelKnodiaApiKeychain.id)
+            .$dynamic();
+
+        const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("paginatedIds");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select({
+              knodiaApiKeychain: readmodelKnodiaApiKeychain,
+            })
+            .from(readmodelKnodiaApiKeychain)
+            .innerJoin(
+              paginatedIds,
+              eq(readmodelKnodiaApiKeychain.id, paginatedIds.keychainId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const keychains = aggregateFlatKnodiaApiKeychains(queryRes);
+
+        return {
+          results: keychains.map((e) => e.data),
+          totalCount,
+        };
+      });
     },
   };
 }

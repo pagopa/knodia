@@ -1,3 +1,4 @@
+import type { splitKnodiaApiKeychainIntoObjectsSQL } from "../src/converters/knodiaApiKeychainSplitters.ts";
 import type { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/splitters.ts";
 
 export function createConsumerKeychainAggregatorInput({
@@ -16,6 +17,27 @@ export function createConsumerKeychainAggregatorInput({
     usersOrNull.map((userSQL) => ({
       consumerKeychain: consumerKeychainSQL,
       key: keySQL,
+      user: userSQL,
+    })),
+  );
+}
+
+export function createKnodiaApiKeychainAggregatorInput({
+  knodiaApiKeychainKeysSQL,
+  knodiaApiKeychainSQL,
+  knodiaApiKeychainUsersSQL,
+}: ReturnType<typeof splitKnodiaApiKeychainIntoObjectsSQL>) {
+  const keysOrNull = knodiaApiKeychainKeysSQL.length
+    ? knodiaApiKeychainKeysSQL
+    : [null];
+  const usersOrNull = knodiaApiKeychainUsersSQL.length
+    ? knodiaApiKeychainUsersSQL
+    : [null];
+
+  return keysOrNull.flatMap((keySQL) =>
+    usersOrNull.map((userSQL) => ({
+      key: keySQL,
+      knodiaApiKeychain: knodiaApiKeychainSQL,
       user: userSQL,
     })),
   );

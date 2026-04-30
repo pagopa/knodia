@@ -1,0 +1,24 @@
+meta {
+  name: Get Knodia API Keychain Keys
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/knodiaApiKeychains/:knodiaApiKeychainId/keys?offset=0&limit=50
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  knodiaApiKeychainId: {{knodiaApiKeychainId}}
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}

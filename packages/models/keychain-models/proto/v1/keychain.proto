@@ -46,3 +46,29 @@ message ConsumerKeychainLinkedPurposeV1 {
   string id = 1;
   string knodeId = 2;
 }
+
+message KnodiaApiKeychainV1 {
+  string id = 1;
+  LocalizedTextV1 name = 2;
+  optional LocalizedTextV1 description = 3;
+  string ownerId = 4;
+  repeated KnodiaApiKeychainUserV1 users = 5;
+  repeated KnodiaApiKeychainKeyV1 keys = 6;
+  int64 createdAt = 7;
+  int64 updatedAt = 8;
+}
+
+message KnodiaApiKeychainKeyV1 {
+  string kid = 1;
+  LocalizedTextV1 name = 2;
+  KeyAlgorithmV1 algorithm = 3;
+  string encodedPem = 4;
+  KeyFormatV1 format = 5;
+  string userId = 6;
+  int64 createdAt = 7;
+}
+
+message KnodiaApiKeychainUserV1 {
+  string userId = 1;
+  int64 addedAt = 2;
+}

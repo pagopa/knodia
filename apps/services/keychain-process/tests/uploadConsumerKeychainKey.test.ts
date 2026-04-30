@@ -130,14 +130,17 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       version: 1,
     });
 
-    const addedEventData = KeychainEventV1.parse(addedEvent).data;
+    const parsedEvent = KeychainEventV1.parse(addedEvent);
+    if (parsedEvent.type !== "ConsumerKeychainKeyAddedV1") {
+      throw new Error("Unexpected event type");
+    }
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: [...consumerKeychain.keys, expectedKey],
-      updatedAt: new Date(addedEventData.consumerKeychain!.updatedAt),
+      updatedAt: new Date(parsedEvent.data.consumerKeychain!.updatedAt),
     };
 
-    expect(addedEventData).toMatchObject({
+    expect(parsedEvent.data).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
       kid: expectedKid,
     });

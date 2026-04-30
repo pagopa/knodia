@@ -25,8 +25,10 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
+import { knodiaApiKeychainRouter } from "./routers/knodiaApiKeychainRouter.ts";
 import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
+import { knodiaApiKeychainServiceBuilder } from "./services/knodiaApiKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { userServiceBuilder } from "./services/userService.ts";
 
@@ -65,6 +67,10 @@ export function buildApp({
             name: apiTags.consumerKeychain,
           },
           {
+            description: "Knodia API keychain routes",
+            name: apiTags.knodiaApiKeychain,
+          },
+          {
             description: "User routes",
             name: apiTags.user,
           },
@@ -88,12 +94,23 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    const eventStoreWriter = keychainEventStoreWriterBuilder(eventStoreDb);
+    const readmodelService = readmodelServiceBuilder(readmodelDb);
+
     protectedApp.register(consumerKeychainRouter, {
       consumerKeychainService: consumerKeychainServiceBuilder(
-        keychainEventStoreWriterBuilder(eventStoreDb),
-        readmodelServiceBuilder(readmodelDb),
+        eventStoreWriter,
+        readmodelService,
         userService,
         clients.remoteResourcesManagerClient,
+        config,
+      ),
+    });
+    protectedApp.register(knodiaApiKeychainRouter, {
+      knodiaApiKeychainService: knodiaApiKeychainServiceBuilder(
+        eventStoreWriter,
+        readmodelService,
+        userService,
         config,
       ),
     });

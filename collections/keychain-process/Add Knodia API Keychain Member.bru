@@ -1,0 +1,25 @@
+meta {
+  name: Add Knodia API Keychain Member
+  type: http
+}
+
+post {
+  url: {{host-keychain-process}}/knodiaApiKeychains/:knodiaApiKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  knodiaApiKeychainId: {{knodiaApiKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}"
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Get Knodia API Keychain
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/knodiaApiKeychains/:knodiaApiKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  knodiaApiKeychainId: {{knodiaApiKeychainId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

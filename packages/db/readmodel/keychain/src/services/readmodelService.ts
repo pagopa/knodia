@@ -1,9 +1,14 @@
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KnodiaApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodiaApiKeychain,
+  KnodiaApiKeychain,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -25,6 +30,15 @@ import {
   aggregateFlatConsumerKeychain,
 } from "../converters/aggregators.ts";
 import { toConsumerKeychainPurpose } from "../converters/converters.ts";
+import {
+  aggregateFlatKnodiaApiKeychain,
+  aggregateKnodiaApiKeychain,
+} from "../converters/knodiaApiKeychainAggregators.ts";
+import {
+  readmodelKnodiaApiKeychain,
+  readmodelKnodiaApiKeychainKey,
+  readmodelKnodiaApiKeychainUser,
+} from "../knodiaApiKeychain.ts";
 
 export function consumerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
@@ -89,6 +103,46 @@ export function consumerKeychainReadmodelServiceBuilder(
         .where(eq(readmodelConsumerKeychain.id, consumerKeychainId));
 
       return aggregateFlatConsumerKeychain(queryRes);
+    },
+    async getFlatKnodiaApiKeychainById(
+      knodiaApiKeychainId: KnodiaApiKeychainId,
+    ): Promise<undefined | WithMetadata<FlatKnodiaApiKeychain>> {
+      const queryRes = await readmodelDb
+        .select({
+          knodiaApiKeychain: readmodelKnodiaApiKeychain,
+        })
+        .from(readmodelKnodiaApiKeychain)
+        .where(eq(readmodelKnodiaApiKeychain.id, knodiaApiKeychainId));
+
+      return aggregateFlatKnodiaApiKeychain(queryRes);
+    },
+    async getKnodiaApiKeychainById(
+      knodiaApiKeychainId: KnodiaApiKeychainId,
+    ): Promise<undefined | WithMetadata<KnodiaApiKeychain>> {
+      const queryRes = await readmodelDb
+        .select({
+          key: readmodelKnodiaApiKeychainKey,
+          knodiaApiKeychain: readmodelKnodiaApiKeychain,
+          user: readmodelKnodiaApiKeychainUser,
+        })
+        .from(readmodelKnodiaApiKeychain)
+        .leftJoin(
+          readmodelKnodiaApiKeychainKey,
+          eq(
+            readmodelKnodiaApiKeychainKey.knodiaApiKeychainId,
+            readmodelKnodiaApiKeychain.id,
+          ),
+        )
+        .leftJoin(
+          readmodelKnodiaApiKeychainUser,
+          eq(
+            readmodelKnodiaApiKeychainUser.knodiaApiKeychainId,
+            readmodelKnodiaApiKeychain.id,
+          ),
+        )
+        .where(eq(readmodelKnodiaApiKeychain.id, knodiaApiKeychainId));
+
+      return aggregateKnodiaApiKeychain(queryRes);
     },
   };
 }
