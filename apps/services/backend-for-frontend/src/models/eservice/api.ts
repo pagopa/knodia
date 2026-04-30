@@ -15,6 +15,7 @@ import {
   API_AccessTokenType,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceTemplateReference,
   API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
@@ -44,67 +45,107 @@ const API_InterfaceDocumentSeed = z
   })
   .meta({ id: "InterfaceDocumentSeed" });
 
-export const API_EserviceSeed = z
+const API_InterfaceDocumentContactOverrides = z
   .strictObject({
-    accessTokenAudience: z
-      .array(z.string())
-      .meta({ description: "Audience for the access token" }),
-    accessTokenDuration: z
-      .number()
-      .int()
-      .min(minAccessTokenDuration)
-      .max(maxAccessTokenDuration)
-      .optional()
-      .default(3600)
-      .meta({
-        description: "Duration of the access token in seconds",
-        format: "int32",
-      }),
-    accessTokenType: API_AccessTokenType.optional()
-      .default("Bearer")
-      .meta({ description: "Type of the access token" }),
-    categories: z
-      .array(API_EserviceCategory)
-      .optional()
-      .meta({ description: "Categories of the E-service" }),
-    description: API_LocalizedDescription,
-    interfaceDocument: API_InterfaceDocumentSeed.meta({
-      description: "Interface document for the E-service",
-    }),
-    isSignalHubEnabled: z
-      .boolean()
-      .optional()
-      .meta({ description: "Whether SignalHub is enabled for the E-service" }),
-    maxDailyCallsPerConsumer: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({
-        description:
-          "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
-        format: "int32",
-      }),
-    maxDailyCallsPerKnode: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({
-        description:
-          "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
-        format: "int32",
-      }),
-    mode: API_EserviceMode.meta({
-      description: "Mode of the E-service",
-    }).optional(),
-    name: API_LocalizedName,
-    requiredAttributes: z
-      .array(z.array(API_Attribute))
-      .meta({ description: "Required attributes for the E-service" }),
+    email: z.email(),
+    name: z.string(),
+    url: z.string().optional(),
   })
-  .meta({ id: "EserviceSeed" });
-export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+  .meta({ id: "InterfaceDocumentContactOverrides" });
+
+export const API_InterfaceDocumentOverrides = z
+  .strictObject({
+    contact: API_InterfaceDocumentContactOverrides.meta({
+      description:
+        "OpenAPI contact overrides to apply to the template interface",
+    }),
+    serverUrls: z.array(z.string()).min(1).meta({
+      description: "Server URLs override to apply to the template interface",
+    }),
+    termsOfService: z.string().optional(),
+  })
+  .meta({ id: "InterfaceDocumentOverrides" });
+export type API_InterfaceDocumentOverrides = z.infer<
+  typeof API_InterfaceDocumentOverrides
+>;
+
+const API_EserviceBaseSeed = z.strictObject({
+  accessTokenAudience: z
+    .array(z.string())
+    .meta({ description: "Audience for the access token" }),
+  accessTokenDuration: z
+    .number()
+    .int()
+    .min(minAccessTokenDuration)
+    .max(maxAccessTokenDuration)
+    .optional()
+    .default(3600)
+    .meta({
+      description: "Duration of the access token in seconds",
+      format: "int32",
+    }),
+  accessTokenType: API_AccessTokenType.optional()
+    .default("Bearer")
+    .meta({ description: "Type of the access token" }),
+  description: API_LocalizedDescription,
+  isSignalHubEnabled: z
+    .boolean()
+    .optional()
+    .meta({ description: "Whether SignalHub is enabled for the E-service" }),
+  maxDailyCallsPerConsumer: z
+    .number()
+    .int()
+    .min(minDailyCalls)
+    .max(maxDailyCalls)
+    .meta({
+      description:
+        "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
+      format: "int32",
+    }),
+  maxDailyCallsPerKnode: z
+    .number()
+    .int()
+    .min(minDailyCalls)
+    .max(maxDailyCalls)
+    .meta({
+      description:
+        "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
+      format: "int32",
+    }),
+  name: API_LocalizedName,
+});
+
+export const API_EserviceFromScratchSeed = API_EserviceBaseSeed.extend({
+  categories: z
+    .array(API_EserviceCategory)
+    .optional()
+    .meta({ description: "Categories of the E-service" }),
+  interfaceDocument: API_InterfaceDocumentSeed.meta({
+    description: "Interface document for the E-service",
+  }),
+  mode: API_EserviceMode.meta({
+    description: "Mode of the E-service",
+  }).optional(),
+  requiredAttributes: z
+    .array(z.array(API_Attribute))
+    .meta({ description: "Required attributes for the E-service" }),
+}).meta({ id: "EserviceFromScratchSeed" });
+export type API_EserviceFromScratchSeed = z.infer<
+  typeof API_EserviceFromScratchSeed
+>;
+
+export const API_EserviceFromTemplateSeed = API_EserviceBaseSeed.extend({
+  interfaceDocumentOverrides: API_InterfaceDocumentOverrides.meta({
+    description:
+      "Overrides applied to the E-service Template interface document",
+  }),
+  template: API_EserviceTemplateReference.meta({
+    description: "Reference to the E-service Template to instantiate",
+  }),
+}).meta({ id: "EserviceFromTemplateSeed" });
+export type API_EserviceFromTemplateSeed = z.infer<
+  typeof API_EserviceFromTemplateSeed
+>;
 
 export const API_EservicePatch = z
   .strictObject({

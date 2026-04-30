@@ -590,6 +590,25 @@ components:
         - pagination
         - results
       additionalProperties: false
+    MagicLink:
+      description: A signed, single-action link a Consumer user can follow to perform
+        an action on the Producer Knode's frontend
+      type: object
+      properties:
+        expiresAt:
+          description: ISO 8601 timestamp after which the magic link is no longer valid
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        url:
+          description: Absolute URL of the target Knode's frontend, carrying a signed
+            token for the action
+          type: string
+          format: uri
+      required:
+        - expiresAt
+        - url
+      additionalProperties: false
     ClientAssertionVerificationRequest:
       type: object
       properties:
@@ -1374,6 +1393,54 @@ paths:
                 description: Agreement suspended successfully
                 allOf:
                   - $ref: "#/components/schemas/Agreement"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /agreements/{agreementId}/activationMagicLink:
+    post:
+      operationId: createAgreementActivationMagicLink
+      summary: Create an Agreement activation magic link
+      tags:
+        - operation
+        - agreement
+      description: Create a magic link for a Consumer user to activate an Agreement on
+        the Producer's frontend
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/AgreementId"
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "200":
+          description: Magic link created successfully
+          content:
+            application/json:
+              schema:
+                description: Magic link created successfully
+                allOf:
+                  - $ref: "#/components/schemas/MagicLink"
         "400":
           description: Bad Request
           content:

@@ -662,9 +662,15 @@ importers:
       jose:
         specifier: 'catalog:'
         version: 6.1.3
+      js-yaml:
+        specifier: 'catalog:'
+        version: 4.1.1
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -684,6 +690,9 @@ importers:
       '@stoplight/spectral-cli':
         specifier: 'catalog:'
         version: 6.15.0
+      '@types/js-yaml':
+        specifier: 'catalog:'
+        version: 4.0.9
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
@@ -732,6 +741,9 @@ importers:
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
+      '@knodia/eservice-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-template-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -1574,6 +1586,9 @@ importers:
       '@types/pg':
         specifier: 'catalog:'
         version: 8.16.0
+      axios:
+        specifier: 'catalog:'
+        version: 1.15.0
       concurrently:
         specifier: 'catalog:'
         version: 9.2.1
@@ -1592,6 +1607,9 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
