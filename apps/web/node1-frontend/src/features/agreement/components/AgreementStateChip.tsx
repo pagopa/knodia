@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Chip, type ChipProps } from "@knodia/ui-kit/ui";
-import { CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
+import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
 export function AgreementStateChip({
@@ -24,11 +24,14 @@ export function AgreementStateChip({
           type={type}
         />
       ))
-      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
-      .with("Archived", () => {
-        console.warn("Unhandled agreement state: Archived");
-        return null;
-      })
+      .with("Archived", () => (
+        <Chip
+          icon={<ArchiveIcon />}
+          kind="neutral"
+          label="Archived"
+          type={type}
+        />
+      ))
       .with("PendingConsumerOperatorIdentification", () => {
         console.warn(
           "Unhandled agreement state: PendingConsumerOperatorIdentification",
