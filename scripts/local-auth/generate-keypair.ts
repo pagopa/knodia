@@ -1,11 +1,23 @@
 import { createHash, createPublicKey, generateKeyPairSync } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { parseArgs } from "node:util";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KEYS_DIR = resolve(__dirname, "../../docker/keys");
 const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
+
+const { values } = parseArgs({
+  options: {
+    alg: { type: "string", short: "a", default: "RS256" },
+  },
+});
+const alg = values.alg;
+if (alg !== "RS256" && alg !== "ES256") {
+  console.error(`Unsupported algorithm: ${alg}. Use RS256 or ES256.`);
+  process.exit(1);
+}
 
 // Same algorithm as keychain-process: sha256(JSON.stringify(sortedJWK)) in base64url
 function calculateKid(publicKeyPem: string): string {
@@ -22,16 +34,23 @@ function calculateKid(publicKeyPem: string): string {
     .digest("base64url");
 }
 
-const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-  modulusLength: 2048,
-  publicKeyEncoding: { type: "spki", format: "pem" },
-  privateKeyEncoding: { type: "pkcs8", format: "pem" },
-});
+const { privateKey, publicKey } =
+  alg === "ES256"
+    ? generateKeyPairSync("ec", {
+        namedCurve: "P-256",
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      })
+    : generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      });
 const kid = calculateKid(publicKey);
 
 mkdirSync(KEYS_DIR, { recursive: true });
-const pubKeyPath = resolve(KEYS_DIR, `${kid}.pub.pem`);
-const privKeyPath = resolve(KEYS_DIR, `${kid}.priv.pem`);
+const pubKeyPath = resolve(KEYS_DIR, `${kid}.${alg}.pub.pem`);
+const privKeyPath = resolve(KEYS_DIR, `${kid}.${alg}.priv.pem`);
 writeFileSync(pubKeyPath, publicKey);
 writeFileSync(privKeyPath, privateKey);
 
@@ -42,8 +61,8 @@ function upsert(content: string, name: string, value: string): string {
   const pattern = new RegExp(`^${name}=.*$`, "m");
   return pattern.test(content) ? content.replace(pattern, line) : content.trimEnd() + "\n" + line + "\n";
 }
-let updated = upsert(existing, "KEYCHAIN_PRIVATE_KEY_PATH", privKeyPath);
-updated = upsert(updated, "KEYCHAIN_PUBLIC_KEY_B64", Buffer.from(publicKey, "utf-8").toString("base64"));
+let updated = upsert(existing, `KEYCHAIN_PRIVATE_${alg}_KEY_PATH`, privKeyPath);
+updated = upsert(updated, `KEYCHAIN_PUBLIC_${alg}_KEY_B64`, Buffer.from(publicKey, "utf-8").toString("base64"));
 writeFileSync(COLLECTIONS_ENV_PATH, updated);
 
 console.log(`kid: ${kid}`);
