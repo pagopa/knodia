@@ -907,6 +907,51 @@ export type CreateAgreementActivationMagicLinkResponses = {
 
 export type CreateAgreementActivationMagicLinkResponse = CreateAgreementActivationMagicLinkResponses[keyof CreateAgreementActivationMagicLinkResponses];
 
+export type ArchivePurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];
+
 export type GetPurposesData = {
     body?: never;
     path?: never;

@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
+import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, ArchivePurposeData, ArchivePurposeErrors, ArchivePurposeResponses, CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -164,6 +164,18 @@ export const createAgreementActivationMagicLink = <ThrowOnError extends boolean 
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}/activationMagicLink',
+    ...options
+});
+
+/**
+ * Archive a Purpose
+ *
+ * Archive a Purpose on behalf of its Consumer; the Consumer must be the caller organization
+ */
+export const archivePurpose = <ThrowOnError extends boolean = true>(options: Options<ArchivePurposeData, ThrowOnError>) => (options.client ?? client).post<ArchivePurposeResponses, ArchivePurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/archive',
     ...options
 });
 

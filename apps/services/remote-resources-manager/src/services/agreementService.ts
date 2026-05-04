@@ -1,7 +1,11 @@
 /* eslint-disable max-lines-per-function */
 import type { API_MagicLink } from "@knodia/agreement-models/api";
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  KnodeId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -218,18 +222,12 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreement> {
       logger.info(`Reactivating Agreement ${agreementId} on Knode ${knodeId}`);
 
-      await retrieveOrganization(authData.organizationId, readmodelService);
-
-      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+      await verifyConsumerCanActOnAgreement(
         agreementId,
         knodeId,
-      );
-
-      assertAgreementExists(remoteAgreement, agreementId);
-      assertOrganizationIsAgreementConsumer(
-        remoteAgreement,
-        agreementId,
         authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
       );
 
       const { data } = await k2kGatewayApi.reactivateAgreement({
@@ -247,18 +245,12 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreement> {
       logger.info(`Suspending Agreement ${agreementId} on Knode ${knodeId}`);
 
-      await retrieveOrganization(authData.organizationId, readmodelService);
-
-      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+      await verifyConsumerCanActOnAgreement(
         agreementId,
         knodeId,
-      );
-
-      assertAgreementExists(remoteAgreement, agreementId);
-      assertOrganizationIsAgreementConsumer(
-        remoteAgreement,
-        agreementId,
         authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
       );
 
       const { data } = await k2kGatewayApi.suspendAgreement({
@@ -269,4 +261,26 @@ export function agreementServiceBuilder(
       return toAPI_Agreement(data, knodeId);
     },
   };
+}
+
+async function verifyConsumerCanActOnAgreement(
+  agreementId: ExternalId<AgreementId>,
+  knodeId: KnodeId,
+  organizationId: OrganizationId,
+  remoteResourceDbService: RemoteResourceDbService,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  await retrieveOrganization(organizationId, readmodelService);
+
+  const remoteAgreement = await remoteResourceDbService.getAgreementById(
+    agreementId,
+    knodeId,
+  );
+
+  assertAgreementExists(remoteAgreement, agreementId);
+  assertOrganizationIsAgreementConsumer(
+    remoteAgreement,
+    agreementId,
+    organizationId,
+  );
 }
