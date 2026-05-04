@@ -1,12 +1,10 @@
-import { Breadcrumb, Breadcrumbs, Empty } from "@knodia/ui-kit/ui";
-import { ArchiveIcon } from "@phosphor-icons/react";
+import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
-import { useHasRole } from "@/contexts/auth";
 import { ArchivedConsumerPurposeTable } from "@/features/purpose/components/ArchivedConsumerPurposeTable";
 import { consumerArchivedPurposesQuery } from "@/features/purpose/services/queries";
 
@@ -36,7 +34,6 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const canManagePurposes = useHasRole("administrative");
   const { offset } = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -44,8 +41,6 @@ function RouteComponent() {
     ...consumerArchivedPurposesQuery(offset),
     placeholderData: keepPreviousData,
   });
-
-  const isEmpty = !isLoading && data?.results.length === 0;
 
   return (
     <ListPageLayout
@@ -65,22 +60,10 @@ function RouteComponent() {
 
       <PageHeader title="Archive" />
 
-      {isEmpty ? (
-        <Empty
-          description="Archived Purposes will appear here."
-          icon={<ArchiveIcon />}
-          title={
-            canManagePurposes
-              ? "You haven't archived any Purpose yet."
-              : "There are no archived Purposes."
-          }
-        />
-      ) : (
-        <ArchivedConsumerPurposeTable
-          isLoading={isLoading}
-          purposes={data?.results ?? []}
-        />
-      )}
+      <ArchivedConsumerPurposeTable
+        isLoading={isLoading}
+        purposes={data?.results ?? []}
+      />
     </ListPageLayout>
   );
 }

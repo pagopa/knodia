@@ -3,6 +3,7 @@ import type { bffApi } from "@knodia/bff-client";
 import {
   Cell,
   Column,
+  Empty,
   Loader,
   Row,
   Table,
@@ -13,6 +14,7 @@ import { ArchiveIcon, ArrowRightIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
+import { useHasRole } from "@/contexts/auth";
 import { formatNumericDate } from "@/utils/formatters";
 
 export function ArchivedConsumerPurposeTable({
@@ -22,8 +24,23 @@ export function ArchivedConsumerPurposeTable({
   isLoading: boolean;
   purposes: bffApi.ConsumerPurpose[];
 }) {
+  const canManagePurposes = useHasRole("administrative");
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
+  }
+
+  if (purposes.length === 0) {
+    return (
+      <Empty
+        description="Archived Purposes will appear here."
+        icon={<ArchiveIcon />}
+        title={
+          canManagePurposes
+            ? "You haven't archived any Purpose yet."
+            : "There are no archived Purposes."
+        }
+      />
+    );
   }
 
   return (
