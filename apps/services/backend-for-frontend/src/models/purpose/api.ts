@@ -55,6 +55,10 @@ export const API_SuspendReactivatePurposeByConsumerQueryParams = z.strictObject(
   },
 );
 
+export const API_ArchiveConsumerPurposeQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+
 export const API_GetConsumerPurposesQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z
