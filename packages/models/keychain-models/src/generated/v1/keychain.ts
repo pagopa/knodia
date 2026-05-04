@@ -82,13 +82,13 @@ export interface ConsumerKeychainV1 {
   name: LocalizedTextV1 | undefined;
   description?: LocalizedTextV1 | undefined;
   ownerId: string;
-  users: ConsumerKeychainUserV1[];
-  keys: ConsumerKeychainKeyV1[];
+  users: KeychainUserV1[];
+  keys: KeychainKeyV1[];
   createdAt: number;
   updatedAt: number;
 }
 
-export interface ConsumerKeychainKeyV1 {
+export interface KeychainKeyV1 {
   kid: string;
   name: LocalizedTextV1 | undefined;
   algorithm: KeyAlgorithmV1;
@@ -98,7 +98,7 @@ export interface ConsumerKeychainKeyV1 {
   createdAt: number;
 }
 
-export interface ConsumerKeychainUserV1 {
+export interface KeychainUserV1 {
   userId: string;
   addedAt: number;
 }
@@ -118,8 +118,8 @@ export interface KnodeApiKeychainV1 {
   name: LocalizedTextV1 | undefined;
   description?: LocalizedTextV1 | undefined;
   ownerId: string;
-  users: ConsumerKeychainUserV1[];
-  keys: ConsumerKeychainKeyV1[];
+  users: KeychainUserV1[];
+  keys: KeychainKeyV1[];
   createdAt: number;
   updatedAt: number;
 }
@@ -152,10 +152,10 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       writer.uint32(34).string(message.ownerId);
     }
     for (const v of message.users) {
-      ConsumerKeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
+      KeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
     }
     for (const v of message.keys) {
-      ConsumerKeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
+      KeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
     }
     if (message.createdAt !== 0) {
       writer.uint32(56).int64(message.createdAt);
@@ -210,7 +210,7 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
             break;
           }
 
-          message.users.push(ConsumerKeychainUserV1.decode(reader, reader.uint32()));
+          message.users.push(KeychainUserV1.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -218,7 +218,7 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
             break;
           }
 
-          message.keys.push(ConsumerKeychainKeyV1.decode(reader, reader.uint32()));
+          message.keys.push(KeychainKeyV1.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -252,12 +252,8 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
-      users: globalThis.Array.isArray(object?.users)
-        ? object.users.map((e: any) => ConsumerKeychainUserV1.fromJSON(e))
-        : [],
-      keys: globalThis.Array.isArray(object?.keys)
-        ? object.keys.map((e: any) => ConsumerKeychainKeyV1.fromJSON(e))
-        : [],
+      users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => KeychainUserV1.fromJSON(e)) : [],
+      keys: globalThis.Array.isArray(object?.keys) ? object.keys.map((e: any) => KeychainKeyV1.fromJSON(e)) : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
     };
@@ -278,10 +274,10 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       obj.ownerId = message.ownerId;
     }
     if (message.users?.length) {
-      obj.users = message.users.map((e) => ConsumerKeychainUserV1.toJSON(e));
+      obj.users = message.users.map((e) => KeychainUserV1.toJSON(e));
     }
     if (message.keys?.length) {
-      obj.keys = message.keys.map((e) => ConsumerKeychainKeyV1.toJSON(e));
+      obj.keys = message.keys.map((e) => KeychainKeyV1.toJSON(e));
     }
     if (message.createdAt !== 0) {
       obj.createdAt = Math.round(message.createdAt);
@@ -305,20 +301,20 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       ? LocalizedTextV1.fromPartial(object.description)
       : undefined;
     message.ownerId = object.ownerId ?? "";
-    message.users = object.users?.map((e) => ConsumerKeychainUserV1.fromPartial(e)) || [];
-    message.keys = object.keys?.map((e) => ConsumerKeychainKeyV1.fromPartial(e)) || [];
+    message.users = object.users?.map((e) => KeychainUserV1.fromPartial(e)) || [];
+    message.keys = object.keys?.map((e) => KeychainKeyV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
     return message;
   },
 };
 
-function createBaseConsumerKeychainKeyV1(): ConsumerKeychainKeyV1 {
+function createBaseKeychainKeyV1(): KeychainKeyV1 {
   return { kid: "", name: undefined, algorithm: 0, encodedPem: "", format: 0, userId: "", createdAt: 0 };
 }
 
-export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
-  encode(message: ConsumerKeychainKeyV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const KeychainKeyV1: MessageFns<KeychainKeyV1> = {
+  encode(message: KeychainKeyV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.kid !== "") {
       writer.uint32(10).string(message.kid);
     }
@@ -343,10 +339,10 @@ export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainKeyV1 {
+  decode(input: BinaryReader | Uint8Array, length?: number): KeychainKeyV1 {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseConsumerKeychainKeyV1();
+    const message = createBaseKeychainKeyV1();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -415,7 +411,7 @@ export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
     return message;
   },
 
-  fromJSON(object: any): ConsumerKeychainKeyV1 {
+  fromJSON(object: any): KeychainKeyV1 {
     return {
       kid: isSet(object.kid) ? globalThis.String(object.kid) : "",
       name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
@@ -427,7 +423,7 @@ export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
     };
   },
 
-  toJSON(message: ConsumerKeychainKeyV1): unknown {
+  toJSON(message: KeychainKeyV1): unknown {
     const obj: any = {};
     if (message.kid !== "") {
       obj.kid = message.kid;
@@ -453,11 +449,11 @@ export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ConsumerKeychainKeyV1>, I>>(base?: I): ConsumerKeychainKeyV1 {
-    return ConsumerKeychainKeyV1.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<KeychainKeyV1>, I>>(base?: I): KeychainKeyV1 {
+    return KeychainKeyV1.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainKeyV1>, I>>(object: I): ConsumerKeychainKeyV1 {
-    const message = createBaseConsumerKeychainKeyV1();
+  fromPartial<I extends Exact<DeepPartial<KeychainKeyV1>, I>>(object: I): KeychainKeyV1 {
+    const message = createBaseKeychainKeyV1();
     message.kid = object.kid ?? "";
     message.name = (object.name !== undefined && object.name !== null)
       ? LocalizedTextV1.fromPartial(object.name)
@@ -471,12 +467,12 @@ export const ConsumerKeychainKeyV1: MessageFns<ConsumerKeychainKeyV1> = {
   },
 };
 
-function createBaseConsumerKeychainUserV1(): ConsumerKeychainUserV1 {
+function createBaseKeychainUserV1(): KeychainUserV1 {
   return { userId: "", addedAt: 0 };
 }
 
-export const ConsumerKeychainUserV1: MessageFns<ConsumerKeychainUserV1> = {
-  encode(message: ConsumerKeychainUserV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const KeychainUserV1: MessageFns<KeychainUserV1> = {
+  encode(message: KeychainUserV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
@@ -486,10 +482,10 @@ export const ConsumerKeychainUserV1: MessageFns<ConsumerKeychainUserV1> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainUserV1 {
+  decode(input: BinaryReader | Uint8Array, length?: number): KeychainUserV1 {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseConsumerKeychainUserV1();
+    const message = createBaseKeychainUserV1();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -518,14 +514,14 @@ export const ConsumerKeychainUserV1: MessageFns<ConsumerKeychainUserV1> = {
     return message;
   },
 
-  fromJSON(object: any): ConsumerKeychainUserV1 {
+  fromJSON(object: any): KeychainUserV1 {
     return {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       addedAt: isSet(object.addedAt) ? globalThis.Number(object.addedAt) : 0,
     };
   },
 
-  toJSON(message: ConsumerKeychainUserV1): unknown {
+  toJSON(message: KeychainUserV1): unknown {
     const obj: any = {};
     if (message.userId !== "") {
       obj.userId = message.userId;
@@ -536,11 +532,11 @@ export const ConsumerKeychainUserV1: MessageFns<ConsumerKeychainUserV1> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ConsumerKeychainUserV1>, I>>(base?: I): ConsumerKeychainUserV1 {
-    return ConsumerKeychainUserV1.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<KeychainUserV1>, I>>(base?: I): KeychainUserV1 {
+    return KeychainUserV1.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainUserV1>, I>>(object: I): ConsumerKeychainUserV1 {
-    const message = createBaseConsumerKeychainUserV1();
+  fromPartial<I extends Exact<DeepPartial<KeychainUserV1>, I>>(object: I): KeychainUserV1 {
+    const message = createBaseKeychainUserV1();
     message.userId = object.userId ?? "";
     message.addedAt = object.addedAt ?? 0;
     return message;
@@ -711,10 +707,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       writer.uint32(34).string(message.ownerId);
     }
     for (const v of message.users) {
-      ConsumerKeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
+      KeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
     }
     for (const v of message.keys) {
-      ConsumerKeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
+      KeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
     }
     if (message.createdAt !== 0) {
       writer.uint32(56).int64(message.createdAt);
@@ -769,7 +765,7 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
             break;
           }
 
-          message.users.push(ConsumerKeychainUserV1.decode(reader, reader.uint32()));
+          message.users.push(KeychainUserV1.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -777,7 +773,7 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
             break;
           }
 
-          message.keys.push(ConsumerKeychainKeyV1.decode(reader, reader.uint32()));
+          message.keys.push(KeychainKeyV1.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -811,12 +807,8 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
-      users: globalThis.Array.isArray(object?.users)
-        ? object.users.map((e: any) => ConsumerKeychainUserV1.fromJSON(e))
-        : [],
-      keys: globalThis.Array.isArray(object?.keys)
-        ? object.keys.map((e: any) => ConsumerKeychainKeyV1.fromJSON(e))
-        : [],
+      users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => KeychainUserV1.fromJSON(e)) : [],
+      keys: globalThis.Array.isArray(object?.keys) ? object.keys.map((e: any) => KeychainKeyV1.fromJSON(e)) : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
     };
@@ -837,10 +829,10 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       obj.ownerId = message.ownerId;
     }
     if (message.users?.length) {
-      obj.users = message.users.map((e) => ConsumerKeychainUserV1.toJSON(e));
+      obj.users = message.users.map((e) => KeychainUserV1.toJSON(e));
     }
     if (message.keys?.length) {
-      obj.keys = message.keys.map((e) => ConsumerKeychainKeyV1.toJSON(e));
+      obj.keys = message.keys.map((e) => KeychainKeyV1.toJSON(e));
     }
     if (message.createdAt !== 0) {
       obj.createdAt = Math.round(message.createdAt);
@@ -864,8 +856,8 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
       ? LocalizedTextV1.fromPartial(object.description)
       : undefined;
     message.ownerId = object.ownerId ?? "";
-    message.users = object.users?.map((e) => ConsumerKeychainUserV1.fromPartial(e)) || [];
-    message.keys = object.keys?.map((e) => ConsumerKeychainKeyV1.fromPartial(e)) || [];
+    message.users = object.users?.map((e) => KeychainUserV1.fromPartial(e)) || [];
+    message.keys = object.keys?.map((e) => KeychainKeyV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
     return message;
