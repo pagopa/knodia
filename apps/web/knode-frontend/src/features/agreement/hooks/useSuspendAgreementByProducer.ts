@@ -1,17 +1,17 @@
 import type { AgreementId } from "@knodia/common-models/ids";
 
-import { suspendProducerAgreementMutation } from "@knodia/bff-client/tanstack-query";
+import { suspendAgreementByProducerMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
 
 import { producerAgreementDetailsQuery } from "../services/queries";
 
-export function useSuspendProducerAgreement(agreementId: AgreementId) {
+export function useSuspendAgreementByProducer(agreementId: AgreementId) {
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({
-    ...suspendProducerAgreementMutation({ client }),
+    ...suspendAgreementByProducerMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(producerAgreementDetailsQuery(agreementId));
     },
