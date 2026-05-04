@@ -7,7 +7,7 @@ docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
-# local-kms-setup) are expected to exit and are not checked.
+# seed, local-kms-setup) are expected to exit and are not checked.
 failed=0
 while IFS= read -r line; do
   [ -z "$line" ] && continue
