@@ -1,5 +1,6 @@
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
+import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -31,7 +32,6 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
-import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
@@ -98,7 +98,7 @@ export function buildAppFromConfig(
   });
 
   const pollingService = pollingServiceBuilder(config);
-  const refreshTokenStore = createRefreshTokenStore(
+  const refreshTokenStore = createJtiReplayStore(
     config.dynamoDbRefreshTokensTable,
     dynamoClient,
   );
@@ -176,5 +176,6 @@ export function buildAppFromConfig(
   });
 
   app.addHook("onClose", () => refreshTokenStore.close());
+
   return app;
 }

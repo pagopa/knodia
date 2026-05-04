@@ -1,5 +1,9 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
-import { Algorithm } from "@knodia/common-models/algorithms";
+import {
+  Algorithm,
+  PublicKeyJwkES256,
+  PublicKeyJwkRS256,
+} from "@knodia/common-models/crypto";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
@@ -23,9 +27,11 @@ import {
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
-import { createPrivateKey, generateKeyPairSync } from "crypto";
-import { type JWTHeaderParameters, type JWTPayload, SignJWT } from "jose";
+import { type JWTHeaderParameters, type JWTPayload } from "jose";
+import { match } from "ts-pattern";
 import { zocker } from "zocker";
+
+import { generateKeySet, signJWT } from "./cryptoUtils.js";
 
 export function getMockAgreement({
   seed = 0,
@@ -153,33 +159,7 @@ export async function getMockClientAssertion(props?: {
   clientAssertionJWS: string;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
   publicKeyEncodedPem: string;
-  signClientAssertion: (args: {
-    clientAssertion: {
-      headers: JWTHeaderParameters;
-      payload: JWTPayload;
-    };
-    keySet: ReturnType<typeof generateKeySet>["keySet"];
-  }) => Promise<string>;
 }> {
-  function generateKeySet() {
-    const keySet = generateKeyPairSync("rsa", {
-      modulusLength: 2048,
-    });
-
-    const pemPublicKey = keySet.publicKey
-      .export({
-        format: "pem",
-        type: "spki",
-      })
-      .toString();
-
-    const publicKeyEncodedPem = Buffer.from(pemPublicKey).toString("base64");
-    return {
-      keySet,
-      publicKeyEncodedPem,
-    };
-  }
-
   const { keySet, publicKeyEncodedPem } = generateKeySet();
 
   const threeHourLater = new Date();
@@ -209,29 +189,8 @@ export async function getMockClientAssertion(props?: {
     ...props?.customHeader,
   };
 
-  async function signClientAssertion({
-    clientAssertion: { headers, payload },
-    keySet,
-  }: {
-    clientAssertion: {
-      headers: JWTHeaderParameters;
-      payload: JWTPayload;
-    };
-    keySet: ReturnType<typeof generateKeySet>["keySet"];
-  }): Promise<string> {
-    const pemPrivateKey = keySet.privateKey.export({
-      format: "pem",
-      type: "pkcs8",
-    });
-
-    const privateKey = createPrivateKey(pemPrivateKey);
-    return await new SignJWT(payload)
-      .setProtectedHeader(headers)
-      .sign(privateKey);
-  }
-
-  const clientAssertionJWS = await signClientAssertion({
-    clientAssertion: { headers, payload: actualPayload },
+  const clientAssertionJWS = await signJWT({
+    jwt: { headers, payload: actualPayload },
     keySet,
   });
 
@@ -243,7 +202,6 @@ export async function getMockClientAssertion(props?: {
     clientAssertionJWS,
     keySet,
     publicKeyEncodedPem,
-    signClientAssertion,
   };
 }
 
@@ -251,6 +209,60 @@ export function getMockConsumerKeychainPurpose(
   seed = 0,
 ): ConsumerKeychainPurpose {
   return zocker(ConsumerKeychainPurpose).setSeed(seed).generate();
+}
+
+export async function getMockDpopProof({
+  alg = Algorithm.enum.ES256,
+  props,
+}: {
+  alg?: Algorithm;
+  props?: {
+    customHeader?: Record<string, unknown>;
+    customPayload?: Record<string, unknown>;
+  };
+} = {}): Promise<{
+  dpopProofJWS: string;
+  dpopProofJWT: {
+    headers: JWTHeaderParameters;
+    payload: JWTPayload;
+  };
+  keySet: ReturnType<typeof generateKeySet>["keySet"];
+}> {
+  const { keySet, publicKeyJwk } = generateKeySet(alg);
+
+  const payload: JWTPayload = {
+    htm: "POST",
+    htu: "https://test.knodia.org/token",
+    iat: dateToSeconds(new Date()),
+    jti: generateId(),
+    ...props?.customPayload,
+  };
+
+  const jwk = match(alg)
+    .with(Algorithm.enum.ES256, () => PublicKeyJwkES256.parse(publicKeyJwk))
+    .with(Algorithm.enum.RS256, () => PublicKeyJwkRS256.parse(publicKeyJwk))
+    .exhaustive();
+
+  const headers: JWTHeaderParameters = {
+    alg,
+    jwk,
+    typ: "dpop+jwt",
+    ...props?.customHeader,
+  };
+
+  const dpopJWS = await signJWT({
+    jwt: { headers, payload },
+    keySet,
+  });
+
+  return {
+    dpopProofJWS: dpopJWS,
+    dpopProofJWT: {
+      headers,
+      payload,
+    },
+    keySet,
+  };
 }
 
 export function getMockPurpose(seed = 0): Purpose {

@@ -22,11 +22,14 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "catalog:",
     "@fastify/formbody": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/crypto": "workspace:*",
+    "@knodia/db-jti-replay-store": "workspace:*",
     "@knodia/db-readmodel-agreement": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",

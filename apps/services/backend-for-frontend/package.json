@@ -30,6 +30,7 @@
     "@knodia/agreement-process-client": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-jti-replay-store": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/eservice-template-models": "workspace:*",
