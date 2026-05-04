@@ -1,11 +1,10 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import {
   Banner,
   Button,
   Divider,
   FileUpload,
   TextField,
-  toastQueue,
 } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
@@ -16,12 +15,11 @@ import {
   useDocsStepForm,
   useEServiceWizardContext,
 } from "@/features/e-service/contexts/useEServiceFormContext";
-import { client } from "@/libs/axios";
-import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { DocumentRecap } from "../../DocumentRecap";
 import { RemovableDocumentRecap } from "../components/RemovableDocumentRecap";
+import { downloadTemplateInterface } from "../utils";
 
 type DocsStepForm = ReturnType<typeof useDocsStepForm>;
 
@@ -238,28 +236,6 @@ function TemplateDocsStepContent({
 }) {
   const interfaceDocument = template.eserviceFields.interfaceDocument;
 
-  const handleInterfaceDownload = async () => {
-    try {
-      const response = await bffApi.downloadEserviceTemplateInterface({
-        client,
-        path: { eserviceTemplateId: template.id },
-        query: { knodeId: template.knodeId },
-      });
-
-      downloadResponseAsFile(
-        response.data,
-        interfaceDocument.name,
-        response.headers["content-type"],
-      );
-    } catch {
-      toastQueue.add({
-        description: "Retry later",
-        kind: "error",
-        title: "Download failed",
-      });
-    }
-  };
-
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -270,7 +246,13 @@ function TemplateDocsStepContent({
 
         <DocumentRecap
           name={interfaceDocument.prettyName.en}
-          onDownload={handleInterfaceDownload}
+          onDownload={() =>
+            downloadTemplateInterface(
+              template.id,
+              template.knodeId,
+              interfaceDocument.name,
+            )
+          }
           showDownloadButton
         />
       </div>

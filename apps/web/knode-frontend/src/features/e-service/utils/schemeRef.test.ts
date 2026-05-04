@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  formatSchemeRefLabels,
   parseSchemeRefKeys,
   toSchemeRefKey,
   toSchemeRefOptions,
@@ -40,49 +39,6 @@ describe("toSchemeRefKey", () => {
     const ref = { code: "bar", scheme: "vc_foo" };
     const [parsed] = parseSchemeRefKeys([toSchemeRefKey(ref)]);
     expect(parsed).toEqual(ref);
-  });
-});
-
-describe("formatSchemeRefLabels", () => {
-  const data = {
-    vc_territorial_units: {
-      nuts1: "NUTS 1",
-      nuts2: "NUTS 2",
-      nuts3: "NUTS 3",
-    },
-  };
-
-  it("formats a disjunction with two refs", () => {
-    expect(
-      formatSchemeRefLabels(
-        [
-          { code: "nuts3", scheme: "vc_territorial_units" },
-          { code: "nuts2", scheme: "vc_territorial_units" },
-        ],
-        data,
-        { type: "disjunction" },
-      ),
-    ).toBe("NUTS 3 or NUTS 2");
-  });
-
-  it("formats a disjunction with three refs", () => {
-    expect(
-      formatSchemeRefLabels(
-        [
-          { code: "nuts3", scheme: "vc_territorial_units" },
-          { code: "nuts2", scheme: "vc_territorial_units" },
-          { code: "nuts1", scheme: "vc_territorial_units" },
-        ],
-        data,
-        { type: "disjunction" },
-      ),
-    ).toBe("NUTS 3, NUTS 2 or NUTS 1");
-  });
-
-  it("falls back to the code when the ref is unknown", () => {
-    expect(
-      formatSchemeRefLabels([{ code: "unknown", scheme: "vc_example" }], data),
-    ).toBe("unknown");
   });
 });
 

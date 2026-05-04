@@ -35,7 +35,6 @@ export interface EServiceWizardContextValue {
   updateDocsStep: (data: DocsStepData | TemplateDocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;
   updateTechnicalStep: (data: TechnicalStepData) => void;
-  updateTemplateDocsStep: (data: TemplateDocsStepData) => void;
 }
 
 export const EServiceWizardContext =

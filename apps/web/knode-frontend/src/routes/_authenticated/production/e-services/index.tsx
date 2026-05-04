@@ -68,19 +68,23 @@ function RouteComponent() {
               <MenuTrigger>
                 <Button hierarchy="brand">Create E-Service</Button>
 
-                <Menu
-                  onAction={(key) => {
-                    if (key === "scratch") {
+                <Menu>
+                  <MenuItem
+                    onAction={() => {
                       navigate({ to: "/production/e-services/new" });
-                    }
-
-                    if (key === "template") {
-                      navigate({ to: "/production/e-services/from-template" });
-                    }
-                  }}
-                >
-                  <MenuItem id="scratch">From scratch</MenuItem>
-                  <MenuItem id="template">From template</MenuItem>
+                    }}
+                  >
+                    From scratch
+                  </MenuItem>
+                  <MenuItem
+                    onAction={() => {
+                      navigate({
+                        to: "/production/e-services/from-template",
+                      });
+                    }}
+                  >
+                    From template
+                  </MenuItem>
                 </Menu>
               </MenuTrigger>
             )}

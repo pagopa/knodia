@@ -19,7 +19,7 @@ import {
 } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import { DefinedByTemplateReadOnlyField } from "../components/DefinedByTemplateReadOnlyField";
+import { DefinedByTemplateIconTooltip } from "../components/DefinedByTemplateIconTooltip";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 
@@ -146,9 +146,12 @@ function DataModeSection({
 
           if (isDefinedByTemplate) {
             return (
-              <DefinedByTemplateReadOnlyField
+              <TextField
+                endIcon={<DefinedByTemplateIconTooltip />}
+                isReadOnly
                 label="Data mode"
                 name={field.name}
+                size="lg"
                 value={labels[value]}
               />
             );

@@ -24,6 +24,7 @@ import {
   parseSchemeRefKey,
   toSchemeRefOptions,
 } from "@/features/e-service/utils/schemeRef";
+import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { requireRole } from "@/libs/routeGuards";
 
 const knodeOptions = KnodeId.options.map((id) => ({ id, label: id }));
@@ -109,6 +110,9 @@ function RouteComponent() {
 
   const { knodeId, templateId } = Route.useSearch();
 
+  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
+    useLeaveConfirmModal(onClose);
+
   const { data: templateDetails, isLoading: isLoadingTemplateDetails } =
     useQuery({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -123,15 +127,23 @@ function RouteComponent() {
   };
 
   return (
-    <CreateEserviceFullPageModal onClose={onClose}>
-      {!templateId && <TemplatesListSelector onSelect={handleSelectTemplate} />}
-      {templateId && isLoadingTemplateDetails && (
-        <Loader className="mx-auto my-20" label="Loading template..." />
-      )}
-      {templateId && templateDetails && (
-        <CreateEServiceForm onLeave={onClose} template={templateDetails} />
-      )}
-    </CreateEserviceFullPageModal>
+    <>
+      <CreateEserviceFullPageModal onClose={handleShowLeaveConfirm}>
+        {!templateId && (
+          <TemplatesListSelector onSelect={handleSelectTemplate} />
+        )}
+        {templateId && isLoadingTemplateDetails && (
+          <Loader className="mx-auto my-20" label="Loading template..." />
+        )}
+        {templateId && templateDetails && (
+          <CreateEServiceForm
+            onLeave={handleShowLeaveConfirm}
+            template={templateDetails}
+          />
+        )}
+      </CreateEserviceFullPageModal>
+      {leaveConfirmModal}
+    </>
   );
 }
 

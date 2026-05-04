@@ -1,6 +1,6 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import { getCategory } from "@knodia/category-models";
-import { Banner, Chip, Divider, toastQueue } from "@knodia/ui-kit/ui";
+import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
@@ -18,10 +18,11 @@ import {
   eserviceFromScratchFormSchema,
   eserviceFromTemplateFormSchema,
 } from "@/features/e-service/types/eserviceCreateForm";
-import { client } from "@/libs/axios";
-import { downloadFile, downloadResponseAsFile } from "@/utils/downloadFile";
+import { downloadFile } from "@/utils/downloadFile";
+import { formatNumber } from "@/utils/formatters";
 
 import { DocumentRecap } from "../../DocumentRecap";
+import { downloadTemplateInterface } from "../utils";
 
 export function RecapStep() {
   const { data, template } = useEServiceWizardContext();
@@ -232,9 +233,7 @@ function TechnicalDetailsSection({
 
       <FieldGroup title="Access token settings">
         <GenericInfoCard label="Duration">
-          {Number.isFinite(data.accessTokenDuration)
-            ? `${data.accessTokenDuration} minutes`
-            : "-"}
+          {`${formatNumber(data.accessTokenDuration)} minutes`}
         </GenericInfoCard>
         <GenericInfoCard label="Audience">
           {data.accessTokenAudience || "-"}
@@ -246,16 +245,10 @@ function TechnicalDetailsSection({
 
       <FieldGroup title="Max API calls per day">
         <GenericInfoCard label="Per Knode">
-          {Number.isFinite(data.maxDailyCallsPerKnode)
-            ? new Intl.NumberFormat("it-IT").format(data.maxDailyCallsPerKnode)
-            : "-"}
+          {formatNumber(data.maxDailyCallsPerKnode)}
         </GenericInfoCard>
         <GenericInfoCard label="Per consumer">
-          {Number.isFinite(data.maxDailyCallsPerConsumer)
-            ? new Intl.NumberFormat("it-IT").format(
-                data.maxDailyCallsPerConsumer,
-              )
-            : "-"}
+          {formatNumber(data.maxDailyCallsPerConsumer)}
         </GenericInfoCard>
       </FieldGroup>
 
@@ -283,35 +276,19 @@ function TemplateDocumentsSection({
 }) {
   const interfaceDocument = template.eserviceFields.interfaceDocument;
 
-  const handleInterfaceDownload = async () => {
-    try {
-      const response = await bffApi.downloadEserviceTemplateInterface({
-        client,
-        path: { eserviceTemplateId: template.id },
-        query: { knodeId: template.knodeId },
-      });
-
-      downloadResponseAsFile(
-        response.data,
-        interfaceDocument.name,
-        response.headers["content-type"],
-      );
-    } catch {
-      toastQueue.add({
-        description: "Retry later",
-        kind: "error",
-        title: "Download failed",
-      });
-    }
-  };
-
   return (
     <>
       <SectionTitle>Documents</SectionTitle>
 
       <DocumentRecap
         name={interfaceDocument.prettyName.en}
-        onDownload={handleInterfaceDownload}
+        onDownload={() =>
+          downloadTemplateInterface(
+            template.id,
+            template.knodeId,
+            interfaceDocument.name,
+          )
+        }
         showDownloadButton
       />
 

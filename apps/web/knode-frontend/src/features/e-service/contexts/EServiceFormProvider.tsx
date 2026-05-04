@@ -50,13 +50,6 @@ export function EServiceFormProvider({
     [],
   );
 
-  const updateTemplateDocsStep = useCallback(
-    (stepData: TemplateDocsStepData) => {
-      setData((prev) => ({ ...prev, ...stepData }));
-    },
-    [],
-  );
-
   const updateAttributesStep = useCallback((stepData: AttributesStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
@@ -69,7 +62,6 @@ export function EServiceFormProvider({
       updateDocsStep,
       updateGeneralStep,
       updateTechnicalStep,
-      updateTemplateDocsStep,
     }),
     [
       data,
@@ -77,7 +69,6 @@ export function EServiceFormProvider({
       updateAttributesStep,
       updateDocsStep,
       updateGeneralStep,
-      updateTemplateDocsStep,
       updateTechnicalStep,
     ],
   );

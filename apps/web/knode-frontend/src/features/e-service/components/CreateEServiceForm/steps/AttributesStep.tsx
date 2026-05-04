@@ -10,14 +10,13 @@ import {
   useEServiceWizardContext,
 } from "@/features/e-service/contexts/useEServiceFormContext";
 import {
-  formatSchemeRefLabels,
   parseSchemeRefKeys,
   renderSchemeRefItems,
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import { DefinedByTemplateReadOnlyField } from "../components/DefinedByTemplateReadOnlyField";
+import { DefinedByTemplateIconTooltip } from "../components/DefinedByTemplateIconTooltip";
 
 type AttributesStepForm = ReturnType<typeof useAttributesStepForm>;
 
@@ -135,24 +134,18 @@ function AttributesField({
       {(groupField) => {
         const value = groupField.state.value ?? [];
 
-        if (areDefinedByTemplate) {
-          return (
-            <DefinedByTemplateReadOnlyField
-              label="Attributes"
-              name={groupField.name}
-              value={formatSchemeRefLabels(value, attributes, {
-                type: "disjunction",
-              })}
-            />
-          );
-        }
-
         return (
           <Select
             className="flex-1"
+            endIcon={
+              areDefinedByTemplate ? (
+                <DefinedByTemplateIconTooltip />
+              ) : undefined
+            }
             errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
             id={`${groupField.name}-${groupIndex}`}
             isInvalid={!groupField.state.meta.isValid}
+            isReadOnly={areDefinedByTemplate}
             isRequired
             label="Attributes"
             name={groupField.name}

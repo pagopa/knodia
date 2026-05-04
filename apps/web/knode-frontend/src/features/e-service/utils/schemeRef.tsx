@@ -7,21 +7,6 @@ import type { SchemeRef } from "@/types/schemeRef";
 const SEPARATOR = "$";
 type SchemeRefDictionary = Record<string, Record<string, string>>;
 
-export function formatSchemeRefLabels(
-  refs: SchemeRef[],
-  data: SchemeRefDictionary,
-  { type = "conjunction" }: { type?: "conjunction" | "disjunction" } = {},
-) {
-  const labels = refs.map((ref) => data[ref.scheme]?.[ref.code] ?? ref.code);
-  const separator = type === "disjunction" ? "or" : "and";
-
-  if (labels.length <= 2) {
-    return labels.join(` ${separator} `);
-  }
-
-  return `${labels.slice(0, -1).join(", ")} ${separator} ${labels.at(-1)}`;
-}
-
 export function parseSchemeRefKey(key: string): SchemeRef {
   const [scheme = "", code = ""] = key.split(SEPARATOR);
   return { code, scheme };
