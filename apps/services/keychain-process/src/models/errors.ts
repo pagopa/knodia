@@ -116,6 +116,7 @@ export function keyNotFoundInKeychain(
   });
 }
 
+/** @knipignore */
 export function knodeApiKeychainNotFound(id: KnodeApiKeychainId) {
   return createApiError<ErrorCodes>({
     code: "KNODE_API_KEYCHAIN_NOT_FOUND",
