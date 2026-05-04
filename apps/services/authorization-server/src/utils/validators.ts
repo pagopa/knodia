@@ -5,27 +5,32 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
+import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
-import { type Algorithm } from "@knodia/common-models/algorithms";
+import { type Algorithm } from "@knodia/common-models/crypto";
+import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
+import { type EserviceVersion } from "@knodia/eservice-models";
 import {
-  EserviceAccessTokenType,
-  type EserviceVersion,
-} from "@knodia/eservice-models";
-import {
-  createPublicKey,
-  decodeBase64Pem,
-} from "@knodia/fastify-zod-api-commons/crypto";
-import { ApiError } from "@knodia/fastify-zod-api-commons/models";
+  ApiError,
+  unauthorizedError,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 import { AxiosError } from "axios";
-import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import {
+  decodeJwt,
+  decodeProtectedHeader,
+  importJWK,
+  type JWTPayload,
+  jwtVerify,
+} from "jose";
+import {
+  JOSENotSupported,
   JWSInvalid,
   JWSSignatureVerificationFailed,
   JWTClaimValidationFailed,
@@ -38,20 +43,30 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { ClientAssertion } from "../models/clientAssertion.ts";
 import {
+  EXPECTED_CLIENT_ASSERTION_TYP,
+  EXPECTED_DPOP_PROOF_TYP,
+} from "../models/constants.ts";
+import { DpopProof } from "../models/dpop.ts";
+import {
+  accessTokenTypeMismatch,
   agreementNotActive,
   clientAssertionClaimsValidationError,
   clientAssertionExpired,
   consumerKnodeVerificationDataNotFound,
   consumerMissingRequiredAttributes,
+  dpopClaimsValidationError,
+  dpopProofExpired,
   eserviceVersionNotActive,
-  eserviceVersionNotUsingBearerToken,
+  invalidClientAssertionJWS,
   invalidClientAssertionSignature,
-  jsonWebTokenError,
+  invalidDpopProofJWS,
+  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
   unexpectedConsumerKnodeVerificationDataRetrievalError,
+  unexpectedDpopProofSignatureVerificationError,
 } from "../models/errors.ts";
 import {
   retrieveAgreement,
@@ -59,9 +74,27 @@ import {
   retrievePurpose,
 } from "./readmodelUtils.ts";
 
+export async function assertDpopProofNotReplayed(
+  dpopProofJWT: DpopProof,
+  dpopProofMaxTokenAgeSeconds: number,
+  dpopProofStore: JtiReplayStore,
+  jwtClockToleranceSeconds: number,
+) {
+  const firstUse = await dpopProofStore.consume(
+    dpopProofJWT.payload.jti,
+    dpopProofJWT.payload.iat +
+      dpopProofMaxTokenAgeSeconds +
+      jwtClockToleranceSeconds,
+  );
+  if (!firstUse) {
+    throw unauthorizedError("DPoP proof already used");
+  }
+}
+
 export async function validatePlatformObjects(
   purposeId: PurposeId,
   consumerAttributes: k2kGatewayApi.Attribute[],
+  dpopProofJWT: JWTPayload | undefined,
   readmodelService: ReadmodelService,
 ) {
   const { data: purpose } = await retrievePurpose(purposeId, readmodelService);
@@ -76,7 +109,7 @@ export async function validatePlatformObjects(
     readmodelService,
   );
 
-  assertEserviceVersionUsesBearerToken(eserviceVersion);
+  assertEserviceVersionUsesCorrectToken(eserviceVersion, dpopProofJWT);
   assertPlatformStatesAreActive(purpose, agreement, eserviceVersion);
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
@@ -100,7 +133,7 @@ export async function verifyClientAssertionSignature(
     consumerKeychainId: ConsumerKeychainId;
   },
   clientAssertionAcceptedAudiences: string[],
-  clientAssertionClockToleranceSeconds: number,
+  jwtClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
   k2kGatewayClient: K2K2GatewayApiClient,
   logger: FastifyBaseLogger,
@@ -144,11 +177,11 @@ export async function verifyClientAssertionSignature(
     await jwtVerify(clientAssertionJWS, verificationKey, {
       algorithms: [publicKey.algorithm],
       audience: clientAssertionAcceptedAudiences,
-      clockTolerance: clientAssertionClockToleranceSeconds,
+      clockTolerance: jwtClockToleranceSeconds,
       issuer: consumerKeychainId,
       maxTokenAge: clientAssertionMaxTokenAgeSeconds,
       subject: consumerKeychainId,
-      typ: "JWT",
+      typ: EXPECTED_CLIENT_ASSERTION_TYP,
     });
 
     return {
@@ -165,7 +198,9 @@ export async function verifyClientAssertionSignature(
       .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
         invalidClientAssertionSignature(),
       )
-      .with(P.instanceOf(JWSInvalid), (e) => jsonWebTokenError(e.message))
+      .with(P.instanceOf(JWSInvalid), (e) =>
+        invalidClientAssertionJWS(e.message),
+      )
       .with(P.instanceOf(ApiError), (e) => e)
       .with(P.instanceOf(AxiosError), (e) => {
         if (e.status === 404) {
@@ -175,6 +210,71 @@ export async function verifyClientAssertionSignature(
         }
       })
       .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
+  }
+}
+
+export async function verifyDpopProofSignature(
+  dpopProofJWS: string | undefined,
+  dpopProofMaxTokenAgeSeconds: number,
+  jwtClockToleranceSeconds: number,
+  expectedDpopProofHtu: string,
+  logger: FastifyBaseLogger,
+): Promise<DpopProof | undefined> {
+  if (!dpopProofJWS) {
+    return undefined;
+  }
+
+  try {
+    const protectedHeader = decodeProtectedHeader(dpopProofJWS);
+    const payload = decodeJwt(dpopProofJWS);
+
+    logger.info(
+      `Verifying DPoP Proof (JTI=${payload.jti}) signature with algorithm ${protectedHeader.alg}`,
+    );
+
+    const dpopProof = DpopProof.parse({
+      header: protectedHeader,
+      payload,
+    });
+    const {
+      header: { alg: dpopProofAlg, jwk },
+      payload: { htu },
+    } = dpopProof;
+
+    assertDpopProofHtuIsValid(htu, expectedDpopProofHtu);
+
+    const verificationKey = await importJWK(jwk, dpopProofAlg);
+
+    await jwtVerify(dpopProofJWS, verificationKey, {
+      algorithms: [dpopProofAlg],
+      clockTolerance: jwtClockToleranceSeconds,
+      maxTokenAge: dpopProofMaxTokenAgeSeconds,
+      typ: EXPECTED_DPOP_PROOF_TYP,
+    });
+
+    return dpopProof;
+  } catch (error) {
+    throw match(error)
+      .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
+      .with(
+        P.union(
+          P.instanceOf(JWTClaimValidationFailed),
+          P.instanceOf(ZodError),
+          P.instanceOf(JOSENotSupported),
+        ),
+        (e) => dpopClaimsValidationError(e),
+      )
+      .with(
+        P.instanceOf(DOMException),
+        (e) => e.name === "DataError",
+        (e) => dpopClaimsValidationError(e),
+      )
+      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
+        invalidDpopProofSignature(),
+      )
+      .with(P.instanceOf(JWSInvalid), (e) => invalidDpopProofJWS(e.message))
+      .with(P.instanceOf(ApiError), (e) => e)
+      .otherwise((e) => unexpectedDpopProofSignatureVerificationError(e));
   }
 }
 
@@ -191,12 +291,44 @@ function assertConsumerAttributesMeetEserviceRequirements(
   }
 }
 
-function assertEserviceVersionUsesBearerToken(
-  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
-) {
-  if (eserviceVersion.accessTokenType !== EserviceAccessTokenType.enum.Bearer) {
-    throw eserviceVersionNotUsingBearerToken(eserviceVersion);
+function assertDpopProofHtuIsValid(htu: string, expectedDpopProofHtu: string) {
+  const normalizeHtu = (raw: string) => {
+    const url = new URL(raw);
+    return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/, "")}`;
+  };
+
+  const errorMessage = `Invalid 'htu' claim in DPoP proof. Expected '${expectedDpopProofHtu}' but got '${htu}'`;
+  let normalizedHtu: string;
+  let normalizedExpectedHtu: string;
+  try {
+    normalizedHtu = normalizeHtu(htu);
+    normalizedExpectedHtu = normalizeHtu(expectedDpopProofHtu);
+  } catch (e) {
+    throw dpopClaimsValidationError(
+      new Error(e instanceof Error ? e.message : errorMessage),
+    );
   }
+
+  if (normalizedHtu !== normalizedExpectedHtu)
+    throw dpopClaimsValidationError(new Error(errorMessage));
+}
+
+function assertEserviceVersionUsesCorrectToken(
+  eserviceVersion: Pick<EserviceVersion, "accessTokenType" | "id">,
+  dpopProofJWT: JWTPayload | undefined,
+) {
+  match(eserviceVersion.accessTokenType)
+    .with("Bearer", () => {
+      if (dpopProofJWT) {
+        throw accessTokenTypeMismatch(eserviceVersion, true);
+      }
+    })
+    .with("DPoP", () => {
+      if (!dpopProofJWT) {
+        throw accessTokenTypeMismatch(eserviceVersion, false);
+      }
+    })
+    .exhaustive();
 }
 
 function assertPlatformStatesAreActive(

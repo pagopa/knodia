@@ -28,12 +28,9 @@ export function toExpectAPI_Eservice(
     updatedAt: Date | string;
   },
 ) {
-  const toISOString = (value: Date | string) =>
-    value instanceof Date ? value.toISOString() : value;
-
   return {
     categories: expect.arrayContaining(eservice.categories),
-    createdAt: toISOString(eservice.createdAt),
+    createdAt: toExpectIsoOrNull(eservice.createdAt),
     description: eservice.description,
     id: unsafeBrandId(eservice.id),
     isConsumerOperatorIdentificationRequired:
@@ -43,7 +40,7 @@ export function toExpectAPI_Eservice(
     name: eservice.name,
     producerId: unsafeBrandId(eservice.producerId),
     ...(eservice.template ? { template: eservice.template } : {}),
-    updatedAt: toISOString(eservice.updatedAt),
+    updatedAt: toExpectIsoOrNull(eservice.updatedAt),
   };
 }
 
@@ -98,6 +95,11 @@ export function toExpectEservice(eservice: Eservice) {
       eservice.versions.map(toExpectEserviceVersion),
     ),
   };
+}
+
+export function toExpectIsoOrNull(value: Date | null | string) {
+  if (value === null) return null;
+  return typeof value === "string" ? value : value.toISOString();
 }
 
 export function toExpectOrganization(organization: Organization) {

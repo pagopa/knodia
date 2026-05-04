@@ -9,12 +9,15 @@
     "build:storybook": "storybook build"
   },
   "exports": {
-    "./themes/node1.css": "./src/themes/node1.css",
+    "./themes/lynx.css": "./src/themes/lynx.css",
+    "./themes/orion.css": "./src/themes/orion.css",
     "./ui": "./src/components/ui/index.ts",
     "./layout": "./src/components/layout/index.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
+    "@fontsource-variable/petrona": "catalog:",
+    "@fontsource-variable/source-serif-4": "catalog:",
     "@phosphor-icons/react": "catalog:",
     "@react-aria/toast": "catalog:",
     "@react-stately/toast": "catalog:",

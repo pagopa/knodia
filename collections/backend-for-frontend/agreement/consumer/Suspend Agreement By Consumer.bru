@@ -1,0 +1,23 @@
+meta {
+  name: Suspend Agreement By Consumer
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/agreements/:agreementId/suspend?knodeId={{other-knode-id}}
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
