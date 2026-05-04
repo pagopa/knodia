@@ -778,7 +778,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
         const sortedKeychains = Array.from(dedupedKeychains.values()).sort(
           (a, b) =>
-            a.name.en.localeCompare(b.name.en) || a.id.localeCompare(b.id),
+            b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id),
         );
 
         const pageSlice = sortedKeychains.slice(offset, offset + limit);
