@@ -22,7 +22,7 @@ import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDail
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
-import { useArchiveConsumerPurpose } from "@/features/purpose/hooks/useArchiveConsumerPurpose";
+import { useArchivePurposeByConsumer } from "@/features/purpose/hooks/useArchivePurposeByConsumer";
 import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
 import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
 
@@ -46,25 +46,23 @@ export function ConsumerPurposeDetail({
     placeholderData: keepPreviousData,
   });
 
+  const headerActions = isArchived ? (
+    <PurposeStateChip archivedAt={purpose.updatedAt} state={purpose.state} />
+  ) : (
+    canManagePurpose && (
+      <PurposeActionButton knodeId={knodeId} purpose={purpose} />
+    )
+  );
+  const headerStatusChip = isArchived ? undefined : (
+    <PurposeStateChip state={purpose.state} />
+  );
+
   return (
     <>
       <PageHeader
-        actions={
-          isArchived ? (
-            <PurposeStateChip
-              archivedAt={purpose.updatedAt}
-              state={purpose.state}
-            />
-          ) : (
-            canManagePurpose && (
-              <PurposeActionButton knodeId={knodeId} purpose={purpose} />
-            )
-          )
-        }
+        actions={headerActions}
         description={purpose.description.en}
-        resourceStatusChip={
-          isArchived ? undefined : <PurposeStateChip state={purpose.state} />
-        }
+        resourceStatusChip={headerStatusChip}
         title={purpose.name.en}
       />
 
@@ -137,7 +135,7 @@ export function ConsumerPurposeDetail({
         title="Keychains"
       >
         <LinkedConsumerKeychainsTable
-          canManagePurpose={canManagePurpose}
+          canManagePurpose={canManagePurpose && !isArchived}
           isLoading={!data}
           keychains={data?.results ?? []}
           knodeId={knodeId}
@@ -163,7 +161,7 @@ function ArchiveConsumerPurposeButton({
   purposeId: PurposeId;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { archivePurpose, isError, isPending } = useArchiveConsumerPurpose(
+  const { archivePurpose, isError, isPending } = useArchivePurposeByConsumer(
     purposeId,
     knodeId,
   );
@@ -216,16 +214,7 @@ function PurposeActionButton({
       <SuspendPurposeByConsumerButton knodeId={knodeId} purposeId={purposeId} />
     ))
     .with("Suspended", () => (
-      <>
-        {purpose.suspendedByConsumerAt !== null &&
-        purpose.suspendedByProducerAt === null ? (
-          <ReactivatePurposeByConsumerButton
-            knodeId={knodeId}
-            purposeId={purposeId}
-          />
-        ) : null}
-        <ArchiveConsumerPurposeButton knodeId={knodeId} purposeId={purposeId} />
-      </>
+      <SuspendedConsumerActions knodeId={knodeId} purpose={purpose} />
     ))
     .with("Archived", () => null)
     .exhaustive();
@@ -253,6 +242,31 @@ function ReactivatePurposeByConsumerButton({
     >
       Reactivate
     </Button>
+  );
+}
+
+function SuspendedConsumerActions({
+  knodeId,
+  purpose,
+}: {
+  knodeId: KnodeId;
+  purpose: bffApi.PurposeDetails;
+}) {
+  const purposeId = unsafeBrandId<PurposeId>(purpose.id);
+  const canReactivate =
+    purpose.suspendedByConsumerAt !== null &&
+    purpose.suspendedByProducerAt === null;
+
+  return (
+    <>
+      {canReactivate && (
+        <ReactivatePurposeByConsumerButton
+          knodeId={knodeId}
+          purposeId={purposeId}
+        />
+      )}
+      <ArchiveConsumerPurposeButton knodeId={knodeId} purposeId={purposeId} />
+    </>
   );
 }
 
