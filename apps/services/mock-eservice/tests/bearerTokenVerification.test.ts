@@ -84,7 +84,7 @@ async function signToken(
   return jwt.sign(privateKey);
 }
 
-describe("mock-eservice access-token verification", () => {
+describe("mock-eservice Bearer access-token verification", () => {
   it("returns 200 for a valid access token", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
