@@ -59,6 +59,10 @@ export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
 export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Returns Consumer Keychains linked to any Purpose belonging to the given E-service. Mutually exclusive with `purpose`.",
+    }),
     purpose: z
       .string()
       .refine((value) => {
@@ -73,8 +77,10 @@ export const API_ConsumerKeychainsQueryParams =
       .optional()
       .meta({
         description:
-          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.",
       }),
+  }).refine((q) => !(q.purpose && q.eserviceId), {
+    message: "`purpose` and `eserviceId` are mutually exclusive",
   });
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
