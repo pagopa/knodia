@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses } from './types.gen.ts';
+import type { ArchivePurposeData, ArchivePurposeErrors, ArchivePurposeResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -136,5 +136,17 @@ export const reactivatePurposeByProducer = <ThrowOnError extends boolean = true>
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/purposes/{purposeId}/reactivateByProducer',
+    ...options
+});
+
+/**
+ * Archive Purpose
+ *
+ * Archive a Purpose
+ */
+export const archivePurpose = <ThrowOnError extends boolean = true>(options: Options<ArchivePurposeData, ThrowOnError>) => (options.client ?? client).post<ArchivePurposeResponses, ArchivePurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/{purposeId}/archive',
     ...options
 });

@@ -12,13 +12,10 @@ import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
-import { useReactivateProducerAgreement } from "../../hooks/useReactivateProducerAgreement";
-import { useSuspendProducerAgreement } from "../../hooks/useSuspendProducerAgreement";
+import { useReactivateAgreementByProducer } from "../../hooks/useReactivateAgreementByProducer";
+import { useSuspendAgreementByProducer } from "../../hooks/useSuspendAgreementByProducer";
 import { AgreementStateChip } from "../AgreementStateChip";
-import {
-  ProducerSuspendAgreementBody,
-  SuspendAgreementModal,
-} from "../SuspendAgreementModal";
+import { SuspendAgreementModal } from "../SuspendAgreementModal";
 import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
@@ -93,13 +90,13 @@ function AgreementActionButton({
 }) {
   return match(agreement.state)
     .with("Active", () => (
-      <SuspendProducerAgreementButton
+      <SuspendAgreementByProducerButton
         agreementId={unsafeBrandId<AgreementId>(agreement.id)}
       />
     ))
     .with("Suspended", () =>
       agreement.suspendedByProducerAt !== null ? (
-        <ReactivateProducerAgreementButton
+        <ReactivateAgreementByProducerButton
           agreementId={unsafeBrandId<AgreementId>(agreement.id)}
         />
       ) : null,
@@ -115,7 +112,7 @@ function ConsumerSuspendedBanner({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { isError, isPending, suspendAgreement } =
-    useSuspendProducerAgreement(agreementId);
+    useSuspendAgreementByProducer(agreementId);
 
   return (
     <>
@@ -137,20 +134,19 @@ function ConsumerSuspendedBanner({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="producer"
+      />
     </>
   );
 }
 
-function ReactivateProducerAgreementButton({
+function ReactivateAgreementByProducerButton({
   agreementId,
 }: {
   agreementId: AgreementId;
 }) {
   const { isPending, reactivateAgreement } =
-    useReactivateProducerAgreement(agreementId);
+    useReactivateAgreementByProducer(agreementId);
 
   return (
     <Button
@@ -165,14 +161,14 @@ function ReactivateProducerAgreementButton({
   );
 }
 
-function SuspendProducerAgreementButton({
+function SuspendAgreementByProducerButton({
   agreementId,
 }: {
   agreementId: AgreementId;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { isError, isPending, suspendAgreement } =
-    useSuspendProducerAgreement(agreementId);
+    useSuspendAgreementByProducer(agreementId);
 
   return (
     <>
@@ -190,9 +186,8 @@ function SuspendProducerAgreementButton({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ProducerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="producer"
+      />
     </>
   );
 }
