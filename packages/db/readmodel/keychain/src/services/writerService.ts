@@ -22,7 +22,7 @@ import {
 import {
   splitConsumerKeychainIntoObjectsSQL,
   toConsumerKeychainPurposeSQL,
-} from "../converters/splitters.ts";
+} from "../converters/consumerKeychainSplitters.ts";
 import { knodeApiKeychainWriterServiceBuilder } from "./knodeApiKeychainWriterService.ts";
 
 export type KeychainWriterService = ReturnType<
