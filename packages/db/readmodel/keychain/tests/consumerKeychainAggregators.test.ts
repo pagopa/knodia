@@ -1,6 +1,9 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { ConsumerKeychain } from "@knodia/keychain-models";
 
+import {
+  type ConsumerKeychain,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
 import {
   getMockConsumerKeychain,
   toExpectConsumerKeychain,
@@ -10,9 +13,11 @@ import { describe, expect, it } from "vitest";
 import {
   aggregateConsumerKeychain,
   aggregateConsumerKeychains,
-} from "../src/converters/aggregators.ts";
-import { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/splitters.ts";
-import { createConsumerKeychainAggregatorInput } from "./utils.ts";
+  aggregateFlatConsumerKeychain,
+  aggregateFlatConsumerKeychains,
+} from "../src/converters/consumerKeychainAggregators.ts";
+import { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/consumerKeychainSplitters.ts";
+import { createConsumerKeychainAggregatorInput } from "./consumerKeychainUtils.ts";
 
 describe("Consumer keychain aggregators", () => {
   it("should convert Consumer keychain SQL objects into a Consumer keychain business object", () => {
@@ -74,6 +79,71 @@ describe("Consumer keychain aggregators", () => {
         },
         {
           data: toExpectConsumerKeychain(consumerKeychain2.data),
+          metadata: consumerKeychain2.metadata,
+        },
+      ]),
+    );
+  });
+
+  it("should convert Consumer keychain SQL objects into a flat Consumer keychain business object", () => {
+    const consumerKeychain: WithMetadata<ConsumerKeychain> = {
+      data: getMockConsumerKeychain(),
+      metadata: {
+        version: 1,
+      },
+    };
+
+    const consumerKeychainSQLObjects = splitConsumerKeychainIntoObjectsSQL(
+      consumerKeychain.data,
+      consumerKeychain.metadata.version,
+    );
+
+    const aggregated = aggregateFlatConsumerKeychain(
+      createConsumerKeychainAggregatorInput(consumerKeychainSQLObjects),
+    );
+
+    expect(aggregated).toEqual({
+      data: FlatConsumerKeychain.parse(consumerKeychain.data),
+      metadata: consumerKeychain.metadata,
+    });
+  });
+
+  it("should convert Consumer keychain SQL objects into flat Consumer keychain business objects", () => {
+    const consumerKeychain1: WithMetadata<ConsumerKeychain> = {
+      data: getMockConsumerKeychain(),
+      metadata: {
+        version: 1,
+      },
+    };
+    const consumerKeychain2: WithMetadata<ConsumerKeychain> = {
+      data: getMockConsumerKeychain(1),
+      metadata: {
+        version: 1,
+      },
+    };
+
+    const sql1 = splitConsumerKeychainIntoObjectsSQL(
+      consumerKeychain1.data,
+      consumerKeychain1.metadata.version,
+    );
+    const sql2 = splitConsumerKeychainIntoObjectsSQL(
+      consumerKeychain2.data,
+      consumerKeychain2.metadata.version,
+    );
+
+    const aggregated = aggregateFlatConsumerKeychains([
+      ...createConsumerKeychainAggregatorInput(sql1),
+      ...createConsumerKeychainAggregatorInput(sql2),
+    ]);
+
+    expect(aggregated).toEqual(
+      expect.arrayContaining([
+        {
+          data: FlatConsumerKeychain.parse(consumerKeychain1.data),
+          metadata: consumerKeychain1.metadata,
+        },
+        {
+          data: FlatConsumerKeychain.parse(consumerKeychain2.data),
           metadata: consumerKeychain2.metadata,
         },
       ]),

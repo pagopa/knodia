@@ -43,7 +43,6 @@ export const aggregateFlatKnodeApiKeychain = (
   return buildFlatKnodeApiKeychain(toKnodeApiKeychainAggregator(queryRes));
 };
 
-/** @knipignore */
 export const aggregateFlatKnodeApiKeychains = (
   queryRes: KnodeApiKeychainAggregatorInput,
 ): WithMetadata<FlatKnodeApiKeychain>[] => {
