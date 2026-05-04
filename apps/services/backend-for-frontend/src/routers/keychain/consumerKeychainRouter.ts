@@ -711,20 +711,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: ownerId } = getUISessionAuthData(authData);
+      const { eserviceId, limit, offset, purpose } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       logger.info(
         { ownerId, requestQuery: req.query },
         `Getting Consumer Keychains with query parameters for owner ${ownerId}`,
       );
-
-      const { limit, offset, purpose } = req.query;
-      const headers = getKnodiaServiceHeaders(req, correlationId);
-
-      const { data } = await keychainProcessApi.getConsumerKeychains({
-        client: keychainProcessClient,
-        headers,
-        query: { limit, offset, ownerId, purpose },
-      });
 
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
@@ -749,6 +742,59 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           membersCount: members.pagination.total,
         });
       }
+
+      if (eserviceId !== undefined) {
+        // TODO(KN-473): paginate to fetch all purposes if >50 exist,
+        // otherwise the linked Consumer Keychains list will be undercounted
+        const { data: purposes } = await remoteResourcesManagerApi.getPurposes({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: { eserviceId, limit: 50, offset: 0 },
+        });
+
+        // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
+        // otherwise the linked Consumer Keychains list will be undercounted
+        const keychainPages = await Promise.all(
+          purposes.results.map((purpose) =>
+            keychainProcessApi.getConsumerKeychains({
+              client: keychainProcessClient,
+              headers,
+              query: {
+                limit: 50,
+                offset: 0,
+                ownerId,
+                purpose: `${purpose.knodeId}:${purpose.id}`,
+              },
+            }),
+          ),
+        );
+
+        const dedupedKeychains = new Map<string, keychainProcessApi.Keychain>();
+        for (const { data } of keychainPages) {
+          for (const keychain of data.results) {
+            dedupedKeychains.set(keychain.id, keychain);
+          }
+        }
+
+        const sortedKeychains = Array.from(dedupedKeychains.values()).sort(
+          (a, b) =>
+            a.name.en.localeCompare(b.name.en) || a.id.localeCompare(b.id),
+        );
+
+        const pageSlice = sortedKeychains.slice(offset, offset + limit);
+
+        res.send({
+          pagination: { limit, offset, total: sortedKeychains.length },
+          results: await Promise.all(pageSlice.map(enhanceKeychainWithCounts)),
+        });
+        return;
+      }
+
+      const { data } = await keychainProcessApi.getConsumerKeychains({
+        client: keychainProcessClient,
+        headers,
+        query: { limit, offset, ownerId, purpose },
+      });
 
       res.send({
         pagination: data.pagination,
