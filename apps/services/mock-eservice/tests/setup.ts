@@ -1,7 +1,9 @@
 import type { FastifyInstance } from "fastify";
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { Algorithm } from "@knodia/common-models/crypto";
 import { KnodeId } from "@knodia/common-models/ids";
+import { generateKeySet } from "@knodia/test-commons/utils";
 import {
   createLocalJWKSet,
   type CryptoKey,
@@ -25,7 +27,14 @@ const dynamoDbDpopProofsTable = "knodia-mock-eservice-dpop-proofs";
 
 interface TestContext {
   app: FastifyInstance;
-  privateKey: CryptoKey;
+  dpopKeys: {
+    dpopKeySet: ReturnType<typeof generateKeySet>["keySet"];
+    dpopPublicKeyJwk: JsonWebKey;
+  };
+  tokenKeys: {
+    tokenPrivateKey: CryptoKey;
+    tokenPublicKey: CryptoKey;
+  };
 }
 
 let ctx: TestContext;
@@ -66,7 +75,21 @@ beforeAll(async () => {
   });
   await app.ready();
 
-  ctx = { app, privateKey };
+  const { keySet: dpopKeySet, publicKeyJwk: dpopPublicKeyJwk } = generateKeySet(
+    Algorithm.enum.ES256,
+  );
+
+  ctx = {
+    app,
+    dpopKeys: {
+      dpopKeySet,
+      dpopPublicKeyJwk,
+    },
+    tokenKeys: {
+      tokenPrivateKey: privateKey,
+      tokenPublicKey: publicKey,
+    },
+  };
 });
 
 afterAll(async () => {

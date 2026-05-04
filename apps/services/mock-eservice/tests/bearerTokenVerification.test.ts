@@ -46,7 +46,9 @@ async function signToken(
     typ?: string;
   } = {},
 ) {
-  const { privateKey } = getCtx();
+  const {
+    tokenKeys: { tokenPrivateKey },
+  } = getCtx();
   const {
     audience,
     expiresIn = "5m",
@@ -81,7 +83,7 @@ async function signToken(
     .setIssuedAt(now)
     .setExpirationTime(expiresIn);
 
-  return jwt.sign(privateKey);
+  return jwt.sign(tokenPrivateKey);
 }
 
 describe("mock-eservice Bearer access-token verification", () => {

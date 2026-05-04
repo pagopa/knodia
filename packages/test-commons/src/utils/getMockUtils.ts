@@ -36,6 +36,7 @@ import {
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
+import { createHash } from "crypto";
 import { match } from "ts-pattern";
 import { zocker } from "zocker";
 
@@ -221,21 +222,33 @@ export function getMockConsumerKeychainPurpose(
 
 export async function getMockDpopProof({
   alg = Algorithm.enum.ES256,
+  customKeySet,
+  dpopBoundToken,
   props,
 }: {
   alg?: Algorithm;
+  customKeySet?: ReturnType<typeof generateKeySet>["keySet"];
+  dpopBoundToken?: string;
   props?: {
-    customHeader?: Record<string, unknown>;
-    customPayload?: Record<string, unknown>;
+    customHeader?: Partial<DpopProofHeader> & Record<string, unknown>;
+    customPayload?: Partial<DpopProofPayload> & Record<string, unknown>;
   };
 } = {}): Promise<{
   dpopProofJWS: string;
   dpopProofJWT: DpopProof;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
 }> {
-  const { keySet, publicKeyJwk } = generateKeySet(alg);
+  const { keySet, publicKeyJwk } = customKeySet
+    ? {
+        keySet: customKeySet,
+        publicKeyJwk: customKeySet.publicKey.export({ format: "jwk" }),
+      }
+    : generateKeySet(alg);
 
   const payload: DpopProofPayload = {
+    ath: dpopBoundToken
+      ? createHash("sha256").update(dpopBoundToken).digest("base64url")
+      : undefined,
     htm: "POST",
     htu: "https://test.knodia.org/token",
     iat: dateToSeconds(new Date()),
