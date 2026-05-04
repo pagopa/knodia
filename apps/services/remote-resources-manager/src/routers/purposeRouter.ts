@@ -38,6 +38,43 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
+      const data = await purposeService.archivePurpose(
+        unsafeBrandExternalId<PurposeId>(req.params.purposeId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Archive a Purpose on behalf of its Consumer; the Consumer must be the caller organization",
+      operationId: "archivePurpose",
+      params: API_PurposeIdPathParam,
+      querystring: API_GetPurposeQueryParams,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Archive a Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/archive",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
       const data = await purposeService.createPurpose(req.body, ctx);
 
       res.status(201).send(data);

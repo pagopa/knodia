@@ -1,0 +1,31 @@
+meta {
+  name: 10 - Link Purpose To Keychain
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+body:json {
+  {
+    "knodeId": "{{other-knode-id}}",
+    "purposeId": "{{purposeId}}"
+  }
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1500))
+}
