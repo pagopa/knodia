@@ -6,6 +6,7 @@ import {
   KnodeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
@@ -298,8 +299,9 @@ describe("OrgConsumptionStatusSection — archive flow", () => {
 
     // banner Archive button: opens the modal
     await user.click(screen.getByRole("button", { name: "Archive" }));
-    // modal Archive button: confirms (the banner button is now aria-hidden by the focus trap)
-    await user.click(screen.getByRole("button", { name: "Archive" }));
+    // modal Archive button: confirms
+    const dialog = screen.getByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Archive" }));
 
     await waitFor(() => {
       expect(capturedKnodeId).toBe(KNODE_ID);
