@@ -23,7 +23,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: false,
     include: ["src/**/*.test.{ts,tsx}"],
-    name: "@knodia/node1-frontend",
+    name: "@knodia/knode-frontend",
     setupFiles: ["./src/test/setup.ts"],
   },
 });
