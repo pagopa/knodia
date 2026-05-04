@@ -171,7 +171,7 @@ export type InterfaceDocumentOverrides = {
      * Server URLs override to apply to the template interface
      */
     serverUrls: Array<string>;
-    termsAndConditionsUrl?: string;
+    termsOfService?: string;
 };
 
 export type EserviceFromScratchSeed = {
@@ -820,7 +820,17 @@ export type User = {
     username: string;
 };
 
-export type Users = Array<User>;
+export type OrganizationUser = {
+    email: string;
+    id: UserId;
+    username: string;
+    /**
+     * Whether the User has the technical role within the Organization
+     */
+    isTechnical: boolean;
+};
+
+export type OrganizationUsers = Array<OrganizationUser>;
 
 export type KeychainMembers = {
     pagination: Pagination;
@@ -1403,7 +1413,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
 
-export type SuspendProducerEserviceData = {
+export type SuspendEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -1412,7 +1422,7 @@ export type SuspendProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/suspend';
 };
 
-export type SuspendProducerEserviceErrors = {
+export type SuspendEserviceErrors = {
     /**
      * Bad Request
      */
@@ -1435,18 +1445,18 @@ export type SuspendProducerEserviceErrors = {
     409: Problem;
 };
 
-export type SuspendProducerEserviceError = SuspendProducerEserviceErrors[keyof SuspendProducerEserviceErrors];
+export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
 
-export type SuspendProducerEserviceResponses = {
+export type SuspendEserviceResponses = {
     /**
      * E-service suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerEserviceResponse = SuspendProducerEserviceResponses[keyof SuspendProducerEserviceResponses];
+export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
 
-export type ReactivateProducerEserviceData = {
+export type ReactivateEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -1455,7 +1465,7 @@ export type ReactivateProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/reactivate';
 };
 
-export type ReactivateProducerEserviceErrors = {
+export type ReactivateEserviceErrors = {
     /**
      * Bad Request
      */
@@ -1478,16 +1488,16 @@ export type ReactivateProducerEserviceErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerEserviceError = ReactivateProducerEserviceErrors[keyof ReactivateProducerEserviceErrors];
+export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
 
-export type ReactivateProducerEserviceResponses = {
+export type ReactivateEserviceResponses = {
     /**
      * E-service reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
+export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
 
 export type ArchiveProducerEserviceData = {
     body?: never;
@@ -2295,14 +2305,14 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetTechnicalUsersData = {
+export type GetOrganizationUsersData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/users/technical';
+    url: '/users';
 };
 
-export type GetTechnicalUsersErrors = {
+export type GetOrganizationUsersErrors = {
     /**
      * Bad Request
      */
@@ -2317,16 +2327,16 @@ export type GetTechnicalUsersErrors = {
     403: Problem;
 };
 
-export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
 
-export type GetTechnicalUsersResponses = {
+export type GetOrganizationUsersResponses = {
     /**
-     * Technical Users retrieved successfully
+     * Organization Users retrieved successfully
      */
-    200: Users;
+    200: OrganizationUsers;
 };
 
-export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
+export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -2652,7 +2662,7 @@ export type CreateAgreementConsumerActivationMagicLinkResponses = {
 
 export type CreateAgreementConsumerActivationMagicLinkResponse = CreateAgreementConsumerActivationMagicLinkResponses[keyof CreateAgreementConsumerActivationMagicLinkResponses];
 
-export type ReactivateConsumerAgreementData = {
+export type ReactivateAgreementByConsumerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2663,7 +2673,7 @@ export type ReactivateConsumerAgreementData = {
     url: '/consumer/agreements/{agreementId}/reactivate';
 };
 
-export type ReactivateConsumerAgreementErrors = {
+export type ReactivateAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2686,18 +2696,18 @@ export type ReactivateConsumerAgreementErrors = {
     409: Problem;
 };
 
-export type ReactivateConsumerAgreementError = ReactivateConsumerAgreementErrors[keyof ReactivateConsumerAgreementErrors];
+export type ReactivateAgreementByConsumerError = ReactivateAgreementByConsumerErrors[keyof ReactivateAgreementByConsumerErrors];
 
-export type ReactivateConsumerAgreementResponses = {
+export type ReactivateAgreementByConsumerResponses = {
     /**
      * Agreement reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateConsumerAgreementResponse = ReactivateConsumerAgreementResponses[keyof ReactivateConsumerAgreementResponses];
+export type ReactivateAgreementByConsumerResponse = ReactivateAgreementByConsumerResponses[keyof ReactivateAgreementByConsumerResponses];
 
-export type SuspendConsumerAgreementData = {
+export type SuspendAgreementByConsumerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2708,7 +2718,7 @@ export type SuspendConsumerAgreementData = {
     url: '/consumer/agreements/{agreementId}/suspend';
 };
 
-export type SuspendConsumerAgreementErrors = {
+export type SuspendAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2731,16 +2741,16 @@ export type SuspendConsumerAgreementErrors = {
     409: Problem;
 };
 
-export type SuspendConsumerAgreementError = SuspendConsumerAgreementErrors[keyof SuspendConsumerAgreementErrors];
+export type SuspendAgreementByConsumerError = SuspendAgreementByConsumerErrors[keyof SuspendAgreementByConsumerErrors];
 
-export type SuspendConsumerAgreementResponses = {
+export type SuspendAgreementByConsumerResponses = {
     /**
      * Agreement suspended successfully
      */
     204: void;
 };
 
-export type SuspendConsumerAgreementResponse = SuspendConsumerAgreementResponses[keyof SuspendConsumerAgreementResponses];
+export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
 
 export type GetConsumerPurposesData = {
     body?: never;
@@ -3121,7 +3131,7 @@ export type GetProducerAgreementDetailsResponses = {
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
 
-export type ReactivateProducerAgreementData = {
+export type ReactivateAgreementByProducerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -3130,7 +3140,7 @@ export type ReactivateProducerAgreementData = {
     url: '/producer/agreements/{agreementId}/reactivate';
 };
 
-export type ReactivateProducerAgreementErrors = {
+export type ReactivateAgreementByProducerErrors = {
     /**
      * Bad Request
      */
@@ -3153,18 +3163,18 @@ export type ReactivateProducerAgreementErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerAgreementError = ReactivateProducerAgreementErrors[keyof ReactivateProducerAgreementErrors];
+export type ReactivateAgreementByProducerError = ReactivateAgreementByProducerErrors[keyof ReactivateAgreementByProducerErrors];
 
-export type ReactivateProducerAgreementResponses = {
+export type ReactivateAgreementByProducerResponses = {
     /**
      * Agreement reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerAgreementResponse = ReactivateProducerAgreementResponses[keyof ReactivateProducerAgreementResponses];
+export type ReactivateAgreementByProducerResponse = ReactivateAgreementByProducerResponses[keyof ReactivateAgreementByProducerResponses];
 
-export type SuspendProducerAgreementData = {
+export type SuspendAgreementByProducerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -3173,7 +3183,7 @@ export type SuspendProducerAgreementData = {
     url: '/producer/agreements/{agreementId}/suspend';
 };
 
-export type SuspendProducerAgreementErrors = {
+export type SuspendAgreementByProducerErrors = {
     /**
      * Bad Request
      */
@@ -3196,16 +3206,16 @@ export type SuspendProducerAgreementErrors = {
     409: Problem;
 };
 
-export type SuspendProducerAgreementError = SuspendProducerAgreementErrors[keyof SuspendProducerAgreementErrors];
+export type SuspendAgreementByProducerError = SuspendAgreementByProducerErrors[keyof SuspendAgreementByProducerErrors];
 
-export type SuspendProducerAgreementResponses = {
+export type SuspendAgreementByProducerResponses = {
     /**
      * Agreement suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerAgreementResponse = SuspendProducerAgreementResponses[keyof SuspendProducerAgreementResponses];
+export type SuspendAgreementByProducerResponse = SuspendAgreementByProducerResponses[keyof SuspendAgreementByProducerResponses];
 
 export type GetProducerPurposesData = {
     body?: never;

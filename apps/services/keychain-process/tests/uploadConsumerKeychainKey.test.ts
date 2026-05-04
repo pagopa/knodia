@@ -5,11 +5,7 @@ import {
   type OrganizationId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
-import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-} from "@knodia/fastify-zod-api-commons/crypto";
+import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,

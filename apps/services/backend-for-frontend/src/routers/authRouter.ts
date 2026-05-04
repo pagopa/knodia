@@ -51,11 +51,10 @@ const API_ExternalSessionResponse = z
   .meta({ id: "ExternalSessionResponse" });
 
 const API_RefreshCookie = z.object({
-  refresh: z
-    .string()
-    .describe(
+  refresh: z.string().meta({
+    description:
       "HttpOnly refresh token (set automatically by login and refresh responses)",
-    ),
+  }),
 });
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (

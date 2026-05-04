@@ -48,7 +48,6 @@ import {
   API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
   API_EservicePatch,
-  type API_InterfaceDocumentOverrides,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -59,6 +58,7 @@ import {
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import {
+  applyInterfaceDocumentOverrides,
   retrieveEserviceTemplate,
   retrieveEserviceTemplateInterfaceContent,
 } from "../../utils/eserviceTemplate.ts";
@@ -201,11 +201,9 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       const templateInterfaceContent =
         retrieveEserviceTemplateInterfaceContent(template);
 
-      /**
-       * TODO: Add interface interpolation logic, tracked in KN-523.
-       */
       const overriddenInterfaceContent = applyInterfaceDocumentOverrides({
         content: templateInterfaceContent,
+        fileName: template.eserviceFields.interfaceDocument.name,
         overrides: req.body.interfaceDocumentOverrides,
       });
 
@@ -614,7 +612,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an E-service",
-      operationId: "suspendProducerEservice",
+      operationId: "suspendEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -656,7 +654,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate a suspended E-service",
-      operationId: "reactivateProducerEservice",
+      operationId: "reactivateEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -715,12 +713,3 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     url: "/producer/eservices/:eserviceId/archive",
   });
 };
-
-function applyInterfaceDocumentOverrides({
-  content,
-}: {
-  content: Buffer;
-  overrides: API_InterfaceDocumentOverrides;
-}) {
-  return content;
-}

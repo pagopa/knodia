@@ -1,15 +1,17 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
-import { afterAll, beforeAll, inject } from "vitest";
-
-import { buildAppFromConfig } from "../src/app.ts";
 import {
   createJtiReplayStore,
   type JtiReplayStore,
-} from "../src/services/jtiReplayStore.ts";
+} from "@knodia/db-jti-replay-store";
+import { resetDynamoTable } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
+
+import { buildAppFromConfig } from "../src/app.ts";
 
 // Must match a schema file under dynamo-tables/
-export const refreshTokenTableName = "knodia-bff-refresh-tokens";
+const refreshTokenTableName = "knodia-bff-refresh-tokens";
+const magicLinkTokenTableName = "knodia-bff-magic-link-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
 export let dynamoClient: DynamoDBClient;
@@ -37,7 +39,7 @@ beforeAll(async () => {
       },
       defaultPollingMaxRetries: 5,
       defaultPollingRetryDelay: 400,
-      dynamoDbMagicLinkTokensTable: "knodia-bff-magic-link-tokens",
+      dynamoDbMagicLinkTokensTable: magicLinkTokenTableName,
       dynamoDbRefreshTokensTable: refreshTokenTableName,
       eserviceInterfacesS3Bucket: "test-bucket",
       eserviceProcessUrl: "http://localhost:0",
@@ -82,6 +84,13 @@ beforeAll(async () => {
   );
 
   await app.ready();
+});
+
+afterEach(async () => {
+  await Promise.all([
+    resetDynamoTable(refreshTokenTableName, "jti", dynamoClient),
+    resetDynamoTable(magicLinkTokenTableName, "jti", dynamoClient),
+  ]);
 });
 
 afterAll(async () => {

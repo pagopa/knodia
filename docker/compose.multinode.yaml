@@ -1551,7 +1551,7 @@ services:
     container_name: knodia-multinode-frontend-orion
     build:
       context: ..
-      dockerfile: apps/web/node1-frontend/Dockerfile
+      dockerfile: apps/web/frontend-orion/Dockerfile
     ports:
       - 5001:80
     volumes:
@@ -1571,7 +1571,7 @@ services:
     container_name: knodia-multinode-frontend-lynx
     build:
       context: ..
-      dockerfile: apps/web/node1-frontend/Dockerfile
+      dockerfile: apps/web/frontend-lynx/Dockerfile
     ports:
       - 5002:80
     volumes:

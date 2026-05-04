@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
+import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -32,7 +33,6 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
-import { createJtiReplayStore } from "./services/jtiReplayStore.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
@@ -187,5 +187,6 @@ export function buildAppFromConfig(
   });
 
   app.addHook("onClose", () => sharedDynamoClient.destroy());
+
   return app;
 }
