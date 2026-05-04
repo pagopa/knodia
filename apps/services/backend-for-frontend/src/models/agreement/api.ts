@@ -37,11 +37,10 @@ export const API_AgreementSeed = z
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
-export const API_SuspendReactivateConsumerAgreementQueryParams = z.strictObject(
-  {
+export const API_SuspendReactivateAgreementByConsumerQueryParams =
+  z.strictObject({
     knodeId: API_KnodeId,
-  },
-);
+  });
 
 export const API_CreateAgreementConsumerActivationMagicLinkQueryParams =
   z.strictObject({

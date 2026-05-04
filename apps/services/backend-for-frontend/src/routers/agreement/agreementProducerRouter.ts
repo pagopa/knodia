@@ -341,7 +341,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate an Agreement as Producer",
-      operationId: "reactivateProducerAgreement",
+      operationId: "reactivateAgreementByProducer",
       params: API_AgreementIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -381,7 +381,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an Agreement as Producer",
-      operationId: "suspendProducerAgreement",
+      operationId: "suspendAgreementByProducer",
       params: API_AgreementIdPathParam,
       response: {
         204: z.undefined().meta({
