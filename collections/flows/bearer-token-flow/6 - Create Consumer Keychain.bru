@@ -21,7 +21,7 @@ body:json {
       "en": "{{randomKeychainName}}"
     },
     "description": {
-      "en": "Keychain for the client-assertion flow"
+      "en": "Keychain for the Bearer token flow"
     }
   }
 }
@@ -32,7 +32,7 @@ vars:post-response {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  bru.setVar("randomKeychainName", `Client Assertion Flow Keychain ${random}`)
+  bru.setVar("randomKeychainName", `Bearer Token Flow Keychain ${random}`)
 }
 
 script:post-response {
