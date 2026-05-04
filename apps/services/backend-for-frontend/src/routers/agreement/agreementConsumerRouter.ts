@@ -352,7 +352,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate an Agreement as Consumer",
-      operationId: "reactivateConsumerAgreement",
+      operationId: "reactivateAgreementByConsumer",
       params: API_AgreementIdPathParam,
       querystring: API_ConsumerAgreementActionQueryParams,
       response: {
@@ -392,7 +392,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an Agreement as Consumer",
-      operationId: "suspendConsumerAgreement",
+      operationId: "suspendAgreementByConsumer",
       params: API_AgreementIdPathParam,
       querystring: API_ConsumerAgreementActionQueryParams,
       response: {
@@ -432,7 +432,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Archive an Agreement as Consumer",
-      operationId: "archiveConsumerAgreement",
+      operationId: "archiveAgreementByConsumer",
       params: API_AgreementIdPathParam,
       querystring: API_ConsumerAgreementActionQueryParams,
       response: {

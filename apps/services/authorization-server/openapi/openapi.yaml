@@ -103,6 +103,7 @@ components:
           type: string
           enum:
             - Bearer
+            - DPoP
       required:
         - access_token
         - expires_in
@@ -138,6 +139,13 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               $ref: "#/components/schemas/TokenRequest"
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: dpop
+          required: false
+          description: DPoP proof JWT
       security: []
       responses:
         "200":

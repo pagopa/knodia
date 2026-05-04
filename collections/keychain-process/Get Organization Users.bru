@@ -1,0 +1,14 @@
+meta {
+  name: Get Organization Users
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/users
+  body: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

@@ -41,7 +41,7 @@ import {
   API_GetConsumerPurposesQueryParams,
   API_PurposeDetails,
   API_PurposeSeed,
-  API_SuspendReactivateConsumerPurposeQueryParams,
+  API_SuspendReactivatePurposeByConsumerQueryParams,
 } from "../../models/purpose/api.ts";
 import {
   toAPI_ConsumerPurpose,
@@ -374,7 +374,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       description: "Reactivate a Purpose as Consumer",
       operationId: "reactivatePurposeByConsumer",
       params: API_PurposeIdPathParam,
-      querystring: API_SuspendReactivateConsumerPurposeQueryParams,
+      querystring: API_SuspendReactivatePurposeByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Purpose reactivated successfully",
@@ -414,7 +414,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       description: "Suspend a Purpose as Consumer",
       operationId: "suspendPurposeByConsumer",
       params: API_PurposeIdPathParam,
-      querystring: API_SuspendReactivateConsumerPurposeQueryParams,
+      querystring: API_SuspendReactivatePurposeByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Purpose suspended successfully",
