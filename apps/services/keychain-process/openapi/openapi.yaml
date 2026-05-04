@@ -1702,5 +1702,7 @@ tags:
     name: health
   - description: Consumer keychain routes
     name: consumerKeychain
+  - description: Knode API keychain routes
+    name: knodeApiKeychain
   - description: User routes
     name: user
