@@ -13,8 +13,6 @@ import {
 
 import { keychainSchema } from "./keychainSchema.ts";
 
-export { keychainSchema };
-
 export const readmodelConsumerKeychain = keychainSchema.table(
   "consumer_keychain",
   {
