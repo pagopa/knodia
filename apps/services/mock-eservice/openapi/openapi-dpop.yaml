@@ -9,11 +9,15 @@ info:
 components:
   securitySchemes:
     dpopAuth:
-      bearerFormat: DPoP
       description: A DPoP-bound access token conforming to RFC 9449
         (https://www.rfc-editor.org/rfc/rfc9449.html)
-      scheme: bearer
+      scheme: DPoP
       type: http
+    dpopProof:
+      description: DPoP proof JWT conforming to RFC 9449
+      in: header
+      name: DPoP
+      type: apiKey
   schemas:
     ProblemError:
       type: object
@@ -138,6 +142,7 @@ servers:
     url: /
 security:
   - dpopAuth: []
+    dpopProof: []
 tags:
   - description: Health check routes
     name: health
