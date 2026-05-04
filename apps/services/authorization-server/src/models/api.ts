@@ -23,7 +23,7 @@ export const API_TokenResponse = z
   .strictObject({
     access_token: z.string(),
     expires_in: z.number().meta({ format: "int32" }),
-    token_type: z.enum(["Bearer"]),
+    token_type: z.enum(["Bearer", "DPoP"]),
   })
   .meta({ id: "TokenResponse" });
 export type API_TokenResponse = z.infer<typeof API_TokenResponse>;

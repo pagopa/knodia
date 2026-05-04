@@ -161,7 +161,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           path: { consumerKeychainId: req.params.consumerKeychainId },
           query: { limit, offset },
         }),
-        keychainProcessApi.getTechnicalUsers({
+        keychainProcessApi.getOrganizationUsers({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
         }),

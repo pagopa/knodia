@@ -24,6 +24,10 @@ export interface IdmUser {
   username: string;
 }
 
+export interface OrganizationUser extends IdmUser {
+  isTechnical: boolean;
+}
+
 export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   const client = new CognitoIdentityProviderClient();
 
@@ -49,17 +53,20 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   }
 
   return {
-    async getOrganizationTechnicalUsers(
+    async getOrganizationUsers(
       organizationId: OrganizationId,
-    ): Promise<IdmUser[]> {
-      const organizationUsers = await listUsersInGroup(
-        getOrganizationGroupName(organizationId),
-      );
-      const technicalUsers = await listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME);
+    ): Promise<OrganizationUser[]> {
+      const [organizationUsers, technicalUsers] = await Promise.all([
+        listUsersInGroup(getOrganizationGroupName(organizationId)),
+        listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME),
+      ]);
 
       const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
 
-      return organizationUsers.filter((user) => technicalUserIds.has(user.id));
+      return organizationUsers.map((user) => ({
+        ...user,
+        isTechnical: technicalUserIds.has(user.id),
+      }));
     },
 
     async getUserById(userId: UserId): Promise<IdmUser | undefined> {

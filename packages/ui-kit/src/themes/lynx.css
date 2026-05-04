@@ -1,0 +1,162 @@
+@import "./base.css";
+
+@import "@fontsource-variable/petrona";
+@import "@fontsource-variable/source-serif-4";
+
+@import "./_utilities.css";
+
+@theme {
+  --font-body: "Source Serif 4 Variable", serif;
+  --font-display: "Petrona Variable", serif;
+  --font-sans: var(--font-body);
+
+  /* Brand Colors */
+  --color-brand-light: var(--color-brand-100);
+  --color-brand-light-decorative: var(--color-brand-300);
+  --color-brand-light-low-contrast: var(--color-brand-700);
+  --color-brand-light-mid-contrast: var(--color-brand-900);
+  --color-brand-light-high-contrast: var(--color-brand-950);
+  --color-brand-dark: var(--color-brand-800);
+  --color-brand-dark-decorative: var(--color-brand-600);
+  --color-brand-dark-mid-contrast: var(--color-brand-300);
+  --color-brand-dark-high-contrast: var(--color-white);
+
+  /* Primary Colors */
+  --color-primary-light: var(--color-white);
+  --color-primary-light-decorative: var(--color-neutral-300);
+  --color-primary-light-low-contrast: var(--color-neutral-500);
+  --color-primary-light-mid-contrast: var(--color-neutral-600);
+  --color-primary-light-high-contrast: var(--color-neutral-700);
+  --color-primary-dark: var(--color-neutral-700);
+  --color-primary-dark-decorative: var(--color-neutral-500);
+  --color-primary-dark-high-contrast: var(--color-white);
+
+  /* Secondary Colors */
+  --color-secondary-light: var(--color-neutral-50);
+  --color-secondary-light-decorative: var(--color-neutral-300);
+  --color-secondary-light-low-contrast: var(--color-neutral-500);
+  --color-secondary-light-mid-contrast: var(--color-neutral-600);
+  --color-secondary-light-high-contrast: var(--color-neutral-700);
+  --color-secondary-dark: var(--color-neutral-600);
+  --color-secondary-dark-decorative: var(--color-neutral-500);
+  --color-secondary-dark-mid-contrast: var(--color-neutral-300);
+
+  /* Info Colors */
+  --color-info-light: var(--color-teal-50);
+  --color-info-light-decorative: var(--color-teal-400);
+  --color-info-light-low-contrast: var(--color-teal-600);
+  --color-info-light-mid-contrast: var(--color-teal-700);
+  --color-info-light-high-contrast: var(--color-teal-800);
+  --color-info-dark: var(--color-teal-800);
+  --color-info-dark-decorative: var(--color-teal-600);
+  --color-info-dark-mid-contrast: var(--color-teal-300);
+
+  /* Success Colors */
+  --color-success-light: var(--color-lime-50);
+  --color-success-light-decorative: var(--color-lime-400);
+  --color-success-light-low-contrast: var(--color-lime-600);
+  --color-success-light-mid-contrast: var(--color-lime-700);
+  --color-success-light-high-contrast: var(--color-lime-800);
+  --color-success-dark: var(--color-lime-700);
+  --color-success-dark-decorative: var(--color-lime-600);
+  --color-success-dark-mid-contrast: var(--color-lime-300);
+
+  /* Warning Colors — mixed amber bg + orange text as per Lynx design */
+  --color-warning-light: var(--color-amber-50);
+  --color-warning-light-decorative: var(--color-orange-300);
+  --color-warning-light-low-contrast: var(--color-orange-600);
+  --color-warning-light-mid-contrast: var(--color-orange-700);
+  --color-warning-light-high-contrast: var(--color-orange-900);
+  --color-warning-dark: var(--color-amber-800);
+  --color-warning-dark-decorative: var(--color-orange-700);
+  --color-warning-dark-mid-contrast: var(--color-orange-300);
+
+  /* Error Colors */
+  --color-error-light: var(--color-red-50);
+  --color-error-light-decorative: var(--color-red-300);
+  --color-error-light-low-contrast: var(--color-red-500);
+  --color-error-light-mid-contrast: var(--color-red-700);
+  --color-error-light-high-contrast: var(--color-red-800);
+  --color-error-dark: var(--color-red-800);
+  --color-error-dark-decorative: var(--color-red-600);
+  --color-error-dark-mid-contrast: var(--color-red-200);
+
+  /* Mapped Colors */
+  --color-brand-50: #fbfbf4;
+  --color-brand-100: #edf1da;
+  --color-brand-200: #d0ddad;
+  --color-brand-300: #bacf94;
+  --color-brand-400: #a4c17e;
+  --color-brand-500: #8fb471;
+  --color-brand-600: #7ea466;
+  --color-brand-700: #6c8f59;
+  --color-brand-800: #5a7549;
+  --color-brand-900: #415535;
+  --color-brand-950: #232d1c;
+
+  --color-error-50: var(--color-red-50);
+  --color-error-100: var(--color-red-100);
+  --color-error-200: var(--color-red-200);
+  --color-error-300: var(--color-red-300);
+  --color-error-400: var(--color-red-400);
+  --color-error-500: var(--color-red-500);
+  --color-error-600: var(--color-red-600);
+  --color-error-700: var(--color-red-700);
+  --color-error-800: var(--color-red-800);
+  --color-error-900: var(--color-red-900);
+  --color-error-950: var(--color-red-950);
+
+  /* Typography */
+  --font-family-display: var(--font-display);
+  --font-size-display-sm: 36px;
+  --font-weight-display-em: 700;
+  --line-height-display: 1.1;
+  --letter-spacing-display-sm: 0px;
+
+  --font-family-title: var(--font-display);
+  --line-height-title: 1.25;
+  --font-size-title-sm: 16px;
+  --font-size-title-md: 18px;
+  --font-size-title-lg: 24px;
+  --letter-spacing-title-sm: 0px;
+  --letter-spacing-title-md: 0px;
+  --letter-spacing-title-lg: 0px;
+  --font-weight-title: 400;
+  --font-weight-title-em: 700;
+
+  --font-family-label: var(--font-body);
+  --font-weight-label: 500;
+  --font-weight-label-em: 700;
+  --letter-spacing-label: 0px;
+  --line-height-label: 1.2;
+  --font-size-label-sm: 12px;
+  --font-size-label-md: 14px;
+  --font-size-label-lg: 16px;
+
+  --font-family-body: var(--font-body);
+  --font-size-body-lg: 16px;
+  --letter-spacing-body-lg: 0px;
+  --line-height-body-lg: 1.6;
+  --font-size-body-md: 14px;
+  --letter-spacing-body-md: 0px;
+  --line-height-body-md: 1.6;
+  --font-size-body-sm: 12px;
+  --letter-spacing-body-sm: 0px;
+  --line-height-body-sm: 1.6;
+  --font-weight-body: 400;
+  --font-weight-body-em: 600;
+
+  --font-family-headline: var(--font-display);
+  --line-height-headline: 1.2;
+  --font-size-headline-sm: 24px;
+  --font-size-headline-md: 28px;
+  --font-size-headline-lg: 32px;
+  --font-weight-headline: 400;
+  --font-weight-headline-em: 700;
+  --letter-spacing-headline-sm: 0px;
+  --letter-spacing-headline-md: 0px;
+  --letter-spacing-headline-lg: 0px;
+
+  /* Button */
+  --radius-button: 3px;
+}

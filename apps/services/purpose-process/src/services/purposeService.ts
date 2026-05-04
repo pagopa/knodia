@@ -41,6 +41,7 @@ import {
 } from "../models/formSchemas.ts";
 import {
   createPurposeActivatedV1Event,
+  createPurposeArchivedV1Event,
   createPurposeReactivatedByConsumerV1Event,
   createPurposeReactivatedByProducerV1Event,
   createPurposeSuspendedByConsumerV1Event,
@@ -59,6 +60,7 @@ import {
   assertOrganizationIsPurposeProducer,
   assertPurposeCanBeReactivatedBy,
   assertPurposeCanBeSuspendedBy,
+  assertPurposeIsSuspended,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -83,6 +85,38 @@ export function purposeServiceBuilder(
 ) {
   const assertFormAnswersAreValid = buildFormAnswersValidator(getFormSchemas);
   return {
+    async archivePurpose(
+      purposeId: PurposeId,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Purpose>> {
+      logger.info(`Archiving Purpose ${purposeId}`);
+
+      const { data: purpose, metadata } = await retrievePurpose(
+        purposeId,
+        readmodelService,
+      );
+
+      // Only the consumer can archive a purpose.
+      // Purpose must be in Suspended state.
+      assertPurposeIsSuspended(purpose);
+
+      const now = new Date();
+      const updatedPurpose: Purpose = {
+        ...purpose,
+        state: PurposeState.enum.Archived,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createPurposeArchivedV1Event(
+          updatedPurpose,
+          metadata.version,
+          correlationId,
+        ),
+      );
+
+      return { data: updatedPurpose, metadata: { version: newVersion } };
+    },
     async createPurpose(
       {
         consumer,
