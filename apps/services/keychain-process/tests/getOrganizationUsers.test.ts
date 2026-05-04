@@ -6,7 +6,7 @@ import {
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { API_Users } from "../src/models/api.ts";
+import { API_OrganizationUsers } from "../src/models/api.ts";
 import { injectAppRequest, makeCognitoUser } from "./utils.ts";
 
 const sendMock = vi.hoisted(() => vi.fn());
@@ -35,12 +35,12 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-describe("GET /users/technical (getTechnicalUsers)", () => {
+describe("GET /users (getOrganizationUsers)", () => {
   beforeEach(() => {
     sendMock.mockReset();
   });
 
-  it("should return the intersection between organization users and technical users", async () => {
+  it("should return all organization users with their technical flag", async () => {
     sendMock.mockImplementation(
       async (command: { input: { GroupName: string; NextToken?: string } }) => {
         if (
@@ -117,19 +117,27 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
     );
 
     const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      "/users/technical",
+      "/users",
     );
 
     expect(response.statusCode).toBe(200);
-    expect(API_Users.parse(response.json())).toEqual([
+    expect(API_OrganizationUsers.parse(response.json())).toEqual([
       {
         email: "mario.rossi@example.com",
         id: "10000000-1000-1000-8000-000000000011",
+        isTechnical: true,
         username: "Mario Rossi",
+      },
+      {
+        email: "giulia.bianchi@example.com",
+        id: "10000000-1000-1000-8000-000000000012",
+        isTechnical: false,
+        username: "Giulia Bianchi",
       },
       {
         email: "luca.neri@example.com",
         id: "10000000-1000-1000-8000-000000000013",
+        isTechnical: true,
         username: "Luca Neri",
       },
     ]);
@@ -141,7 +149,7 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
     async (token) => {
       sendMock.mockResolvedValue({ Users: [] });
 
-      const response = await injectAppRequest(token).get("/users/technical");
+      const response = await injectAppRequest(token).get("/users");
 
       expect(response.statusCode).toBe(200);
     },
@@ -150,7 +158,7 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await injectAppRequest(token).get("/users/technical");
+      const response = await injectAppRequest(token).get("/users");
 
       expect(response.statusCode).toBe(403);
       expect(sendMock).not.toHaveBeenCalled();

@@ -3,8 +3,9 @@ import {
   addConsumerKeychainMemberMutation,
   getConsumerKeychainMembershipQueryKey,
   getConsumerKeychainMembersQueryKey,
-  getTechnicalUsersOptions,
+  getOrganizationUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
+import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -93,14 +94,20 @@ function AddKeychainMemberModal({
     },
   });
 
-  const { data = [] } = useQuery(getTechnicalUsersOptions({ client }));
+  const { data: organizationUsers = [] } = useQuery(
+    getOrganizationUsersOptions({ client }),
+  );
 
-  const technicalUsersOptions = data.map((user) => ({
+  const userOptions = organizationUsers.map((user) => ({
     id: user.id,
     label: user.username,
   }));
 
-  const handleAddKeychainMember = (userId: string) => {
+  const isTechnicalById = new Map(
+    organizationUsers.map((user) => [user.id, user.isTechnical]),
+  );
+
+  const handleAddKeychainMember = (userId: UserId) => {
     match(keychainType)
       .with("consumption", () =>
         addConsumerKeychainMember({
@@ -117,7 +124,7 @@ function AddKeychainMemberModal({
       .exhaustive();
   };
 
-  const checkUserKeychainMembership = async (userId: string) => {
+  const checkUserKeychainMembership = async (userId: UserId) => {
     const {
       data: { isMember },
     } = await match(keychainType)
@@ -144,7 +151,7 @@ function AddKeychainMemberModal({
     },
     onSubmit: async ({ value }) => {
       if (!value.userId) return;
-      handleAddKeychainMember(value.userId);
+      handleAddKeychainMember(unsafeBrandUserId(value.userId));
     },
     validationLogic: revalidateLogic(),
     validators: {
@@ -152,11 +159,17 @@ function AddKeychainMemberModal({
         userId: z
           .guid("Invalid user")
           .nullable()
-          .refine((value) => value !== null, "Select an operator"),
+          .refine((value) => value !== null, "Select an operator")
+          .refine(
+            (value) => value === null || isTechnicalById.get(value) === true,
+            "Only Technical operators can be added as members.",
+          ),
       }),
       onSubmitAsync: async ({ value: { userId } }) => {
         if (!userId) return undefined;
-        const isMember = await checkUserKeychainMembership(userId);
+        const isMember = await checkUserKeychainMembership(
+          unsafeBrandUserId(userId),
+        );
 
         if (isMember) {
           return {
@@ -210,7 +223,7 @@ function AddKeychainMemberModal({
               placeholder="Select an option..."
               value={field.state.value}
             >
-              {technicalUsersOptions.map((option) => (
+              {userOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
