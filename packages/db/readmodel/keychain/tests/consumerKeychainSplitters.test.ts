@@ -7,7 +7,7 @@ import type {
   ConsumerKeychainUserSQL,
 } from "../src/consumerKeychain.ts";
 
-import { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/splitters.ts";
+import { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/consumerKeychainSplitters.ts";
 
 describe("Consumer keychain splitters", () => {
   it("should split a Consumer keychain business object into Consumer keychain SQL objects", () => {
