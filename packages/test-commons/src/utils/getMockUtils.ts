@@ -24,6 +24,7 @@ import {
   ConsumerKeychain,
   type ConsumerKeychainKey,
   ConsumerKeychainPurpose,
+  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
@@ -122,6 +123,20 @@ export function getMockEserviceCategory(seed = 0) {
 
 export function getMockEserviceVersion(seed = 0): EserviceVersion {
   return zocker(EserviceVersion).setSeed(seed).generate();
+}
+
+export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
+  // Re-parse through the schema to normalize zocker's mixed-case GUIDs
+  // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
+  return KnodeApiKeychain.parse({
+    ...zocker(KnodeApiKeychain)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+    keys: [getMockConsumerKeychainKey(seed)],
+  });
 }
 
 export function getMockOrganization(seed = 0): Organization {
