@@ -1,4 +1,4 @@
-import { genericInternalError } from "../../models/common-models/src/errors.ts";
+import { genericInternalError } from "@knodia/common-models/errors";
 
 export function pollingMaxRetriesExceeded(
   retries: number,

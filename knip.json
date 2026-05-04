@@ -47,7 +47,7 @@
     },
     "apps/web/**/*": {
       "ignore": ["src/routeTree.gen.ts", "public/**/*"],
-      "ignoreDependencies": ["babel-plugin-react-compiler"]
+      "ignoreDependencies": ["babel-plugin-react-compiler", "@theme.css"]
     },
     "packages/ui-kit": {
       "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]

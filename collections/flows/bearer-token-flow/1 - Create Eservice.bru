@@ -21,7 +21,7 @@ body:json {
       "en": "{{randomName}}"
     },
     "description": {
-      "en": "Eservice for the client-assertion flow"
+      "en": "Eservice for the Bearer token flow"
     },
     "accessTokenAudience": ["https://api.example.com"],
     "accessTokenDuration": 3600,
@@ -63,7 +63,7 @@ vars:post-response {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  bru.setVar("randomName", `Client Assertion Flow Eservice ${random}`)
+  bru.setVar("randomName", `Bearer Token Flow Eservice ${random}`)
 }
 
 script:post-response {

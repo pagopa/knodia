@@ -1,3 +1,5 @@
+import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
+
 import {
   UISessionRefreshTokenClaims,
   UserRole,
@@ -10,8 +12,6 @@ import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import z from "zod";
 
 import type { BffProcessConfig } from "../config/config.ts";
-
-import { type RefreshTokenStore } from "./refreshTokenStore.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
@@ -31,7 +31,7 @@ type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 export function authServiceBuilder(
   config: BffProcessConfig,
   tokenGenerator: TokenGenerator,
-  refreshTokenStore: RefreshTokenStore,
+  refreshTokenStore: JtiReplayStore,
 ) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>

@@ -10,7 +10,7 @@ pnpm generate-keypair
 ```
 
 Generates an RSA keypair under `docker/keys/` and writes
-`KEYCHAIN_PRIVATE_KEY_PATH` + `KEYCHAIN_PUBLIC_KEY_B64` into
+`KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64` into
 `collections/.env`. Run once, or again to rotate the key.
 
 ## Run
@@ -20,7 +20,7 @@ signing script:
 
 ```
 pnpm generate-client-assertion \
-  --key $KEYCHAIN_PRIVATE_KEY_PATH \
+  --key $KEYCHAIN_PRIVATE_RS256_KEY_PATH \
   --keychainId <consumerKeychainId> \
   --purposeId <purposeId>
 ```
