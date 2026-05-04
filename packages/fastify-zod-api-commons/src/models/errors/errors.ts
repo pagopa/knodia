@@ -30,11 +30,6 @@ export const commonErrorCodes = {
   FASTIFY_ERROR: "9995",
   UNAUTHORIZED: "9996",
   FORBIDDEN: "9997",
-  INVALID_KEY_LENGTH: "9998",
-  INVALID_PUBLIC_KEY: "9999",
-  NOT_ALLOWED_MULTIPLE_KEYS: "10000",
-  NOT_ALLOWED_PRIVATE_KEY: "10001",
-  NOT_AN_RSA_KEY: "10002",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -71,27 +66,6 @@ export function genericError(details: string): ApiError<CommonErrorCodes> {
   });
 }
 
-export function invalidKeyLength(
-  actualLength: number | undefined,
-  minLength = 2048,
-) {
-  return createApiError<CommonErrorCodes>({
-    code: "INVALID_KEY_LENGTH",
-    detail: `Invalid RSA key length: ${actualLength} bits. It must be at least ${minLength}`,
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Invalid Key length",
-  });
-}
-
-export function invalidPublicKey() {
-  return createApiError<CommonErrorCodes>({
-    code: "INVALID_PUBLIC_KEY",
-    detail: "Public key is invalid",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Invalid Key",
-  });
-}
-
 export function missingRequestHeader(
   headerName: string,
 ): ApiError<CommonErrorCodes> {
@@ -111,33 +85,6 @@ export function missingResponseHeader(
     detail: `Missing ${headerName} response header`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response header has not been passed",
-  });
-}
-
-export function notAllowedMultipleKeys() {
-  return createApiError<CommonErrorCodes>({
-    code: "NOT_ALLOWED_MULTIPLE_KEYS",
-    detail: "The received key contains multiple keys",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not allowed multiple keys",
-  });
-}
-
-export function notAllowedPrivateKey() {
-  return createApiError<CommonErrorCodes>({
-    code: "NOT_ALLOWED_PRIVATE_KEY",
-    detail: "The received key is a private key",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not allowed private key",
-  });
-}
-
-export function notAnRSAKey() {
-  return createApiError<CommonErrorCodes>({
-    code: "NOT_AN_RSA_KEY",
-    detail: "Provided key is not an RSA key",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not an RSA key",
   });
 }
 

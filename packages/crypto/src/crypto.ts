@@ -6,22 +6,17 @@ import {
   notAllowedMultipleKeys,
   notAllowedPrivateKey,
   notAnRSAKey,
-} from "../models/errors/errors.ts";
+} from "./errors.ts";
 
-export const decodeBase64Pem = (base64String: string): string => {
-  const cleanedBase64 = base64String.trim();
-  const decodedBytes = Buffer.from(cleanedBase64, "base64");
-  return decodedBytes.toString("utf-8");
-};
-
-export const createJWK = ({ pemKey }: { pemKey: string }): JsonWebKey =>
-  createPublicKey({ pemKey }).export({ format: "jwk" });
-
-export const calculateKid = (jwk: JsonWebKey): string => {
+export function calculateKid(jwk: JsonWebKey): string {
   const sortedJwk = sortJWK(jwk);
   const jwkString = JSON.stringify(sortedJwk);
   return crypto.createHash("sha256").update(jwkString).digest("base64url");
-};
+}
+
+export function createJWK({ pemKey }: { pemKey: string }): JsonWebKey {
+  return createPublicKey({ pemKey }).export({ format: "jwk" });
+}
 
 export function createPublicKey({ pemKey }: { pemKey: string }): KeyObject {
   assertSingleKey(pemKey);
@@ -33,6 +28,12 @@ export function createPublicKey({ pemKey }: { pemKey: string }): KeyObject {
   assertValidRSAKeyLength(publicKey);
 
   return publicKey;
+}
+
+export function decodeBase64Pem(base64String: string): string {
+  const cleanedBase64 = base64String.trim();
+  const decodedBytes = Buffer.from(cleanedBase64, "base64");
+  return decodedBytes.toString("utf-8");
 }
 
 export function isX509Certificate(pemKey: string): boolean {

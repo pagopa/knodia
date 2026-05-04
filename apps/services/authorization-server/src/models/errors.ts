@@ -1,5 +1,5 @@
 import type { AgreementState } from "@knodia/agreement-models";
-import type { Algorithm } from "@knodia/common-models/algorithms";
+import type { Algorithm } from "@knodia/common-models/crypto";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
@@ -8,13 +8,14 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type {
-  EserviceVersion,
-  EserviceVersionState,
-} from "@knodia/eservice-models";
 import type { PurposeState } from "@knodia/purpose-models";
 import type { AxiosError } from "axios";
 
+import {
+  EserviceAccessTokenType,
+  type EserviceVersion,
+  type EserviceVersionState,
+} from "@knodia/eservice-models";
 import {
   type ApiError,
   type CommonErrorCodes,
@@ -37,7 +38,7 @@ const errorCodes = {
   UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0002",
   CLIENT_ASSERTION_EXPIRED: "0003",
   INVALID_CLIENT_ASSERTION_SIGNATURE: "0004",
-  JSON_WEB_TOKEN_ERROR: "0005",
+  INVALID_CLIENT_ASSERTION_JWS: "0005",
   PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG: "0006",
   AGREEMENT_NOT_ACTIVE: "0007",
   ESERVICE_VERSION_NOT_ACTIVE: "0008",
@@ -47,9 +48,14 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_FOUND: "0012",
   PURPOSE_NOT_FOUND: "0013",
   PLATFORM_STATES_NOT_ACTIVE: "0014",
-  ESERVICE_VERSION_NOT_USING_BEARER_TOKEN: "0015",
+  ACCESS_TOKEN_TYPE_MISMATCH: "0015",
   CONSUMER_KNODE_VERIFICATION_DATA_NOT_FOUND: "0016",
   UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0017",
+  DPOP_CLAIMS_VALIDATION_ERROR: "0018",
+  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0019",
+  INVALID_DPOP_PROOF_JWS: "0020",
+  INVALID_DPOP_PROOF_SIGNATURE: "0021",
+  DPOP_PROOF_EXPIRED: "0022",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -59,6 +65,18 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
   serviceName: "authorization-server",
 });
+
+export function accessTokenTypeMismatch(
+  { accessTokenType, id }: Pick<EserviceVersion, "accessTokenType" | "id">,
+  isRequestUsingDpop: boolean,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ACCESS_TOKEN_TYPE_MISMATCH",
+    detail: `E-service Version with ID ${id} requires ${accessTokenType} tokens, but the request is asking for a ${isRequestUsingDpop ? EserviceAccessTokenType.enum.DPoP : EserviceAccessTokenType.enum.Bearer} token`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "unauthorized_client",
+  });
+}
 
 export function agreementNotActive(id: AgreementId, state: AgreementState) {
   return createApiError<ErrorCodes>({
@@ -125,6 +143,29 @@ export function consumerMissingRequiredAttributes(
   });
 }
 
+export function dpopClaimsValidationError(error: unknown) {
+  return createApiErrorFromErrorsList<ErrorCodes>({
+    code: "DPOP_CLAIMS_VALIDATION_ERROR",
+    errors:
+      error instanceof ZodError
+        ? error.issues
+        : error instanceof Error
+          ? [error]
+          : [],
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function dpopProofExpired() {
+  return createApiError<ErrorCodes>({
+    code: "DPOP_PROOF_EXPIRED",
+    detail: "The DPoP Proof has expired",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_dpop_proof",
+  });
+}
+
 export function eserviceVersionNotActive(
   id: EserviceVersionId,
   state: EserviceVersionState,
@@ -149,15 +190,12 @@ export function eserviceVersionNotFound(
   });
 }
 
-export function eserviceVersionNotUsingBearerToken({
-  accessTokenType,
-  id,
-}: Pick<EserviceVersion, "accessTokenType" | "id">) {
+export function invalidClientAssertionJWS(message: string) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_VERSION_NOT_USING_BEARER_TOKEN",
-    detail: `E-service Version with ID ${id} has access token type '${accessTokenType}', but it must be 'Bearer'`,
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "unauthorized_client",
+    code: "INVALID_CLIENT_ASSERTION_JWS",
+    detail: `Invalid JWT format in Client Assertion signature verification. Reason: ${message}`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
   });
 }
 
@@ -170,12 +208,21 @@ export function invalidClientAssertionSignature() {
   });
 }
 
-export function jsonWebTokenError(message: string) {
+export function invalidDpopProofJWS(message: string) {
   return createApiError<ErrorCodes>({
-    code: "JSON_WEB_TOKEN_ERROR",
-    detail: `Invalid JWT format in Client Assertion signature verification. Reason: ${message}`,
+    code: "INVALID_DPOP_PROOF_JWS",
+    detail: `Invalid JWT format in DPoP Proof signature verification. Reason: ${message}`,
     status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function invalidDpopProofSignature() {
+  return createApiError<ErrorCodes>({
+    code: "INVALID_DPOP_PROOF_SIGNATURE",
+    detail: "The DPoP Proof signature is invalid",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_dpop_proof",
   });
 }
 
@@ -246,5 +293,16 @@ export function unexpectedConsumerKnodeVerificationDataRetrievalError(
     detail: `An unexpected error occurred during retrieval of the Consumer's Knode verification data: ${error.message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
+  });
+}
+
+export function unexpectedDpopProofSignatureVerificationError(error: unknown) {
+  const message = error instanceof Error ? error.message : "Unknown error";
+
+  return createApiError<ErrorCodes>({
+    code: "UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR",
+    detail: `An unexpected error occurred during DPoP Proof signature verification: ${message}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "invalid_dpop_proof",
   });
 }

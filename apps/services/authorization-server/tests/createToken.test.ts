@@ -1,36 +1,52 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
 import type { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
-import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import { dateToSeconds } from "@knodia/common-models/utils";
+import { storeJti } from "@knodia/db-jti-replay-store/utils";
+import {
+  type Eservice,
+  EserviceAccessTokenType,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import {
   getMockAgreement,
   getMockClientAssertion,
+  getMockDpopProof,
   getMockEservice,
   getMockEserviceVersion,
   getMockPurpose,
+  signJWT,
 } from "@knodia/test-commons/utils";
 import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { unknown } from "zod";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
 import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
+  accessTokenTypeMismatch,
+  clientAssertionClaimsValidationError,
   consumerMissingRequiredAttributes,
-  eserviceVersionNotUsingBearerToken,
+  dpopClaimsValidationError,
   invalidClientAssertionSignature,
+  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
 import {
   agreementWriterService,
   app,
+  dpopProofHtuBaseUrl,
+  dynamoClient,
+  dynamoDbDpopProofsTable,
   eserviceWriterService,
   producerKnodeId,
   purposeWriterService,
@@ -132,9 +148,8 @@ describe("POST /token", async () => {
   const {
     clientAssertion,
     clientAssertionJWS,
-    keySet,
+    keySet: clientAssertionKeySet,
     publicKeyEncodedPem,
-    signClientAssertion,
   } = await getMockClientAssertion({
     standardClaimsOverride: {
       aud: ["test-audience-1"],
@@ -142,6 +157,14 @@ describe("POST /token", async () => {
       purpose_id: purpose.id,
       sub: consumerKeychainId,
     },
+  });
+
+  const {
+    dpopProofJWS,
+    dpopProofJWT,
+    keySet: dpopProofKeySet,
+  } = await getMockDpopProof({
+    props: { customPayload: { htu: `${dpopProofHtuBaseUrl}///?test=12345/` } }, // intentionally malformed htu to test the normalization
   });
 
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
@@ -167,20 +190,25 @@ describe("POST /token", async () => {
     grant_type: VALID_GRANT_TYPE,
   };
 
-  async function createToken(body: API_TokenRequest = defaultBody) {
+  async function createToken({
+    body = defaultBody,
+    requestDpopProofJWS,
+  }: {
+    body?: API_TokenRequest;
+    requestDpopProofJWS?: string;
+  } = {}) {
     return app.inject({
-      headers: { "content-type": "application/x-www-form-urlencoded" },
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        ...(requestDpopProofJWS ? { dpop: requestDpopProofJWS } : {}),
+      },
       method: "POST",
       payload: new URLSearchParams(body).toString(),
       url: "/token",
     });
   }
 
-  beforeEach(() => {
-    getClientAssertionVerificationDataMock.mockReset();
-  });
-
-  it("returns a mocked bearer token", async () => {
+  async function seedTestData(tokenType: EserviceAccessTokenType) {
     const archivedAgreement1: Agreement = {
       ...getMockAgreement({ seed: 1 }),
       consumer: purpose.consumer,
@@ -200,25 +228,44 @@ describe("POST /token", async () => {
       agreementWriterService.upsertAgreement(agreement, 0),
       agreementWriterService.upsertAgreement(archivedAgreement1, 0),
       agreementWriterService.upsertAgreement(archivedAgreement2, 0),
-      eserviceWriterService.upsertEservice(eservice, 0),
+      eserviceWriterService.upsertEservice(
+        {
+          ...eservice,
+          versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
+        },
+        0,
+      ),
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);
 
     getClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
+  }
 
-    const response = await createToken();
-
-    const responseBody = response.json<API_TokenResponse>();
-
-    expect(response.statusCode).toBe(200);
-    expect(responseBody).toEqual({
-      access_token: MOCK_TOKEN,
-      expires_in: eserviceVersion.accessTokenDuration,
-      token_type: "Bearer",
-    });
+  beforeEach(() => {
+    getClientAssertionVerificationDataMock.mockReset();
   });
+
+  it.each(EserviceAccessTokenType.options)(
+    "should return 200 and a valid %s token",
+    async (tokenType) => {
+      await seedTestData(tokenType);
+
+      const response = await createToken({
+        requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
+      });
+
+      const responseBody = response.json<API_TokenResponse>();
+
+      expect(response.statusCode).toBe(200);
+      expect(responseBody).toEqual({
+        access_token: MOCK_TOKEN,
+        expires_in: eserviceVersion.accessTokenDuration,
+        token_type: tokenType,
+      });
+    },
+  );
 
   it.each([
     ["invalid property", { ...defaultBody, wrongProperty: "wrong" }],
@@ -242,7 +289,7 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await createToken(body as never);
+      const response = await createToken({ body: body as never });
       expect(response.statusCode).toBe(400);
     },
   );
@@ -435,17 +482,136 @@ describe("POST /token", async () => {
         data: mockK2KResponse,
       });
 
-      const clientAssertionJWS = await signClientAssertion({
-        clientAssertion,
-        keySet,
+      const clientAssertionJWS = await signJWT({
+        jwt: clientAssertion,
+        keySet: clientAssertionKeySet,
       });
 
       const response = await createToken({
-        ...defaultBody,
-        client_assertion: clientAssertionJWS,
+        body: {
+          ...defaultBody,
+          client_assertion: clientAssertionJWS,
+        },
       });
 
+      const error = clientAssertionClaimsValidationError(unknown);
+
       expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
+    },
+  );
+
+  it.each([
+    [
+      "invalid claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid typ claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          typ: "wrong",
+        },
+      },
+    ],
+    [
+      "missing jwk claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          jwk: undefined,
+        },
+      },
+    ],
+    [
+      "invalid jwk claim in dpop proof headers",
+      {
+        ...dpopProofJWT,
+        headers: {
+          ...dpopProofJWT.headers,
+          jwk: {
+            ...dpopProofJWT.headers.jwk,
+            x: "invalid",
+            y: "invalid",
+          },
+        },
+      },
+    ],
+    [
+      "invalid htm claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          htm: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid htu claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          htu: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid iat claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          iat: -123,
+        },
+      },
+    ],
+    [
+      "invalid jti claim in dpop proof payload",
+      {
+        ...dpopProofJWT,
+        payload: {
+          ...dpopProofJWT.payload,
+          jti: "wrong",
+        },
+      },
+    ],
+  ])(
+    "should return 401 if the DPoP proof has invalid claims - %s",
+    async (_label, dpopProof) => {
+      const dpopProofJWS = await signJWT({
+        jwt: dpopProof,
+        keySet: dpopProofKeySet,
+      });
+
+      const response = await createToken({
+        requestDpopProofJWS: dpopProofJWS,
+      });
+
+      const error = dpopClaimsValidationError(unknown);
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json<API_Problem>().title).toEqual(error.title);
     },
   );
 
@@ -485,6 +651,26 @@ describe("POST /token", async () => {
     const response = await createToken();
 
     const error = invalidClientAssertionSignature();
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 401 when the DPoP signature is invalid", async () => {
+    const { keySet: wrongKeySet } = await getMockDpopProof();
+    const wrongDpopProofJWS = await signJWT({
+      jwt: {
+        headers: dpopProofJWT.headers,
+        payload: dpopProofJWT.payload,
+      },
+      keySet: wrongKeySet,
+    });
+
+    const response = await createToken({
+      requestDpopProofJWS: wrongDpopProofJWS,
+    });
+
+    const error = invalidDpopProofSignature();
 
     expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().title).toEqual(error.title);
@@ -665,15 +851,28 @@ describe("POST /token", async () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 400 if the E-service version does not use Bearer token", async () => {
-    const eserviceVersionWithWrongTokenType: EserviceVersion = {
-      ...eserviceVersion,
-      accessTokenType: "DPoP",
-    };
+  it.each([
+    {
+      testCase:
+        "E-service version uses DPoP token but request is using Bearer token",
+      tokenType: "DPoP",
+    },
+    {
+      testCase:
+        "E-service version uses Bearer token but request is using DPoP token",
+      tokenType: "Bearer",
+    },
+  ] satisfies {
+    testCase: string;
+    tokenType: EserviceAccessTokenType;
+  }[])("should return 400 if the $testCase", async ({ tokenType }) => {
     await Promise.all([
       agreementWriterService.upsertAgreement(agreement, 0),
       eserviceWriterService.upsertEservice(
-        { ...eservice, versions: [eserviceVersionWithWrongTokenType] },
+        {
+          ...eservice,
+          versions: [{ ...eserviceVersion, accessTokenType: tokenType }],
+        },
         0,
       ),
       purposeWriterService.upsertPurpose(purpose, 0),
@@ -683,13 +882,36 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await createToken();
+    const response = await createToken({
+      requestDpopProofJWS: tokenType === "Bearer" ? dpopProofJWS : undefined,
+    });
 
-    const error = eserviceVersionNotUsingBearerToken(
-      eserviceVersionWithWrongTokenType,
+    const error = accessTokenTypeMismatch(
+      eserviceVersion,
+      dpopProofJWS !== undefined,
     );
 
     expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 401 if the DPoP proof JTI has been replayed", async () => {
+    await seedTestData("DPoP");
+
+    await storeJti({
+      dynamoClient,
+      expireAtSec: dateToSeconds(new Date()) + 60,
+      jti: dpopProofJWT.payload.jti!,
+      tableName: dynamoDbDpopProofsTable,
+    });
+
+    const response = await createToken({
+      requestDpopProofJWS: dpopProofJWS,
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.json<API_Problem>().errors?.[0]?.detail).toEqual(
+      "DPoP proof already used",
+    );
   });
 });

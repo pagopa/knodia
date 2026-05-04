@@ -3,17 +3,18 @@ import {
   DynamoDBClient,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
-import { dateToSeconds } from "@knodia/common-models/utils";
 
-export type RefreshTokenStore = ReturnType<typeof createRefreshTokenStore>;
+import { storeJti } from "./utils/utils.ts";
+
+export type JtiReplayStore = ReturnType<typeof createJtiReplayStore>;
 
 /**
- * Uses DynamoDB as a set of "seen" JTIs to prevent refresh token replay.
+ * Uses DynamoDB as a set of "seen" JTIs to prevent JWT replay.
  *
  * Each JTI is stored with a `ttl` attribute matching the token's `exp` claim,
  * so entries are automatically cleaned up by DynamoDB's native TTL.
  */
-export function createRefreshTokenStore(
+export function createJtiReplayStore(
   tableName: string,
   dynamoClient?: DynamoDBClient,
 ) {
@@ -27,28 +28,10 @@ export function createRefreshTokenStore(
     /**
      * Marks a JTI as used. Returns `true` if this is the first use,
      * `false` if the JTI was already seen (replay attempt).
-     *
-     * Uses conditional put for atomicity. The `OR ttl < :now` clause
-     * allows overwriting records whose TTL has expired but that DynamoDB
-     * hasn't physically deleted yet (TTL cleanup is best-effort and can
-     * lag behind), preventing stale records from blocking valid writes.
      */
     async consume(jti: string, expireAtSec: number): Promise<boolean> {
-      const nowSec = dateToSeconds(new Date());
       try {
-        await client.send(
-          new PutItemCommand({
-            ConditionExpression: "attribute_not_exists(jti) OR #ttl < :now",
-            // "ttl" is a DynamoDB reserved word — must use a #placeholder
-            ExpressionAttributeNames: { "#ttl": "ttl" },
-            ExpressionAttributeValues: { ":now": { N: String(nowSec) } },
-            Item: {
-              jti: { S: jti },
-              ttl: { N: String(expireAtSec) },
-            },
-            TableName: tableName,
-          }),
-        );
+        await storeJti({ dynamoClient: client, expireAtSec, jti, tableName });
         return true;
       } catch (err) {
         if (err instanceof ConditionalCheckFailedException) {
