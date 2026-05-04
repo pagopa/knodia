@@ -71,6 +71,7 @@ export const buildKnodeApiKeychain = ({
   };
 };
 
+/** @knipignore */
 export function toKnodeApiKeychainKey(
   keySQL: KnodeApiKeychainKeySQL,
 ): ConsumerKeychainKey {
