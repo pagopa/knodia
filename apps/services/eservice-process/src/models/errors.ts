@@ -64,11 +64,11 @@ export function eserviceNotFound(id: EserviceId) {
 export function eserviceTemplateInstanceFieldsCannotBeUpdated(
   eserviceId: EserviceId,
   templateId: ExternalId<EserviceTemplateId>,
-  fields?: (keyof Eservice)[],
+  fields: (keyof Eservice)[],
 ) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_TEMPLATE_INSTANCE_CANNOT_BE_UPDATED",
-    detail: `E-service ${eserviceId} is an instance of template ${templateId}; template-defined fields ${fields ? fields.join(", ") : ""} cannot be updated`,
+    detail: `E-service ${eserviceId} is an instance of template ${templateId}; template-defined fields ${fields.join(", ")} cannot be updated`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Template Instance Cannot Be Updated",
   });

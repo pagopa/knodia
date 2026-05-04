@@ -15,12 +15,11 @@ import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { generalStepSchema } from "../types/eserviceCreateForm";
 import {
-  formatSchemeRefLabels,
   parseSchemeRefKeys,
   renderSchemeRefItems,
   toSchemeRefKey,
 } from "../utils/schemeRef";
-import { DefinedByTemplateReadOnlyField } from "./CreateEServiceForm/components/DefinedByTemplateReadOnlyField";
+import { DefinedByTemplateIconTooltip } from "./CreateEServiceForm/components/DefinedByTemplateIconTooltip";
 
 interface EditEServiceModalProps {
   eservice: bffApi.ProducerEserviceDetails;
@@ -147,20 +146,14 @@ export function EditEServiceModal({
             const value = field.state.value;
             const label = "Categories (optional)";
 
-            if (isTemplateInstance) {
-              return (
-                <DefinedByTemplateReadOnlyField
-                  label={label}
-                  name={field.name}
-                  value={formatSchemeRefLabels(value, categories, {
-                    type: "conjunction",
-                  })}
-                />
-              );
-            }
-
             return (
               <Select
+                endIcon={
+                  isTemplateInstance ? (
+                    <DefinedByTemplateIconTooltip />
+                  ) : undefined
+                }
+                isReadOnly={isTemplateInstance}
                 label={label}
                 name={field.name}
                 onChange={(keys) =>
