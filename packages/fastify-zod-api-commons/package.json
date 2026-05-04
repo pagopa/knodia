@@ -12,7 +12,6 @@
     "./authMock": "./test/mock/authMock.ts",
     "./config": "./src/config/config.ts",
     "./context": "./src/context/context.ts",
-    "./crypto": "./src/utils/crypto.ts",
     "./fastify": "./src/utils/fastify.ts",
     "./generateOpenapi": "./src/utils/generateOpenapi.ts",
     "./health": "./src/routers/healthRouter.ts",

@@ -26,6 +26,7 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { randomUUID } from "node:crypto";
 
@@ -37,6 +38,8 @@ import type {
   UISessionRefreshToken,
   UISessionToken,
 } from "./models.ts";
+
+import { calculateDpopThumbprint } from "./utils/utils.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";
@@ -51,6 +54,7 @@ interface EserviceAccessTokenInput extends TokenParams {
   audience: string[];
   consumer: ExternalResource<OrganizationId>;
   consumerKeychainId: ConsumerKeychainId; // access token client_id claim
+  dpopJWK?: PublicKeyJwk;
   eserviceId: EserviceId;
   eserviceVersionId: EserviceVersionId;
   producer: { id: OrganizationId; knodeId: KnodeId };
@@ -194,6 +198,9 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       const claims: EserviceAccessTokenClaims = {
         aud: input.audience,
         client_id: input.consumerKeychainId,
+        cnf: input.dpopJWK
+          ? { jkt: calculateDpopThumbprint(input.dpopJWK) }
+          : undefined,
         consumer: { id: input.consumer.id, knode_id: input.consumer.knodeId },
         eservice: {
           id: input.eserviceId,

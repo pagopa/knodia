@@ -10,6 +10,7 @@
   "dependencies": {
     "@aws-sdk/client-kms": "catalog:",
     "@knodia/common-models": "workspace:*",
+    "@knodia/crypto": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

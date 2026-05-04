@@ -17,7 +17,10 @@ import type {
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
-import { genericInternalError } from "@knodia/common-models/errors";
+import {
+  genericInternalError,
+  InternalError,
+} from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
   generateId,
@@ -27,11 +30,7 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
-import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-} from "@knodia/fastify-zod-api-commons/crypto";
+import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
 import {
   remoteResourcesManagerApi,
@@ -54,6 +53,7 @@ import type { IdmUser, UserService } from "./userService.ts";
 
 import {
   consumerKeychainNotFound,
+  jwkDecodingError,
   keyNotFoundInKeychain,
   userAlreadyMember,
   userNotFound,
@@ -677,7 +677,16 @@ export function consumerKeychainServiceBuilder(
 
       assertNotX509Certificate(pemKey);
 
-      const jwk = createJWK({ pemKey });
+      let jwk: JsonWebKey;
+      try {
+        jwk = createJWK({ pemKey });
+      } catch (error) {
+        if (error instanceof InternalError) {
+          throw jwkDecodingError(error.message);
+        }
+        throw error;
+      }
+
       const kid = unsafeBrandKeyId(calculateKid(jwk));
 
       await assertKeyIsUnique(
