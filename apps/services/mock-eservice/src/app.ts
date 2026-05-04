@@ -25,6 +25,16 @@ import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 
+const bearerAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Mock e-service endpoints protected by Bearer token access tokens",
+  name: apiTags.bearerTokenMock,
+};
+const dpopAppTag: OpenAPIV3.TagObject = {
+  description: "Mock e-service endpoints protected by DPoP-bound access tokens",
+  name: apiTags.dpopTokenMock,
+};
+
 export function buildApp({
   config,
   dynamoClient,
@@ -53,6 +63,12 @@ export function buildApp({
     config,
     { ...bearerAuthSecurityScheme, ...dpopAuthSecurityScheme },
     [...bearerAuthSecurity, ...dpopAuthSecurity],
+    {
+      description: "Mock e-service API endpoints",
+      title: "Knodia Mock E-service API",
+      version: "1.0.0",
+    },
+    [bearerAppTag, dpopAppTag],
   );
 
   // Public routes (no auth required)
@@ -119,6 +135,12 @@ function buildBearerApp({
     config,
     bearerAuthSecurityScheme,
     bearerAuthSecurity,
+    {
+      description: "Mock e-service API with Bearer token authentication",
+      title: "Knodia Mock E-service API (Bearer)",
+      version: "1.0.0",
+    },
+    [bearerAppTag],
   );
 
   app.register(healthRouter);
@@ -163,6 +185,13 @@ function buildDpopApp({
     config,
     dpopAuthSecurityScheme,
     dpopAuthSecurity,
+    {
+      description:
+        "Mock e-service API with DPoP-bound access token authentication",
+      title: "Knodia Mock E-service API (DPoP)",
+      version: "1.0.0",
+    },
+    [dpopAppTag],
   );
 
   app.register(healthRouter);
@@ -187,25 +216,17 @@ function createMockFastifyApp(
   loggerConfig: LoggerConfig,
   securitySchemes: Record<string, OpenAPIV3.SecuritySchemeObject>,
   security: OpenAPIV3.SecurityRequirementObject[],
+  info: OpenAPIV3.InfoObject,
+  tags: OpenAPIV3.TagObject[],
 ) {
   return createFastifyApp({
     fastifyOptions: {
       openapi: {
         components: { securitySchemes },
-        info: {
-          description: "Mock e-service API endpoints",
-          title: "Knodia Mock E-service API",
-          version: "1.0.0",
-        },
+        info,
         security,
         servers: [{ description: "Mock E-service API", url: "/" }],
-        tags: [
-          healthRouterTag,
-          {
-            description: "Mock e-service data routes",
-            name: apiTags.mock,
-          },
-        ],
+        tags: [healthRouterTag, ...tags],
       },
     },
     loggerConfig,

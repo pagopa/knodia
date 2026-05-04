@@ -3,8 +3,8 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: Mock e-service API endpoints
-  title: Knodia Mock E-service API
+  description: Mock e-service API with DPoP-bound access token authentication
+  title: Knodia Mock E-service API (DPoP)
   version: 1.0.0
 components:
   securitySchemes:
@@ -110,7 +110,7 @@ paths:
       operationId: testDpop
       summary: Mock e-service DPoP endpoint
       tags:
-        - mock
+        - dpopTokenMock
       description: Validates the incoming DPoP access token and returns a static
         success response
       parameters:
@@ -146,5 +146,5 @@ security:
 tags:
   - description: Health check routes
     name: health
-  - description: Mock e-service data routes
-    name: mock
+  - description: Mock e-service endpoints protected by DPoP-bound access tokens
+    name: dpopTokenMock

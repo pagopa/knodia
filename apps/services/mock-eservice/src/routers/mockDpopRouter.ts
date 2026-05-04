@@ -62,7 +62,7 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
       summary: "Mock e-service DPoP endpoint",
-      tags: [apiTags.mock],
+      tags: [apiTags.dpopTokenMock],
     },
     url: "/testDpop",
   });

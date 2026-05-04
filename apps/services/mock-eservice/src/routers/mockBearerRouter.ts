@@ -58,7 +58,7 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
       summary: "Mock e-service endpoint",
-      tags: [apiTags.mock],
+      tags: [apiTags.bearerTokenMock],
     },
     url: "/test",
   });

@@ -116,7 +116,7 @@ paths:
       operationId: test
       summary: Mock e-service endpoint
       tags:
-        - mock
+        - bearerTokenMock
       description: Validates the incoming Bearer access token and returns a static
         success response
       responses:
@@ -141,7 +141,7 @@ paths:
       operationId: testDpop
       summary: Mock e-service DPoP endpoint
       tags:
-        - mock
+        - dpopTokenMock
       description: Validates the incoming DPoP access token and returns a static
         success response
       parameters:
@@ -178,5 +178,7 @@ security:
 tags:
   - description: Health check routes
     name: health
-  - description: Mock e-service data routes
-    name: mock
+  - description: Mock e-service endpoints protected by Bearer token access tokens
+    name: bearerTokenMock
+  - description: Mock e-service endpoints protected by DPoP-bound access tokens
+    name: dpopTokenMock
