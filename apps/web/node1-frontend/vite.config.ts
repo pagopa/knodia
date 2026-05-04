@@ -10,6 +10,17 @@ import { APP_BASE_PATH } from "./src/config/basepath.ts";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  const requestedTheme = env["VITE_THEME"];
+  if (
+    requestedTheme !== undefined &&
+    requestedTheme !== "orion" &&
+    requestedTheme !== "lynx"
+  ) {
+    throw new Error(
+      `[vite] Invalid VITE_THEME="${requestedTheme}". Expected "orion" or "lynx".`,
+    );
+  }
+  const theme = requestedTheme ?? "orion";
 
   return {
     base: APP_BASE_PATH,
@@ -30,6 +41,14 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        "@login-bg.webp": path.resolve(
+          __dirname,
+          `./src/assets/login-bg-${theme}.webp`,
+        ),
+        "@theme.css": path.resolve(
+          __dirname,
+          `../../../packages/ui-kit/src/themes/${theme}.css`,
+        ),
       },
     },
     server: {
