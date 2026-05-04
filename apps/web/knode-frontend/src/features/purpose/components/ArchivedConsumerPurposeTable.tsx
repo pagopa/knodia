@@ -56,17 +56,12 @@ export function ArchivedConsumerPurposeTable({
               {purpose.eservice.name.en}
             </Cell>
             <Cell>
-              <span className="inline-flex items-center gap-2">
-                <KnodeAvatar
-                  className="bg-brand-dark text-white"
-                  knodeId={purpose.producer.knodeId}
-                  name={purpose.producer.name}
-                  size="sm"
-                />
-                <span className="body-md text-primary-light-mid-contrast">
-                  {purpose.producer.name}
-                </span>
-              </span>
+              <KnodeAvatar
+                className="bg-brand-dark text-white"
+                knodeId={purpose.producer.knodeId}
+                name={purpose.producer.name}
+                size="sm"
+              />
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
               {purpose.keychains}
