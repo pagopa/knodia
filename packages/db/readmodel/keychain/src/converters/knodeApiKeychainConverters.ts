@@ -7,7 +7,7 @@ import {
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
-  type ConsumerKeychainKey,
+  type KeychainKey,
   type FlatKnodeApiKeychain,
   KeyAlgorithm,
   KeyFormat,
@@ -74,7 +74,7 @@ export const buildKnodeApiKeychain = ({
 /** @knipignore */
 export function toKnodeApiKeychainKey(
   keySQL: KnodeApiKeychainKeySQL,
-): ConsumerKeychainKey {
+): KeychainKey {
   return {
     algorithm: KeyAlgorithm.parse(keySQL.algorithm),
     createdAt: keySQL.createdAt,

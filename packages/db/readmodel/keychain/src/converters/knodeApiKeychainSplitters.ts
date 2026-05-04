@@ -1,7 +1,7 @@
 import type { KnodeApiKeychainId } from "@knodia/common-models/ids";
 import type {
-  ConsumerKeychainKey,
-  ConsumerKeychainUser,
+  KeychainKey,
+  KeychainUser,
   KnodeApiKeychain,
 } from "@knodia/keychain-models";
 
@@ -49,7 +49,7 @@ const toKnodeApiKeychainKeySQL = ({
   knodeApiKeychainId,
   metadataVersion,
 }: {
-  key: ConsumerKeychainKey;
+  key: KeychainKey;
   knodeApiKeychainId: KnodeApiKeychainId;
   metadataVersion: number;
 }): KnodeApiKeychainKeySQL => ({
@@ -84,7 +84,7 @@ const toKnodeApiKeychainUserSQL = ({
 }: {
   knodeApiKeychainId: KnodeApiKeychainId;
   metadataVersion: number;
-  user: ConsumerKeychainUser;
+  user: KeychainUser;
 }): KnodeApiKeychainUserSQL => ({
   addedAt: user.addedAt,
   knodeApiKeychainId,

@@ -31,7 +31,7 @@ export type KeyFormat = z.infer<typeof KeyFormat>;
 export const KeyAlgorithm = z.enum(["RS256"]);
 export type KeyAlgorithm = z.infer<typeof KeyAlgorithm>;
 
-export const ConsumerKeychainKey = z.strictObject({
+export const KeychainKey = z.strictObject({
   algorithm: KeyAlgorithm,
   createdAt: z.coerce.date(),
   encodedPem: z.string(),
@@ -40,23 +40,23 @@ export const ConsumerKeychainKey = z.strictObject({
   name: LocalizedName,
   userId: UserId,
 });
-export type ConsumerKeychainKey = z.infer<typeof ConsumerKeychainKey>;
+export type KeychainKey = z.infer<typeof KeychainKey>;
 
-export const ConsumerKeychainUser = z.strictObject({
+export const KeychainUser = z.strictObject({
   addedAt: z.coerce.date(),
   userId: UserId,
 });
-export type ConsumerKeychainUser = z.infer<typeof ConsumerKeychainUser>;
+export type KeychainUser = z.infer<typeof KeychainUser>;
 
 export const ConsumerKeychain = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedDescription.optional(),
   id: ConsumerKeychainId,
-  keys: z.array(ConsumerKeychainKey),
+  keys: z.array(KeychainKey),
   name: LocalizedName,
   ownerId: OrganizationId,
   updatedAt: z.coerce.date(),
-  users: z.array(ConsumerKeychainUser),
+  users: z.array(KeychainUser),
 });
 export type ConsumerKeychain = z.infer<typeof ConsumerKeychain>;
 
@@ -73,17 +73,15 @@ export const ConsumerKeychainPurpose = z.strictObject({
 });
 export type ConsumerKeychainPurpose = z.infer<typeof ConsumerKeychainPurpose>;
 
-// KnodeApiKeychain reuses ConsumerKeychainKey / ConsumerKeychainUser:
-// the per-key and per-user shapes are identical across the two domains.
 export const KnodeApiKeychain = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedDescription.optional(),
   id: KnodeApiKeychainId,
-  keys: z.array(ConsumerKeychainKey),
+  keys: z.array(KeychainKey),
   name: LocalizedName,
   ownerId: OrganizationId,
   updatedAt: z.coerce.date(),
-  users: z.array(ConsumerKeychainUser),
+  users: z.array(KeychainUser),
 });
 export type KnodeApiKeychain = z.infer<typeof KnodeApiKeychain>;
 

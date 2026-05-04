@@ -10,11 +10,11 @@ import {
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
-  type ConsumerKeychainKey,
   type ConsumerKeychainPurpose,
-  type ConsumerKeychainUser,
   type FlatConsumerKeychain,
   KeyAlgorithm,
+  type KeychainKey,
+  type KeychainUser,
   KeyFormat,
   LocalizedDescription,
   LocalizedName,
@@ -40,11 +40,11 @@ export const buildConsumerKeychain = ({
         ? undefined
         : LocalizedDescription.parse(consumerKeychainSQL.description),
     id: unsafeBrandId(consumerKeychainSQL.id),
-    keys: consumerKeychainKeysSQL.map(toConsumerKeychainKey),
+    keys: consumerKeychainKeysSQL.map(toKeychainKey),
     name: LocalizedName.parse(consumerKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
     updatedAt: consumerKeychainSQL.updatedAt,
-    users: consumerKeychainUsersSQL.map(toConsumerKeychainUser),
+    users: consumerKeychainUsersSQL.map(toKeychainUser),
   };
 
   return {
@@ -74,20 +74,6 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
-export function toConsumerKeychainKey(
-  keySQL: ConsumerKeychainKeySQL,
-): ConsumerKeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: unsafeBrandKeyId(keySQL.kid),
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
-  };
-}
-
 export function toConsumerKeychainPurpose(
   consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
 ): WithMetadata<ConsumerKeychainPurpose> {
@@ -106,9 +92,19 @@ export function toConsumerKeychainPurpose(
   };
 }
 
-function toConsumerKeychainUser(
-  userSQL: ConsumerKeychainUserSQL,
-): ConsumerKeychainUser {
+export function toKeychainKey(keySQL: ConsumerKeychainKeySQL): KeychainKey {
+  return {
+    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
+    createdAt: keySQL.createdAt,
+    encodedPem: keySQL.encodedPem,
+    format: KeyFormat.parse(keySQL.format),
+    kid: unsafeBrandKeyId(keySQL.kid),
+    name: LocalizedName.parse(keySQL.name),
+    userId: unsafeBrandUserId(keySQL.userId),
+  };
+}
+
+function toKeychainUser(userSQL: ConsumerKeychainUserSQL): KeychainUser {
   return {
     addedAt: userSQL.addedAt,
     userId: unsafeBrandUserId(userSQL.userId),
