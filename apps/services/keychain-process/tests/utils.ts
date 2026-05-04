@@ -10,6 +10,7 @@ import { generateId, type KnodeId } from "@knodia/common-models/ids";
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
 import { expect } from "vitest";
 
 import {
@@ -91,8 +92,8 @@ export function toRRM_Purpose(
     knodeId,
     name: purpose.name,
     state: purpose.state,
-    suspendedByConsumerAt: purpose.suspendedByConsumerAt?.toISOString() ?? null,
-    suspendedByProducerAt: purpose.suspendedByProducerAt?.toISOString() ?? null,
+    suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
+    suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
     updatedAt: purpose.updatedAt.toISOString(),
   };
 }

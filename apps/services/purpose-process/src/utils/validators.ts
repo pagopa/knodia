@@ -24,6 +24,7 @@ import {
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
+  purposeNotInExpectedStates,
   purposeNotInReactivatableState,
   purposeNotInSuspendableState,
 } from "../models/errors.ts";
@@ -146,6 +147,16 @@ export function assertPurposeCanBeSuspendedBy(
       throwNotSuspendable();
     })
     .exhaustive();
+}
+
+export function assertPurposeIsSuspended(purpose: Purpose): void {
+  if (purpose.state !== PurposeState.enum.Suspended) {
+    throw purposeNotInExpectedStates({
+      allowedStates: [PurposeState.enum.Suspended],
+      purposeId: purpose.id,
+      state: purpose.state,
+    });
+  }
 }
 
 function getOwnSuspendedAt(purpose: Purpose, actor: PurposeActor): Date | null {

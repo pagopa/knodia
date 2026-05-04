@@ -8,6 +8,7 @@ import { zocker } from "zocker";
 
 import {
   PurposeActivatedV1,
+  PurposeArchivedV1,
   PurposeReactivatedByConsumerV1,
   PurposeReactivatedByProducerV1,
   PurposeSuspendedByConsumerV1,
@@ -75,6 +76,11 @@ describe("PurposeEventV1 codec", () => {
       purpose: consumerOnlySuspendedPurpose,
       type: "PurposeReactivatedByProducerV1" as const,
     },
+    {
+      message: PurposeArchivedV1,
+      purpose: consumerOnlySuspendedPurpose,
+      type: "PurposeArchivedV1" as const,
+    },
   ] as const;
 
   it.each(cases)(
@@ -87,6 +93,7 @@ describe("PurposeEventV1 codec", () => {
           { type: "PurposeSuspendedByProducerV1" },
           { type: "PurposeReactivatedByConsumerV1" },
           { type: "PurposeReactivatedByProducerV1" },
+          { type: "PurposeArchivedV1" },
           ({ purpose: p, type }): PurposeEventV1 => ({
             data: { purpose: toPurposeV1(p) },
             type,

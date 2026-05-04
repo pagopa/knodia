@@ -25,12 +25,9 @@ import { match } from "ts-pattern";
 
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
-import {
-  ConsumerSuspendAgreementBody,
-  SuspendAgreementModal,
-} from "@/features/agreement/components/SuspendAgreementModal";
-import { useReactivateConsumerAgreement } from "@/features/agreement/hooks/useReactivateConsumerAgreement";
-import { useSuspendConsumerAgreement } from "@/features/agreement/hooks/useSuspendConsumerAgreement";
+import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
+import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
+import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
 import { EservicePurposeSection } from "./EservicePurposeSection";
 
@@ -97,7 +94,7 @@ function AgreementStatusBanner({
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
 
   const { isPending: isReactivatePending, reactivateAgreement } =
-    useReactivateConsumerAgreement({
+    useReactivateAgreementByConsumer({
       agreementId,
       eserviceId,
       knodeId,
@@ -106,7 +103,7 @@ function AgreementStatusBanner({
   const banner = match(agreement.state)
     .with("Active", () =>
       canManageAgreement ? (
-        <SuspendConsumerAgreementButton
+        <SuspendAgreementByConsumerButton
           agreementId={agreementId}
           eserviceId={eserviceId}
           knodeId={knodeId}
@@ -223,7 +220,7 @@ function CollapseTrigger({
   );
 }
 
-function SuspendConsumerAgreementButton({
+function SuspendAgreementByConsumerButton({
   agreementId,
   eserviceId,
   knodeId,
@@ -233,11 +230,12 @@ function SuspendConsumerAgreementButton({
   knodeId: KnodeId;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isError, isPending, suspendAgreement } = useSuspendConsumerAgreement({
-    agreementId,
-    eserviceId,
-    knodeId,
-  });
+  const { isError, isPending, suspendAgreement } =
+    useSuspendAgreementByConsumer({
+      agreementId,
+      eserviceId,
+      knodeId,
+    });
 
   return (
     <>
@@ -253,9 +251,8 @@ function SuspendConsumerAgreementButton({
         isPending={isPending}
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
-      >
-        <ConsumerSuspendAgreementBody />
-      </SuspendAgreementModal>
+        suspendActor="consumer"
+      />
     </>
   );
 }
