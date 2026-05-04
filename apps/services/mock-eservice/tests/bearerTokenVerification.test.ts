@@ -22,8 +22,8 @@ import {
   TEST_KNODE_ID,
 } from "./setup.ts";
 
-// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockRouter.ts
-// (kept in sync with docker/readmodel-seed/mock-eservice.sql).
+// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockBearerRouter.ts
+// (kept in sync with docker/readmodel-seed/mock-bearer-eservice.sql).
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "10000000-0000-4000-8000-000000000001",
 );
