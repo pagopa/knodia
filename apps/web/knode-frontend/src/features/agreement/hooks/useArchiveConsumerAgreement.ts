@@ -5,7 +5,7 @@ import type {
 } from "@knodia/common-models/ids";
 
 import {
-  archiveConsumerAgreementMutation,
+  archiveAgreementByConsumerMutation,
   getConsumerAgreementsQueryKey,
 } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,7 +27,7 @@ export function useArchiveConsumerAgreement({
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({
-    ...archiveConsumerAgreementMutation({ client }),
+    ...archiveAgreementByConsumerMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         consumerEserviceDetailsQuery(eserviceId, knodeId),
