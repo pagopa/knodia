@@ -486,10 +486,6 @@ export type GetEserviceErrors = {
      * E-service not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type GetEserviceError = GetEserviceErrors[keyof GetEserviceErrors];
@@ -535,6 +531,10 @@ export type UpdateEserviceErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateEserviceError = UpdateEserviceErrors[keyof UpdateEserviceErrors];
