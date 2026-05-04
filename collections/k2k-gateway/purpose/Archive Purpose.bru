@@ -1,0 +1,17 @@
+meta {
+  name: Archive Purpose
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/purposes/:purposeId/archive
+  body: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  ~Authorization:
+}
