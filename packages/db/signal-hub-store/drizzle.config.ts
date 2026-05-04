@@ -13,8 +13,6 @@ export default defineConfig({
   },
   dialect: "postgresql",
   out: "./generated",
-  schemaFilter: [
-    signalHubStoreDbConfig.signalHubStoreDbSchema,
-  ],
+  schemaFilter: [signalHubStoreDbConfig.signalHubStoreDbSchema],
   tablesFilter: ["!flyway_schema_history"],
 });

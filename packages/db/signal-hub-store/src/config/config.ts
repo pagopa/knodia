@@ -1,7 +1,7 @@
 import { env } from "node:process";
 import { z } from "zod";
 
-export const SignalHubStoreDbConfig = z
+const SignalHubStoreDbConfig = z
   .object({
     SIGNAL_HUB_STORE_DB_HOST: z.string(),
     SIGNAL_HUB_STORE_DB_NAME: z.string(),
@@ -20,7 +20,7 @@ export const SignalHubStoreDbConfig = z
     signalHubStoreDbUser: c.SIGNAL_HUB_STORE_DB_USER,
     signalHubStoreDbUseSsl: c.SIGNAL_HUB_STORE_DB_USE_SSL,
   }));
-export type SignalHubStoreDbConfig = z.infer<typeof SignalHubStoreDbConfig>;
+type SignalHubStoreDbConfig = z.infer<typeof SignalHubStoreDbConfig>;
 
 export const signalHubStoreDbConfig: SignalHubStoreDbConfig =
   SignalHubStoreDbConfig.parse(env);

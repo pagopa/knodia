@@ -11,7 +11,6 @@
     "db:schema-normalize": "node ../../../scripts/normalize-drizzle-output.ts"
   },
   "dependencies": {
-    "@knodia/common-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
@@ -20,6 +19,7 @@
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",

@@ -2,7 +2,6 @@ import {
   bigint,
   bigserial,
   pgSchema,
-  primaryKey,
   text,
   timestamp,
   unique,
@@ -15,6 +14,7 @@ const signalHubStoreSchema = pgSchema(
   signalHubStoreDbConfig.signalHubStoreDbSchema,
 );
 
+/** @knipignore */
 export const signalHubSignal = signalHubStoreSchema.table(
   "signal",
   {
@@ -36,7 +36,3 @@ export const signalHubSignal = signalHubStoreSchema.table(
     ),
   ],
 );
-
-export type NewSignalHubSignal = typeof signalHubSignal.$inferInsert;
-
-export type SignalHubSignalSQL = typeof signalHubSignal.$inferSelect;

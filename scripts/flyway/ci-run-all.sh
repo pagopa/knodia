@@ -11,6 +11,7 @@ declare -A DB_MAP=(
   [event-store]=event_store
   [read-model]=readmodel
   [remote-resource]=remote_resource
+  [signal-hub-store]=signal_hub_store
 )
 
 run_flyway() {
