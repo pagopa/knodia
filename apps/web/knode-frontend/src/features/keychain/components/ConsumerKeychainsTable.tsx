@@ -10,28 +10,35 @@ import {
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import { type ReactNode } from "react";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
-interface EserviceLinkedConsumerKeychainsTableProps {
+interface ConsumerKeychainsTableProps {
+  emptyState: {
+    icon: ReactNode;
+    message: ReactNode;
+  };
   isLoading: boolean;
   keychains: bffApi.Keychain[];
+  rowActions?: (keychain: bffApi.Keychain) => ReactNode;
 }
 
-export function EserviceLinkedConsumerKeychainsTable({
+export function ConsumerKeychainsTable({
+  emptyState,
   isLoading,
   keychains,
-}: EserviceLinkedConsumerKeychainsTableProps) {
+  rowActions,
+}: ConsumerKeychainsTableProps) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
 
   if (keychains.length === 0) {
     return (
-      <Banner icon={<SelectionIcon />} kind="neutral">
-        To request an access token for this E-Service, associate a Keychain to a
-        Purpose from the Purpose page. Associated Keychains will appear here.
+      <Banner icon={emptyState.icon} kind="neutral">
+        {emptyState.message}
       </Banner>
     );
   }
@@ -55,7 +62,8 @@ export function EserviceLinkedConsumerKeychainsTable({
             </Cell>
             <Cell>{keychain.keysCount}</Cell>
             <Cell>
-              <div className="flex justify-end">
+              <div className="flex justify-end items-center gap-2">
+                {rowActions?.(keychain)}
                 <ButtonLinkWithPreload
                   hierarchy="neutral"
                   kind="outlined"
