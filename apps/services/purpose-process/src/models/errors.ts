@@ -39,6 +39,7 @@ const errorCodes = {
   PURPOSE_NOT_IN_SUSPENDABLE_STATE: "0008",
   PURPOSE_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_PURPOSE_PRODUCER: "0010",
+  PURPOSE_NOT_IN_EXPECTED_STATES: "0011",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -150,6 +151,23 @@ export function purposeNotFound(id: PurposeId) {
     detail: `Purpose with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Purpose Not Found",
+  });
+}
+
+export function purposeNotInExpectedStates({
+  allowedStates,
+  purposeId,
+  state,
+}: {
+  allowedStates: PurposeState[];
+  purposeId: PurposeId;
+  state: PurposeState;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_IN_EXPECTED_STATES",
+    detail: `Purpose ${purposeId} is in state ${state}, expected one of [${allowedStates.join(", ")}]`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Purpose Not in Expected States",
   });
 }
 

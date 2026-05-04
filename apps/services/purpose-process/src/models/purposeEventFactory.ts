@@ -18,6 +18,22 @@ export const createPurposeActivatedV1Event = (
   streamId: purpose.id,
 });
 
+export const createPurposeArchivedV1Event = (
+  purpose: Purpose,
+  currentVersion: number,
+  correlationId: CorrelationId,
+): NewEventStorePurposeEvent => ({
+  correlationId,
+  currentMetadataVersion: currentVersion,
+  event: {
+    data: {
+      purpose: toPurposeV1(purpose),
+    },
+    type: "PurposeArchivedV1",
+  },
+  streamId: purpose.id,
+});
+
 export const createPurposeReactivatedByConsumerV1Event = (
   purpose: Purpose,
   currentVersion: number,

@@ -144,7 +144,17 @@ export type User = {
     username: string;
 };
 
-export type Users = Array<User>;
+export type OrganizationUser = {
+    email: string;
+    id: UserId;
+    username: string;
+    /**
+     * Whether the User has the technical role within the Organization
+     */
+    isTechnical: boolean;
+};
+
+export type OrganizationUsers = Array<OrganizationUser>;
 
 export type KeychainMemberSeed = {
     userId: UserId;
@@ -1014,7 +1024,7 @@ export type GetConsumerKeychainPurposeResponses = {
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
 
-export type GetTechnicalUsersData = {
+export type GetOrganizationUsersData = {
     body?: never;
     headers: {
         /**
@@ -1024,10 +1034,10 @@ export type GetTechnicalUsersData = {
     };
     path?: never;
     query?: never;
-    url: '/users/technical';
+    url: '/users';
 };
 
-export type GetTechnicalUsersErrors = {
+export type GetOrganizationUsersErrors = {
     /**
      * Bad Request
      */
@@ -1042,13 +1052,13 @@ export type GetTechnicalUsersErrors = {
     403: Problem;
 };
 
-export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
 
-export type GetTechnicalUsersResponses = {
+export type GetOrganizationUsersResponses = {
     /**
-     * Technical Users retrieved successfully
+     * Organization Users retrieved successfully
      */
-    200: Users;
+    200: OrganizationUsers;
 };
 
-export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
+export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
