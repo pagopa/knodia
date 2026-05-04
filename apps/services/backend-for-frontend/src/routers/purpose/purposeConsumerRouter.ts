@@ -35,6 +35,7 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_ArchiveConsumerPurposeQueryParams,
   API_ConsumerPurposes,
   API_GetConsumerPurposeDetailQueryParams,
   API_GetConsumerPurposeFormSchemaQueryParams,
@@ -428,5 +429,45 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/consumer/purposes/:purposeId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(
+        `Archiving Purpose ${req.params.purposeId} on knode ${req.query.knodeId} by Consumer`,
+      );
+
+      await remoteResourcesManagerApi.archivePurpose({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { purposeId: req.params.purposeId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Archive a Purpose as Consumer",
+      operationId: "archivePurposeByConsumer",
+      params: API_PurposeIdPathParam,
+      querystring: API_ArchiveConsumerPurposeQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/consumer/purposes/:purposeId/archive",
   });
 };
