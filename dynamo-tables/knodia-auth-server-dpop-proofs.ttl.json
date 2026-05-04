@@ -1,0 +1,7 @@
+{
+  "TableName": "knodia-auth-server-dpop-proofs",
+  "TimeToLiveSpecification": {
+    "Enabled": true,
+    "AttributeName": "ttl"
+  }
+}

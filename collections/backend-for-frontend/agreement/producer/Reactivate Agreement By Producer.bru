@@ -1,0 +1,19 @@
+meta {
+  name: Reactivate Agreement By Producer
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producer/agreements/:agreementId/reactivate
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+

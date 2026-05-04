@@ -14,6 +14,10 @@ export interface PurposeActivatedV1 {
   purpose: PurposeV1 | undefined;
 }
 
+export interface PurposeArchivedV1 {
+  purpose: PurposeV1 | undefined;
+}
+
 export interface PurposeSuspendedByConsumerV1 {
   purpose: PurposeV1 | undefined;
 }
@@ -83,6 +87,66 @@ export const PurposeActivatedV1: MessageFns<PurposeActivatedV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<PurposeActivatedV1>, I>>(object: I): PurposeActivatedV1 {
     const message = createBasePurposeActivatedV1();
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePurposeArchivedV1(): PurposeArchivedV1 {
+  return { purpose: undefined };
+}
+
+export const PurposeArchivedV1: MessageFns<PurposeArchivedV1> = {
+  encode(message: PurposeArchivedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeArchivedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeArchivedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeArchivedV1 {
+    return { purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined };
+  },
+
+  toJSON(message: PurposeArchivedV1): unknown {
+    const obj: any = {};
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeArchivedV1>, I>>(base?: I): PurposeArchivedV1 {
+    return PurposeArchivedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeArchivedV1>, I>>(object: I): PurposeArchivedV1 {
+    const message = createBasePurposeArchivedV1();
     message.purpose = (object.purpose !== undefined && object.purpose !== null)
       ? PurposeV1.fromPartial(object.purpose)
       : undefined;

@@ -12,6 +12,7 @@
     "./errors": "./src/errors.ts"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "axios": "catalog:",
     "zod": "catalog:"

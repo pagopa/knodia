@@ -11,7 +11,7 @@ import type { ConsumerKeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { UserRole } from "@knodia/common-models/auth";
-import { isX509Certificate } from "@knodia/fastify-zod-api-commons/crypto";
+import { isX509Certificate } from "@knodia/crypto";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";

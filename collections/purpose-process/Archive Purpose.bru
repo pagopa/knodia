@@ -1,0 +1,19 @@
+meta {
+  name: Archive Purpose
+  type: http
+}
+
+post {
+  url: {{host-purpose-process}}/purposes/:purposeId/archive
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}
