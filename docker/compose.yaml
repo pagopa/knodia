@@ -32,6 +32,7 @@ services:
       - ../migration/event-store:/flyway/databases/event_store:ro
       - ../migration/read-model:/flyway/databases/readmodel:ro
       - ../migration/remote-resource:/flyway/databases/remote_resource:ro
+      - ../migration/signal-hub-store:/flyway/databases/signal_hub_store:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
