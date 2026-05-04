@@ -405,4 +405,43 @@ export const purposeRouter: FastifyPluginAsyncZod<
     },
     url: "/purposes/:purposeId/reactivateByProducer",
   });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.archivePurpose(req.params.purposeId, ctx);
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      description: "Archive a Purpose",
+      headers: KnodiaServiceHeaders,
+      operationId: "archivePurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose archived successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Archive Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/archive",
+  });
 };

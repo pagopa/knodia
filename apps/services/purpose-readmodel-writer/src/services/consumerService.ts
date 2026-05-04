@@ -18,6 +18,7 @@ export async function handlePurposeEvent(
       {
         type: P.union(
           "PurposeActivatedV1",
+          "PurposeArchivedV1",
           "PurposeSuspendedByConsumerV1",
           "PurposeSuspendedByProducerV1",
           "PurposeReactivatedByConsumerV1",

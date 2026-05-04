@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import {
   PurposeActivatedV1,
+  PurposeArchivedV1,
   PurposeReactivatedByConsumerV1,
   PurposeReactivatedByProducerV1,
   PurposeSuspendedByConsumerV1,
@@ -30,6 +31,10 @@ export const PurposeEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(PurposeReactivatedByProducerV1),
     type: z.literal("PurposeReactivatedByProducerV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(PurposeArchivedV1),
+    type: z.literal("PurposeArchivedV1"),
   }),
 ]);
 export type PurposeEventV1 = z.infer<typeof PurposeEventV1>;

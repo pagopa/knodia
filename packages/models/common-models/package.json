@@ -8,8 +8,8 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    "./algorithms": "./src/algorithms.ts",
     "./api": "./src/api/api.ts",
+    "./crypto": "./src/crypto.ts",
     "./internalApi": "./src/api/internalApi.ts",
     "./auth": "./src/auth/index.ts",
     "./errors": "./src/errors.ts",

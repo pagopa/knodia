@@ -1,0 +1,19 @@
+meta {
+  name: Suspend Purpose By Producer
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producer/purposes/:purposeId/suspend
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+

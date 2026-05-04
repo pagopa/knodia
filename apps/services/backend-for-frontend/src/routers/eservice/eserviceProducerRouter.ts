@@ -613,7 +613,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an E-service",
-      operationId: "suspendProducerEservice",
+      operationId: "suspendEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -655,7 +655,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate a suspended E-service",
-      operationId: "reactivateProducerEservice",
+      operationId: "reactivateEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({

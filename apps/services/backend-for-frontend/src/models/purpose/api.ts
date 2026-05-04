@@ -49,7 +49,13 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
-export const API_SuspendReactivateConsumerPurposeQueryParams = z.strictObject({
+export const API_SuspendReactivatePurposeByConsumerQueryParams = z.strictObject(
+  {
+    knodeId: API_KnodeId,
+  },
+);
+
+export const API_ArchiveConsumerPurposeQueryParams = z.strictObject({
   knodeId: API_KnodeId,
 });
 

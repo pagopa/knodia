@@ -9,6 +9,7 @@ import type { AuthorizationServerConfig } from "../config/config.ts";
 
 import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { AuthServerHeaders } from "../models/headers.ts";
 import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
@@ -18,14 +19,7 @@ interface TokenRouterOptions {
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  {
-    config: {
-      clientAssertionAcceptedAudiences,
-      clientAssertionClockToleranceSeconds,
-      clientAssertionMaxTokenAgeSeconds,
-    },
-    tokenService,
-  },
+  { config, tokenService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -44,10 +38,9 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         {
           clientAssertionJWS: req.body.client_assertion,
           consumerKeychainId: unsafeBrandId(req.body.client_id),
+          dpopProofJWS: req.headers.dpop,
         },
-        clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
-        clientAssertionMaxTokenAgeSeconds,
+        config,
         logger,
       );
 
@@ -58,6 +51,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       body: API_TokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
       description: "Issue an E-service access token",
+      headers: AuthServerHeaders,
       operationId: "createToken",
       response: {
         200: API_TokenResponse.meta({
