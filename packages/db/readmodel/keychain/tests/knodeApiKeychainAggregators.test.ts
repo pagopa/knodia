@@ -1,7 +1,7 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
-  FlatKnodeApiKeychain,
+  type FlatKnodeApiKeychain,
   type KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import {
@@ -103,7 +103,7 @@ describe("Knode API keychain aggregators", () => {
     );
 
     expect(aggregated).toEqual({
-      data: FlatKnodeApiKeychain.parse(knodeApiKeychain.data),
+      data: toFlatKnodeApiKeychain(knodeApiKeychain.data),
       metadata: knodeApiKeychain.metadata,
     });
   });
@@ -139,14 +139,27 @@ describe("Knode API keychain aggregators", () => {
     expect(aggregated).toEqual(
       expect.arrayContaining([
         {
-          data: FlatKnodeApiKeychain.parse(knodeApiKeychain1.data),
+          data: toFlatKnodeApiKeychain(knodeApiKeychain1.data),
           metadata: knodeApiKeychain1.metadata,
         },
         {
-          data: FlatKnodeApiKeychain.parse(knodeApiKeychain2.data),
+          data: toFlatKnodeApiKeychain(knodeApiKeychain2.data),
           metadata: knodeApiKeychain2.metadata,
         },
       ]),
     );
   });
 });
+
+function toFlatKnodeApiKeychain(
+  knodeApiKeychain: KnodeApiKeychain,
+): FlatKnodeApiKeychain {
+  return {
+    createdAt: knodeApiKeychain.createdAt,
+    description: knodeApiKeychain.description,
+    id: knodeApiKeychain.id,
+    name: knodeApiKeychain.name,
+    ownerId: knodeApiKeychain.ownerId,
+    updatedAt: knodeApiKeychain.updatedAt,
+  };
+}

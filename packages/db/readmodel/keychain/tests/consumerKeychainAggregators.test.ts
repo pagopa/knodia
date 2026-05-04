@@ -2,7 +2,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
   type ConsumerKeychain,
-  FlatConsumerKeychain,
+  type FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 import {
   getMockConsumerKeychain,
@@ -103,7 +103,7 @@ describe("Consumer keychain aggregators", () => {
     );
 
     expect(aggregated).toEqual({
-      data: FlatConsumerKeychain.parse(consumerKeychain.data),
+      data: toFlatConsumerKeychain(consumerKeychain.data),
       metadata: consumerKeychain.metadata,
     });
   });
@@ -139,14 +139,27 @@ describe("Consumer keychain aggregators", () => {
     expect(aggregated).toEqual(
       expect.arrayContaining([
         {
-          data: FlatConsumerKeychain.parse(consumerKeychain1.data),
+          data: toFlatConsumerKeychain(consumerKeychain1.data),
           metadata: consumerKeychain1.metadata,
         },
         {
-          data: FlatConsumerKeychain.parse(consumerKeychain2.data),
+          data: toFlatConsumerKeychain(consumerKeychain2.data),
           metadata: consumerKeychain2.metadata,
         },
       ]),
     );
   });
 });
+
+function toFlatConsumerKeychain(
+  consumerKeychain: ConsumerKeychain,
+): FlatConsumerKeychain {
+  return {
+    createdAt: consumerKeychain.createdAt,
+    description: consumerKeychain.description,
+    id: consumerKeychain.id,
+    name: consumerKeychain.name,
+    ownerId: consumerKeychain.ownerId,
+    updatedAt: consumerKeychain.updatedAt,
+  };
+}
