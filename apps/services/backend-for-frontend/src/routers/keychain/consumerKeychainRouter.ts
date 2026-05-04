@@ -754,8 +754,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
         // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
         // otherwise the linked Consumer Keychains list will be undercounted
-        const keychainPages = await Promise.all(
-          purposes.results.map((purpose) =>
+        const keychainResponses = await Promise.all(
+          purposes.results.map((p) =>
             keychainProcessApi.getConsumerKeychains({
               client: keychainProcessClient,
               headers,
@@ -763,14 +763,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
                 limit: 50,
                 offset: 0,
                 ownerId,
-                purpose: `${purpose.knodeId}:${purpose.id}`,
+                purpose: `${p.knodeId}:${p.id}`,
               },
             }),
           ),
         );
 
         const dedupedKeychains = new Map<string, keychainProcessApi.Keychain>();
-        for (const { data } of keychainPages) {
+        for (const { data } of keychainResponses) {
           for (const keychain of data.results) {
             dedupedKeychains.set(keychain.id, keychain);
           }
