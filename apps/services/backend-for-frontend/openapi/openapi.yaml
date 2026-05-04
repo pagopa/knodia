@@ -4641,7 +4641,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/archive:
     post:
-      operationId: archiveConsumerAgreement
+      operationId: archiveAgreementByConsumer
       tags:
         - agreement
       description: Archive an Agreement as Consumer

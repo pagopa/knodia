@@ -2776,7 +2776,7 @@ export type SuspendAgreementByConsumerResponses = {
 
 export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
 
-export type ArchiveConsumerAgreementData = {
+export type ArchiveAgreementByConsumerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2787,7 +2787,7 @@ export type ArchiveConsumerAgreementData = {
     url: '/consumer/agreements/{agreementId}/archive';
 };
 
-export type ArchiveConsumerAgreementErrors = {
+export type ArchiveAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2810,16 +2810,16 @@ export type ArchiveConsumerAgreementErrors = {
     409: Problem;
 };
 
-export type ArchiveConsumerAgreementError = ArchiveConsumerAgreementErrors[keyof ArchiveConsumerAgreementErrors];
+export type ArchiveAgreementByConsumerError = ArchiveAgreementByConsumerErrors[keyof ArchiveAgreementByConsumerErrors];
 
-export type ArchiveConsumerAgreementResponses = {
+export type ArchiveAgreementByConsumerResponses = {
     /**
      * Agreement archived successfully
      */
     204: void;
 };
 
-export type ArchiveConsumerAgreementResponse = ArchiveConsumerAgreementResponses[keyof ArchiveConsumerAgreementResponses];
+export type ArchiveAgreementByConsumerResponse = ArchiveAgreementByConsumerResponses[keyof ArchiveAgreementByConsumerResponses];
 
 export type GetConsumerPurposesData = {
     body?: never;

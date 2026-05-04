@@ -431,7 +431,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Archive an Agreement as Consumer",
-      operationId: "archiveConsumerAgreement",
+      operationId: "archiveAgreementByConsumer",
       params: API_AgreementIdPathParam,
       querystring: API_ConsumerAgreementActionQueryParams,
       response: {
