@@ -107,9 +107,7 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
             value={field.state.value}
           >
             <Radio value="Bearer">Bearer</Radio>
-            <Radio isDisabled value="DPoP">
-              DPoP
-            </Radio>
+            <Radio value="DPoP">DPoP</Radio>
           </RadioGroup>
         )}
       </form.Field>

@@ -7,6 +7,7 @@ import type {
   InternalTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
+import type { PublicKeyJwk } from "@knodia/common-models/crypto";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { type SignCommand } from "@aws-sdk/client-kms";
@@ -27,10 +28,11 @@ import {
   unsafeBrandId,
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
-import { getMockEservice } from "@knodia/test-commons/utils";
+import { getMockDpopProof, getMockEservice } from "@knodia/test-commons/utils";
 import { afterAll, assert, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
+import { calculateDpopThumbprint } from "../src/utils/utils.ts";
 import { kmsSendMock, testKmsClient } from "./utils.ts";
 
 function decodeB64url(s: string): unknown {
@@ -55,6 +57,8 @@ const producer: { id: OrganizationId; knodeId: KnodeId } = {
 const eservice = getMockEservice({ latestVersionState: "Active" });
 const eserviceVersion = eservice.versions[0]!;
 const purposeId = generateId<PurposeId>();
+
+const { dpopProofJWT } = await getMockDpopProof();
 
 // External-ui-session resource fields shared by the regular and magic-link variants
 const externalUISessionResourceInput = {
@@ -188,7 +192,47 @@ const testCases = [
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,
       }),
-    name: "generateEserviceAccessToken",
+    name: "generateBearerEserviceAccessToken",
+    tokenDuration: eserviceVersion.accessTokenDuration,
+  },
+  {
+    expectedPayload: {
+      aud: ["my-audience"],
+      client_id: consumerKeychainId,
+      cnf: {
+        jkt: calculateDpopThumbprint(dpopProofJWT.headers.jwk as PublicKeyJwk),
+      },
+      consumer: { id: consumer.id, knode_id: consumer.knodeId },
+      eservice: {
+        id: eservice.id,
+        knode_id: producer.knodeId,
+        version: eserviceVersion.id,
+      },
+      exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
+      iat: MOCK_NOW_SECONDS,
+      iss: "my-issuer",
+      jti: expect.any(String),
+      nbf: MOCK_NOW_SECONDS,
+      producer: { id: producer.id, knode_id: producer.knodeId },
+      purpose: { id: purposeId, knode_id: producer.knodeId },
+      sub: consumerKeychainId,
+    } satisfies EserviceAccessTokenClaims,
+    generate: () =>
+      generator.generateEserviceAccessToken({
+        audience: ["my-audience"],
+        consumer,
+        consumerKeychainId,
+        dpopJWK: dpopProofJWT.headers.jwk as PublicKeyJwk,
+        eserviceId: eservice.id,
+        eserviceVersionId: eserviceVersion.id,
+        issuer: "my-issuer",
+        kid: KID,
+        producer,
+        purposeId,
+        secondsDuration: eserviceVersion.accessTokenDuration,
+        subject: consumerKeychainId,
+      }),
+    name: "generateDpopEserviceAccessToken",
     tokenDuration: eserviceVersion.accessTokenDuration,
   },
   {

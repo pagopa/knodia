@@ -101,7 +101,10 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     method: "POST",
     schema: {
       cookies: z.object({
-        session: z.string().optional().describe("HttpOnly session cookie"),
+        session: z
+          .string()
+          .optional()
+          .meta({ description: "HttpOnly session cookie" }),
       }),
       description: "Test endpoint with cookie parameter",
       operationId: "testCookie",

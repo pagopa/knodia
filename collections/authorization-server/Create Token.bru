@@ -9,6 +9,10 @@ post {
   auth: none
 }
 
+headers {
+  ~DPoP: {{dpopProof}}
+}
+
 body:form-urlencoded {
   client_assertion: {{process.env.CLIENT_ASSERTION_JWT}}
   client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer

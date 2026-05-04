@@ -1,23 +1,24 @@
 import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-  isX509Certificate,
-} from "@knodia/fastify-zod-api-commons/crypto";
-import {
-  invalidKeyLength,
-  invalidPublicKey,
-  notAllowedMultipleKeys,
-  notAllowedPrivateKey,
-  notAnRSAKey,
-} from "@knodia/fastify-zod-api-commons/models";
-import {
   createEcKeyPair,
   createRsaKeyPair,
   rsaX509CertificatePem,
   toBase64,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
+
+import {
+  calculateKid,
+  createJWK,
+  decodeBase64Pem,
+  isX509Certificate,
+} from "../src/crypto.ts";
+import {
+  invalidKeyLength,
+  invalidPublicKey,
+  notAllowedMultipleKeys,
+  notAllowedPrivateKey,
+  notAnRSAKey,
+} from "../src/errors.ts";
 
 const rsa2048KeyPair = createRsaKeyPair(2048);
 const rsa1024KeyPair = createRsaKeyPair(1024);

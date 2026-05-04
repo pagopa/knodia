@@ -1,19 +1,15 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
-import { afterAll, beforeAll, inject } from "vitest";
+import { resetDynamoTable } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildAppFromConfig } from "../src/app.ts";
-import {
-  createRefreshTokenStore,
-  type RefreshTokenStore,
-} from "../src/services/refreshTokenStore.ts";
 
 // Must match a schema file under dynamo-tables/
-export const refreshTokenTableName = "knodia-bff-refresh-tokens";
+const refreshTokenTableName = "knodia-bff-refresh-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
-export let dynamoClient: DynamoDBClient;
-export let refreshTokenStore: RefreshTokenStore;
+let dynamoClient: DynamoDBClient;
 
 beforeAll(async () => {
   dynamoClient = new DynamoDBClient({
@@ -21,10 +17,6 @@ beforeAll(async () => {
     endpoint: inject("DYNAMODB_CONNECTION_STRING"),
     region: "eu-south-1",
   });
-  refreshTokenStore = createRefreshTokenStore(
-    refreshTokenTableName,
-    dynamoClient,
-  );
 
   app = buildAppFromConfig(
     {
@@ -70,6 +62,10 @@ beforeAll(async () => {
   );
 
   await app.ready();
+});
+
+afterEach(async () => {
+  await resetDynamoTable(refreshTokenTableName, "jti", dynamoClient);
 });
 
 afterAll(async () => {

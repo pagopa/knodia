@@ -1,6 +1,8 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import formBody from "@fastify/formbody";
+import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -20,15 +22,22 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
   config,
+  dynamoClient,
   readmodelDb,
 }: {
   config: AuthorizationServerConfig;
+  dynamoClient?: DynamoDBClient;
   readmodelDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     consumerKnodeUrl: config.consumerKnodeUrl,
   });
   const tokenGenerator = tokenGeneratorBuilder();
+
+  const dpopProofStore = createJtiReplayStore(
+    config.dynamoDbDpopProofsTable,
+    dynamoClient,
+  );
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -60,10 +69,15 @@ export function buildApp({
     config,
     tokenService: tokenServiceBuilder({
       config,
+      dpopProofStore,
       k2kGatewayClient,
       readmodelService: readmodelServiceBuilder(readmodelDb),
       tokenGenerator,
     }),
+  });
+
+  app.addHook("onClose", async () => {
+    await dpopProofStore.close();
   });
 
   return app;
