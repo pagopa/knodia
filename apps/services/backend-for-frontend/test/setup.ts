@@ -1,9 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
-import {
-  createJtiReplayStore,
-  type JtiReplayStore,
-} from "@knodia/db-jti-replay-store";
 import { resetDynamoTable } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
@@ -14,8 +10,7 @@ const refreshTokenTableName = "knodia-bff-refresh-tokens";
 const magicLinkTokenTableName = "knodia-bff-magic-link-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
-export let dynamoClient: DynamoDBClient;
-export let refreshTokenStore: JtiReplayStore;
+let dynamoClient: DynamoDBClient;
 
 beforeAll(async () => {
   dynamoClient = new DynamoDBClient({
@@ -23,7 +18,6 @@ beforeAll(async () => {
     endpoint: inject("DYNAMODB_CONNECTION_STRING"),
     region: "eu-south-1",
   });
-  refreshTokenStore = createJtiReplayStore(refreshTokenTableName, dynamoClient);
 
   app = buildAppFromConfig(
     {
