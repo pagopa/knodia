@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/users/technical
+  url: {{host-backend-for-frontend}}/users
   body: none
   auth: none
 }
@@ -16,5 +16,5 @@ headers {
 }
 
 vars:post-response {
-  userId: res.body[0].id
+  userId: res.body.find(u => u.isTechnical).id
 }

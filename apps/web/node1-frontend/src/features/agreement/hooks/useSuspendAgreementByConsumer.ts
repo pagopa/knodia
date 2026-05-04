@@ -4,34 +4,27 @@ import type {
   KnodeId,
 } from "@knodia/common-models/ids";
 
-import { reactivateConsumerAgreementMutation } from "@knodia/bff-client/tanstack-query";
-import { toastQueue } from "@knodia/ui-kit/ui";
+import { suspendAgreementByConsumerMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { client } from "@/libs/axios";
 
-interface UseReactivateConsumerAgreementParams {
+interface UseSuspendAgreementByConsumerParams {
   agreementId: AgreementId;
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }
 
-export function useReactivateConsumerAgreement({
+export function useSuspendAgreementByConsumer({
   agreementId,
   eserviceId,
   knodeId,
-}: UseReactivateConsumerAgreementParams) {
+}: UseSuspendAgreementByConsumerParams) {
   const queryClient = useQueryClient();
 
-  const { isPending, mutate } = useMutation({
-    ...reactivateConsumerAgreementMutation({ client }),
-    onError: () =>
-      toastQueue.add({
-        description: "Please try again later.",
-        kind: "error",
-        title: "Unable to reactivate Agreement",
-      }),
+  const { isError, isPending, mutate } = useMutation({
+    ...suspendAgreementByConsumerMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         consumerEserviceDetailsQuery(eserviceId, knodeId),
@@ -39,9 +32,9 @@ export function useReactivateConsumerAgreement({
     },
   });
 
-  const reactivateAgreement = () => {
+  const suspendAgreement = () => {
     mutate({ path: { agreementId }, query: { knodeId } });
   };
 
-  return { isPending, reactivateAgreement };
+  return { isError, isPending, suspendAgreement };
 }

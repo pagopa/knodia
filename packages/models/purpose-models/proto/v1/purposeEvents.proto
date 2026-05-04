@@ -8,6 +8,10 @@ message PurposeActivatedV1 {
   PurposeV1 purpose = 1;
 }
 
+message PurposeArchivedV1 {
+  PurposeV1 purpose = 1;
+}
+
 message PurposeSuspendedByConsumerV1 {
   PurposeV1 purpose = 1;
 }
