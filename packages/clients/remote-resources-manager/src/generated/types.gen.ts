@@ -922,7 +922,7 @@ export type GetPurposesData = {
         /**
          * Filter by Purpose State
          */
-        state?: PurposeState;
+        state?: Array<PurposeState>;
     };
     url: '/purposes';
 };

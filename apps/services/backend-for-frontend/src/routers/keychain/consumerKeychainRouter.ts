@@ -33,6 +33,7 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { API_PurposeState } from "@knodia/purpose-models/api";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -749,7 +750,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         const { data: purposes } = await remoteResourcesManagerApi.getPurposes({
           client: remoteResourcesManagerClient,
           headers,
-          query: { eserviceId, limit: 50, offset: 0 },
+          query: {
+            eserviceId,
+            limit: 50,
+            offset: 0,
+            state: [
+              API_PurposeState.enum.Active,
+              API_PurposeState.enum.Suspended,
+            ],
+          },
         });
 
         // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,

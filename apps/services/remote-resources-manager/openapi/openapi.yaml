@@ -1767,8 +1767,9 @@ paths:
           required: false
           description: Filter by E-service ID
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/PurposeState"
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
           in: query
           name: state
           required: false
