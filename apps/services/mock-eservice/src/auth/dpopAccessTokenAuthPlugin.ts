@@ -39,7 +39,7 @@ export const dpopAccessTokenAuthPlugin =
       );
       const claims = await verifyEserviceAccessToken(token, opts, true);
 
-      const expectedJkt = claims.cnf.jkt;
+      const accessTokenJkt = claims.cnf.jkt;
 
       const dpopProofJWS = request.headers["dpop"];
       if (!dpopProofJWS) {
@@ -68,9 +68,11 @@ export const dpopAccessTokenAuthPlugin =
         throw invalidDpopProofAth(dpopProofJWT.payload.ath, expectedAth);
       }
 
-      const actualJkt = await calculateJwkThumbprint(dpopProofJWT.headers.jwk);
-      if (actualJkt !== expectedJkt) {
-        throw invalidDpopThumbprint(actualJkt, expectedJkt);
+      const jktFromDpopProof = await calculateJwkThumbprint(
+        dpopProofJWT.headers.jwk,
+      );
+      if (jktFromDpopProof !== accessTokenJkt) {
+        throw invalidDpopThumbprint(jktFromDpopProof, accessTokenJkt);
       }
 
       await assertDpopProofNotReplayed(
