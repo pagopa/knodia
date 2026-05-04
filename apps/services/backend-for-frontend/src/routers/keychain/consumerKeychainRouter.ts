@@ -784,6 +784,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         const pageSlice = sortedKeychains.slice(offset, offset + limit);
 
         res.send({
+          // TODO(KN-473): `total` is capped at the fan-out limit and may
+          // under-count when an e-service has more linked purposes/keychains
+          // than the upstream calls fetch.
           pagination: { limit, offset, total: sortedKeychains.length },
           results: await Promise.all(pageSlice.map(enhanceKeychainWithCounts)),
         });
