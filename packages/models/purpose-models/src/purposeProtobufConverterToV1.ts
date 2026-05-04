@@ -34,5 +34,6 @@ export const toPurposeV1 = (purpose: Purpose): PurposeV1 => ({
   state: toPurposeStateV1(purpose.state),
   suspendedByConsumerAt: purpose.suspendedByConsumerAt?.getTime(),
   suspendedByProducerAt: purpose.suspendedByProducerAt?.getTime(),
+  template: purpose.template,
   updatedAt: purpose.updatedAt.getTime(),
 });

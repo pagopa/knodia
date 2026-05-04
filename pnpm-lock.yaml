@@ -1446,6 +1446,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
+      '@knodia/purpose-statement-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-statement-template-models
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
@@ -3328,6 +3331,34 @@ importers:
       zocker:
         specifier: 'catalog:'
         version: 3.0.0(zod@4.2.0)
+
+  packages/models/purpose-statement-template-models:
+    dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../common-models
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../purpose-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/openapi-client-generator:
     dependencies:

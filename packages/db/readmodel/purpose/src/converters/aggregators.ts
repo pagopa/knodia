@@ -1,7 +1,11 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  KnodeId,
+  type PurposeStatementTemplateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import {
   aggregateByPKString,
@@ -49,6 +53,15 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     state: PurposeState.parse(purposeSQL.state),
     suspendedByConsumerAt: purposeSQL.suspendedByConsumerAt,
     suspendedByProducerAt: purposeSQL.suspendedByProducerAt,
+    template:
+      purposeSQL.templateId && purposeSQL.templateKnodeId
+        ? {
+            id: unsafeBrandExternalId<PurposeStatementTemplateId>(
+              purposeSQL.templateId,
+            ),
+            knodeId: KnodeId.parse(purposeSQL.templateKnodeId),
+          }
+        : undefined,
     updatedAt: purposeSQL.updatedAt,
   };
   return {

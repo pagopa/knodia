@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
-import { generateId } from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import {
+  generateId,
+  type PurposeStatementTemplateId,
+} from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
@@ -49,11 +53,25 @@ describe("PurposeEventV1 codec", () => {
     suspendedByConsumerAt: null,
     suspendedByProducerAt: new Date(),
   };
+  // explicitly cover the template field round-trip (zocker may omit optionals)
+  const purposeWithTemplate: Purpose = {
+    ...zocker(Purpose).generate(),
+    formAnswersJson: mockFormAnswers,
+    template: {
+      id: generateExternalId<PurposeStatementTemplateId>(),
+      knodeId: "Orion",
+    },
+  };
 
   const cases = [
     {
       message: PurposeActivatedV1,
       purpose,
+      type: "PurposeActivatedV1" as const,
+    },
+    {
+      message: PurposeActivatedV1,
+      purpose: purposeWithTemplate,
       type: "PurposeActivatedV1" as const,
     },
     {
