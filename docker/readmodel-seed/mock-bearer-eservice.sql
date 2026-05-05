@@ -1,4 +1,4 @@
--- Seeds the producer-side rows for the mock e-service (eservice + version
+-- Seeds the producer-side rows for the mock Bearer e-service (eservice + version
 -- + interface + required attribute + category).
 
 INSERT INTO ${NAMESPACE}_eservice."eservice" (
@@ -8,8 +8,8 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   '10000000-0000-4000-8000-000000000001',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mock E-service"}'::jsonb,
-  '{"en": "Mock e-service used to validate the access-token flow end-to-end"}'::jsonb,
+  '{"en": "Mock Bearer E-service"}'::jsonb,
+  '{"en": "Mock e-service used to validate the Bearer access-token flow end-to-end"}'::jsonb,
   'ProvideData',
   false, false,
   0, now(), now()
@@ -39,9 +39,9 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '10000000-0000-4000-8000-000000000002',
   '186811e830bb8c525b6d1b06828b4f551a3b8ac23787a3a4ad1557d64c4a1c23',
   'application/yaml',
-  'mock-eservice.yaml',
-  'interfaces/mock-eservice.yaml',
-  '{"en": "mock-eservice.yaml"}'::jsonb,
+  'mock-bearer-eservice.yaml',
+  'interfaces/mock-bearer-eservice.yaml',
+  '{"en": "mock-bearer-eservice.yaml"}'::jsonb,
   0, now(), now()
 ) ON CONFLICT (id) DO NOTHING;
 
