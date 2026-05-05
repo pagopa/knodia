@@ -1,4 +1,4 @@
-import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
+import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-keychain/services";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
@@ -14,7 +14,7 @@ export async function handleKeychainEvent(
   {
     keychainWriterService,
   }: {
-    keychainWriterService: KeychainWriterService;
+    keychainWriterService: ConsumerKeychainWriterService;
   },
 ): Promise<void> {
   return match(message)

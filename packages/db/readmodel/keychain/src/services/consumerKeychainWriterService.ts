@@ -23,15 +23,13 @@ import {
   splitConsumerKeychainIntoObjectsSQL,
   toConsumerKeychainPurposeSQL,
 } from "../converters/consumerKeychainSplitters.ts";
-import { knodeApiKeychainWriterServiceBuilder } from "./knodeApiKeychainWriterService.ts";
 
-export type KeychainWriterService = ReturnType<
-  typeof keychainWriterServiceBuilder
+export type ConsumerKeychainWriterService = ReturnType<
+  typeof consumerKeychainWriterServiceBuilder
 >;
 
-export function keychainWriterServiceBuilder(db: NodePgDatabase) {
+export function consumerKeychainWriterServiceBuilder(db: NodePgDatabase) {
   return {
-    ...knodeApiKeychainWriterServiceBuilder(db),
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
       metadataVersion: number,
