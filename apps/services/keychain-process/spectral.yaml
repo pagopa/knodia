@@ -1,6 +1,1 @@
 "extends": ["@knodia/spectral-config/spectral.yaml"]
-rules:
-  # `knodeApiKeychainId` is a UUID path parameter, not an API key. The Italian
-  # API rules' `apikey` regex matches it as a false positive, so we disable the
-  # rule for this service.
-  sec-credentials-parameters: off
