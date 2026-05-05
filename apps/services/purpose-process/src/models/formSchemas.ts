@@ -1,13 +1,15 @@
-import { type PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import {
+  type PurposeFormSchemaVersion,
+  PurposeFormVariant,
+} from "@knodia/purpose-models";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import z from "zod";
 
-export const PURPOSE_FORM_SCHEMA_FOLDERS = [
-  "schemas-basic",
-  "schemas-withriskanalysis",
-] as const;
+export const PURPOSE_FORM_SCHEMA_FOLDERS = PurposeFormVariant.options.map(
+  (variant) => `schemas-${variant}` as const,
+);
 type PurposeFormSchemaFolder = (typeof PURPOSE_FORM_SCHEMA_FOLDERS)[number];
 
 export const CURRENT_FORM_SCHEMA_VERSION: PurposeFormSchemaVersion = "1.0";

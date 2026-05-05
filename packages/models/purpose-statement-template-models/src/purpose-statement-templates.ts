@@ -12,9 +12,6 @@ import {
 } from "@knodia/purpose-models";
 import z from "zod";
 
-export const PurposeFormVariant = z.enum(["basic", "withriskanalysis"]);
-export type PurposeFormVariant = z.infer<typeof PurposeFormVariant>;
-
 /** @knipignore */
 export const PurposeStatementTemplate = z.strictObject({
   createdAt: z.coerce.date(),
@@ -25,7 +22,6 @@ export const PurposeStatementTemplate = z.strictObject({
   formSchemaVersion: PurposeFormSchemaVersion,
   id: PurposeStatementTemplateId,
   name: LocalizedPurposeName,
-  purposeFormVariant: PurposeFormVariant,
 });
 export type PurposeStatementTemplate = z.infer<typeof PurposeStatementTemplate>;
 
@@ -62,7 +58,6 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         "a1b2c3d4-0001-4000-8000-000000000001",
       ),
       name: { en: "Generic citizen data consultation (basic)" },
-      purposeFormVariant: "basic",
     },
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
@@ -84,7 +79,6 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         "a1b2c3d4-0001-4000-8000-000000000002",
       ),
       name: { en: "Lynx residence cross-border consultation (basic)" },
-      purposeFormVariant: "basic",
     },
   ],
   Orion: [
@@ -117,7 +111,6 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         "a1b2c3d4-0002-4000-8000-000000000001",
       ),
       name: { en: "Generic PA consultation (with risk analysis)" },
-      purposeFormVariant: "withriskanalysis",
     },
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
@@ -154,7 +147,6 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         "a1b2c3d4-0002-4000-8000-000000000002",
       ),
       name: { en: "Orion PA address cross-border consumption" },
-      purposeFormVariant: "withriskanalysis",
     },
     {
       createdAt: new Date("2025-01-03T00:00:00Z"),
@@ -190,7 +182,6 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         "a1b2c3d4-0002-4000-8000-000000000003",
       ),
       name: { en: "Orion PA typology cross-border statistics" },
-      purposeFormVariant: "withriskanalysis",
     },
   ],
 };
