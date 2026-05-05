@@ -70,7 +70,11 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       version: 1,
     });
 
-    const removedEventData = KeychainEventV1.parse(removedEvent).data;
+    const parsedRemovedEvent = KeychainEventV1.parse(removedEvent);
+    if (parsedRemovedEvent.type !== "ConsumerKeychainKeyRemovedV1") {
+      throw new Error(`Unexpected event type: ${parsedRemovedEvent.type}`);
+    }
+    const removedEventData = parsedRemovedEvent.data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       keys: [],

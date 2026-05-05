@@ -126,7 +126,11 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       version: 1,
     });
 
-    const addedEventData = KeychainEventV1.parse(addedEvent).data;
+    const parsedAddedEvent = KeychainEventV1.parse(addedEvent);
+    if (parsedAddedEvent.type !== "ConsumerKeychainKeyAddedV1") {
+      throw new Error(`Unexpected event type: ${parsedAddedEvent.type}`);
+    }
+    const addedEventData = parsedAddedEvent.data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: [...consumerKeychain.keys, expectedKey],

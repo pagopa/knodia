@@ -108,7 +108,7 @@ export function buildApp({
       ),
     });
     protectedApp.register(knodeApiKeychainRouter, {
-      knodeApiKeychainService: knodeApiKeychainServiceBuilder(),
+      knodeApiKeychainService: knodeApiKeychainServiceBuilder(eventStoreWriter),
     });
     protectedApp.register(userRouter, userService);
   });
