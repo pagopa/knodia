@@ -6,3 +6,5 @@ tags = {
   "Owner"     = "PagoPa"
   "Source"    = "https://github.com/pagopa/knodia"
 }
+
+ecr_cross_account_pull_account_ids = ["144349651087"]
