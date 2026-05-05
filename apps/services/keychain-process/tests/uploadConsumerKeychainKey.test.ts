@@ -26,6 +26,7 @@ import {
   rsaX509CertificatePem,
   toBase64,
 } from "@knodia/test-commons/utils";
+import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 
 import type {
@@ -126,11 +127,11 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       version: 1,
     });
 
-    const parsedAddedEvent = KeychainEventV1.parse(addedEvent);
-    if (parsedAddedEvent.type !== "ConsumerKeychainKeyAddedV1") {
-      throw new Error(`Unexpected event type: ${parsedAddedEvent.type}`);
-    }
-    const addedEventData = parsedAddedEvent.data;
+    const addedEventData = match(KeychainEventV1.parse(addedEvent))
+      .with({ type: "ConsumerKeychainKeyAddedV1" }, (e) => e.data)
+      .otherwise((e) => {
+        throw new Error(`Unexpected event type: ${e.type}`);
+      });
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: [...consumerKeychain.keys, expectedKey],
