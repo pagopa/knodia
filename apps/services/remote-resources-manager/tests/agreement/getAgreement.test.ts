@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
@@ -33,6 +34,8 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
+const producerKnodeId: KnodeId = "Orion";
+
 const toRemoteResourceAgreement = (
   apiDetail: API_Agreement,
 ): RemoteResourceAgreementSQL => ({
@@ -46,14 +49,14 @@ const toRemoteResourceAgreement = (
 
 const getAgreement = (
   agreementId: string,
-  query: Record<string, string> = { knodeId: "Orion" },
+  query: Record<string, string> = { knodeId: producerKnodeId },
   token: TestToken = allowedTestTokens[0]!,
 ) => injectAppRequest(token).get(`/agreements/${agreementId}`).query(query);
 
 describe("GET /agreements/:agreementId (getAgreement)", () => {
   const agreement = getMockAgreement();
   const k2kAgreement = toK2KAgreement(agreement);
-  const knodeId = agreement.consumer.knodeId;
+  const knodeId = producerKnodeId;
   const expectedApiDetail = toAPI_Agreement(k2kAgreement, knodeId);
   const remoteResourceAgreement = toRemoteResourceAgreement(expectedApiDetail);
 
@@ -101,7 +104,7 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   );
 
   it.each([
-    { agreementId: "not-a-uuid", query: { knodeId: "Orion" } },
+    { agreementId: "not-a-uuid", query: { knodeId: producerKnodeId } },
     { agreementId: crypto.randomUUID(), query: {} },
     { agreementId: crypto.randomUUID(), query: { knodeId: "InvalidKnode" } },
   ])(
