@@ -76,12 +76,6 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     eserviceId,
     limit: 1,
     offset: 0,
-    state: [
-      "ACTIVE",
-      "SUSPENDED",
-      "ARCHIVED",
-      "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
-    ],
   };
 
   const buildK2KAgreement = (
