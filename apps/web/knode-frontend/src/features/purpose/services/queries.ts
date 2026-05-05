@@ -11,6 +11,7 @@ import {
   getConsumerKeychainsQueryKey,
   getConsumerPurposeDetailsOptions,
   getConsumerPurposesOptions,
+  getConsumerPurposesQueryKey,
   getProducerPurposeDetailsOptions,
   getProducerPurposesOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -118,6 +119,13 @@ export const purposeLinkedConsumerKeychainsQuery = (
       offset,
       purpose: `${knodeId}:${purposeId}`,
     },
+  });
+
+export const consumerPurposesQueryKey = () =>
+  getConsumerPurposesQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
   });
 
 export const purposeLinkedConsumerKeychainsQueryKey = () =>
