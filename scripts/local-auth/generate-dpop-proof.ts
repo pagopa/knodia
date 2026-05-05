@@ -27,13 +27,15 @@ const SUPPORTED_ALGS = ["ES256", "RS256"];
 const { values } = parseArgs({
   options: {
     alg: { type: "string", default: "ES256" },
+    ath: { type: "string" },
+    htm: { type: "string", default: "POST" },
     htu: { type: "string", default: DEFAULT_HTU },
     key: { type: "string" },
   },
   strict: true,
 });
 
-const { key, htu, alg } = values;
+const { key, htu, alg, htm, ath } = values;
 
 if (!SUPPORTED_ALGS.includes(alg)) {
   console.error(`Error: --alg must be one of: ${SUPPORTED_ALGS.join(", ")}`);
@@ -45,6 +47,8 @@ if (!key) {
     --key $KEYCHAIN_PRIVATE_ES256_KEY_PATH \\
     [--alg ES256|RS256] # default: ES256 \\
     [--htu <url>] # default: https://test.knodia.org/token \\
+    [--htm <http-method>] # default: POST \\
+    [--ath <dpop-bound-access-token>]
 
 Use \`pnpm generate-keypair --alg <RS256|ES256>\` first if you don't have a keypair yet.`);
   process.exit(1);
@@ -66,7 +70,10 @@ const header = b64url(
 );
 const payload = b64url(
   JSON.stringify({
-    htm: "POST",
+    ath: ath
+      ? createHash("sha256").update(ath).digest("base64url")
+      : undefined,
+    htm,
     htu,
     iat: now,
     jti: randomUUID(),

@@ -1,3 +1,4 @@
 export const apiTags = {
-  mock: "mock",
+  bearerTokenMock: "bearerTokenMock",
+  dpopTokenMock: "dpopTokenMock",
 } as const;
