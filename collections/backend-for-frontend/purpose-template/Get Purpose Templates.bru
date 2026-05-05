@@ -1,0 +1,18 @@
+meta {
+  name: Get Purpose Templates
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/purposeTemplates?knodeId=Lynx
+  body: none
+}
+
+params:query {
+  knodeId: {{knodeId}}
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

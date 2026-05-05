@@ -696,6 +696,8 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
 export type PurposeFormTexts = {
     en: {
         [key: string]: string;
@@ -868,6 +870,24 @@ export type KeychainMembers = {
 export type CreatedKeyResource = {
     kid: KeyId;
 };
+
+export type PurposeTemplate = {
+    description: LocalizedPurposeDescription;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplateDetails = {
+    createdAt: string;
+    description: LocalizedPurposeDescription;
+    eserviceId?: string;
+    formAnswers: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplates = Array<PurposeTemplate>;
 
 /**
  * Seed data to create a new Purpose
@@ -1190,6 +1210,83 @@ export type DownloadEserviceTemplateInterfaceResponses = {
 };
 
 export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
+
+export type GetPurposeTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        eserviceId?: string;
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates';
+};
+
+export type GetPurposeTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposeTemplatesError = GetPurposeTemplatesErrors[keyof GetPurposeTemplatesErrors];
+
+export type GetPurposeTemplatesResponses = {
+    /**
+     * Purpose Templates retrieved successfully
+     */
+    200: PurposeTemplates;
+};
+
+export type GetPurposeTemplatesResponse = GetPurposeTemplatesResponses[keyof GetPurposeTemplatesResponses];
+
+export type GetPurposeTemplateData = {
+    body?: never;
+    path: {
+        purposeTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates/{purposeTemplateId}';
+};
+
+export type GetPurposeTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose Template not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeTemplateError = GetPurposeTemplateErrors[keyof GetPurposeTemplateErrors];
+
+export type GetPurposeTemplateResponses = {
+    /**
+     * Purpose Template retrieved successfully
+     */
+    200: PurposeTemplateDetails;
+};
+
+export type GetPurposeTemplateResponse = GetPurposeTemplateResponses[keyof GetPurposeTemplateResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
