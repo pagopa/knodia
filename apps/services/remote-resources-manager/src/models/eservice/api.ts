@@ -201,7 +201,7 @@ export const API_Eservices = z
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
 export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
-  agreementStates: arrayQueryParam(API_AgreementState)
+  agreementState: arrayQueryParam(API_AgreementState)
     .optional()
     .meta({ description: "Filter by Agreement State" }),
 });

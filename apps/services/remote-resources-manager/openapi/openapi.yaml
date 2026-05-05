@@ -1111,7 +1111,7 @@ paths:
             items:
               $ref: "#/components/schemas/AgreementState"
           in: query
-          name: agreementStates
+          name: agreementState
           required: false
           description: Filter by Agreement State
       responses:

@@ -191,7 +191,7 @@ describe("GET /eservices (getEservices)", () => {
         .get("/eservices")
         .query({
           ...defaultQuery,
-          ...(currentStates ? { agreementStates: [...currentStates] } : {}),
+          ...(currentStates ? { agreementState: [...currentStates] } : {}),
         });
 
       expect(response.statusCode).toBe(200);
@@ -263,7 +263,7 @@ describe("GET /eservices (getEservices)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    { ...defaultQuery, agreementStates: ["InvalidState"] },
+    { ...defaultQuery, agreementState: ["InvalidState"] },
     {
       ...defaultQuery,
       invalidParam: "invalid",

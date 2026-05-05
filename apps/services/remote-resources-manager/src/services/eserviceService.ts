@@ -179,8 +179,8 @@ export function eserviceServiceBuilder(
         `Getting Consumer E-services with query parameters`,
       );
 
-      const { agreementStates, limit, offset } = reqQuery;
-      const k2kAgreementStates = agreementStates?.map(toK2KAPI_AgreementState);
+      const { agreementState, limit, offset } = reqQuery;
+      const k2kAgreementStates = agreementState?.map(toK2KAPI_AgreementState);
 
       let totalCount = 0;
       let dynamicLimit = limit;

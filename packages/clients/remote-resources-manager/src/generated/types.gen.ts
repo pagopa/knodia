@@ -527,7 +527,7 @@ export type GetEservicesData = {
         /**
          * Filter by Agreement State
          */
-        agreementStates?: Array<AgreementState>;
+        agreementState?: Array<AgreementState>;
     };
     url: '/eservices';
 };

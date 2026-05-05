@@ -278,7 +278,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      const agreementStates = req.query.agreementState
+      const agreementState = req.query.agreementState
         ? [req.query.agreementState]
         : nonArchivedAgreementStates;
 
@@ -286,7 +286,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         client: remoteResourcesManagerClient,
         headers,
         query: {
-          agreementStates,
+          agreementState,
           limit: req.query.limit,
           offset: req.query.offset,
         },
