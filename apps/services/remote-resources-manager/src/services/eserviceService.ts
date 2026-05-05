@@ -143,7 +143,7 @@ export function eserviceServiceBuilder(
               // Returns the "current" agreement for this (consumer, e-service). When
               // older Archived agreements coexist with a non-archived one, the default
               // `updatedAt DESC` sort puts the non-archived one first (archived
-              // agreements aren't updated after archival), so `limit: 1` is enough.
+              // agreements aren't updated after archival), so `limit: 1` is enough, no state filter required.
               // TODO: revisit if the default sort order changes.
               limit: 1,
               offset: 0,
