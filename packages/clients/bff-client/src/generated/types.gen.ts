@@ -353,13 +353,13 @@ export type ProducerEserviceDetailsAgreementCounters = {
 
 export type ProducerEserviceDetailsPurposeCounters = {
     /**
-     * Number of active Purposes
+     * Number of Active Purposes
      */
     active: number;
     /**
-     * Total number of Purposes
+     * Number of Suspended Purposes
      */
-    total: number;
+    suspended: number;
     /**
      * Total API calls per day across all Active Purposes
      */

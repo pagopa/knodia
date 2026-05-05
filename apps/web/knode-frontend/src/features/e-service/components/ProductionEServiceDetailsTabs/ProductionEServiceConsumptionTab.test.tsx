@@ -25,7 +25,7 @@ function createEserviceDetails(
     mode: "ProvideData",
     name: { en: "Test E-Service" },
     producerId: "00000000-0000-0000-0000-000000000001",
-    purposes: { active: 0, total: 0, totalApiCallsPerDay: 0 },
+    purposes: { active: 0, suspended: 0, totalApiCallsPerDay: 0 },
     updatedAt: "2026-01-01T00:00:00.000Z",
     version: {
       accessTokenAudience: ["aud"],
@@ -110,5 +110,28 @@ describe("ProductionEServiceConsumptionTab — Agreements section", () => {
 
     const labels = screen.getAllByText(/^(Active|Suspended)$/);
     expect(labels.map((el) => el.textContent)).toEqual(["Active", "Suspended"]);
+  });
+});
+
+describe("ProductionEServiceConsumptionTab — Purposes section", () => {
+  it("shows the empty-state banner when there are no Active or Suspended Purposes", () => {
+    renderTab(createEserviceDetails());
+
+    expect(
+      screen.getByText("There are no Purposes for this E-Service yet."),
+    ).toBeInTheDocument();
+  });
+
+  it("renders Active and Suspended counters when there are Purposes", () => {
+    renderTab(
+      createEserviceDetails({
+        purposes: { active: 3, suspended: 1, totalApiCallsPerDay: 0 },
+      }),
+    );
+
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("Suspended")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
   });
 });

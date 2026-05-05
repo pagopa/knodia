@@ -294,11 +294,11 @@ const API_ProducerEserviceDetailsAgreementCounters = z
 const API_ProducerEserviceDetailsPurposeCounters = z
   .strictObject({
     active: z.number().int().min(0).meta({
-      description: "Number of active Purposes",
+      description: "Number of Active Purposes",
       format: "int32",
     }),
-    total: z.number().int().min(0).meta({
-      description: "Total number of Purposes",
+    suspended: z.number().int().min(0).meta({
+      description: "Number of Suspended Purposes",
       format: "int32",
     }),
     totalApiCallsPerDay: z.number().int().min(0).meta({

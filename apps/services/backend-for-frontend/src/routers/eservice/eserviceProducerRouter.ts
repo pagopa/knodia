@@ -392,8 +392,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         { data: latestVersionInterface },
         { data: activeAgreements },
         { data: suspendedAgreements },
-        { data: allPurposes },
         { data: activePurposes },
+        { data: suspendedPurposes },
         { data: totalDailyCalls },
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
@@ -438,6 +438,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
+            state: [API_PurposeState.enum.Active],
           },
         }),
         purposeProcessApi.getPurposes({
@@ -447,7 +448,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
-            state: [API_PurposeState.enum.Active],
+            state: [API_PurposeState.enum.Suspended],
           },
         }),
         purposeProcessApi.getPurposesTotalDailyCalls({
@@ -469,7 +470,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             },
             purposes: {
               active: activePurposes.pagination.total,
-              total: allPurposes.pagination.total,
+              suspended: suspendedPurposes.pagination.total,
               totalApiCallsPerDay: totalDailyCalls.totalDailyCalls,
             },
           },
