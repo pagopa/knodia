@@ -158,10 +158,14 @@ function RouteComponent() {
 
       <PageHeader
         resourceStatusChip={
-          <EserviceStateChip
-            archivedAt={eservice.latestVersionUpdatedAt}
-            state={eservice.state}
-          />
+          eservice.state === "Archived" ? (
+            <EserviceStateChip
+              archivedAt={eservice.latestVersionUpdatedAt}
+              state="Archived"
+            />
+          ) : (
+            <EserviceStateChip state={eservice.state} />
+          )
         }
         title={eservice.name}
       >

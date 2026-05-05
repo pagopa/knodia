@@ -29,15 +29,4 @@ describe("EserviceStateChip", () => {
     );
     expect(screen.getByText("Archived 30.04.26")).toBeInTheDocument();
   });
-
-  it("ignores archivedAt when state is not Archived", () => {
-    renderWithProviders(
-      <EserviceStateChip
-        archivedAt="2026-04-30T10:00:00.000Z"
-        state="Active"
-      />,
-    );
-    expect(screen.getByText("Available")).toBeInTheDocument();
-    expect(screen.queryByText(/30\.04\.26/)).not.toBeInTheDocument();
-  });
 });

@@ -6,18 +6,16 @@ import { match } from "ts-pattern";
 
 import { formatNumericDate } from "@/utils/formatters";
 
-export function EserviceStateChip({
-  archivedAt,
-  state,
-}: {
-  archivedAt?: string;
-  state: bffApi.EserviceVersionState;
-}) {
-  return match(state)
-    .with("Active", () => (
+type EserviceStateChipProps =
+  | { archivedAt?: never; state: bffApi.EserviceVersionState }
+  | { archivedAt?: string; state: "Archived" };
+
+export function EserviceStateChip(props: EserviceStateChipProps) {
+  return match(props)
+    .with({ state: "Active" }, () => (
       <Chip icon={<CheckIcon />} kind="brand" label="Available" type="light" />
     ))
-    .with("Suspended", () => (
+    .with({ state: "Suspended" }, () => (
       <Chip
         icon={<ProhibitIcon />}
         kind="neutral"
@@ -25,7 +23,7 @@ export function EserviceStateChip({
         type="light"
       />
     ))
-    .with("Archived", () => (
+    .with({ state: "Archived" }, ({ archivedAt }) => (
       <Chip
         icon={<ArchiveIcon />}
         kind="neutral"
