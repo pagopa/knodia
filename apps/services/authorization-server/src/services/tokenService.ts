@@ -3,16 +3,19 @@ import type { FastifyBaseLogger } from "fastify";
 
 import { type ConsumerKeychainId } from "@knodia/common-models/ids";
 import { type JtiReplayStore } from "@knodia/db-jti-replay-store";
+import {
+  assertDpopProofNotReplayed,
+  verifyDpopProofSignature,
+} from "@knodia/dpop-validator";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { EXPECTED_DPOP_PROOF_HTM } from "../models/constants.ts";
 import {
-  assertDpopProofNotReplayed,
   validatePlatformObjects,
   verifyClientAssertionSignature,
-  verifyDpopProofSignature,
 } from "../utils/validators.ts";
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;
@@ -56,9 +59,12 @@ export function tokenServiceBuilder({
       // Verify DPoP proof signature and claims if a DPoP proof is provided in the request headers
       const dpopProofJWT = await verifyDpopProofSignature(
         dpopProofJWS,
-        dpopProofMaxTokenAgeSeconds,
-        jwtClockToleranceSeconds,
-        dpopProofHtuBaseUrl,
+        {
+          expectedHtm: EXPECTED_DPOP_PROOF_HTM,
+          expectedHtu: dpopProofHtuBaseUrl,
+          jwtClockToleranceSeconds,
+          maxTokenAgeSeconds: dpopProofMaxTokenAgeSeconds,
+        },
         logger,
       );
 
@@ -97,7 +103,7 @@ export function tokenServiceBuilder({
         audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,
         consumerKeychainId,
-        dpopJWK: dpopProofJWT?.header.jwk,
+        dpopJWK: dpopProofJWT?.headers.jwk,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,

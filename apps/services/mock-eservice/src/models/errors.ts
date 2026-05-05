@@ -1,9 +1,65 @@
+import { type DpopErrorKey } from "@knodia/dpop-validator/errors";
+import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 
-export const makeApiProblem = makeApiProblemBuilder(
-  {},
-  {
-    forceGenericProblemOn500: true,
-    serviceName: "mock-eservice",
-  },
-);
+/* eslint-disable perfectionist/sort-objects */
+const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
+  DPOP_CLAIMS_VALIDATION_ERROR: "0001",
+  DPOP_PROOF_EXPIRED: "0002",
+  INVALID_DPOP_PROOF_JWS: "0003",
+  INVALID_DPOP_PROOF_SIGNATURE: "0004",
+  UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR: "0005",
+  DPOP_PROOF_ALREADY_USED: "0006",
+  DPOP_PROOF_NOT_FOUND: "0007",
+  INVALID_DPOP_PROOF_JWS_FORMAT: "0008",
+  INVALID_DPOP_PROOF_ATH: "0009",
+  INVALID_DPOP_THUMBPRINT: "0010",
+};
+/* eslint-enable perfectionist/sort-objects */
+
+export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
+  forceGenericProblemOn500: true,
+  serviceName: "mock-eservice",
+});
+
+export function dpopProofNotFound() {
+  return createApiError({
+    code: "DPOP_PROOF_NOT_FOUND",
+    detail: "DPoP proof not found",
+    status: 401,
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function invalidDpopProofAth(
+  dpopProofAth: string | undefined,
+  expectedAth: string,
+) {
+  return createApiError({
+    code: "INVALID_DPOP_PROOF_ATH",
+    detail: `DPoP proof ath does not match the presented access token. Expected: ${expectedAth}, Received: ${dpopProofAth}`,
+    status: 401,
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function invalidDpopProofJwsFormat(dpopProofJws: string[]) {
+  return createApiError({
+    code: "INVALID_DPOP_PROOF_JWS_FORMAT",
+    detail: `Invalid DPoP proof JWS format: ${dpopProofJws}. Expected a single string.`,
+    status: 401,
+    title: "invalid_dpop_proof",
+  });
+}
+
+export function invalidDpopThumbprint(
+  dpopProofThumbprint: string,
+  expectedThumbprint: string,
+) {
+  return createApiError({
+    code: "INVALID_DPOP_THUMBPRINT",
+    detail: `DPoP proof thumbprint does not match the expected one. Expected: ${expectedThumbprint}, Received: ${dpopProofThumbprint}`,
+    status: 401,
+    title: "invalid_dpop_proof",
+  });
+}
