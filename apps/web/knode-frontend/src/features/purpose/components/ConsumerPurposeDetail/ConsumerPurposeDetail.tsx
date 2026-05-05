@@ -135,7 +135,7 @@ export function ConsumerPurposeDetail({
         title="Keychains"
       >
         <LinkedConsumerKeychainsTable
-          canManagePurpose={canManagePurpose && !isArchived}
+          canManagePurpose={canManagePurpose}
           isLoading={!data}
           keychains={data?.results ?? []}
           knodeId={knodeId}

@@ -115,7 +115,7 @@ describe("ConsumerPurposeDetail — action button gating", () => {
     ).toBeVisible();
   });
 
-  it("shows Archive and hides Reactivate when both have suspended", () => {
+  it("shows Archive and hides Reactivate when both have suspended; banner is hidden", () => {
     mockEmptyKeychains();
 
     renderWithProviders(
@@ -134,6 +134,9 @@ describe("ConsumerPurposeDetail — action button gating", () => {
       screen.queryByRole("button", { name: "Reactivate" }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Archive" })).toBeVisible();
+    expect(
+      screen.queryByText("The Producer suspended this Purpose"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders no action buttons on Archived purposes; shows Archived chip; no banner; keychains section still visible", () => {
@@ -169,6 +172,38 @@ describe("ConsumerPurposeDetail — action button gating", () => {
     expect(
       screen.queryByRole("button", { name: "Link Keychain" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("keeps the Unlink button visible on Archived purposes with linked keychains", async () => {
+    server.use(
+      http.get(`${BASE_URL}/consumerKeychains`, () =>
+        HttpResponse.json({
+          pagination: { limit: 10, offset: 0, total: 1 },
+          results: [
+            {
+              id: "11111111-1111-4000-8000-000000000001",
+              keysCount: 2,
+              membersCount: 3,
+              name: { en: "My Keychain" },
+            },
+          ],
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <ConsumerPurposeDetail
+        knodeId={KNODE_ID}
+        purpose={{
+          ...basePurpose,
+          state: "Archived",
+          updatedAt: "2026-04-25T10:00:00Z",
+        }}
+      />,
+    );
+
+    expect(await screen.findByText("My Keychain")).toBeVisible();
+    expect(screen.getByRole("button", { name: /Unlink/ })).toBeVisible();
   });
 });
 
