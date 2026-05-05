@@ -7,9 +7,9 @@ import {
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
-  type KeychainKey,
   type FlatKnodeApiKeychain,
   KeyAlgorithm,
+  type KeychainKey,
   KeyFormat,
   type KnodeApiKeychain,
   LocalizedDescription,
