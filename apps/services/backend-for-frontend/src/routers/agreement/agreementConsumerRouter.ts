@@ -1,7 +1,12 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_AgreementState,
+  API_MagicLink,
+} from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -14,21 +19,28 @@ import {
 } from "@knodia/remote-resources-manager-client";
 import z from "zod";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
-  API_SuspendReactivateConsumerAgreementQueryParams,
+  API_CreateAgreementConsumerActivationMagicLinkQueryParams,
+  API_GetPendingConsumerAgreementsQueryParams,
+  API_PendingConsumerAgreements,
+  API_SuspendReactivateAgreementByConsumerQueryParams,
 } from "../../models/agreement/api.ts";
+import { toAPI_PendingConsumerAgreement } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface AgreementConsumerRouterOptions {
+  config: BffProcessConfig;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (fastify, { config, remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -144,6 +156,100 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        { requestQuery: req.query },
+        `Getting pending Consumer Agreements for Consumer ID ${consumerId}`,
+      );
+
+      const { data } = await remoteResourcesManagerApi.getEservices({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: {
+          agreementState:
+            API_AgreementState.enum.PendingConsumerOperatorIdentification,
+          limit: req.query.limit,
+          offset: req.query.offset,
+        },
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map((eservice) =>
+          toAPI_PendingConsumerAgreement({
+            eservice,
+            recentUpdateDays: config.recentUpdateDays,
+          }),
+        ),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of Consumer Agreements pending action",
+      operationId: "getPendingConsumerAgreements",
+      querystring: API_GetPendingConsumerAgreementsQueryParams,
+      response: {
+        200: API_PendingConsumerAgreements.meta({
+          description: "Pending Consumer Agreements retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/pending",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        `Creating activation magic link for Agreement ${req.params.agreementId} requested by Consumer ${consumerId} on Knode ${req.query.knodeId}`,
+      );
+
+      const { data } =
+        await remoteResourcesManagerApi.createAgreementActivationMagicLink({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { agreementId: req.params.agreementId },
+          query: { knodeId: req.query.knodeId },
+        });
+
+      res.status(200).send(data);
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
+      operationId: "createAgreementConsumerActivationMagicLink",
+      params: API_AgreementIdPathParam,
+      querystring: API_CreateAgreementConsumerActivationMagicLinkQueryParams,
+      response: {
+        200: API_MagicLink.meta({
+          description: "Magic link created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Create an Agreement activation magic link",
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/activationMagicLink",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
       getUISessionAuthData(authData);
 
       logger.info(
@@ -162,9 +268,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate an Agreement as Consumer",
-      operationId: "reactivateConsumerAgreement",
+      operationId: "reactivateAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement reactivated successfully",
@@ -202,9 +308,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an Agreement as Consumer",
-      operationId: "suspendConsumerAgreement",
+      operationId: "suspendAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateConsumerAgreementQueryParams,
+      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement suspended successfully",

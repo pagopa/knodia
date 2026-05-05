@@ -1,3 +1,4 @@
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -15,6 +16,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   assertEntityExists,
@@ -24,6 +26,10 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 import {
   purposeProcessApi,
@@ -33,6 +39,7 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
+import z from "zod";
 
 import type { BffProcessConfig } from "../../config/config.ts";
 
@@ -54,6 +61,7 @@ interface PurposeProducerRouterOptions {
   config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   organizationProcessClient: OrganizationProcessClient;
+  pollingService: PollingService;
   purposeProcessClient: PurposeProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -68,10 +76,31 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
     config,
     eserviceProcessClient,
     organizationProcessClient,
+    pollingService,
     purposeProcessClient,
     remoteResourcesManagerClient,
   },
 ) => {
+  const retrievePurposeById = (
+    purposeId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    purposeProcessApi.getPurpose({
+      client: purposeProcessClient,
+      headers,
+      path: { purposeId },
+    });
+
+  const pollPurpose = (
+    response: AxiosResponse<purposeProcessApi.Purpose>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrievePurposeById(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -291,5 +320,85 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/producer/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(`Reactivating Purpose ${req.params.purposeId} by Producer`);
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await purposeProcessApi.reactivatePurposeByProducer({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      await pollPurpose(response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate a Purpose as Producer",
+      operationId: "reactivatePurposeByProducer",
+      params: API_PurposeIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/producer/purposes/:purposeId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(`Suspending Purpose ${req.params.purposeId} by Producer`);
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await purposeProcessApi.suspendPurposeByProducer({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      await pollPurpose(response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend a Purpose as Producer",
+      operationId: "suspendPurposeByProducer",
+      params: API_PurposeIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/producer/purposes/:purposeId/suspend",
   });
 };

@@ -1,5 +1,10 @@
+/* eslint-disable max-lines-per-function */
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  KnodeId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -18,12 +23,15 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { purposeNotFound } from "../models/errors.ts";
 import {
   toAPI_Purpose,
   toK2KAPI_PurposeState,
 } from "../models/purpose/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import {
+  assertOrganizationIsPurposeConsumer,
+  assertPurposeExists,
+} from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
@@ -33,6 +41,29 @@ export function purposeServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async archivePurpose(
+      purposeId: ExternalId<PurposeId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purpose> {
+      logger.info(`Archiving Purpose ${purposeId} on Knode ${knodeId}`);
+
+      await verifyConsumerCanActOnPurpose(
+        purposeId,
+        knodeId,
+        authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
+      );
+
+      const { data } = await k2kGatewayApi.archivePurpose({
+        client: k2kGatewayClient,
+        path: { purposeId },
+      });
+
+      return toAPI_Purpose(data, knodeId);
+    },
+
     async createPurpose(
       reqBody: API_PurposeSeed,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
@@ -110,9 +141,7 @@ export function purposeServiceBuilder(
         knodeId,
       );
 
-      if (!remotePurpose) {
-        throw purposeNotFound(purposeId);
-      }
+      assertPurposeExists(remotePurpose, purposeId);
 
       const { data } = await k2kGatewayApi.getPurpose({
         client: k2kGatewayClient,
@@ -177,5 +206,69 @@ export function purposeServiceBuilder(
         results,
       };
     },
+
+    async reactivatePurpose(
+      purposeId: ExternalId<PurposeId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purpose> {
+      logger.info(`Reactivating Purpose ${purposeId} on Knode ${knodeId}`);
+
+      await verifyConsumerCanActOnPurpose(
+        purposeId,
+        knodeId,
+        authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
+      );
+
+      const { data } = await k2kGatewayApi.reactivatePurpose({
+        client: k2kGatewayClient,
+        path: { purposeId },
+      });
+
+      return toAPI_Purpose(data, knodeId);
+    },
+
+    async suspendPurpose(
+      purposeId: ExternalId<PurposeId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purpose> {
+      logger.info(`Suspending Purpose ${purposeId} on Knode ${knodeId}`);
+
+      await verifyConsumerCanActOnPurpose(
+        purposeId,
+        knodeId,
+        authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
+      );
+
+      const { data } = await k2kGatewayApi.suspendPurpose({
+        client: k2kGatewayClient,
+        path: { purposeId },
+      });
+
+      return toAPI_Purpose(data, knodeId);
+    },
   };
+}
+
+async function verifyConsumerCanActOnPurpose(
+  purposeId: ExternalId<PurposeId>,
+  knodeId: KnodeId,
+  organizationId: OrganizationId,
+  remoteResourceDbService: RemoteResourceDbService,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  await retrieveOrganization(organizationId, readmodelService);
+
+  const remotePurpose = await remoteResourceDbService.getPurposeById(
+    purposeId,
+    knodeId,
+  );
+
+  assertPurposeExists(remotePurpose, purposeId);
+  assertOrganizationIsPurposeConsumer(remotePurpose, purposeId, organizationId);
 }

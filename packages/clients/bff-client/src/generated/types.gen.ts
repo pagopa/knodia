@@ -40,6 +40,20 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -101,6 +115,14 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
+ * Reference to an E-service template
+ */
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
@@ -134,7 +156,25 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceSeed = {
+export type InterfaceDocumentContactOverrides = {
+    email: string;
+    name: string;
+    url?: string;
+};
+
+export type InterfaceDocumentOverrides = {
+    /**
+     * OpenAPI contact overrides to apply to the template interface
+     */
+    contact: InterfaceDocumentContactOverrides;
+    /**
+     * Server URLs override to apply to the template interface
+     */
+    serverUrls: Array<string>;
+    termsOfService?: string;
+};
+
+export type EserviceFromScratchSeed = {
     /**
      * Audience for the access token
      */
@@ -147,15 +187,7 @@ export type EserviceSeed = {
      * Type of the access token
      */
     accessTokenType: AccessTokenType;
-    /**
-     * Categories of the E-service
-     */
-    categories?: Array<EserviceCategory>;
     description: LocalizedDescription;
-    /**
-     * Interface document for the E-service
-     */
-    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Whether SignalHub is enabled for the E-service
      */
@@ -168,15 +200,60 @@ export type EserviceSeed = {
      * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
      */
     maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    /**
+     * Interface document for the E-service
+     */
+    interfaceDocument: InterfaceDocumentSeed;
     /**
      * Mode of the E-service
      */
     mode?: EserviceMode;
-    name: LocalizedName;
     /**
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceFromTemplateSeed = {
+    /**
+     * Audience for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    /**
+     * Type of the access token
+     */
+    accessTokenType: AccessTokenType;
+    description: LocalizedDescription;
+    /**
+     * Whether SignalHub is enabled for the E-service
+     */
+    isSignalHubEnabled?: boolean;
+    /**
+     * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+     */
+    maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Overrides applied to the E-service Template interface document
+     */
+    interfaceDocumentOverrides: InterfaceDocumentOverrides;
+    /**
+     * Reference to the E-service Template to instantiate
+     */
+    template: EserviceTemplateReference;
 };
 
 export type EservicePatch = {
@@ -507,6 +584,27 @@ export type ConsumerAgreements = {
     };
 };
 
+export type PendingConsumerAgreement = {
+    eservice: {
+        categories: Array<EserviceCategory>;
+        id: string;
+        mode: EserviceMode;
+        name: LocalizedName;
+        state: EserviceVersionState;
+    };
+    /**
+     * Indicates whether the Agreement or its E-service has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
+    id: string;
+    producer: CompactOrganization;
+};
+
+export type PendingConsumerAgreements = {
+    pagination: Pagination;
+    results: Array<PendingConsumerAgreement>;
+};
+
 export type SessionRequest = {
     oidcToken: string;
 };
@@ -514,6 +612,35 @@ export type SessionRequest = {
 export type SessionResponse = {
     uiSessionToken: string;
 };
+
+export type EserviceTemplateInterface = {
+    contentType: string;
+    name: string;
+    prettyName: LocalizedInterfacePrettyName;
+};
+
+export type EserviceTemplateEserviceFields = {
+    categories: Array<EserviceCategory>;
+    interfaceDocument: EserviceTemplateInterface;
+    mode: EserviceMode;
+    requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type EserviceTemplateDetails = {
+    createdAt: string;
+    description: LocalizedDescription;
+    eserviceFields: EserviceTemplateEserviceFields;
+    id: string;
+    name: LocalizedName;
+};
+
+export type EserviceTemplate = {
+    description: LocalizedDescription;
+    id: string;
+    name: LocalizedName;
+};
+
+export type EserviceTemplates = Array<EserviceTemplate>;
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
@@ -684,7 +811,17 @@ export type User = {
     username: string;
 };
 
-export type Users = Array<User>;
+export type OrganizationUser = {
+    email: string;
+    id: UserId;
+    username: string;
+    /**
+     * Whether the User has the technical role within the Organization
+     */
+    isTechnical: boolean;
+};
+
+export type OrganizationUsers = Array<OrganizationUser>;
 
 export type KeychainMembers = {
     pagination: Pagination;
@@ -772,6 +909,8 @@ export type PurposeDetails = {
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
 };
 
 /**
@@ -870,6 +1009,123 @@ export type LogoutResponses = {
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
+export type GetEserviceTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates';
+};
+
+export type GetEserviceTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetEserviceTemplatesError = GetEserviceTemplatesErrors[keyof GetEserviceTemplatesErrors];
+
+export type GetEserviceTemplatesResponses = {
+    /**
+     * E-service Templates retrieved successfully
+     */
+    200: EserviceTemplates;
+};
+
+export type GetEserviceTemplatesResponse = GetEserviceTemplatesResponses[keyof GetEserviceTemplatesResponses];
+
+export type GetEserviceTemplateData = {
+    body?: never;
+    path: {
+        eserviceTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{eserviceTemplateId}';
+};
+
+export type GetEserviceTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceTemplateError = GetEserviceTemplateErrors[keyof GetEserviceTemplateErrors];
+
+export type GetEserviceTemplateResponses = {
+    /**
+     * E-service Template retrieved successfully
+     */
+    200: EserviceTemplateDetails;
+};
+
+export type GetEserviceTemplateResponse = GetEserviceTemplateResponses[keyof GetEserviceTemplateResponses];
+
+export type DownloadEserviceTemplateInterfaceData = {
+    body?: never;
+    path: {
+        eserviceTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eserviceTemplates/{eserviceTemplateId}/interface';
+};
+
+export type DownloadEserviceTemplateInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
+
+export type DownloadEserviceTemplateInterfaceResponses = {
+    /**
+     * E-service Template interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
+
 export type GetProducerEservicesData = {
     body?: never;
     path?: never;
@@ -933,7 +1189,7 @@ export type GetProducerEservicesResponses = {
 export type GetProducerEservicesResponse = GetProducerEservicesResponses[keyof GetProducerEservicesResponses];
 
 export type CreateEserviceData = {
-    body: EserviceSeed;
+    body: EserviceFromScratchSeed;
     path?: never;
     query?: never;
     url: '/producer/eservices';
@@ -964,6 +1220,43 @@ export type CreateEserviceResponses = {
 };
 
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
+
+export type CreateEserviceFromTemplateData = {
+    body: EserviceFromTemplateSeed;
+    path?: never;
+    query?: never;
+    url: '/producer/eservices/fromTemplate';
+};
+
+export type CreateEserviceFromTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
+};
+
+export type CreateEserviceFromTemplateError = CreateEserviceFromTemplateErrors[keyof CreateEserviceFromTemplateErrors];
+
+export type CreateEserviceFromTemplateResponses = {
+    /**
+     * E-service created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateEserviceFromTemplateResponse = CreateEserviceFromTemplateResponses[keyof CreateEserviceFromTemplateResponses];
 
 export type GetProducerEserviceDetailsData = {
     body?: never;
@@ -1082,7 +1375,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
 
-export type SuspendProducerEserviceData = {
+export type SuspendEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -1091,7 +1384,7 @@ export type SuspendProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/suspend';
 };
 
-export type SuspendProducerEserviceErrors = {
+export type SuspendEserviceErrors = {
     /**
      * Bad Request
      */
@@ -1114,18 +1407,18 @@ export type SuspendProducerEserviceErrors = {
     409: Problem;
 };
 
-export type SuspendProducerEserviceError = SuspendProducerEserviceErrors[keyof SuspendProducerEserviceErrors];
+export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
 
-export type SuspendProducerEserviceResponses = {
+export type SuspendEserviceResponses = {
     /**
      * E-service suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerEserviceResponse = SuspendProducerEserviceResponses[keyof SuspendProducerEserviceResponses];
+export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
 
-export type ReactivateProducerEserviceData = {
+export type ReactivateEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -1134,7 +1427,7 @@ export type ReactivateProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/reactivate';
 };
 
-export type ReactivateProducerEserviceErrors = {
+export type ReactivateEserviceErrors = {
     /**
      * Bad Request
      */
@@ -1157,16 +1450,59 @@ export type ReactivateProducerEserviceErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerEserviceError = ReactivateProducerEserviceErrors[keyof ReactivateProducerEserviceErrors];
+export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
 
-export type ReactivateProducerEserviceResponses = {
+export type ReactivateEserviceResponses = {
     /**
      * E-service reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
+export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
+
+export type ArchiveProducerEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/archive';
+};
+
+export type ArchiveProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveProducerEserviceError = ArchiveProducerEserviceErrors[keyof ArchiveProducerEserviceErrors];
+
+export type ArchiveProducerEserviceResponses = {
+    /**
+     * E-service archived successfully
+     */
+    204: void;
+};
+
+export type ArchiveProducerEserviceResponse = ArchiveProducerEserviceResponses[keyof ArchiveProducerEserviceResponses];
 
 export type GetConsumerKeychainKeysData = {
     body?: never;
@@ -1931,14 +2267,14 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetTechnicalUsersData = {
+export type GetOrganizationUsersData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/users/technical';
+    url: '/users';
 };
 
-export type GetTechnicalUsersErrors = {
+export type GetOrganizationUsersErrors = {
     /**
      * Bad Request
      */
@@ -1953,16 +2289,16 @@ export type GetTechnicalUsersErrors = {
     403: Problem;
 };
 
-export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
 
-export type GetTechnicalUsersResponses = {
+export type GetOrganizationUsersResponses = {
     /**
-     * Technical Users retrieved successfully
+     * Organization Users retrieved successfully
      */
-    200: Users;
+    200: OrganizationUsers;
 };
 
-export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
+export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -2201,7 +2537,94 @@ export type CreateConsumerAgreementResponses = {
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
-export type ReactivateConsumerAgreementData = {
+export type GetPendingConsumerAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumer/agreements/pending';
+};
+
+export type GetPendingConsumerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErrors[keyof GetPendingConsumerAgreementsErrors];
+
+export type GetPendingConsumerAgreementsResponses = {
+    /**
+     * Pending Consumer Agreements retrieved successfully
+     */
+    200: PendingConsumerAgreements;
+};
+
+export type GetPendingConsumerAgreementsResponse = GetPendingConsumerAgreementsResponses[keyof GetPendingConsumerAgreementsResponses];
+
+export type CreateAgreementConsumerActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementConsumerActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkError = CreateAgreementConsumerActivationMagicLinkErrors[keyof CreateAgreementConsumerActivationMagicLinkErrors];
+
+export type CreateAgreementConsumerActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementConsumerActivationMagicLinkResponse = CreateAgreementConsumerActivationMagicLinkResponses[keyof CreateAgreementConsumerActivationMagicLinkResponses];
+
+export type ReactivateAgreementByConsumerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2212,7 +2635,7 @@ export type ReactivateConsumerAgreementData = {
     url: '/consumer/agreements/{agreementId}/reactivate';
 };
 
-export type ReactivateConsumerAgreementErrors = {
+export type ReactivateAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2235,18 +2658,18 @@ export type ReactivateConsumerAgreementErrors = {
     409: Problem;
 };
 
-export type ReactivateConsumerAgreementError = ReactivateConsumerAgreementErrors[keyof ReactivateConsumerAgreementErrors];
+export type ReactivateAgreementByConsumerError = ReactivateAgreementByConsumerErrors[keyof ReactivateAgreementByConsumerErrors];
 
-export type ReactivateConsumerAgreementResponses = {
+export type ReactivateAgreementByConsumerResponses = {
     /**
      * Agreement reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateConsumerAgreementResponse = ReactivateConsumerAgreementResponses[keyof ReactivateConsumerAgreementResponses];
+export type ReactivateAgreementByConsumerResponse = ReactivateAgreementByConsumerResponses[keyof ReactivateAgreementByConsumerResponses];
 
-export type SuspendConsumerAgreementData = {
+export type SuspendAgreementByConsumerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2257,7 +2680,7 @@ export type SuspendConsumerAgreementData = {
     url: '/consumer/agreements/{agreementId}/suspend';
 };
 
-export type SuspendConsumerAgreementErrors = {
+export type SuspendAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -2280,16 +2703,16 @@ export type SuspendConsumerAgreementErrors = {
     409: Problem;
 };
 
-export type SuspendConsumerAgreementError = SuspendConsumerAgreementErrors[keyof SuspendConsumerAgreementErrors];
+export type SuspendAgreementByConsumerError = SuspendAgreementByConsumerErrors[keyof SuspendAgreementByConsumerErrors];
 
-export type SuspendConsumerAgreementResponses = {
+export type SuspendAgreementByConsumerResponses = {
     /**
      * Agreement suspended successfully
      */
     204: void;
 };
 
-export type SuspendConsumerAgreementResponse = SuspendConsumerAgreementResponses[keyof SuspendConsumerAgreementResponses];
+export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
 
 export type GetConsumerPurposesData = {
     body?: never;
@@ -2458,6 +2881,141 @@ export type GetConsumerPurposeDetailsResponses = {
 
 export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
 
+export type ReactivatePurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByConsumerError = ReactivatePurposeByConsumerErrors[keyof ReactivatePurposeByConsumerErrors];
+
+export type ReactivatePurposeByConsumerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivatePurposeByConsumerResponse = ReactivatePurposeByConsumerResponses[keyof ReactivatePurposeByConsumerResponses];
+
+export type SuspendPurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByConsumerError = SuspendPurposeByConsumerErrors[keyof SuspendPurposeByConsumerErrors];
+
+export type SuspendPurposeByConsumerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendPurposeByConsumerResponse = SuspendPurposeByConsumerResponses[keyof SuspendPurposeByConsumerResponses];
+
+export type ArchivePurposeByConsumerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeByConsumerError = ArchivePurposeByConsumerErrors[keyof ArchivePurposeByConsumerErrors];
+
+export type ArchivePurposeByConsumerResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    204: void;
+};
+
+export type ArchivePurposeByConsumerResponse = ArchivePurposeByConsumerResponses[keyof ArchivePurposeByConsumerResponses];
+
 export type GetSessionOrganizationData = {
     body?: never;
     path?: never;
@@ -2580,7 +3138,7 @@ export type GetProducerAgreementDetailsResponses = {
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
 
-export type ReactivateProducerAgreementData = {
+export type ReactivateAgreementByProducerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2589,7 +3147,7 @@ export type ReactivateProducerAgreementData = {
     url: '/producer/agreements/{agreementId}/reactivate';
 };
 
-export type ReactivateProducerAgreementErrors = {
+export type ReactivateAgreementByProducerErrors = {
     /**
      * Bad Request
      */
@@ -2612,18 +3170,18 @@ export type ReactivateProducerAgreementErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerAgreementError = ReactivateProducerAgreementErrors[keyof ReactivateProducerAgreementErrors];
+export type ReactivateAgreementByProducerError = ReactivateAgreementByProducerErrors[keyof ReactivateAgreementByProducerErrors];
 
-export type ReactivateProducerAgreementResponses = {
+export type ReactivateAgreementByProducerResponses = {
     /**
      * Agreement reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerAgreementResponse = ReactivateProducerAgreementResponses[keyof ReactivateProducerAgreementResponses];
+export type ReactivateAgreementByProducerResponse = ReactivateAgreementByProducerResponses[keyof ReactivateAgreementByProducerResponses];
 
-export type SuspendProducerAgreementData = {
+export type SuspendAgreementByProducerData = {
     body?: never;
     path: {
         agreementId: string;
@@ -2632,7 +3190,7 @@ export type SuspendProducerAgreementData = {
     url: '/producer/agreements/{agreementId}/suspend';
 };
 
-export type SuspendProducerAgreementErrors = {
+export type SuspendAgreementByProducerErrors = {
     /**
      * Bad Request
      */
@@ -2655,16 +3213,16 @@ export type SuspendProducerAgreementErrors = {
     409: Problem;
 };
 
-export type SuspendProducerAgreementError = SuspendProducerAgreementErrors[keyof SuspendProducerAgreementErrors];
+export type SuspendAgreementByProducerError = SuspendAgreementByProducerErrors[keyof SuspendAgreementByProducerErrors];
 
-export type SuspendProducerAgreementResponses = {
+export type SuspendAgreementByProducerResponses = {
     /**
      * Agreement suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerAgreementResponse = SuspendProducerAgreementResponses[keyof SuspendProducerAgreementResponses];
+export type SuspendAgreementByProducerResponse = SuspendAgreementByProducerResponses[keyof SuspendAgreementByProducerResponses];
 
 export type GetProducerPurposesData = {
     body?: never;
@@ -2762,3 +3320,89 @@ export type GetProducerPurposeDetailsResponses = {
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
+
+export type ReactivatePurposeByProducerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeByProducerError = ReactivatePurposeByProducerErrors[keyof ReactivatePurposeByProducerErrors];
+
+export type ReactivatePurposeByProducerResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    204: void;
+};
+
+export type ReactivatePurposeByProducerResponse = ReactivatePurposeByProducerResponses[keyof ReactivatePurposeByProducerResponses];
+
+export type SuspendPurposeByProducerData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeByProducerError = SuspendPurposeByProducerErrors[keyof SuspendPurposeByProducerErrors];
+
+export type SuspendPurposeByProducerResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    204: void;
+};
+
+export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses[keyof SuspendPurposeByProducerResponses];

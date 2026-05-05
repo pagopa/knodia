@@ -9,6 +9,7 @@ import {
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -160,7 +161,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           path: { consumerKeychainId: req.params.consumerKeychainId },
           query: { limit, offset },
         }),
-        keychainProcessApi.getTechnicalUsers({
+        keychainProcessApi.getOrganizationUsers({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
         }),
@@ -209,12 +210,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const content = Buffer.from(key.encodedPem, "base64");
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="public_key_${keyId}.pub"`,
-        "Content-Type": "text/plain; charset=utf-8",
-      });
-
-      res.raw.end(content);
+      sendFileDownload(
+        res,
+        content,
+        `public_key_${keyId}.pub`,
+        "text/plain; charset=utf-8",
+      );
     },
     method: "GET",
     schema: {

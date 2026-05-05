@@ -4,6 +4,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
@@ -61,7 +62,7 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
   eserviceId: API_EserviceId.optional().meta({
     description: "Filter by E-service ID",
   }),
-  state: API_AgreementState.optional().meta({
+  state: arrayQueryParam(API_AgreementState).optional().meta({
     description: "Filter by Agreement State",
   }),
 });
@@ -114,3 +115,21 @@ export const API_Agreements = z
   })
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
+
+export const API_MagicLink = z
+  .strictObject({
+    expiresAt: z.iso.datetime().meta({
+      description:
+        "ISO 8601 timestamp after which the magic link is no longer valid",
+    }),
+    url: z.url().meta({
+      description:
+        "Absolute URL of the target Knode's frontend, carrying a signed token for the action",
+    }),
+  })
+  .meta({
+    description:
+      "A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend",
+    id: "MagicLink",
+  });
+export type API_MagicLink = z.infer<typeof API_MagicLink>;

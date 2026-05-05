@@ -1,4 +1,5 @@
 import { EserviceId } from "@knodia/common-models/ids";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
@@ -62,3 +63,24 @@ export const API_AccessTokenType = z
   .enum(["Bearer", "DPoP"])
   .meta({ id: "AccessTokenType" });
 export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
+
+export const API_EserviceTemplateId = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "EserviceTemplateId" });
+export type API_EserviceTemplateId = z.infer<typeof API_EserviceTemplateId>;
+
+export const API_EserviceTemplateReference = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Reference to an E-service template",
+    id: "EserviceTemplateReference",
+  });
+export type API_EserviceTemplateReference = z.infer<
+  typeof API_EserviceTemplateReference
+>;

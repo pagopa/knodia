@@ -8,7 +8,7 @@ locals {
   computed_repository_names = flatten([
     for key, src in local.ecr_sources : [
       for d in distinct([
-        for f in fileset(path.root, "${src.dir}*/*") :
+        for f in fileset(path.root, "${src.dir}*/Dockerfile") :
         dirname(f)
       ]) :
       "${src.prefix}${replace(d, src.dir, "")}"

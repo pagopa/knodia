@@ -1,5 +1,6 @@
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
+import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -22,6 +23,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
 import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
+import { eserviceTemplateRouter } from "./routers/eservice-template/eserviceTemplateRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
@@ -30,7 +32,6 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
-import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
@@ -85,6 +86,10 @@ export function buildAppFromConfig(
             description: "User routes",
             name: apiTags.user,
           },
+          {
+            description: "E-service Templates routes",
+            name: apiTags.eserviceTemplate,
+          },
         ],
       },
     },
@@ -93,7 +98,7 @@ export function buildAppFromConfig(
   });
 
   const pollingService = pollingServiceBuilder(config);
-  const refreshTokenStore = createRefreshTokenStore(
+  const refreshTokenStore = createJtiReplayStore(
     config.dynamoDbRefreshTokensTable,
     dynamoClient,
   );
@@ -114,6 +119,7 @@ export function buildAppFromConfig(
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(eserviceTemplateRouter);
     protectedApp.register(eserviceProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       config,
@@ -137,6 +143,7 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementConsumerRouter, {
+      config,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
@@ -162,11 +169,13 @@ export function buildAppFromConfig(
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
+      pollingService,
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
 
   app.addHook("onClose", () => refreshTokenStore.close());
+
   return app;
 }

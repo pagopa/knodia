@@ -1,0 +1,49 @@
+meta {
+  name: 11 - Create Token
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host-authorization-server}}/token
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  DPoP: {{process.env.DPOP_PROOF_JWT}}
+}
+
+body:form-urlencoded {
+  client_assertion: {{process.env.CLIENT_ASSERTION_JWT}}
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_id: {{consumerKeychainId}}
+  grant_type: client_credentials
+}
+
+vars:post-response {
+  access_token: res.body.access_token
+}
+
+assert {
+  res.status: eq 200
+  res.body.token_type: eq DPoP
+}
+
+script:post-response {
+  if (res.status === 200) return
+  
+  const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-rsa-key>"
+  const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH") || "<path-to-private-ec-key>"
+  const dpopAlg = ecKeyPath === "<path-to-private-ec-key>" ? "<RS256|ES256>" : "ES256";
+  const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
+  const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
+  throw new Error(
+    `Request failed with status ${res.status}.\n\n` +
+    `1. Regenerate the client assertion (if missing or stale):\n` +
+    `   pnpm generate-client-assertion --key ${rsaKeyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
+    `2. Regenerate the DPoP proof (if missing or stale):\n` +
+    `   pnpm generate-dpop-proof --key ${ecKeyPath} --alg ${dpopAlg} [--htu <htu> // default: https://test.knodia.org/token]\n\n` +
+    `Then re-run this call.`
+  )
+}

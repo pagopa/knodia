@@ -352,6 +352,20 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
+/**
+ * A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend
+ */
+export type MagicLink = {
+    /**
+     * ISO 8601 timestamp after which the magic link is no longer valid
+     */
+    expiresAt: string;
+    /**
+     * Absolute URL of the target Knode's frontend, carrying a signed token for the action
+     */
+    url: string;
+};
+
 export type ClientAssertionVerificationRequest = {
     /**
      * Unique identifier of the Consumer Keychain
@@ -481,6 +495,14 @@ export type Purpose = {
     id: PurposeId;
     name: LocalizedPurposeName;
     state: PurposeState;
+    /**
+     * Timestamp when the Purpose was suspended by the Consumer
+     */
+    suspendedByConsumerAt: string | null;
+    /**
+     * Timestamp when the Purpose was suspended by the Producer
+     */
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 
@@ -749,7 +771,7 @@ export type GetAgreementsData = {
         /**
          * Filter by Agreement State
          */
-        state?: AgreementState;
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };
@@ -905,6 +927,41 @@ export type SuspendAgreementResponses = {
 };
 
 export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
+
+export type CreateAgreementActivationMagicLinkData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activationMagicLink';
+};
+
+export type CreateAgreementActivationMagicLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementActivationMagicLinkError = CreateAgreementActivationMagicLinkErrors[keyof CreateAgreementActivationMagicLinkErrors];
+
+export type CreateAgreementActivationMagicLinkResponses = {
+    /**
+     * Magic link created successfully
+     */
+    200: MagicLink;
+};
+
+export type CreateAgreementActivationMagicLinkResponse = CreateAgreementActivationMagicLinkResponses[keyof CreateAgreementActivationMagicLinkResponses];
 
 export type GetOrganizationData = {
     body?: never;
@@ -1100,3 +1157,108 @@ export type GetPurposeResponses = {
 };
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
+
+export type ReactivatePurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/reactivate';
+};
+
+export type ReactivatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivatePurposeError = ReactivatePurposeErrors[keyof ReactivatePurposeErrors];
+
+export type ReactivatePurposeResponses = {
+    /**
+     * Purpose reactivated successfully
+     */
+    200: Purpose;
+};
+
+export type ReactivatePurposeResponse = ReactivatePurposeResponses[keyof ReactivatePurposeResponses];
+
+export type SuspendPurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/suspend';
+};
+
+export type SuspendPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendPurposeError = SuspendPurposeErrors[keyof SuspendPurposeErrors];
+
+export type SuspendPurposeResponses = {
+    /**
+     * Purpose suspended successfully
+     */
+    200: Purpose;
+};
+
+export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];
+
+export type ArchivePurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];

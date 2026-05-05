@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { addConsumerKeychainMember, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, downloadConsumerKeychainKey, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychainOptions, getConsumerKeychainPurposeLink, getConsumerKeychainPurposes, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getSessionOrganization, getStatus, getTechnicalUsers, linkPurposeToConsumerKeychain, logout, type Options, reactivateConsumerAgreement, reactivateProducerAgreement, reactivateProducerEservice, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, suspendConsumerAgreement, suspendProducerAgreement, suspendProducerEservice, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, updateProducerEservice, uploadConsumerKeychainKey } from '../sdk.gen.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsError, GetConsumerKeychainOptionsResponse, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkError, GetConsumerKeychainPurposeLinkResponse, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesError, GetConsumerKeychainPurposesResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutResponse, ReactivateConsumerAgreementData, ReactivateConsumerAgreementError, ReactivateConsumerAgreementResponse, ReactivateProducerAgreementData, ReactivateProducerAgreementError, ReactivateProducerAgreementResponse, ReactivateProducerEserviceData, ReactivateProducerEserviceError, ReactivateProducerEserviceResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, SuspendConsumerAgreementData, SuspendConsumerAgreementError, SuspendConsumerAgreementResponse, SuspendProducerAgreementData, SuspendProducerAgreementError, SuspendProducerAgreementResponse, SuspendProducerEserviceData, SuspendProducerEserviceError, SuspendProducerEserviceResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UpdateProducerEserviceData, UpdateProducerEserviceError, UpdateProducerEserviceResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse } from '../types.gen.ts';
+import { addConsumerKeychainMember, archiveProducerEservice, archivePurposeByConsumer, createAgreementConsumerActivationMagicLink, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createEserviceFromTemplate, createSession, deleteConsumerKeychain, downloadConsumerKeychainKey, downloadEserviceTemplateInterface, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychainOptions, getConsumerKeychainPurposeLink, getConsumerKeychainPurposes, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getEserviceTemplate, getEserviceTemplates, getOrganizationUsers, getPendingConsumerAgreements, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getSessionOrganization, getStatus, linkPurposeToConsumerKeychain, logout, type Options, reactivateAgreementByConsumer, reactivateAgreementByProducer, reactivateEservice, reactivatePurposeByConsumer, reactivatePurposeByProducer, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, suspendAgreementByConsumer, suspendAgreementByProducer, suspendEservice, suspendPurposeByConsumer, suspendPurposeByProducer, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, updateProducerEservice, uploadConsumerKeychainKey } from '../sdk.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, ArchiveProducerEserviceData, ArchiveProducerEserviceError, ArchiveProducerEserviceResponse, ArchivePurposeByConsumerData, ArchivePurposeByConsumerError, ArchivePurposeByConsumerResponse, CreateAgreementConsumerActivationMagicLinkData, CreateAgreementConsumerActivationMagicLinkError, CreateAgreementConsumerActivationMagicLinkResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceFromTemplateData, CreateEserviceFromTemplateError, CreateEserviceFromTemplateResponse, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, DownloadEserviceTemplateInterfaceData, DownloadEserviceTemplateInterfaceError, DownloadEserviceTemplateInterfaceResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsError, GetConsumerKeychainOptionsResponse, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkError, GetConsumerKeychainPurposeLinkResponse, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesError, GetConsumerKeychainPurposesResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetEserviceTemplateData, GetEserviceTemplateError, GetEserviceTemplateResponse, GetEserviceTemplatesData, GetEserviceTemplatesError, GetEserviceTemplatesResponse, GetOrganizationUsersData, GetOrganizationUsersError, GetOrganizationUsersResponse, GetPendingConsumerAgreementsData, GetPendingConsumerAgreementsError, GetPendingConsumerAgreementsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutResponse, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerError, ReactivateAgreementByConsumerResponse, ReactivateAgreementByProducerData, ReactivateAgreementByProducerError, ReactivateAgreementByProducerResponse, ReactivateEserviceData, ReactivateEserviceError, ReactivateEserviceResponse, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerError, ReactivatePurposeByConsumerResponse, ReactivatePurposeByProducerData, ReactivatePurposeByProducerError, ReactivatePurposeByProducerResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, SuspendAgreementByConsumerData, SuspendAgreementByConsumerError, SuspendAgreementByConsumerResponse, SuspendAgreementByProducerData, SuspendAgreementByProducerError, SuspendAgreementByProducerResponse, SuspendEserviceData, SuspendEserviceError, SuspendEserviceResponse, SuspendPurposeByConsumerData, SuspendPurposeByConsumerError, SuspendPurposeByConsumerResponse, SuspendPurposeByProducerData, SuspendPurposeByProducerError, SuspendPurposeByProducerResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UpdateProducerEserviceData, UpdateProducerEserviceError, UpdateProducerEserviceResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -109,6 +109,62 @@ export const logoutMutation = (options?: Partial<Options<LogoutData>>): UseMutat
     return mutationOptions;
 };
 
+export const getEserviceTemplatesQueryKey = (options: Options<GetEserviceTemplatesData>) => createQueryKey('getEserviceTemplates', options);
+
+/**
+ * Retrieve a list of E-Service Templates available for a given Knode
+ */
+export const getEserviceTemplatesOptions = (options: Options<GetEserviceTemplatesData>) => queryOptions<GetEserviceTemplatesResponse, AxiosError<GetEserviceTemplatesError>, GetEserviceTemplatesResponse, ReturnType<typeof getEserviceTemplatesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getEserviceTemplates({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getEserviceTemplatesQueryKey(options)
+});
+
+export const getEserviceTemplateQueryKey = (options: Options<GetEserviceTemplateData>) => createQueryKey('getEserviceTemplate', options);
+
+/**
+ * Retrieve an E-service Template with all its details
+ */
+export const getEserviceTemplateOptions = (options: Options<GetEserviceTemplateData>) => queryOptions<GetEserviceTemplateResponse, AxiosError<GetEserviceTemplateError>, GetEserviceTemplateResponse, ReturnType<typeof getEserviceTemplateQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getEserviceTemplate({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getEserviceTemplateQueryKey(options)
+});
+
+export const downloadEserviceTemplateInterfaceQueryKey = (options: Options<DownloadEserviceTemplateInterfaceData>) => createQueryKey('downloadEserviceTemplateInterface', options);
+
+/**
+ * Download E-service Template interface
+ *
+ * Download the interface document for an E-service Template
+ */
+export const downloadEserviceTemplateInterfaceOptions = (options: Options<DownloadEserviceTemplateInterfaceData>) => queryOptions<DownloadEserviceTemplateInterfaceResponse, AxiosError<DownloadEserviceTemplateInterfaceError>, DownloadEserviceTemplateInterfaceResponse, ReturnType<typeof downloadEserviceTemplateInterfaceQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await downloadEserviceTemplateInterface({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: downloadEserviceTemplateInterfaceQueryKey(options)
+});
+
 export const getProducerEservicesQueryKey = (options: Options<GetProducerEservicesData>) => createQueryKey('getProducerEservices', options);
 
 /**
@@ -200,6 +256,23 @@ export const createEserviceMutation = (options?: Partial<Options<CreateEserviceD
     return mutationOptions;
 };
 
+/**
+ * Create a new E-service from a Template
+ */
+export const createEserviceFromTemplateMutation = (options?: Partial<Options<CreateEserviceFromTemplateData>>): UseMutationOptions<CreateEserviceFromTemplateResponse, AxiosError<CreateEserviceFromTemplateError>, Options<CreateEserviceFromTemplateData>> => {
+    const mutationOptions: UseMutationOptions<CreateEserviceFromTemplateResponse, AxiosError<CreateEserviceFromTemplateError>, Options<CreateEserviceFromTemplateData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createEserviceFromTemplate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const getProducerEserviceDetailsQueryKey = (options: Options<GetProducerEserviceDetailsData>) => createQueryKey('getProducerEserviceDetails', options);
 
 /**
@@ -258,10 +331,10 @@ export const getProducerEserviceLatestVersionInterfaceOptions = (options: Option
 /**
  * Suspend an E-service
  */
-export const suspendProducerEserviceMutation = (options?: Partial<Options<SuspendProducerEserviceData>>): UseMutationOptions<SuspendProducerEserviceResponse, AxiosError<SuspendProducerEserviceError>, Options<SuspendProducerEserviceData>> => {
-    const mutationOptions: UseMutationOptions<SuspendProducerEserviceResponse, AxiosError<SuspendProducerEserviceError>, Options<SuspendProducerEserviceData>> = {
+export const suspendEserviceMutation = (options?: Partial<Options<SuspendEserviceData>>): UseMutationOptions<SuspendEserviceResponse, AxiosError<SuspendEserviceError>, Options<SuspendEserviceData>> => {
+    const mutationOptions: UseMutationOptions<SuspendEserviceResponse, AxiosError<SuspendEserviceError>, Options<SuspendEserviceData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await suspendProducerEservice({
+            const { data } = await suspendEservice({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -275,10 +348,27 @@ export const suspendProducerEserviceMutation = (options?: Partial<Options<Suspen
 /**
  * Reactivate a suspended E-service
  */
-export const reactivateProducerEserviceMutation = (options?: Partial<Options<ReactivateProducerEserviceData>>): UseMutationOptions<ReactivateProducerEserviceResponse, AxiosError<ReactivateProducerEserviceError>, Options<ReactivateProducerEserviceData>> => {
-    const mutationOptions: UseMutationOptions<ReactivateProducerEserviceResponse, AxiosError<ReactivateProducerEserviceError>, Options<ReactivateProducerEserviceData>> = {
+export const reactivateEserviceMutation = (options?: Partial<Options<ReactivateEserviceData>>): UseMutationOptions<ReactivateEserviceResponse, AxiosError<ReactivateEserviceError>, Options<ReactivateEserviceData>> => {
+    const mutationOptions: UseMutationOptions<ReactivateEserviceResponse, AxiosError<ReactivateEserviceError>, Options<ReactivateEserviceData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await reactivateProducerEservice({
+            const { data } = await reactivateEservice({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Archive an E-service
+ */
+export const archiveProducerEserviceMutation = (options?: Partial<Options<ArchiveProducerEserviceData>>): UseMutationOptions<ArchiveProducerEserviceResponse, AxiosError<ArchiveProducerEserviceError>, Options<ArchiveProducerEserviceData>> => {
+    const mutationOptions: UseMutationOptions<ArchiveProducerEserviceResponse, AxiosError<ArchiveProducerEserviceError>, Options<ArchiveProducerEserviceData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await archiveProducerEservice({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -739,14 +829,14 @@ export const getConsumerKeychainPurposeLinkOptions = (options: Options<GetConsum
     queryKey: getConsumerKeychainPurposeLinkQueryKey(options)
 });
 
-export const getTechnicalUsersQueryKey = (options?: Options<GetTechnicalUsersData>) => createQueryKey('getTechnicalUsers', options);
+export const getOrganizationUsersQueryKey = (options?: Options<GetOrganizationUsersData>) => createQueryKey('getOrganizationUsers', options);
 
 /**
- * Retrieve technical users of the requesting User's Organization
+ * Retrieve users of the requesting User's Organization, including whether they have the technical role
  */
-export const getTechnicalUsersOptions = (options?: Options<GetTechnicalUsersData>) => queryOptions<GetTechnicalUsersResponse, AxiosError<GetTechnicalUsersError>, GetTechnicalUsersResponse, ReturnType<typeof getTechnicalUsersQueryKey>>({
+export const getOrganizationUsersOptions = (options?: Options<GetOrganizationUsersData>) => queryOptions<GetOrganizationUsersResponse, AxiosError<GetOrganizationUsersError>, GetOrganizationUsersResponse, ReturnType<typeof getOrganizationUsersQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getTechnicalUsers({
+        const { data } = await getOrganizationUsers({
             ...options,
             ...queryKey[0],
             signal,
@@ -754,7 +844,7 @@ export const getTechnicalUsersOptions = (options?: Options<GetTechnicalUsersData
         });
         return data;
     },
-    queryKey: getTechnicalUsersQueryKey(options)
+    queryKey: getOrganizationUsersQueryKey(options)
 });
 
 /**
@@ -902,13 +992,77 @@ export const createConsumerAgreementMutation = (options?: Partial<Options<Create
     return mutationOptions;
 };
 
+export const getPendingConsumerAgreementsQueryKey = (options: Options<GetPendingConsumerAgreementsData>) => createQueryKey('getPendingConsumerAgreements', options);
+
+/**
+ * Retrieve a paginated list of Consumer Agreements pending action
+ */
+export const getPendingConsumerAgreementsOptions = (options: Options<GetPendingConsumerAgreementsData>) => queryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, GetPendingConsumerAgreementsResponse, ReturnType<typeof getPendingConsumerAgreementsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getPendingConsumerAgreements({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getPendingConsumerAgreementsQueryKey(options)
+});
+
+export const getPendingConsumerAgreementsInfiniteQueryKey = (options: Options<GetPendingConsumerAgreementsData>): QueryKey<Options<GetPendingConsumerAgreementsData>> => createQueryKey('getPendingConsumerAgreements', options, true);
+
+/**
+ * Retrieve a paginated list of Consumer Agreements pending action
+ */
+export const getPendingConsumerAgreementsInfiniteOptions = (options: Options<GetPendingConsumerAgreementsData>) => infiniteQueryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, InfiniteData<GetPendingConsumerAgreementsResponse>, QueryKey<Options<GetPendingConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getPendingConsumerAgreements({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getPendingConsumerAgreementsInfiniteQueryKey(options)
+});
+
+/**
+ * Create an Agreement activation magic link
+ *
+ * Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend
+ */
+export const createAgreementConsumerActivationMagicLinkMutation = (options?: Partial<Options<CreateAgreementConsumerActivationMagicLinkData>>): UseMutationOptions<CreateAgreementConsumerActivationMagicLinkResponse, AxiosError<CreateAgreementConsumerActivationMagicLinkError>, Options<CreateAgreementConsumerActivationMagicLinkData>> => {
+    const mutationOptions: UseMutationOptions<CreateAgreementConsumerActivationMagicLinkResponse, AxiosError<CreateAgreementConsumerActivationMagicLinkError>, Options<CreateAgreementConsumerActivationMagicLinkData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createAgreementConsumerActivationMagicLink({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 /**
  * Reactivate an Agreement as Consumer
  */
-export const reactivateConsumerAgreementMutation = (options?: Partial<Options<ReactivateConsumerAgreementData>>): UseMutationOptions<ReactivateConsumerAgreementResponse, AxiosError<ReactivateConsumerAgreementError>, Options<ReactivateConsumerAgreementData>> => {
-    const mutationOptions: UseMutationOptions<ReactivateConsumerAgreementResponse, AxiosError<ReactivateConsumerAgreementError>, Options<ReactivateConsumerAgreementData>> = {
+export const reactivateAgreementByConsumerMutation = (options?: Partial<Options<ReactivateAgreementByConsumerData>>): UseMutationOptions<ReactivateAgreementByConsumerResponse, AxiosError<ReactivateAgreementByConsumerError>, Options<ReactivateAgreementByConsumerData>> => {
+    const mutationOptions: UseMutationOptions<ReactivateAgreementByConsumerResponse, AxiosError<ReactivateAgreementByConsumerError>, Options<ReactivateAgreementByConsumerData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await reactivateConsumerAgreement({
+            const { data } = await reactivateAgreementByConsumer({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -922,10 +1076,10 @@ export const reactivateConsumerAgreementMutation = (options?: Partial<Options<Re
 /**
  * Suspend an Agreement as Consumer
  */
-export const suspendConsumerAgreementMutation = (options?: Partial<Options<SuspendConsumerAgreementData>>): UseMutationOptions<SuspendConsumerAgreementResponse, AxiosError<SuspendConsumerAgreementError>, Options<SuspendConsumerAgreementData>> => {
-    const mutationOptions: UseMutationOptions<SuspendConsumerAgreementResponse, AxiosError<SuspendConsumerAgreementError>, Options<SuspendConsumerAgreementData>> = {
+export const suspendAgreementByConsumerMutation = (options?: Partial<Options<SuspendAgreementByConsumerData>>): UseMutationOptions<SuspendAgreementByConsumerResponse, AxiosError<SuspendAgreementByConsumerError>, Options<SuspendAgreementByConsumerData>> => {
+    const mutationOptions: UseMutationOptions<SuspendAgreementByConsumerResponse, AxiosError<SuspendAgreementByConsumerError>, Options<SuspendAgreementByConsumerData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await suspendConsumerAgreement({
+            const { data } = await suspendAgreementByConsumer({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -1044,6 +1198,57 @@ export const getConsumerPurposeDetailsOptions = (options: Options<GetConsumerPur
     queryKey: getConsumerPurposeDetailsQueryKey(options)
 });
 
+/**
+ * Reactivate a Purpose as Consumer
+ */
+export const reactivatePurposeByConsumerMutation = (options?: Partial<Options<ReactivatePurposeByConsumerData>>): UseMutationOptions<ReactivatePurposeByConsumerResponse, AxiosError<ReactivatePurposeByConsumerError>, Options<ReactivatePurposeByConsumerData>> => {
+    const mutationOptions: UseMutationOptions<ReactivatePurposeByConsumerResponse, AxiosError<ReactivatePurposeByConsumerError>, Options<ReactivatePurposeByConsumerData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reactivatePurposeByConsumer({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Suspend a Purpose as Consumer
+ */
+export const suspendPurposeByConsumerMutation = (options?: Partial<Options<SuspendPurposeByConsumerData>>): UseMutationOptions<SuspendPurposeByConsumerResponse, AxiosError<SuspendPurposeByConsumerError>, Options<SuspendPurposeByConsumerData>> => {
+    const mutationOptions: UseMutationOptions<SuspendPurposeByConsumerResponse, AxiosError<SuspendPurposeByConsumerError>, Options<SuspendPurposeByConsumerData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await suspendPurposeByConsumer({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Archive a Purpose as Consumer
+ */
+export const archivePurposeByConsumerMutation = (options?: Partial<Options<ArchivePurposeByConsumerData>>): UseMutationOptions<ArchivePurposeByConsumerResponse, AxiosError<ArchivePurposeByConsumerError>, Options<ArchivePurposeByConsumerData>> => {
+    const mutationOptions: UseMutationOptions<ArchivePurposeByConsumerResponse, AxiosError<ArchivePurposeByConsumerError>, Options<ArchivePurposeByConsumerData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await archivePurposeByConsumer({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const getSessionOrganizationQueryKey = (options?: Options<GetSessionOrganizationData>) => createQueryKey('getSessionOrganization', options);
 
 /**
@@ -1128,10 +1333,10 @@ export const getProducerAgreementDetailsOptions = (options: Options<GetProducerA
 /**
  * Reactivate an Agreement as Producer
  */
-export const reactivateProducerAgreementMutation = (options?: Partial<Options<ReactivateProducerAgreementData>>): UseMutationOptions<ReactivateProducerAgreementResponse, AxiosError<ReactivateProducerAgreementError>, Options<ReactivateProducerAgreementData>> => {
-    const mutationOptions: UseMutationOptions<ReactivateProducerAgreementResponse, AxiosError<ReactivateProducerAgreementError>, Options<ReactivateProducerAgreementData>> = {
+export const reactivateAgreementByProducerMutation = (options?: Partial<Options<ReactivateAgreementByProducerData>>): UseMutationOptions<ReactivateAgreementByProducerResponse, AxiosError<ReactivateAgreementByProducerError>, Options<ReactivateAgreementByProducerData>> => {
+    const mutationOptions: UseMutationOptions<ReactivateAgreementByProducerResponse, AxiosError<ReactivateAgreementByProducerError>, Options<ReactivateAgreementByProducerData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await reactivateProducerAgreement({
+            const { data } = await reactivateAgreementByProducer({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -1145,10 +1350,10 @@ export const reactivateProducerAgreementMutation = (options?: Partial<Options<Re
 /**
  * Suspend an Agreement as Producer
  */
-export const suspendProducerAgreementMutation = (options?: Partial<Options<SuspendProducerAgreementData>>): UseMutationOptions<SuspendProducerAgreementResponse, AxiosError<SuspendProducerAgreementError>, Options<SuspendProducerAgreementData>> => {
-    const mutationOptions: UseMutationOptions<SuspendProducerAgreementResponse, AxiosError<SuspendProducerAgreementError>, Options<SuspendProducerAgreementData>> = {
+export const suspendAgreementByProducerMutation = (options?: Partial<Options<SuspendAgreementByProducerData>>): UseMutationOptions<SuspendAgreementByProducerResponse, AxiosError<SuspendAgreementByProducerError>, Options<SuspendAgreementByProducerData>> => {
+    const mutationOptions: UseMutationOptions<SuspendAgreementByProducerResponse, AxiosError<SuspendAgreementByProducerError>, Options<SuspendAgreementByProducerData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await suspendProducerAgreement({
+            const { data } = await suspendAgreementByProducer({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -1225,3 +1430,37 @@ export const getProducerPurposeDetailsOptions = (options: Options<GetProducerPur
     },
     queryKey: getProducerPurposeDetailsQueryKey(options)
 });
+
+/**
+ * Reactivate a Purpose as Producer
+ */
+export const reactivatePurposeByProducerMutation = (options?: Partial<Options<ReactivatePurposeByProducerData>>): UseMutationOptions<ReactivatePurposeByProducerResponse, AxiosError<ReactivatePurposeByProducerError>, Options<ReactivatePurposeByProducerData>> => {
+    const mutationOptions: UseMutationOptions<ReactivatePurposeByProducerResponse, AxiosError<ReactivatePurposeByProducerError>, Options<ReactivatePurposeByProducerData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reactivatePurposeByProducer({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Suspend a Purpose as Producer
+ */
+export const suspendPurposeByProducerMutation = (options?: Partial<Options<SuspendPurposeByProducerData>>): UseMutationOptions<SuspendPurposeByProducerResponse, AxiosError<SuspendPurposeByProducerError>, Options<SuspendPurposeByProducerData>> => {
+    const mutationOptions: UseMutationOptions<SuspendPurposeByProducerResponse, AxiosError<SuspendPurposeByProducerError>, Options<SuspendPurposeByProducerData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await suspendPurposeByProducer({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};

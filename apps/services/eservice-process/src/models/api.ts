@@ -14,6 +14,8 @@ import {
   API_AccessTokenType,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceTemplateId,
+  API_EserviceTemplateReference,
   API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
@@ -91,6 +93,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    template: API_EserviceTemplateId.optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -179,65 +182,82 @@ const API_InterfaceDocumentSeed = z
   })
   .meta({ id: "InterfaceDocumentSeed" });
 
-export const API_EserviceSeed = z
-  .strictObject({
-    accessTokenAudience: z
-      .array(z.string())
-      .meta({ description: "Audience for the access token" }),
-    accessTokenDuration: z
-      .number()
-      .int()
-      .min(minAccessTokenDuration)
-      .max(maxAccessTokenDuration)
-      .optional()
-      .default(3600)
-      .meta({
-        description: "Duration of the access token in seconds",
-        format: "int32",
-      }),
-    accessTokenType: API_AccessTokenType.optional()
-      .default("Bearer")
-      .meta({ description: "Type of the access token" }),
-    categories: z
-      .array(API_EserviceCategory)
-      .optional()
-      .meta({ description: "Categories of the E-service" }),
-    description: API_LocalizedDescription,
-    interfaceDocument: API_InterfaceDocumentSeed.meta({
-      description: "Interface document",
+const API_EserviceBaseSeed = z.strictObject({
+  accessTokenAudience: z
+    .array(z.string())
+    .meta({ description: "Audience for the access token" }),
+  accessTokenDuration: z
+    .number()
+    .int()
+    .min(minAccessTokenDuration)
+    .max(maxAccessTokenDuration)
+    .optional()
+    .default(3600)
+    .meta({
+      description: "Duration of the access token in seconds",
+      format: "int32",
     }),
-    isSignalHubEnabled: z
-      .boolean()
-      .optional()
-      .meta({ description: "Whether SignalHub is enabled for the E-service" }),
-    maxDailyCallsPerConsumer: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({
-        description:
-          "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
-        format: "int32",
-      }),
-    maxDailyCallsPerKnode: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({
-        description:
-          "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
-        format: "int32",
-      }),
-    mode: API_EserviceMode.meta({
-      description: "Mode of the E-service",
-    }).optional(),
-    name: API_LocalizedName,
-    requiredAttributes: z
-      .array(z.array(API_Attribute))
-      .meta({ description: "Required attributes for the E-service" }),
-  })
+  accessTokenType: API_AccessTokenType.optional()
+    .default("Bearer")
+    .meta({ description: "Type of the access token" }),
+  description: API_LocalizedDescription,
+  interfaceDocument: API_InterfaceDocumentSeed.meta({
+    description: "Interface document",
+  }),
+  isSignalHubEnabled: z
+    .boolean()
+    .optional()
+    .meta({ description: "Whether SignalHub is enabled for the E-service" }),
+  maxDailyCallsPerConsumer: z
+    .number()
+    .int()
+    .min(minDailyCalls)
+    .max(maxDailyCalls)
+    .meta({
+      description:
+        "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
+      format: "int32",
+    }),
+  maxDailyCallsPerKnode: z
+    .number()
+    .int()
+    .min(minDailyCalls)
+    .max(maxDailyCalls)
+    .meta({
+      description:
+        "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
+      format: "int32",
+    }),
+  name: API_LocalizedName,
+});
+
+export const API_EserviceFromScratchSeed = API_EserviceBaseSeed.extend({
+  categories: z
+    .array(API_EserviceCategory)
+    .optional()
+    .meta({ description: "Categories of the E-service" }),
+  mode: API_EserviceMode.meta({
+    description: "Mode of the E-service",
+  }).optional(),
+  requiredAttributes: z
+    .array(z.array(API_Attribute))
+    .meta({ description: "Required attributes for the E-service" }),
+}).meta({ id: "EserviceFromScratchSeed" });
+export type API_EserviceFromScratchSeed = z.infer<
+  typeof API_EserviceFromScratchSeed
+>;
+
+export const API_EserviceFromTemplateSeed = API_EserviceBaseSeed.extend({
+  template: API_EserviceTemplateReference,
+}).meta({
+  id: "EserviceFromTemplateSeed",
+});
+export type API_EserviceFromTemplateSeed = z.infer<
+  typeof API_EserviceFromTemplateSeed
+>;
+
+export const API_EserviceSeed = z
+  .union([API_EserviceFromScratchSeed, API_EserviceFromTemplateSeed])
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 

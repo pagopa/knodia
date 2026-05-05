@@ -10,6 +10,7 @@ import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Organization } from "@knodia/organization-models";
 import type { Purpose, PurposeState } from "@knodia/purpose-models";
 
+import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
 import { match } from "ts-pattern";
 
 export const toK2KVersionState = (
@@ -48,8 +49,8 @@ export const toK2KAgreement = (
   id: agreement.id,
   producerId: agreement.producerId,
   state: toK2KAgreementState(agreement.state),
-  suspendedByConsumerAt: agreement.suspendedByConsumerAt?.toISOString() ?? null,
-  suspendedByProducerAt: agreement.suspendedByProducerAt?.toISOString() ?? null,
+  suspendedByConsumerAt: toExpectIsoOrNull(agreement.suspendedByConsumerAt),
+  suspendedByProducerAt: toExpectIsoOrNull(agreement.suspendedByProducerAt),
   updatedAt: agreement.updatedAt.toISOString(),
 });
 
@@ -131,6 +132,8 @@ export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
     en: purpose.name.en,
   },
   state: toK2KPurposeState(purpose.state),
+  suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
+  suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
   updatedAt: purpose.updatedAt.toISOString(),
 });
 

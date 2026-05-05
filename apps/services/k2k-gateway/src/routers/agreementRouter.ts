@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
+import type { TokenGenerator } from "@knodia/token-generator";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -9,6 +9,14 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
+import { ExternalUISessionScope } from "@knodia/common-models/auth";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  type CorrelationId,
+  KnodeId,
+  type OrganizationId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -19,6 +27,8 @@ import {
   type PollingService,
 } from "@knodia/polling";
 
+import type { K2KGatewayConfig } from "../config/config.ts";
+
 import {
   API_Agreement,
   API_AgreementIdPathParam,
@@ -26,6 +36,7 @@ import {
   API_AgreementSeed,
   API_CreatedAgreementResource,
   API_GetAgreementsQueryParams,
+  API_MagicLink,
 } from "../models/agreement/api.ts";
 import {
   toAPI_Agreement,
@@ -38,15 +49,71 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   callerKnodeId: KnodeId;
+  internalTokenProvider: RefreshableInternalTokenGenerator;
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"];
   pollingService: PollingService;
-  tokenProvider: RefreshableInternalTokenGenerator;
+  tokenGenerator: TokenGenerator;
+}
+
+async function buildActivationMagicLink(
+  claims: agreementProcessApi.AgreementActivationClaims,
+  tokenGenerator: TokenGenerator,
+  magicLinkConfig: K2KGatewayConfig["magicLinkConfig"],
+) {
+  const { payload, serialized } =
+    await tokenGenerator.generateExternalUISessionMagicLinkToken({
+      agreement: {
+        id: unsafeBrandId(claims.agreement.id),
+        knodeId: KnodeId.parse(claims.agreement.knodeId),
+      },
+      audience: magicLinkConfig.audience,
+      consumer: {
+        id: unsafeBrandExternalId<OrganizationId>(claims.consumer.id),
+        knodeId: KnodeId.parse(claims.consumer.knodeId),
+      },
+      eservice: {
+        id: unsafeBrandId(claims.eservice.id),
+        knodeId: KnodeId.parse(claims.eservice.knodeId),
+        version: unsafeBrandId(claims.eservice.version),
+      },
+      issuer: magicLinkConfig.issuer,
+      kid: magicLinkConfig.kid,
+      producer: {
+        id: unsafeBrandId(claims.producer.id),
+        knodeId: KnodeId.parse(claims.producer.knodeId),
+      },
+      scope: ExternalUISessionScope.enum["agreement-activation"],
+      secondsDuration: magicLinkConfig.secondsDuration,
+      subject: claims.agreement.id,
+    });
+
+  const url = new URL(
+    magicLinkConfig.frontendActivationPath,
+    magicLinkConfig.frontendBaseUrl,
+  );
+  // Put the token in the URL fragment, not the query string: browsers don't
+  // send fragments upstream, so the one-time token stays out of Referer
+  // headers and server access logs.
+  url.hash = new URLSearchParams({ token: serialized }).toString();
+
+  return {
+    expiresAt: new Date(payload.exp * 1000).toISOString(),
+    url: url.toString(),
+  };
 }
 
 export const agreementRouter: FastifyPluginAsyncZod<
   AgreementRouterOptions
 > = async (
   fastify,
-  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
+  {
+    agreementProcessClient,
+    callerKnodeId,
+    internalTokenProvider,
+    magicLinkConfig,
+    pollingService,
+    tokenGenerator,
+  },
 ) => {
   const retrieveAgreementById = async (
     agreementId: string,
@@ -69,7 +136,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     });
 
   const getHeaders = async (correlationId: CorrelationId) =>
-    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
+    getKnodiaServiceHeaders(correlationId, await internalTokenProvider.get());
 
   fastify.route({
     handler: async (req, res) => {
@@ -244,7 +311,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
           eserviceId,
           limit,
           offset,
-          state: state ? [toProcessAPI_AgreementState(state)] : undefined,
+          state: state?.map(toProcessAPI_AgreementState),
         },
       });
 
@@ -268,5 +335,51 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { agreementId } = req.params;
+      logger.info(
+        `Creating activation magic link for Agreement ${agreementId}`,
+      );
+      const headers = await getHeaders(correlationId);
+      // The activationClaims endpoint returns the claims but also
+      // validates the agreement state.
+      const { data: claims } =
+        await agreementProcessApi.getAgreementActivationClaims({
+          client: agreementProcessClient,
+          headers,
+          path: { agreementId },
+        });
+      res
+        .status(200)
+        .send(
+          await buildActivationMagicLink(
+            claims,
+            tokenGenerator,
+            magicLinkConfig,
+          ),
+        );
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Create a magic link for a Consumer user to activate an Agreement on the Producer's frontend",
+      operationId: "createAgreementActivationMagicLink",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_MagicLink.meta({
+          description: "Magic link created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Create an Agreement activation magic link",
+      tags: [apiTags.operation, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/activationMagicLink",
   });
 };

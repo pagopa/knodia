@@ -33,6 +33,11 @@ export type Problem = {
     title: string;
 };
 
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -64,6 +69,19 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
+
+export type EserviceTemplateId = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
+ * Reference to an E-service template
+ */
+export type EserviceTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
 
 export type Attribute = {
     code: string;
@@ -112,6 +130,7 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
+    template?: EserviceTemplateId;
     updatedAt: string;
 };
 
@@ -185,7 +204,7 @@ export type InterfaceDocumentSeed = {
     prettyName: LocalizedInterfacePrettyName;
 };
 
-export type EserviceSeed = {
+export type EserviceFromScratchSeed = {
     /**
      * Audience for the access token
      */
@@ -198,10 +217,6 @@ export type EserviceSeed = {
      * Type of the access token
      */
     accessTokenType: AccessTokenType;
-    /**
-     * Categories of the E-service
-     */
-    categories?: Array<EserviceCategory>;
     description: LocalizedDescription;
     /**
      * Interface document
@@ -219,16 +234,56 @@ export type EserviceSeed = {
      * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
      */
     maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
     /**
      * Mode of the E-service
      */
     mode?: EserviceMode;
-    name: LocalizedName;
     /**
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
 };
+
+export type EserviceFromTemplateSeed = {
+    /**
+     * Audience for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    /**
+     * Type of the access token
+     */
+    accessTokenType: AccessTokenType;
+    description: LocalizedDescription;
+    /**
+     * Interface document
+     */
+    interfaceDocument: InterfaceDocumentSeed;
+    /**
+     * Whether SignalHub is enabled for the E-service
+     */
+    isSignalHubEnabled?: boolean;
+    /**
+     * Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)
+     */
+    maxDailyCallsPerKnode: number;
+    name: LocalizedName;
+    template: EserviceTemplateReference;
+};
+
+export type EserviceSeed = EserviceFromScratchSeed | EserviceFromTemplateSeed;
 
 export type EservicePatch = {
     /**
@@ -378,6 +433,10 @@ export type CreateEserviceErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * E-service template not found
+     */
+    404: Problem;
     /**
      * Conflict
      */

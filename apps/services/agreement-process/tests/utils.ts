@@ -4,11 +4,15 @@ import { generateId } from "@knodia/common-models/ids";
 import { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
 import { agreementEventStoreWriterBuilder } from "@knodia/db-event-store-writer/agreement";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
 import { expect } from "vitest";
 
 import type { API_Agreement } from "../src/models/api.ts";
 
-import { createAgreementActivatedV1Event } from "../src/models/agreementEventFactory.ts";
+import {
+  createAgreementActivatedV1Event,
+  createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
+} from "../src/models/agreementEventFactory.ts";
 import { agreementWriterService, app, eventStoreDb } from "./setup.ts";
 
 export async function getAllAgreementEvents() {
@@ -24,24 +28,23 @@ export async function seedAgreement(agreement: Agreement) {
   await agreementWriterService.upsertAgreement(agreement, 0);
 }
 
+export async function seedPendingAgreement(agreement: Agreement) {
+  await agreementEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createAgreementCreatedPendingConsumerOperatorIdentificationV1Event(
+      agreement,
+      generateId(),
+    ),
+  );
+  await agreementWriterService.upsertAgreement(agreement, 0);
+}
+
 export function toExpectAPI_Agreement(agreement: Agreement | API_Agreement) {
   return {
     ...agreement,
     attributes: expect.arrayContaining(agreement.attributes),
-    createdAt:
-      typeof agreement.createdAt === "string"
-        ? agreement.createdAt
-        : agreement.createdAt.toISOString(),
+    createdAt: toExpectIsoOrNull(agreement.createdAt),
     suspendedByConsumerAt: toExpectIsoOrNull(agreement.suspendedByConsumerAt),
     suspendedByProducerAt: toExpectIsoOrNull(agreement.suspendedByProducerAt),
-    updatedAt:
-      typeof agreement.updatedAt === "string"
-        ? agreement.updatedAt
-        : agreement.updatedAt.toISOString(),
+    updatedAt: toExpectIsoOrNull(agreement.updatedAt),
   };
-}
-
-function toExpectIsoOrNull(value: Date | null | string) {
-  if (value === null) return null;
-  return typeof value === "string" ? value : value.toISOString();
 }

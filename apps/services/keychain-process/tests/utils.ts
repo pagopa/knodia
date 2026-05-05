@@ -3,11 +3,14 @@ import type {
   ConsumerKeychainPurpose,
   ConsumerKeychainV1,
 } from "@knodia/keychain-models";
+import type { Purpose } from "@knodia/purpose-models";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, type KnodeId } from "@knodia/common-models/ids";
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
 import { expect } from "vitest";
 
 import {
@@ -74,4 +77,23 @@ export function toExpectConsumerKeychainV1(
     keys: expect.arrayContaining(consumerKeychain.keys),
     users: expect.arrayContaining(consumerKeychain.users),
   });
+}
+
+export function toRRM_Purpose(
+  purpose: Purpose,
+  knodeId: KnodeId,
+): remoteResourcesManagerApi.Purpose {
+  return {
+    consumer: purpose.consumer,
+    dailyCalls: purpose.dailyCalls,
+    description: purpose.description,
+    eserviceId: purpose.eserviceId,
+    id: purpose.id,
+    knodeId,
+    name: purpose.name,
+    state: purpose.state,
+    suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
+    suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
+    updatedAt: purpose.updatedAt.toISOString(),
+  };
 }

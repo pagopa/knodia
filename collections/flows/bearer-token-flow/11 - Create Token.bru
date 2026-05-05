@@ -29,7 +29,7 @@ vars:post-response {
 script:post-response {
   if (res.status === 200) return
 
-  const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_KEY_PATH") || "<path-to-private-key>"
+  const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-key>"
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
   throw new Error(

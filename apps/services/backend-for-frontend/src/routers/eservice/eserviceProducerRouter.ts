@@ -15,6 +15,7 @@ import {
 import {
   type EserviceInterfaceId,
   generateId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
@@ -22,6 +23,7 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -36,14 +38,16 @@ import {
   purposeProcessApi,
   type PurposeProcessClient,
 } from "@knodia/purpose-process-client";
+import { createHash } from "node:crypto";
 import z from "zod";
 
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_EserviceFromScratchSeed,
+  API_EserviceFromTemplateSeed,
   API_EservicePatch,
-  API_EserviceSeed,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -53,6 +57,11 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import {
+  applyInterfaceDocumentOverrides,
+  retrieveEserviceTemplate,
+  retrieveEserviceTemplateInterfaceContent,
+} from "../../utils/eserviceTemplate.ts";
 
 interface EserviceProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -136,7 +145,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         key: `${interfaceDocumentId}/${name}`,
       });
 
-      const seed: eserviceProcessApi.EserviceSeed = {
+      const seed: eserviceProcessApi.EserviceFromScratchSeed = {
         ...rest,
         interfaceDocument: {
           ...interfaceDocumentRest,
@@ -158,7 +167,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EserviceSeed,
+      body: API_EserviceFromScratchSeed,
       description: "Create a new E-service",
       operationId: "createEservice",
       response: {
@@ -172,6 +181,93 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body },
+        "Creating new E-service from template with body data",
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const template = retrieveEserviceTemplate(
+        unsafeBrandId(req.body.template.id),
+        req.body.template.knodeId,
+      );
+      const templateInterfaceContent =
+        retrieveEserviceTemplateInterfaceContent(template);
+
+      const overriddenInterfaceContent = applyInterfaceDocumentOverrides({
+        content: templateInterfaceContent,
+        fileName: template.eserviceFields.interfaceDocument.name,
+        overrides: req.body.interfaceDocumentOverrides,
+      });
+
+      const checksum = createHash("sha256")
+        .update(overriddenInterfaceContent)
+        .digest("hex");
+
+      const interfaceDocumentId = generateId<EserviceInterfaceId>();
+
+      const s3Key = await fileManager.storeBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        checksumSHA256Hex: checksum,
+        content: overriddenInterfaceContent,
+        contentType: template.eserviceFields.interfaceDocument.contentType,
+        key: `${interfaceDocumentId}/${template.eserviceFields.interfaceDocument.name}`,
+      });
+
+      const seed: eserviceProcessApi.EserviceFromTemplateSeed = {
+        accessTokenAudience: req.body.accessTokenAudience,
+        accessTokenDuration: req.body.accessTokenDuration,
+        accessTokenType: req.body.accessTokenType,
+        description: req.body.description,
+        interfaceDocument: {
+          checksum,
+          contentType: template.eserviceFields.interfaceDocument.contentType,
+          id: interfaceDocumentId,
+          name: template.eserviceFields.interfaceDocument.name,
+          path: s3Key,
+          prettyName: template.eserviceFields.interfaceDocument.prettyName,
+        },
+        isSignalHubEnabled: req.body.isSignalHubEnabled,
+        maxDailyCallsPerConsumer: req.body.maxDailyCallsPerConsumer,
+        maxDailyCallsPerKnode: req.body.maxDailyCallsPerKnode,
+        name: req.body.name,
+        template: req.body.template,
+      };
+
+      const response = await eserviceProcessApi.createEservice({
+        body: seed,
+        client: eserviceProcessClient,
+        headers,
+      });
+
+      await pollEservice(response, headers, response.data.id);
+
+      res.status(201).send({ id: response.data.id });
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceFromTemplateSeed,
+      description: "Create a new E-service from a Template",
+      operationId: "createEserviceFromTemplate",
+      response: {
+        201: API_CreatedResource.meta({
+          description: "E-service created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service template not found" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/fromTemplate",
   });
 
   fastify.route({
@@ -467,11 +563,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         key: data.path,
       });
 
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${data.name}"`,
-        "Content-Type": data.contentType,
-      });
-      res.raw.end(content);
+      sendFileDownload(res, content, data.name, data.contentType);
     },
     method: "GET",
     schema: {
@@ -520,7 +612,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Suspend an E-service",
-      operationId: "suspendProducerEservice",
+      operationId: "suspendEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -562,7 +654,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       description: "Reactivate a suspended E-service",
-      operationId: "reactivateProducerEservice",
+      operationId: "reactivateEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
@@ -577,5 +669,47 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { eserviceId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Archiving E-service with ID ${eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await eserviceProcessApi.archiveEservice({
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId },
+      });
+
+      await pollEserviceById(eserviceId, response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Archive an E-service",
+      operationId: "archiveProducerEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "E-service archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/archive",
   });
 };
