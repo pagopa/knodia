@@ -1,4 +1,7 @@
-import { fromExternalResourceV1 } from "@knodia/common-models/externalResource";
+import {
+  fromExternalResourceV1,
+  fromOptionalExternalResourceV1,
+} from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
@@ -41,9 +44,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
       input.suspendedByProducerAt != null
         ? new Date(input.suspendedByProducerAt)
         : null,
-    template: input.template
-      ? fromExternalResourceV1(input.template)
-      : undefined,
+    template: fromOptionalExternalResourceV1(input.template),
     updatedAt: new Date(input.updatedAt),
   };
 };

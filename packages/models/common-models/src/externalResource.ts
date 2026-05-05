@@ -30,6 +30,14 @@ export function fromExternalResourceV1<T extends IDS>(input: {
   } as ExternalResource<T>;
 }
 
+export function fromOptionalExternalResourceV1<T extends IDS>(input?: {
+  id: string;
+  knodeId: string;
+}): ExternalResource<T> | undefined {
+  if (!input) return undefined;
+  return fromExternalResourceV1<T>(input);
+}
+
 export function generateExternalId<T extends IDS>(): ExternalId<T> {
   return crypto.randomUUID() as ExternalId<T>;
 }
