@@ -66,8 +66,9 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     mutate: exchangeToken,
   } = useMutation({
     ...createSessionMutation({ client }),
-    onError: () => {
-      redirectToLogout();
+    onError: async () => {
+      await removeUser();
+      void router.navigate({ replace: true, to: "/login" });
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
@@ -82,13 +83,13 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
 
   // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
-    if (user?.access_token && !uiSessionToken) {
+    if (user?.id_token && !uiSessionToken) {
       exchangeToken({
-        body: { oidcToken: user.access_token },
+        body: { oidcToken: user.id_token },
         withCredentials: true,
       });
     }
-  }, [user?.access_token, uiSessionToken, exchangeToken]);
+  }, [user?.id_token, uiSessionToken, exchangeToken]);
 
   const sessionClaims = useMemo(() => {
     if (!uiSessionToken) return null;

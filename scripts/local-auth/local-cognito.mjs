@@ -399,6 +399,10 @@ createServer(async (req, res) => {
       const idToken = signJwt({
         sub: USER_ID,
         iss: ISSUER,
+        token_use: "id",
+        "cognito:groups": [`org:${ORG_ID}`],
+        "custom:roles": ROLES.map((role) => role.replace("role:", "")).join(","),
+        "cognito:username": USERNAME,
         aud: clientId || codeData.clientId,
         iat: now,
         exp: now + 3600,
