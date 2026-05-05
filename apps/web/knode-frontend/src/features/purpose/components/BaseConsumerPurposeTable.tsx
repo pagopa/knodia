@@ -13,6 +13,7 @@ import { ArrowRightIcon } from "@phosphor-icons/react";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
+import { formatNumericDate } from "@/utils/formatters";
 
 import { PurposeStateChip } from "./PurposeStateChip";
 
@@ -59,9 +60,8 @@ export function BaseConsumerPurposeTable({
             {isArchived && (
               <Cell>
                 <PurposeStateChip
-                  archivedAt={purpose.updatedAt}
+                  label={formatNumericDate(purpose.updatedAt)}
                   state="Archived"
-                  type="bright"
                 />
               </Cell>
             )}

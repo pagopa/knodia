@@ -4,11 +4,9 @@ import { Chip, type ChipProps } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
-import { formatNumericDate } from "@/utils/formatters";
-
 type PurposeStateChipProps = { type?: ChipProps["type"] } & (
-  | { archivedAt?: never; state: bffApi.PurposeState }
-  | { archivedAt?: string; state: "Archived" }
+  | { label?: never; state: Exclude<bffApi.PurposeState, "Archived"> }
+  | { label?: string; state: Extract<bffApi.PurposeState, "Archived"> }
 );
 
 export function PurposeStateChip(props: PurposeStateChipProps) {
@@ -25,13 +23,11 @@ export function PurposeStateChip(props: PurposeStateChipProps) {
         type={type}
       />
     ))
-    .with({ state: "Archived" }, ({ archivedAt }) => (
+    .with({ state: "Archived" }, ({ label }) => (
       <Chip
         icon={<ArchiveIcon />}
         kind="neutral"
-        label={
-          archivedAt ? `Archived ${formatNumericDate(archivedAt)}` : "Archived"
-        }
+        label={label ?? "Archived"}
         type={type}
       />
     ))

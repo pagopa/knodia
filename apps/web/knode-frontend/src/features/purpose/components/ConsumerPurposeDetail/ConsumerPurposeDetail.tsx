@@ -25,6 +25,7 @@ import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurpos
 import { useArchivePurposeByConsumer } from "@/features/purpose/hooks/useArchivePurposeByConsumer";
 import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
 import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
+import { formatNumericDate } from "@/utils/formatters";
 
 import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
 import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
@@ -47,7 +48,10 @@ export function ConsumerPurposeDetail({
   });
 
   const headerActions = isArchived ? (
-    <PurposeStateChip archivedAt={purpose.updatedAt} state="Archived" />
+    <PurposeStateChip
+      label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
+      state="Archived"
+    />
   ) : (
     canManagePurpose && (
       <PurposeActionButton knodeId={knodeId} purpose={purpose} />

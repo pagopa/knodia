@@ -17,6 +17,7 @@ import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip
 import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
 import { useReactivatePurposeByProducer } from "@/features/purpose/hooks/useReactivatePurposeByProducer";
 import { useSuspendPurposeByProducer } from "@/features/purpose/hooks/useSuspendPurposeByProducer";
+import { formatNumericDate } from "@/utils/formatters";
 
 export function ProducerPurposeDetail({
   purpose,
@@ -32,7 +33,10 @@ export function ProducerPurposeDetail({
       <PageHeader
         actions={
           isArchived ? (
-            <PurposeStateChip archivedAt={purpose.updatedAt} state="Archived" />
+            <PurposeStateChip
+              label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
+              state="Archived"
+            />
           ) : (
             canManagePurposeState && <PurposeActionButton purpose={purpose} />
           )
