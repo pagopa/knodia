@@ -9,7 +9,7 @@ import {
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
 
-export async function handleKeychainEvent(
+export async function handleConsumerKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
     consumerKeychainWriterService,

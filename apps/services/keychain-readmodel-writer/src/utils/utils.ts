@@ -8,7 +8,7 @@ import { consumerKeychainWriterServiceBuilder } from "@knodia/db-readmodel-keych
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
 
-import { handleKeychainEvent } from "../services/consumerService.ts";
+import { handleConsumerKeychainEvent } from "../services/consumerService.ts";
 
 export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
@@ -32,7 +32,7 @@ export const createProcessMessage = (
     };
     const messageLogger = logger.child(loggerMetadata);
 
-    await handleKeychainEvent(event, { consumerKeychainWriterService });
+    await handleConsumerKeychainEvent(event, { consumerKeychainWriterService });
 
     messageLogger.info(
       `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,
