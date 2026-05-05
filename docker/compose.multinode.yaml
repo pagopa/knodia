@@ -80,6 +80,8 @@ services:
     image: amazon/aws-cli:2.34.25
     container_name: knodia-multinode-seed
     depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
       flyway-lynx:
         condition: service_completed_successfully
       minio-setup:

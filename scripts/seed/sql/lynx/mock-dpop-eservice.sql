@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'e522049f-2301-442a-91de-e5bcaffd08be',
   '905c4569-95db-4670-a146-8239fcb3f41a',
   'a50299cc-f381-4089-8684-a63b2497b690',
-  '186811e830bb8c525b6d1b06828b4f551a3b8ac23787a3a4ad1557d64c4a1c23',
+  '1b50374e3e6b2e451767e18dc4e4ad381965d2280cca3baf42c9d10cce4aa3d7',
   'application/yaml',
   'mock-dpop-eservice.yaml',
   'e522049f-2301-442a-91de-e5bcaffd08be/mock-dpop-eservice.yaml',
