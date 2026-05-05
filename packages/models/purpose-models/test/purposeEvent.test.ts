@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import {
-  generateId,
-  type PurposeStatementTemplateId,
-} from "@knodia/common-models/ids";
+import { generateId, type PurposeTemplateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
@@ -57,7 +54,7 @@ describe("PurposeEventV1 codec", () => {
     ...zocker(Purpose).generate(),
     formAnswersJson: mockFormAnswers,
     template: {
-      id: generateExternalId<PurposeStatementTemplateId>(),
+      id: generateExternalId<PurposeTemplateId>(),
       knodeId: "Orion",
     },
   };

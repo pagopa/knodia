@@ -6,7 +6,7 @@ import {
 } from "@knodia/common-models/externalResource";
 import {
   KnodeId,
-  type PurposeStatementTemplateId,
+  type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
@@ -56,7 +56,7 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     state: PurposeState.parse(purposeSQL.state),
     suspendedByConsumerAt: purposeSQL.suspendedByConsumerAt,
     suspendedByProducerAt: purposeSQL.suspendedByProducerAt,
-    template: toOptionalExternalResource<PurposeStatementTemplateId>(
+    template: toOptionalExternalResource<PurposeTemplateId>(
       purposeSQL.templateId,
       purposeSQL.templateKnodeId,
     ),

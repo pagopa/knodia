@@ -4,7 +4,7 @@ import {
   type KnodeId,
   type OrganizationId,
   PurposeId,
-  type PurposeStatementTemplateId,
+  type PurposeTemplateId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
@@ -68,7 +68,7 @@ export const Purpose = z.strictObject({
   suspendedByConsumerAt: z.coerce.date().nullable(),
   suspendedByProducerAt: z.coerce.date().nullable(),
   // present only if the purpose was created starting from a statement template
-  template: ExternalResource<PurposeStatementTemplateId>().optional(),
+  template: ExternalResource<PurposeTemplateId>().optional(),
   updatedAt: z.coerce.date(),
 });
 export type Purpose = z.infer<typeof Purpose>;

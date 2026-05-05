@@ -1,5 +1,5 @@
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import { type PurposeStatementTemplateId } from "@knodia/common-models/ids";
+import { type PurposeTemplateId } from "@knodia/common-models/ids";
 import { type Purpose } from "@knodia/purpose-models";
 import { getMockPurpose } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -19,7 +19,7 @@ describe("Purpose Splitters", () => {
       purpose: {
         ...getMockPurpose(),
         template: {
-          id: generateExternalId<PurposeStatementTemplateId>(),
+          id: generateExternalId<PurposeTemplateId>(),
           knodeId: "Orion",
         },
       },

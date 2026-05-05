@@ -1,7 +1,7 @@
 import {
   EserviceId,
   type KnodeId,
-  PurposeStatementTemplateId,
+  PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -13,17 +13,17 @@ import {
 import z from "zod";
 
 /** @knipignore */
-export const PurposeStatementTemplate = z.strictObject({
+export const PurposeTemplate = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedPurposeDescription,
   // undefined = generic template for the Knode (not tied to a specific eservice)
   eserviceId: EserviceId.optional(),
   formAnswers: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
-  id: PurposeStatementTemplateId,
+  id: PurposeTemplateId,
   name: LocalizedPurposeName,
 });
-export type PurposeStatementTemplate = z.infer<typeof PurposeStatementTemplate>;
+export type PurposeTemplate = z.infer<typeof PurposeTemplate>;
 
 // TODO: align with eservice mocks once they exist with stable UUIDs
 const PLACEHOLDER_ESERVICE_ORION_01 = unsafeBrandId<EserviceId>(
@@ -37,7 +37,7 @@ const PLACEHOLDER_ESERVICE_LYNX_05 = unsafeBrandId<EserviceId>(
 );
 
 /** @knipignore */
-const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
+const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
   Lynx: [
     {
       createdAt: new Date("2025-01-01T00:00:00Z"),
@@ -54,7 +54,7 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         usesPersonalData: "YES",
       },
       formSchemaVersion: "1.0",
-      id: unsafeBrandId<PurposeStatementTemplateId>(
+      id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0001-4000-8000-000000000001",
       ),
       name: { en: "Generic citizen data consultation (basic)" },
@@ -75,7 +75,7 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         usesPersonalData: "YES",
       },
       formSchemaVersion: "1.0",
-      id: unsafeBrandId<PurposeStatementTemplateId>(
+      id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0001-4000-8000-000000000002",
       ),
       name: { en: "Lynx residence cross-border consultation (basic)" },
@@ -107,7 +107,7 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         usesPersonalData: "YES",
       },
       formSchemaVersion: "1.0",
-      id: unsafeBrandId<PurposeStatementTemplateId>(
+      id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000001",
       ),
       name: { en: "Generic PA consultation (with risk analysis)" },
@@ -143,7 +143,7 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         usesPersonalData: "YES",
       },
       formSchemaVersion: "1.0",
-      id: unsafeBrandId<PurposeStatementTemplateId>(
+      id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000002",
       ),
       name: { en: "Orion PA address cross-border consumption" },
@@ -178,7 +178,7 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
         usesPersonalData: "YES",
       },
       formSchemaVersion: "1.0",
-      id: unsafeBrandId<PurposeStatementTemplateId>(
+      id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000003",
       ),
       name: { en: "Orion PA typology cross-border statistics" },
@@ -187,13 +187,11 @@ const purposeStatementTemplates: Record<KnodeId, PurposeStatementTemplate[]> = {
 };
 
 /** @knipignore */
-export function getPurposeStatementTemplate(
-  id: PurposeStatementTemplateId,
+export function getPurposeTemplate(
+  id: PurposeTemplateId,
   knodeId: KnodeId,
-): PurposeStatementTemplate | undefined {
-  return purposeStatementTemplates[knodeId].find(
-    (template) => template.id === id,
-  );
+): PurposeTemplate | undefined {
+  return purposeTemplates[knodeId].find((template) => template.id === id);
 }
 
 /**
@@ -203,11 +201,11 @@ export function getPurposeStatementTemplate(
  * (generic + eservice-specific). With `opts.eserviceId`, returns generic
  * templates plus the specifics matching that eservice.
  */
-export function getPurposeStatementTemplates(
+export function getPurposeTemplates(
   knodeId: KnodeId,
   opts?: { eserviceId: EserviceId },
-): PurposeStatementTemplate[] {
-  const all = purposeStatementTemplates[knodeId];
+): PurposeTemplate[] {
+  const all = purposeTemplates[knodeId];
   if (opts === undefined) return all;
   return all.filter(
     (template) =>

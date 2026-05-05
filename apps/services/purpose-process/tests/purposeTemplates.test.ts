@@ -3,7 +3,7 @@ import {
   type PurposeFormVariant,
   purposeFormVariantByKnode,
 } from "@knodia/purpose-models";
-import { getPurposeStatementTemplates } from "@knodia/purpose-statement-template-models";
+import { getPurposeTemplates } from "@knodia/purpose-template-models";
 import { describe, expect, it } from "vitest";
 
 import { loadFormSchemas } from "../src/models/formSchemas.ts";
@@ -19,10 +19,10 @@ const validators: Record<
   ),
 };
 
-describe("purpose statement templates: formAnswers validation", () => {
+describe("purpose templates: formAnswers validation", () => {
   for (const knodeId of KnodeId.options) {
     const variant = purposeFormVariantByKnode[knodeId];
-    for (const template of getPurposeStatementTemplates(knodeId)) {
+    for (const template of getPurposeTemplates(knodeId)) {
       it(`[${knodeId}] "${template.name.en}" has valid formAnswers for variant ${variant}`, () => {
         expect(() =>
           validators[variant](template.formAnswers, template.formSchemaVersion),
