@@ -8,7 +8,7 @@ import {
 import { describe, expect, it } from "vitest";
 
 import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
-import { keychainWriterService } from "./setup.ts";
+import { consumerKeychainWriterService } from "./setup.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const allowedUiSessionTestTokens: Extract<TestToken, { type: "ui-session" }>[] =
@@ -42,7 +42,10 @@ const getConsumerKeychainPurpose = (
 
 const seedData = async () => {
   await seedConsumerKeychain(consumerKeychain);
-  await keychainWriterService.upsertConsumerKeychainPurpose(mockPurpose, 1);
+  await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
+    mockPurpose,
+    1,
+  );
 };
 
 describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getConsumerKeychainPurpose)", () => {

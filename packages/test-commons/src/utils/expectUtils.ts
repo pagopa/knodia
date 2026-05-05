@@ -5,7 +5,10 @@ import {
   type EserviceInterface,
   type EserviceVersion,
 } from "@knodia/eservice-models";
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  type ConsumerKeychain,
+  type KnodeApiKeychain,
+} from "@knodia/keychain-models";
 import { type Organization } from "@knodia/organization-models";
 import { expect } from "vitest";
 
@@ -100,6 +103,14 @@ export function toExpectEservice(eservice: Eservice) {
 export function toExpectIsoOrNull(value: Date | null | string) {
   if (value === null) return null;
   return typeof value === "string" ? value : value.toISOString();
+}
+
+export function toExpectKnodeApiKeychain(knodeApiKeychain: KnodeApiKeychain) {
+  return expect.objectContaining({
+    ...knodeApiKeychain,
+    keys: expect.arrayContaining(knodeApiKeychain.keys),
+    users: expect.arrayContaining(knodeApiKeychain.users),
+  });
 }
 
 export function toExpectOrganization(organization: Organization) {
