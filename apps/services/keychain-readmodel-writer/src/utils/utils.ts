@@ -11,7 +11,7 @@ import {
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
 
-import { handleKeychainEvent } from "../services/consumerService.ts";
+import { handleKeychainEvent } from "../services/keychainEventService.ts";
 
 export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
