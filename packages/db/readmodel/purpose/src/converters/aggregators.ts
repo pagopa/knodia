@@ -1,6 +1,9 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  toOptionalExternalResource,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import {
   KnodeId,
   type PurposeStatementTemplateId,
@@ -53,15 +56,10 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     state: PurposeState.parse(purposeSQL.state),
     suspendedByConsumerAt: purposeSQL.suspendedByConsumerAt,
     suspendedByProducerAt: purposeSQL.suspendedByProducerAt,
-    template:
-      purposeSQL.templateId && purposeSQL.templateKnodeId
-        ? {
-            id: unsafeBrandExternalId<PurposeStatementTemplateId>(
-              purposeSQL.templateId,
-            ),
-            knodeId: KnodeId.parse(purposeSQL.templateKnodeId),
-          }
-        : undefined,
+    template: toOptionalExternalResource<PurposeStatementTemplateId>(
+      purposeSQL.templateId,
+      purposeSQL.templateKnodeId,
+    ),
     updatedAt: purposeSQL.updatedAt,
   };
   return {

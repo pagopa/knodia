@@ -1,18 +1,10 @@
-import {
-  type ExternalResource,
-  unsafeBrandExternalId,
-} from "@knodia/common-models/externalResource";
-import {
-  KnodeId,
-  type OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { fromExternalResourceV1 } from "@knodia/common-models/externalResource";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import { type Agreement, AgreementState } from "./agreement.ts";
 import {
-  type AgreementConsumerV1,
   AgreementStateV1,
   type AgreementV1,
 } from "./generated/v1/agreement.ts";
@@ -22,7 +14,7 @@ export const fromAgreementV1 = (input: AgreementV1): Agreement => {
 
   return {
     ...input,
-    consumer: fromAgreementConsumerV1(input.consumer),
+    consumer: fromExternalResourceV1(input.consumer),
     createdAt: new Date(input.createdAt),
     eserviceId: unsafeBrandId(input.eserviceId),
     eserviceVersionId: unsafeBrandId(input.eserviceVersionId),
@@ -54,10 +46,3 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
       throw new Error("Unrecognized AgreementStateV1 value");
     })
     .exhaustive();
-
-const fromAgreementConsumerV1 = (
-  input: AgreementConsumerV1,
-): ExternalResource<OrganizationId> => ({
-  id: unsafeBrandExternalId(input.id),
-  knodeId: KnodeId.parse(input.knodeId),
-});
