@@ -134,10 +134,8 @@ async function fillTechnicalStep(
 async function fillTemplateAttributesStep(
   user: ReturnType<typeof renderWizard>["user"],
 ) {
-  expect(screen.getByDisplayValue("NUTS 2 or NUTS 1")).toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: /attributes/i }),
-  ).not.toBeInTheDocument();
+  expect(screen.getByText("NUTS 2 or NUTS 1")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /attributes/i })).toBeDisabled();
 
   await user.click(screen.getByRole("button", { name: "Next" }));
   await waitFor(() => {
