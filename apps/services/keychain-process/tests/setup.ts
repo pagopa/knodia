@@ -17,7 +17,7 @@ import { buildApp } from "../src/app.ts";
 let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
-let keychainWriterService: ConsumerKeychainWriterService;
+let consumerKeychainWriterService: ConsumerKeychainWriterService;
 export const mockMaxKeysPerKeychain = 100;
 
 async function resetTestDatabases() {
@@ -48,7 +48,8 @@ beforeAll(async () => {
     remoteResourcesManagerUrl: "http://test-remote-resources-manager",
   });
 
-  keychainWriterService = consumerKeychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainWriterService =
+    consumerKeychainWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -59,4 +60,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, keychainWriterService };
+export { app, consumerKeychainWriterService, eventStoreDb };

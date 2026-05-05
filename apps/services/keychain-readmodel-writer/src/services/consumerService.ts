@@ -12,9 +12,9 @@ import { match, P } from "ts-pattern";
 export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
-    keychainWriterService,
+    consumerKeychainWriterService,
   }: {
-    keychainWriterService: ConsumerKeychainWriterService;
+    consumerKeychainWriterService: ConsumerKeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -31,7 +31,7 @@ export async function handleKeychainEvent(
       },
       async (msg) => {
         assertDataExistsInEvent(msg, "consumerKeychain");
-        await keychainWriterService.upsertConsumerKeychain(
+        await consumerKeychainWriterService.upsertConsumerKeychain(
           fromConsumerKeychainV1(msg.data.consumerKeychain),
           message.version,
         );
@@ -39,7 +39,7 @@ export async function handleKeychainEvent(
     )
     .with({ type: "ConsumerKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "consumerKeychain");
-      await keychainWriterService.deleteConsumerKeychain(
+      await consumerKeychainWriterService.deleteConsumerKeychain(
         fromConsumerKeychainV1(msg.data.consumerKeychain).id,
         message.version,
       );
@@ -49,7 +49,7 @@ export async function handleKeychainEvent(
       assertDataExistsInEvent(msg, "purpose");
 
       const { consumerKeychain, purpose } = msg.data;
-      await keychainWriterService.upsertConsumerKeychainPurpose(
+      await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           linkedAt: new Date(msg.data.linkedAt),
@@ -66,7 +66,7 @@ export async function handleKeychainEvent(
       assertDataExistsInEvent(msg, "purpose");
 
       const { consumerKeychain, purpose } = msg.data;
-      await keychainWriterService.deleteConsumerKeychainPurpose(
+      await consumerKeychainWriterService.deleteConsumerKeychainPurpose(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           purpose: {

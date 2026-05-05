@@ -22,7 +22,7 @@ let readmodelDb: TestDrizzleDb;
 let producer: TestProducer;
 let consumer: TestConsumer;
 let topicName: string;
-let keychainWriterService: ConsumerKeychainWriterService;
+let consumerKeychainWriterService: ConsumerKeychainWriterService;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
@@ -36,7 +36,8 @@ beforeAll(async () => {
     createProcessMessage(readmodelDb, logger),
   ));
 
-  keychainWriterService = consumerKeychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainWriterService =
+    consumerKeychainWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -51,4 +52,10 @@ afterAll(async () => {
   ]);
 });
 
-export { consumer, keychainWriterService, producer, readmodelDb, topicName };
+export {
+  consumer,
+  consumerKeychainWriterService,
+  producer,
+  readmodelDb,
+  topicName,
+};
