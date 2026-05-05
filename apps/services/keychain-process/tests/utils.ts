@@ -16,7 +16,7 @@ import { expect } from "vitest";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
-} from "../src/models/keychainEventFactory.ts";
+} from "../src/models/consumerKeychainEventFactory.ts";
 import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
