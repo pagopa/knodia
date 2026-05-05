@@ -1,8 +1,8 @@
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodeApiKeychain,
   KeychainKey,
-  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 
 import type { IdmUser, OrganizationUser } from "../services/userService.ts";
@@ -15,18 +15,7 @@ import type {
 } from "./api.ts";
 
 export const toAPI_Keychain = (
-  keychain: FlatConsumerKeychain,
-): API_Keychain => ({
-  createdAt: keychain.createdAt.toISOString(),
-  description: keychain.description,
-  id: keychain.id,
-  name: keychain.name,
-  ownerId: keychain.ownerId,
-  updatedAt: keychain.updatedAt.toISOString(),
-});
-
-export const toAPI_KnodeApiKeychain = (
-  keychain: KnodeApiKeychain,
+  keychain: FlatConsumerKeychain | FlatKnodeApiKeychain,
 ): API_Keychain => ({
   createdAt: keychain.createdAt.toISOString(),
   description: keychain.description,

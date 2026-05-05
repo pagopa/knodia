@@ -13,7 +13,7 @@ import {
 import type { KnodeApiKeychainService } from "../services/knodeApiKeychainService.ts";
 
 import { API_Keychain, API_KnodeApiKeychainSeed } from "../models/api.ts";
-import { toAPI_KnodeApiKeychain } from "../models/apiConverter.ts";
+import { toAPI_Keychain } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface KnodeApiKeychainRouterOptions {
@@ -35,7 +35,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       } = await knodeApiKeychainService.createKnodeApiKeychain(req.body, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(201).send(toAPI_KnodeApiKeychain(knodeApiKeychain));
+      res.status(201).send(toAPI_Keychain(knodeApiKeychain));
     },
     method: "POST",
     schema: {
