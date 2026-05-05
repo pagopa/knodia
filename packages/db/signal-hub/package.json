@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/db-signal-hub-store",
+  "name": "@knodia/db-signal-hub",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
@@ -19,14 +19,13 @@
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/signalHubStore.ts",
+    ".": "./src/signalHub.ts",
     "./config": "./src/config.ts"
   }
 }

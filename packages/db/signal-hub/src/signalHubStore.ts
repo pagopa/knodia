@@ -8,14 +8,12 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { signalHubStoreDbConfig } from "./config/config.ts";
+import { signalHubDbConfig } from "./config/config.ts";
 
-const signalHubStoreSchema = pgSchema(
-  signalHubStoreDbConfig.signalHubStoreDbSchema,
-);
+const signalHubSchema = pgSchema(signalHubDbConfig.signalHubDbSchema);
 
 /** @knipignore */
-export const signalHubSignal = signalHubStoreSchema.table(
+export const signalHubSignal = signalHubSchema.table(
   "signal",
   {
     correlationId: uuid("correlation_id").notNull(),

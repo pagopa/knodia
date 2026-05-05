@@ -7,7 +7,7 @@ packages:
   - packages/db/jti-replay-store
   - packages/db/readmodel/*
   - packages/db/remote-resource
-  - packages/db/signal-hub-store
+  - packages/db/signal-hub
   - packages/clients/*
   - tools/*
 

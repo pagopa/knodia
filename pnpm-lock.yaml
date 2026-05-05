@@ -2692,7 +2692,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/signal-hub-store:
+  packages/db/signal-hub:
     dependencies:
       drizzle-orm:
         specifier: 'catalog:'
@@ -2713,9 +2713,6 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 25.0.0
       '@types/pg':
         specifier: 'catalog:'
         version: 8.16.0
