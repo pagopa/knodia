@@ -90,3 +90,5 @@ export const FlatKnodeApiKeychain = KnodeApiKeychain.omit({
   users: true,
 });
 export type FlatKnodeApiKeychain = z.infer<typeof FlatKnodeApiKeychain>;
+
+export type KeychainId = ConsumerKeychainId | KnodeApiKeychainId;
