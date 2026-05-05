@@ -8,12 +8,11 @@ import {
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
-import { formatNumericDate } from "@/utils/formatters";
 
 import { PurposeStateChip } from "./PurposeStateChip";
 
@@ -58,11 +57,12 @@ export function BaseConsumerPurposeTable({
         {(purpose) => (
           <Row id={purpose.id}>
             {isArchived && (
-              <Cell className="body-md text-primary-light-mid-contrast">
-                <span className="inline-flex items-center gap-2">
-                  <ArchiveIcon />
-                  {formatNumericDate(purpose.updatedAt)}
-                </span>
+              <Cell>
+                <PurposeStateChip
+                  archivedAt={purpose.updatedAt}
+                  state="Archived"
+                  type="bright"
+                />
               </Cell>
             )}
             <Cell className="body-md-em text-primary-light-mid-contrast">
