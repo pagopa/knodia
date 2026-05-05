@@ -31,7 +31,7 @@
       "PassFile": "/pgadmin4/pgpass"
     },
     "4": {
-      "Name": "Signal Hub Store",
+      "Name": "Signal Hub",
       "Group": "Knodia",
       "Host": "postgres",
       "Port": 5432,
