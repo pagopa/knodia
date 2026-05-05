@@ -13,6 +13,7 @@ import {
   readmodelKnodeApiKeychainUser,
 } from "../knodeApiKeychain.ts";
 
+/** @knipignore */
 export function knodeApiKeychainWriterServiceBuilder(db: NodePgDatabase) {
   return {
     async deleteKnodeApiKeychain(
