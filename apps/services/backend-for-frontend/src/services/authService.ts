@@ -80,7 +80,7 @@ export function authServiceBuilder(
     const rawPayload = await verifyCognitoJwt(token);
 
     const payloadParsed = CognitoPayload.safeParse(rawPayload);
-    if (payloadParsed.success) {
+    if (!payloadParsed.success) {
       throw unauthorizedError("Invalid Cognito token payload");
     }
 
