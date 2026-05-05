@@ -13,17 +13,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { client } from "@/libs/axios";
 
-interface UseArchiveConsumerAgreementParams {
+interface UseArchiveAgreementByConsumerParams {
   agreementId: AgreementId;
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }
 
-export function useArchiveConsumerAgreement({
+export function useArchiveAgreementByConsumer({
   agreementId,
   eserviceId,
   knodeId,
-}: UseArchiveConsumerAgreementParams) {
+}: UseArchiveAgreementByConsumerParams) {
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({

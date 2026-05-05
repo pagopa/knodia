@@ -28,7 +28,7 @@ import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
 import { ArchiveAgreementModal } from "@/features/agreement/components/ArchiveAgreementModal";
 import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
-import { useArchiveConsumerAgreement } from "@/features/agreement/hooks/useArchiveConsumerAgreement";
+import { useArchiveAgreementByConsumer } from "@/features/agreement/hooks/useArchiveAgreementByConsumer";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
@@ -243,7 +243,7 @@ function SuspendedAgreementBanner({
     archiveAgreement,
     isError: isArchiveError,
     isPending: isArchivePending,
-  } = useArchiveConsumerAgreement({ agreementId, eserviceId, knodeId });
+  } = useArchiveAgreementByConsumer({ agreementId, eserviceId, knodeId });
 
   const { isPending: isReactivatePending, reactivateAgreement } =
     useReactivateAgreementByConsumer({ agreementId, eserviceId, knodeId });
