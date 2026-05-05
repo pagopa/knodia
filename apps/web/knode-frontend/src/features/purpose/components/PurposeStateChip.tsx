@@ -6,20 +6,18 @@ import { match } from "ts-pattern";
 
 import { formatNumericDate } from "@/utils/formatters";
 
-export function PurposeStateChip({
-  archivedAt,
-  state,
-  type = "light",
-}: {
-  archivedAt?: string;
-  state: bffApi.PurposeState;
-  type?: ChipProps["type"];
-}) {
-  return match(state)
-    .with("Active", () => (
+type PurposeStateChipProps = { type?: ChipProps["type"] } & (
+  | { archivedAt?: never; state: bffApi.PurposeState }
+  | { archivedAt?: string; state: "Archived" }
+);
+
+export function PurposeStateChip(props: PurposeStateChipProps) {
+  const type = props.type ?? "light";
+  return match(props)
+    .with({ state: "Active" }, () => (
       <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
     ))
-    .with("Suspended", () => (
+    .with({ state: "Suspended" }, () => (
       <Chip
         icon={<ProhibitIcon />}
         kind="error"
@@ -27,7 +25,7 @@ export function PurposeStateChip({
         type={type}
       />
     ))
-    .with("Archived", () => (
+    .with({ state: "Archived" }, ({ archivedAt }) => (
       <Chip
         icon={<ArchiveIcon />}
         kind="neutral"

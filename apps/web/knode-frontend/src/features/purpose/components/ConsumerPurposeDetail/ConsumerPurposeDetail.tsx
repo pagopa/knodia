@@ -47,7 +47,7 @@ export function ConsumerPurposeDetail({
   });
 
   const headerActions = isArchived ? (
-    <PurposeStateChip archivedAt={purpose.updatedAt} state={purpose.state} />
+    <PurposeStateChip archivedAt={purpose.updatedAt} state="Archived" />
   ) : (
     canManagePurpose && (
       <PurposeActionButton knodeId={knodeId} purpose={purpose} />

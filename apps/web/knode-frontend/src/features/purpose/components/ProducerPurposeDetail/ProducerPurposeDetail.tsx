@@ -32,10 +32,7 @@ export function ProducerPurposeDetail({
       <PageHeader
         actions={
           isArchived ? (
-            <PurposeStateChip
-              archivedAt={purpose.updatedAt}
-              state={purpose.state}
-            />
+            <PurposeStateChip archivedAt={purpose.updatedAt} state="Archived" />
           ) : (
             canManagePurposeState && <PurposeActionButton purpose={purpose} />
           )
