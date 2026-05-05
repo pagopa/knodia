@@ -15,7 +15,7 @@ import { API_TestResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
-// Identity of this mock e-service. Hardcoded on purpose.
+// Identity of this mock e-service. Hardcoded on purpose, to be in sync with the SQL seed data.
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "e7f5837e-75f4-431d-9465-73366d27bef2",
 );

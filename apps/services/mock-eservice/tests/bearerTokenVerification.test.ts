@@ -23,7 +23,6 @@ import {
 } from "./setup.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockBearerRouter.ts
-// (kept in sync with scripts/seed/sql/<tenant>/mock-bearer-eservice.sql).
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "e7f5837e-75f4-431d-9465-73366d27bef2",
 );

@@ -16,13 +16,13 @@ import { apiTags } from "../models/apiTags.ts";
 import { MockEserviceHeaders } from "../models/headers.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
-// Identity of this mock e-service. Hardcoded on purpose — these ids are also
-// hardcoded in docker/readmodel-seed/mock-dpop-eservice.sql. Keep the two in sync.
+// Identity of this mock e-service. Hardcoded on purpose.
+// (kept in sync with scripts/seed/sql/<tenant>/mock-dpop-eservice.sql).
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "10000000-0000-4000-8000-000000000004",
+  "905c4569-95db-4670-a146-8239fcb3f41a",
 );
 const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
-  "10000000-0000-4000-8000-000000000005",
+  "a50299cc-f381-4089-8684-a63b2497b690",
 );
 const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
