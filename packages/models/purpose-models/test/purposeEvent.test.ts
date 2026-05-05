@@ -53,7 +53,6 @@ describe("PurposeEventV1 codec", () => {
     suspendedByConsumerAt: null,
     suspendedByProducerAt: new Date(),
   };
-  // explicitly cover the template field round-trip (zocker may omit optionals)
   const purposeWithTemplate: Purpose = {
     ...zocker(Purpose).generate(),
     formAnswersJson: mockFormAnswers,
