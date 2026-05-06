@@ -919,6 +919,10 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+    template?: {
+        id: string;
+        knodeId: KnodeId;
+    };
 };
 
 export type ConsumerPurpose = {

@@ -104,6 +104,10 @@ export type PurposeSeed = {
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
     name: LocalizedPurposeName;
+    template?: {
+        id: string;
+        knodeId: KnodeId;
+    };
 };
 
 export type Purpose = {
@@ -117,6 +121,10 @@ export type Purpose = {
     state: PurposeState;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
+    template?: {
+        id: string;
+        knodeId: KnodeId;
+    };
     updatedAt: string;
 };
 

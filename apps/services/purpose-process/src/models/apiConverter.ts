@@ -13,5 +13,6 @@ export const toAPI_Purpose = (purpose: Purpose): API_Purpose => ({
   state: purpose.state,
   suspendedByConsumerAt: purpose.suspendedByConsumerAt?.toISOString() ?? null,
   suspendedByProducerAt: purpose.suspendedByProducerAt?.toISOString() ?? null,
+  ...(purpose.template ? { template: purpose.template } : {}),
   updatedAt: purpose.updatedAt.toISOString(),
 });
