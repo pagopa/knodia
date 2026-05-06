@@ -567,7 +567,7 @@ export type ProducerAgreements = {
     results: Array<ProducerAgreement>;
 };
 
-export type ConsumerAgreements = {
+export type ConsumerAgreementCounters = {
     counters: {
         /**
          * Number of active agreements
@@ -582,6 +582,22 @@ export type ConsumerAgreements = {
          */
         suspendedAgreements: number;
     };
+};
+
+export type ConsumerAgreement = {
+    eservice: {
+        id: string;
+        name: LocalizedName;
+    };
+    id: string;
+    producer: CompactOrganization;
+    state: AgreementState;
+    updatedAt: string;
+};
+
+export type ConsumerAgreements = {
+    pagination: Pagination;
+    results: Array<ConsumerAgreement>;
 };
 
 export type PendingConsumerAgreement = {
@@ -2478,7 +2494,20 @@ export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof G
 export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items returned
+         */
+        limit?: number;
+        /**
+         * Pagination starting position
+         */
+        offset?: number;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
+    };
     url: '/consumer/agreements';
 };
 
@@ -2540,6 +2569,39 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetConsumerAgreementCountersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/consumer/agreements/counters';
+};
+
+export type GetConsumerAgreementCountersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerAgreementCountersError = GetConsumerAgreementCountersErrors[keyof GetConsumerAgreementCountersErrors];
+
+export type GetConsumerAgreementCountersResponses = {
+    /**
+     * Consumer Agreement counters retrieved successfully
+     */
+    200: ConsumerAgreementCounters;
+};
+
+export type GetConsumerAgreementCountersResponse = GetConsumerAgreementCountersResponses[keyof GetConsumerAgreementCountersResponses];
 
 export type GetPendingConsumerAgreementsData = {
     body?: never;
@@ -2717,6 +2779,51 @@ export type SuspendAgreementByConsumerResponses = {
 };
 
 export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
+
+export type ArchiveAgreementByConsumerData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/agreements/{agreementId}/archive';
+};
+
+export type ArchiveAgreementByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveAgreementByConsumerError = ArchiveAgreementByConsumerErrors[keyof ArchiveAgreementByConsumerErrors];
+
+export type ArchiveAgreementByConsumerResponses = {
+    /**
+     * Agreement archived successfully
+     */
+    204: void;
+};
+
+export type ArchiveAgreementByConsumerResponse = ArchiveAgreementByConsumerResponses[keyof ArchiveAgreementByConsumerResponses];
 
 export type GetConsumerPurposesData = {
     body?: never;

@@ -10,6 +10,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
@@ -43,9 +44,9 @@ export type API_GetAgreementQueryParams = z.infer<
 >;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  state: API_AgreementState.optional().meta({
-    description: "Filter by Agreement State",
-  }),
+  state: arrayQueryParam(API_AgreementState)
+    .optional()
+    .meta({ description: "Filter by Agreement State" }),
 });
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams
@@ -61,6 +62,9 @@ export const API_Agreement = z
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
     producerId: API_OrganizationId,
     state: API_AgreementState,
     suspendedByConsumerAt: z.iso.datetime().nullable().meta({
