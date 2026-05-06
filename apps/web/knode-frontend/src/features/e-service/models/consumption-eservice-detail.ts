@@ -17,6 +17,7 @@ export interface ConsumptionEserviceDetail {
   interfaceDocument: bffApi.ConsumerEserviceDetailsInterfaceDocument;
   isSignalHubEnabled: boolean;
   latestVersionId: EserviceVersionId;
+  latestVersionUpdatedAt: string;
   maxDailyCalls: bffApi.ConsumerEserviceDetailsMaxDailyCalls;
   mode: bffApi.EserviceMode;
   name: string;

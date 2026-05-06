@@ -10,7 +10,7 @@ import { formatNumber } from "@/utils/formatters";
 export function ConsumerAgreementsSummary({
   counters,
 }: {
-  counters: bffApi.ConsumerAgreements["counters"];
+  counters: bffApi.ConsumerAgreementCounters["counters"];
 }) {
   const navigate = useNavigate();
 

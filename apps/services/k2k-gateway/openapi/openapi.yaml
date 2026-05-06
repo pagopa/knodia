@@ -1417,6 +1417,54 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /agreements/{agreementId}/archive:
+    post:
+      operationId: archiveAgreement
+      summary: Archive an Agreement
+      tags:
+        - resource
+        - agreement
+      description: Archive an Agreement on behalf of its Consumer; the Consumer must
+        belong to the caller Knode
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/AgreementId"
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "200":
+          description: Agreement archived successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement archived successfully
+                allOf:
+                  - $ref: "#/components/schemas/Agreement"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /agreements/{agreementId}/activationMagicLink:
     post:
       operationId: createAgreementActivationMagicLink
@@ -1640,8 +1688,9 @@ paths:
           required: false
           description: Filter by E-service ID
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/PurposeState"
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
           in: query
           name: state
           required: false
