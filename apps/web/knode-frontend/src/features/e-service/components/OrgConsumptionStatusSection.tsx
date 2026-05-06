@@ -27,6 +27,7 @@ import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
 import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
+import { useRequestAgreementMagicLink } from "@/features/agreement/hooks/useRequestAgreementMagicLink";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
 import { EservicePurposeSection } from "./EservicePurposeSection";
@@ -100,6 +101,12 @@ function AgreementStatusBanner({
       knodeId,
     });
 
+  const { isPending: isRequestMagicLinkPending, requestMagicLink } =
+    useRequestAgreementMagicLink({
+      agreementId,
+      knodeId,
+    });
+
   const banner = match(agreement.state)
     .with("Active", () =>
       canManageAgreement ? (
@@ -165,6 +172,15 @@ function AgreementStatusBanner({
     })
     .with("PendingConsumerOperatorIdentification", () => (
       <Banner
+        action={
+          canManageAgreement
+            ? {
+                isDisabled: isRequestMagicLinkPending,
+                label: "Go to Producer Knode",
+                onPress: requestMagicLink,
+              }
+            : undefined
+        }
         icon={<WarningCircleIcon />}
         kind="informative"
         size="md"

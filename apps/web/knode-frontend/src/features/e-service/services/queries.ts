@@ -19,10 +19,16 @@ export const consumerEserviceDetailsQuery = (
   eserviceId: string,
   knodeId: KnodeId,
 ) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
+  queryOptions({
+    ...getConsumerEserviceDetailsOptions({
+      client,
+      path: { eserviceId },
+      query: { knodeId },
+    }),
+    // Stop window-focus refetches once the agreement leaves the pending state.
+    refetchOnWindowFocus: (query) =>
+      query.state.data?.agreement?.state ===
+      "PendingConsumerOperatorIdentification",
   });
 
 export const consumerEservicesQuery = (
