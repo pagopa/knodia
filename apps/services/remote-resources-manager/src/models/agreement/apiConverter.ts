@@ -2,6 +2,7 @@ import type {
   API_AgreementConsumer,
   API_AgreementState,
 } from "@knodia/agreement-models/api";
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { match } from "ts-pattern";
@@ -12,6 +13,7 @@ import { toAPI_KnodeId } from "../knode/apiConverter.ts";
 
 export function toAPI_Agreement(
   agreement: k2kGatewayApi.Agreement,
+  knodeId: KnodeId,
 ): API_Agreement {
   return {
     attributes: agreement.attributes,
@@ -19,6 +21,7 @@ export function toAPI_Agreement(
     eserviceId: agreement.eserviceId,
     eserviceVersionId: agreement.eserviceVersionId,
     id: agreement.id,
+    knodeId,
     producerId: agreement.producerId,
     state: toAPI_AgreementState(agreement.state),
     suspendedByConsumerAt: agreement.suspendedByConsumerAt,
