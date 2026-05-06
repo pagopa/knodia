@@ -26,7 +26,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   const client = new CognitoIdentityProviderClient();
 
   return {
-    async checkUserBelongToOrganization(
+    async checkUserBelongsToOrganization(
       user: IdmUser,
       organizationId: OrganizationId,
     ): Promise<boolean> {

@@ -149,7 +149,7 @@ export function consumerKeychainServiceBuilder(
       }
 
       if (
-        !(await userService.checkUserBelongToOrganization(
+        !(await userService.checkUserBelongsToOrganization(
           user,
           authData.organizationId,
         ))

@@ -13,7 +13,7 @@ const DEFAULT_USER_POOL_ID =
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const USERNAME = "Mario Rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
-const ROLES = ["role:administrative", "role:technical"];
+const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
 const MOCK_USERS = [
   {
@@ -24,7 +24,7 @@ const MOCK_USERS = [
       { Name: "given_name", Value: "Mario" },
       { Name: "family_name", Value: "Rossi" },
       { Name: "custom:organizationId", Value: ORG_ID },
-      { Name: "custom:roles", Value: ROLES.map((r) => r.replace("role:", "")).join(",") },
+      { Name: "custom:roles", Value: ROLES.join(",") },
     ],
     Enabled: true,
     Groups: [`org:${ORG_ID}`],
