@@ -87,6 +87,7 @@ export const API_ProducerAgreementDetails = API_ProducerAgreement.omit({
     producer: API_CompactOrganization,
     suspendedByConsumerAt: z.string().datetime().nullable(),
     suspendedByProducerAt: z.string().datetime().nullable(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<

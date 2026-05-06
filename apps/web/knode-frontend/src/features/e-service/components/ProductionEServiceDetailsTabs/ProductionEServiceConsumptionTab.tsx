@@ -40,18 +40,18 @@ function ProductionEserviceAgreements() {
       <h3 className="title-md-em text-primary-light-high-contrast">
         Agreements
       </h3>
-      {agreements.total === 0 ? (
+      {agreements.active === 0 && agreements.suspended === 0 ? (
         <Banner icon={<SelectionIcon />} kind="neutral">
           There are no Agreements for this E-Service yet.
         </Banner>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4">
-            <GenericInfoCard label="Total">
-              {formatNumber(agreements.total)}
-            </GenericInfoCard>
             <GenericInfoCard label="Active">
               {formatNumber(agreements.active)}
+            </GenericInfoCard>
+            <GenericInfoCard label="Suspended">
+              {formatNumber(agreements.suspended)}
             </GenericInfoCard>
           </div>
           <RecentAgreementsSection />
@@ -67,18 +67,18 @@ function ProductionEservicePurposes() {
   return (
     <div className="flex flex-col gap-8">
       <h3 className="title-md-em text-primary-light-high-contrast">Purposes</h3>
-      {purposes.total === 0 ? (
+      {purposes.active === 0 && purposes.suspended === 0 ? (
         <Banner icon={<SelectionIcon />} kind="neutral">
           There are no Purposes for this E-Service yet.
         </Banner>
       ) : (
         <>
           <div className="grid grid-cols-3 gap-4">
-            <GenericInfoCard label="Total">
-              {formatNumber(purposes.total)}
-            </GenericInfoCard>
             <GenericInfoCard label="Active">
               {formatNumber(purposes.active)}
+            </GenericInfoCard>
+            <GenericInfoCard label="Suspended">
+              {formatNumber(purposes.suspended)}
             </GenericInfoCard>
             <GenericInfoCard
               label={
