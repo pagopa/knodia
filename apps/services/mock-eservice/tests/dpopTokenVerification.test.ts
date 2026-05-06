@@ -1,3 +1,9 @@
+/* eslint-disable max-lines-per-function */
+import type {
+  DpopProofHeader,
+  DpopProofPayload,
+} from "@knodia/authorization-models/dpop";
+
 import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -10,7 +16,8 @@ import {
   type PurposeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { SignJWT } from "jose";
+import { getMockDpopProof } from "@knodia/test-commons/utils";
+import { calculateJwkThumbprint, SignJWT } from "jose";
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
@@ -22,20 +29,49 @@ import {
   TEST_KNODE_ID,
 } from "./setup.ts";
 
-// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockRouter.ts
-// (kept in sync with docker/readmodel-seed/mock-eservice.sql).
+// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockDpopRouter.ts
+// (kept in sync with docker/readmodel-seed/mock-dpop-eservice.sql).
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "10000000-0000-4000-8000-000000000001",
+  "10000000-0000-4000-8000-000000000004",
 );
 const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
-  "10000000-0000-4000-8000-000000000002",
+  "10000000-0000-4000-8000-000000000005",
 );
 const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
 );
 
-const ENDPOINT = "/test";
+const ENDPOINT = "/testDpop";
 const OTHER_KNODE_ID = KnodeId.enum.Lynx;
+
+async function getMockDpopProofJWS(
+  dpopBoundToken: string,
+  {
+    customHeader,
+    customPayload,
+  }: {
+    customHeader?: Partial<DpopProofHeader> & Record<string, unknown>;
+    customPayload?: Partial<DpopProofPayload> & Record<string, unknown>;
+  } = {},
+) {
+  const {
+    dpopKeys: { dpopKeySet },
+  } = getCtx();
+  const { dpopProofJWS } = await getMockDpopProof({
+    customKeySet: dpopKeySet,
+    dpopBoundToken,
+    props: {
+      customPayload: {
+        htm: "GET",
+        htu: "http://localhost/testDpop",
+        ...customPayload,
+      },
+      ...customHeader,
+    },
+  });
+
+  return dpopProofJWS;
+}
 
 async function signToken(
   overrides: {
@@ -46,7 +82,10 @@ async function signToken(
     typ?: string;
   } = {},
 ) {
-  const { privateKey } = getCtx();
+  const {
+    dpopKeys: { dpopPublicKeyJwk },
+    tokenKeys: { tokenPrivateKey },
+  } = getCtx();
   const {
     audience,
     expiresIn = "5m",
@@ -58,6 +97,9 @@ async function signToken(
   const now = Math.floor(Date.now() / 1000);
   const defaultPayload: Partial<EserviceAccessTokenClaims> = {
     client_id: generateId<ConsumerKeychainId>(),
+    cnf: {
+      jkt: await calculateJwkThumbprint(dpopPublicKeyJwk),
+    },
     consumer: {
       id: generateExternalId<OrganizationId>(),
       knode_id: OTHER_KNODE_ID,
@@ -81,15 +123,18 @@ async function signToken(
     .setIssuedAt(now)
     .setExpirationTime(expiresIn);
 
-  return jwt.sign(privateKey);
+  return jwt.sign(tokenPrivateKey);
 }
 
-describe("mock-eservice access-token verification", () => {
+describe("mock-eservice DPoP access-token verification", () => {
   it("returns 200 for a valid access token", async () => {
     const token = await signToken();
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -106,7 +151,7 @@ describe("mock-eservice access-token verification", () => {
     expect(res.statusCode).toBe(401);
   });
 
-  it("returns 401 when the Authorization header does not use Bearer", async () => {
+  it("returns 401 when the Authorization header does not use DPoP", async () => {
     const res = await getCtx().app.inject({
       headers: {
         authorization: "Basic dGVzdDp0ZXN0",
@@ -119,9 +164,12 @@ describe("mock-eservice access-token verification", () => {
 
   it("returns 401 for a token with the wrong audience", async () => {
     const token = await signToken({ audience: "some.other.audience" });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -131,9 +179,12 @@ describe("mock-eservice access-token verification", () => {
 
   it("returns 401 for a token with the wrong issuer", async () => {
     const token = await signToken({ issuer: "https://attacker.example" });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -143,9 +194,12 @@ describe("mock-eservice access-token verification", () => {
 
   it("returns 401 for an expired token", async () => {
     const token = await signToken({ expiresIn: "-1s" });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -155,10 +209,13 @@ describe("mock-eservice access-token verification", () => {
 
   it("returns 401 for a token with a tampered signature", async () => {
     const token = await signToken();
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const tampered = token.slice(0, -4) + "AAAA";
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${tampered}`,
+        authorization: `DPoP ${tampered}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -170,9 +227,12 @@ describe("mock-eservice access-token verification", () => {
     const token = await signToken({
       payload: { consumer: "not-an-object" },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -182,9 +242,12 @@ describe("mock-eservice access-token verification", () => {
 
   it("returns 401 when the header typ is not at+jwt", async () => {
     const token = await signToken({ typ: "JWT" });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -202,9 +265,12 @@ describe("mock-eservice access-token verification", () => {
         },
       },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -222,9 +288,12 @@ describe("mock-eservice access-token verification", () => {
         },
       },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -238,9 +307,12 @@ describe("mock-eservice access-token verification", () => {
         producer: { id: generateId(), knode_id: TEST_KNODE_ID },
       },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -258,9 +330,12 @@ describe("mock-eservice access-token verification", () => {
         },
       },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,
@@ -274,9 +349,84 @@ describe("mock-eservice access-token verification", () => {
         producer: { id: EXPECTED_PRODUCER_ID, knode_id: OTHER_KNODE_ID },
       },
     });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
     const res = await getCtx().app.inject({
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the token thumbprint (cnf.jkt) does not match the DPoP proof JWK", async () => {
+    const token = await signToken({
+      payload: {
+        cnf: {
+          jkt: "invalidThumbprint",
+        },
+      },
+    });
+    const dpopProofJWS = await getMockDpopProofJWS(token);
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the DPoP proof HTM does not match the expected method", async () => {
+    const token = await signToken();
+    const dpopProofJWS = await getMockDpopProofJWS(token, {
+      customPayload: { htm: "POST" },
+    });
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the DPoP proof HTU does not match the expected URL", async () => {
+    const token = await signToken();
+    const dpopProofJWS = await getMockDpopProofJWS(token, {
+      customPayload: { htu: "https://wrong.url" },
+    });
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the DPoP proof access token hash (ath) does not match the provided token", async () => {
+    const token = await signToken();
+    const dpopProofJWS = await getMockDpopProofJWS(token, {
+      customPayload: { ath: "invalidAth" },
+    });
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
       },
       method: "GET",
       url: ENDPOINT,

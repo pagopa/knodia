@@ -8,11 +8,17 @@ import {
   API_MagicLink,
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -23,13 +29,18 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import {
   API_AgreementSeed,
+  API_ConsumerAgreementActionQueryParams,
+  API_ConsumerAgreementCounters,
   API_ConsumerAgreements,
   API_CreateAgreementConsumerActivationMagicLinkQueryParams,
+  API_GetConsumerAgreementsQueryParams,
   API_GetPendingConsumerAgreementsQueryParams,
   API_PendingConsumerAgreements,
-  API_SuspendReactivateAgreementByConsumerQueryParams,
 } from "../../models/agreement/api.ts";
-import { toAPI_PendingConsumerAgreement } from "../../models/agreement/apiConverter.ts";
+import {
+  toAPI_ConsumerAgreement,
+  toAPI_PendingConsumerAgreement,
+} from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
@@ -91,54 +102,118 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
-      logger.info(`Getting Consumer Agreements for Consumer ID ${consumerId}`);
+      logger.info(
+        `Getting Consumer Agreement counters for Consumer ID ${consumerId}`,
+      );
 
-      const [
-        { data: activeAgreements },
-        { data: suspendedAgreements },
-        { data: archivedAgreements },
-      ] = await Promise.all([
-        remoteResourcesManagerApi.getAgreements({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const countAgreementsByState = async (
+        agreementState: API_AgreementState,
+      ) => {
+        const { data } = await remoteResourcesManagerApi.getAgreements({
           client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Active",
-          },
-        }),
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Suspended",
-          },
-        }),
-        remoteResourcesManagerApi.getAgreements({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          query: {
-            limit: 1,
-            offset: 0,
-            state: "Archived",
-          },
-        }),
-      ]);
+          headers,
+          query: { limit: 1, offset: 0, state: [agreementState] },
+        });
+        return data.pagination.total;
+      };
+
+      const [activeAgreements, suspendedAgreements, archivedAgreements] =
+        await Promise.all([
+          countAgreementsByState(API_AgreementState.enum.Active),
+          countAgreementsByState(API_AgreementState.enum.Suspended),
+          countAgreementsByState(API_AgreementState.enum.Archived),
+        ]);
 
       res.status(200).send({
         counters: {
-          activeAgreements: activeAgreements.pagination.total,
-          archivedAgreements: archivedAgreements.pagination.total,
-          suspendedAgreements: suspendedAgreements.pagination.total,
+          activeAgreements,
+          archivedAgreements,
+          suspendedAgreements,
         },
       });
     },
     method: "GET",
     schema: {
-      description: "Retrieve a list of Consumer Agreements",
+      description: "Retrieve Consumer Agreement counters per state",
+      operationId: "getConsumerAgreementCounters",
+      response: {
+        200: API_ConsumerAgreementCounters.meta({
+          description: "Consumer Agreement counters retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/counters",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+      const { limit, offset, state } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      logger.info(
+        { requestQuery: req.query },
+        `Listing Consumer Agreements for Consumer ID ${consumerId}`,
+      );
+
+      const { data } = await remoteResourcesManagerApi.getAgreements({
+        client: remoteResourcesManagerClient,
+        headers,
+        query: {
+          limit,
+          offset,
+          state,
+        },
+      });
+
+      const eservicesMap = await getExternalEntitiesMap({
+        fetchFn: ({ entityIds, knodeId }) =>
+          Promise.all(
+            entityIds.map((eserviceId) =>
+              remoteResourcesManagerApi
+                .getEserviceDetails({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { eserviceId },
+                  query: { knodeId },
+                })
+                .then((res) => res.data),
+            ),
+          ),
+        getEntityId: (agreement) => agreement.eserviceId,
+        getKnodeId: (agreement) => KnodeId.parse(agreement.knodeId),
+        items: data.results,
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map((agreement) =>
+          toAPI_ConsumerAgreement({
+            agreement,
+            eservice: assertEntityExists(
+              eservicesMap
+                .get(KnodeId.parse(agreement.knodeId))
+                ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+              `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+            ),
+          }),
+        ),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of Consumer Agreements, optionally filtered by state",
       operationId: "getConsumerAgreements",
+      querystring: API_GetConsumerAgreementsQueryParams,
       response: {
         200: API_ConsumerAgreements.meta({
           description: "Consumer Agreements retrieved successfully",
@@ -270,7 +345,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Reactivate an Agreement as Consumer",
       operationId: "reactivateAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
+      querystring: API_ConsumerAgreementActionQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement reactivated successfully",
@@ -310,7 +385,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       description: "Suspend an Agreement as Consumer",
       operationId: "suspendAgreementByConsumer",
       params: API_AgreementIdPathParam,
-      querystring: API_SuspendReactivateAgreementByConsumerQueryParams,
+      querystring: API_ConsumerAgreementActionQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Agreement suspended successfully",
@@ -324,5 +399,45 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements/:agreementId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(
+        `Archiving Consumer Agreement ${req.params.agreementId} on knode ${req.query.knodeId}`,
+      );
+
+      await remoteResourcesManagerApi.archiveAgreement({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { agreementId: req.params.agreementId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Archive an Agreement as Consumer",
+      operationId: "archiveAgreementByConsumer",
+      params: API_AgreementIdPathParam,
+      querystring: API_ConsumerAgreementActionQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/archive",
   });
 };
