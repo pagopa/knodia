@@ -81,8 +81,8 @@ export function RecapStep() {
 
       <div className="flex flex-col gap-8">
         <Banner kind="warning">
-          Remember: once published, Technical details, Documents, and
-          Attributes cannot be modified.
+          Remember: once published, Technical details, Documents, and Attributes
+          cannot be modified.
         </Banner>
 
         {isError && (
