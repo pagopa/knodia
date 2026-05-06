@@ -61,7 +61,7 @@ export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:
-        "Filter by E-service ID. Returns Consumer Keychains linked to any Purpose belonging to the given E-service. Mutually exclusive with `purpose`.",
+        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.",
     }),
     purpose: z
       .string()

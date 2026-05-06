@@ -1715,7 +1715,7 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID. Returns Consumer Keychains linked to any Purpose belonging to the given E-service. Mutually exclusive with `purpose`.
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.
          */
         eserviceId?: string;
         /**

@@ -3192,8 +3192,8 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID. Returns Consumer Keychains linked to any
-            Purpose belonging to the given E-service. Mutually exclusive with
-            `purpose`.
+            Active or Suspended Purpose belonging to the given E-service.
+            Mutually exclusive with `purpose`.
         - schema:
             type: string
           in: query
