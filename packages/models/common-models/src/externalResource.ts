@@ -16,6 +16,8 @@ export const ExternalResource = <T extends IDS>() =>
     id: ExternalId<T>(),
     knodeId: KnodeId,
   });
+
+// z.infer doesn't reduce in generic context, hence the `as ExternalResource<T>` cast in the helpers below: https://github.com/colinhacks/zod/issues/3309
 export type ExternalResource<T extends IDS> = z.infer<
   ReturnType<typeof ExternalResource<T>>
 >;
