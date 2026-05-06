@@ -182,7 +182,7 @@ export function purposeServiceBuilder(
             eserviceId,
             limit: dynamicLimit,
             offset: dynamicOffset,
-            state: state ? toK2KAPI_PurposeState(state) : undefined,
+            state: state?.map(toK2KAPI_PurposeState),
           },
         });
 
