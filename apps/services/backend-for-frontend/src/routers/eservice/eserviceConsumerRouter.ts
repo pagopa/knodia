@@ -301,7 +301,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 eserviceId: eservice.id,
                 limit: 50,
                 offset: 0,
-                state: API_PurposeState.enum.Active,
+                state: [API_PurposeState.enum.Active],
               },
             }),
             // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:

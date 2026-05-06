@@ -91,6 +91,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
           eserviceId: req.query.eserviceId,
           limit,
           offset,
+          state: req.query.state,
         },
       });
 
