@@ -1165,7 +1165,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerAgreements:
+    ConsumerAgreementCounters:
       type: object
       properties:
         counters:
@@ -1196,6 +1196,54 @@ components:
           additionalProperties: false
       required:
         - counters
+      additionalProperties: false
+    ConsumerAgreement:
+      type: object
+      properties:
+        eservice:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            name:
+              $ref: "#/components/schemas/LocalizedName"
+          required:
+            - id
+            - name
+          additionalProperties: false
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - eservice
+        - id
+        - producer
+        - state
+        - updatedAt
+      additionalProperties: false
+    ConsumerAgreements:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerAgreement"
+      required:
+        - pagination
+        - results
       additionalProperties: false
     PendingConsumerAgreement:
       type: object
@@ -4249,7 +4297,36 @@ paths:
       operationId: getConsumerAgreements
       tags:
         - agreement
-      description: Retrieve a list of Consumer Agreements
+      description: Retrieve a paginated list of Consumer Agreements, optionally
+        filtered by state
+      parameters:
+        - schema:
+            default: 10
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: false
+          description: Maximum number of items returned
+        - schema:
+            default: 0
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: false
+          description: Pagination starting position
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Agreement State
       responses:
         "200":
           description: Consumer Agreements retrieved successfully
@@ -4259,6 +4336,45 @@ paths:
                 description: Consumer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements/counters:
+    get:
+      operationId: getConsumerAgreementCounters
+      tags:
+        - agreement
+      description: Retrieve Consumer Agreement counters per state
+      responses:
+        "200":
+          description: Consumer Agreement counters retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreement counters retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreementCounters"
         "400":
           description: Bad Request
           content:
@@ -4494,6 +4610,68 @@ paths:
       responses:
         "204":
           description: Agreement suspended successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements/{agreementId}/archive:
+    post:
+      operationId: archiveAgreementByConsumer
+      tags:
+        - agreement
+      description: Archive an Agreement as Consumer
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "204":
+          description: Agreement archived successfully
         "400":
           description: Bad Request
           content:
