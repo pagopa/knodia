@@ -111,4 +111,5 @@ export const toAPI_ProducerAgreementDetails = ({
   state: agreement.state,
   suspendedByConsumerAt: agreement.suspendedByConsumerAt,
   suspendedByProducerAt: agreement.suspendedByProducerAt,
+  updatedAt: agreement.updatedAt,
 });

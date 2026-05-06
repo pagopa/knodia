@@ -220,6 +220,7 @@ export type EserviceVersionDetails = {
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
+    updatedAt: string;
 };
 
 export type EserviceDetailsInterfaceDocument = {
@@ -523,7 +524,10 @@ export type GetEservicesData = {
          * Pagination starting position
          */
         offset: number;
-        agreementState?: AgreementState;
+        /**
+         * Filter by Agreement State
+         */
+        agreementState?: Array<AgreementState>;
     };
     url: '/eservices';
 };
