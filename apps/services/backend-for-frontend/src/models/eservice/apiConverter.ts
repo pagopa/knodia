@@ -44,8 +44,12 @@ export const toAPI_ProducerEserviceDetails = ({
   latestVersionInterface,
 }: {
   counters: {
-    agreements: { active: number; total: number };
-    purposes: { active: number; total: number; totalApiCallsPerDay: number };
+    agreements: { active: number; suspended: number };
+    purposes: {
+      active: number;
+      suspended: number;
+      totalApiCallsPerDay: number;
+    };
   };
   eservice: eserviceProcessApi.Eservice;
   latestVersion: eserviceProcessApi.EserviceVersion;
@@ -120,6 +124,7 @@ export const toAPI_ConsumerEserviceDetails = (
   },
   isSignalHubEnabled: detail.isSignalHubEnabled,
   latestVersionId: detail.latestVersion.id,
+  latestVersionUpdatedAt: detail.latestVersion.updatedAt,
   maxDailyCalls: {
     perConsumer: detail.latestVersion.maxDailyCallsPerConsumer,
     perKnode: detail.latestVersion.maxDailyCallsPerKnode,

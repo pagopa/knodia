@@ -334,7 +334,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           eserviceId,
           limit,
           offset,
-          state: state ? [toProcessAPI_PurposeState(state)] : undefined,
+          state: state?.map(toProcessAPI_PurposeState),
         },
       });
 

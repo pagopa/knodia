@@ -17,6 +17,7 @@ import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip
 import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
 import { useReactivatePurposeByProducer } from "@/features/purpose/hooks/useReactivatePurposeByProducer";
 import { useSuspendPurposeByProducer } from "@/features/purpose/hooks/useSuspendPurposeByProducer";
+import { formatNumericDate } from "@/utils/formatters";
 
 export function ProducerPurposeDetail({
   purpose,
@@ -25,15 +26,25 @@ export function ProducerPurposeDetail({
 }) {
   const canManagePurposeState = useHasRole("administrative");
   const purposeId = unsafeBrandId<PurposeId>(purpose.id);
+  const isArchived = purpose.state === "Archived";
 
   return (
     <>
       <PageHeader
         actions={
-          canManagePurposeState && <PurposeActionButton purpose={purpose} />
+          isArchived ? (
+            <PurposeStateChip
+              label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
+              state="Archived"
+            />
+          ) : (
+            canManagePurposeState && <PurposeActionButton purpose={purpose} />
+          )
         }
         description={purpose.description.en}
-        resourceStatusChip={<PurposeStateChip state={purpose.state} />}
+        resourceStatusChip={
+          isArchived ? undefined : <PurposeStateChip state={purpose.state} />
+        }
         title={purpose.name.en}
       />
 
@@ -139,10 +150,7 @@ function PurposeActionButton({ purpose }: { purpose: bffApi.PurposeDetails }) {
         <ReactivateProducerPurposeButton purposeId={purposeId} />
       ) : null,
     )
-    .with("Archived", () => {
-      console.warn("Unhandled purpose state: Archived");
-      return null;
-    })
+    .with("Archived", () => null)
     .exhaustive();
 }
 
