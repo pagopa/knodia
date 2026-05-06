@@ -67,7 +67,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     } finally {
       clearAuthToken();
       setUiSessionToken(null);
-      redirectToLogout();
     }
   }, [removeUser]);
 
@@ -120,6 +119,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     // Best-effort: clear the refresh token cookie
     bffLogout({ withCredentials: true });
     await safelyRemoveUser();
+    redirectToLogout();
   }, [bffLogout, safelyRemoveUser]);
 
   return (
