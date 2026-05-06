@@ -224,8 +224,22 @@ describe("auth integration", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it("returns 401 when no org: group is present", async () => {
+    it("returns 401 when groups is empty", async () => {
       setupValidCognitoToken({ "cognito:groups": [] });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when no org: group is present", async () => {
+      setupValidCognitoToken({
+        "cognito:groups": ["test-group", "test-group-2"],
+      });
 
       const response = await app.inject({
         method: "POST",

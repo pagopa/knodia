@@ -13,6 +13,7 @@ import {
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import { z } from "zod";
 
@@ -108,6 +109,7 @@ const API_EserviceVersionDetails = z
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "EserviceVersionDetails" });
 
@@ -199,7 +201,9 @@ export const API_Eservices = z
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
 export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
-  agreementState: API_AgreementState.optional(),
+  agreementState: arrayQueryParam(API_AgreementState)
+    .optional()
+    .meta({ description: "Filter by Agreement State" }),
 });
 export type API_GetEservicesQueryParams = z.infer<
   typeof API_GetEservicesQueryParams

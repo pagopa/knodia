@@ -96,7 +96,10 @@ describe("AuthContext", () => {
       ),
     );
 
-    mockOidcState.user = { access_token: "cognito-token" };
+    mockOidcState.user = {
+      access_token: "cognito-token",
+      id_token: "cognito-token",
+    };
 
     const onAuth = vi.fn();
     renderWithAuth(onAuth);
@@ -114,7 +117,7 @@ describe("AuthContext", () => {
       ),
     );
 
-    mockOidcState.user = { access_token: "bad-token" };
+    mockOidcState.user = { access_token: "bad-token", id_token: "bad-token" };
 
     const onAuth = vi.fn();
     renderWithAuth(onAuth);

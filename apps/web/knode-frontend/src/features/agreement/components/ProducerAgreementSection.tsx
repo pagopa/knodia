@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId } from "@knodia/common-models/ids";
 
-import { Empty, Loader } from "@knodia/ui-kit/ui";
+import { Empty } from "@knodia/ui-kit/ui";
 import { SelectionIcon } from "@phosphor-icons/react";
 
 import { ProducerEserviceFilter } from "@/features/e-service/components/ProducerEserviceFilter";
@@ -19,10 +19,7 @@ export function ProducerAgreementSection({
   isLoading: boolean;
   onEserviceIdChange: (eserviceId: EserviceId | undefined) => void;
 }) {
-  const hasFilters = eserviceId !== undefined;
-  const showContent = isLoading || hasFilters || agreements.length > 0;
-
-  if (!showContent) {
+  if (!isLoading && eserviceId === undefined && agreements.length === 0) {
     return (
       <Empty
         description="Agreements requested for your E-Services by Consumer Organizations will appear here."
@@ -32,38 +29,13 @@ export function ProducerAgreementSection({
     );
   }
 
-  const filters = (
-    <ProducerEserviceFilter
-      eserviceId={eserviceId}
-      onEserviceIdChange={onEserviceIdChange}
-    />
-  );
-
-  if (isLoading) {
-    return (
-      <>
-        {filters}
-        <Loader className="mx-auto mt-20" label="Loading..." />
-      </>
-    );
-  }
-
-  if (agreements.length === 0) {
-    return (
-      <>
-        {filters}
-        <Empty
-          icon={<SelectionIcon />}
-          title="No Agreements match the selected filter."
-        />
-      </>
-    );
-  }
-
   return (
     <>
-      {filters}
-      <ProducerAgreementTable agreements={agreements} />
+      <ProducerEserviceFilter
+        eserviceId={eserviceId}
+        onEserviceIdChange={onEserviceIdChange}
+      />
+      <ProducerAgreementTable agreements={agreements} isLoading={isLoading} />
     </>
   );
 }

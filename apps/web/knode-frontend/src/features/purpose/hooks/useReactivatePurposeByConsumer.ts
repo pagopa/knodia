@@ -6,7 +6,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { client } from "@/libs/axios";
 
-import { consumerPurposeDetailsQuery } from "../services/queries";
+import {
+  consumerPurposeDetailsQuery,
+  consumerPurposesQueryKey,
+} from "../services/queries";
 
 export function useReactivatePurposeByConsumer(
   purposeId: PurposeId,
@@ -26,6 +29,9 @@ export function useReactivatePurposeByConsumer(
       queryClient.invalidateQueries(
         consumerPurposeDetailsQuery(purposeId, knodeId),
       );
+      queryClient.invalidateQueries({
+        queryKey: consumerPurposesQueryKey(),
+      });
     },
   });
 

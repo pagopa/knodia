@@ -60,6 +60,17 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     user,
   } = useOidcAuth();
 
+  // removeUser() can throw — ensure cleanup and redirect happen regardless
+  const safelyRemoveUser = useCallback(async () => {
+    try {
+      await removeUser();
+    } finally {
+      clearAuthToken();
+      setUiSessionToken(null);
+      redirectToLogout();
+    }
+  }, [removeUser]);
+
   const {
     error: exchangeError,
     isPending: isExchangePending,
@@ -67,7 +78,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: async () => {
-      await removeUser();
+      await safelyRemoveUser();
       void router.navigate({ replace: true, to: "/login" });
     },
     onSuccess: (data) => {
@@ -108,16 +119,8 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     // Best-effort: clear the refresh token cookie
     bffLogout({ withCredentials: true });
-
-    // removeUser() can throw — ensure cleanup and redirect happen regardless
-    try {
-      await removeUser();
-    } finally {
-      clearAuthToken();
-      setUiSessionToken(null);
-      redirectToLogout();
-    }
-  }, [bffLogout, removeUser]);
+    await safelyRemoveUser();
+  }, [bffLogout, safelyRemoveUser]);
 
   return (
     <AuthContext.Provider
