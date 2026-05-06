@@ -49,14 +49,6 @@ interface AgreementConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
-// PendingConsumerOperatorIdentification is excluded: counters cover only
-// visible states and the default list must agree with the counters.
-const consumerVisibleStates = [
-  API_AgreementState.enum.Active,
-  API_AgreementState.enum.Suspended,
-  API_AgreementState.enum.Archived,
-];
-
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
 > = async (fastify, { config, remoteResourcesManagerClient }) => {
@@ -178,7 +170,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         query: {
           limit,
           offset,
-          state: state?.length ? state : consumerVisibleStates,
+          state,
         },
       });
 
