@@ -4,6 +4,7 @@ import { writeFile } from "node:fs/promises";
 
 export default async function generateOpenapi(
   app: FastifyInstance,
+  outputPath = "openapi/openapi.yaml",
 ): Promise<void> {
   await app.ready();
 
@@ -13,7 +14,7 @@ export default async function generateOpenapi(
 
   const schema = app.swagger({ yaml: true });
 
-  await writeFile("openapi/openapi.yaml", schema, { flag: "w" });
+  await writeFile(outputPath, schema, { flag: "w" });
 
   await app.close();
 }
