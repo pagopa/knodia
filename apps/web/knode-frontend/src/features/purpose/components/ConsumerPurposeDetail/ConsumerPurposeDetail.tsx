@@ -16,13 +16,16 @@ import { PageHeader } from "@/components/PageHeader";
 import { ButtonLinkWithPreload, RouterLink } from "@/components/routerLinks";
 import { Section } from "@/components/Section";
 import { useHasRole } from "@/contexts/auth";
+import { ArchivePurposeModal } from "@/features/purpose/components/ArchivePurposeModal";
 import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 import { SuspendPurposeModal } from "@/features/purpose/components/SuspendPurposeModal";
+import { useArchivePurposeByConsumer } from "@/features/purpose/hooks/useArchivePurposeByConsumer";
 import { useReactivatePurposeByConsumer } from "@/features/purpose/hooks/useReactivatePurposeByConsumer";
 import { useSuspendPurposeByConsumer } from "@/features/purpose/hooks/useSuspendPurposeByConsumer";
+import { formatNumericDate } from "@/utils/formatters";
 
 import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
 import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
@@ -36,6 +39,7 @@ export function ConsumerPurposeDetail({
   purpose: bffApi.PurposeDetails;
 }) {
   const canManagePurpose = useHasRole("administrative");
+  const isArchived = purpose.state === "Archived";
 
   const [offset, setOffset] = useState(0);
   const { data } = useQuery({
@@ -43,20 +47,31 @@ export function ConsumerPurposeDetail({
     placeholderData: keepPreviousData,
   });
 
+  const headerActions = isArchived ? (
+    <PurposeStateChip
+      label={`Archived ${formatNumericDate(purpose.updatedAt)}`}
+      state="Archived"
+    />
+  ) : (
+    canManagePurpose && (
+      <PurposeActionButton knodeId={knodeId} purpose={purpose} />
+    )
+  );
+  const headerStatusChip = isArchived ? undefined : (
+    <PurposeStateChip state={purpose.state} />
+  );
+
   return (
     <>
       <PageHeader
-        actions={
-          canManagePurpose && (
-            <PurposeActionButton knodeId={knodeId} purpose={purpose} />
-          )
-        }
+        actions={headerActions}
         description={purpose.description.en}
-        resourceStatusChip={<PurposeStateChip state={purpose.state} />}
+        resourceStatusChip={headerStatusChip}
         title={purpose.name.en}
       />
 
       {purpose.state === "Suspended" &&
+        purpose.suspendedByConsumerAt === null &&
         purpose.suspendedByProducerAt !== null && <ProducerSuspendedBanner />}
 
       <div className="mt-10 flex flex-col gap-4">
@@ -112,7 +127,8 @@ export function ConsumerPurposeDetail({
 
       <Section
         actions={
-          canManagePurpose && (
+          canManagePurpose &&
+          !isArchived && (
             <LinkConsumerKeychainAction
               knodeId={knodeId}
               purposeId={purpose.id}
@@ -137,6 +153,40 @@ export function ConsumerPurposeDetail({
           totalItems={data?.pagination.total ?? 0}
         />
       </Section>
+    </>
+  );
+}
+
+function ArchiveConsumerPurposeButton({
+  knodeId,
+  purposeId,
+}: {
+  knodeId: KnodeId;
+  purposeId: PurposeId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { archivePurpose, isError, isPending } = useArchivePurposeByConsumer(
+    purposeId,
+    knodeId,
+  );
+
+  return (
+    <>
+      <Button
+        hierarchy="danger"
+        kind="tonal"
+        onPress={() => setIsOpen(true)}
+        size="md"
+      >
+        Archive
+      </Button>
+      <ArchivePurposeModal
+        isError={isError}
+        isOpen={isOpen}
+        isPending={isPending}
+        onConfirm={archivePurpose}
+        onOpenChange={setIsOpen}
+      />
     </>
   );
 }
@@ -167,19 +217,10 @@ function PurposeActionButton({
     .with("Active", () => (
       <SuspendPurposeByConsumerButton knodeId={knodeId} purposeId={purposeId} />
     ))
-    .with("Suspended", () =>
-      purpose.suspendedByConsumerAt !== null &&
-      purpose.suspendedByProducerAt === null ? (
-        <ReactivatePurposeByConsumerButton
-          knodeId={knodeId}
-          purposeId={purposeId}
-        />
-      ) : null,
-    )
-    .with("Archived", () => {
-      console.warn("Unhandled purpose state: Archived");
-      return null;
-    })
+    .with("Suspended", () => (
+      <SuspendedConsumerActions knodeId={knodeId} purpose={purpose} />
+    ))
+    .with("Archived", () => null)
     .exhaustive();
 }
 
@@ -205,6 +246,31 @@ function ReactivatePurposeByConsumerButton({
     >
       Reactivate
     </Button>
+  );
+}
+
+function SuspendedConsumerActions({
+  knodeId,
+  purpose,
+}: {
+  knodeId: KnodeId;
+  purpose: bffApi.PurposeDetails;
+}) {
+  const purposeId = unsafeBrandId<PurposeId>(purpose.id);
+  const canReactivate =
+    purpose.suspendedByConsumerAt !== null &&
+    purpose.suspendedByProducerAt === null;
+
+  return (
+    <>
+      {canReactivate && (
+        <ReactivatePurposeByConsumerButton
+          knodeId={knodeId}
+          purposeId={purposeId}
+        />
+      )}
+      <ArchiveConsumerPurposeButton knodeId={knodeId} purposeId={purposeId} />
+    </>
   );
 }
 
