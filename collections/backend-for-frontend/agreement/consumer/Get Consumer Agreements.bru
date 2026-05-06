@@ -4,9 +4,15 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/consumer/agreements
+  url: {{host-backend-for-frontend}}/consumer/agreements?limit=10&offset=0
   body: none
   auth: none
+}
+
+params:query {
+  limit: 10
+  offset: 0
+  ~state: Active
 }
 
 headers {
