@@ -129,7 +129,8 @@ function RouteComponent() {
   );
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const { agreement } = eservice;
-  const hasAgreement = agreement !== undefined;
+  const hasAgreement =
+    agreement !== undefined && agreement.state !== "Archived";
 
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
@@ -156,7 +157,16 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        resourceStatusChip={<EserviceStateChip state={eservice.state} />}
+        resourceStatusChip={
+          eservice.state === "Archived" ? (
+            <EserviceStateChip
+              archivedAt={eservice.latestVersionUpdatedAt}
+              state="Archived"
+            />
+          ) : (
+            <EserviceStateChip state={eservice.state} />
+          )
+        }
         title={eservice.name}
       >
         <div className="flex items-center gap-3 mt-3">
@@ -191,6 +201,7 @@ function RouteComponent() {
             <OrgConsumptionStatusSection
               agreement={agreement}
               eserviceId={eservice.id}
+              eserviceState={eservice.state}
               hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
               knodeId={knodeId}
             />

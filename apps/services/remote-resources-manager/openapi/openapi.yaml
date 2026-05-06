@@ -493,6 +493,10 @@ components:
               $ref: "#/components/schemas/Attribute"
         state:
           $ref: "#/components/schemas/EserviceVersionState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -502,6 +506,7 @@ components:
         - maxDailyCallsPerKnode
         - requiredAttributes
         - state
+        - updatedAt
       additionalProperties: false
     EserviceDetailsInterfaceDocument:
       type: object
@@ -1102,11 +1107,13 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
+            type: array
+            items:
+              $ref: "#/components/schemas/AgreementState"
           in: query
           name: agreementState
           required: false
+          description: Filter by Agreement State
       responses:
         "200":
           description: E-services retrieved successfully
@@ -1843,8 +1850,9 @@ paths:
           required: false
           description: Filter by E-service ID
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/PurposeState"
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
           in: query
           name: state
           required: false

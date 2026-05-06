@@ -31,6 +31,7 @@ function createAgreementDetails(
     state: "Active",
     suspendedByConsumerAt: null,
     suspendedByProducerAt: null,
+    updatedAt: "2026-01-01T00:00:00Z",
     ...overrides,
   };
 }
@@ -98,6 +99,17 @@ describe("ProducerAgreementDetail", () => {
     );
 
     expect(screen.getByText("Suspended")).toBeInTheDocument();
+  });
+
+  it("renders the Archived state chip with the archive date", () => {
+    renderDetail(
+      createAgreementDetails({
+        state: "Archived",
+        updatedAt: "2026-05-06T10:00:00Z",
+      }),
+    );
+
+    expect(screen.getByText("Archived 06.05.26")).toBeInTheDocument();
   });
 
   it("renders the eservice state chip", () => {
