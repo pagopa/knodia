@@ -120,6 +120,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
       ]);
 
       const {

@@ -12,6 +12,10 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
+export type ExternalUISessionEserviceClaimField =
+  | "eservice.id"
+  | "eservice.knodeId";
+
 const {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
@@ -32,10 +36,24 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0009",
   NOT_ESERVICE_PRODUCER: "0010",
   ESERVICE_TEMPLATE_NOT_FOUND: "0011",
+  ESERVICE_TOKEN_CLAIM_MISMATCH: "0012",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
+
+export function eserviceTokenClaimMismatch(
+  field: ExternalUISessionEserviceClaimField,
+  tokenValue: string,
+  expectedValue: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_TOKEN_CLAIM_MISMATCH",
+    detail: `Token claim "${field}" (${tokenValue}) does not match expected value (${expectedValue})`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "E-service Token Claim Mismatch",
+  });
+}
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "eservice-process",

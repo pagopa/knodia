@@ -25,6 +25,18 @@ export const API_CompactAgreement = z
     id: "CompactAgreement",
   });
 
+export const API_AgreementActivationDetails = z
+  .strictObject({
+    agreement: API_CompactAgreement,
+    consumer: API_CompactOrganization,
+    eservice: API_CompactEservice,
+    producer: API_CompactOrganization,
+  })
+  .meta({ id: "AgreementActivationDetails" });
+export type API_AgreementActivationDetails = z.infer<
+  typeof API_AgreementActivationDetails
+>;
+
 export const API_AgreementSeed = z
   .strictObject({
     eserviceId: z.uuid(),

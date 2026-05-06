@@ -1,6 +1,7 @@
 import type { OrganizationEventStoreWriter } from "@knodia/db-event-store-writer/organization";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
@@ -8,7 +9,11 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { Organization } from "@knodia/organization-models";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { generateId, type OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  type KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 
 import type {
   API_GetOrganizationsQueryParams,
@@ -19,13 +24,17 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import { invalidAttribute } from "../models/errors.ts";
 import { createOrganizationCreatedV1Event } from "../models/organizationEventFactory.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
-import { assertOrganizationNameIsUnique } from "../utils/validators.ts";
+import {
+  assertOrganizationNameIsUnique,
+  assertTokenOrganizationClaimsMatchPathParam,
+} from "../utils/validators.ts";
 
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
 export function organizationServiceBuilder(
   eventStoreWriter: OrganizationEventStoreWriter,
   readmodelService: ReadmodelService,
+  config: { knodeId: KnodeId },
 ) {
   return {
     async createOrganization(
@@ -62,9 +71,22 @@ export function organizationServiceBuilder(
     },
     async getOrganization(
       organizationId: OrganizationId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<
+        ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
+      >,
     ): Promise<Organization> {
       logger.info(`Getting Organization with ID ${organizationId}`);
+
+      if (authData.tokenType === "external-ui-session") {
+        assertTokenOrganizationClaimsMatchPathParam(
+          authData,
+          organizationId,
+          config.knodeId,
+        );
+      }
 
       return await retrieveOrganization(organizationId, readmodelService);
     },

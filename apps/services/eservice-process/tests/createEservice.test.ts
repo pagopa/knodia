@@ -4,6 +4,7 @@ import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
   generateId,
+  KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
 import {
@@ -323,6 +324,7 @@ describe("POST /eservices (createEservice)", () => {
         acceptedAudiences: ["test-audience"],
         isConsumerOperatorIdentificationRequired: true,
         isProduction: false,
+        knodeId: KnodeId.enum.Orion,
         logLevel: "silent",
         nodeEnv: "test",
         wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],

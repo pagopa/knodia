@@ -234,7 +234,7 @@ export function assertTokenAgreementIdMatchesPathParam(
 export function assertTokenResourceClaimsMatchAgreement(
   authData: ExternalUISessionAuthData,
   agreement: Agreement,
-  currentKnodeId: KnodeId,
+  thisKnodeId: KnodeId,
 ): void {
   const checks: {
     expectedValue: string;
@@ -242,7 +242,7 @@ export function assertTokenResourceClaimsMatchAgreement(
     tokenValue: string;
   }[] = [
     {
-      expectedValue: currentKnodeId,
+      expectedValue: thisKnodeId,
       field: "agreement.knodeId",
       tokenValue: authData.agreement.knodeId,
     },
@@ -262,7 +262,7 @@ export function assertTokenResourceClaimsMatchAgreement(
       tokenValue: authData.eservice.id,
     },
     {
-      expectedValue: currentKnodeId,
+      expectedValue: thisKnodeId,
       field: "eservice.knodeId",
       tokenValue: authData.eservice.knodeId,
     },
@@ -277,7 +277,7 @@ export function assertTokenResourceClaimsMatchAgreement(
       tokenValue: authData.producer.id,
     },
     {
-      expectedValue: currentKnodeId,
+      expectedValue: thisKnodeId,
       field: "producer.knodeId",
       tokenValue: authData.producer.knodeId,
     },

@@ -531,6 +531,13 @@ export type CompactAgreement = {
     state: AgreementState;
 };
 
+export type AgreementActivationDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    producer: CompactOrganization;
+};
+
 /**
  * Seed data to create a new Agreement
  */
@@ -3447,11 +3454,9 @@ export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses
 
 export type ActivateAgreementData = {
     body?: never;
-    path: {
-        agreementId: string;
-    };
+    path?: never;
     query?: never;
-    url: '/external/agreements/{agreementId}/activate';
+    url: '/external/agreementActivation/activate';
 };
 
 export type ActivateAgreementErrors = {
@@ -3487,3 +3492,40 @@ export type ActivateAgreementResponses = {
 };
 
 export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
+
+export type GetAgreementActivationDetailsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/external/agreementActivation/details';
+};
+
+export type GetAgreementActivationDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementActivationDetailsError = GetAgreementActivationDetailsErrors[keyof GetAgreementActivationDetailsErrors];
+
+export type GetAgreementActivationDetailsResponses = {
+    /**
+     * Agreement activation details retrieved successfully
+     */
+    200: AgreementActivationDetails;
+};
+
+export type GetAgreementActivationDetailsResponse = GetAgreementActivationDetailsResponses[keyof GetAgreementActivationDetailsResponses];

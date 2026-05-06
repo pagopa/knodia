@@ -19,7 +19,7 @@ import {
   seedPendingAgreement,
 } from "./utils.ts";
 
-// agreement-process test setup configures currentKnodeId = "Orion"; assertions
+// agreement-process test setup configures thisKnodeId = "Orion"; assertions
 // below depend on that.
 const LOCAL_KNODE_ID = KnodeId.enum.Orion;
 

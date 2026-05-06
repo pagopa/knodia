@@ -1,0 +1,14 @@
+meta {
+  name: Get External Agreement Activation Details
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/external/agreementActivation/details
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{externalUiSessionJwt}}
+}

@@ -182,7 +182,11 @@ export function buildAppFromConfig(
     });
     protectedApp.register(agreementExternalRouter, {
       agreementProcessClient: clients.agreementProcessClient,
+      config,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
 
