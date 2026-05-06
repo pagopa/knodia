@@ -7,8 +7,14 @@ import { match } from "ts-pattern";
 import { formatNumericDate } from "@/utils/formatters";
 
 type EserviceStateChipProps =
-  | { archivedAt?: never; state: bffApi.EserviceVersionState }
-  | { archivedAt?: string; state: "Archived" };
+  | {
+      archivedAt?: never;
+      state: Exclude<bffApi.EserviceVersionState, "Archived">;
+    }
+  | {
+      archivedAt?: string;
+      state: Extract<bffApi.EserviceVersionState, "Archived">;
+    };
 
 export function EserviceStateChip(props: EserviceStateChipProps) {
   return match(props)

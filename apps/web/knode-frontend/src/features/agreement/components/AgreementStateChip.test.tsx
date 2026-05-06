@@ -15,8 +15,15 @@ describe("AgreementStateChip", () => {
     expect(screen.getByText("Suspended")).toBeInTheDocument();
   });
 
-  it("renders 'Archived' when state is Archived", () => {
+  it("renders 'Archived' when state is Archived without an archive date", () => {
     renderWithProviders(<AgreementStateChip state="Archived" />);
     expect(screen.getByText("Archived")).toBeInTheDocument();
+  });
+
+  it("renders the formatted archive date when state is Archived", () => {
+    renderWithProviders(
+      <AgreementStateChip archivedAt="2026-05-06T10:00:00Z" state="Archived" />,
+    );
+    expect(screen.getByText("Archived 06.05.26")).toBeInTheDocument();
   });
 });

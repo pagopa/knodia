@@ -564,6 +564,7 @@ export type ProducerAgreementDetails = {
     producer: CompactOrganization;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
+    updatedAt: string;
 };
 
 export type ProducerAgreements = {
