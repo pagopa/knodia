@@ -53,11 +53,13 @@ describe("GET /users (getOrganizationUsers)", () => {
               makeCognitoUser({
                 email: "mario.rossi@example.com",
                 id: "10000000-1000-1000-8000-000000000011",
+                roles: ["administrative", "technical"],
                 username: "Mario Rossi",
               }),
               makeCognitoUser({
                 email: "giulia.bianchi@example.com",
                 id: "10000000-1000-1000-8000-000000000012",
+                roles: ["administrative"],
                 username: "Giulia Bianchi",
               }),
             ],
@@ -73,37 +75,7 @@ describe("GET /users (getOrganizationUsers)", () => {
               makeCognitoUser({
                 email: "luca.neri@example.com",
                 id: "10000000-1000-1000-8000-000000000013",
-                username: "Luca Neri",
-              }),
-            ],
-          };
-        }
-
-        if (
-          command.input.GroupName === "role:technical" &&
-          command.input.NextToken === undefined
-        ) {
-          return {
-            NextToken: "technical-page-2",
-            Users: [
-              makeCognitoUser({
-                email: "mario.rossi@example.com",
-                id: "10000000-1000-1000-8000-000000000011",
-                username: "Mario Rossi",
-              }),
-            ],
-          };
-        }
-
-        if (
-          command.input.GroupName === "role:technical" &&
-          command.input.NextToken === "technical-page-2"
-        ) {
-          return {
-            Users: [
-              makeCognitoUser({
-                email: "luca.neri@example.com",
-                id: "10000000-1000-1000-8000-000000000013",
+                roles: ["technical"],
                 username: "Luca Neri",
               }),
             ],
@@ -141,7 +113,7 @@ describe("GET /users (getOrganizationUsers)", () => {
         username: "Luca Neri",
       },
     ]);
-    expect(sendMock).toHaveBeenCalledTimes(4);
+    expect(sendMock).toHaveBeenCalledTimes(2);
   });
 
   it.each(allowedTestTokens)(

@@ -81,7 +81,6 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
   assertUserIsAllowedToRemoveKey,
@@ -149,14 +148,15 @@ export function consumerKeychainServiceBuilder(
         throw userNotFound(userId);
       }
 
-      const userGroups = await userService.getUserGroups(user.username);
-
-      assertUserBelongsToOrganization(
-        userId,
-        authData.organizationId,
-        userGroups,
-      );
-      assertUserHasTechnicalRole(userId, userGroups);
+      if (
+        !(await userService.checkUserBelongToOrganization(
+          user,
+          authData.organizationId,
+        ))
+      ) {
+        throw userNotFound(userId);
+      }
+      assertUserHasTechnicalRole(user);
 
       const now = new Date();
       const updatedConsumerKeychain: ConsumerKeychain = {

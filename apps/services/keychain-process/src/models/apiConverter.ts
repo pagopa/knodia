@@ -4,7 +4,9 @@ import type {
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
-import type { IdmUser, OrganizationUser } from "../services/userService.ts";
+import { UserRole } from "@knodia/common-models/auth";
+
+import type { IdmUser } from "../services/userService.ts";
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
@@ -43,10 +45,10 @@ export const toAPI_User = (idmUser: IdmUser): API_User => ({
 });
 
 export const toAPI_OrganizationUser = (
-  user: OrganizationUser,
+  user: IdmUser,
 ): API_OrganizationUser => ({
   ...toAPI_User(user),
-  isTechnical: user.isTechnical,
+  isTechnical: user.roles.includes(UserRole.enum.technical),
 });
 
 export const toAPI_ConsumerKeychainPurpose = (

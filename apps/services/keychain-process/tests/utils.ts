@@ -1,3 +1,4 @@
+import type { UserRole } from "@knodia/common-models/auth";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
@@ -28,16 +29,19 @@ export const injectAppRequest = createInjectAppRequest(() => app);
 export function makeCognitoUser({
   email,
   id,
+  roles = ["technical"],
   username,
 }: {
   email: string;
   id: string;
+  roles?: UserRole[];
   username: string;
 }) {
   return {
     Attributes: [
       { Name: "sub", Value: id },
       { Name: "email", Value: email },
+      { Name: "custom:roles", Value: roles.join(",") },
     ],
     Username: username,
   };
