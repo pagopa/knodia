@@ -23,7 +23,7 @@ let mockOidcState = {
   isLoading: false,
   removeUser: mockRemoveUser,
   signinRedirect: mockSigninRedirect,
-  user: null as null | { access_token: string },
+  user: null as null | { id_token?: string },
 };
 
 vi.mock("react-oidc-context", () => ({
@@ -97,7 +97,6 @@ describe("AuthContext", () => {
     );
 
     mockOidcState.user = {
-      access_token: "cognito-token",
       id_token: "cognito-token",
     };
 
@@ -117,7 +116,7 @@ describe("AuthContext", () => {
       ),
     );
 
-    mockOidcState.user = { access_token: "bad-token", id_token: "bad-token" };
+    mockOidcState.user = { id_token: "bad-token" };
 
     const onAuth = vi.fn();
     renderWithAuth(onAuth);
