@@ -3,17 +3,21 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: Mock e-service API endpoints
-  title: Knodia Mock E-service API
+  description: Mock e-service API with DPoP-bound access token authentication
+  title: Knodia Mock E-service API (DPoP)
   version: 1.0.0
 components:
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: A JWT bearer token conforming to the best practices defined in RFC
-        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
-      scheme: bearer
+    dpopAuth:
+      description: A DPoP-bound access token conforming to RFC 9449
+        (https://www.rfc-editor.org/rfc/rfc9449.html)
+      scheme: DPoP
       type: http
+    dpopProof:
+      description: DPoP proof JWT conforming to RFC 9449
+      in: header
+      name: DPoP
+      type: apiKey
   schemas:
     ProblemError:
       type: object
@@ -101,14 +105,21 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /test:
+  /testDpop:
     get:
-      operationId: test
-      summary: Mock e-service endpoint
+      operationId: testDpop
+      summary: Mock e-service DPoP endpoint
       tags:
-        - mock
-      description: Validates the incoming Bearer access token and returns a static
+        - dpopTokenMock
+      description: Validates the incoming DPoP access token and returns a static
         success response
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: dpop
+          required: true
+          description: DPoP proof JWT
       responses:
         "200":
           description: Access token accepted
@@ -130,9 +141,10 @@ servers:
   - description: Mock E-service API
     url: /
 security:
-  - bearerAuth: []
+  - dpopAuth: []
+    dpopProof: []
 tags:
   - description: Health check routes
     name: health
-  - description: Mock e-service data routes
-    name: mock
+  - description: Mock e-service endpoints protected by DPoP-bound access tokens
+    name: dpopTokenMock
