@@ -601,49 +601,49 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
-    ProducerEserviceDetailsCounters:
+    ProducerEserviceDetailsAgreementCounters:
       type: object
       properties:
         active:
-          description: Number of active items
+          description: Number of Active Agreements
           format: int32
           type: integer
           minimum: 0
           maximum: 9007199254740991
-        total:
-          description: Total number of items
+        suspended:
+          description: Number of Suspended Agreements
           format: int32
           type: integer
           minimum: 0
           maximum: 9007199254740991
       required:
         - active
-        - total
+        - suspended
       additionalProperties: false
     ProducerEserviceDetailsPurposeCounters:
       type: object
       properties:
         active:
-          description: Number of active items
+          description: Number of Active Purposes
           format: int32
           type: integer
           minimum: 0
           maximum: 9007199254740991
-        total:
-          description: Total number of items
+        suspended:
+          description: Number of Suspended Purposes
           format: int32
           type: integer
           minimum: 0
           maximum: 9007199254740991
         totalApiCallsPerDay:
-          description: Total API calls per day across all Active purposes
+          description: Total API calls per day across all Active Purposes
           format: int64
           type: integer
           minimum: 0
           maximum: 9007199254740991
       required:
         - active
-        - total
+        - suspended
         - totalApiCallsPerDay
       additionalProperties: false
     ProducerEserviceDetails:
@@ -652,7 +652,7 @@ components:
         agreements:
           description: Agreement counters
           allOf:
-            - $ref: "#/components/schemas/ProducerEserviceDetailsCounters"
+            - $ref: "#/components/schemas/ProducerEserviceDetailsAgreementCounters"
         categories:
           type: array
           items:
@@ -931,6 +931,11 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        latestVersionUpdatedAt:
+          description: Timestamp of the last update applied to the latest E-service version
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         maxDailyCalls:
           $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
         mode:
@@ -957,6 +962,7 @@ components:
         - interfaceDocument
         - isSignalHubEnabled
         - latestVersionId
+        - latestVersionUpdatedAt
         - maxDailyCalls
         - mode
         - name
@@ -1142,6 +1148,10 @@ components:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - consumer
         - eservice
@@ -1151,6 +1161,7 @@ components:
         - producer
         - suspendedByConsumerAt
         - suspendedByProducerAt
+        - updatedAt
       additionalProperties: false
     ProducerAgreements:
       type: object
@@ -1869,6 +1880,10 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/PurposeState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - dailyCalls
         - eservice
@@ -1878,6 +1893,7 @@ components:
         - name
         - producer
         - state
+        - updatedAt
       additionalProperties: false
     ConsumerPurposes:
       type: object
@@ -1997,6 +2013,10 @@ components:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - agreement
         - consumer
@@ -2010,6 +2030,7 @@ components:
         - state
         - suspendedByConsumerAt
         - suspendedByProducerAt
+        - updatedAt
       additionalProperties: false
     SessionOrganization:
       description: Organization details for the current session, including attributes
@@ -4745,6 +4766,14 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
       responses:
         "200":
           description: Consumer Purposes retrieved successfully

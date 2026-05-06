@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
@@ -52,6 +53,12 @@ interface EserviceConsumerRouterOptions {
   organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
+
+const nonArchivedAgreementStates = [
+  API_AgreementState.enum.Active,
+  API_AgreementState.enum.Suspended,
+  API_AgreementState.enum.PendingConsumerOperatorIdentification,
+];
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   EserviceConsumerRouterOptions
@@ -271,10 +278,18 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
+      const agreementState = req.query.agreementState
+        ? [req.query.agreementState]
+        : nonArchivedAgreementStates;
+
       const { data } = await remoteResourcesManagerApi.getEservices({
         client: remoteResourcesManagerClient,
         headers,
-        query: req.query,
+        query: {
+          agreementState,
+          limit: req.query.limit,
+          offset: req.query.offset,
+        },
       });
 
       if (data.results.length === 0) {
@@ -301,7 +316,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 eserviceId: eservice.id,
                 limit: 50,
                 offset: 0,
-                state: API_PurposeState.enum.Active,
+                state: [API_PurposeState.enum.Active],
               },
             }),
             // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:

@@ -53,6 +53,7 @@ export function toConsumptionEserviceDetail(
     interfaceDocument: detail.interfaceDocument,
     isSignalHubEnabled: detail.isSignalHubEnabled,
     latestVersionId: unsafeBrandId(detail.latestVersionId),
+    latestVersionUpdatedAt: detail.latestVersionUpdatedAt,
     maxDailyCalls: detail.maxDailyCalls,
     mode: detail.mode,
     name: detail.name.en,
