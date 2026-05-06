@@ -2,7 +2,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import { getPurposeTemplates } from "@knodia/purpose-template-models";
@@ -19,15 +18,14 @@ import {
   toAPI_PurposeTemplate,
   toAPI_PurposeTemplateDetails,
 } from "../../models/purpose-template/apiConverter.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 import { retrievePurposeTemplate } from "../../utils/purposeTemplate.ts";
 
 export const purposeTemplateRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = validateAuthorization(
-        getContextValues(requestContext),
-        [{ tokenType: "ui-session", userRoles: ["administrative"] }],
-      );
+      const { authData, logger } = getContextValues(requestContext);
+      getUISessionAuthData(authData);
 
       const { eserviceId, knodeId } = req.query;
 
@@ -68,10 +66,8 @@ export const purposeTemplateRouter: FastifyPluginAsyncZod = async (fastify) => {
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = validateAuthorization(
-        getContextValues(requestContext),
-        [{ tokenType: "ui-session", userRoles: ["administrative"] }],
-      );
+      const { authData, logger } = getContextValues(requestContext);
+      getUISessionAuthData(authData);
 
       const { purposeTemplateId } = req.params;
       const { knodeId } = req.query;

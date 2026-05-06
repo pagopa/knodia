@@ -113,7 +113,7 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it("returns 403 when the user does not have the administrative role", async () => {
+  it("returns 200 when the user has a technical role", async () => {
     mockJwtVerify.mockResolvedValue({
       payload: makeUiSessionPayload({ roles: ["technical"] }),
       protectedHeader: { alg: "RS256" },
@@ -125,7 +125,7 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
       url: "/purposeTemplates?knodeId=Orion",
     });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(200);
   });
 });
 
@@ -190,7 +190,7 @@ describe("GET /purposeTemplates/:purposeTemplateId (getPurposeTemplate)", () => 
     expect(response.statusCode).toBe(400);
   });
 
-  it("returns 403 when the user does not have the administrative role", async () => {
+  it("returns 200 when the user has a technical role", async () => {
     mockJwtVerify.mockResolvedValue({
       payload: makeUiSessionPayload({ roles: ["technical"] }),
       protectedHeader: { alg: "RS256" },
@@ -202,6 +202,6 @@ describe("GET /purposeTemplates/:purposeTemplateId (getPurposeTemplate)", () => 
       url: `/purposeTemplates/${ORION_GENERIC_TEMPLATE_ID}?knodeId=Orion`,
     });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(200);
   });
 });
