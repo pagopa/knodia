@@ -7,18 +7,20 @@ import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
-  type ConsumerKeychainKeyV1,
-  type ConsumerKeychainUserV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
+  type KeychainKeyV1,
+  type KeychainUserV1,
   KeyFormatV1,
+  type KnodeApiKeychainV1,
 } from "./generated/v1/keychain.ts";
 import {
   type ConsumerKeychain,
-  type ConsumerKeychainKey,
-  type ConsumerKeychainUser,
   KeyAlgorithm,
+  type KeychainKey,
+  type KeychainUser,
   KeyFormat,
+  type KnodeApiKeychain,
 } from "./keychain.ts";
 
 export const fromConsumerKeychainV1 = (
@@ -30,17 +32,15 @@ export const fromConsumerKeychainV1 = (
     ...input,
     createdAt: new Date(input.createdAt),
     id: unsafeBrandId(input.id),
-    keys: input.keys.map(fromConsumerKeychainKeyV1),
+    keys: input.keys.map(fromKeychainKeyV1),
     name: input.name,
     ownerId: unsafeBrandId(input.ownerId),
     updatedAt: new Date(input.updatedAt),
-    users: input.users.map(fromConsumerKeychainUserV1),
+    users: input.users.map(fromKeychainUserV1),
   };
 };
 
-const fromConsumerKeychainKeyV1 = (
-  input: ConsumerKeychainKeyV1,
-): ConsumerKeychainKey => {
+const fromKeychainKeyV1 = (input: KeychainKeyV1): KeychainKey => {
   assertRequired(input.name, "Key name is undefined");
 
   return {
@@ -54,9 +54,7 @@ const fromConsumerKeychainKeyV1 = (
   };
 };
 
-const fromConsumerKeychainUserV1 = (
-  input: ConsumerKeychainUserV1,
-): ConsumerKeychainUser => ({
+const fromKeychainUserV1 = (input: KeychainUserV1): KeychainUser => ({
   addedAt: new Date(input.addedAt),
   userId: unsafeBrandUserId(input.userId),
 });
@@ -77,3 +75,20 @@ const fromKeyFormatV1 = (input: KeyFormatV1): KeyFormat =>
       throw new Error("Unrecognized KeyFormatV1 value");
     })
     .exhaustive();
+
+export const fromKnodeApiKeychainV1 = (
+  input: KnodeApiKeychainV1,
+): KnodeApiKeychain => {
+  assertRequired(input.name, "KnodeApiKeychain name is undefined");
+
+  return {
+    ...input,
+    createdAt: new Date(input.createdAt),
+    id: unsafeBrandId(input.id),
+    keys: input.keys.map(fromKeychainKeyV1),
+    name: input.name,
+    ownerId: unsafeBrandId(input.ownerId),
+    updatedAt: new Date(input.updatedAt),
+    users: input.users.map(fromKeychainUserV1),
+  };
+};

@@ -13,9 +13,9 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { IdmClient, IdmUser } from "@knodia/idm-client";
 import type {
   ConsumerKeychain,
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  KeychainKey,
 } from "@knodia/keychain-models";
 
 import {
@@ -257,7 +257,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<ConsumerKeychainKey> {
+    ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
       );
@@ -274,7 +274,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<ConsumerKeychainKey>> {
+    ): Promise<ListResult<KeychainKey>> {
       logger.info(
         { params },
         `Getting keys of Consumer Keychain with ID ${consumerKeychainId}`,
@@ -648,7 +648,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       keySeed: API_KeychainKeySeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychainKey>> {
+    ): Promise<WithMetadata<KeychainKey>> {
       logger.info(`Uploading key to Consumer Keychain ${consumerKeychainId}`);
 
       const consumerKeychain = await retrieveConsumerKeychain(
@@ -695,7 +695,7 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      const newKey: ConsumerKeychainKey = {
+      const newKey: KeychainKey = {
         algorithm: "RS256",
         createdAt: new Date(),
         encodedPem: keySeed.encodedPem,

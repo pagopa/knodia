@@ -1,4 +1,4 @@
-import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -21,6 +21,7 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
+import { agreementExternalRouter } from "./routers/agreement/agreementExternalRouter.ts";
 import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceTemplateRouter } from "./routers/eservice-template/eserviceTemplateRouter.ts";
@@ -36,7 +37,7 @@ import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
-  dynamoClient?: DynamoDBClient,
+  injectedDynamoClient?: DynamoDBClient,
 ) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
@@ -49,6 +50,7 @@ export function buildAppFromConfig(
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
+  const sharedDynamoClient = injectedDynamoClient ?? new DynamoDBClient();
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -105,12 +107,17 @@ export function buildAppFromConfig(
   const pollingService = pollingServiceBuilder(config);
   const refreshTokenStore = createJtiReplayStore(
     config.dynamoDbRefreshTokensTable,
-    dynamoClient,
+    sharedDynamoClient,
+  );
+  const magicLinkTokenStore = createJtiReplayStore(
+    config.dynamoDbMagicLinkTokensTable,
+    sharedDynamoClient,
   );
   const authService = authServiceBuilder(
     config,
     tokenGenerator,
     refreshTokenStore,
+    magicLinkTokenStore,
   );
 
   // Register cookie parser
@@ -181,9 +188,13 @@ export function buildAppFromConfig(
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
+    protectedApp.register(agreementExternalRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      pollingService,
+    });
   });
 
-  app.addHook("onClose", () => refreshTokenStore.close());
+  app.addHook("onClose", () => sharedDynamoClient.destroy());
 
   return app;
 }

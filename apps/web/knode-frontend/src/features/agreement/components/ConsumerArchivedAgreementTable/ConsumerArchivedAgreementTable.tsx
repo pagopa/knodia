@@ -32,6 +32,7 @@ export function ConsumerArchivedAgreementTable({
       <Empty
         description="Archived Agreements will be displayed here."
         icon={<ArchiveIcon />}
+        kind="brand-soft"
         title="You haven't archived any Agreement yet."
       />
     );
