@@ -265,6 +265,7 @@
 
   /* Agreement counter card */
   --spacing-counter-card: 24px;
+  --spacing-counter-card-right: 24px;
   --spacing-counter-card-gap: 40px;
   --spacing-counter-card-icon: 40px;
   --spacing-counter-card-svg: 24px;

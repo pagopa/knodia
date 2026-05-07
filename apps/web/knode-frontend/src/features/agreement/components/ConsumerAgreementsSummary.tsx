@@ -90,7 +90,7 @@ function AgreementCounterCard({
 
   return (
     <div
-      className={`${cardBg} flex flex-col gap-counter-card-gap rounded-card pb-counter-card pl-counter-card pr-6 pt-counter-card`}
+      className={`${cardBg} flex flex-col gap-counter-card-gap rounded-card pb-counter-card pl-counter-card pr-counter-card-right pt-counter-card`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
