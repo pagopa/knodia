@@ -18,6 +18,7 @@ import {
   API_PurposeFormUiSchema,
   API_PurposeFormUiTexts,
   API_PurposeState,
+  API_PurposeTemplateReference,
 } from "@knodia/purpose-models/api";
 import z from "zod";
 export const API_PurposeSeed = z
@@ -29,7 +30,7 @@ export const API_PurposeSeed = z
     formAnswersJson: API_PurposeFormAnswers,
     formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
-    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
+    template: API_PurposeTemplateReference.optional(),
   })
   .meta({ id: "PurposeSeed" });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
@@ -48,7 +49,7 @@ export const API_Purpose = z
     state: API_PurposeState,
     suspendedByConsumerAt: z.iso.datetime().nullable(),
     suspendedByProducerAt: z.iso.datetime().nullable(),
-    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
+    template: API_PurposeTemplateReference.optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Purpose" });

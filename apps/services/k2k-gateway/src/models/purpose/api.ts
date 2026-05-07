@@ -62,6 +62,16 @@ const API_PurposeDailyCalls = z
     format: "int32",
   });
 
+const API_PurposeTemplateReference = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Reference to a Purpose statement template",
+    id: "PurposeTemplateReference",
+  });
+
 export const API_PurposeSeed = z
   .strictObject({
     consumerId: API_OrganizationId.meta({
@@ -76,7 +86,7 @@ export const API_PurposeSeed = z
     formAnswersJson: API_PurposeFormAnswers,
     formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
-    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
+    template: API_PurposeTemplateReference.optional(),
   })
   .meta({
     description: "Seed data to create a new Purpose",
@@ -125,7 +135,7 @@ export const API_Purpose = z
     suspendedByProducerAt: z.iso.datetime().nullable().meta({
       description: "Timestamp when the Purpose was suspended by the Producer",
     }),
-    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
+    template: API_PurposeTemplateReference.optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({
