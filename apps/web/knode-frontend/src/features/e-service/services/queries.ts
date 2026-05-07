@@ -4,6 +4,8 @@ import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerEserviceDetailsOptions,
   getConsumerEservicesOptions,
+  getEserviceTemplateOptions,
+  getEserviceTemplatesOptions,
   getProducerEserviceDetailsOptions,
   getProducerEservicesOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -89,4 +91,20 @@ export const consumerCatalogEservicesQuery = (
       return data;
     },
     queryKey: ["getConsumerCatalogEservices", { body, offset }] as const,
+  });
+
+export const eserviceTemplatesQuery = (knodeId: KnodeId) =>
+  getEserviceTemplatesOptions({
+    client,
+    query: { knodeId },
+  });
+
+export const eserviceTemplateDetailsQuery = (
+  eserviceTemplateId: string,
+  knodeId: KnodeId,
+) =>
+  getEserviceTemplateOptions({
+    client,
+    path: { eserviceTemplateId },
+    query: { knodeId },
   });

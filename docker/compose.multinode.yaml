@@ -957,6 +957,24 @@ services:
       dynamodb-setup:
         condition: service_completed_successfully
 
+  signal-hub-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signal-hub-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub/Dockerfile
+    ports:
+      - 3801:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+
   # ============================================================
   # Lynx Node
   # ============================================================
@@ -1574,6 +1592,24 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+
+  signal-hub-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signal-hub-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub/Dockerfile
+    ports:
+      - 3802:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
 
   # ============================================================
   # Frontends

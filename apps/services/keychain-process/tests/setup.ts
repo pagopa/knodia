@@ -3,9 +3,9 @@ import type { FastifyInstance } from "fastify";
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import {
-  type KeychainWriterService,
-  keychainWriterServiceBuilder,
-} from "@knodia/db-readmodel-keychain/writer";
+  type ConsumerKeychainWriterService,
+  consumerKeychainWriterServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { type TestDrizzleDb } from "@knodia/test-commons/types";
@@ -17,7 +17,7 @@ import { buildApp } from "../src/app.ts";
 let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
-let keychainWriterService: KeychainWriterService;
+let consumerKeychainWriterService: ConsumerKeychainWriterService;
 export const mockMaxKeysPerKeychain = 100;
 
 async function resetTestDatabases() {
@@ -48,7 +48,8 @@ beforeAll(async () => {
     remoteResourcesManagerUrl: "http://test-remote-resources-manager",
   });
 
-  keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainWriterService =
+    consumerKeychainWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -59,4 +60,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, keychainWriterService };
+export { app, consumerKeychainWriterService, eventStoreDb };

@@ -9,8 +9,8 @@ import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
-  type ConsumerKeychainKey,
   KeychainEventV1,
+  type KeychainKey,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import {
@@ -22,7 +22,7 @@ import {
   createEcKeyPair,
   createRsaKeyPair,
   getMockConsumerKeychain,
-  getMockConsumerKeychainKey,
+  getMockKeychainKey,
   rsaX509CertificatePem,
   toBase64,
 } from "@knodia/test-commons/utils";
@@ -105,7 +105,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     expect(response.statusCode).toBe(201);
 
     const responseBody = response.json<API_KeychainKey>();
-    const expectedKey: ConsumerKeychainKey = {
+    const expectedKey: KeychainKey = {
       algorithm: "RS256",
       createdAt: new Date(responseBody.createdAt),
       encodedPem: mockSeed.encodedPem,
@@ -271,7 +271,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       ),
     );
 
-    const existingKey: ConsumerKeychainKey = {
+    const existingKey: KeychainKey = {
       algorithm: "RS256",
       createdAt: new Date(),
       encodedPem,
@@ -306,7 +306,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     const mockConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: Array.from({ length: mockMaxKeysPerKeychain }, (_, i) =>
-        getMockConsumerKeychainKey(i),
+        getMockKeychainKey(i),
       ),
     };
 
