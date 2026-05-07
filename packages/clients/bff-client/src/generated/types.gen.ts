@@ -3227,6 +3227,10 @@ export type GetProducerAgreementsData = {
          * Filter to only Agreements updated within the recent update window
          */
         recentlyUpdated?: 'true' | 'false';
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/producer/agreements';
 };

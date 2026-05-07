@@ -5310,6 +5310,14 @@ paths:
           name: recentlyUpdated
           required: false
           description: Filter to only Agreements updated within the recent update window
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Agreement State
       responses:
         "200":
           description: Producer Agreements retrieved successfully
