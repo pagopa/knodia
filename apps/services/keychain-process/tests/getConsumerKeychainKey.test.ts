@@ -5,7 +5,7 @@ import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
-  getMockConsumerKeychainKey,
+  getMockKeychainKey,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -15,8 +15,8 @@ import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const existingKeys = [
-  { ...getMockConsumerKeychainKey(0), createdAt: new Date(1) },
-  { ...getMockConsumerKeychainKey(1), createdAt: new Date(2) },
+  { ...getMockKeychainKey(0), createdAt: new Date(1) },
+  { ...getMockKeychainKey(1), createdAt: new Date(2) },
 ];
 
 const consumerKeychain: ConsumerKeychain = {

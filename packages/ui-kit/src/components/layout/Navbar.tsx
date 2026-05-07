@@ -52,9 +52,7 @@ export function NavbarUserMenu({
             {name}
           </p>
           {role && (
-            <p className="text-brand-dark-mid-contrast truncate body-sm">
-              {role}
-            </p>
+            <p className="text-navbar-role-text truncate body-sm">{role}</p>
           )}
         </div>
       </div>

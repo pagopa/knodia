@@ -25,6 +25,7 @@ function createPurpose(
       name: "Rigel Corp",
     },
     state: "Active",
+    updatedAt: "2026-04-15T10:00:00Z",
     ...overrides,
   };
 }

@@ -1,9 +1,14 @@
 import {
   CheckCircleIcon,
+  CheckSquareIcon,
   CircleIcon,
   DotOutlineIcon,
+  SelectionIcon,
+  SquareLogoIcon,
   XCircleIcon,
+  XSquareIcon,
 } from "@phosphor-icons/react";
+import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
 interface StepsProps {
@@ -75,9 +80,32 @@ const stepDot = tv({
   },
 });
 
-function StepDot({ status }: { status: StepStatus }) {
-  const className = stepDot({ status });
+function LynxStepDot({
+  className,
+  status,
+}: {
+  className: string;
+  status: StepStatus;
+}) {
+  switch (status) {
+    case "completed":
+      return <CheckSquareIcon className={className} weight="duotone" />;
+    case "current":
+      return <SquareLogoIcon className={className} />;
+    case "error":
+      return <XSquareIcon className={className} weight="light" />;
+    case "uncompleted":
+      return <SelectionIcon className={className} weight="light" />;
+  }
+}
 
+function OrionStepDot({
+  className,
+  status,
+}: {
+  className: string;
+  status: StepStatus;
+}) {
   switch (status) {
     case "completed":
       return <CheckCircleIcon className={className} weight="fill" />;
@@ -88,6 +116,23 @@ function StepDot({ status }: { status: StepStatus }) {
     case "uncompleted":
       return <DotOutlineIcon className={className} weight="fill" />;
   }
+}
+
+function StepDot({ status }: { status: StepStatus }) {
+  const className = stepDot({ status });
+
+  return (
+    <>
+      <OrionStepDot
+        className={twMerge(className, "orion-only")}
+        status={status}
+      />
+      <LynxStepDot
+        className={twMerge(className, "lynx-only")}
+        status={status}
+      />
+    </>
+  );
 }
 
 const stepLine = tv({

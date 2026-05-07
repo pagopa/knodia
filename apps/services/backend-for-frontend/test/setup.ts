@@ -7,6 +7,7 @@ import { buildAppFromConfig } from "../src/app.ts";
 
 // Must match a schema file under dynamo-tables/
 const refreshTokenTableName = "knodia-bff-refresh-tokens";
+const magicLinkTokenTableName = "knodia-bff-magic-link-tokens";
 
 let app: ReturnType<typeof buildAppFromConfig>;
 let dynamoClient: DynamoDBClient;
@@ -32,9 +33,24 @@ beforeAll(async () => {
       },
       defaultPollingMaxRetries: 5,
       defaultPollingRetryDelay: 400,
+      dynamoDbMagicLinkTokensTable: magicLinkTokenTableName,
       dynamoDbRefreshTokensTable: refreshTokenTableName,
       eserviceInterfacesS3Bucket: "test-bucket",
       eserviceProcessUrl: "http://localhost:0",
+      externalUiSessionJwt: {
+        audience: "test-external-ui-session-audience",
+        issuer: "test-issuer",
+        kid: "alias/test-kid",
+        secondsDuration: 300,
+      },
+      externalUiSessionMagicLinkAccepted: {
+        audience: "test-magic-link-audience",
+        issuer: "test-issuer",
+        wellKnownUrls: [
+          "http://localhost:4502/knodia/.well-known/jwks.json",
+          "http://localhost:4503/knodia/.well-known/jwks.json",
+        ],
+      },
       host: "0.0.0.0",
       isProduction: false,
       keychainProcessUrl: "http://localhost:0",
@@ -65,7 +81,10 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetDynamoTable(refreshTokenTableName, "jti", dynamoClient);
+  await Promise.all([
+    resetDynamoTable(refreshTokenTableName, "jti", dynamoClient),
+    resetDynamoTable(magicLinkTokenTableName, "jti", dynamoClient),
+  ]);
 });
 
 afterAll(async () => {

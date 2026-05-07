@@ -278,32 +278,39 @@ const API_ProducerEserviceVersionDetails = z
   })
   .meta({ id: "ProducerEserviceVersionDetails" });
 
-const API_ProducerEserviceDetailsCounters = z
+const API_ProducerEserviceDetailsAgreementCounters = z
   .strictObject({
-    active: z
-      .number()
-      .int()
-      .min(0)
-      .meta({ description: "Number of active items", format: "int32" }),
-    total: z
-      .number()
-      .int()
-      .min(0)
-      .meta({ description: "Total number of items", format: "int32" }),
+    active: z.number().int().min(0).meta({
+      description: "Number of Active Agreements",
+      format: "int32",
+    }),
+    suspended: z.number().int().min(0).meta({
+      description: "Number of Suspended Agreements",
+      format: "int32",
+    }),
   })
-  .meta({ id: "ProducerEserviceDetailsCounters" });
+  .meta({ id: "ProducerEserviceDetailsAgreementCounters" });
 
-const API_ProducerEserviceDetailsPurposeCounters =
-  API_ProducerEserviceDetailsCounters.extend({
+const API_ProducerEserviceDetailsPurposeCounters = z
+  .strictObject({
+    active: z.number().int().min(0).meta({
+      description: "Number of Active Purposes",
+      format: "int32",
+    }),
+    suspended: z.number().int().min(0).meta({
+      description: "Number of Suspended Purposes",
+      format: "int32",
+    }),
     totalApiCallsPerDay: z.number().int().min(0).meta({
-      description: "Total API calls per day across all Active purposes",
+      description: "Total API calls per day across all Active Purposes",
       format: "int64",
     }),
-  }).meta({ id: "ProducerEserviceDetailsPurposeCounters" });
+  })
+  .meta({ id: "ProducerEserviceDetailsPurposeCounters" });
 
 export const API_ProducerEserviceDetails = z
   .strictObject({
-    agreements: API_ProducerEserviceDetailsCounters.meta({
+    agreements: API_ProducerEserviceDetailsAgreementCounters.meta({
       description: "Agreement counters",
     }),
     categories: z.array(API_EserviceCategory),
@@ -448,6 +455,10 @@ export const API_ConsumerEserviceDetails = z
     isSignalHubEnabled: z.boolean(),
     latestVersionId: z.uuid().meta({
       description: "Unique identifier of the latest E-service version",
+    }),
+    latestVersionUpdatedAt: z.iso.datetime().meta({
+      description:
+        "Timestamp of the last update applied to the latest E-service version",
     }),
     maxDailyCalls: z
       .strictObject({

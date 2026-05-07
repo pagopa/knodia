@@ -273,6 +273,49 @@ export const purposeRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
+      logger.info(`Archiving Purpose ${req.params.purposeId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const response = await purposeProcessApi.archivePurpose({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      await pollPurpose(
+        pollingService,
+        purposeProcessClient,
+        response,
+        headers,
+      );
+
+      res.send(toAPI_Purpose(response.data));
+    },
+    method: "POST",
+    schema: {
+      description:
+        "Archive a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode",
+      operationId: "archivePurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose archived successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Archive a Purpose",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/:purposeId/archive",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
       logger.info(
         { requestQuery: req.query },
         "Getting Purposes with query params",
@@ -291,7 +334,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           eserviceId,
           limit,
           offset,
-          state: state ? [toProcessAPI_PurposeState(state)] : undefined,
+          state: state?.map(toProcessAPI_PurposeState),
         },
       });
 

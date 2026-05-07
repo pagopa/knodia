@@ -5,18 +5,18 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
+import {
+  ClientAssertion,
+  EXPECTED_CLIENT_ASSERTION_TYP,
+} from "@knodia/authorization-models/clientAssertion";
 import { type Algorithm } from "@knodia/common-models/crypto";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
-import {
-  ApiError,
-  unauthorizedError,
-} from "@knodia/fastify-zod-api-commons/models";
+import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -25,12 +25,10 @@ import { AxiosError } from "axios";
 import {
   decodeJwt,
   decodeProtectedHeader,
-  importJWK,
   type JWTPayload,
   jwtVerify,
 } from "jose";
 import {
-  JOSENotSupported,
   JWSInvalid,
   JWSSignatureVerificationFailed,
   JWTClaimValidationFailed,
@@ -41,12 +39,6 @@ import { ZodError } from "zod";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { ClientAssertion } from "../models/clientAssertion.ts";
-import {
-  EXPECTED_CLIENT_ASSERTION_TYP,
-  EXPECTED_DPOP_PROOF_TYP,
-} from "../models/constants.ts";
-import { DpopProof } from "../models/dpop.ts";
 import {
   accessTokenTypeMismatch,
   agreementNotActive,
@@ -54,42 +46,20 @@ import {
   clientAssertionExpired,
   consumerKnodeVerificationDataNotFound,
   consumerMissingRequiredAttributes,
-  dpopClaimsValidationError,
-  dpopProofExpired,
   eserviceVersionNotActive,
   invalidClientAssertionJWS,
   invalidClientAssertionSignature,
-  invalidDpopProofJWS,
-  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
   unexpectedConsumerKnodeVerificationDataRetrievalError,
-  unexpectedDpopProofSignatureVerificationError,
 } from "../models/errors.ts";
 import {
   retrieveAgreement,
   retrieveEserviceVersion,
   retrievePurpose,
 } from "./readmodelUtils.ts";
-
-export async function assertDpopProofNotReplayed(
-  dpopProofJWT: DpopProof,
-  dpopProofMaxTokenAgeSeconds: number,
-  dpopProofStore: JtiReplayStore,
-  jwtClockToleranceSeconds: number,
-) {
-  const firstUse = await dpopProofStore.consume(
-    dpopProofJWT.payload.jti,
-    dpopProofJWT.payload.iat +
-      dpopProofMaxTokenAgeSeconds +
-      jwtClockToleranceSeconds,
-  );
-  if (!firstUse) {
-    throw unauthorizedError("DPoP proof already used");
-  }
-}
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,
@@ -147,10 +117,10 @@ export async function verifyClientAssertionSignature(
     );
 
     const {
-      header: { alg: clientAssertionAlg, kid },
+      headers: { alg: clientAssertionAlg, kid },
       payload: { purposeId },
     } = ClientAssertion.parse({
-      header: protectedHeader,
+      headers: protectedHeader,
       payload,
     });
 
@@ -213,71 +183,6 @@ export async function verifyClientAssertionSignature(
   }
 }
 
-export async function verifyDpopProofSignature(
-  dpopProofJWS: string | undefined,
-  dpopProofMaxTokenAgeSeconds: number,
-  jwtClockToleranceSeconds: number,
-  expectedDpopProofHtu: string,
-  logger: FastifyBaseLogger,
-): Promise<DpopProof | undefined> {
-  if (!dpopProofJWS) {
-    return undefined;
-  }
-
-  try {
-    const protectedHeader = decodeProtectedHeader(dpopProofJWS);
-    const payload = decodeJwt(dpopProofJWS);
-
-    logger.info(
-      `Verifying DPoP Proof (JTI=${payload.jti}) signature with algorithm ${protectedHeader.alg}`,
-    );
-
-    const dpopProof = DpopProof.parse({
-      header: protectedHeader,
-      payload,
-    });
-    const {
-      header: { alg: dpopProofAlg, jwk },
-      payload: { htu },
-    } = dpopProof;
-
-    assertDpopProofHtuIsValid(htu, expectedDpopProofHtu);
-
-    const verificationKey = await importJWK(jwk, dpopProofAlg);
-
-    await jwtVerify(dpopProofJWS, verificationKey, {
-      algorithms: [dpopProofAlg],
-      clockTolerance: jwtClockToleranceSeconds,
-      maxTokenAge: dpopProofMaxTokenAgeSeconds,
-      typ: EXPECTED_DPOP_PROOF_TYP,
-    });
-
-    return dpopProof;
-  } catch (error) {
-    throw match(error)
-      .with(P.instanceOf(JWTExpired), () => dpopProofExpired())
-      .with(
-        P.union(
-          P.instanceOf(JWTClaimValidationFailed),
-          P.instanceOf(ZodError),
-          P.instanceOf(JOSENotSupported),
-        ),
-        (e) => dpopClaimsValidationError(e),
-      )
-      .with(
-        P.instanceOf(DOMException),
-        (e) => e.name === "DataError",
-        (e) => dpopClaimsValidationError(e),
-      )
-      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
-        invalidDpopProofSignature(),
-      )
-      .with(P.instanceOf(JWSInvalid), (e) => invalidDpopProofJWS(e.message))
-      .with(P.instanceOf(ApiError), (e) => e)
-      .otherwise((e) => unexpectedDpopProofSignatureVerificationError(e));
-  }
-}
-
 function assertConsumerAttributesMeetEserviceRequirements(
   {
     id: eserviceVersionId,
@@ -289,28 +194,6 @@ function assertConsumerAttributesMeetEserviceRequirements(
   if (!hasAllRequiredAttributes(consumerAttributes, requiredAttributes)) {
     throw consumerMissingRequiredAttributes(consumer, eserviceVersionId);
   }
-}
-
-function assertDpopProofHtuIsValid(htu: string, expectedDpopProofHtu: string) {
-  const normalizeHtu = (raw: string) => {
-    const url = new URL(raw);
-    return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/, "")}`;
-  };
-
-  const errorMessage = `Invalid 'htu' claim in DPoP proof. Expected '${expectedDpopProofHtu}' but got '${htu}'`;
-  let normalizedHtu: string;
-  let normalizedExpectedHtu: string;
-  try {
-    normalizedHtu = normalizeHtu(htu);
-    normalizedExpectedHtu = normalizeHtu(expectedDpopProofHtu);
-  } catch (e) {
-    throw dpopClaimsValidationError(
-      new Error(e instanceof Error ? e.message : errorMessage),
-    );
-  }
-
-  if (normalizedHtu !== normalizedExpectedHtu)
-    throw dpopClaimsValidationError(new Error(errorMessage));
 }
 
 function assertEserviceVersionUsesCorrectToken(

@@ -3,7 +3,6 @@ import type { RemoteResourceDbService } from "@knodia/db-remote-resource/service
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
   type ExternalResource,
   unsafeBrandExternalId,
@@ -141,15 +140,13 @@ export function eserviceServiceBuilder(
             query: {
               consumerId: authData.organizationId,
               eserviceId: eserviceId.id,
+              // Returns the "current" agreement for this (consumer, e-service). When
+              // older Archived agreements coexist with a non-archived one, the default
+              // `updatedAt DESC` sort puts the non-archived one first (archived
+              // agreements aren't updated after archival), so `limit: 1` is enough, no state filter required.
+              // TODO: revisit if the default sort order changes.
               limit: 1,
               offset: 0,
-              state: [
-                toK2KAPI_AgreementState(API_AgreementState.enum.Active),
-                toK2KAPI_AgreementState(API_AgreementState.enum.Suspended),
-                toK2KAPI_AgreementState(
-                  API_AgreementState.enum.PendingConsumerOperatorIdentification,
-                ),
-              ],
             },
           }),
         ]);
@@ -179,6 +176,7 @@ export function eserviceServiceBuilder(
       );
 
       const { agreementState, limit, offset } = reqQuery;
+      const k2kAgreementStates = agreementState?.map(toK2KAPI_AgreementState);
 
       let totalCount = 0;
       let dynamicLimit = limit;
@@ -199,9 +197,7 @@ export function eserviceServiceBuilder(
             consumerId: authData.organizationId,
             limit: dynamicLimit,
             offset: dynamicOffset,
-            state: agreementState
-              ? [toK2KAPI_AgreementState(agreementState)]
-              : undefined,
+            state: k2kAgreementStates,
           },
         });
 
