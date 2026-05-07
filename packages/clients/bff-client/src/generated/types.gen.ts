@@ -634,6 +634,15 @@ export type SessionResponse = {
     uiSessionToken: string;
 };
 
+export type ExternalSessionRequest = {
+    magicLinkToken: string;
+};
+
+export type ExternalSessionResponse = {
+    agreementId: string;
+    externalUiSessionToken: string;
+};
+
 export type EserviceTemplateInterface = {
     contentType: string;
     name: string;
@@ -1031,6 +1040,35 @@ export type LogoutResponses = {
 };
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type CreateExternalSessionData = {
+    body: ExternalSessionRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/externalUiSession';
+};
+
+export type CreateExternalSessionErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+};
+
+export type CreateExternalSessionError = CreateExternalSessionErrors[keyof CreateExternalSessionErrors];
+
+export type CreateExternalSessionResponses = {
+    /**
+     * External session created successfully
+     */
+    200: ExternalSessionResponse;
+};
+
+export type CreateExternalSessionResponse = CreateExternalSessionResponses[keyof CreateExternalSessionResponses];
 
 export type GetEserviceTemplatesData = {
     body?: never;
@@ -3528,3 +3566,46 @@ export type SuspendPurposeByProducerResponses = {
 };
 
 export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses[keyof SuspendPurposeByProducerResponses];
+
+export type ActivateAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/external/agreements/{agreementId}/activate';
+};
+
+export type ActivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ActivateAgreementError = ActivateAgreementErrors[keyof ActivateAgreementErrors];
+
+export type ActivateAgreementResponses = {
+    /**
+     * Agreement activated successfully
+     */
+    204: void;
+};
+
+export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
