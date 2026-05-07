@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signal_hub."signal" (
 -- Grant privileges to ${NAMESPACE}_signal_hub_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_signal_hub TO ${NAMESPACE}_signal_hub_user;
 GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_signal_hub TO ${NAMESPACE}_signal_hub_user;
-
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${NAMESPACE}_signal_hub TO ${NAMESPACE}_signal_hub_user;
