@@ -7,12 +7,8 @@ import type {
   UserId,
 } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
-<<<<<<< feat/KN-604_idm-client-package
 import type { IdmUser } from "@knodia/idm-client";
-import type { ConsumerKeychainUser } from "@knodia/keychain-models";
-=======
 import type { KeychainUser } from "@knodia/keychain-models";
->>>>>>> feat/KN-592_cognito-service-update
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { UserRole } from "@knodia/common-models/auth";
