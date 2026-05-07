@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
   EserviceEventV1,
   EserviceVersionState,
   fromEserviceV1,
 } from "@knodia/eservice-models";
+import { getEserviceTemplates } from "@knodia/eservice-template-models";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -193,6 +195,26 @@ describe("PATCH /eservices/:eserviceId (updateEservice) - error cases", () => {
       });
 
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 409 if categories are updated on an E-service template instance", async () => {
+    const template = getEserviceTemplates("Lynx")[0]!;
+    const eservice = {
+      ...makeEserviceWithVersionState(EserviceVersionState.enum.Active, 210),
+      categories: template.eserviceFields.categories,
+      mode: template.eserviceFields.mode,
+      template: {
+        id: unsafeBrandExternalId(template.id),
+        knodeId: "Lynx",
+      } as const,
+    };
+    await seedEservice(eservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .patch(`/eservices/${eservice.id}`)
+      .body({ categories: [validCategory] });
+
+    expect(response.statusCode).toBe(409);
   });
 
   it("should return 403 if caller is not the producer", async () => {
