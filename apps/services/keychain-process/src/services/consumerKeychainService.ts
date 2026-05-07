@@ -191,7 +191,7 @@ export function consumerKeychainServiceBuilder(
       const { organizationId: ownerId } = authData;
 
       logger.info(
-        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId} `,
+        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId}`,
       );
 
       const now = new Date();

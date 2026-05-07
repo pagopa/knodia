@@ -4,11 +4,7 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { KnodeApiKeychain } from "@knodia/keychain-models";
 
-import {
-  generateId,
-  type KnodeApiKeychainId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateId, type KnodeApiKeychainId } from "@knodia/common-models/ids";
 
 import type { API_KnodeApiKeychainSeed } from "../models/api.ts";
 
@@ -27,7 +23,7 @@ export function knodeApiKeychainServiceBuilder(
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<KnodeApiKeychain>> {
       const knodeApiKeychainId = generateId<KnodeApiKeychainId>();
-      const ownerId: OrganizationId = authData.organizationId;
+      const { organizationId: ownerId } = authData;
 
       logger.info(
         `Creating Knode API Keychain ${knodeApiKeychainId} for owner ${ownerId}`,
