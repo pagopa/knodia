@@ -73,6 +73,7 @@ import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
+  retrieveFlatConsumerKeychain,
 } from "../utils/retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
@@ -244,10 +245,10 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychain>> {
+    ): Promise<WithMetadata<FlatConsumerKeychain>> {
       logger.info(`Getting Consumer Keychain with ID ${consumerKeychainId}`);
 
-      return await retrieveConsumerKeychain(
+      return await retrieveFlatConsumerKeychain(
         consumerKeychainId,
         readmodelService,
       );

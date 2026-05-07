@@ -2,6 +2,7 @@ import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
   ConsumerKeychainV1,
+  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
@@ -17,7 +18,13 @@ import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
 } from "../src/models/consumerKeychainEventFactory.ts";
-import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
+import { createKnodeApiKeychainCreatedV1Event } from "../src/models/knodeApiKeychainEventFactory.ts";
+import {
+  app,
+  consumerKeychainWriterService,
+  eventStoreDb,
+  knodeApiKeychainWriterService,
+} from "./setup.ts";
 
 export async function getAllKeychainEvents() {
   return await eventStoreDb.select().from(eventStoreKeychainEvents);
@@ -69,6 +76,16 @@ export async function seedConsumerKeychainPurpose(
   await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
     consumerKeychainPurpose,
     1,
+  );
+}
+
+export async function seedKnodeApiKeychain(knodeApiKeychain: KnodeApiKeychain) {
+  await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createKnodeApiKeychainCreatedV1Event(knodeApiKeychain, generateId()),
+  );
+  await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+    knodeApiKeychain,
+    0,
   );
 }
 

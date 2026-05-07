@@ -1,18 +1,32 @@
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { KnodeApiKeychain } from "@knodia/keychain-models";
+import type {
+  FlatKnodeApiKeychain,
+  KeychainKey,
+  KnodeApiKeychain,
+} from "@knodia/keychain-models";
 
 import {
   generateId,
+  type KeyId,
   type KnodeApiKeychainId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
 import type { API_KnodeApiKeychainSeed } from "../models/api.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createKnodeApiKeychainCreatedV1Event } from "../models/knodeApiKeychainEventFactory.ts";
+import {
+  retrieveFlatKnodeApiKeychain,
+  retrieveKnodeApiKeychain,
+  retrieveKnodeApiKeychainKey,
+} from "../utils/retrievalUtils.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -20,6 +34,7 @@ export type KnodeApiKeychainService = ReturnType<
 
 export function knodeApiKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
+  readmodelService: ReadmodelService,
 ) {
   return {
     async createKnodeApiKeychain(
@@ -53,6 +68,34 @@ export function knodeApiKeychainServiceBuilder(
         data: knodeApiKeychain,
         metadata: { version: newVersion },
       };
+    },
+    async getKnodeApiKeychain(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<FlatKnodeApiKeychain>> {
+      logger.info(`Getting Knode API Keychain with ID ${knodeApiKeychainId}`);
+
+      return await retrieveFlatKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+    },
+
+    async getKnodeApiKeychainKey(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      kid: KeyId,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<KeychainKey> {
+      logger.info(
+        `Getting key with ID ${kid} of Knode API Keychain with ID ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
     },
   };
 }

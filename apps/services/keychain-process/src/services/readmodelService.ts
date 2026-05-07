@@ -1,5 +1,9 @@
 /* eslint-disable max-lines-per-function */
-import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KeyId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychainPurpose,
@@ -23,7 +27,10 @@ import {
   toConsumerKeychainPurpose,
   toKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
-import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
+import {
+  consumerKeychainReadmodelServiceBuilder,
+  knodeApiKeychainReadmodelServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
 import { and, desc, eq, exists } from "drizzle-orm";
 
 import type {
@@ -37,6 +44,8 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const consumerKeychainReadmodelService =
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
+  const knodeApiKeychainReadmodelService =
+    knodeApiKeychainReadmodelServiceBuilder(readmodelDb);
 
   return {
     async checkConsumerKeychainKeyExists(kid: KeyId) {
@@ -243,6 +252,16 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getFlatConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getFlatConsumerKeychainById(
         consumerKeychainId,
+      );
+    },
+    async getFlatKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {
+      return await knodeApiKeychainReadmodelService.getFlatKnodeApiKeychainById(
+        knodeApiKeychainId,
+      );
+    },
+    async getKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {
+      return await knodeApiKeychainReadmodelService.getKnodeApiKeychainById(
+        knodeApiKeychainId,
       );
     },
   };
