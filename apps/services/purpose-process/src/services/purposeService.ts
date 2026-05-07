@@ -180,7 +180,7 @@ export function purposeServiceBuilder(
         suspendedByConsumerAt: null,
         suspendedByProducerAt: null,
         // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
-        ...(template ? { template } : {}),
+        template,
         updatedAt: now,
       };
 
