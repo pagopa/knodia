@@ -18,7 +18,7 @@ export const PurposeTemplate = z.strictObject({
   description: LocalizedPurposeDescription,
   // undefined = generic template for the Knode (not tied to a specific eservice)
   eserviceId: EserviceId.optional(),
-  formAnswers: PurposeFormAnswers,
+  formAnswersJson: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
   id: PurposeTemplateId,
   name: LocalizedPurposeName,
@@ -44,7 +44,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       description: {
         en: "Generic basic-form blueprint for routine institutional consultation of citizen data.",
       },
-      formAnswers: {
+      formAnswersJson: {
         declarationConfirmGDPR: "true",
         institutionalPurpose:
           "Routine consultation of citizen registry data for institutional duties.",
@@ -65,7 +65,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         en: "Basic-form blueprint for cross-border consultation of Lynx citizen residence data.",
       },
       eserviceId: PLACEHOLDER_ESERVICE_LYNX_05,
-      formAnswers: {
+      formAnswersJson: {
         declarationConfirmGDPR: "true",
         institutionalPurpose:
           "Cross-border consultation of citizen residence place for administrative procedures.",
@@ -87,7 +87,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       description: {
         en: "Risk-analysis blueprint for institutional consumption of public administration data.",
       },
-      formAnswers: {
+      formAnswersJson: {
         checkedExistenceMereCorrectnessInteropCatalogue: "true",
         confirmPrincipleIntegrityAndDiscretion: "true",
         dataDownload: "NO",
@@ -118,7 +118,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         en: "Risk-analysis blueprint for cross-border consumption of Orion PA address data.",
       },
       eserviceId: PLACEHOLDER_ESERVICE_ORION_01,
-      formAnswers: {
+      formAnswersJson: {
         checkedExistenceMereCorrectnessInteropCatalogue: "true",
         confirmPrincipleIntegrityAndDiscretion: "true",
         dataDownload: "YES",
@@ -154,7 +154,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         en: "Risk-analysis blueprint for cross-border consumption of Orion PA typology data.",
       },
       eserviceId: PLACEHOLDER_ESERVICE_ORION_02,
-      formAnswers: {
+      formAnswersJson: {
         administrativeActText:
           "Council Decision 2009/917/JHA on use of information technology for customs purposes.",
         checkedExistenceMereCorrectnessInteropCatalogue: "true",

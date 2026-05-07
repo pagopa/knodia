@@ -17,7 +17,6 @@ export const ExternalResource = <T extends IDS>() =>
     knodeId: KnodeId,
   });
 
-// z.infer doesn't reduce in generic context, hence the `as ExternalResource<T>` cast in the helpers below: https://github.com/colinhacks/zod/issues/3309
 export type ExternalResource<T extends IDS> = z.infer<
   ReturnType<typeof ExternalResource<T>>
 >;
@@ -29,6 +28,7 @@ export function fromExternalResource<T extends IDS>(input: {
   return {
     id: unsafeBrandExternalId<T>(input.id),
     knodeId: KnodeId.parse(input.knodeId),
+    // z.infer doesn't reduce in generic context: https://github.com/colinhacks/zod/issues/3309
   } as ExternalResource<T>;
 }
 
@@ -44,16 +44,23 @@ export function generateExternalId<T extends IDS>(): ExternalId<T> {
   return crypto.randomUUID() as ExternalId<T>;
 }
 
+export function toExternalResource<T extends IDS>(
+  id: string,
+  knodeId: string,
+): ExternalResource<T> {
+  return {
+    id: unsafeBrandExternalId<T>(id),
+    knodeId: KnodeId.parse(knodeId),
+    // z.infer doesn't reduce in generic context: https://github.com/colinhacks/zod/issues/3309
+  } as ExternalResource<T>;
+}
+
 export function toOptionalExternalResource<T extends IDS>(
   id: null | string,
   knodeId: null | string,
 ): ExternalResource<T> | undefined {
   if (!id || !knodeId) return undefined;
-
-  return {
-    id: unsafeBrandExternalId<T>(id),
-    knodeId: KnodeId.parse(knodeId),
-  } as ExternalResource<T>;
+  return toExternalResource<T>(id, knodeId);
 }
 
 export function unsafeBrandExternalId<T extends IDS>(

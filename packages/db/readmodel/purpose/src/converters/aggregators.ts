@@ -1,11 +1,11 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
+  toExternalResource,
   toOptionalExternalResource,
-  unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import {
-  KnodeId,
+  type OrganizationId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -39,10 +39,10 @@ const LocalizedDescription = LocalizedText(
 
 const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
   const purpose: Purpose = {
-    consumer: {
-      id: unsafeBrandExternalId(purposeSQL.consumerId),
-      knodeId: KnodeId.parse(purposeSQL.consumerKnodeId),
-    },
+    consumer: toExternalResource<OrganizationId>(
+      purposeSQL.consumerId,
+      purposeSQL.consumerKnodeId,
+    ),
     createdAt: purposeSQL.createdAt,
     dailyCalls: purposeSQL.dailyCalls,
     description: LocalizedDescription.parse(purposeSQL.description),

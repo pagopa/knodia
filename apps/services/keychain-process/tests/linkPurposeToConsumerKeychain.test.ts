@@ -6,7 +6,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 import {
   type ExternalResource,
   generateExternalId,
-  unsafeBrandExternalId,
+  toExternalResource,
 } from "@knodia/common-models/externalResource";
 import {
   generateId,
@@ -70,15 +70,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
   };
   const purpose: Purpose = {
     ...getMockPurpose(),
-    consumer: {
-      id: unsafeBrandExternalId(TEST_ORGANIZATION_ID),
-      knodeId,
-    },
+    consumer: toExternalResource<OrganizationId>(TEST_ORGANIZATION_ID, knodeId),
   };
-  const externalPurpose: ExternalResource<PurposeId> = {
-    id: unsafeBrandExternalId(purpose.id),
+  const externalPurpose: ExternalResource<PurposeId> = toExternalResource(
+    purpose.id,
     knodeId,
-  };
+  );
   const apiPurpose = toRRM_Purpose(purpose, knodeId);
   const body: API_ConsumerKeychainPurposeLinkSeed = {
     knodeId,
