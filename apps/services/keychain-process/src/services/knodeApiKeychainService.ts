@@ -71,7 +71,7 @@ export function knodeApiKeychainServiceBuilder(
     },
     async getKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<WithMetadata<FlatKnodeApiKeychain>> {
       logger.info(`Getting Knode API Keychain with ID ${knodeApiKeychainId}`);
 
@@ -84,7 +84,7 @@ export function knodeApiKeychainServiceBuilder(
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Knode API Keychain with ID ${knodeApiKeychainId}`,

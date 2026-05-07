@@ -14,7 +14,11 @@ const knodeApiKeychain = mockKnodeApiKeychains[0]!;
 const VALID_KNODE_API_KEYCHAIN_ID = knodeApiKeychain.id;
 const NON_EXISTENT_KNODE_API_KEYCHAIN_ID = generateId<KnodeApiKeychainId>();
 
-const allowedTestTokens: TestToken[] = [{ type: "internal" }];
+const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
+  { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
+];
 
 const getKnodeApiKeychain = (
   knodeApiKeychainId: string,

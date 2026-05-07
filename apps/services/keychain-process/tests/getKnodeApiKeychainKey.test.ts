@@ -35,7 +35,11 @@ const VALID_KEY_ID = requestedKey.kid;
 const NON_EXISTENT_KNODE_API_KEYCHAIN_ID = generateId<KnodeApiKeychainId>();
 const NON_EXISTENT_KEY_ID = unsafeBrandKeyId("non-existent-key-id");
 
-const allowedTestTokens: TestToken[] = [{ type: "internal" }];
+const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
+  { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
+];
 
 const getKnodeApiKeychainKey = (
   knodeApiKeychainId: KnodeApiKeychainId,
