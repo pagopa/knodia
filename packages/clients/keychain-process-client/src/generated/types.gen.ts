@@ -1122,8 +1122,8 @@ export type GetKnodeApiKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
         knodeApiKeychainId: string;
+        keyId: string;
     };
     query?: never;
     url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
