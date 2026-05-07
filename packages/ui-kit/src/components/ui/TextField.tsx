@@ -55,7 +55,7 @@ export function TextField({
           readOnly={props.isReadOnly}
         />
         {props.endIcon && (
-          <span className="text-primary-light-low-contrast pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 [&>svg]:h-5 [&>svg]:w-5">
+          <span className="text-primary-light-low-contrast absolute top-1/2 right-3 -translate-y-1/2 [&>svg]:h-5 [&>svg]:w-5">
             {props.endIcon}
           </span>
         )}

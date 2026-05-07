@@ -7,7 +7,7 @@ import type {
   UserId,
 } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
-import type { IdmUser } from "@knodia/idm-client";
+import type { IdmClient, IdmUser } from "@knodia/idm-client";
 import type { KeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -25,6 +25,7 @@ import {
   purposeAlreadyLinkedToConsumerKeychain,
   tooManyKeysPerKeychain,
   userNotAllowed,
+  userNotFound,
 } from "../models/errors.ts";
 
 export function assertOrganizationIsKeychainOwner(
@@ -62,6 +63,16 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
 
   if (consumerKeychainPurpose) {
     throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purpose);
+  }
+}
+
+export async function assertUserBelongsToOrganization(
+  user: IdmUser,
+  organizationId: OrganizationId,
+  idmClient: IdmClient,
+): Promise<void> {
+  if (!(await idmClient.checkUserBelongsToOrganization(user, organizationId))) {
+    throw userNotFound(user.id);
   }
 }
 

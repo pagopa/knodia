@@ -81,6 +81,7 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
+  assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
   assertUserIsAllowedToRemoveKey,
@@ -148,14 +149,11 @@ export function consumerKeychainServiceBuilder(
         throw userNotFound(userId);
       }
 
-      if (
-        !(await idmClient.checkUserBelongsToOrganization(
-          user,
-          authData.organizationId,
-        ))
-      ) {
-        throw userNotFound(userId);
-      }
+      await assertUserBelongsToOrganization(
+        user,
+        authData.organizationId,
+        idmClient,
+      );
       assertUserHasTechnicalRole(user);
 
       const now = new Date();

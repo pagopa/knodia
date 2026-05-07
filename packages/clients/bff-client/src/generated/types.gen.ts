@@ -384,6 +384,7 @@ export type ProducerEserviceDetails = {
      * Purpose counters
      */
     purposes: ProducerEserviceDetailsPurposeCounters;
+    template?: EserviceTemplateReference;
     updatedAt: string;
     /**
      * Latest version details
@@ -661,12 +662,15 @@ export type EserviceTemplateDetails = {
     description: LocalizedDescription;
     eserviceFields: EserviceTemplateEserviceFields;
     id: string;
+    knodeId: KnodeId;
     name: LocalizedName;
 };
 
 export type EserviceTemplate = {
+    categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    mode: EserviceMode;
     name: LocalizedName;
 };
 
@@ -1384,6 +1388,10 @@ export type UpdateProducerEserviceErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
