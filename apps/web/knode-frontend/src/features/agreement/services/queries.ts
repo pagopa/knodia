@@ -54,6 +54,16 @@ export const producerAgreementsQuery = (
     },
   });
 
+export const archivedProducerAgreementsQuery = (offset: number) =>
+  getProducerAgreementsOptions({
+    client,
+    query: {
+      limit: ARCHIVED_AGREEMENTS_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
+  });
+
 // TODO: replace hardcoded limit with pagination when the number of recently updated agreements per e-service grows
 export const producerRecentAgreementsByEserviceQuery = (
   eserviceId: EserviceId,

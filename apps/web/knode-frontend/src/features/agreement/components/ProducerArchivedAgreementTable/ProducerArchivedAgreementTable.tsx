@@ -1,0 +1,75 @@
+import type { bffApi } from "@knodia/bff-client";
+
+import {
+  Cell,
+  Chip,
+  Column,
+  Empty,
+  Loader,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+} from "@knodia/ui-kit/ui";
+import { ArchiveIcon, SelectionIcon } from "@phosphor-icons/react";
+
+import { formatNumericDate } from "@/utils/formatters";
+
+export function ProducerArchivedAgreementTable({
+  agreements,
+  isLoading,
+}: {
+  agreements: bffApi.ProducerAgreement[];
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return <Loader className="mx-auto mt-20" label="Loading..." />;
+  }
+
+  if (agreements.length === 0) {
+    return (
+      <Empty
+        description="Agreements archived by your Consumers will be displayed here."
+        icon={<SelectionIcon />}
+        kind="brand-soft"
+        title="You don't have any archived Agreements yet."
+      />
+    );
+  }
+
+  return (
+    <Table aria-label="Archived producer agreements">
+      <TableHeader>
+        <Column id="archivingDate">Archiving date</Column>
+        <Column id="eservice" isRowHeader>
+          E-Service
+        </Column>
+        <Column id="consumerKnode">Consumer Knode</Column>
+        <Column id="consumer">Consumer</Column>
+      </TableHeader>
+      <TableBody items={agreements}>
+        {(agreement) => (
+          <Row id={agreement.id}>
+            <Cell>
+              <Chip
+                icon={<ArchiveIcon />}
+                kind="neutral"
+                label={formatNumericDate(agreement.updatedAt)}
+                type="light"
+              />
+            </Cell>
+            <Cell className="body-md text-primary-light-mid-contrast">
+              {agreement.eservice.name.en}
+            </Cell>
+            <Cell className="body-md text-primary-light-mid-contrast">
+              {agreement.consumer.knodeId} Knode
+            </Cell>
+            <Cell className="body-md text-primary-light-mid-contrast">
+              {agreement.consumer.name}
+            </Cell>
+          </Row>
+        )}
+      </TableBody>
+    </Table>
+  );
+}

@@ -82,6 +82,16 @@ export const producerPurposesQuery = (
     },
   });
 
+export const producerArchivedPurposesQuery = (offset: number) =>
+  getProducerPurposesOptions({
+    client,
+    query: {
+      limit: PURPOSES_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
+  });
+
 // TODO: replace hardcoded limit with pagination when the number of purposes per agreement grows
 export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
   getProducerPurposesOptions({
