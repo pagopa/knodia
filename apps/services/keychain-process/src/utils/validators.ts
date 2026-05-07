@@ -7,8 +7,12 @@ import type {
   UserId,
 } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+<<<<<<< feat/KN-604_idm-client-package
 import type { IdmUser } from "@knodia/idm-client";
 import type { ConsumerKeychainUser } from "@knodia/keychain-models";
+=======
+import type { KeychainUser } from "@knodia/keychain-models";
+>>>>>>> feat/KN-592_cognito-service-update
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -74,7 +78,7 @@ export function assertUserHasTechnicalRole(user: IdmUser): void {
 export function assertUserIsAllowedToPerformKeychainOperation(
   userId: UserId,
   keychainId: ConsumerKeychainId,
-  members: ConsumerKeychainUser[],
+  members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
   if (!isMember) {
@@ -85,7 +89,7 @@ export function assertUserIsAllowedToPerformKeychainOperation(
 export function assertUserIsAllowedToRemoveKey(
   authData: UISessionAuthData,
   keychainId: ConsumerKeychainId,
-  members: ConsumerKeychainUser[],
+  members: KeychainUser[],
 ): void {
   const { userId, userRoles } = authData;
 
@@ -99,7 +103,7 @@ export function assertUserIsAllowedToRemoveKey(
 export function assertUserIsMemberOfKeychain(
   userId: UserId,
   keychainId: ConsumerKeychainId,
-  members: ConsumerKeychainUser[],
+  members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
   if (!isMember) {

@@ -135,6 +135,7 @@ function EmptyAgreementsState() {
           : undefined
       }
       icon={<SelectionPlusIcon />}
+      kind="brand-soft"
       title="You don't have any Agreements yet."
     />
   );

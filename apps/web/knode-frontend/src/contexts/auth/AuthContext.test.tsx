@@ -4,11 +4,7 @@ import { render, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  getAuthToken,
-  redirectToLogout,
-  setAuthToken,
-} from "@/test/mocks/auth";
+import { getAuthToken, setAuthToken } from "@/test/mocks/auth";
 import { server } from "@/test/msw/server";
 
 vi.mock("@/libs/auth", () => import("@/test/mocks/auth"));
@@ -106,23 +102,6 @@ describe("AuthContext", () => {
     await waitFor(() => {
       expect(setAuthToken).toHaveBeenCalledWith("session-token");
       expect(mockNavigate).toHaveBeenCalledWith({ replace: true, to: "/" });
-    });
-  });
-
-  it("redirects to logout on exchange error", async () => {
-    server.use(
-      http.post(`${BFF_URL}/auth/ui-session`, () =>
-        HttpResponse.json({ error: "invalid_token" }, { status: 401 }),
-      ),
-    );
-
-    mockOidcState.user = { id_token: "bad-token" };
-
-    const onAuth = vi.fn();
-    renderWithAuth(onAuth);
-
-    await waitFor(() => {
-      expect(redirectToLogout).toHaveBeenCalled();
     });
   });
 

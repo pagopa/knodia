@@ -18,7 +18,7 @@ import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
 } from "../src/models/keychainEventFactory.ts";
-import { app, eventStoreDb, keychainWriterService } from "./setup.ts";
+import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
   return await eventStoreDb.select().from(eventStoreKeychainEvents);
@@ -51,7 +51,10 @@ export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
     createConsumerKeychainCreatedV1Event(consumerKeychain, generateId()),
   );
-  await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
+  await consumerKeychainWriterService.upsertConsumerKeychain(
+    consumerKeychain,
+    0,
+  );
 }
 
 export async function seedConsumerKeychainPurpose(
@@ -67,7 +70,7 @@ export async function seedConsumerKeychainPurpose(
       purpose: consumerKeychainPurpose.purpose,
     }),
   );
-  await keychainWriterService.upsertConsumerKeychainPurpose(
+  await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
     consumerKeychainPurpose,
     1,
   );

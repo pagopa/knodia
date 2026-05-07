@@ -19,7 +19,9 @@ export function Section({
             {title}
           </h2>
           {description && (
-            <p className="body-md text-primary-dark mt-2">{description}</p>
+            <p className="body-md text-primary-dark mt-2 max-w-160">
+              {description}
+            </p>
           )}
         </div>
         {actions && <div>{actions}</div>}
