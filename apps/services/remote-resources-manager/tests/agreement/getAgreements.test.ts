@@ -63,7 +63,9 @@ describe("GET /agreements (getAgreements)", () => {
     offset: 0,
   };
 
-  const expectedApiResult = zocker(API_Agreement).generate();
+  const knodeId: KnodeId = "Orion";
+
+  const expectedApiResult = { ...zocker(API_Agreement).generate(), knodeId };
   const k2kResult = toK2KResult(expectedApiResult);
 
   const mockK2KResponse: k2kGatewayApi.Agreements = {
@@ -71,7 +73,6 @@ describe("GET /agreements (getAgreements)", () => {
     results: [k2kResult],
   };
 
-  const knodeId: KnodeId = "Orion";
   const remoteAgreement: RemoteResourceAgreementSQL = {
     agreementId: expectedApiResult.id,
     consumerId: TEST_ORGANIZATION_ID,
@@ -94,7 +95,7 @@ describe("GET /agreements (getAgreements)", () => {
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get("/agreements")
-      .query({ ...defaultQuery, state: expectedApiResult.state });
+      .query({ ...defaultQuery, state: [expectedApiResult.state] });
 
     expect(response.statusCode).toBe(200);
 
@@ -112,6 +113,30 @@ describe("GET /agreements (getAgreements)", () => {
       pagination: { ...parsedDefaultQuery, total: 1 },
       results: [expectedApiResult],
     });
+  });
+
+  it("forwards a multi-state filter to the k2k-gateway as an array", async () => {
+    getAgreementsMock.mockResolvedValue({
+      data: { ...mockK2KResponse, results: [] },
+    });
+
+    await remoteResourceDbService.insertAgreement(remoteAgreement);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/agreements")
+      .query({ ...defaultQuery, state: ["Active", "Suspended"] });
+
+    expect(response.statusCode).toBe(200);
+    expect(getAgreementsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          state: [
+            toK2KAPI_AgreementState("Active"),
+            toK2KAPI_AgreementState("Suspended"),
+          ],
+        }),
+      }),
+    );
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

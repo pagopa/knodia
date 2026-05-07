@@ -28,7 +28,7 @@ function createAgreement(
 
 function renderTable(agreements: bffApi.ProducerAgreement[] = []) {
   return renderWithProviders(
-    <ProducerAgreementTable agreements={agreements} />,
+    <ProducerAgreementTable agreements={agreements} isLoading={false} />,
     { routes: [{ path: "/production/agreements/$id" }] },
   );
 }

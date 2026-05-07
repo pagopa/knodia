@@ -17,7 +17,7 @@ import { tv } from "tailwind-variants";
 import { type ToastContent, toastQueue } from "./toastQueue";
 
 const toastStyle = tv({
-  base: "flex w-[262px] items-center gap-2 rounded-lg px-4 py-3",
+  base: "flex w-[262px] items-center gap-2 rounded-toast px-4 py-3",
   variants: {
     kind: {
       neutral: "bg-secondary-dark",

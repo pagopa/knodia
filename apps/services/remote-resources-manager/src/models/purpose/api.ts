@@ -4,6 +4,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
@@ -88,9 +89,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
     .uuid()
     .optional()
     .meta({ description: "Filter by E-service ID" }),
-  state: API_PurposeState.optional().meta({
-    description: "Filter by Purpose State",
-  }),
+  state: arrayQueryParam(API_PurposeState)
+    .optional()
+    .meta({ description: "Filter by Purpose State" }),
 });
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
