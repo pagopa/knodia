@@ -857,6 +857,25 @@ export type CreatedKeyResource = {
 };
 
 /**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
+
+/**
  * Seed data to create a new Purpose
  */
 export type PurposeSeed = {
@@ -934,16 +953,6 @@ export type PurposeDetails = {
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
     updatedAt: string;
-};
-
-/**
- * Organization details for the current session, including attributes
- */
-export type SessionOrganization = {
-    attributes: Array<Attribute>;
-    id: string;
-    knodeId: KnodeId;
-    name: string;
 };
 
 export type GetStatusData = {
@@ -2322,6 +2331,39 @@ export type GetOrganizationUsersResponses = {
 };
 
 export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
+
+export type GetOperatorsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/operators';
+};
+
+export type GetOperatorsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
+
+export type GetOperatorsResponses = {
+    /**
+     * Operators retrieved successfully
+     */
+    200: Operators;
+};
+
+export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;

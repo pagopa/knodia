@@ -1,3 +1,4 @@
+import type { UserRole } from "@knodia/common-models/auth";
 import type { Organization } from "@knodia/organization-models";
 
 import { generateId } from "@knodia/common-models/ids";
@@ -29,3 +30,24 @@ export const toExpectAPI_Organization = (org: Organization) => ({
   name: org.name,
   updatedAt: org.updatedAt.toISOString(),
 });
+
+export function makeCognitoUser({
+  email,
+  id,
+  roles = ["technical"],
+  username,
+}: {
+  email: string;
+  id: string;
+  roles?: UserRole[];
+  username: string;
+}) {
+  return {
+    Attributes: [
+      { Name: "sub", Value: id },
+      { Name: "email", Value: email },
+      { Name: "custom:roles", Value: roles.join(",") },
+    ],
+    Username: username,
+  };
+}

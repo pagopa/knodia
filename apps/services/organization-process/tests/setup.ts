@@ -35,6 +35,7 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      cognitoUserPoolId: "test-user-pool-id",
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",

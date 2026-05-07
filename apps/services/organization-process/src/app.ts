@@ -18,12 +18,15 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { createIdmClient, type IdmClientConfig } from "@knodia/idm-client";
 
 import type { OrganizationProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { operatorRouter } from "./routers/operatorRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
+import { operatorServiceBuilder } from "./services/operatorService.ts";
 import { organizationServiceBuilder } from "./services/organizationService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
@@ -32,7 +35,7 @@ export function buildApp({
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig & IdmClientConfig & LoggerConfig;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -53,6 +56,10 @@ export function buildApp({
             description: "Organization routes",
             name: apiTags.organization,
           },
+          {
+            description: "Operator routes",
+            name: apiTags.operator,
+          },
         ],
       },
     },
@@ -69,13 +76,13 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(
-      organizationRouter,
-      organizationServiceBuilder(
-        organizationEventStoreWriterBuilder(eventStoreDb),
-        readmodelServiceBuilder(readmodelDb),
-      ),
+    const organizationService = organizationServiceBuilder(
+      organizationEventStoreWriterBuilder(eventStoreDb),
+      readmodelServiceBuilder(readmodelDb),
     );
+    const operatorService = operatorServiceBuilder(createIdmClient(config));
+    protectedApp.register(organizationRouter, organizationService);
+    protectedApp.register(operatorRouter, operatorService);
   });
 
   return app;
