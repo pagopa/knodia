@@ -3,7 +3,10 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
-import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
+import type {
+  EServiceFromScratchFormData,
+  EServiceFromTemplateFormData,
+} from "@/features/e-service/types/eserviceCreateForm";
 
 import {
   arrayBufferToBase64,
@@ -61,7 +64,7 @@ export function toConsumptionEserviceDetail(
 }
 
 export async function toEserviceFromScratchSeed(
-  data: EServiceFormData,
+  data: EServiceFromScratchFormData,
   checksum: string,
 ): Promise<bffApi.EserviceFromScratchSeed> {
   const { interfaceDocument } = data;
@@ -87,5 +90,36 @@ export async function toEserviceFromScratchSeed(
     mode: data.mode,
     name: { en: data.name },
     requiredAttributes: data.requiredAttributes,
+  };
+}
+
+export function toEserviceFromTemplateSeed(
+  data: EServiceFromTemplateFormData,
+  template: bffApi.EserviceTemplateDetails,
+): bffApi.EserviceFromTemplateSeed {
+  return {
+    accessTokenAudience: [data.accessTokenAudience],
+    accessTokenDuration: data.accessTokenDuration * 60,
+    accessTokenType: data.accessTokenType,
+    description: { en: data.description },
+    interfaceDocumentOverrides: {
+      contact: {
+        email: data.contactEmail,
+        name: data.contactName,
+        ...(data.contactUrl && { url: data.contactUrl }),
+      },
+      serverUrls: data.serverUrls,
+      ...(data.termsOfServiceUrl && {
+        termsOfService: data.termsOfServiceUrl,
+      }),
+    },
+    isSignalHubEnabled: data.isSignalHubEnabled,
+    maxDailyCallsPerConsumer: data.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: data.maxDailyCallsPerKnode,
+    name: { en: data.name },
+    template: {
+      id: template.id,
+      knodeId: template.knodeId,
+    },
   };
 }
