@@ -47,7 +47,6 @@ const EserviceTemplateEserviceFields = z.strictObject({
   requiredAttributes: z.array(AttributeGroup),
 });
 
-/** @knipignore */
 export const EserviceTemplate = z.strictObject({
   createdAt: z.coerce.date(), // Used for sorting (for now)
   description: LocalizedDescription,
@@ -199,7 +198,6 @@ const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
   ],
 };
 
-/** @knipignore */
 export function getEserviceTemplate(
   eserviceTemplateId: EserviceTemplateId,
   knodeId: KnodeId,
@@ -209,7 +207,6 @@ export function getEserviceTemplate(
   );
 }
 
-/** @knipignore */
 export function getEserviceTemplateInterfaceContent(
   interfaceName: string,
 ): Buffer<ArrayBufferLike> | undefined {
