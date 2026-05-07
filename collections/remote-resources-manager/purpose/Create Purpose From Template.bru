@@ -1,0 +1,56 @@
+meta {
+  name: Create Purpose From Template
+  type: http
+}
+
+post {
+  url: {{host-remote-resources-manager}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "Test Purpose"
+    },
+    "description": {
+      "en": "A test purpose for accessing data"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "knodeId": "{{other-knode-id}}",
+    "dailyCalls": 100,
+    "formAnswersJson": {
+      "checkedExistenceMereCorrectnessInteropCatalogue": "true",
+      "confirmPrincipleIntegrityAndDiscretion": "true",
+      "dataDownload": "NO",
+      "declarationConfirmGDPR": "true",
+      "deliveryMethod": "CLEARTEXT",
+      "doneDpia": "NO",
+      "institutionalPurpose": "Test purpose",
+      "isRequestOnBehalfOfThirdParties": "NO",
+      "knowsDataQuantity": "NO",
+      "legalBasis": ["CONSENT"],
+      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
+      "policyProvided": "YES",
+      "policyProvidedMedium": "PRINT",
+      "purpose": "INSTITUTIONAL",
+      "purposePursuit": "MERE_CORRECTNESS",
+      "usesPersonalData": "YES"
+    },
+    "formSchemaVersion": "1.0",
+    "template": {
+      "id": "{{purposeTemplateId}}",
+      "knodeId": "{{other-knode-id}}"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}
