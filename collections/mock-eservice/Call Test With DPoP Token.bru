@@ -1,16 +1,17 @@
 meta {
-  name: Call Test
+  name: Call Test With DPoP Token
   type: http
 }
 
 get {
-  url: {{host-mock-eservice}}/test
+  url: {{host-mock-eservice}}/testDpop
   body: none
   auth: none
 }
 
 headers {
-  Authorization: Bearer {{access_token}}
+  Authorization: DPoP {{access_token}}
+  DPoP: {{process.env.DPOP_PROOF_JWT}}
 }
 
 script:pre-request {

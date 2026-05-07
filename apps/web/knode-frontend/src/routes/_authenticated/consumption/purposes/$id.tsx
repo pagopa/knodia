@@ -36,6 +36,11 @@ function RouteComponent() {
       <Breadcrumbs className="mb-10">
         <Breadcrumb isDisabled>Consumption</Breadcrumb>
         <Breadcrumb href={{ to: "/consumption/purposes" }}>Purposes</Breadcrumb>
+        {purpose.state === "Archived" && (
+          <Breadcrumb href={{ to: "/consumption/purposes/archive" }}>
+            Archive
+          </Breadcrumb>
+        )}
         <Breadcrumb>{purpose.name.en}</Breadcrumb>
       </Breadcrumbs>
 

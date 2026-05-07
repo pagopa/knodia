@@ -36,6 +36,7 @@ export function ConsumptionEserviceList({
             : "Consumed E-Services will appear here."
         }
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title="You don't consume any E-Service yet."
       />
     );
@@ -63,6 +64,7 @@ export function ConsumptionEserviceList({
         {filters}
         <Empty
           icon={<SelectionPlusIcon />}
+          kind="brand-soft"
           title="No E-Services match the selected filters."
         />
       </>

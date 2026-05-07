@@ -1,0 +1,21 @@
+meta {
+  name: Create External Session
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/auth/externalUiSession
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "magicLinkToken": "{{magicLinkToken}}"
+  }
+}
+
+vars:post-response {
+  agreementId: res.body.agreementId
+  externalUiSessionJwt: res.body.externalUiSessionToken
+}

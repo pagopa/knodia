@@ -116,6 +116,10 @@ export type Agreement = {
     eserviceId: string;
     eserviceVersionId: string;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     producerId: OrganizationId;
     state: AgreementState;
     /**
@@ -216,6 +220,7 @@ export type EserviceVersionDetails = {
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
+    updatedAt: string;
 };
 
 export type EserviceDetailsInterfaceDocument = {
@@ -519,7 +524,10 @@ export type GetEservicesData = {
          * Pagination starting position
          */
         offset: number;
-        agreementState?: AgreementState;
+        /**
+         * Filter by Agreement State
+         */
+        agreementState?: Array<AgreementState>;
     };
     url: '/eservices';
 };
@@ -610,7 +618,7 @@ export type GetAgreementsData = {
         /**
          * Filter by Agreement State
          */
-        state?: AgreementState;
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };
@@ -772,6 +780,51 @@ export type SuspendAgreementResponses = {
 
 export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
 
+export type ArchiveAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/agreements/{agreementId}/archive';
+};
+
+export type ArchiveAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveAgreementError = ArchiveAgreementErrors[keyof ArchiveAgreementErrors];
+
+export type ArchiveAgreementResponses = {
+    /**
+     * Agreement archived successfully
+     */
+    200: Agreement;
+};
+
+export type ArchiveAgreementResponse = ArchiveAgreementResponses[keyof ArchiveAgreementResponses];
+
 export type GetAgreementData = {
     body?: never;
     path: {
@@ -858,6 +911,51 @@ export type CreateAgreementActivationMagicLinkResponses = {
 
 export type CreateAgreementActivationMagicLinkResponse = CreateAgreementActivationMagicLinkResponses[keyof CreateAgreementActivationMagicLinkResponses];
 
+export type ArchivePurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];
+
 export type GetPurposesData = {
     body?: never;
     path?: never;
@@ -877,7 +975,7 @@ export type GetPurposesData = {
         /**
          * Filter by Purpose State
          */
-        state?: PurposeState;
+        state?: Array<PurposeState>;
     };
     url: '/purposes';
 };

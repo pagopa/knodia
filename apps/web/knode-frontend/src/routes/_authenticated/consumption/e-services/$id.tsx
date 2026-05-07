@@ -129,7 +129,8 @@ function RouteComponent() {
   );
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const { agreement } = eservice;
-  const hasAgreement = agreement !== undefined;
+  const hasAgreement =
+    agreement !== undefined && agreement.state !== "Archived";
 
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
@@ -156,7 +157,16 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        resourceStatusChip={<EserviceStateChip state={eservice.state} />}
+        resourceStatusChip={
+          eservice.state === "Archived" ? (
+            <EserviceStateChip
+              archivedAt={eservice.latestVersionUpdatedAt}
+              state="Archived"
+            />
+          ) : (
+            <EserviceStateChip state={eservice.state} />
+          )
+        }
         title={eservice.name}
       >
         <div className="flex items-center gap-3 mt-3">
@@ -168,7 +178,7 @@ function RouteComponent() {
           />
           <OrganizationContactPopover organization={eservice.producer} />
         </div>
-        <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
+        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
           {eservice.description}
         </p>
       </PageHeader>
@@ -185,19 +195,18 @@ function RouteComponent() {
         ))}
       </div>
 
-      <Divider className="my-10" />
-
       {agreement && (
-        <>
+        <div className="mt-10">
           <OrgConsumptionStatusSection
             agreement={agreement}
             eserviceId={eservice.id}
+            eserviceState={eservice.state}
             hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
             knodeId={knodeId}
           />
-          <Divider className="my-10" />
-        </>
+        </div>
       )}
+      <Divider className="my-10" />
       <ConsumptionRequirementsSection
         canRequestAgreement={canManageAgreements}
         eserviceId={eservice.id}
