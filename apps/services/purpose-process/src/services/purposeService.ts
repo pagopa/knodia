@@ -179,6 +179,7 @@ export function purposeServiceBuilder(
         state: PurposeState.enum.Active,
         suspendedByConsumerAt: null,
         suspendedByProducerAt: null,
+        // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
         ...(template ? { template } : {}),
         updatedAt: now,
       };
