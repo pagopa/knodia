@@ -27,7 +27,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: z.coerce.number().int().positive(),
         DYNAMODB_DPOP_PROOFS_TABLE: z.string(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
-        GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
+        GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_ID: KnodeId,
       })
