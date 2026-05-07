@@ -66,6 +66,7 @@ function RouteComponent() {
         <Empty
           description="E-Services you archive will appear here."
           icon={<ArchiveIcon />}
+          kind="brand-soft"
           title="No archived E-Services yet."
         />
       ) : (
