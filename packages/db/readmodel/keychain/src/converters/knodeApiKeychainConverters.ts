@@ -1,16 +1,8 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import {
-  type OrganizationId,
-  unsafeBrandId,
-  unsafeBrandKeyId,
-  unsafeBrandUserId,
-} from "@knodia/common-models/ids";
+import { type OrganizationId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
   type FlatKnodeApiKeychain,
-  KeyAlgorithm,
-  type KeychainKey,
-  KeyFormat,
   type KnodeApiKeychain,
   LocalizedDescription,
   LocalizedName,
@@ -19,8 +11,9 @@ import {
 import type {
   FlatKnodeApiKeychainItemsSQL,
   KnodeApiKeychainItemsSQL,
-  KnodeApiKeychainKeySQL,
 } from "../knodeApiKeychain.ts";
+
+import { toKeychainKey, toKeychainUser } from "./keychainConverters.ts";
 
 export const buildFlatKnodeApiKeychain = ({
   knodeApiKeychainSQL,
@@ -55,14 +48,11 @@ export const buildKnodeApiKeychain = ({
         ? undefined
         : LocalizedDescription.parse(knodeApiKeychainSQL.description),
     id: unsafeBrandId(knodeApiKeychainSQL.id),
-    keys: knodeApiKeychainKeysSQL.map(toKnodeApiKeychainKey),
+    keys: knodeApiKeychainKeysSQL.map(toKeychainKey),
     name: LocalizedName.parse(knodeApiKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(knodeApiKeychainSQL.ownerId),
     updatedAt: knodeApiKeychainSQL.updatedAt,
-    users: knodeApiKeychainUsersSQL.map((userSQL) => ({
-      addedAt: userSQL.addedAt,
-      userId: unsafeBrandUserId(userSQL.userId),
-    })),
+    users: knodeApiKeychainUsersSQL.map(toKeychainUser),
   };
 
   return {
@@ -70,18 +60,3 @@ export const buildKnodeApiKeychain = ({
     metadata: { version: knodeApiKeychainSQL.metadataVersion },
   };
 };
-
-/** @knipignore */
-export function toKnodeApiKeychainKey(
-  keySQL: KnodeApiKeychainKeySQL,
-): KeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: unsafeBrandKeyId(keySQL.kid),
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
-  };
-}
