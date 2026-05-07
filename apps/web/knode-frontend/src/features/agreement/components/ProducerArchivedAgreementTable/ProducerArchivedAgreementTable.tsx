@@ -13,6 +13,7 @@ import {
 } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, SelectionIcon } from "@phosphor-icons/react";
 
+import { RouterLink } from "@/components/routerLinks";
 import { formatNumericDate } from "@/utils/formatters";
 
 export function ProducerArchivedAgreementTable({
@@ -59,7 +60,13 @@ export function ProducerArchivedAgreementTable({
               />
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
-              {agreement.eservice.name.en}
+              <RouterLink
+                params={{ id: agreement.eservice.id }}
+                to="/production/e-services/$id"
+                variant="inline"
+              >
+                {agreement.eservice.name.en}
+              </RouterLink>
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
               {agreement.consumer.knodeId} Knode
