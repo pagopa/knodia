@@ -1,10 +1,8 @@
 import type { UserType } from "@aws-sdk/client-cognito-identity-provider";
 
-import { UserRole } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
-import { unsafeBrandUserId } from "@knodia/common-models/ids";
 
-import type { IdmUser } from "./models.ts";
+import { IdmUser } from "./models.js";
 
 export function toIdmUser(user: UserType): IdmUser {
   const attributes = new Map(
@@ -22,23 +20,11 @@ export function toIdmUser(user: UserType): IdmUser {
   };
 
   const id = requireAttribute("sub");
-  const email = requireAttribute("email", id);
-  const roles = requireAttribute("custom:roles", id)
-    .split(",")
-    .map((s) => s.trim())
-    .filter((role): role is UserRole => UserRole.safeParse(role).success);
 
-  if (roles.length === 0)
-    throw genericInternalError(`User ${id} is missing required roles`);
-
-  const username = user.Username;
-  if (!username)
-    throw genericInternalError(`User ${id} is missing required username`);
-
-  return {
-    email,
-    id: unsafeBrandUserId(id),
-    roles,
-    username,
-  };
+  return IdmUser.parse({
+    email: requireAttribute("email", id),
+    id,
+    roles: requireAttribute("custom:roles", id),
+    username: user.Username,
+  });
 }
