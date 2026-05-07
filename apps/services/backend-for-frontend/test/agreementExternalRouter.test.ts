@@ -78,7 +78,7 @@ function makeAxiosError(status: number, title: string): AxiosError {
   return error;
 }
 
-function makeExternalUiSessionPayload(
+function makeExternalUISessionPayload(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
   return {
@@ -105,7 +105,7 @@ function makeExternalUiSessionPayload(
 describe("POST /external/agreements/:agreementId/activate (activateAgreement)", () => {
   beforeEach(() => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload(),
+      payload: makeExternalUISessionPayload(),
       protectedHeader: { alg: "RS256" },
     });
     activateAgreementMock.mockResolvedValue(mockAgreementResponse);
@@ -203,7 +203,7 @@ describe("POST /external/agreements/:agreementId/activate (activateAgreement)", 
 
   it("returns 401 when the scope claim is not a valid ExternalUISessionScope", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload({ scope: "other-scope" }),
+      payload: makeExternalUISessionPayload({ scope: "other-scope" }),
       protectedHeader: { alg: "RS256" },
     });
 

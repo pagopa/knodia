@@ -20,7 +20,7 @@ import {
 import z from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
-import { getExternalUiSessionAuthData } from "../../utils/authData.ts";
+import { getExternalUISessionAuthData } from "../../utils/authData.ts";
 
 interface AgreementExternalRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -54,7 +54,7 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
-      getExternalUiSessionAuthData(authData);
+      getExternalUISessionAuthData(authData);
       const { agreementId } = req.params;
 
       logger.info(`Activating Agreement ${agreementId}`);
