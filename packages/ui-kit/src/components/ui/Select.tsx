@@ -40,6 +40,7 @@ export interface SelectProps<
   extends Omit<AriaSelectProps<T, M>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
+  endIcon?: React.ReactNode;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   label?: string;
   /**
@@ -72,6 +73,8 @@ export function Select<
   ...props
 }: SelectProps<T, M>) {
   const { locale } = useLocale();
+  const isReadOnly = props.isReadOnly === true;
+
   return (
     <AriaSelect<T, M>
       {...props}
@@ -88,9 +91,12 @@ export function Select<
             ...renderProps,
             size,
             isInvalid,
+            isReadOnly,
+            isDisabled: isReadOnly ? false : renderProps.isDisabled,
             isFocused: renderProps.isPressed,
           })
         }
+        isDisabled={isReadOnly}
       >
         <SelectValue className="flex-1 min-w-0 body-md truncate data-placeholder:text-primary-light-low-contrast">
           {({ selectedText, defaultChildren, state }) => {
@@ -105,10 +111,9 @@ export function Select<
             return selectedText || defaultChildren;
           }}
         </SelectValue>
-        <CaretDownIcon
-          aria-hidden
-          className="w-5 h-5 text-primary-light-low-contrast"
-        />
+        <span className="text-primary-light-low-contrast [&>svg]:h-5 [&>svg]:w-5">
+          {props.endIcon ?? <CaretDownIcon aria-hidden />}
+        </span>
       </Button>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
