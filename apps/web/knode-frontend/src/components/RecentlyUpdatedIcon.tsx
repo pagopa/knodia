@@ -8,7 +8,7 @@ export function RecentlyUpdatedIcon() {
       <InteractiveIcon aria-label="Recent update" excludeFromTabOrder>
         <WarningCircleIcon
           aria-hidden
-          className="size-6 text-sky-600"
+          className="size-6 text-info-light-low-contrast"
           weight="fill"
         />
       </InteractiveIcon>

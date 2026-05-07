@@ -1,0 +1,17 @@
+meta {
+  name: Archive Agreement
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements/:agreementId/archive
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  ~Authorization:
+}

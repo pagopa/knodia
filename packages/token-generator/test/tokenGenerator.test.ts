@@ -29,10 +29,10 @@ import {
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { getMockDpopProof, getMockEservice } from "@knodia/test-commons/utils";
+import { calculateJwkThumbprint } from "jose";
 import { afterAll, assert, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
-import { calculateDpopThumbprint } from "../src/utils/utils.ts";
 import { kmsSendMock, testKmsClient } from "./utils.ts";
 
 function decodeB64url(s: string): unknown {
@@ -200,7 +200,7 @@ const testCases = [
       aud: ["my-audience"],
       client_id: consumerKeychainId,
       cnf: {
-        jkt: calculateDpopThumbprint(dpopProofJWT.headers.jwk as PublicKeyJwk),
+        jkt: await calculateJwkThumbprint(dpopProofJWT.headers.jwk),
       },
       consumer: { id: consumer.id, knode_id: consumer.knodeId },
       eservice: {

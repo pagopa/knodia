@@ -10,7 +10,7 @@ import { EserviceStateChip } from "./EserviceStateChip";
 
 export function EserviceCard({ children }: { children: React.ReactNode }) {
   return (
-    <article className="p-4 flex flex-col gap-4 rounded-2xl elevation-1 border border-slate-100">
+    <article className="p-4 flex flex-col gap-4 rounded-eservice-card shadow-eservice-card border border-eservice-card-border">
       {children}
     </article>
   );
