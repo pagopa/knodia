@@ -14,15 +14,16 @@ import { Button, type ButtonProps } from "./Button";
 import { ButtonLink } from "./ButtonLink";
 
 const empty = tv({
-  base: "flex flex-col items-center justify-center gap-8 text-center max-w-60",
+  base: "flex flex-col items-center justify-center gap-8 text-center max-w-empty",
 });
 
 const emptyIconWrapper = tv({
-  base: "flex items-center justify-center p-2 rounded-[10px]",
+  base: "flex items-center justify-center p-2 rounded-empty-icon",
   variants: {
     kind: {
       neutral: "bg-secondary-light",
       brand: "bg-brand-light",
+      "brand-soft": "bg-empty-icon-brand-soft-bg",
       informative: "bg-info-light",
       success: "bg-success-light",
       warning: "bg-warning-light",
@@ -40,6 +41,7 @@ const emptyIcon = tv({
     kind: {
       neutral: "text-secondary-light-mid-contrast",
       brand: "text-brand-light-mid-contrast",
+      "brand-soft": "text-secondary-light-mid-contrast",
       informative: "text-info-light-mid-contrast",
       success: "text-success-light-mid-contrast",
       warning: "text-warning-light-mid-contrast",
@@ -133,6 +135,7 @@ function DefaultEmptyIcon({ kind }: { kind: EmptyVariants["kind"] }) {
     case "warning":
       return <WarningIcon />;
     case "brand":
+    case "brand-soft":
     case "neutral":
     default:
       return <PlaceholderIcon />;
