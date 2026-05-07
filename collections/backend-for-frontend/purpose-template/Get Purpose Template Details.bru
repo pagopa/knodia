@@ -4,7 +4,7 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/purposeTemplates/:purposeTemplateId?knodeId=Lynx
+  url: {{host-backend-for-frontend}}/purposeTemplates/:purposeTemplateId?knodeId={{other-knode-id}}
   body: none
 }
 
@@ -13,7 +13,7 @@ params:path {
 }
 
 params:query {
-  knodeId: {{knodeId}}
+  knodeId: {{other-knode-id}}
 }
 
 headers {

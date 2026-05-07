@@ -4,12 +4,12 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/purposeTemplates?knodeId=Lynx
+  url: {{host-backend-for-frontend}}/purposeTemplates?knodeId={{other-knode-id}}
   body: none
 }
 
 params:query {
-  knodeId: {{knodeId}}
+  knodeId: {{other-knode-id}}
   ~eserviceId: {{eserviceId}}
 }
 
