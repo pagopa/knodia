@@ -27,7 +27,7 @@ export function DetailsAndAttributesPage() {
 
       <div className="flex flex-col gap-10">
         <Section
-          className="rounded-2xl border border-slate-100 p-6 elevation-1"
+          className="rounded-card border border-card-border p-6 shadow-card"
           description="This information will be visible to other people in Knodia."
           title="Contacts"
         >

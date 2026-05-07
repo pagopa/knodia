@@ -5,28 +5,22 @@ import {
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
-  unsafeBrandKeyId,
-  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
-  type ConsumerKeychainKey,
   type ConsumerKeychainPurpose,
-  type ConsumerKeychainUser,
   type FlatConsumerKeychain,
-  KeyAlgorithm,
-  KeyFormat,
   LocalizedDescription,
   LocalizedName,
 } from "@knodia/keychain-models";
 
 import type {
   ConsumerKeychainItemsSQL,
-  ConsumerKeychainKeySQL,
   ConsumerKeychainPurposeSQL,
-  ConsumerKeychainUserSQL,
   FlatConsumerKeychainItemsSQL,
 } from "../consumerKeychain.ts";
+
+import { toKeychainKey, toKeychainUser } from "./keychainConverters.ts";
 
 export const buildConsumerKeychain = ({
   consumerKeychainKeysSQL,
@@ -40,11 +34,11 @@ export const buildConsumerKeychain = ({
         ? undefined
         : LocalizedDescription.parse(consumerKeychainSQL.description),
     id: unsafeBrandId(consumerKeychainSQL.id),
-    keys: consumerKeychainKeysSQL.map(toConsumerKeychainKey),
+    keys: consumerKeychainKeysSQL.map(toKeychainKey),
     name: LocalizedName.parse(consumerKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
     updatedAt: consumerKeychainSQL.updatedAt,
-    users: consumerKeychainUsersSQL.map(toConsumerKeychainUser),
+    users: consumerKeychainUsersSQL.map(toKeychainUser),
   };
 
   return {
@@ -74,20 +68,6 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
-export function toConsumerKeychainKey(
-  keySQL: ConsumerKeychainKeySQL,
-): ConsumerKeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: unsafeBrandKeyId(keySQL.kid),
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
-  };
-}
-
 export function toConsumerKeychainPurpose(
   consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
 ): WithMetadata<ConsumerKeychainPurpose> {
@@ -103,14 +83,5 @@ export function toConsumerKeychainPurpose(
       },
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
-  };
-}
-
-function toConsumerKeychainUser(
-  userSQL: ConsumerKeychainUserSQL,
-): ConsumerKeychainUser {
-  return {
-    addedAt: userSQL.addedAt,
-    userId: unsafeBrandUserId(userSQL.userId),
   };
 }

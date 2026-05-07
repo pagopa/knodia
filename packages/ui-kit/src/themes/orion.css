@@ -24,6 +24,7 @@
   --color-primary-light-low-contrast: var(--color-slate-500);
   --color-primary-light-mid-contrast: var(--color-slate-600);
   --color-primary-light-high-contrast: var(--color-slate-700);
+  --color-on-primary-light-high-contrast: var(--color-slate-700);
   --color-primary-dark: var(--color-slate-700);
   --color-primary-dark-decorative: var(--color-slate-600);
   --color-primary-dark-high-contrast: var(--color-white);
@@ -115,6 +116,46 @@
   --color-error-900: var(--color-rose-900);
   --color-error-950: var(--color-rose-950);
 
+  /* Table */
+  --color-table-header-bg: transparent;
+  --color-table-header-border: var(--color-black);
+
+  /* Navbar */
+  --color-navbar-role-text: var(--color-brand-dark-mid-contrast);
+
+  /* Tonal brand button */
+  --color-button-tonal-brand-bg: var(--color-brand-50);
+  --color-button-tonal-brand-bg-hover: var(--color-brand-100);
+
+  /* Tonal danger button */
+  --color-button-tonal-danger-bg: var(--color-error-50);
+  --color-button-tonal-danger-bg-hover: var(--color-error-100);
+  --color-button-tonal-danger-border: transparent;
+
+  /* Tonal neutral button */
+  --color-button-tonal-neutral-bg: var(--color-neutral-50);
+  --color-button-tonal-neutral-bg-hover: var(--color-neutral-100);
+  --color-button-tonal-neutral-border: transparent;
+
+  /* Outlined button — hover (per hierarchy where token diverges across themes) */
+  --color-button-outlined-neutral-border-hover: var(--color-slate-400);
+  --color-button-outlined-neutral-bg-hover: var(--color-slate-50);
+  --color-button-outlined-brand-bg-hover: var(--color-brand-50);
+
+  /* Empty icon — brand-soft (theme-scoped) */
+  --color-empty-icon-brand-soft-bg: var(--color-secondary-light);
+
+  /* Org consumption status */
+  --radius-org-consumption-status-card: 8px;
+  --shadow-org-consumption-status: 0 4px 8px 0
+    color-mix(in srgb, var(--color-slate-700) 12%, transparent);
+
+  /* Document recap */
+  --color-document-recap-border: var(--color-slate-100);
+  --radius-document-recap: 16px;
+  --shadow-document-recap: 0 2px 4px 0
+    color-mix(in srgb, var(--color-slate-700) 8%, transparent);
+
   /* Typography */
   --font-family-display: var(--font-sans);
   --font-size-display-sm: 36px;
@@ -168,4 +209,94 @@
 
   /* Button */
   --radius-button: 8px;
+
+  /* Banner */
+  --radius-banner: 8px;
+
+  /* Chip */
+  --radius-chip: calc(infinity * 1px);
+
+  /* Field */
+  --radius-field: 8px;
+
+  /* Text area */
+  --radius-textarea: 6px;
+
+  /* Dropdown */
+  --radius-dropdown: 16px;
+
+  /* Popover */
+  --radius-popover: 16px;
+
+  /* Empty icon */
+  --radius-empty-icon: 10px;
+
+  /* Empty state */
+  --container-empty: 240px;
+
+  /* List item */
+  --radius-list-item: 6px;
+
+  /* Modal */
+  --radius-modal: 16px;
+
+  /* Checkbox */
+  --radius-checkbox: 4px;
+
+  /* Pagination button */
+  --radius-pagination-button: 8px;
+
+  /* Tab */
+  --radius-tab: 6px;
+
+  /* Tooltip */
+  --radius-tooltip: 8px;
+
+  /* Toast */
+  --radius-toast: 8px;
+
+  /* Login card */
+  --radius-login-card: 16px;
+  --spacing-login-card-y: 64px;
+  --spacing-login-card-x: 40px;
+
+  /* Card */
+  --radius-card: 16px;
+  --color-card-border: var(--color-slate-100);
+  --shadow-card: 0 2px 4px 0
+    color-mix(in srgb, var(--color-slate-700) 8%, transparent);
+
+  /* Attribute group */
+  --radius-attribute-group: 8px;
+
+  /* Info card */
+  --radius-info-card: 8px;
+
+  /* Settings card */
+  --radius-settings-card: 8px;
+
+  /* Agreement counter card */
+  --spacing-counter-card: 16px;
+  --spacing-counter-card-right: 24px;
+  --spacing-counter-card-gap: 16px;
+  --spacing-counter-card-icon: 32px;
+  --spacing-counter-card-svg: 16px;
+  --radius-counter-card-icon: 8px;
+  --font-family-counter-card-label: var(--font-family-label);
+  --font-size-counter-card-label: var(--font-size-label-lg);
+  --font-weight-counter-card-label: var(--font-weight-label);
+  --letter-spacing-counter-card-label: var(--letter-spacing-label);
+  --line-height-counter-card-label: var(--line-height-label);
+
+  /* E-service card */
+  --radius-eservice-card: 16px;
+  --color-eservice-card-border: var(--color-slate-100);
+  --shadow-eservice-card: 0 2px 4px 0
+    color-mix(in srgb, var(--color-slate-700) 8%, transparent);
+}
+
+@layer utilities {
+  .lynx-only {
+    display: none;
+  }
 }

@@ -25,7 +25,7 @@ import {
 import {
   buildConsumerKeychain,
   buildFlatConsumerKeychain,
-} from "./converters.ts";
+} from "./consumerKeychainConverters.ts";
 
 type ConsumerKeychainAggregatorInput = {
   consumerKeychain: ConsumerKeychainSQL;

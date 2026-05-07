@@ -30,10 +30,9 @@
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/consumerKeychain.ts",
+    ".": "./src/index.ts",
     "./config": "./config/config.ts",
     "./converters": "./src/converters/index.ts",
-    "./writer": "./src/services/writerService.ts",
-    "./services": "./src/services/readmodelService.ts"
+    "./services": "./src/services/index.ts"
   }
 }

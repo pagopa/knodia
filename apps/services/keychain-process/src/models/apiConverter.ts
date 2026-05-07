@@ -1,7 +1,7 @@
 import type {
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  KeychainKey,
 } from "@knodia/keychain-models";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -26,9 +26,7 @@ export const toAPI_Keychain = (
   updatedAt: keychain.updatedAt.toISOString(),
 });
 
-export const toAPI_KeychainKey = (
-  key: ConsumerKeychainKey,
-): API_KeychainKey => ({
+export const toAPI_KeychainKey = (key: KeychainKey): API_KeychainKey => ({
   algorithm: key.algorithm,
   createdAt: key.createdAt.toISOString(),
   encodedPem: key.encodedPem,

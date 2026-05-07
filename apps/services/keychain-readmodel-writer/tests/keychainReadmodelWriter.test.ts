@@ -22,7 +22,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   consumer,
-  keychainWriterService,
+  consumerKeychainWriterService,
   producer,
   readmodelDb,
   topicName,
@@ -69,7 +69,10 @@ describe("Consumer keychain read model writer tests", async () => {
       knodeId: "Orion",
     };
 
-    await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
+    await consumerKeychainWriterService.upsertConsumerKeychain(
+      consumerKeychain,
+      0,
+    );
 
     const eventData = protobufBinaryCodec(
       keychainEvents.ConsumerKeychainPurposeLinkedV1,
@@ -117,7 +120,7 @@ describe("Consumer keychain read model writer tests", async () => {
   it("ConsumerKeychainPurposeUnlinkedV1", async () => {
     const oldMetadataVersion = 2;
     const consumerKeychain = getMockConsumerKeychain();
-    await keychainWriterService.upsertConsumerKeychain(
+    await consumerKeychainWriterService.upsertConsumerKeychain(
       consumerKeychain,
       oldMetadataVersion,
     );
@@ -131,7 +134,7 @@ describe("Consumer keychain read model writer tests", async () => {
       consumerKeychainId: consumerKeychain.id,
       purpose: purpose1,
     };
-    await keychainWriterService.upsertConsumerKeychainPurpose(
+    await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurpose1,
       oldMetadataVersion,
     );
@@ -145,7 +148,7 @@ describe("Consumer keychain read model writer tests", async () => {
       consumerKeychainId: consumerKeychain.id,
       purpose: purpose2,
     };
-    await keychainWriterService.upsertConsumerKeychainPurpose(
+    await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurpose2,
       oldMetadataVersion,
     );

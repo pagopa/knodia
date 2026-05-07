@@ -60,7 +60,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     user,
   } = useOidcAuth();
 
-  // removeUser() can throw — ensure cleanup and redirect happen regardless
+  // removeUser() can throw — ensure cleanup happens regardless
   const safelyRemoveUser = useCallback(async () => {
     try {
       await removeUser();

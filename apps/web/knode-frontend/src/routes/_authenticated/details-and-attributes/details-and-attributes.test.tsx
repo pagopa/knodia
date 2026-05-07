@@ -18,7 +18,7 @@ describe("DetailsAndAttributesPage", () => {
     });
 
     expect(
-      screen.getByText("20000000-2000-1000-8000-000000000002"),
+      screen.getByText("#20000000-2000-1000-8000-000000000002"),
     ).toBeInTheDocument();
   });
 
