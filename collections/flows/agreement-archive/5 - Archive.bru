@@ -1,0 +1,29 @@
+meta {
+  name: 5 - Archive
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/archive
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: eq Archived
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}

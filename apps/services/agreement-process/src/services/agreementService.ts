@@ -36,6 +36,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createAgreementActivatedByConsumerOperatorV1Event,
   createAgreementActivatedV1Event,
+  createAgreementArchivedV1Event,
   createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
   createAgreementReactivatedByConsumerV1Event,
   createAgreementReactivatedByProducerV1Event,
@@ -48,6 +49,7 @@ import {
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
+  assertAgreementCanBeArchived,
   assertAgreementCanBeReactivatedBy,
   assertAgreementCanBeSuspendedBy,
   assertAgreementIsPendingConsumerOperatorIdentification,
@@ -115,6 +117,36 @@ export function agreementServiceBuilder(
         createAgreementActivatedByConsumerOperatorV1Event(
           updatedAgreement,
           version,
+          correlationId,
+        ),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
+    },
+    async archiveAgreement(
+      agreementId: AgreementId,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Archiving Agreement ${agreementId}`);
+
+      const { data: agreement, metadata } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+
+      assertAgreementCanBeArchived(agreement);
+
+      const now = new Date();
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: AgreementState.enum.Archived,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createAgreementArchivedV1Event(
+          updatedAgreement,
+          metadata.version,
           correlationId,
         ),
       );

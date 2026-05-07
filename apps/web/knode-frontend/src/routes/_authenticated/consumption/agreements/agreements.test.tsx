@@ -49,7 +49,7 @@ function mockCounters(counters: {
   suspendedAgreements: number;
 }) {
   server.use(
-    http.get(`${BASE_URL}/consumer/agreements`, () =>
+    http.get(`${BASE_URL}/consumer/agreements/counters`, () =>
       HttpResponse.json({ counters }),
     ),
   );
