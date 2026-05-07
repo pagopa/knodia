@@ -4,6 +4,7 @@ import type {
   EserviceId,
   KnodeId,
   PurposeId,
+  PurposeTemplateId,
 } from "@knodia/common-models/ids";
 
 import {
@@ -14,6 +15,8 @@ import {
   getConsumerPurposesQueryKey,
   getProducerPurposeDetailsOptions,
   getProducerPurposesOptions,
+  getPurposeTemplateOptions,
+  getPurposeTemplatesOptions,
 } from "@knodia/bff-client/tanstack-query";
 
 import { client } from "@/libs/axios";
@@ -133,4 +136,23 @@ export const purposeLinkedConsumerKeychainsQueryKey = () =>
     client,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     query: undefined!,
+  });
+
+export const purposeTemplatesQuery = (
+  knodeId: KnodeId,
+  eserviceId?: EserviceId,
+) =>
+  getPurposeTemplatesOptions({
+    client,
+    query: { eserviceId, knodeId },
+  });
+
+export const purposeTemplateDetailsQuery = (
+  purposeTemplateId: PurposeTemplateId,
+  knodeId: KnodeId,
+) =>
+  getPurposeTemplateOptions({
+    client,
+    path: { purposeTemplateId },
+    query: { knodeId },
   });

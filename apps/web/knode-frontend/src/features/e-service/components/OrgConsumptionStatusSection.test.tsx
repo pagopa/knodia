@@ -46,6 +46,7 @@ function renderSection({
     <OrgConsumptionStatusSection
       agreement={agreement}
       eserviceId={unsafeBrandId<EserviceId>(crypto.randomUUID())}
+      eserviceMode="ProvideData"
       eserviceState={eserviceState}
       hasRecentlyBeenUpdated={hasRecentlyBeenUpdated}
       knodeId={KNODE_ID}
@@ -446,6 +447,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
@@ -467,6 +469,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
           suspendedByConsumerAt: "2026-01-01T00:00:00Z",
         }}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
@@ -477,6 +480,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}

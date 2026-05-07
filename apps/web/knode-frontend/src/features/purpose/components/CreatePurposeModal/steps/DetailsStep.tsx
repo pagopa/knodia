@@ -10,6 +10,8 @@ import {
 } from "@/features/purpose/contexts/usePurposeFormContext";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
+import { TemplateNotice } from "../TemplateNotice";
+
 interface Props {
   onCancel: () => void;
 }
@@ -28,6 +30,16 @@ export function DetailsStep({ onCancel }: Props) {
         />
 
         <SettingsCard label="E-Service">{eserviceName}</SettingsCard>
+        <TemplateNotice />
+
+        <div className="bg-secondary-light flex flex-col gap-3 rounded-lg p-6">
+          <span className="label-lg text-primary-light-low-contrast">
+            E-Service
+          </span>
+          <span className="title-md-em text-primary-light-high-contrast">
+            {eserviceName}
+          </span>
+        </div>
 
         <div className="flex flex-col gap-6">
           <form.Field name="name">

@@ -3,7 +3,6 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import {
   Banner,
-  Button,
   Cell,
   Column,
   Loader,
@@ -20,17 +19,20 @@ import { useState } from "react";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { CreatePurposeBlockedModal } from "@/features/purpose/components/CreatePurposeBlockedModal";
+import { CreatePurposeButton } from "@/features/purpose/components/CreatePurposeButton";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
 export function EservicePurposeSection({
   agreementState,
   eserviceId,
+  eserviceMode,
   eserviceState,
   knodeId,
 }: {
   agreementState: bffApi.AgreementState;
   eserviceId: EserviceId;
+  eserviceMode: bffApi.EserviceMode;
   eserviceState: bffApi.EserviceVersionState;
   knodeId: KnodeId;
 }) {
@@ -63,6 +65,7 @@ export function EservicePurposeSection({
         {canManageConsumption && purposes.length > 0 && (
           <CreatePurposeButton
             eserviceId={eserviceId}
+            eserviceMode={eserviceMode}
             isBlocked={isBlocked}
             knodeId={knodeId}
             onBlockedPress={onCreatePurposePress}
@@ -82,43 +85,6 @@ export function EservicePurposeSection({
         onOpenChange={setIsBlockedModalOpen}
       />
     </div>
-  );
-}
-
-function CreatePurposeButton({
-  eserviceId,
-  isBlocked,
-  knodeId,
-  onBlockedPress,
-}: {
-  eserviceId: EserviceId;
-  isBlocked: boolean;
-  knodeId: KnodeId;
-  onBlockedPress: () => void;
-}) {
-  if (isBlocked) {
-    return (
-      <Button
-        hierarchy="neutral"
-        kind="tonal"
-        onPress={onBlockedPress}
-        size="sm"
-      >
-        Create Purpose
-      </Button>
-    );
-  }
-  return (
-    <ButtonLinkWithPreload
-      hierarchy="neutral"
-      kind="tonal"
-      params={{ id: eserviceId }}
-      search={{ knodeId }}
-      size="sm"
-      to="/consumption/e-services/$id/purposes/new"
-    >
-      Create Purpose
-    </ButtonLinkWithPreload>
   );
 }
 

@@ -25,6 +25,7 @@ export interface PurposeWizardContextValue {
   formSchemaVersion: string;
   knodeId: KnodeId;
   maxDailyCallsPerConsumer: number;
+  selectedTemplate?: { id: string; knodeId: KnodeId };
   updateDetailsStep: (data: DetailsStepData) => void;
   updateFormAnswers: (answers: FormValues) => void;
 }

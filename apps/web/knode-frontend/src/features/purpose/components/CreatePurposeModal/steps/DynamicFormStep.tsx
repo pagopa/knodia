@@ -29,6 +29,7 @@ import { useCreatePurpose } from "@/features/purpose/hooks/useCreatePurpose";
 import { useVisibleFields } from "@/features/purpose/hooks/useVisibleFields";
 
 import { FieldRenderer } from "../renderers/FieldRenderer";
+import { TemplateNotice } from "../TemplateNotice";
 
 interface Props {
   isLastStep: boolean;
@@ -129,6 +130,8 @@ export function DynamicFormStep({
         {step.label && (
           <StepHeader description={step.description ?? ""} title={step.label} />
         )}
+
+        <TemplateNotice />
 
         {visibleGroups.map((group, groupIndex) => (
           <GroupSection
