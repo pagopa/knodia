@@ -90,7 +90,7 @@ export function ProducerPurposeDetail({
 
       <PurposeAgreementCard
         action={
-          purpose.agreement.state === "Archived" ? null : (
+          purpose.agreement.state !== "Archived" && (
             <ButtonLinkWithPreload
               aria-label="Go to agreement"
               hierarchy="neutral"
