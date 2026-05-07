@@ -11,7 +11,6 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -67,12 +66,11 @@ describe("POST /knodeApiKeychains (createKnodeApiKeychain)", () => {
       version: 0,
     });
 
-    const createdEventData = match(KeychainEventV1.parse(createdEvent))
-      .with({ type: "KnodeApiKeychainCreatedV1" }, (e) => e.data)
-      .otherwise((e) => {
-        throw new Error(`Unexpected event type: ${e.type}`);
-      });
-    expect(createdEventData.knodeApiKeychain).toMatchObject(
+    const parsedCreatedEvent = KeychainEventV1.parse(createdEvent);
+    if (parsedCreatedEvent.type !== "KnodeApiKeychainCreatedV1") {
+      throw new Error(`Unexpected event type: ${parsedCreatedEvent.type}`);
+    }
+    expect(parsedCreatedEvent.data.knodeApiKeychain).toMatchObject(
       toKnodeApiKeychainV1(expectedKnodeApiKeychain),
     );
   });
