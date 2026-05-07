@@ -67,7 +67,9 @@ export function eserviceServiceBuilder(
             ? contentType
             : "application/octet-stream",
         fileName: parseContentDispositionFileName(
-          typeof contentDisposition === "string" ? contentDisposition : undefined,
+          typeof contentDisposition === "string"
+            ? contentDisposition
+            : undefined,
         ),
       };
     },
