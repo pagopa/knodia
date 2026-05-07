@@ -145,6 +145,15 @@
     line-height: var(--line-height-headline);
   }
 
+  /* Component-scoped typography */
+  .counter-card-label {
+    font-family: var(--font-family-counter-card-label);
+    font-size: var(--font-size-counter-card-label);
+    font-weight: var(--font-weight-counter-card-label);
+    letter-spacing: var(--letter-spacing-counter-card-label);
+    line-height: var(--line-height-counter-card-label);
+  }
+
   /* Elevation Shadows */
   .elevation-1 {
     box-shadow: 0 2px 4px 0

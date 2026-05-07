@@ -12,7 +12,9 @@ const mockDecodeJwt = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
 
 vi.mock("jose", () => ({
-  createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks"),
+  // URL-keyed so tests can distinguish the Cognito JWKS from the BFF
+  // well-known JWKSs when pinning jwtVerify's jwks argument.
+  createRemoteJWKSet: vi.fn((url: string | URL) => `mock-jwks:${String(url)}`),
   decodeJwt: (...args: unknown[]) => mockDecodeJwt(...args),
   jwtVerify: mockJwtVerify,
 }));
@@ -411,6 +413,20 @@ describe("auth integration", () => {
       const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
       expect(refreshCookie!["httponly"]).toBe("true");
+
+      // Pin the refresh-verifier inputs so a regression that drops the
+      // issuer/audience/algorithm check or points at a non-BFF JWKS cannot
+      // pass silently. The JWKS return value is URL-keyed by the shared
+      // authMocks factory, so this also excludes the Cognito JWKS.
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        "valid-refresh-jwt",
+        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[01]\//),
+        {
+          algorithms: ["RS256"],
+          audience: ["test-audience"],
+          issuer: "test-issuer",
+        },
+      );
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
@@ -624,6 +640,205 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(204);
+    });
+  });
+
+  // --- Magic-link token exchange ---
+
+  describe("POST /auth/externalUiSession", () => {
+    const AGREEMENT_ID = "40000000-4000-1000-8000-000000000004";
+    const CONSUMER_ID = "50000000-5000-1000-8000-000000000005";
+    const ESERVICE_ID = "60000000-6000-1000-8000-000000000006";
+    const ESERVICE_VERSION_ID = "70000000-7000-1000-8000-000000000007";
+    const PRODUCER_ID = "80000000-8000-1000-8000-000000000008";
+
+    function makeMagicLinkPayload(
+      overrides: Record<string, unknown> = {},
+    ): Record<string, unknown> {
+      return {
+        agreement: { id: AGREEMENT_ID, knode_id: "Lynx" },
+        aud: "test-magic-link-audience",
+        consumer: { id: CONSUMER_ID, knode_id: "Orion" },
+        eservice: {
+          id: ESERVICE_ID,
+          knode_id: "Lynx",
+          version: ESERVICE_VERSION_ID,
+        },
+        exp: Math.floor(Date.now() / 1000) + 120,
+        iat: Math.floor(Date.now() / 1000),
+        iss: "test-issuer",
+        jti: crypto.randomUUID(),
+        producer: { id: PRODUCER_ID, knode_id: "Lynx" },
+        scope: "agreement-activation",
+        sub: AGREEMENT_ID,
+        type: "external-ui-session-magic-link",
+        ...overrides,
+      };
+    }
+
+    function setupValidMagicLinkToken(overrides: Record<string, unknown> = {}) {
+      mockJwtVerify.mockResolvedValue({
+        payload: makeMagicLinkPayload(overrides),
+        protectedHeader: { alg: "RS256" },
+      });
+    }
+
+    it("returns an external-ui-session token when the magic-link token is valid", async () => {
+      setupValidMagicLinkToken();
+      setupKmsSignature();
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "valid.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = response.json<{
+        agreementId: string;
+        externalUiSessionToken: string;
+      }>();
+      expect(body.agreementId).toBe(AGREEMENT_ID);
+      expect(body.externalUiSessionToken).toBeDefined();
+      expect(body.externalUiSessionToken.split(".")).toHaveLength(3);
+
+      const payload = parseJwtPayload(body.externalUiSessionToken) as Record<
+        string,
+        unknown
+      >;
+      expect(payload["type"]).toBe("external-ui-session");
+      expect(payload["agreement"]).toEqual({
+        id: AGREEMENT_ID,
+        knode_id: "Lynx",
+      });
+      expect(payload["consumer"]).toEqual({
+        id: CONSUMER_ID,
+        knode_id: "Orion",
+      });
+      expect(payload["eservice"]).toEqual({
+        id: ESERVICE_ID,
+        knode_id: "Lynx",
+        version: ESERVICE_VERSION_ID,
+      });
+      expect(payload["producer"]).toEqual({
+        id: PRODUCER_ID,
+        knode_id: "Lynx",
+      });
+      expect(payload["scope"]).toBe("agreement-activation");
+      expect(payload["sub"]).toBe(AGREEMENT_ID);
+
+      // Pin the magic-link verifier inputs: a regression that drops the
+      // issuer/audience/algorithm check or points at any non-magic-link JWKS
+      // (Cognito or BFF refresh-token JWKS) would otherwise pass silently.
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        "valid.magic.link",
+        expect.stringMatching(/^mock-jwks:http:\/\/localhost:450[23]\//),
+        {
+          algorithms: ["RS256"],
+          audience: "test-magic-link-audience",
+          issuer: "test-issuer",
+        },
+      );
+    });
+
+    it("does not invoke the BFF refresh-token JWKS for magic-link verification", async () => {
+      setupValidMagicLinkToken();
+      setupKmsSignature();
+
+      await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "valid.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+
+      const jwksUrls = mockJwtVerify.mock.calls.map(([, jwks]) => jwks);
+      expect(
+        jwksUrls.every((url) => !/localhost:450[01]/.test(String(url))),
+      ).toBe(true);
+    });
+
+    it("does not set a refresh cookie (one-shot session)", async () => {
+      setupValidMagicLinkToken();
+      setupKmsSignature();
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "valid.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+
+      const refreshCookie = getSetCookie(response, "refresh");
+      expect(refreshCookie).toBeUndefined();
+    });
+
+    it("returns 401 when the magic-link JWT verification fails", async () => {
+      mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "bad.token" },
+        url: "/auth/externalUiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when the claims parse fails", async () => {
+      mockJwtVerify.mockResolvedValue({
+        payload: { foo: "bar" },
+        protectedHeader: { alg: "RS256" },
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "malformed-claims" },
+        url: "/auth/externalUiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when the scope is wrong", async () => {
+      setupValidMagicLinkToken({ scope: "other-scope" });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "wrong-scope" },
+        url: "/auth/externalUiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 on replay (same jti twice)", async () => {
+      const jti = crypto.randomUUID();
+      setupValidMagicLinkToken({ jti });
+      setupKmsSignature();
+
+      const first = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "valid.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+      expect(first.statusCode).toBe(200);
+
+      setupValidMagicLinkToken({ jti });
+
+      const second = await app.inject({
+        method: "POST",
+        payload: { magicLinkToken: "replay.magic.link" },
+        url: "/auth/externalUiSession",
+      });
+      expect(second.statusCode).toBe(401);
+    });
+
+    it("returns 400 when request body is missing magicLinkToken", async () => {
+      const response = await app.inject({
+        method: "POST",
+        payload: {},
+        url: "/auth/externalUiSession",
+      });
+      expect(response.statusCode).toBe(400);
     });
   });
 });

@@ -33,7 +33,7 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { keychainWriterService } from "./setup.ts";
+import { consumerKeychainWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -180,7 +180,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       linkedAt: new Date(),
       purpose: externalPurpose,
     };
-    await keychainWriterService.upsertConsumerKeychainPurpose(
+    await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurpose,
       1,
     );

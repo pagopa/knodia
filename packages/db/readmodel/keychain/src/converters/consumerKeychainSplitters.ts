@@ -1,9 +1,9 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychain,
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
-  ConsumerKeychainUser,
+  KeychainKey,
+  KeychainUser,
 } from "@knodia/keychain-models";
 
 import type {
@@ -24,7 +24,7 @@ export const splitConsumerKeychainIntoObjectsSQL = (
   );
 
   const consumerKeychainKeysSQL = consumerKeychain.keys.map((key) =>
-    toConsumerKeychainKeySQL({
+    toKeychainKeySQL({
       consumerKeychainId: consumerKeychain.id,
       key,
       metadataVersion,
@@ -32,7 +32,7 @@ export const splitConsumerKeychainIntoObjectsSQL = (
   );
 
   const consumerKeychainUsersSQL = consumerKeychain.users.map((user) =>
-    toConsumerKeychainUserSQL({
+    toKeychainUserSQL({
       consumerKeychainId: consumerKeychain.id,
       metadataVersion,
       user,
@@ -59,13 +59,13 @@ const toConsumerKeychainSQL = (
   updatedAt: consumerKeychain.updatedAt,
 });
 
-const toConsumerKeychainKeySQL = ({
+const toKeychainKeySQL = ({
   consumerKeychainId,
   key,
   metadataVersion,
 }: {
   consumerKeychainId: ConsumerKeychainId;
-  key: ConsumerKeychainKey;
+  key: KeychainKey;
   metadataVersion: number;
 }): ConsumerKeychainKeySQL => ({
   algorithm: key.algorithm,
@@ -79,14 +79,14 @@ const toConsumerKeychainKeySQL = ({
   userId: key.userId,
 });
 
-const toConsumerKeychainUserSQL = ({
+const toKeychainUserSQL = ({
   consumerKeychainId,
   metadataVersion,
   user,
 }: {
   consumerKeychainId: ConsumerKeychainId;
   metadataVersion: number;
-  user: ConsumerKeychainUser;
+  user: KeychainUser;
 }): ConsumerKeychainUserSQL => ({
   addedAt: user.addedAt,
   consumerKeychainId,

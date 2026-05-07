@@ -2,18 +2,20 @@ import { match } from "ts-pattern";
 
 import type {
   ConsumerKeychain,
-  ConsumerKeychainKey,
-  ConsumerKeychainUser,
   KeyAlgorithm,
+  KeychainKey,
+  KeychainUser,
   KeyFormat,
+  KnodeApiKeychain,
 } from "./keychain.ts";
 
 import {
-  type ConsumerKeychainKeyV1,
-  type ConsumerKeychainUserV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
+  type KeychainKeyV1,
+  type KeychainUserV1,
   KeyFormatV1,
+  type KnodeApiKeychainV1,
 } from "./generated/v1/keychain.ts";
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
@@ -22,18 +24,14 @@ const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
     .with("X509Certificate", () => KeyFormatV1.X509Certificate)
     .exhaustive();
 
-const toConsumerKeychainKeyV1 = (
-  key: ConsumerKeychainKey,
-): ConsumerKeychainKeyV1 => ({
+const toKeychainKeyV1 = (key: KeychainKey): KeychainKeyV1 => ({
   ...key,
   algorithm: toKeyAlgorithm(key.algorithm),
   createdAt: key.createdAt.getTime(),
   format: toKeyFormatV1(key.format),
 });
 
-const toConsumerKeychainUserV1 = (
-  user: ConsumerKeychainUser,
-): ConsumerKeychainUserV1 => ({
+const toKeychainUserV1 = (user: KeychainUser): KeychainUserV1 => ({
   ...user,
   addedAt: user.addedAt.getTime(),
 });
@@ -48,7 +46,17 @@ export const toConsumerKeychainV1 = (
 ): ConsumerKeychainV1 => ({
   ...consumerKeychain,
   createdAt: consumerKeychain.createdAt.getTime(),
-  keys: consumerKeychain.keys.map(toConsumerKeychainKeyV1),
+  keys: consumerKeychain.keys.map(toKeychainKeyV1),
   updatedAt: consumerKeychain.updatedAt.getTime(),
-  users: consumerKeychain.users.map(toConsumerKeychainUserV1),
+  users: consumerKeychain.users.map(toKeychainUserV1),
+});
+
+export const toKnodeApiKeychainV1 = (
+  knodeApiKeychain: KnodeApiKeychain,
+): KnodeApiKeychainV1 => ({
+  ...knodeApiKeychain,
+  createdAt: knodeApiKeychain.createdAt.getTime(),
+  keys: knodeApiKeychain.keys.map(toKeychainKeyV1),
+  updatedAt: knodeApiKeychain.updatedAt.getTime(),
+  users: knodeApiKeychain.users.map(toKeychainUserV1),
 });

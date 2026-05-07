@@ -25,6 +25,7 @@ export function ArchivedConsumerPurposeTable({
       <Empty
         description="Archived Purposes will appear here."
         icon={<ArchiveIcon />}
+        kind="brand-soft"
         title={
           canManagePurposes
             ? "You haven't archived any Purpose yet."
