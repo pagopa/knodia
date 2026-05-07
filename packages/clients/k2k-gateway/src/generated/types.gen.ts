@@ -366,7 +366,7 @@ export type MagicLink = {
     url: string;
 };
 
-export type ClientAssertionVerificationRequest = {
+export type ConsumerClientAssertionVerificationRequest = {
     /**
      * Unique identifier of the Consumer Keychain
      */
@@ -378,6 +378,14 @@ export type ClientAssertionVerificationRequest = {
     purposeId: string;
 };
 
+export type KnodeApiClientAssertionVerificationRequest = {
+    /**
+     * Unique identifier of the Consumer Keychain
+     */
+    keychainId: string;
+    kid: KeyId;
+};
+
 export type PublicKeyForVerification = {
     algorithm: string;
     encodedPem: string;
@@ -385,11 +393,15 @@ export type PublicKeyForVerification = {
     kid: KeyId;
 };
 
-export type ClientAssertionVerificationResponse = {
+export type ConsumerClientAssertionVerificationResponse = {
     /**
      * Attributes of the Consumer organization
      */
     consumerAttributes: Array<Attribute>;
+    publicKey: PublicKeyForVerification;
+};
+
+export type KnodeApiClientAssertionVerificationResponse = {
     publicKey: PublicKeyForVerification;
 };
 
@@ -554,14 +566,14 @@ export type GetStatusResponses = {
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 
-export type GetClientAssertionVerificationDataData = {
-    body: ClientAssertionVerificationRequest;
+export type GetConsumerClientAssertionVerificationDataData = {
+    body: ConsumerClientAssertionVerificationRequest;
     path?: never;
     query?: never;
-    url: '/clientAssertionVerificationData';
+    url: '/consumerClientAssertionVerificationData';
 };
 
-export type GetClientAssertionVerificationDataErrors = {
+export type GetConsumerClientAssertionVerificationDataErrors = {
     /**
      * Bad Request
      */
@@ -572,16 +584,45 @@ export type GetClientAssertionVerificationDataErrors = {
     404: Problem;
 };
 
-export type GetClientAssertionVerificationDataError = GetClientAssertionVerificationDataErrors[keyof GetClientAssertionVerificationDataErrors];
+export type GetConsumerClientAssertionVerificationDataError = GetConsumerClientAssertionVerificationDataErrors[keyof GetConsumerClientAssertionVerificationDataErrors];
 
-export type GetClientAssertionVerificationDataResponses = {
+export type GetConsumerClientAssertionVerificationDataResponses = {
     /**
-     * Client assertion verification data retrieved successfully
+     * Consumer client assertion verification data retrieved successfully
      */
-    200: ClientAssertionVerificationResponse;
+    200: ConsumerClientAssertionVerificationResponse;
 };
 
-export type GetClientAssertionVerificationDataResponse = GetClientAssertionVerificationDataResponses[keyof GetClientAssertionVerificationDataResponses];
+export type GetConsumerClientAssertionVerificationDataResponse = GetConsumerClientAssertionVerificationDataResponses[keyof GetConsumerClientAssertionVerificationDataResponses];
+
+export type GetKnodeApiClientAssertionVerificationDataData = {
+    body: KnodeApiClientAssertionVerificationRequest;
+    path?: never;
+    query?: never;
+    url: '/knodeApiClientAssertionVerificationData';
+};
+
+export type GetKnodeApiClientAssertionVerificationDataErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetKnodeApiClientAssertionVerificationDataError = GetKnodeApiClientAssertionVerificationDataErrors[keyof GetKnodeApiClientAssertionVerificationDataErrors];
+
+export type GetKnodeApiClientAssertionVerificationDataResponses = {
+    /**
+     * Knode API client assertion verification data retrieved successfully
+     */
+    200: KnodeApiClientAssertionVerificationResponse;
+};
+
+export type GetKnodeApiClientAssertionVerificationDataResponse = GetKnodeApiClientAssertionVerificationDataResponses[keyof GetKnodeApiClientAssertionVerificationDataResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;

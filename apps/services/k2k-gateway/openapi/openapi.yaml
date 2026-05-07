@@ -609,7 +609,7 @@ components:
         - expiresAt
         - url
       additionalProperties: false
-    ClientAssertionVerificationRequest:
+    ConsumerClientAssertionVerificationRequest:
       type: object
       properties:
         keychainId:
@@ -629,6 +629,20 @@ components:
         - kid
         - purposeId
       additionalProperties: false
+    KnodeApiClientAssertionVerificationRequest:
+      type: object
+      properties:
+        keychainId:
+          description: Unique identifier of the Consumer Keychain
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        kid:
+          $ref: "#/components/schemas/KeyId"
+      required:
+        - keychainId
+        - kid
+      additionalProperties: false
     PublicKeyForVerification:
       type: object
       properties:
@@ -646,7 +660,7 @@ components:
         - format
         - kid
       additionalProperties: false
-    ClientAssertionVerificationResponse:
+    ConsumerClientAssertionVerificationResponse:
       type: object
       properties:
         consumerAttributes:
@@ -658,6 +672,14 @@ components:
           $ref: "#/components/schemas/PublicKeyForVerification"
       required:
         - consumerAttributes
+        - publicKey
+      additionalProperties: false
+    KnodeApiClientAssertionVerificationResponse:
+      type: object
+      properties:
+        publicKey:
+          $ref: "#/components/schemas/PublicKeyForVerification"
+      required:
         - publicKey
       additionalProperties: false
     Organization:
@@ -909,10 +931,11 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /clientAssertionVerificationData:
+  /consumerClientAssertionVerificationData:
     post:
-      operationId: getClientAssertionVerificationData
-      summary: Get client assertion verification data
+      operationId: getConsumerClientAssertionVerificationData
+      summary: Get Consumer client assertion verification data for E-service access
+        token emission
       tags:
         - operation
       description: Verify that the key and purpose are associated with the consumer
@@ -923,16 +946,56 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ClientAssertionVerificationRequest"
+              $ref: "#/components/schemas/ConsumerClientAssertionVerificationRequest"
       responses:
         "200":
-          description: Client assertion verification data retrieved successfully
+          description: Consumer client assertion verification data retrieved successfully
           content:
             application/json:
               schema:
-                description: Client assertion verification data retrieved successfully
+                description: Consumer client assertion verification data retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ClientAssertionVerificationResponse"
+                  - $ref: "#/components/schemas/ConsumerClientAssertionVerificationResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /knodeApiClientAssertionVerificationData:
+    post:
+      operationId: getKnodeApiClientAssertionVerificationData
+      summary: Get Knode API client assertion verification data for Knode API access
+        token emission
+      tags:
+        - operation
+      description: Verify that the key is associated with the Knode API keychain, and
+        return the public key for further verification by the auth server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KnodeApiClientAssertionVerificationRequest"
+      responses:
+        "200":
+          description: Knode API client assertion verification data retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Knode API client assertion verification data retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/KnodeApiClientAssertionVerificationResponse"
         "400":
           description: Bad Request
           content:
