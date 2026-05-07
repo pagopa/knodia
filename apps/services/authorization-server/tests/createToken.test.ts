@@ -170,21 +170,22 @@ describe("POST /token", async () => {
     props: { customPayload: { htu: `${dpopProofHtuBaseUrl}///?test=12345/` } }, // intentionally malformed htu to test the normalization
   });
 
-  const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
-    consumerAttributes: [
-      commonAttribute,
-      {
-        code: "vc_organizational_units",
-        scheme: "nuts2",
+  const mockK2KResponse: k2kGatewayApi.ConsumerClientAssertionVerificationResponse =
+    {
+      consumerAttributes: [
+        commonAttribute,
+        {
+          code: "vc_organizational_units",
+          scheme: "nuts2",
+        },
+      ],
+      publicKey: {
+        algorithm: clientAssertion.headers.alg,
+        encodedPem: publicKeyEncodedPem,
+        format: "PublicKey",
+        kid: "kid",
       },
-    ],
-    publicKey: {
-      algorithm: clientAssertion.headers.alg,
-      encodedPem: publicKeyEncodedPem,
-      format: "PublicKey",
-      kid: "kid",
-    },
-  };
+    };
 
   const defaultBody: API_TokenRequest = {
     client_assertion: clientAssertionJWS,
@@ -648,7 +649,7 @@ describe("POST /token", async () => {
           ...mockK2KResponse.publicKey,
           encodedPem: invalidPublicKeyEncodedPem,
         },
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
@@ -685,7 +686,7 @@ describe("POST /token", async () => {
       data: {
         ...mockK2KResponse,
         publicKey: { ...mockK2KResponse.publicKey, algorithm: wrongAlg },
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
@@ -840,7 +841,7 @@ describe("POST /token", async () => {
             scheme: "nuts3",
           },
         ],
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
