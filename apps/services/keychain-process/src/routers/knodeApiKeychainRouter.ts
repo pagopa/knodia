@@ -70,7 +70,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
       const {
@@ -111,7 +111,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
       const key = await knodeApiKeychainService.getKnodeApiKeychainKey(
