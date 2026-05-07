@@ -1,4 +1,4 @@
-import type { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/splitters.ts";
+import type { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/consumerKeychainSplitters.ts";
 
 export function createConsumerKeychainAggregatorInput({
   consumerKeychainKeysSQL,

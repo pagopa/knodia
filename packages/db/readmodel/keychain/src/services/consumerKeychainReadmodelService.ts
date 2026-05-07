@@ -23,8 +23,8 @@ import {
 import {
   aggregateConsumerKeychain,
   aggregateFlatConsumerKeychain,
-} from "../converters/aggregators.ts";
-import { toConsumerKeychainPurpose } from "../converters/converters.ts";
+} from "../converters/consumerKeychainAggregators.ts";
+import { toConsumerKeychainPurpose } from "../converters/consumerKeychainConverters.ts";
 
 export function consumerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
