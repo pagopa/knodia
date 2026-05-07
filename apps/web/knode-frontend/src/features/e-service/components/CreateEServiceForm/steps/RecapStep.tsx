@@ -123,7 +123,7 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
   return (
     <div>
       <div className="body-sm-em text-primary-light-high-contrast">
-        File checksum
+        Checksum
       </div>
       <CopyableValueField value={checksum} />
     </div>

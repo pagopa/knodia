@@ -41,7 +41,7 @@ const tabList = tv({
 
 const tab = tv({
   extend: focusRing,
-  base: "body-md box-border inline-flex items-center justify-center gap-2 rounded-t-md border border-transparent px-6 py-1.75 text-center text-primary-light-high-contrast transition [-webkit-tap-highlight-color:transparent]",
+  base: "body-md box-border inline-flex items-center justify-center gap-2 rounded-t-tab border border-transparent px-6 py-1.75 text-center text-primary-light-high-contrast transition [-webkit-tap-highlight-color:transparent]",
   variants: {
     kind: {
       hug: "shrink-0",

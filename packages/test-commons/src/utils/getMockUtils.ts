@@ -31,8 +31,9 @@ import {
 } from "@knodia/eservice-models";
 import {
   ConsumerKeychain,
-  type ConsumerKeychainKey,
   ConsumerKeychainPurpose,
+  type KeychainKey,
+  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
@@ -70,23 +71,8 @@ export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
       })
       .setSeed(seed)
       .generate(),
-    keys: [getMockConsumerKeychainKey(seed)],
+    keys: [getMockKeychainKey(seed)],
   });
-}
-
-export function getMockConsumerKeychainKey(seed = 0): ConsumerKeychainKey {
-  const baseKey = zocker(ConsumerKeychain.shape.keys.element)
-    .setSeed(seed)
-    .generate();
-
-  return {
-    ...baseKey,
-    encodedPem: `-----BEGIN PUBLIC KEY-----mock-key-${seed}-----END PUBLIC KEY-----`,
-    kid: unsafeBrandKeyId(
-      Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
-    ),
-    userId: generateUserId(),
-  };
 }
 
 export function getMockEservice({
@@ -131,6 +117,35 @@ export function getMockEserviceCategory(seed = 0) {
 
 export function getMockEserviceVersion(seed = 0): EserviceVersion {
   return zocker(EserviceVersion).setSeed(seed).generate();
+}
+
+export function getMockKeychainKey(seed = 0): KeychainKey {
+  const baseKey = zocker(ConsumerKeychain.shape.keys.element)
+    .setSeed(seed)
+    .generate();
+
+  return {
+    ...baseKey,
+    encodedPem: `-----BEGIN PUBLIC KEY-----mock-key-${seed}-----END PUBLIC KEY-----`,
+    kid: unsafeBrandKeyId(
+      Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
+    ),
+    userId: generateUserId(),
+  };
+}
+
+export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
+  // Re-parse through the schema to normalize zocker's mixed-case GUIDs
+  // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
+  return KnodeApiKeychain.parse({
+    ...zocker(KnodeApiKeychain)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+    keys: [getMockKeychainKey(seed)],
+  });
 }
 
 export function getMockOrganization(seed = 0): Organization {

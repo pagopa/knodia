@@ -7,14 +7,14 @@ import {
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
-  type ConsumerKeychainKey,
   KeychainEventV1,
+  type KeychainKey,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
-  getMockConsumerKeychainKey,
+  getMockKeychainKey,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -30,8 +30,8 @@ const allowedTestTokens: TestToken[] = [
 ];
 const callerUserId = generateUserId();
 
-const existingKey: ConsumerKeychainKey = {
-  ...getMockConsumerKeychainKey(0),
+const existingKey: KeychainKey = {
+  ...getMockKeychainKey(0),
   userId: callerUserId,
 };
 
