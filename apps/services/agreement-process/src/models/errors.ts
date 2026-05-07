@@ -41,6 +41,7 @@ const errorCodes = {
   ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
   AGREEMENT_NOT_IN_ACTIVATABLE_STATE: "0011",
   AGREEMENT_TOKEN_CLAIM_MISMATCH: "0012",
+  AGREEMENT_NOT_IN_ARCHIVABLE_STATE: "0013",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -85,6 +86,21 @@ export function agreementNotInActivatableState(
     detail: `Agreement ${agreementId} cannot be activated (state=${state})`,
     status: HTTP_STATUS_CONFLICT,
     title: "Agreement Not In Activatable State",
+  });
+}
+
+export function agreementNotInArchivableState({
+  agreementId,
+  state,
+}: {
+  agreementId: AgreementId;
+  state: AgreementState;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_ARCHIVABLE_STATE",
+    detail: `Agreement ${agreementId} cannot be archived (state=${state})`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not In Archivable State",
   });
 }
 

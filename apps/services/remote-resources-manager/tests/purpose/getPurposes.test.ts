@@ -121,7 +121,7 @@ describe("GET /purposes (getPurposes)", () => {
     expect(getPurposesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({
-          state: "ACTIVE",
+          state: ["ACTIVE"],
         }),
       }),
     );

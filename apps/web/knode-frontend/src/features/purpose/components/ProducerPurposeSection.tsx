@@ -27,6 +27,7 @@ export function ProducerPurposeSection({
       <Empty
         description="Purposes created for your E-Services by Consumer Organizations will appear here."
         icon={<SelectionIcon />}
+        kind="brand-soft"
         title="There are no Purposes for your E-Services yet."
       />
     );
@@ -54,6 +55,7 @@ export function ProducerPurposeSection({
         {filters}
         <Empty
           icon={<SelectionIcon />}
+          kind="brand-soft"
           title="No Purposes match the selected filter."
         />
       </>
