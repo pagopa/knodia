@@ -81,7 +81,7 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
         knodeId,
       );
 
-      res.send(toAPI_EserviceTemplateDetails(eserviceTemplate));
+      res.send(toAPI_EserviceTemplateDetails(eserviceTemplate, knodeId));
     },
     method: "GET",
     schema: {

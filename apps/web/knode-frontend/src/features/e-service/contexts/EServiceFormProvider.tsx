@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { useCallback, useMemo, useState } from "react";
 
 import type {
@@ -6,6 +8,7 @@ import type {
   EServiceFormDraftData,
   GeneralStepData,
   TechnicalStepData,
+  TemplateDocsStepData,
 } from "@/features/e-service/types/eserviceCreateForm";
 
 import {
@@ -16,12 +19,21 @@ import {
 
 export function EServiceFormProvider({
   children,
+  template,
 }: {
   children: React.ReactNode;
+  template: bffApi.EserviceTemplateDetails | undefined;
 }) {
-  const [data, setData] = useState<EServiceFormDraftData>(
-    ESERVICE_FORM_DEFAULTS,
-  );
+  const [data, setData] = useState<EServiceFormDraftData>({
+    ...ESERVICE_FORM_DEFAULTS,
+    ...(template
+      ? {
+          categories: template.eserviceFields.categories,
+          mode: template.eserviceFields.mode,
+          requiredAttributes: template.eserviceFields.requiredAttributes,
+        }
+      : {}),
+  });
 
   const updateGeneralStep = useCallback((stepData: GeneralStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
@@ -31,9 +43,12 @@ export function EServiceFormProvider({
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
 
-  const updateDocsStep = useCallback((stepData: DocsStepData) => {
-    setData((prev) => ({ ...prev, ...stepData }));
-  }, []);
+  const updateDocsStep = useCallback(
+    (stepData: DocsStepData | TemplateDocsStepData) => {
+      setData((prev) => ({ ...prev, ...stepData }));
+    },
+    [],
+  );
 
   const updateAttributesStep = useCallback((stepData: AttributesStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
@@ -42,6 +57,7 @@ export function EServiceFormProvider({
   const value = useMemo<EServiceWizardContextValue>(
     () => ({
       data,
+      template,
       updateAttributesStep,
       updateDocsStep,
       updateGeneralStep,
@@ -49,6 +65,7 @@ export function EServiceFormProvider({
     }),
     [
       data,
+      template,
       updateAttributesStep,
       updateDocsStep,
       updateGeneralStep,
