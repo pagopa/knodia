@@ -18,6 +18,7 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { createIdmClient } from "@knodia/idm-client";
 
 import type { KeychainProcessConfig } from "./config/config.ts";
 
@@ -28,7 +29,6 @@ import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
 import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
-import { userServiceBuilder } from "./services/userService.ts";
 
 export function buildApp({
   config,
@@ -75,9 +75,7 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const userService = userServiceBuilder({
-    userPoolId: config.cognitoUserPoolId,
-  });
+  const idmClient = createIdmClient(config);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -92,12 +90,12 @@ export function buildApp({
       consumerKeychainService: consumerKeychainServiceBuilder(
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
-        userService,
+        idmClient,
         clients.remoteResourcesManagerClient,
         config,
       ),
     });
-    protectedApp.register(userRouter, userService);
+    protectedApp.register(userRouter, idmClient);
   });
 
   return app;

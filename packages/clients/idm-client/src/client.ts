@@ -1,3 +1,5 @@
+import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+
 import {
   AdminListGroupsForUserCommand,
   CognitoIdentityProviderClient,
@@ -5,24 +7,15 @@ import {
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { UserRole } from "@knodia/common-models/auth";
-import { genericInternalError } from "@knodia/common-models/errors";
-import {
-  type OrganizationId,
-  unsafeBrandUserId,
-  type UserId,
-} from "@knodia/common-models/ids";
 
-export interface IdmUser {
-  email: string;
-  id: UserId;
-  roles: UserRole[];
-  username: string;
-}
+import type { IdmClientConfig } from "./config.ts";
+import type { IdmUser } from "./models.ts";
 
-export type UserService = ReturnType<typeof userServiceBuilder>;
+import { toIdmUser } from "./converters.ts";
 
-export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
+export type IdmClient = ReturnType<typeof createIdmClient>;
+
+export function createIdmClient({ cognitoUserPoolId }: IdmClientConfig) {
   const client = new CognitoIdentityProviderClient();
 
   return {
@@ -38,7 +31,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
             Limit: 60, // Max limit per AWS docs
             NextToken: nextToken,
             Username: user.username,
-            UserPoolId: userPoolId,
+            UserPoolId: cognitoUserPoolId,
           }),
         );
 
@@ -67,7 +60,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
             GroupName: getOrganizationGroupName(organizationId),
             Limit: 60, // Max limit per AWS docs
             NextToken: nextToken,
-            UserPoolId: userPoolId,
+            UserPoolId: cognitoUserPoolId,
           }),
         );
 
@@ -83,7 +76,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
         new ListUsersCommand({
           Filter: `sub = "${userId}"`,
           Limit: 1,
-          UserPoolId: userPoolId,
+          UserPoolId: cognitoUserPoolId,
         }),
       );
 
@@ -95,41 +88,4 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
 
 function getOrganizationGroupName(organizationId: OrganizationId) {
   return `org:${organizationId}`;
-}
-
-function toIdmUser(user: UserType): IdmUser {
-  const attributes = new Map(
-    (user.Attributes ?? []).map((attr) => [attr.Name, attr.Value]),
-  );
-
-  const requireAttribute = (attributeName: string, userId?: string): string => {
-    const value = attributes.get(attributeName);
-    if (!value)
-      throw genericInternalError(
-        `User ${userId ?? "unknown"} is missing required attribute ${attributeName}`,
-      );
-
-    return value;
-  };
-
-  const id = requireAttribute("sub");
-  const email = requireAttribute("email", id);
-  const roles = requireAttribute("custom:roles", id)
-    .split(",")
-    .map((s) => s.trim())
-    .filter((role): role is UserRole => UserRole.safeParse(role).success);
-
-  if (roles.length === 0)
-    throw genericInternalError(`User ${id} is missing required roles`);
-
-  const username = user.Username;
-  if (!username)
-    throw genericInternalError(`User ${id} is missing required username`);
-
-  return {
-    email,
-    id: unsafeBrandUserId(id),
-    roles,
-    username,
-  };
 }

@@ -10,6 +10,7 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { IdmClient, IdmUser } from "@knodia/idm-client";
 import type {
   ConsumerKeychain,
   ConsumerKeychainKey,
@@ -49,7 +50,6 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { IdmUser, UserService } from "./userService.ts";
 
 import {
   consumerKeychainNotFound,
@@ -94,7 +94,7 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
-  userService: UserService,
+  idmClient: IdmClient,
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
@@ -102,7 +102,7 @@ export function consumerKeychainServiceBuilder(
     userId: UserId,
     consumerKeychainId: ConsumerKeychainId,
   ): Promise<IdmUser> {
-    const user = await userService.getUserById(userId);
+    const user = await idmClient.getUserById(userId);
     if (!user) {
       /**
        * This should not happen as users are validated when added as members.
@@ -142,14 +142,14 @@ export function consumerKeychainServiceBuilder(
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
-      const user = await userService.getUserById(userId);
+      const user = await idmClient.getUserById(userId);
 
       if (!user) {
         throw userNotFound(userId);
       }
 
       if (
-        !(await userService.checkUserBelongsToOrganization(
+        !(await idmClient.checkUserBelongsToOrganization(
           user,
           authData.organizationId,
         ))

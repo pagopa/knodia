@@ -7,6 +7,7 @@ import type {
   UserId,
 } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { IdmUser } from "@knodia/idm-client";
 import type { ConsumerKeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -25,7 +26,6 @@ import {
   tooManyKeysPerKeychain,
   userNotAllowed,
 } from "../models/errors.ts";
-import { type IdmUser } from "../services/userService.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,

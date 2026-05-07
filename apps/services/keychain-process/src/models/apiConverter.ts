@@ -1,3 +1,4 @@
+import type { IdmUser } from "@knodia/idm-client";
 import type {
   ConsumerKeychainKey,
   ConsumerKeychainPurpose,
@@ -6,7 +7,6 @@ import type {
 
 import { UserRole } from "@knodia/common-models/auth";
 
-import type { IdmUser } from "../services/userService.ts";
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
