@@ -174,7 +174,7 @@ function CollapseTrigger({
           {hasRecentlyBeenUpdated && <RecentlyUpdatedChip />}
           <span
             aria-hidden
-            className="flex items-center justify-center rounded-button bg-slate-100 p-2"
+            className="flex items-center justify-center rounded-button bg-neutral-100 p-2"
           >
             {isExpanded ? (
               <CaretUpIcon size={20} />
