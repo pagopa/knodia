@@ -1,3 +1,4 @@
+import { Algorithm } from "@knodia/common-models/crypto";
 import {
   ConsumerKeychainId,
   KeyId,
@@ -5,16 +6,15 @@ import {
 } from "@knodia/common-models/ids";
 import z from "zod";
 
-import {
-  EXPECTED_CLIENT_ASSERTION_ALGORITHM,
-  EXPECTED_CLIENT_ASSERTION_TYP,
-} from "./constants.ts";
+export const EXPECTED_CLIENT_ASSERTION_ALGORITHM = Algorithm.enum.RS256;
+export const EXPECTED_CLIENT_ASSERTION_TYP = "JWT";
 
 const ClientAssertionHeader = z.strictObject({
   alg: z.literal(EXPECTED_CLIENT_ASSERTION_ALGORITHM),
   kid: KeyId,
   typ: z.literal(EXPECTED_CLIENT_ASSERTION_TYP),
 });
+export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
 
 const ClientAssertionPayload = z
   .strictObject({
@@ -30,9 +30,11 @@ const ClientAssertionPayload = z
     ...rest,
     purposeId: purpose_id,
   }));
+export type ClientAssertionRawPayload = z.input<typeof ClientAssertionPayload>;
+type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
 
 export const ClientAssertion = z.strictObject({
-  header: ClientAssertionHeader,
+  headers: ClientAssertionHeader,
   payload: ClientAssertionPayload,
 });
 export type ClientAssertion = z.infer<typeof ClientAssertion>;

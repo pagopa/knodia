@@ -1,0 +1,18 @@
+meta {
+  name: Activate Agreement
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/external/agreements/:agreementId/activate
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  Authorization: Bearer {{externalUiSessionJwt}}
+}

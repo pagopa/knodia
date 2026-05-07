@@ -79,4 +79,35 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
     const response = await getAgreement("not-a-uuid");
     expect(response.statusCode).toBe(400);
   });
+
+  it("should return the agreement for an external-ui-session token whose agreement.id matches the path", async () => {
+    await seedAgreement(agreement);
+
+    const response = await injectAppRequest({
+      agreementId: agreement.id,
+      consumerId: agreement.consumer.id,
+      consumerKnodeId: agreement.consumer.knodeId,
+      eserviceId: agreement.eserviceId,
+      eserviceVersionId: agreement.eserviceVersionId,
+      producerId: agreement.producerId,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/agreements/${VALID_AGREEMENT_ID}`);
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<API_Agreement>();
+    expect(body).toEqual(toExpectAPI_Agreement(agreement));
+  });
+
+  it("should return 403 for an external-ui-session token whose agreement.id does not match the path", async () => {
+    await seedAgreement(agreement);
+
+    const response = await injectAppRequest({
+      agreementId: NON_EXISTENT_AGREEMENT_ID,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/agreements/${VALID_AGREEMENT_ID}`);
+
+    expect(response.statusCode).toBe(403);
+  });
 });

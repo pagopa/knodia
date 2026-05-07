@@ -78,6 +78,7 @@ export const toAPI_EserviceDetails = (
     maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
     requiredAttributes: version.requiredAttributes,
     state: toAPI_EserviceVersionState(version.state),
+    updatedAt: version.updatedAt,
   },
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,

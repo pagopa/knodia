@@ -13,7 +13,7 @@ import { Description, FieldError, Label } from "./Field";
 import { fieldInputStyle, focusRing } from "./styles";
 
 const textArea = tv({
-  base: "resize-none",
+  base: "resize-none rounded-textarea",
   variants: {
     size: {
       sm: "py-1.25",

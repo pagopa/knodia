@@ -27,7 +27,7 @@ const overlay = tv({
 });
 
 const modal = tv({
-  base: "max-h-full w-xl overflow-hidden rounded-2xl bg-white elevation-5 p-6",
+  base: "max-h-full w-xl overflow-hidden rounded-modal bg-white elevation-5 p-6",
   variants: {
     isEntering: {
       true: "animate-in zoom-in-95 duration-200 ease-out",

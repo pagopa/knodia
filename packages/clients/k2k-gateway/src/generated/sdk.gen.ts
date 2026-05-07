@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetConsumerClientAssertionVerificationDataData, GetConsumerClientAssertionVerificationDataErrors, GetConsumerClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetKnodeApiClientAssertionVerificationDataData, GetKnodeApiClientAssertionVerificationDataErrors, GetKnodeApiClientAssertionVerificationDataResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
+import type { ArchiveAgreementData, ArchiveAgreementErrors, ArchiveAgreementResponses, ArchivePurposeData, ArchivePurposeErrors, ArchivePurposeResponses, CreateAgreementActivationMagicLinkData, CreateAgreementActivationMagicLinkErrors, CreateAgreementActivationMagicLinkResponses, CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementData, ReactivateAgreementErrors, ReactivateAgreementResponses, ReactivatePurposeData, ReactivatePurposeErrors, ReactivatePurposeResponses, SuspendAgreementData, SuspendAgreementErrors, SuspendAgreementResponses, SuspendPurposeData, SuspendPurposeErrors, SuspendPurposeResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -28,28 +28,13 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
- * Get Consumer client assertion verification data for E-service access token emission
+ * Get client assertion verification data
  *
  * Verify that the key and purpose are associated with the consumer keychain, and return the public key and consumer attributes for further verification by the auth server
  */
-export const getConsumerClientAssertionVerificationData = <ThrowOnError extends boolean = true>(options: Options<GetConsumerClientAssertionVerificationDataData, ThrowOnError>) => (options.client ?? client).post<GetConsumerClientAssertionVerificationDataResponses, GetConsumerClientAssertionVerificationDataErrors, ThrowOnError>({
+export const getClientAssertionVerificationData = <ThrowOnError extends boolean = true>(options: Options<GetClientAssertionVerificationDataData, ThrowOnError>) => (options.client ?? client).post<GetClientAssertionVerificationDataResponses, GetClientAssertionVerificationDataErrors, ThrowOnError>({
     responseType: 'json',
-    url: '/consumerClientAssertionVerificationData',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Get Knode API client assertion verification data for Knode API access token emission
- *
- * Verify that the key is associated with the Knode API keychain, and return the public key for further verification by the auth server
- */
-export const getKnodeApiClientAssertionVerificationData = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiClientAssertionVerificationDataData, ThrowOnError>) => (options.client ?? client).post<GetKnodeApiClientAssertionVerificationDataResponses, GetKnodeApiClientAssertionVerificationDataErrors, ThrowOnError>({
-    responseType: 'json',
-    url: '/knodeApiClientAssertionVerificationData',
+    url: '/clientAssertionVerificationData',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -174,6 +159,17 @@ export const suspendAgreement = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
+ * Archive an Agreement
+ *
+ * Archive an Agreement on behalf of its Consumer; the Consumer must belong to the caller Knode
+ */
+export const archiveAgreement = <ThrowOnError extends boolean = true>(options: Options<ArchiveAgreementData, ThrowOnError>) => (options.client ?? client).post<ArchiveAgreementResponses, ArchiveAgreementErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}/archive',
+    ...options
+});
+
+/**
  * Create an Agreement activation magic link
  *
  * Create a magic link for a Consumer user to activate an Agreement on the Producer's frontend
@@ -269,5 +265,16 @@ export const reactivatePurpose = <ThrowOnError extends boolean = true>(options: 
 export const suspendPurpose = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeResponses, SuspendPurposeErrors, ThrowOnError>({
     responseType: 'json',
     url: '/purposes/{purposeId}/suspend',
+    ...options
+});
+
+/**
+ * Archive a Purpose
+ *
+ * Archive a Purpose on behalf of its Consumer; the Consumer must belong to the caller Knode
+ */
+export const archivePurpose = <ThrowOnError extends boolean = true>(options: Options<ArchivePurposeData, ThrowOnError>) => (options.client ?? client).post<ArchivePurposeResponses, ArchivePurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/purposes/{purposeId}/archive',
     ...options
 });

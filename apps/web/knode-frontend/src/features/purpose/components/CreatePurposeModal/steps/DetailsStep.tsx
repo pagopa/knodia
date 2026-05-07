@@ -1,6 +1,7 @@
 import { NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
+import { SettingsCard } from "@/components/SettingCard";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
 import {
@@ -26,14 +27,7 @@ export function DetailsStep({ onCancel }: Props) {
           title="Purpose details"
         />
 
-        <div className="bg-secondary-light flex flex-col gap-3 rounded-lg p-6">
-          <span className="label-lg text-primary-light-low-contrast">
-            E-Service
-          </span>
-          <span className="title-md-em text-primary-light-high-contrast">
-            {eserviceName}
-          </span>
-        </div>
+        <SettingsCard label="E-Service">{eserviceName}</SettingsCard>
 
         <div className="flex flex-col gap-6">
           <form.Field name="name">

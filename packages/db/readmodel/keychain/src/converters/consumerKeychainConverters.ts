@@ -5,28 +5,22 @@ import {
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
-  unsafeBrandKeyId,
-  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   type FlatConsumerKeychain,
-  KeyAlgorithm,
-  type KeychainKey,
-  type KeychainUser,
-  KeyFormat,
   LocalizedDescription,
   LocalizedName,
 } from "@knodia/keychain-models";
 
 import type {
   ConsumerKeychainItemsSQL,
-  ConsumerKeychainKeySQL,
   ConsumerKeychainPurposeSQL,
-  ConsumerKeychainUserSQL,
   FlatConsumerKeychainItemsSQL,
 } from "../consumerKeychain.ts";
+
+import { toKeychainKey, toKeychainUser } from "./keychainConverters.ts";
 
 export const buildConsumerKeychain = ({
   consumerKeychainKeysSQL,
@@ -89,24 +83,5 @@ export function toConsumerKeychainPurpose(
       },
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
-  };
-}
-
-export function toKeychainKey(keySQL: ConsumerKeychainKeySQL): KeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: unsafeBrandKeyId(keySQL.kid),
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
-  };
-}
-
-function toKeychainUser(userSQL: ConsumerKeychainUserSQL): KeychainUser {
-  return {
-    addedAt: userSQL.addedAt,
-    userId: unsafeBrandUserId(userSQL.userId),
   };
 }
