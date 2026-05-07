@@ -1,5 +1,3 @@
-import type { bffApi } from "@knodia/bff-client";
-
 import {
   Banner,
   Checkbox,
@@ -20,6 +18,7 @@ import {
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { DefinedByTemplateIconTooltip } from "../components/DefinedByTemplateIconTooltip";
+import { getEserviceModeLabel } from "../utils";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 
@@ -133,11 +132,6 @@ function DataModeSection({
   form: TechnicalStepForm;
   isDefinedByTemplate: boolean;
 }) {
-  const labels: Record<bffApi.EserviceMode, string> = {
-    ProvideData: "Provide data",
-    ReceiveData: "Receive data",
-  };
-
   return (
     <div className="flex flex-col gap-6">
       <form.Field name="mode">
@@ -152,7 +146,7 @@ function DataModeSection({
                 label="Data mode"
                 name={field.name}
                 size="lg"
-                value={labels[value]}
+                value={getEserviceModeLabel(value)}
               />
             );
           }
@@ -167,9 +161,11 @@ function DataModeSection({
               orientation="horizontal"
               value={value}
             >
-              <Radio value="ProvideData">{labels.ProvideData}</Radio>
+              <Radio value="ProvideData">
+                {getEserviceModeLabel("ProvideData")}
+              </Radio>
               <Radio isDisabled value="ReceiveData">
-                {labels.ReceiveData}
+                {getEserviceModeLabel("ReceiveData")}
               </Radio>
             </RadioGroup>
           );

@@ -4,7 +4,7 @@ import { categories } from "@knodia/category-models";
 import { KnodeId } from "@knodia/common-models/ids";
 import { Button, ComboBox, ComboBoxItem, Loader } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { config } from "@/config/config";
@@ -84,7 +84,7 @@ function EserviceTemplateCard({
             aria-label="Use template"
             hierarchy="neutral"
             kind="outlined"
-            onClick={() => onSelect(id)}
+            onPress={() => onSelect(id)}
             size="icon-md"
           >
             <ArrowRightIcon />
@@ -120,18 +120,10 @@ function RouteComponent() {
       enabled: !!templateId,
     });
 
-  const handleSelectTemplate = (templateId: string) => {
-    navigate({
-      search: (prev) => ({ knodeId: prev.knodeId, templateId }),
-    });
-  };
-
   return (
     <>
       <CreateEserviceFullPageModal onClose={handleShowLeaveConfirm}>
-        {!templateId && (
-          <TemplatesListSelector onSelect={handleSelectTemplate} />
-        )}
+        {!templateId && <TemplatesListSelector />}
         {templateId && isLoadingTemplateDetails && (
           <Loader className="mx-auto my-20" label="Loading template..." />
         )}
@@ -147,22 +139,23 @@ function RouteComponent() {
   );
 }
 
-function TemplatesListSelector({
-  onSelect,
-}: {
-  onSelect: (templateId: string) => void;
-}) {
+function TemplatesListSelector() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
-  const { data } = useQuery({
-    ...eserviceTemplatesQuery(search.knodeId),
-    placeholderData: keepPreviousData,
-  });
+  const { data, isLoading: isLoadingTemplates } = useQuery(
+    eserviceTemplatesQuery(search.knodeId),
+  );
 
   const handleFilterChange = (values: Partial<typeof search>) => {
     navigate({
       replace: true,
       search: (prev) => ({ ...prev, ...values }),
+    });
+  };
+
+  const handleSelectTemplate = (templateId: string) => {
+    navigate({
+      search: { knodeId: search.knodeId, templateId },
     });
   };
 
@@ -218,6 +211,10 @@ function TemplatesListSelector({
         </ComboBox>
       </div>
 
+      {isLoadingTemplates && (
+        <Loader className="mx-auto mb-10" label="Loading templates..." />
+      )}
+
       <div className="flex flex-col gap-4">
         {templates?.map((template) => (
           <EserviceTemplateCard
@@ -226,7 +223,7 @@ function TemplatesListSelector({
             id={template.id}
             key={template.id}
             mode={template.mode}
-            onSelect={onSelect}
+            onSelect={() => handleSelectTemplate(template.id)}
             title={template.name.en}
           />
         ))}
