@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { Steps } from "@knodia/ui-kit/ui";
 
 import {
@@ -7,8 +9,6 @@ import {
   useStepsContext,
 } from "@/contexts/steps";
 import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
-import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
-import { FullPageModal } from "@/layouts/FullPageModal";
 
 import { AttributesStep } from "./steps/AttributesStep";
 import { DocsStep } from "./steps/DocsStep";
@@ -16,17 +16,16 @@ import { GeneralStep } from "./steps/GeneralStep";
 import { RecapStep } from "./steps/RecapStep";
 import { TechnicalStep } from "./steps/TechnicalStep";
 
-interface Props {
-  onClose: () => void;
-}
-
-export function CreateEServiceModal({ onClose }: Props) {
-  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
-    useLeaveConfirmModal(onClose);
-
+export function CreateEServiceForm({
+  onLeave,
+  template,
+}: {
+  onLeave: () => void;
+  template?: bffApi.EserviceTemplateDetails;
+}) {
   const steps: StepConfig[] = [
     {
-      content: <GeneralStep onCancel={handleShowLeaveConfirm} />,
+      content: <GeneralStep onCancel={onLeave} />,
       label: "General",
     },
     { content: <TechnicalStep />, label: "Technical" },
@@ -37,31 +36,27 @@ export function CreateEServiceModal({ onClose }: Props) {
 
   return (
     <>
-      <FullPageModal onClose={handleShowLeaveConfirm} title="Create E-Service">
-        <StepsProvider stepConfig={steps}>
-          <EServiceFormProvider>
-            <ModalContent />
-          </EServiceFormProvider>
-        </StepsProvider>
-      </FullPageModal>
-
-      {leaveConfirmModal}
+      <StepsProvider stepConfig={steps}>
+        <EServiceFormProvider template={template}>
+          <EserviceFormCurrentStep />
+        </EServiceFormProvider>
+      </StepsProvider>
     </>
   );
 }
 
-function ModalContent() {
+function EserviceFormCurrentStep() {
   const { currentStepIndex, stepLabels } = useStepsContext();
   const { content } = useCurrentStep();
 
   return (
-    <div className="mx-auto max-w-160 p-10 pb-16 flex flex-col gap-16">
+    <>
       <Steps
         ariaLabel="E-Service creation steps"
         current={currentStepIndex}
         steps={stepLabels}
       />
       {content}
-    </div>
+    </>
   );
 }
