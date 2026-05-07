@@ -22,7 +22,7 @@ export type ExternalResource<T extends IDS> = z.infer<
   ReturnType<typeof ExternalResource<T>>
 >;
 
-export function fromExternalResourceV1<T extends IDS>(input: {
+export function fromExternalResource<T extends IDS>(input: {
   id: string;
   knodeId: string;
 }): ExternalResource<T> {
@@ -32,12 +32,12 @@ export function fromExternalResourceV1<T extends IDS>(input: {
   } as ExternalResource<T>;
 }
 
-export function fromOptionalExternalResourceV1<T extends IDS>(input?: {
+export function fromOptionalExternalResource<T extends IDS>(input?: {
   id: string;
   knodeId: string;
 }): ExternalResource<T> | undefined {
   if (!input) return undefined;
-  return fromExternalResourceV1<T>(input);
+  return fromExternalResource<T>(input);
 }
 
 export function generateExternalId<T extends IDS>(): ExternalId<T> {
@@ -48,12 +48,12 @@ export function toOptionalExternalResource<T extends IDS>(
   id: null | string,
   knodeId: null | string,
 ): ExternalResource<T> | undefined {
-  return id && knodeId
-    ? ({
-        id: unsafeBrandExternalId<T>(id),
-        knodeId: KnodeId.parse(knodeId),
-      } as ExternalResource<T>)
-    : undefined;
+  if (!id || !knodeId) return undefined;
+
+  return {
+    id: unsafeBrandExternalId<T>(id),
+    knodeId: KnodeId.parse(knodeId),
+  } as ExternalResource<T>;
 }
 
 export function unsafeBrandExternalId<T extends IDS>(

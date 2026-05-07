@@ -1,6 +1,6 @@
 import {
-  fromExternalResourceV1,
-  fromOptionalExternalResourceV1,
+  fromExternalResource,
+  fromOptionalExternalResource,
 } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
@@ -25,7 +25,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
 
   return {
     ...input,
-    consumer: fromExternalResourceV1(input.consumer),
+    consumer: fromExternalResource(input.consumer),
     createdAt: new Date(input.createdAt),
     description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
@@ -44,7 +44,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
       input.suspendedByProducerAt != null
         ? new Date(input.suspendedByProducerAt)
         : null,
-    template: fromOptionalExternalResourceV1(input.template),
+    template: fromOptionalExternalResource(input.template),
     updatedAt: new Date(input.updatedAt),
   };
 };

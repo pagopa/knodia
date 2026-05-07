@@ -1,4 +1,4 @@
-import { fromExternalResourceV1 } from "@knodia/common-models/externalResource";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
@@ -14,7 +14,7 @@ export const fromAgreementV1 = (input: AgreementV1): Agreement => {
 
   return {
     ...input,
-    consumer: fromExternalResourceV1(input.consumer),
+    consumer: fromExternalResource(input.consumer),
     createdAt: new Date(input.createdAt),
     eserviceId: unsafeBrandId(input.eserviceId),
     eserviceVersionId: unsafeBrandId(input.eserviceVersionId),

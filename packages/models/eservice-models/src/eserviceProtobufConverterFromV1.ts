@@ -1,6 +1,6 @@
 import type { AttributeGroup } from "@knodia/attribute-models";
 
-import { fromOptionalExternalResourceV1 } from "@knodia/common-models/externalResource";
+import { fromOptionalExternalResource } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
@@ -35,7 +35,7 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
     mode: fromEserviceModeV1(input.mode),
     name: input.name,
     producerId: unsafeBrandId(input.producerId),
-    template: fromOptionalExternalResourceV1(input.template),
+    template: fromOptionalExternalResource(input.template),
     updatedAt: new Date(input.updatedAt),
     versions: input.versions.map(fromEserviceVersionV1),
   };
