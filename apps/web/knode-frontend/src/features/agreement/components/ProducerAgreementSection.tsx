@@ -24,6 +24,7 @@ export function ProducerAgreementSection({
       <Empty
         description="Agreements requested for your E-Services by Consumer Organizations will appear here."
         icon={<SelectionIcon />}
+        kind="brand-soft"
         title="There are no Agreements for your E-Services."
       />
     );

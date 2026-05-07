@@ -45,6 +45,7 @@ export function KeychainTable({
             : "New Keychains will appear here."
         }
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title="You don't have any Keychains yet"
       />
     );
