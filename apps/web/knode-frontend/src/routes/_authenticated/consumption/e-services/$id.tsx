@@ -196,19 +196,17 @@ function RouteComponent() {
       </div>
 
       {agreement && (
-        <>
-          <div className="mt-10">
-            <OrgConsumptionStatusSection
-              agreement={agreement}
-              eserviceId={eservice.id}
-              eserviceState={eservice.state}
-              hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
-              knodeId={knodeId}
-            />
-          </div>
-          <Divider className="my-10" />
-        </>
+        <div className="mt-10">
+          <OrgConsumptionStatusSection
+            agreement={agreement}
+            eserviceId={eservice.id}
+            eserviceState={eservice.state}
+            hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
+            knodeId={knodeId}
+          />
+        </div>
       )}
+      <Divider className="my-10" />
       <ConsumptionRequirementsSection
         canRequestAgreement={canManageAgreements}
         eserviceId={eservice.id}
