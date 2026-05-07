@@ -68,6 +68,7 @@ function RouteComponent() {
   const { id } = Route.useParams();
   const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
   const isArchived = eservice.version.state === "Archived";
+  const editAction = <EditAction eservice={eservice} />;
 
   return (
     <>
@@ -93,16 +94,14 @@ function RouteComponent() {
               label={`Archived ${formatNumericDate(eservice.version.updatedAt)}`}
               type="light"
             />
+          ) : isAdministrative ? (
+            <EserviceProducerActions
+              editAction={editAction}
+              eserviceId={eservice.id}
+              state={eservice.version.state}
+            />
           ) : (
-            <>
-              {isAdministrative && (
-                <EserviceProducerActions
-                  eserviceId={eservice.id}
-                  state={eservice.version.state}
-                />
-              )}
-              <EditAction eservice={eservice} />
-            </>
+            editAction
           )
         }
         copyableId={eservice.id}

@@ -88,11 +88,11 @@ export function Sidebar() {
         <SidebarSection key={idx} title={section.title}>
           {section.items.map((item) => (
             <SidebarNavItemLink
+              Icon={item.Icon}
               isCurrent={location.pathname.startsWith(item.to)}
               key={`${item.to}-${item.label}`}
               to={item.to}
             >
-              <item.Icon />
               {item.label}
             </SidebarNavItemLink>
           ))}

@@ -32,7 +32,7 @@ export function Column(props: ColumnProps) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "px-4 pb-3 label-md text-primary-light-high-contrast",
+        "px-4 py-3 label-md text-primary-light-high-contrast bg-table-header-bg",
       )}
     />
   );
@@ -67,7 +67,7 @@ export function TableHeader<T extends object>(props: TableHeaderProps<T>) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "border-b border-black text-left",
+        "border-b border-table-header-border text-left",
       )}
     />
   );

@@ -2,9 +2,9 @@
 import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  KeychainKey,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -20,8 +20,8 @@ import {
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
-  toConsumerKeychainKey,
   toConsumerKeychainPurpose,
+  toKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
 import { and, desc, eq, exists } from "drizzle-orm";
@@ -56,7 +56,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychainKeys(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
-    ): Promise<ListResult<ConsumerKeychainKey>> {
+    ): Promise<ListResult<KeychainKey>> {
       const { limit, offset } = params;
 
       return await readmodelDb.transaction(async (tx) => {
@@ -89,7 +89,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         ]);
 
         return {
-          results: queryRes.map(toConsumerKeychainKey),
+          results: queryRes.map(toKeychainKey),
           totalCount,
         };
       });

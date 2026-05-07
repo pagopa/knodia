@@ -22,7 +22,7 @@ import { downloadFile } from "@/utils/downloadFile";
 import { formatNumber } from "@/utils/formatters";
 
 import { DocumentRecap } from "../../DocumentRecap";
-import { downloadTemplateInterface } from "../utils";
+import { downloadTemplateInterface, getEserviceModeLabel } from "../utils";
 
 export function RecapStep() {
   const { data, template } = useEServiceWizardContext();
@@ -123,7 +123,7 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
   return (
     <div>
       <div className="body-sm-em text-primary-light-high-contrast">
-        File checksum
+        Checksum
       </div>
       <CopyableValueField value={checksum} />
     </div>
@@ -228,7 +228,7 @@ function TechnicalDetailsSection({
       <SectionTitle>Technical details</SectionTitle>
 
       <GenericInfoCard label="Type">
-        {data.mode === "ReceiveData" ? "Receive data" : "Provide data"}
+        {getEserviceModeLabel(data.mode)}
       </GenericInfoCard>
 
       <FieldGroup title="Access token settings">
