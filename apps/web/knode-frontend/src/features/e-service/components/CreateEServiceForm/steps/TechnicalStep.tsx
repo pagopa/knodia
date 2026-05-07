@@ -11,14 +11,21 @@ import {
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
-import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
+import {
+  useEServiceWizardContext,
+  useTechnicalStepForm,
+} from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
+
+import { DefinedByTemplateIconTooltip } from "../components/DefinedByTemplateIconTooltip";
+import { getEserviceModeLabel } from "../utils";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 
 export function TechnicalStep() {
   const { nextStep, prevStep } = useStepsContext();
   const form = useTechnicalStepForm(nextStep);
+  const { template } = useEServiceWizardContext();
 
   return (
     <>
@@ -33,7 +40,10 @@ export function TechnicalStep() {
           </Banner>
         </StepHeader>
 
-        <DataModeSection form={form} />
+        <DataModeSection
+          form={form}
+          isDefinedByTemplate={template !== undefined}
+        />
         <Divider />
         <AccessTokenSection form={form} />
         <Divider />
@@ -115,26 +125,51 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
   );
 }
 
-function DataModeSection({ form }: { form: TechnicalStepForm }) {
+function DataModeSection({
+  form,
+  isDefinedByTemplate,
+}: {
+  form: TechnicalStepForm;
+  isDefinedByTemplate: boolean;
+}) {
   return (
     <div className="flex flex-col gap-6">
       <form.Field name="mode">
-        {(field) => (
-          <RadioGroup
-            isRequired
-            label="Data mode"
-            name={field.name}
-            onBlur={field.handleBlur}
-            onChange={field.handleChange}
-            orientation="horizontal"
-            value={field.state.value}
-          >
-            <Radio value="ProvideData">Provide data</Radio>
-            <Radio isDisabled value="ReceiveData">
-              Receive data
-            </Radio>
-          </RadioGroup>
-        )}
+        {(field) => {
+          const value = field.state.value;
+
+          if (isDefinedByTemplate) {
+            return (
+              <TextField
+                endIcon={<DefinedByTemplateIconTooltip />}
+                isReadOnly
+                label="Data mode"
+                name={field.name}
+                size="lg"
+                value={getEserviceModeLabel(value)}
+              />
+            );
+          }
+
+          return (
+            <RadioGroup
+              isRequired
+              label="Data mode"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={field.handleChange}
+              orientation="horizontal"
+              value={value}
+            >
+              <Radio value="ProvideData">
+                {getEserviceModeLabel("ProvideData")}
+              </Radio>
+              <Radio isDisabled value="ReceiveData">
+                {getEserviceModeLabel("ReceiveData")}
+              </Radio>
+            </RadioGroup>
+          );
+        }}
       </form.Field>
     </div>
   );
