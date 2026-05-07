@@ -11,7 +11,7 @@ import { tv } from "tailwind-variants";
 import { Button } from "./Button";
 
 const popover = tv({
-  base: "rounded-popover bg-white elevation-1 border border-slate-100 p-4",
+  base: "rounded-popover bg-white elevation-1 border border-neutral-100 p-4",
   variants: {
     isEntering: {
       true: "animate-in fade-in placement-bottom:slide-in-from-top-1 placement-top:slide-in-from-bottom-1 duration-200 ease-out",
