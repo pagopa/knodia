@@ -1,0 +1,30 @@
+{
+  "name": "@knodia/dpop-validator",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@knodia/authorization-models": "workspace:*",
+    "@knodia/db-jti-replay-store": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
+    "fastify": "catalog:",
+    "jose": "catalog:",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    "./errors": "./src/models/errors.ts",
+    ".": "./src/utils/validators.ts"
+  }
+}

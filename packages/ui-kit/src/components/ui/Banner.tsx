@@ -12,7 +12,7 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { Button } from "./Button";
 
 const banner = tv({
-  base: "flex rounded-lg w-full",
+  base: "flex rounded-banner w-full",
   variants: {
     kind: {
       informative: "bg-info-light",

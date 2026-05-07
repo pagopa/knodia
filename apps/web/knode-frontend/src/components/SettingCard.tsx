@@ -17,7 +17,7 @@ export function SettingsCard({
     <dl
       {...props}
       className={twMerge(
-        "bg-secondary-light flex flex-col gap-3 rounded-lg p-6",
+        "bg-secondary-light flex flex-col gap-3 rounded-settings-card p-6",
         className,
       )}
     >

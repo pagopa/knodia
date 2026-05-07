@@ -12,7 +12,7 @@ export const DocumentRecap = ({
   onDownload,
   showDownloadButton = false,
 }: Props) => (
-  <div className="bg-primary-light border-slate-100 border py-3 px-4 rounded-2xl flex justify-between elevation-1">
+  <div className="bg-primary-light border-document-recap-border border py-3 px-4 rounded-document-recap flex justify-between shadow-document-recap">
     <div className="flex gap-4 items-center">
       <FileTextIcon className="text-brand-dark" size={24} />
       <span className="body-lg-em text-primary-light-high-contrast">

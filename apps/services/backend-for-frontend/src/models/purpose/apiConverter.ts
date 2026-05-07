@@ -38,6 +38,7 @@ export const toAPI_ConsumerPurpose = ({
     name: eserviceDetails.producer.name,
   },
   state: purpose.state,
+  updatedAt: purpose.updatedAt,
 });
 
 export const toAPI_ProducerPurpose = ({
@@ -107,6 +108,7 @@ export const toAPI_ConsumerPurposeDetails = ({
   state: purpose.state,
   suspendedByConsumerAt: purpose.suspendedByConsumerAt,
   suspendedByProducerAt: purpose.suspendedByProducerAt,
+  updatedAt: purpose.updatedAt,
 });
 
 export const toAPI_PurposeDetails = ({
@@ -153,4 +155,5 @@ export const toAPI_PurposeDetails = ({
   state: purpose.state,
   suspendedByConsumerAt: purpose.suspendedByConsumerAt,
   suspendedByProducerAt: purpose.suspendedByProducerAt,
+  updatedAt: purpose.updatedAt,
 });

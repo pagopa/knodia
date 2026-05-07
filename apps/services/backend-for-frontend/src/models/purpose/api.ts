@@ -55,12 +55,19 @@ export const API_SuspendReactivatePurposeByConsumerQueryParams = z.strictObject(
   },
 );
 
+export const API_ArchiveConsumerPurposeQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+
 export const API_GetConsumerPurposesQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z
       .uuid()
       .optional()
       .meta({ description: "Filter by E-service ID" }),
+    state: arrayQueryParam(API_PurposeState)
+      .optional()
+      .meta({ description: "Filter by Purpose State" }),
   });
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
@@ -81,6 +88,7 @@ export const API_ConsumerPurpose = z
     name: API_LocalizedPurposeName,
     producer: API_CompactOrganization,
     state: API_PurposeState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ConsumerPurpose" });
 export type API_ConsumerPurpose = z.infer<typeof API_ConsumerPurpose>;
@@ -159,6 +167,7 @@ export const API_PurposeDetails = z
     state: API_PurposeState,
     suspendedByConsumerAt: z.iso.datetime().nullable(),
     suspendedByProducerAt: z.iso.datetime().nullable(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "PurposeDetails" });
 export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;

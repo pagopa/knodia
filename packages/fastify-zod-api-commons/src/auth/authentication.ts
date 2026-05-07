@@ -4,11 +4,12 @@ import { requestContext } from "@fastify/request-context";
 import { KnodiaAuthTokenClaims } from "@knodia/common-models/auth";
 import { type CorrelationId, unsafeBrandId } from "@knodia/common-models/ids";
 import fastifyPlugin from "fastify-plugin";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createRemoteJWKSet } from "jose";
 import { match } from "ts-pattern";
 
 import { unauthorizedError } from "../models/errors/errors.ts";
 import { extractAuthDataFromToken } from "./authData.ts";
+import { verifyAgainstJwksSets } from "./verifyAgainstJwksSets.ts";
 
 const BEARER_PREFIX = "bearer ";
 
@@ -17,12 +18,15 @@ interface AuthenticationPluginOptions {
   wellKnownUrls: string[];
 }
 
-export const parseAuthHeaderToken = (authHeader: string | undefined) => {
-  if (!authHeader?.toLowerCase().startsWith(BEARER_PREFIX)) {
+export const parseAuthHeaderToken = (
+  authHeader: string | undefined,
+  prefix: string = BEARER_PREFIX,
+) => {
+  if (!authHeader?.toLowerCase().startsWith(prefix)) {
     throw unauthorizedError("Missing or invalid Authorization header");
   }
 
-  return authHeader.substring(BEARER_PREFIX.length);
+  return authHeader.substring(prefix.length);
 };
 
 export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
@@ -34,15 +38,10 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
     fastify.addHook("onRequest", async (request) => {
       const token = parseAuthHeaderToken(request.headers.authorization);
 
-      const rawPayload = await Promise.any(
-        jwksSets.map(async (jwks) => {
-          const { payload } = await jwtVerify(token, jwks, {
-            audience: opts.acceptedAudiences,
-          });
-          return payload;
-        }),
-      ).catch(() => {
-        throw unauthorizedError("Token verification failed");
+      const rawPayload = await verifyAgainstJwksSets({
+        audience: opts.acceptedAudiences,
+        jwksSets,
+        token,
       });
 
       const parsed = KnodiaAuthTokenClaims.safeParse(rawPayload);

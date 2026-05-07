@@ -1,6 +1,7 @@
 import type { AgreementId, EserviceId } from "@knodia/common-models/ids";
 
 import {
+  getConsumerAgreementsOptions,
   getPendingConsumerAgreementsOptions,
   getProducerAgreementDetailsOptions,
   getProducerAgreementsOptions,
@@ -10,6 +11,7 @@ import { client } from "@/libs/axios";
 
 const AGREEMENTS_PAGE_LIMIT = 9;
 const AGREEMENTS_SECTION_LIMIT = 50;
+const ARCHIVED_AGREEMENTS_PAGE_LIMIT = 10;
 
 export const producerAgreementDetailsQuery = (agreementId: AgreementId) =>
   getProducerAgreementDetailsOptions({
@@ -21,6 +23,16 @@ export const pendingConsumerAgreementsQuery = (offset: number) =>
   getPendingConsumerAgreementsOptions({
     client,
     query: { limit: AGREEMENTS_PAGE_LIMIT, offset },
+  });
+
+export const archivedConsumerAgreementsQuery = (offset: number) =>
+  getConsumerAgreementsOptions({
+    client,
+    query: {
+      limit: ARCHIVED_AGREEMENTS_PAGE_LIMIT,
+      offset,
+      state: ["Archived"],
+    },
   });
 
 export const producerAgreementsQuery = (

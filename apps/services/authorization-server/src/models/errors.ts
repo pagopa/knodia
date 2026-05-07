@@ -11,6 +11,7 @@ import type {
 import type { PurposeState } from "@knodia/purpose-models";
 import type { AxiosError } from "axios";
 
+import { type DpopErrorKey } from "@knodia/dpop-validator/errors";
 import {
   EserviceAccessTokenType,
   type EserviceVersion,
@@ -33,7 +34,7 @@ const {
 } = constants;
 
 /* eslint-disable perfectionist/sort-objects */
-const errorCodes = {
+const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   CLIENT_ASSERTION_CLAIMS_VALIDATION_ERROR: "0001",
   UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0002",
   CLIENT_ASSERTION_EXPIRED: "0003",
@@ -56,6 +57,7 @@ const errorCodes = {
   INVALID_DPOP_PROOF_JWS: "0020",
   INVALID_DPOP_PROOF_SIGNATURE: "0021",
   DPOP_PROOF_EXPIRED: "0022",
+  DPOP_PROOF_ALREADY_USED: "0023",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -143,29 +145,6 @@ export function consumerMissingRequiredAttributes(
   });
 }
 
-export function dpopClaimsValidationError(error: unknown) {
-  return createApiErrorFromErrorsList<ErrorCodes>({
-    code: "DPOP_CLAIMS_VALIDATION_ERROR",
-    errors:
-      error instanceof ZodError
-        ? error.issues
-        : error instanceof Error
-          ? [error]
-          : [],
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_dpop_proof",
-  });
-}
-
-export function dpopProofExpired() {
-  return createApiError<ErrorCodes>({
-    code: "DPOP_PROOF_EXPIRED",
-    detail: "The DPoP Proof has expired",
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_dpop_proof",
-  });
-}
-
 export function eserviceVersionNotActive(
   id: EserviceVersionId,
   state: EserviceVersionState,
@@ -205,24 +184,6 @@ export function invalidClientAssertionSignature() {
     detail: "The Client Assertion signature is invalid",
     status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_client",
-  });
-}
-
-export function invalidDpopProofJWS(message: string) {
-  return createApiError<ErrorCodes>({
-    code: "INVALID_DPOP_PROOF_JWS",
-    detail: `Invalid JWT format in DPoP Proof signature verification. Reason: ${message}`,
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_dpop_proof",
-  });
-}
-
-export function invalidDpopProofSignature() {
-  return createApiError<ErrorCodes>({
-    code: "INVALID_DPOP_PROOF_SIGNATURE",
-    detail: "The DPoP Proof signature is invalid",
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_dpop_proof",
   });
 }
 
@@ -293,16 +254,5 @@ export function unexpectedConsumerKnodeVerificationDataRetrievalError(
     detail: `An unexpected error occurred during retrieval of the Consumer's Knode verification data: ${error.message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
-  });
-}
-
-export function unexpectedDpopProofSignatureVerificationError(error: unknown) {
-  const message = error instanceof Error ? error.message : "Unknown error";
-
-  return createApiError<ErrorCodes>({
-    code: "UNEXPECTED_DPOP_PROOF_SIGNATURE_VERIFICATION_ERROR",
-    detail: `An unexpected error occurred during DPoP Proof signature verification: ${message}`,
-    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-    title: "invalid_dpop_proof",
   });
 }

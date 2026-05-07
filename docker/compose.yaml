@@ -233,12 +233,14 @@ services:
       minio:
         condition: service_healthy
     volumes:
-      - ../apps/services/mock-eservice/openapi/openapi.yaml:/seed/mock-eservice.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/seed/mock-bearer-eservice.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/seed/mock-dpop-eservice.yaml:ro
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
-      mc cp /seed/mock-eservice.yaml local/knodia-eservice-interfaces/interfaces/mock-eservice.yaml;
+      mc cp /seed/mock-bearer-eservice.yaml local/knodia-eservice-interfaces/interfaces/mock-bearer-eservice.yaml;
+      mc cp /seed/mock-dpop-eservice.yaml local/knodia-eservice-interfaces/interfaces/mock-dpop-eservice.yaml;
       exit 0;
       "
   # Web GUI for PostgreSQL
