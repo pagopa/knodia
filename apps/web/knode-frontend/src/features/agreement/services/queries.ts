@@ -17,6 +17,7 @@ const PRODUCER_VISIBLE_AGREEMENT_STATES: bffApi.AgreementState[] = [
   "Active",
   "Suspended",
 ];
+const ARCHIVED_AGREEMENT_STATES: bffApi.AgreementState[] = ["Archived"];
 
 export const producerAgreementDetailsQuery = (agreementId: AgreementId) =>
   getProducerAgreementDetailsOptions({
@@ -36,7 +37,7 @@ export const archivedConsumerAgreementsQuery = (offset: number) =>
     query: {
       limit: ARCHIVED_AGREEMENTS_PAGE_LIMIT,
       offset,
-      state: ["Archived"],
+      state: ARCHIVED_AGREEMENT_STATES,
     },
   });
 
@@ -60,7 +61,7 @@ export const archivedProducerAgreementsQuery = (offset: number) =>
     query: {
       limit: ARCHIVED_AGREEMENTS_PAGE_LIMIT,
       offset,
-      state: ["Archived"],
+      state: ARCHIVED_AGREEMENT_STATES,
     },
   });
 

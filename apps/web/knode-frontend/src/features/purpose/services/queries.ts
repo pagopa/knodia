@@ -22,6 +22,7 @@ const PURPOSES_PAGE_LIMIT = 9;
 const PURPOSES_SECTION_LIMIT = 50;
 const PURPOSES_LINKED_KEYCHAINS_LIMIT = 10;
 const VISIBLE_PURPOSE_STATES: bffApi.PurposeState[] = ["Active", "Suspended"];
+const ARCHIVED_PURPOSE_STATES: bffApi.PurposeState[] = ["Archived"];
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -52,7 +53,7 @@ export const consumerArchivedPurposesQuery = (offset: number) =>
     query: {
       limit: PURPOSES_PAGE_LIMIT,
       offset,
-      state: ["Archived"],
+      state: ARCHIVED_PURPOSE_STATES,
     },
   });
 
@@ -88,7 +89,7 @@ export const producerArchivedPurposesQuery = (offset: number) =>
     query: {
       limit: PURPOSES_PAGE_LIMIT,
       offset,
-      state: ["Archived"],
+      state: ARCHIVED_PURPOSE_STATES,
     },
   });
 
