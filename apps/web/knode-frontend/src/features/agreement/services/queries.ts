@@ -13,7 +13,7 @@ import { client } from "@/libs/axios";
 const AGREEMENTS_PAGE_LIMIT = 9;
 const AGREEMENTS_SECTION_LIMIT = 50;
 const ARCHIVED_AGREEMENTS_PAGE_LIMIT = 10;
-const NON_ARCHIVED_AGREEMENT_STATES: bffApi.AgreementState[] = [
+const PRODUCER_VISIBLE_AGREEMENT_STATES: bffApi.AgreementState[] = [
   "Active",
   "Suspended",
 ];
@@ -50,7 +50,7 @@ export const producerAgreementsQuery = (
       eserviceId,
       limit: AGREEMENTS_PAGE_LIMIT,
       offset,
-      state: NON_ARCHIVED_AGREEMENT_STATES,
+      state: PRODUCER_VISIBLE_AGREEMENT_STATES,
     },
   });
 
@@ -75,6 +75,6 @@ export const producerRecentAgreementsByEserviceQuery = (
       limit: AGREEMENTS_SECTION_LIMIT,
       offset: 0,
       recentlyUpdated: "true",
-      state: NON_ARCHIVED_AGREEMENT_STATES,
+      state: PRODUCER_VISIBLE_AGREEMENT_STATES,
     },
   });
