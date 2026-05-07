@@ -76,6 +76,7 @@ export const API_PurposeSeed = z
     formAnswersJson: API_PurposeFormAnswers,
     formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
+    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
   })
   .meta({
     description: "Seed data to create a new Purpose",
@@ -124,6 +125,7 @@ export const API_Purpose = z
     suspendedByProducerAt: z.iso.datetime().nullable().meta({
       description: "Timestamp when the Purpose was suspended by the Producer",
     }),
+    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({

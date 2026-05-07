@@ -30,6 +30,7 @@ export const API_PurposeSeed = z
     formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
     knodeId: API_KnodeId,
     name: API_LocalizedPurposeName,
+    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
   })
   .meta({
     description: "Seed data to create a new Purpose",
@@ -79,6 +80,7 @@ export const API_Purpose = z
     suspendedByProducerAt: z.iso.datetime().nullable().meta({
       description: "Timestamp when the Purpose was suspended by the Producer",
     }),
+    template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Purpose" });

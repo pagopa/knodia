@@ -28,8 +28,6 @@ export const API_PurposeSeed = z
     formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
     knodeId: API_KnodeId,
     name: API_LocalizedPurposeName,
-    // TODO: currently dropped at the RRM boundary until the
-    // BFF -> RRM -> k2k-gateway propagation sub-task lands.
     template: z.strictObject({ id: z.uuid(), knodeId: API_KnodeId }).optional(),
   })
   .meta({
