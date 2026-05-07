@@ -24,8 +24,9 @@ import {
   purposeAlreadyLinkedToConsumerKeychain,
   tooManyKeysPerKeychain,
   userNotAllowed,
+  userNotFound,
 } from "../models/errors.ts";
-import { type IdmUser } from "../services/userService.ts";
+import { type IdmUser, type UserService } from "../services/userService.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -62,6 +63,18 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
 
   if (consumerKeychainPurpose) {
     throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purpose);
+  }
+}
+
+export async function assertUserBelongsToOrganization(
+  user: IdmUser,
+  organizationId: OrganizationId,
+  userService: UserService,
+): Promise<void> {
+  if (
+    !(await userService.checkUserBelongsToOrganization(user, organizationId))
+  ) {
+    throw userNotFound(user.id);
   }
 }
 

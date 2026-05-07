@@ -11,7 +11,10 @@ import {
   OrganizationId,
   UserId,
 } from "@knodia/common-models/ids";
-import { NonEmptyArray } from "@knodia/common-models/types";
+import {
+  CommaSeparatedArray,
+  NonEmptyArray,
+} from "@knodia/common-models/types";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
@@ -23,7 +26,7 @@ import type { BffProcessConfig } from "../config/config.ts";
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
   "cognito:username": z.string(),
-  "custom:roles": z.string(),
+  "custom:roles": CommaSeparatedArray(UserRole),
   sub: z.string(),
   // We expect the OIDC token to be an ID token, which contains the role custom attributes.
   token_use: z.literal("id"),
@@ -98,19 +101,7 @@ export function authServiceBuilder(
 
     const cognitoPayload = payloadParsed.data;
 
-    const roles = cognitoPayload["custom:roles"]
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((role) => {
-        try {
-          return UserRole.parse(role);
-        } catch {
-          throw unauthorizedError(
-            `Invalid role claim in Cognito token: ${role}`,
-          );
-        }
-      });
+    const roles = cognitoPayload["custom:roles"];
 
     const orgGroup = cognitoPayload["cognito:groups"].find((g) =>
       g.startsWith("org:"),

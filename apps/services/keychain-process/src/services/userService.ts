@@ -12,6 +12,7 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { CommaSeparatedArray } from "@knodia/common-models/types";
 
 export interface IdmUser {
   email: string;
@@ -114,12 +115,16 @@ function toIdmUser(user: UserType): IdmUser {
 
   const id = requireAttribute("sub");
   const email = requireAttribute("email", id);
-  const roles = requireAttribute("custom:roles", id)
-    .split(",")
-    .map((s) => s.trim())
-    .filter((role): role is UserRole => UserRole.safeParse(role).success);
+  const commaSeparatedRoles = requireAttribute("custom:roles", id);
+  const roles = CommaSeparatedArray(UserRole).safeParse(commaSeparatedRoles);
 
-  if (roles.length === 0)
+  if (!roles.success) {
+    throw genericInternalError(
+      `User ${id} has invalid role claims: ${commaSeparatedRoles}`,
+    );
+  }
+
+  if (roles.data.length === 0)
     throw genericInternalError(`User ${id} is missing required roles`);
 
   const username = user.Username;
@@ -129,7 +134,7 @@ function toIdmUser(user: UserType): IdmUser {
   return {
     email,
     id: unsafeBrandUserId(id),
-    roles,
+    roles: roles.data,
     username,
   };
 }
