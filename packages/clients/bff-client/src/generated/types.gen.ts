@@ -661,12 +661,15 @@ export type EserviceTemplateDetails = {
     description: LocalizedDescription;
     eserviceFields: EserviceTemplateEserviceFields;
     id: string;
+    knodeId: KnodeId;
     name: LocalizedName;
 };
 
 export type EserviceTemplate = {
+    categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    mode: EserviceMode;
     name: LocalizedName;
 };
 
