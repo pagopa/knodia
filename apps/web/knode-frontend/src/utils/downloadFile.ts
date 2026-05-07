@@ -12,11 +12,13 @@ export const downloadFile = (file: File | null | undefined) => {
 export const downloadResponseAsFile = (
   data: unknown,
   fileName: string,
-  contentType: string,
+  contentType: unknown,
 ) => {
   const content =
     typeof data === "string" ? data : JSON.stringify(data, null, 2);
 
-  const file = new File([content], fileName, { type: contentType });
+  const file = new File([content], fileName, {
+    type: typeof contentType === "string" ? contentType : "",
+  });
   downloadFile(file);
 };

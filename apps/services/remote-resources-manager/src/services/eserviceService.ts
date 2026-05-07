@@ -58,11 +58,16 @@ export function eserviceServiceBuilder(
           responseType: "arraybuffer",
         });
 
+      const contentType = headers["content-type"];
+      const contentDisposition = headers["content-disposition"];
       return {
         buffer: Buffer.from(blob as unknown as ArrayBuffer),
-        contentType: headers["content-type"] ?? "application/octet-stream",
+        contentType:
+          typeof contentType === "string"
+            ? contentType
+            : "application/octet-stream",
         fileName: parseContentDispositionFileName(
-          headers["content-disposition"],
+          typeof contentDisposition === "string" ? contentDisposition : undefined,
         ),
       };
     },
