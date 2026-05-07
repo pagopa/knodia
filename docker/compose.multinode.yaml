@@ -944,7 +944,7 @@ services:
       ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
       EXPECTED_ISSUER: "https://orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
       DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
@@ -1562,7 +1562,7 @@ services:
       ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
       EXPECTED_ISSUER: "https://lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
       DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
