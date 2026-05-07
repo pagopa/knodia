@@ -26,6 +26,6 @@
   },
   "exports": {
     ".": "./src/signalHub.ts",
-    "./config": "./src/config.ts"
+    "./config": "./src/config/config.ts"
   }
 }
