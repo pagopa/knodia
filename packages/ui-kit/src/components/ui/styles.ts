@@ -12,7 +12,7 @@ export const focusRing = tv({
 
 export const fieldInputStyle = tv({
   extend: focusRing,
-  base: "border-primary-light-decorative box-border w-full rounded-lg border px-3 text-sm leading-[1.6] transition",
+  base: "border-primary-light-decorative box-border w-full rounded-field border px-3 text-sm leading-[1.6] transition",
   variants: {
     isInvalid: {
       true: "",
@@ -71,17 +71,17 @@ export const fieldBorderStyles = tv({
 
 export const fieldGroupStyles = tv({
   extend: focusRing,
-  base: "group flex h-10 items-center overflow-hidden rounded-lg border bg-white",
+  base: "group flex h-10 items-center overflow-hidden rounded-field border bg-white",
   variants: fieldBorderStyles.variants,
 });
 
 export const dropdownStyles = tv({
-  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
+  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-dropdown shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });
 
 export const listItemStyles = tv({
   extend: focusRing,
-  base: "group body-md relative flex w-full items-center gap-3 rounded-md px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
+  base: "group body-md relative flex w-full items-center gap-3 rounded-list-item px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
   variants: {
     isDisabled: { true: "", false: "" },
     isSelected: { true: "", false: "" },
@@ -167,19 +167,19 @@ export const buttonStyles = tv({
       kind: "outlined",
       hierarchy: "brand",
       class:
-        "border-brand-200 text-brand-700 hover:bg-brand-50 pressed:bg-brand-50",
+        "border-brand-200 text-brand-700 hover:border-brand-400 hover:bg-button-outlined-brand-bg-hover pressed:bg-brand-50",
     },
     {
       kind: "outlined",
       hierarchy: "danger",
       class:
-        "border-error-200 text-error-600 hover:bg-error-50 pressed:bg-error-50",
+        "border-error-200 text-error-600 hover:border-error-400 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "outlined",
       hierarchy: "neutral",
       class:
-        "pressed:bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-50",
+        "pressed:bg-neutral-50 border-neutral-200 text-neutral-700 hover:border-button-outlined-neutral-border-hover hover:bg-button-outlined-neutral-bg-hover",
     },
 
     // --- TONAL buttons ---
@@ -187,19 +187,19 @@ export const buttonStyles = tv({
       kind: "tonal",
       hierarchy: "brand",
       class:
-        "bg-brand-50 hover:bg-brand-100 pressed:bg-brand-100 text-brand-700",
+        "bg-button-tonal-brand-bg hover:bg-button-tonal-brand-bg-hover pressed:bg-button-tonal-brand-bg-hover text-brand-700",
     },
     {
       kind: "tonal",
       hierarchy: "danger",
       class:
-        "bg-error-50 hover:bg-error-100 pressed:bg-error-100 text-error-600",
+        "bg-button-tonal-danger-bg hover:bg-button-tonal-danger-bg-hover pressed:bg-button-tonal-danger-bg-hover text-error-600 border-button-tonal-danger-border",
     },
     {
       kind: "tonal",
       hierarchy: "neutral",
       class:
-        "pressed:bg-neutral-100 bg-neutral-50 text-neutral-700 hover:bg-neutral-100",
+        "bg-button-tonal-neutral-bg hover:bg-button-tonal-neutral-bg-hover pressed:bg-button-tonal-neutral-bg-hover text-neutral-700 border-button-tonal-neutral-border",
     },
 
     // --- GHOST buttons ---

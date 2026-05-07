@@ -928,6 +928,41 @@ export type SuspendAgreementResponses = {
 
 export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
 
+export type ArchiveAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/archive';
+};
+
+export type ArchiveAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchiveAgreementError = ArchiveAgreementErrors[keyof ArchiveAgreementErrors];
+
+export type ArchiveAgreementResponses = {
+    /**
+     * Agreement archived successfully
+     */
+    200: Agreement;
+};
+
+export type ArchiveAgreementResponse = ArchiveAgreementResponses[keyof ArchiveAgreementResponses];
+
 export type CreateAgreementActivationMagicLinkData = {
     body?: never;
     path: {
@@ -1055,7 +1090,7 @@ export type GetPurposesData = {
         /**
          * Filter by Purpose State
          */
-        state?: PurposeState;
+        state?: Array<PurposeState>;
     };
     url: '/purposes';
 };
@@ -1227,3 +1262,38 @@ export type SuspendPurposeResponses = {
 };
 
 export type SuspendPurposeResponse = SuspendPurposeResponses[keyof SuspendPurposeResponses];
+
+export type ArchivePurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}/archive';
+};
+
+export type ArchivePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ArchivePurposeError = ArchivePurposeErrors[keyof ArchivePurposeErrors];
+
+export type ArchivePurposeResponses = {
+    /**
+     * Purpose archived successfully
+     */
+    200: Purpose;
+};
+
+export type ArchivePurposeResponse = ArchivePurposeResponses[keyof ArchivePurposeResponses];

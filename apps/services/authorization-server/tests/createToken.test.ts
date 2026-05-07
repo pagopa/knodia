@@ -6,10 +6,16 @@ import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
+import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "@knodia/authorization-models/clientAssertion";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { storeJti } from "@knodia/db-jti-replay-store/utils";
+import {
+  dpopClaimsValidationError,
+  dpopProofAlreadyUsed,
+  invalidDpopProofSignature,
+} from "@knodia/dpop-validator/errors";
 import {
   type Eservice,
   EserviceAccessTokenType,
@@ -30,14 +36,11 @@ import { unknown } from "zod";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
-import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
   accessTokenTypeMismatch,
   clientAssertionClaimsValidationError,
   consumerMissingRequiredAttributes,
-  dpopClaimsValidationError,
   invalidClientAssertionSignature,
-  invalidDpopProofSignature,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
@@ -901,7 +904,7 @@ describe("POST /token", async () => {
     await storeJti({
       dynamoClient,
       expireAtSec: dateToSeconds(new Date()) + 60,
-      jti: dpopProofJWT.payload.jti!,
+      jti: dpopProofJWT.payload.jti,
       tableName: dynamoDbDpopProofsTable,
     });
 
@@ -909,9 +912,11 @@ describe("POST /token", async () => {
       requestDpopProofJWS: dpopProofJWS,
     });
 
+    const error = dpopProofAlreadyUsed(dpopProofJWT.payload.jti);
+
     expect(response.statusCode).toBe(401);
     expect(response.json<API_Problem>().errors?.[0]?.detail).toEqual(
-      "DPoP proof already used",
+      error.errors[0]!.detail,
     );
   });
 });

@@ -28,6 +28,7 @@ export function ProductionEserviceList({
             : "New E-Services will appear here."
         }
         icon={<SelectionPlusIcon />}
+        kind="brand-soft"
         title="You don't have any E-Services yet."
       />
     );

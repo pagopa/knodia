@@ -24,17 +24,27 @@ export function ProducerAgreementDetail({
   agreement: bffApi.ProducerAgreementDetails;
 }) {
   const canManageAgreementState = useHasRole("administrative");
+  const isArchived = agreement.state === "Archived";
 
   return (
     <>
       <PageHeader
         actions={
-          canManageAgreementState && (
-            <AgreementActionButton agreement={agreement} />
+          isArchived ? (
+            <AgreementStateChip
+              archivedAt={agreement.updatedAt}
+              state="Archived"
+            />
+          ) : (
+            canManageAgreementState && (
+              <AgreementActionButton agreement={agreement} />
+            )
           )
         }
         resourceStatusChip={
-          <AgreementStateChip state={agreement.state} type="light" />
+          isArchived ? undefined : (
+            <AgreementStateChip state={agreement.state} type="light" />
+          )
         }
         title="Agreement request"
       />

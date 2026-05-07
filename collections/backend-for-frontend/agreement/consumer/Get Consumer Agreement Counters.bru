@@ -1,0 +1,14 @@
+meta {
+  name: Get Consumer Agreement Counters
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/agreements/counters
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

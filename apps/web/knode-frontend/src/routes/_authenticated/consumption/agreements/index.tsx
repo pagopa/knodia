@@ -1,4 +1,4 @@
-import { getConsumerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
+import { getConsumerAgreementCountersOptions } from "@knodia/bff-client/tanstack-query";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -29,7 +29,9 @@ export const Route = createFileRoute("/_authenticated/consumption/agreements/")(
     // eslint-disable-next-line perfectionist/sort-objects
     loader: async ({ context: { queryClient }, deps: { offset } }) => {
       await Promise.all([
-        queryClient.ensureQueryData(getConsumerAgreementsOptions({ client })),
+        queryClient.ensureQueryData(
+          getConsumerAgreementCountersOptions({ client }),
+        ),
         queryClient.ensureQueryData(pendingConsumerAgreementsQuery(offset)),
       ]);
     },
@@ -48,7 +50,7 @@ export function ConsumerAgreementsPage({
   onOffsetChange: (offset: number) => void;
 }) {
   const { data: countersData } = useSuspenseQuery(
-    getConsumerAgreementsOptions({ client }),
+    getConsumerAgreementCountersOptions({ client }),
   );
 
   const { data: pendingData } = useSuspenseQuery(
@@ -133,6 +135,7 @@ function EmptyAgreementsState() {
           : undefined
       }
       icon={<SelectionPlusIcon />}
+      kind="brand-soft"
       title="You don't have any Agreements yet."
     />
   );

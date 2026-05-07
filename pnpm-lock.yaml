@@ -499,6 +499,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
+      '@knodia/authorization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/authorization-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -520,6 +523,9 @@ importers:
       '@knodia/db-readmodel-purpose':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/purpose
+      '@knodia/dpop-validator':
+        specifier: workspace:*
+        version: link:../../../packages/dpop-validator
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -1142,12 +1148,24 @@ importers:
 
   apps/services/mock-eservice:
     dependencies:
+      '@aws-sdk/client-dynamodb':
+        specifier: 'catalog:'
+        version: 3.1023.0
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/authorization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/authorization-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-jti-replay-store':
+        specifier: workspace:*
+        version: link:../../../packages/db/jti-replay-store
+      '@knodia/dpop-validator':
+        specifier: workspace:*
+        version: link:../../../packages/dpop-validator
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -1182,6 +1200,9 @@ importers:
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -1197,6 +1218,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      openapi-types:
+        specifier: 'catalog:'
+        version: 12.1.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2692,33 +2716,39 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/signal-hub:
+  packages/dpop-validator:
     dependencies:
-      drizzle-orm:
+      '@knodia/authorization-models':
+        specifier: workspace:*
+        version: link:../models/authorization-models
+      '@knodia/db-jti-replay-store':
+        specifier: workspace:*
+        version: link:../db/jti-replay-store
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../fastify-zod-api-commons
+      fastify:
         specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
-      pg:
+        version: 5.8.5
+      jose:
         specifier: 'catalog:'
-        version: 8.16.3
+        version: 6.1.3
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
     devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: 'catalog:'
-        version: 1.51.4
       '@knodia/eslint-config':
         specifier: workspace:*
-        version: link:../../eslint-config
+        version: link:../eslint-config
       '@knodia/typescript-config':
         specifier: workspace:*
-        version: link:../../typescript-config
-      '@types/pg':
+        version: link:../typescript-config
+      '@types/node':
         specifier: 'catalog:'
-        version: 8.16.0
-      drizzle-kit:
-        specifier: 'catalog:'
-        version: 0.31.8
+        version: 25.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -2980,6 +3010,31 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/models/authorization-models:
+    dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../common-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/models/category-models:
     devDependencies:
@@ -3290,6 +3345,9 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../models/agreement-models
+      '@knodia/authorization-models':
+        specifier: workspace:*
+        version: link:../models/authorization-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
@@ -3368,9 +3426,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
-      '@knodia/crypto':
-        specifier: workspace:*
-        version: link:../crypto
+      jose:
+        specifier: 'catalog:'
+        version: 6.1.3
       zod:
         specifier: 'catalog:'
         version: 4.2.0

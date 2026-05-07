@@ -4,18 +4,18 @@ import { Chip, type ChipProps } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
-export function PurposeStateChip({
-  state,
-  type = "light",
-}: {
-  state: bffApi.PurposeState;
-  type?: ChipProps["type"];
-}) {
-  return match(state)
-    .with("Active", () => (
+type PurposeStateChipProps = { type?: ChipProps["type"] } & (
+  | { label?: never; state: Exclude<bffApi.PurposeState, "Archived"> }
+  | { label?: string; state: Extract<bffApi.PurposeState, "Archived"> }
+);
+
+export function PurposeStateChip(props: PurposeStateChipProps) {
+  const type = props.type ?? "light";
+  return match(props)
+    .with({ state: "Active" }, () => (
       <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
     ))
-    .with("Suspended", () => (
+    .with({ state: "Suspended" }, () => (
       <Chip
         icon={<ProhibitIcon />}
         kind="error"
@@ -23,11 +23,11 @@ export function PurposeStateChip({
         type={type}
       />
     ))
-    .with("Archived", () => (
+    .with({ state: "Archived" }, ({ label }) => (
       <Chip
         icon={<ArchiveIcon />}
         kind="neutral"
-        label="Archived"
+        label={label ?? "Archived"}
         type={type}
       />
     ))
