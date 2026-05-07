@@ -1,7 +1,6 @@
 import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   EserviceId,
-  type KnodeId,
   type OrganizationId,
   PurposeId,
   type PurposeTemplateId,
@@ -43,17 +42,6 @@ export type PurposeFormAnswers = z.infer<typeof PurposeFormAnswers>;
 export const PurposeFormSchemaVersion = z.enum(["1.0"]);
 export type PurposeFormSchemaVersion = z.infer<typeof PurposeFormSchemaVersion>;
 
-export const PurposeFormVariant = z.enum(["basic", "withriskanalysis"]);
-export type PurposeFormVariant = z.infer<typeof PurposeFormVariant>;
-
-// Each Knode runs a single purpose-process with a fixed PURPOSE_FORMS_DIR
-// (see docker/compose.multinode.yaml), so KnodeId determines the form variant
-// against which Purpose formAnswers must validate.
-export const purposeFormVariantByKnode = {
-  Lynx: "basic",
-  Orion: "withriskanalysis",
-} as const satisfies Record<KnodeId, PurposeFormVariant>;
-
 export const Purpose = z.strictObject({
   consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
@@ -67,7 +55,7 @@ export const Purpose = z.strictObject({
   state: PurposeState,
   suspendedByConsumerAt: z.coerce.date().nullable(),
   suspendedByProducerAt: z.coerce.date().nullable(),
-  // present only if the purpose was created starting from a statement template
+  // present only if the purpose was created starting from a purpose template
   template: ExternalResource<PurposeTemplateId>().optional(),
   updatedAt: z.coerce.date(),
 });

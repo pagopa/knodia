@@ -1,11 +1,11 @@
-import {
-  type PurposeFormSchemaVersion,
-  PurposeFormVariant,
-} from "@knodia/purpose-models";
+import { type PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import z from "zod";
+
+export const PurposeFormVariant = z.enum(["basic", "withriskanalysis"]);
+export type PurposeFormVariant = z.infer<typeof PurposeFormVariant>;
 
 export const PURPOSE_FORM_SCHEMA_FOLDERS = PurposeFormVariant.options.map(
   (variant) => `schemas-${variant}` as const,
