@@ -8,6 +8,7 @@ import {
 } from "@knodia/common-models/ids";
 import { Banner } from "@knodia/ui-kit/ui";
 import {
+  ArchiveIcon,
   CaretDownIcon,
   CaretUpIcon,
   SelectionIcon,
@@ -25,7 +26,9 @@ import { match } from "ts-pattern";
 
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
+import { ArchiveAgreementModal } from "@/features/agreement/components/ArchiveAgreementModal";
 import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
+import { useArchiveAgreementByConsumer } from "@/features/agreement/hooks/useArchiveAgreementByConsumer";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
 import { useRequestAgreementMagicLink } from "@/features/agreement/hooks/useRequestAgreementMagicLink";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
@@ -35,11 +38,13 @@ import { EservicePurposeSection } from "./EservicePurposeSection";
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
+  eserviceState,
   hasRecentlyBeenUpdated,
   knodeId,
 }: {
   agreement: bffApi.EserviceAgreementDetail;
   eserviceId: EserviceId;
+  eserviceState: bffApi.EserviceVersionState;
   hasRecentlyBeenUpdated: boolean;
   knodeId: KnodeId;
 }) {
@@ -47,7 +52,7 @@ export function OrgConsumptionStatusSection({
 
   return (
     <Disclosure
-      className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-expanded:pb-6 elevation-2"
+      className="flex flex-col rounded-org-consumption-status-card border border-primary-light-decorative px-6 pt-6 data-expanded:pb-6 shadow-org-consumption-status"
       defaultExpanded
     >
       <CollapseTrigger hasRecentlyBeenUpdated={hasRecentlyBeenUpdated} />
@@ -60,22 +65,29 @@ export function OrgConsumptionStatusSection({
           knodeId={knodeId}
         />
 
-        {agreement.state !== "PendingConsumerOperatorIdentification" && (
-          <>
-            <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
+        {match(agreement.state)
+          .with("Active", "Suspended", "Archived", () => (
+            <>
+              <EservicePurposeSection
+                agreementState={agreement.state}
+                eserviceId={eserviceId}
+                eserviceState={eserviceState}
+                knodeId={knodeId}
+              />
 
-            <div className="mt-4 flex flex-col gap-4">
-              <h3 className="title-md-em text-primary-light-low-contrast">
-                Keychains
-              </h3>
-              <Banner icon={<SelectionIcon />} kind="neutral">
-                To request an access token for this E-Service, associate a
-                Keychain to a Purpose from the Purpose page. Associated
-                Keychains will appear here.
-              </Banner>
-            </div>
-          </>
-        )}
+              <div className="mt-4 flex flex-col gap-4">
+                <h3 className="title-md-em text-primary-light-low-contrast">
+                  Keychains
+                </h3>
+                <Banner icon={<SelectionIcon />} kind="neutral">
+                  To request an access token for this E-Service, associate a
+                  Keychain to a Purpose from the Purpose page. Associated
+                  Keychains will appear here.
+                </Banner>
+              </div>
+            </>
+          ))
+          .otherwise(() => null)}
       </DisclosurePanel>
     </Disclosure>
   );
@@ -93,13 +105,6 @@ function AgreementStatusBanner({
   knodeId: KnodeId;
 }) {
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
-
-  const { isPending: isReactivatePending, reactivateAgreement } =
-    useReactivateAgreementByConsumer({
-      agreementId,
-      eserviceId,
-      knodeId,
-    });
 
   const { isPending: isRequestMagicLinkPending, requestMagicLink } =
     useRequestAgreementMagicLink({
@@ -119,57 +124,22 @@ function AgreementStatusBanner({
         <Banner kind="success">Active</Banner>
       ),
     )
-    .with("Suspended", () =>
-      agreement.suspendedByProducerAt !== null ? (
-        <Banner
-          action={
-            canManageAgreement
-              ? {
-                  label: "Archive",
-                  // TODO: implement archive agreement action
-                }
-              : undefined
-          }
-          kind="error"
-          size="md"
-          title="Suspended by Producer"
-        >
-          You can&apos;t reactivate this Agreement because it was suspended by
-          the Producer. If you believe this is a mistake, contact the Producer
-          to request the reactivation, or archive it and request a new
-          Agreement.
-        </Banner>
-      ) : (
-        <Banner
-          action={
-            canManageAgreement
-              ? {
-                  label: "Archive",
-                  // TODO: implement archive agreement action
-                }
-              : undefined
-          }
-          kind="error"
-          prominentAction={
-            canManageAgreement && agreement.suspendedByConsumerAt !== null
-              ? {
-                  isDisabled: isReactivatePending,
-                  label: "Reactivate",
-                  onPress: reactivateAgreement,
-                }
-              : undefined
-          }
-        >
-          Suspended
-        </Banner>
-      ),
-    )
-    .with("Archived", () => {
-      console.warn(
-        "Unexpected Archived agreement in consumption status section",
-      );
-      return null;
-    })
+    .with("Suspended", () => (
+      <SuspendedAgreementBanner
+        agreement={agreement}
+        canManageAgreement={canManageAgreement}
+        eserviceId={eserviceId}
+        knodeId={knodeId}
+      />
+    ))
+    .with("Archived", () => (
+      <Banner icon={<ArchiveIcon />} kind="neutral" size="md" title="Archived">
+        <span className="block max-w-160">
+          You can&apos;t restore an archived Agreement. If your organization has
+          the required attributes, you can request a new one.
+        </span>
+      </Banner>
+    ))
     .with("PendingConsumerOperatorIdentification", () => (
       <Banner
         action={
@@ -190,8 +160,6 @@ function AgreementStatusBanner({
       </Banner>
     ))
     .exhaustive();
-
-  if (!banner) return null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -222,7 +190,7 @@ function CollapseTrigger({
           {hasRecentlyBeenUpdated && <RecentlyUpdatedChip />}
           <span
             aria-hidden
-            className="flex items-center justify-center rounded-[7px] bg-slate-100 p-2"
+            className="flex items-center justify-center rounded-button bg-neutral-100 p-2"
           >
             {isExpanded ? (
               <CaretUpIcon size={20} />
@@ -268,6 +236,77 @@ function SuspendAgreementByConsumerButton({
         onConfirm={suspendAgreement}
         onOpenChange={setIsOpen}
         suspendActor="consumer"
+      />
+    </>
+  );
+}
+
+function SuspendedAgreementBanner({
+  agreement,
+  canManageAgreement,
+  eserviceId,
+  knodeId,
+}: {
+  agreement: bffApi.EserviceAgreementDetail;
+  canManageAgreement: boolean;
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
+}) {
+  const agreementId = unsafeBrandId<AgreementId>(agreement.id);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+
+  const {
+    archiveAgreement,
+    isError: isArchiveError,
+    isPending: isArchivePending,
+  } = useArchiveAgreementByConsumer({ agreementId, eserviceId, knodeId });
+
+  const { isPending: isReactivatePending, reactivateAgreement } =
+    useReactivateAgreementByConsumer({ agreementId, eserviceId, knodeId });
+
+  const archiveAction = canManageAgreement
+    ? { label: "Archive", onPress: () => setIsArchiveModalOpen(true) }
+    : undefined;
+
+  return (
+    <>
+      {agreement.suspendedByProducerAt !== null ? (
+        <Banner
+          action={archiveAction}
+          kind="error"
+          size="md"
+          title="Suspended by Producer"
+        >
+          <span className="block max-w-160">
+            You can&apos;t reactivate this Agreement because it was suspended by
+            the Producer. If you believe this is a mistake, contact the Producer
+            to request the reactivation, or archive it and request a new
+            Agreement.
+          </span>
+        </Banner>
+      ) : (
+        <Banner
+          action={archiveAction}
+          kind="error"
+          prominentAction={
+            canManageAgreement && agreement.suspendedByConsumerAt !== null
+              ? {
+                  isDisabled: isReactivatePending,
+                  label: "Reactivate",
+                  onPress: reactivateAgreement,
+                }
+              : undefined
+          }
+        >
+          Suspended
+        </Banner>
+      )}
+      <ArchiveAgreementModal
+        isError={isArchiveError}
+        isOpen={isArchiveModalOpen}
+        isPending={isArchivePending}
+        onConfirm={archiveAgreement}
+        onOpenChange={setIsArchiveModalOpen}
       />
     </>
   );

@@ -18,12 +18,15 @@ interface AuthenticationPluginOptions {
   wellKnownUrls: string[];
 }
 
-export const parseAuthHeaderToken = (authHeader: string | undefined) => {
-  if (!authHeader?.toLowerCase().startsWith(BEARER_PREFIX)) {
+export const parseAuthHeaderToken = (
+  authHeader: string | undefined,
+  prefix: string = BEARER_PREFIX,
+) => {
+  if (!authHeader?.toLowerCase().startsWith(prefix)) {
     throw unauthorizedError("Missing or invalid Authorization header");
   }
 
-  return authHeader.substring(BEARER_PREFIX.length);
+  return authHeader.substring(prefix.length);
 };
 
 export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(

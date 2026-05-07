@@ -6,7 +6,7 @@ import type {
 
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 
-export function getExternalUiSessionAuthData(
+export function getExternalUISessionAuthData(
   authData: AuthData | undefined,
 ): ExternalUISessionAuthData {
   if (authData?.tokenType !== "external-ui-session") {

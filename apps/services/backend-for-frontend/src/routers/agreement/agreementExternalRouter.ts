@@ -34,7 +34,7 @@ import type { BffProcessConfig } from "../../config/config.ts";
 
 import { API_AgreementActivationDetails } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
-import { getExternalUiSessionAuthData } from "../../utils/authData.ts";
+import { getExternalUISessionAuthData } from "../../utils/authData.ts";
 
 interface AgreementExternalRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -82,7 +82,7 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
-      const externalAuthData = getExternalUiSessionAuthData(authData);
+      const externalAuthData = getExternalUISessionAuthData(authData);
       const agreementId = externalAuthData.agreement.id;
 
       logger.info(`Activating Agreement ${agreementId}`);
@@ -124,7 +124,7 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
-      const externalAuthData = getExternalUiSessionAuthData(authData);
+      const externalAuthData = getExternalUISessionAuthData(authData);
       const agreementId = externalAuthData.agreement.id;
 
       logger.info(`Getting activation details for Agreement ${agreementId}`);

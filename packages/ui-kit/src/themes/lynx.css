@@ -27,6 +27,7 @@
   --color-primary-light-low-contrast: var(--color-neutral-500);
   --color-primary-light-mid-contrast: var(--color-neutral-600);
   --color-primary-light-high-contrast: var(--color-neutral-700);
+  --color-on-primary-light-high-contrast: var(--color-slate-700);
   --color-primary-dark: var(--color-neutral-700);
   --color-primary-dark-decorative: var(--color-neutral-500);
   --color-primary-dark-high-contrast: var(--color-white);
@@ -106,6 +107,44 @@
   --color-error-900: var(--color-red-900);
   --color-error-950: var(--color-red-950);
 
+  /* Table */
+  --color-table-header-bg: var(--color-brand-light);
+  --color-table-header-border: transparent;
+
+  /* Navbar */
+  --color-navbar-role-text: var(--color-brand-dark-high-contrast);
+
+  /* Tonal brand button */
+  --color-button-tonal-brand-bg: var(--color-brand-100);
+  --color-button-tonal-brand-bg-hover: var(--color-brand-200);
+
+  /* Tonal danger button — outlined-look in Lynx */
+  --color-button-tonal-danger-bg: transparent;
+  --color-button-tonal-danger-bg-hover: var(--color-error-50);
+  --color-button-tonal-danger-border: var(--color-error-200);
+
+  /* Tonal neutral button — outlined-look in Lynx */
+  --color-button-tonal-neutral-bg: transparent;
+  --color-button-tonal-neutral-bg-hover: var(--color-neutral-50);
+  --color-button-tonal-neutral-border: var(--color-neutral-200);
+
+  /* Outlined button — hover (per hierarchy where token diverges across themes) */
+  --color-button-outlined-neutral-border-hover: var(--color-neutral-400);
+  --color-button-outlined-neutral-bg-hover: var(--color-neutral-50);
+  --color-button-outlined-brand-bg-hover: var(--color-brand-100);
+
+  /* Empty icon — brand-soft (theme-scoped) */
+  --color-empty-icon-brand-soft-bg: var(--color-brand-light);
+
+  /* Org consumption status */
+  --radius-org-consumption-status-card: 0;
+  --shadow-org-consumption-status: none;
+
+  /* Document recap */
+  --color-document-recap-border: var(--color-primary-light-decorative);
+  --radius-document-recap: 0;
+  --shadow-document-recap: none;
+
   /* Typography */
   --font-family-display: var(--font-display);
   --font-size-display-sm: 36px;
@@ -159,4 +198,92 @@
 
   /* Button */
   --radius-button: 3px;
+
+  /* Banner */
+  --radius-banner: 0;
+
+  /* Chip */
+  --radius-chip: 3px;
+
+  /* Field */
+  --radius-field: 2px;
+
+  /* Text area */
+  --radius-textarea: 2px;
+
+  /* Dropdown */
+  --radius-dropdown: 0;
+
+  /* Popover */
+  --radius-popover: 0;
+
+  /* Empty icon */
+  --radius-empty-icon: 100px;
+
+  /* Empty state */
+  --container-empty: 400px;
+
+  /* List item */
+  --radius-list-item: 0;
+
+  /* Modal */
+  --radius-modal: 0;
+
+  /* Checkbox */
+  --radius-checkbox: 2px;
+
+  /* Pagination button */
+  --radius-pagination-button: 100px;
+
+  /* Tab */
+  --radius-tab: 2px;
+
+  /* Tooltip */
+  --radius-tooltip: 0;
+
+  /* Toast */
+  --radius-toast: 0;
+
+  /* Login card */
+  --radius-login-card: 0;
+  --spacing-login-card-y: 48px;
+  --spacing-login-card-x: 24px;
+
+  /* Card */
+  --radius-card: 0;
+  --color-card-border: var(--color-primary-light-decorative);
+  --shadow-card: none;
+
+  /* Attribute group */
+  --radius-attribute-group: 0;
+
+  /* Info card */
+  --radius-info-card: 0;
+
+  /* Settings card */
+  --radius-settings-card: 0;
+
+  /* Agreement counter card */
+  --spacing-counter-card: 24px;
+  --spacing-counter-card-right: 24px;
+  --spacing-counter-card-gap: 40px;
+  --spacing-counter-card-icon: 40px;
+  --spacing-counter-card-svg: 24px;
+  --radius-counter-card-icon: 100px;
+  --font-family-counter-card-label: var(--font-family-title);
+  --font-size-counter-card-label: var(--font-size-title-md);
+  --font-weight-counter-card-label: var(--font-weight-title-em);
+  --letter-spacing-counter-card-label: var(--letter-spacing-title-md);
+  --line-height-counter-card-label: var(--line-height-title);
+
+  /* E-service card */
+  --radius-eservice-card: 0;
+  --color-eservice-card-border: var(--color-primary-light-decorative);
+  --shadow-eservice-card: none;
+}
+
+@layer utilities {
+  .orion-only {
+    display: none;
+  }
 }

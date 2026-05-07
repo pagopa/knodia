@@ -29,6 +29,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   agreementAlreadyExists,
   agreementNotInActivatableState,
+  agreementNotInArchivableState,
   agreementNotInReactivatableState,
   agreementNotInSuspendableState,
   agreementTokenClaimMismatch,
@@ -47,6 +48,15 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
   EserviceVersionState.enum.Suspended,
 ];
+
+export function assertAgreementCanBeArchived(agreement: Agreement): void {
+  if (agreement.state !== AgreementState.enum.Suspended) {
+    throw agreementNotInArchivableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+    });
+  }
+}
 
 export function assertAgreementCanBeReactivatedBy(
   agreement: Agreement,

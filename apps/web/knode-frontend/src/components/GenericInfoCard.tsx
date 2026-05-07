@@ -15,7 +15,7 @@ export function GenericInfoCard({
     <dl
       {...props}
       className={twMerge(
-        "flex justify-between py-3 px-4 rounded-lg text-primary-dark bg-secondary-light",
+        "flex justify-between py-3 px-4 rounded-info-card text-primary-dark bg-secondary-light",
         className,
       )}
     >

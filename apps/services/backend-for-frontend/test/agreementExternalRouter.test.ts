@@ -148,7 +148,7 @@ function makeAxiosError(status: number, title: string): AxiosError {
   return error;
 }
 
-function makeExternalUiSessionPayload(
+function makeExternalUISessionPayload(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
   return {
@@ -175,7 +175,7 @@ function makeExternalUiSessionPayload(
 describe("POST /external/agreementActivation/activate (activateAgreement)", () => {
   beforeEach(() => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload(),
+      payload: makeExternalUISessionPayload(),
       protectedHeader: { alg: "RS256" },
     });
     activateAgreementMock.mockResolvedValue(mockAgreementResponse);
@@ -273,7 +273,7 @@ describe("POST /external/agreementActivation/activate (activateAgreement)", () =
 
   it("returns 401 when the scope claim is not a valid ExternalUISessionScope", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload({ scope: "other-scope" }),
+      payload: makeExternalUISessionPayload({ scope: "other-scope" }),
       protectedHeader: { alg: "RS256" },
     });
 
@@ -319,7 +319,7 @@ describe("POST /external/agreementActivation/activate (activateAgreement)", () =
 describe("GET /external/agreementActivation/details (getAgreementActivationDetails)", () => {
   beforeEach(() => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload(),
+      payload: makeExternalUISessionPayload(),
       protectedHeader: { alg: "RS256" },
     });
     getAgreementMock.mockResolvedValue(mockAgreementResponse);
@@ -380,7 +380,7 @@ describe("GET /external/agreementActivation/details (getAgreementActivationDetai
 
   it("uses IDs from the agreement record (not the token claims) to drive the downstream resource calls", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload({
+      payload: makeExternalUISessionPayload({
         consumer: {
           id: "11111111-1111-4000-8000-111111111111",
           knode_id: "Lynx",
@@ -464,7 +464,7 @@ describe("GET /external/agreementActivation/details (getAgreementActivationDetai
 
   it("returns 401 when the scope claim is wrong", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: makeExternalUiSessionPayload({ scope: "other-scope" }),
+      payload: makeExternalUISessionPayload({ scope: "other-scope" }),
       protectedHeader: { alg: "RS256" },
     });
 

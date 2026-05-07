@@ -1,6 +1,7 @@
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { tv } from "tailwind-variants";
 
+import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Button, type ButtonProps } from "./Button";
 
 type PaginationItem =
@@ -163,10 +164,18 @@ function getPaginationItems({
   return items;
 }
 
-function PaginationButton({ isCurrent, ...props }: PaginationButtonProps) {
+function PaginationButton({
+  isCurrent,
+  className,
+  ...props
+}: PaginationButtonProps) {
   return (
     <Button
       {...props}
+      className={composeTailwindRenderProps(
+        className,
+        "rounded-pagination-button",
+      )}
       hierarchy="neutral"
       kind={isCurrent ? "outlined" : "ghost"}
       size="md"

@@ -10,6 +10,7 @@ import {
   API_EserviceVersionState,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import z from "zod";
 
@@ -49,10 +50,9 @@ export const API_AgreementSeed = z
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
-export const API_SuspendReactivateAgreementByConsumerQueryParams =
-  z.strictObject({
-    knodeId: API_KnodeId,
-  });
+export const API_ConsumerAgreementActionQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
 
 export const API_CreateAgreementConsumerActivationMagicLinkQueryParams =
   z.strictObject({
@@ -99,6 +99,7 @@ export const API_ProducerAgreementDetails = API_ProducerAgreement.omit({
     producer: API_CompactOrganization,
     suspendedByConsumerAt: z.string().datetime().nullable(),
     suspendedByProducerAt: z.string().datetime().nullable(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<
@@ -113,7 +114,7 @@ export const API_ProducerAgreements = z
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
 
-export const API_ConsumerAgreements = z
+export const API_ConsumerAgreementCounters = z
   .strictObject({
     counters: z.strictObject({
       activeAgreements: z
@@ -130,6 +131,42 @@ export const API_ConsumerAgreements = z
         format: "int32",
       }),
     }),
+  })
+  .meta({ id: "ConsumerAgreementCounters" });
+export type API_ConsumerAgreementCounters = z.infer<
+  typeof API_ConsumerAgreementCounters
+>;
+
+export const API_GetConsumerAgreementsQueryParams =
+  API_PaginationQueryParams.extend({
+    limit: API_PaginationQueryParams.shape.limit.default(10),
+    offset: API_PaginationQueryParams.shape.offset.default(0),
+    state: arrayQueryParam(API_AgreementState)
+      .optional()
+      .meta({ description: "Filter by Agreement State" }),
+  });
+export type API_GetConsumerAgreementsQueryParams = z.infer<
+  typeof API_GetConsumerAgreementsQueryParams
+>;
+
+export const API_ConsumerAgreement = z
+  .strictObject({
+    eservice: z.strictObject({
+      id: z.uuid(),
+      name: API_LocalizedName,
+    }),
+    id: z.uuid(),
+    producer: API_CompactOrganization,
+    state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "ConsumerAgreement" });
+export type API_ConsumerAgreement = z.infer<typeof API_ConsumerAgreement>;
+
+export const API_ConsumerAgreements = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerAgreement),
   })
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
