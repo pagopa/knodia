@@ -75,6 +75,7 @@ export const API_ProducerAgreement = z
     }),
     id: z.uuid(),
     state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
