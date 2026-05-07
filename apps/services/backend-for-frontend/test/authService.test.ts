@@ -252,8 +252,10 @@ describe("auth integration", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it("returns 401 when no valid role in custom:roles", async () => {
-      setupValidCognitoToken({ "custom:roles": "invalidrole" });
+    it("returns 401 when custom:roles contains no roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "",
+      });
 
       const response = await app.inject({
         method: "POST",
@@ -262,6 +264,54 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when custom:roles contains only invalid roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "invalidrole1,invalidrole2",
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when custom:roles contains an invalid role", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "administrative,invalidrole",
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("ignores empty entries in custom:roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "administrative, , technical,",
+      });
+      setupKmsSignature();
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = response.json<{ uiSessionToken: string }>();
+      const uiPayload = UISessionTokenClaims.parse(
+        parseJwtPayload(body.uiSessionToken),
+      );
+      expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     });
 
     it("returns 401 when token_use is access", async () => {

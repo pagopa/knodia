@@ -101,7 +101,16 @@ export function authServiceBuilder(
     const roles = cognitoPayload["custom:roles"]
       .split(",")
       .map((s) => s.trim())
-      .filter((role): role is UserRole => UserRole.safeParse(role).success);
+      .filter(Boolean)
+      .map((role) => {
+        try {
+          return UserRole.parse(role);
+        } catch {
+          throw unauthorizedError(
+            `Invalid role claim in Cognito token: ${role}`,
+          );
+        }
+      });
 
     const orgGroup = cognitoPayload["cognito:groups"].find((g) =>
       g.startsWith("org:"),
