@@ -5,7 +5,11 @@ signs a client assertion, signs a DPoP proof and exchanges it for a DPoP access 
 
 ## Prerequisite
 
-### For Client Assertion
+The flow needs:
+- an **RSA keypair** to sign the client assertion (always RS256);
+- a keypair to sign the DPoP proof — RS256 or ES256.
+
+The simplest setup is a single RSA keypair, used for both:
 
 ```
 pnpm generate-keypair
@@ -15,17 +19,14 @@ Generates an RSA keypair under `docker/keys/` and writes
 `KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64` into
 `collections/.env`. Run once, or again to rotate the key.
 
-### For DPoP Proof
+If you want a separate ES256 keypair for the DPoP proof, also run:
 
 ```
 pnpm generate-keypair --alg ES256
 ```
 
-Generates an EC keypair under `docker/keys/` and writes
-`KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64` into
-`collections/.env`. Run once, or again to rotate the key.
-
-The DPoP proof can also be signed with an RSA key.
+This writes `KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64`
+into `collections/.env`.
 
 ## Run
 
