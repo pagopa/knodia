@@ -6,10 +6,7 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
-import type {
-  ConsumerKeychainPurpose,
-  KeychainId,
-} from "@knodia/keychain-models";
+import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -95,7 +92,10 @@ export function keyAlreadyExists(kid: string) {
   });
 }
 
-export function keychainMemberNotFound(keychainId: KeychainId, userId: UserId) {
+export function keychainMemberNotFound(
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  userId: UserId,
+) {
   return createApiError<ErrorCodes>({
     code: "KEYCHAIN_MEMBER_NOT_FOUND",
     detail: `User ${userId} is not a member of keychain ${keychainId}`,
@@ -104,7 +104,10 @@ export function keychainMemberNotFound(keychainId: KeychainId, userId: UserId) {
   });
 }
 
-export function keyNotFoundInKeychain(kid: KeyId, keychainId: KeychainId) {
+export function keyNotFoundInKeychain(
+  kid: KeyId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+) {
   return createApiError<ErrorCodes>({
     code: "KEY_NOT_FOUND_IN_KEYCHAIN",
     detail: `Key with kid ${kid} not found in keychain ${keychainId}`,
@@ -143,7 +146,10 @@ export function purposeAlreadyLinkedToConsumerKeychain(
   });
 }
 
-export function tooManyKeysPerKeychain(keychainId: KeychainId, size: number) {
+export function tooManyKeysPerKeychain(
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  size: number,
+) {
   return createApiError<ErrorCodes>({
     code: "TOO_MANY_KEYS_PER_KEYCHAIN",
     detail: `Keys count (${size}) for the keychain ${keychainId} exceeds maximum allowed value`,
@@ -152,7 +158,10 @@ export function tooManyKeysPerKeychain(keychainId: KeychainId, size: number) {
   });
 }
 
-export function userAlreadyMember(keychainId: KeychainId, userId: UserId) {
+export function userAlreadyMember(
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  userId: UserId,
+) {
   return createApiError<ErrorCodes>({
     code: "USER_ALREADY_MEMBER",
     detail: `User ${userId} is already a member of keychain ${keychainId}`,
@@ -161,7 +170,10 @@ export function userAlreadyMember(keychainId: KeychainId, userId: UserId) {
   });
 }
 
-export function userNotAllowed(userId: UserId, keychainId: KeychainId) {
+export function userNotAllowed(
+  userId: UserId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",
     detail: `User ${userId} is not allowed to perform this action on keychain ${keychainId}`,

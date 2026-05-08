@@ -16,7 +16,6 @@ import {
   getMockConsumerKeychain,
   getMockKeychainKey,
 } from "@knodia/test-commons/utils";
-import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -71,11 +70,11 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       version: 1,
     });
 
-    const removedEventData = match(KeychainEventV1.parse(removedEvent))
-      .with({ type: "ConsumerKeychainKeyRemovedV1" }, (e) => e.data)
-      .otherwise((e) => {
-        throw new Error(`Unexpected event type: ${e.type}`);
-      });
+    const parsedRemovedEvent = KeychainEventV1.parse(removedEvent);
+    if (parsedRemovedEvent.type !== "ConsumerKeychainKeyRemovedV1") {
+      throw new Error(`Unexpected event type: ${parsedRemovedEvent.type}`);
+    }
+    const removedEventData = parsedRemovedEvent.data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       keys: [],
