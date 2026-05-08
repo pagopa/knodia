@@ -13,7 +13,7 @@ const DEFAULT_USER_POOL_ID =
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const USERNAME = "Mario Rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
-const ROLES = ["role:administrative", "role:technical"];
+const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
 const MOCK_USERS = [
   {
@@ -24,6 +24,7 @@ const MOCK_USERS = [
       { Name: "given_name", Value: "Mario" },
       { Name: "family_name", Value: "Rossi" },
       { Name: "custom:organizationId", Value: ORG_ID },
+      { Name: "custom:roles", Value: ROLES.join(",") },
     ],
     Enabled: true,
     Groups: [`org:${ORG_ID}`],
@@ -40,9 +41,10 @@ const MOCK_USERS = [
       { Name: "given_name", Value: "Tecnico" },
       { Name: "family_name", Value: "Roma" },
       { Name: "custom:organizationId", Value: ORG_ID },
+      { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
-    Groups: ["role:technical", `org:${ORG_ID}`],
+    Groups: [`org:${ORG_ID}`],
     UserCreateDate: NOW_IN_SECONDS - 64_800,
     UserLastModifiedDate: NOW_IN_SECONDS - 2_700,
     UserStatus: "CONFIRMED",
@@ -56,6 +58,7 @@ const MOCK_USERS = [
       { Name: "given_name", Value: "Giulia" },
       { Name: "family_name", Value: "Bianchi" },
       { Name: "custom:organizationId", Value: ORG_ID },
+      { Name: "custom:roles", Value: "administrative" },
     ],
     Enabled: true,
     Groups: [`org:${ORG_ID}`],
@@ -75,9 +78,10 @@ const MOCK_USERS = [
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000099",
       },
+      { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
-    Groups: ["role:technical", "org:00000000-0000-4000-8000-000000000099"],
+    Groups: ["org:00000000-0000-4000-8000-000000000099"],
     UserCreateDate: NOW_IN_SECONDS - 21_600,
     UserLastModifiedDate: NOW_IN_SECONDS - 900,
     UserStatus: "CONFIRMED",
