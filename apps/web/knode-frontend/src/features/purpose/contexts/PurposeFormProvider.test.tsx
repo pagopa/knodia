@@ -1,5 +1,10 @@
 import type { bffApi } from "@knodia/bff-client";
 
+import {
+  type EserviceId,
+  KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
@@ -9,8 +14,10 @@ import { renderWithProviders, screen } from "@/test/utils";
 import { PurposeFormProvider } from "./PurposeFormProvider";
 import { usePurposeWizardContext } from "./usePurposeFormContext";
 
-const KNODE_ID = "Orion" as const;
-const ESERVICE_ID = "eservice-123" as ConsumptionEserviceDetail["id"];
+const KNODE_ID = KnodeId.enum.Orion;
+const ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "10000000-0000-4000-8000-000000000001",
+);
 
 const mockEservice = {
   id: ESERVICE_ID,

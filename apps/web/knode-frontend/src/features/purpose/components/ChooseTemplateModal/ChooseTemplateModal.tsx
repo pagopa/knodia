@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
-import { Banner, Button } from "@knodia/ui-kit/ui";
+import { Banner, Button, Loader } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -60,11 +60,7 @@ export function ChooseTemplateModal({
       <div className="mx-auto flex max-w-160 flex-col gap-10 p-10 pb-16">
         <StepHeader description="" title="Choose template" />
 
-        {isPending && (
-          <span className="body-lg text-primary-light-low-contrast">
-            Loading templates...
-          </span>
-        )}
+        {isPending && <Loader className="mx-auto mt-10" label="Loading..." />}
 
         {isError && (
           <Banner kind="error">
@@ -110,7 +106,7 @@ function TemplateCard({
   template: bffApi.PurposeTemplate;
 }) {
   return (
-    <article className="flex items-start gap-10 rounded-2xl border border-slate-100 elevation-1 p-4">
+    <article className="flex items-start gap-10 rounded-card border border-card-border shadow-card p-4">
       <div className="flex min-w-0 flex-1 flex-col">
         <h3 className="title-md-em text-primary-light-high-contrast">
           {template.name.en}

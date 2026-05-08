@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import {
   type EserviceId,
   type PurposeTemplateId,
@@ -34,15 +36,12 @@ export const Route = createFileRoute(
     const eserviceDetail = await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(id, knodeId),
     );
-    // Fall back to the from-scratch flow if the templateId does not resolve
-    // to a template valid for this E-service and form schema version
-    // (stale bookmark, removed template, manual URL tampering, mismatched
-    // E-service or schema). The list endpoint applies those availability
-    // constraints server-side, so a template present in the list is safe to
-    // pre-fill. Transient query failures are not swallowed — they propagate
-    // to the route error boundary instead of silently degrading to from-scratch.
-    let templateDetail;
-    if (templateId) {
+    // Templates only apply to ProvideData E-services; a tampered URL on a
+    // ReceiveData E-service silently degrades to the from-scratch flow.
+    // The list endpoint enforces E-service and form-schema-version availability
+    // server-side, so an unknown templateId also degrades to from-scratch.
+    let templateDetail: bffApi.PurposeTemplateDetails | undefined;
+    if (templateId && eserviceDetail.mode === "ProvideData") {
       const availableTemplates = await context.queryClient.ensureQueryData(
         purposeTemplatesQuery(knodeId, unsafeBrandId<EserviceId>(id)),
       );
@@ -75,7 +74,7 @@ function RouteComponent() {
       to: "/consumption/e-services/$id",
     });
 
-  if (from === "template" && !templateId) {
+  if (from === "template" && !templateId && eservice.mode === "ProvideData") {
     return (
       <ChooseTemplateModal
         eserviceId={eservice.id}

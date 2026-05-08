@@ -1,3 +1,4 @@
+import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import {
@@ -25,7 +26,7 @@ export interface PurposeWizardContextValue {
   formSchemaVersion: string;
   knodeId: KnodeId;
   maxDailyCallsPerConsumer: number;
-  selectedTemplate?: { id: string; knodeId: KnodeId };
+  selectedTemplate?: bffApi.PurposeTemplateReference;
   updateDetailsStep: (data: DetailsStepData) => void;
   updateFormAnswers: (answers: FormValues) => void;
 }

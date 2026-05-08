@@ -4,6 +4,7 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 import { Button, Menu, MenuItem, MenuTrigger } from "@knodia/ui-kit/ui";
 import { CaretDownIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
+import { match } from "ts-pattern";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
@@ -59,17 +60,24 @@ export function CreatePurposeButton({
         <CaretDownIcon />
       </Button>
       <Menu
-        onAction={(key) => {
-          if (key !== "scratch" && key !== "template") return;
-          navigate({
-            params: { id: eserviceId },
-            search: {
-              knodeId,
-              ...(key === "template" && { from: "template" }),
-            },
-            to: "/consumption/e-services/$id/purposes/new",
-          });
-        }}
+        onAction={(key) =>
+          match(key)
+            .with("scratch", () =>
+              navigate({
+                params: { id: eserviceId },
+                search: { knodeId },
+                to: "/consumption/e-services/$id/purposes/new",
+              }),
+            )
+            .with("template", () =>
+              navigate({
+                params: { id: eserviceId },
+                search: { from: "template", knodeId },
+                to: "/consumption/e-services/$id/purposes/new",
+              }),
+            )
+            .otherwise(() => undefined)
+        }
       >
         <MenuItem id="scratch">From scratch</MenuItem>
         <MenuItem id="template">From template</MenuItem>
