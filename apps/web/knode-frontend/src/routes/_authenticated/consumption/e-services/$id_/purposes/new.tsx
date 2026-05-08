@@ -30,13 +30,17 @@ export const Route = createFileRoute(
     const eserviceDetail = await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(id, knodeId),
     );
+    // Fall back to the from-scratch flow if the templateId is unknown
+    // (stale bookmark, removed template, manual URL tampering).
     const templateDetail = templateId
-      ? await context.queryClient.ensureQueryData(
-          purposeTemplateDetailsQuery(
-            unsafeBrandId<PurposeTemplateId>(templateId),
-            knodeId,
-          ),
-        )
+      ? await context.queryClient
+          .ensureQueryData(
+            purposeTemplateDetailsQuery(
+              unsafeBrandId<PurposeTemplateId>(templateId),
+              knodeId,
+            ),
+          )
+          .catch(() => undefined)
       : undefined;
     return { eserviceDetail, templateDetail };
   },
