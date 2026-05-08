@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -10,7 +11,6 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { IdmClient, IdmUser } from "@knodia/idm-client";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
@@ -81,6 +81,7 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
+  assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
   assertUserIsAllowedToRemoveKey,
@@ -94,7 +95,7 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
-  idmClient: IdmClient,
+  cognitoIdmClient: CognitoIdmClient,
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
@@ -102,7 +103,7 @@ export function consumerKeychainServiceBuilder(
     userId: UserId,
     consumerKeychainId: ConsumerKeychainId,
   ): Promise<IdmUser> {
-    const user = await idmClient.getUserById(userId);
+    const user = await cognitoIdmClient.getUserById(userId);
     if (!user) {
       /**
        * This should not happen as users are validated when added as members.
@@ -142,20 +143,17 @@ export function consumerKeychainServiceBuilder(
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
-      const user = await idmClient.getUserById(userId);
+      const user = await cognitoIdmClient.getUserById(userId);
 
       if (!user) {
         throw userNotFound(userId);
       }
 
-      if (
-        !(await idmClient.checkUserBelongsToOrganization(
-          user,
-          authData.organizationId,
-        ))
-      ) {
-        throw userNotFound(userId);
-      }
+      await assertUserBelongsToOrganization(
+        user,
+        authData.organizationId,
+        cognitoIdmClient,
+      );
       assertUserHasTechnicalRole(user);
 
       const now = new Date();

@@ -1,10 +1,10 @@
+import { CognitoIdmClientConfig } from "@knodia/cognito-idm-client";
 import { EventStoreKeychainConfig } from "@knodia/db-event-store-keychain/config";
 import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import {
   AuthConfig,
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
-import { IdmClientConfig } from "@knodia/idm-client";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
   )
   .and(EventStoreKeychainConfig)
   .and(ReadmodelKeychainConfig)
-  .and(IdmClientConfig);
+  .and(CognitoIdmClientConfig);
 
 export type KeychainProcessConfig = z.infer<typeof KeychainProcessConfig>;
 
