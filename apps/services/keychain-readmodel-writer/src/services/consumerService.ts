@@ -83,12 +83,20 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
-    .with({ type: "KnodeApiKeychainCreatedV1" }, async (msg) => {
-      assertDataExistsInEvent(msg, "knodeApiKeychain");
-      await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
-        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
-        message.version,
-      );
-    })
+    .with(
+      {
+        type: P.union(
+          "KnodeApiKeychainCreatedV1",
+          "KnodeApiKeychainKeyAddedV1",
+        ),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "knodeApiKeychain");
+        await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+          fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
+          message.version,
+        );
+      },
+    )
     .exhaustive();
 }
