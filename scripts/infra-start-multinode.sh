@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Build images serially to avoid OOM-ing the host: parallel buildx with this
-# many services can exhaust memory.
-docker compose -f docker/compose.multinode.yaml build --parallel 1
-
 # --wait exits 1 when init containers (flyway, debezium-setup, etc.) exit,
 # even with exit code 0. This is expected, so we suppress it.
 # See: https://github.com/docker/compose/issues/10596.
-docker compose -f docker/compose.multinode.yaml up -d --wait || true
+docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
