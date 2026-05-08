@@ -1233,6 +1233,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
+      '@knodia/cognito-idm-client':
+        specifier: workspace:*
+        version: link:../../../packages/cognito-idm-client
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -1254,9 +1257,6 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
-      '@knodia/idm-client':
-        specifier: workspace:*
-        version: link:../../../packages/clients/idm-client
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger

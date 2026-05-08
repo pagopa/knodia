@@ -1,4 +1,4 @@
-import type { IdmUser } from "@knodia/idm-client";
+import type { IdmUser } from "@knodia/cognito-idm-client";
 import type { Organization } from "@knodia/organization-models";
 
 import type { API_Operator, API_Organization } from "./api.ts";

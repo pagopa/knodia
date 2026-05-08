@@ -1,10 +1,10 @@
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { IdmClient, IdmUser } from "@knodia/idm-client";
 
 export type OperatorService = ReturnType<typeof operatorServiceBuilder>;
 
-export function operatorServiceBuilder(idmClient: IdmClient) {
+export function operatorServiceBuilder(cognitoIdmClient: CognitoIdmClient) {
   return {
     async getOperators({
       authData,
@@ -12,7 +12,9 @@ export function operatorServiceBuilder(idmClient: IdmClient) {
     }: AuthorizedContext<UISessionAuthData>): Promise<IdmUser[]> {
       logger.info("Getting Operators of the requesting Organization");
 
-      return await idmClient.getOrganizationUsers(authData.organizationId);
+      return await cognitoIdmClient.getOrganizationUsers(
+        authData.organizationId,
+      );
     },
   };
 }

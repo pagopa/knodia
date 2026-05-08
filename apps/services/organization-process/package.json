@@ -31,7 +31,7 @@
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-organization": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
-    "@knodia/idm-client": "workspace:*",
+    "@knodia/cognito-idm-client": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/organization-models": "workspace:*",
     "drizzle-orm": "catalog:",

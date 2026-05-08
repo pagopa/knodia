@@ -2,6 +2,10 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import {
+  buildCognitoIdmClient,
+  type CognitoIdmClientConfig,
+} from "@knodia/cognito-idm-client";
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { organizationEventStoreWriterBuilder } from "@knodia/db-event-store-writer/organization";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -18,7 +22,6 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
-import { createIdmClient, type IdmClientConfig } from "@knodia/idm-client";
 
 import type { OrganizationProcessConfig } from "./config/config.ts";
 
@@ -35,7 +38,7 @@ export function buildApp({
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & IdmClientConfig & LoggerConfig;
+  config: AuthConfig & CognitoIdmClientConfig & LoggerConfig;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -80,7 +83,9 @@ export function buildApp({
       organizationEventStoreWriterBuilder(eventStoreDb),
       readmodelServiceBuilder(readmodelDb),
     );
-    const operatorService = operatorServiceBuilder(createIdmClient(config));
+    const operatorService = operatorServiceBuilder(
+      buildCognitoIdmClient(config),
+    );
     protectedApp.register(organizationRouter, organizationService);
     protectedApp.register(operatorRouter, operatorService);
   });
