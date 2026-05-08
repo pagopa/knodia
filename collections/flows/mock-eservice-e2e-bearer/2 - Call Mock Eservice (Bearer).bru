@@ -20,7 +20,7 @@ assert {
 }
 
 script:pre-request {
-  if (!bru.getVar("access_token")) {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
     throw new Error(
       "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
     )

@@ -35,8 +35,17 @@ script:post-response {
   
   const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH")
   const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH")
-  const dpopAlg = ecKeyPath ? "ES256" : rsaKeyPath ? "RS256" : "<RS256|ES256>"
-  const dpopKeyPath = dpopAlg === "ES256" ? ecKeyPath : dpopAlg === "RS256" ? rsaKeyPath : "<path-to-private-key>"
+  let dpopAlg, dpopKeyPath
+  if (ecKeyPath) {
+    dpopAlg = "ES256"
+    dpopKeyPath = ecKeyPath
+  } else if (rsaKeyPath) {
+    dpopAlg = "RS256"
+    dpopKeyPath = rsaKeyPath
+  } else {
+    dpopAlg = "<RS256|ES256>"
+    dpopKeyPath = "<path-to-private-key>"
+  }
   const clientAssertionKeyPath = rsaKeyPath || "<path-to-private-rsa-key>"
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
