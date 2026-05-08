@@ -7,9 +7,10 @@ Runs only the shared infrastructure services needed for local development: Postg
 Application services (process, readmodel-writer, BFF, frontend) are started separately via `pnpm dev` in their respective packages.
 
 ```bash
-pnpm infra:start    # start infrastructure (+ generate local dev tokens)
-pnpm infra:stop     # stop containers (preserves volumes)
-pnpm infra:destroy  # stop and remove containers (volumes are preserved)
+pnpm infra:start                # start infrastructure (+ generate local dev tokens)
+pnpm infra:stop                 # stop containers (preserves volumes)
+pnpm infra:destroy              # stop and remove containers (volumes are preserved)
+pnpm infra:destroy -- --volumes # stop and remove containers and volumes (useful to recover from Debezium/event-consumption failures caused by stale state)
 ```
 
 ## `compose.multinode.yaml`: multi-node environment
