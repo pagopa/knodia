@@ -12,7 +12,7 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
-import { CommaSeparatedArray } from "@knodia/common-models/types";
+import { CommaSeparatedList } from "@knodia/common-models/types";
 
 export interface IdmUser {
   email: string;
@@ -116,7 +116,7 @@ function toIdmUser(user: UserType): IdmUser {
   const id = requireAttribute("sub");
   const email = requireAttribute("email", id);
   const commaSeparatedRoles = requireAttribute("custom:roles", id);
-  const roles = CommaSeparatedArray(UserRole).safeParse(commaSeparatedRoles);
+  const roles = CommaSeparatedList(UserRole).safeParse(commaSeparatedRoles);
 
   if (!roles.success) {
     throw genericInternalError(
