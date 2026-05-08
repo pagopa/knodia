@@ -1,0 +1,19 @@
+meta {
+  name: Get Knode Api Keychains
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/knodeApiKeychains?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

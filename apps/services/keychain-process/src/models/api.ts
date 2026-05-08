@@ -247,3 +247,8 @@ export const API_KnodeApiKeychainKeyPathParams =
 export type API_KnodeApiKeychainKeyPathParams = z.infer<
   typeof API_KnodeApiKeychainKeyPathParams
 >;
+
+export const API_GetKnodeApiKeychainsQueryParams = API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainsQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainsQueryParams
+>;

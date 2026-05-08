@@ -1,5 +1,8 @@
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   InternalAuthData,
   UISessionAuthData,
@@ -18,6 +21,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
@@ -104,6 +108,15 @@ export function knodeApiKeychainServiceBuilder(
 
       return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
     },
+    async getKnodeApiKeychains(
+      params: API_GetKnodeApiKeychainsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<FlatKnodeApiKeychain>> {
+      logger.info({ params }, "Getting Knode API keychains with params");
+
+      return await readmodelService.getKnodeApiKeychains(params);
+    },
+
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       keySeed: API_KeychainKeySeed,
