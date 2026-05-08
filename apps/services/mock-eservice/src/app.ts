@@ -1,4 +1,5 @@
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { OpenAPIV3 } from "openapi-types";
 
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
@@ -14,7 +15,6 @@ import {
   dpopAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
 import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
-import { type OpenAPIV3 } from "openapi-types";
 
 import type { MockEserviceConfig } from "./config/config.ts";
 

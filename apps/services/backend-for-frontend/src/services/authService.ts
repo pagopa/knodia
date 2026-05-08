@@ -11,10 +11,7 @@ import {
   OrganizationId,
   UserId,
 } from "@knodia/common-models/ids";
-import {
-  CommaSeparatedArray,
-  NonEmptyArray,
-} from "@knodia/common-models/types";
+import { CommaSeparatedList, NonEmptyArray } from "@knodia/common-models/types";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
@@ -26,7 +23,7 @@ import type { BffProcessConfig } from "../config/config.ts";
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
   "cognito:username": z.string(),
-  "custom:roles": CommaSeparatedArray(UserRole),
+  "custom:roles": CommaSeparatedList(UserRole),
   sub: z.string(),
   // We expect the OIDC token to be an ID token, which contains the role custom attributes.
   token_use: z.literal("id"),
