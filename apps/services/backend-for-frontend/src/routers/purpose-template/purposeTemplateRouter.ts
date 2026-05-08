@@ -1,10 +1,17 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import { getPurposeTemplates } from "@knodia/purpose-template-models";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
@@ -21,26 +28,42 @@ import {
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { retrievePurposeTemplate } from "../../utils/purposeTemplate.ts";
 
-export const purposeTemplateRouter: FastifyPluginAsyncZod = async (fastify) => {
+interface PurposeTemplateRouterOptions {
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
+}
+
+export const purposeTemplateRouter: FastifyPluginAsyncZod<
+  PurposeTemplateRouterOptions
+> = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { authData, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
       getUISessionAuthData(authData);
 
       const { eserviceId, knodeId } = req.query;
 
+      const {
+        data: { version: formSchemaVersion },
+      } = await remoteResourcesManagerApi.getCurrentPurposeFormSchemas({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: { knodeId },
+      });
+
       logger.info(
-        { requestQuery: req.query },
+        { formSchemaVersion, requestQuery: req.query },
         `Getting Purpose Templates for Knode ${knodeId}${
           eserviceId === undefined ? "" : ` filtered by E-service ${eserviceId}`
-        }`,
+        } (formSchemaVersion ${formSchemaVersion})`,
       );
 
       const purposeTemplates = getPurposeTemplates(
         knodeId,
+        formSchemaVersion,
         eserviceId === undefined
           ? undefined
-          : { eserviceId: unsafeBrandId(eserviceId) },
+          : unsafeBrandId<EserviceId>(eserviceId),
       );
 
       res.send(purposeTemplates.map(toAPI_PurposeTemplate));

@@ -10,6 +10,7 @@ import { z } from "zod";
 export const API_PurposeTemplate = z
   .strictObject({
     description: API_LocalizedPurposeDescription,
+    eserviceId: z.uuid().optional(),
     id: z.uuid(),
     name: API_LocalizedPurposeName,
   })
@@ -21,7 +22,7 @@ export const API_PurposeTemplateDetails = z
     createdAt: z.iso.datetime(),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid().optional(),
-    formAnswers: API_PurposeFormAnswers,
+    formAnswersJson: API_PurposeFormAnswers,
     formSchemaVersion: API_PurposeFormSchemaVersion,
     id: z.uuid(),
     name: API_LocalizedPurposeName,

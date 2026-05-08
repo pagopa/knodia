@@ -132,7 +132,9 @@ export function buildAppFromConfig(
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceTemplateRouter);
-    protectedApp.register(purposeTemplateRouter);
+    protectedApp.register(purposeTemplateRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
     protectedApp.register(eserviceProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       config,

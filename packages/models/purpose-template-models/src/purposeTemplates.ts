@@ -195,21 +195,27 @@ export function getPurposeTemplate(
 }
 
 /**
- * @knipignore
- *
- * Without `opts.eserviceId`, returns every template registered for the Knode
- * (generic + eservice-specific). With `opts.eserviceId`, returns generic
- * templates plus the specifics matching that eservice.
+ * Returns templates registered for the Knode, with optional independent filters:
+ * - `formSchemaVersion`: matches templates with the same version (typed `string` since the BFF receives it as opaque from a remote service).
+ * - `eserviceId`: returns generic templates (`eserviceId === undefined`) plus those tied to that eservice.
  */
 export function getPurposeTemplates(
   knodeId: KnodeId,
-  opts?: { eserviceId: EserviceId },
+  formSchemaVersion?: string,
+  eserviceId?: EserviceId,
 ): PurposeTemplate[] {
-  const all = purposeTemplates[knodeId];
-  if (opts === undefined) return all;
-  return all.filter(
+  const templatesWithCorrectVersion = purposeTemplates[knodeId].filter(
     (template) =>
-      template.eserviceId === undefined ||
-      template.eserviceId === opts.eserviceId,
+      formSchemaVersion === undefined ||
+      template.formSchemaVersion === formSchemaVersion,
+  );
+
+  if (eserviceId === undefined) {
+    return templatesWithCorrectVersion;
+  }
+
+  return templatesWithCorrectVersion.filter(
+    (template) =>
+      template.eserviceId === undefined || template.eserviceId === eserviceId,
   );
 }

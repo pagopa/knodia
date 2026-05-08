@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { app } from "./setup.ts";
+
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockDecodeJwt = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
+const getCurrentPurposeFormSchemasMock = vi.hoisted(() => vi.fn());
 
 vi.mock("jose", () => ({
   createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks"),
@@ -21,7 +24,20 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-import { app } from "./setup.ts";
+vi.mock("@knodia/remote-resources-manager-client", async (importOriginal) => {
+  const original =
+    await importOriginal<
+      typeof import("@knodia/remote-resources-manager-client")
+    >();
+
+  return {
+    ...original,
+    remoteResourcesManagerApi: {
+      ...original.remoteResourcesManagerApi,
+      getCurrentPurposeFormSchemas: getCurrentPurposeFormSchemasMock,
+    },
+  };
+});
 
 const ORGANIZATION_ID = "20000000-2000-1000-8000-000000000002";
 const USER_ID = "10000000-1000-1000-8000-000000000001";
@@ -30,6 +46,21 @@ const ORION_GENERIC_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000001";
 const ORION_ESERVICE_01_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000002";
 const ORION_ESERVICE_02_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000003";
 const PLACEHOLDER_ORION_ESERVICE_01 = "11111111-1111-4111-8111-000000000001";
+const PLACEHOLDER_ORION_ESERVICE_02 = "11111111-1111-4111-8111-000000000002";
+
+const CURRENT_MAJOR = 1;
+const CURRENT_FORM_SCHEMA_VERSION = `${CURRENT_MAJOR}.0`;
+const NEXT_FORM_SCHEMA_VERSION = `${CURRENT_MAJOR + 1}.0`;
+
+const currentFormSchemasResponse = {
+  data: {
+    schema: { properties: {}, type: "object" },
+    texts: { en: {} },
+    uiSchema: { elements: [], type: "VerticalLayout" },
+    uiTexts: { en: {} },
+    version: CURRENT_FORM_SCHEMA_VERSION,
+  },
+};
 
 function makeUiSessionPayload(
   overrides: Record<string, unknown> = {},
@@ -55,6 +86,9 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
       payload: makeUiSessionPayload(),
       protectedHeader: { alg: "RS256" },
     });
+    getCurrentPurposeFormSchemasMock.mockResolvedValue(
+      currentFormSchemasResponse,
+    );
   });
 
   afterEach(() => {
@@ -69,13 +103,21 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json() as { id: string }[];
+    const body = response.json() as { eserviceId?: string; id: string }[];
     expect(body.map((t) => t.id).sort()).toEqual(
       [
         ORION_GENERIC_TEMPLATE_ID,
         ORION_ESERVICE_01_TEMPLATE_ID,
         ORION_ESERVICE_02_TEMPLATE_ID,
       ].sort(),
+    );
+    const byId = Object.fromEntries(body.map((t) => [t.id, t]));
+    expect(byId[ORION_GENERIC_TEMPLATE_ID]?.eserviceId).toBeUndefined();
+    expect(byId[ORION_ESERVICE_01_TEMPLATE_ID]?.eserviceId).toBe(
+      PLACEHOLDER_ORION_ESERVICE_01,
+    );
+    expect(byId[ORION_ESERVICE_02_TEMPLATE_ID]?.eserviceId).toBe(
+      PLACEHOLDER_ORION_ESERVICE_02,
     );
   });
 
@@ -87,10 +129,33 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json() as { id: string }[];
+    const body = response.json() as { eserviceId?: string; id: string }[];
     expect(body.map((t) => t.id).sort()).toEqual(
       [ORION_GENERIC_TEMPLATE_ID, ORION_ESERVICE_01_TEMPLATE_ID].sort(),
     );
+    const byId = Object.fromEntries(body.map((t) => [t.id, t]));
+    expect(byId[ORION_GENERIC_TEMPLATE_ID]?.eserviceId).toBeUndefined();
+    expect(byId[ORION_ESERVICE_01_TEMPLATE_ID]?.eserviceId).toBe(
+      PLACEHOLDER_ORION_ESERVICE_01,
+    );
+  });
+
+  it("returns 200 with empty list when current form schema version does not match any template", async () => {
+    getCurrentPurposeFormSchemasMock.mockResolvedValueOnce({
+      data: {
+        ...currentFormSchemasResponse.data,
+        version: NEXT_FORM_SCHEMA_VERSION,
+      },
+    });
+
+    const response = await app.inject({
+      headers: { authorization: "Bearer valid.ui.session" },
+      method: "GET",
+      url: "/purposeTemplates?knodeId=Orion",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual([]);
   });
 
   it("returns 400 when knodeId is missing", async () => {
@@ -150,13 +215,13 @@ describe("GET /purposeTemplates/:purposeTemplateId (getPurposeTemplate)", () => 
 
     expect(response.statusCode).toBe(200);
     const body = response.json() as {
-      formAnswers: Record<string, unknown>;
+      formAnswersJson: Record<string, unknown>;
       formSchemaVersion: string;
       id: string;
     };
     expect(body.id).toBe(ORION_GENERIC_TEMPLATE_ID);
-    expect(body.formSchemaVersion).toBe("1.0");
-    expect(typeof body.formAnswers).toBe("object");
+    expect(body.formSchemaVersion).toBe(CURRENT_FORM_SCHEMA_VERSION);
+    expect(typeof body.formAnswersJson).toBe("object");
   });
 
   it("returns 404 when the template id does not belong to the given Knode", async () => {

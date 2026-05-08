@@ -6,6 +6,7 @@ export const toAPI_PurposeTemplate = (
   purposeTemplate: PurposeTemplate,
 ): API_PurposeTemplate => ({
   description: purposeTemplate.description,
+  eserviceId: purposeTemplate.eserviceId,
   id: purposeTemplate.id,
   name: purposeTemplate.name,
 });
@@ -16,7 +17,7 @@ export const toAPI_PurposeTemplateDetails = (
   createdAt: purposeTemplate.createdAt.toISOString(),
   description: purposeTemplate.description,
   eserviceId: purposeTemplate.eserviceId,
-  formAnswers: purposeTemplate.formAnswers,
+  formAnswersJson: purposeTemplate.formAnswersJson,
   formSchemaVersion: purposeTemplate.formSchemaVersion,
   id: purposeTemplate.id,
   name: purposeTemplate.name,

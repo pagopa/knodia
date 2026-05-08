@@ -873,6 +873,7 @@ export type CreatedKeyResource = {
 
 export type PurposeTemplate = {
     description: LocalizedPurposeDescription;
+    eserviceId?: string;
     id: string;
     name: LocalizedPurposeName;
 };
@@ -881,7 +882,7 @@ export type PurposeTemplateDetails = {
     createdAt: string;
     description: LocalizedPurposeDescription;
     eserviceId?: string;
-    formAnswers: PurposeFormAnswers;
+    formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
     id: string;
     name: LocalizedPurposeName;

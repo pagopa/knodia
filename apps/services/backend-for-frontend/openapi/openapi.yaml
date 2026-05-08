@@ -1850,6 +1850,10 @@ components:
       properties:
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         id:
           type: string
           format: uuid
@@ -1874,7 +1878,7 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        formAnswers:
+        formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
@@ -1887,7 +1891,7 @@ components:
       required:
         - createdAt
         - description
-        - formAnswers
+        - formAnswersJson
         - formSchemaVersion
         - id
         - name
