@@ -149,14 +149,12 @@ export function consumerKeychainServiceBuilder(
         throw userNotFound(userId);
       }
 
-      const userGroups = await userService.getUserGroups(user.username);
-
-      assertUserBelongsToOrganization(
-        userId,
+      await assertUserBelongsToOrganization(
+        user,
         authData.organizationId,
-        userGroups,
+        userService,
       );
-      assertUserHasTechnicalRole(userId, userGroups);
+      assertUserHasTechnicalRole(user);
 
       const now = new Date();
       const updatedConsumerKeychain: ConsumerKeychain = {

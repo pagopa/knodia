@@ -57,6 +57,7 @@ import {
   updateEserviceVersionState,
 } from "../utils/utils.ts";
 import {
+  assertCategoriesCanBeUpdated,
   assertEserviceVersionIsActive,
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
@@ -329,7 +330,10 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      assertValidCategories(update.categories);
+      if (update.categories !== undefined) {
+        assertCategoriesCanBeUpdated(eservice);
+        assertValidCategories(update.categories);
+      }
 
       const now = new Date();
 
