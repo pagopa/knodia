@@ -31,13 +31,13 @@ vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
 
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
-import { API_KeychainMembers, API_User } from "../src/models/api.ts";
-import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
+import { API_KeychainMembers, API_User } from "../../src/models/api.ts";
+import { mockConsumerKeychains } from "../mockConsumerKeychains.ts";
 import {
   injectAppRequest,
   makeCognitoUser,
   seedConsumerKeychain,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const memberIds = [
   "10000000-1000-1000-8000-000000000011",

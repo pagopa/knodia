@@ -33,13 +33,13 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { consumerKeychainWriterService } from "./setup.ts";
+import { consumerKeychainWriterService } from "../setup.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
   toRRM_Purpose,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const getPurposeMock = vi.hoisted(() => vi.fn());
 

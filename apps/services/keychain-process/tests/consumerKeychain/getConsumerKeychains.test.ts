@@ -11,12 +11,12 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockPurpose } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_GetConsumerKeychainsQueryParams } from "../src/models/api.ts";
+import type { API_GetConsumerKeychainsQueryParams } from "../../src/models/api.ts";
 
-import { toAPI_Keychain } from "../src/models/apiConverter.ts";
-import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
-import { consumerKeychainWriterService } from "./setup.ts";
-import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
+import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import { mockConsumerKeychains } from "../mockConsumerKeychains.ts";
+import { consumerKeychainWriterService } from "../setup.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

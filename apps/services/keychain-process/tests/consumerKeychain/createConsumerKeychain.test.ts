@@ -16,9 +16,9 @@ import { describe, expect, it } from "vitest";
 import {
   type API_ConsumerKeychainSeed,
   type API_Keychain,
-} from "../src/models/api.ts";
-import { toAPI_Keychain } from "../src/models/apiConverter.ts";
-import { getAllKeychainEvents, injectAppRequest } from "./utils.ts";
+} from "../../src/models/api.ts";
+import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import { getAllKeychainEvents, injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

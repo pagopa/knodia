@@ -6,16 +6,16 @@ import { type ConsumerKeychainPurpose } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import type { API_GetConsumerKeychainPurposesQueryParams } from "../src/models/api.ts";
+import type { API_GetConsumerKeychainPurposesQueryParams } from "../../src/models/api.ts";
 
-import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
+import { toAPI_ConsumerKeychainPurpose } from "../../src/models/apiConverter.ts";
 import {
   consumerKeychain1,
   consumerKeychain2,
   mockConsumerKeychainPurposes,
-} from "./mockConsumerKeychainPurposes.ts";
-import { consumerKeychainWriterService } from "./setup.ts";
-import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
+} from "../mockConsumerKeychainPurposes.ts";
+import { consumerKeychainWriterService } from "../setup.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

@@ -31,15 +31,15 @@ import { describe, expect, it } from "vitest";
 import type {
   API_KeychainKey,
   API_KeychainKeySeed,
-} from "../src/models/api.ts";
+} from "../../src/models/api.ts";
 
-import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
-import { mockMaxKeysPerKeychain } from "./setup.ts";
+import { toAPI_KeychainKey } from "../../src/models/apiConverter.ts";
+import { mockMaxKeysPerKeychain } from "../setup.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },

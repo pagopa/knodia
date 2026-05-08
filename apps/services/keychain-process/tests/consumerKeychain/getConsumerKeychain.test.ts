@@ -4,11 +4,11 @@ import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models"
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import type { API_Keychain } from "../src/models/api.ts";
+import type { API_Keychain } from "../../src/models/api.ts";
 
-import { toAPI_Keychain } from "../src/models/apiConverter.ts";
-import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
-import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
+import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import { mockConsumerKeychains } from "../mockConsumerKeychains.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 
 const consumerKeychain = mockConsumerKeychains[0]!;
 const VALID_CONSUMER_KEYCHAIN_ID = consumerKeychain.id;

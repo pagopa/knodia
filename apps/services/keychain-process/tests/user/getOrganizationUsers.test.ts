@@ -6,8 +6,8 @@ import {
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { API_OrganizationUsers } from "../src/models/api.ts";
-import { injectAppRequest, makeCognitoUser } from "./utils.ts";
+import { API_OrganizationUsers } from "../../src/models/api.ts";
+import { injectAppRequest, makeCognitoUser } from "../utils.ts";
 
 const sendMock = vi.hoisted(() => vi.fn());
 
