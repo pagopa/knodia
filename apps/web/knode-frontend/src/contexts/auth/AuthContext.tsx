@@ -60,14 +60,25 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     user,
   } = useOidcAuth();
 
+  // removeUser() can throw — ensure cleanup happens regardless
+  const safelyRemoveUser = useCallback(async () => {
+    try {
+      await removeUser();
+    } finally {
+      clearAuthToken();
+      setUiSessionToken(null);
+    }
+  }, [removeUser]);
+
   const {
     error: exchangeError,
     isPending: isExchangePending,
     mutate: exchangeToken,
   } = useMutation({
     ...createSessionMutation({ client }),
-    onError: () => {
-      redirectToLogout();
+    onError: async () => {
+      await safelyRemoveUser();
+      void router.navigate({ replace: true, to: "/login" });
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
@@ -82,13 +93,13 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
 
   // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
-    if (user?.access_token && !uiSessionToken) {
+    if (user?.id_token && !uiSessionToken) {
       exchangeToken({
-        body: { oidcToken: user.access_token },
+        body: { oidcToken: user.id_token },
         withCredentials: true,
       });
     }
-  }, [user?.access_token, uiSessionToken, exchangeToken]);
+  }, [user?.id_token, uiSessionToken, exchangeToken]);
 
   const sessionClaims = useMemo(() => {
     if (!uiSessionToken) return null;
@@ -107,16 +118,9 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     // Best-effort: clear the refresh token cookie
     bffLogout({ withCredentials: true });
-
-    // removeUser() can throw — ensure cleanup and redirect happen regardless
-    try {
-      await removeUser();
-    } finally {
-      clearAuthToken();
-      setUiSessionToken(null);
-      redirectToLogout();
-    }
-  }, [bffLogout, removeUser]);
+    await safelyRemoveUser();
+    redirectToLogout();
+  }, [bffLogout, safelyRemoveUser]);
 
   return (
     <AuthContext.Provider
