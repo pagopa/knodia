@@ -54,7 +54,7 @@ export function EservicePurposeSection({
         <h3 className="title-md-em text-primary-light-low-contrast">
           Purposes
         </h3>
-        {canManageConsumption && purposes.length > 0 && (
+        {canManageConsumption && (
           <CreatePurposeButton
             eserviceId={eserviceId}
             eserviceMode={eserviceMode}
@@ -64,26 +64,17 @@ export function EservicePurposeSection({
           />
         )}
       </div>
-      <EservicePurposeTable
-        canManageConsumption={canManageConsumption}
-        isLoading={isLoading}
-        onCreatePurposePress={onCreatePurposePress}
-        purposes={purposes}
-      />
+      <EservicePurposeTable isLoading={isLoading} purposes={purposes} />
       {blockedModal}
     </div>
   );
 }
 
 function EservicePurposeTable({
-  canManageConsumption,
   isLoading,
-  onCreatePurposePress,
   purposes,
 }: {
-  canManageConsumption: boolean;
   isLoading: boolean;
-  onCreatePurposePress: () => void;
   purposes: bffApi.ConsumerPurpose[];
 }) {
   if (isLoading) {
@@ -92,15 +83,7 @@ function EservicePurposeTable({
 
   if (purposes.length === 0) {
     return (
-      <Banner
-        action={
-          canManageConsumption
-            ? { label: "Create Purpose", onPress: onCreatePurposePress }
-            : undefined
-        }
-        icon={<SelectionPlusIcon />}
-        kind="neutral"
-      >
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
         You don&apos;t have any Purpose for this E-Service.
       </Banner>
     );
