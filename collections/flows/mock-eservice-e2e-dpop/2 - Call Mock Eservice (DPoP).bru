@@ -1,0 +1,46 @@
+meta {
+  name: 2 - Call Mock Eservice (DPoP)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-mock-eservice}}/testDpop
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: DPoP {{access_token}}
+  DPoP: {{process.env.DPOP_PROOF_JWT}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.status: eq ok
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the dpop-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status === 200) return
+
+  const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH")
+  const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH")
+  const dpopAlg = ecKeyPath ? "ES256" : rsaKeyPath ? "RS256" : "<RS256|ES256>"
+  const keyPath = dpopAlg === "ES256" ? ecKeyPath : dpopAlg === "RS256" ? rsaKeyPath : "<path-to-private-key>"
+  const accessToken = bru.getVar("access_token") || bru.getEnvVar("access_token") || "<access_token>"
+  throw new Error(
+    `Request failed with status ${res.status}.\n\n` +
+    `The DPoP proof used at step 11 (token endpoint) cannot be reused here.\n` +
+    `Re-sign a fresh DPoP proof bound to the access token and targeting GET /testDpop:\n\n` +
+    `  pnpm generate-dpop-proof --key ${keyPath} --alg ${dpopAlg} --htm GET --htu https://test.knodia.org/testDpop --ath ${accessToken}\n\n` +
+    `Then re-run this call.`
+  )
+}

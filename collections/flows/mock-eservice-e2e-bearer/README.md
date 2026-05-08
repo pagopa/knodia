@@ -1,4 +1,4 @@
-# mock-eservice-e2e
+# mock-eservice-e2e-bearer
 
 Exercises the full access-token flow against the seeded mock e-service.
 

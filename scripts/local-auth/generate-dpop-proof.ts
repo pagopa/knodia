@@ -1,6 +1,7 @@
-// Signs an ES256 JWT DPoP proof for the local authorization-server
-// and writes it to collections/.env as DPOP_PROOF_JWT so the
-// authorization-server/Create Token.bru call can pick it up.
+// Signs a JWT DPoP proof (ES256 or RS256) for the local
+// authorization-server or mock-eservice and writes it to
+// collections/.env as DPOP_PROOF_JWT so the relevant Bruno
+// requests can pick it up.
 //
 // stdout: the signed JWT and nothing else (so it can be piped / captured).
 // stderr: everything else (logs, usage).
@@ -44,11 +45,18 @@ if (!SUPPORTED_ALGS.includes(alg)) {
 
 if (!key) {
   console.error(`Usage: node scripts/local-auth/generate-dpop-proof.ts \\
-    --key $KEYCHAIN_PRIVATE_ES256_KEY_PATH \\
-    [--alg ES256|RS256] # default: ES256 \\
-    [--htu <url>] # default: https://test.knodia.org/token \\
-    [--htm <http-method>] # default: POST \\
-    [--ath <dpop-bound-access-token>]
+  --key <path-to-pem-private-key> \\
+  [--alg ES256|RS256] \\
+  [--htu <url>] \\
+  [--htm <http-method>] \\
+  [--ath <dpop-bound-access-token>]
+
+--alg defaults to ES256; must match the type of the provided private key.
+--htu defaults to ${DEFAULT_HTU} (local authorization-server token endpoint).
+   Override with the resource URL (e.g. https://test.knodia.org/testDpop)
+   when minting a proof for a resource call.
+--htm defaults to POST; set to the HTTP method of the target request.
+--ath is required when the proof is bound to an access token (resource calls).
 
 Use \`pnpm generate-keypair --alg <RS256|ES256>\` first if you don't have a keypair yet.`);
   process.exit(1);

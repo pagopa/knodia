@@ -33,17 +33,19 @@ assert {
 script:post-response {
   if (res.status === 200) return
   
-  const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-rsa-key>"
-  const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH") || "<path-to-private-ec-key>"
-  const dpopAlg = ecKeyPath === "<path-to-private-ec-key>" ? "<RS256|ES256>" : "ES256";
+  const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH")
+  const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH")
+  const dpopAlg = ecKeyPath ? "ES256" : rsaKeyPath ? "RS256" : "<RS256|ES256>"
+  const dpopKeyPath = dpopAlg === "ES256" ? ecKeyPath : dpopAlg === "RS256" ? rsaKeyPath : "<path-to-private-key>"
+  const clientAssertionKeyPath = rsaKeyPath || "<path-to-private-rsa-key>"
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
   throw new Error(
     `Request failed with status ${res.status}.\n\n` +
     `1. Regenerate the client assertion (if missing or stale):\n` +
-    `   pnpm generate-client-assertion --key ${rsaKeyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
+    `   pnpm generate-client-assertion --key ${clientAssertionKeyPath} --keychainId ${keychainId} --purposeId ${purposeId}\n\n` +
     `2. Regenerate the DPoP proof (if missing or stale):\n` +
-    `   pnpm generate-dpop-proof --key ${ecKeyPath} --alg ${dpopAlg} [--htu <htu> // default: https://test.knodia.org/token]\n\n` +
+    `   pnpm generate-dpop-proof --key ${dpopKeyPath} --alg ${dpopAlg} --htu https://test.knodia.org/token\n\n` +
     `Then re-run this call.`
   )
 }

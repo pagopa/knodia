@@ -39,9 +39,9 @@ pnpm generate-client-assertion \
   --purposeId <purposeId>
 
 pnpm generate-dpop-proof \
-  --key $KEYCHAIN_PRIVATE_ES256_KEY_PATH \
-  --htu <htu> \
-  --alg <alg>
+  --key $KEYCHAIN_PRIVATE_<RS256|ES256>_KEY_PATH \
+  --alg <RS256|ES256> \
+  --htu https://test.knodia.org/token
 ```
 
 They write `CLIENT_ASSERTION_JWT` and `DPOP_PROOF_JWT` to `collections/.env`. Step 11 picks them

@@ -1,5 +1,5 @@
 meta {
-  name: 1 - Get Mock Eservice
+  name: 1 - Get Mock Eservice (DPoP)
   type: http
   seq: 1
 }
@@ -11,7 +11,7 @@ get {
 }
 
 params:path {
-  eserviceId: e7f5837e-75f4-431d-9465-73366d27bef2
+  eserviceId: 905c4569-95db-4670-a146-8239fcb3f41a
 }
 
 headers {
@@ -26,7 +26,7 @@ vars:post-response {
 script:post-response {
   console.log(
     `\n==> eserviceId captured (${res.body.id}).\n` +
-    "Now run the bearer-token-flow from step 2 (Get Eservice Latest Version) to step 11 (Create Token), skipping step 1 (Create Eservice) — the flow will reuse this eserviceId.\n" +
+    "Now run the dpop-token-flow from step 2 (Get Eservice Latest Version) to step 11 (Create Token), skipping step 1 (Create Eservice) — the flow will reuse this eserviceId.\n" +
     "When it's done, run step 2 of this flow (Call Mock Eservice).\n"
   )
 }
