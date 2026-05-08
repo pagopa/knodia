@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { CreateEServiceModal } from "@/features/e-service/components/CreateEServiceModal";
+import { CreateEServiceForm } from "@/features/e-service/components/CreateEServiceForm";
+import { CreateEserviceFullPageModal } from "@/features/e-service/components/CreateEserviceFullPageModal";
+import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { requireRole } from "@/libs/routeGuards";
 
 export const Route = createFileRoute(
@@ -17,5 +19,15 @@ function RouteComponent() {
   const onClose = () =>
     navigate({ replace: true, to: "/production/e-services" });
 
-  return <CreateEServiceModal onClose={onClose} />;
+  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
+    useLeaveConfirmModal(onClose);
+
+  return (
+    <>
+      <CreateEserviceFullPageModal onClose={handleShowLeaveConfirm}>
+        <CreateEServiceForm onLeave={handleShowLeaveConfirm} />
+      </CreateEserviceFullPageModal>
+      {leaveConfirmModal}
+    </>
+  );
 }

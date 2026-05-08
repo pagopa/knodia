@@ -34,6 +34,11 @@ const eserviceFieldSchemas = {
     .max(1440, "Duration must be at most 1440 minutes (24 hours)."),
   accessTokenType: z.enum(["Bearer", "DPoP"]),
   categories: z.array(schemeRefSchema),
+  contactEmail: z.email("Contact email must be a valid email address."),
+  contactName: z.string().trim().min(1, "Contact name is required."),
+  contactUrl: z
+    .union([z.literal(""), z.url("Contact URL must be a valid URL.")])
+    .optional(),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
@@ -57,19 +62,58 @@ const eserviceFieldSchemas = {
         .min(1, "Group must have at least one attribute."),
     )
     .min(1, "At least one group is required."),
+  serverUrls: z
+    .array(z.url("Server URL must be a valid URL."))
+    .min(1, "At least one server URL is required."),
+  termsOfServiceUrl: z
+    .union([z.literal(""), z.url("Terms of Service URL must be a valid URL.")])
+    .optional(),
 };
 
-export const eserviceFormSchema = z
-  .object(eserviceFieldSchemas)
+const eserviceBaseFormSchema = z
+  .object({
+    accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
+    accessTokenDuration: eserviceFieldSchemas.accessTokenDuration,
+    accessTokenType: eserviceFieldSchemas.accessTokenType,
+    description: eserviceFieldSchemas.description,
+    isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
+    name: eserviceFieldSchemas.name,
+  })
   .and(maxDailyCallsFormSchema);
 
-export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
+export const eserviceFromScratchFormSchema = eserviceBaseFormSchema.and(
+  z.object({
+    categories: eserviceFieldSchemas.categories,
+    interfaceDocument: eserviceFieldSchemas.interfaceDocument,
+    mode: eserviceFieldSchemas.mode,
+    requiredAttributes: eserviceFieldSchemas.requiredAttributes,
+  }),
+);
+
+export const eserviceFromTemplateFormSchema = eserviceBaseFormSchema.and(
+  z.object({
+    contactEmail: eserviceFieldSchemas.contactEmail,
+    contactName: eserviceFieldSchemas.contactName,
+    contactUrl: eserviceFieldSchemas.contactUrl,
+    serverUrls: eserviceFieldSchemas.serverUrls,
+    termsOfServiceUrl: eserviceFieldSchemas.termsOfServiceUrl,
+  }),
+);
 
 // Draft version of the form data: the interface document is nullable
 // because it's not required until the user submits the form.
 // This allows saving partial progress across steps without a valid file.
 export type EServiceFormDraftData = DocsStepDraftData &
-  Omit<EServiceFormData, "interfaceDocument">;
+  Omit<EServiceFromScratchFormData, "interfaceDocument"> &
+  TemplateDocsStepData;
+
+export type EServiceFromScratchFormData = z.infer<
+  typeof eserviceFromScratchFormSchema
+>;
+
+export type EServiceFromTemplateFormData = z.infer<
+  typeof eserviceFromTemplateFormSchema
+>;
 
 // Step-specific validation schemas
 export const generalStepSchema = z.object({
@@ -92,6 +136,14 @@ export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,
 });
 
+export const templateDocsStepSchema = z.object({
+  contactEmail: eserviceFieldSchemas.contactEmail,
+  contactName: eserviceFieldSchemas.contactName,
+  contactUrl: eserviceFieldSchemas.contactUrl,
+  serverUrls: eserviceFieldSchemas.serverUrls,
+  termsOfServiceUrl: eserviceFieldSchemas.termsOfServiceUrl,
+});
+
 export const attributesStepSchema = z.object({
   requiredAttributes: eserviceFieldSchemas.requiredAttributes,
 });
@@ -101,6 +153,7 @@ export type AttributesStepData = z.infer<typeof attributesStepSchema>;
 export type DocsStepData = z.infer<typeof docsStepSchema>;
 export type GeneralStepData = z.infer<typeof generalStepSchema>;
 export type TechnicalStepData = z.infer<typeof technicalStepSchema>;
+export type TemplateDocsStepData = z.infer<typeof templateDocsStepSchema>;
 // Override interfaceDocument to be nullable: in DocsStepData it's required (File),
 // but in draft mode we need null to represent the initial empty state.
 type DocsStepDraftData = Omit<DocsStepData, "interfaceDocument"> & {
@@ -128,6 +181,16 @@ export const DOCS_STEP_DEFAULTS: DocsStepDraftData = {
   interfaceDocument: null,
 };
 
+export const TEMPLATE_DOCS_STEP_DEFAULTS: z.input<
+  typeof templateDocsStepSchema
+> = {
+  contactEmail: "",
+  contactName: "",
+  contactUrl: "",
+  serverUrls: [""],
+  termsOfServiceUrl: "",
+};
+
 export const ATTRIBUTES_STEP_DEFAULTS: z.input<typeof attributesStepSchema> = {
   requiredAttributes: [[]],
 };
@@ -137,5 +200,6 @@ export const ESERVICE_FORM_DEFAULTS: EServiceFormDraftData = {
   ...GENERAL_STEP_DEFAULTS,
   ...TECHNICAL_STEP_DEFAULTS,
   ...DOCS_STEP_DEFAULTS,
+  ...TEMPLATE_DOCS_STEP_DEFAULTS,
   ...ATTRIBUTES_STEP_DEFAULTS,
 };
