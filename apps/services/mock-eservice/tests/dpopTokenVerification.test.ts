@@ -30,12 +30,11 @@ import {
 } from "./setup.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockDpopRouter.ts
-// (kept in sync with docker/readmodel-seed/mock-dpop-eservice.sql).
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "10000000-0000-4000-8000-000000000004",
+  "905c4569-95db-4670-a146-8239fcb3f41a",
 );
 const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
-  "10000000-0000-4000-8000-000000000005",
+  "a50299cc-f381-4089-8684-a63b2497b690",
 );
 const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
