@@ -26,7 +26,7 @@ const MOCK_USERS = [
       { Name: "custom:organizationId", Value: ORG_ID },
     ],
     Enabled: true,
-    Groups: [...ROLES, `org:${ORG_ID}`],
+    Groups: [`org:${ORG_ID}`],
     UserCreateDate: NOW_IN_SECONDS - 86_400,
     UserLastModifiedDate: NOW_IN_SECONDS - 3_600,
     UserStatus: "CONFIRMED",
@@ -387,7 +387,7 @@ createServer(async (req, res) => {
       const accessToken = signJwt({
         sub: USER_ID,
         username: USERNAME,
-        "cognito:groups": [...ROLES, `org:${ORG_ID}`],
+        "cognito:groups": [`org:${ORG_ID}`],
         token_use: "access",
         iss: ISSUER,
         aud: "local.knodia.test/ui-session",
@@ -399,6 +399,10 @@ createServer(async (req, res) => {
       const idToken = signJwt({
         sub: USER_ID,
         iss: ISSUER,
+        token_use: "id",
+        "cognito:groups": [`org:${ORG_ID}`],
+        "custom:roles": ROLES.map((role) => role.replace("role:", "")).join(","),
+        "cognito:username": USERNAME,
         aud: clientId || codeData.clientId,
         iat: now,
         exp: now + 3600,

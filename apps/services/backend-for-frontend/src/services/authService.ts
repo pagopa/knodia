@@ -22,8 +22,11 @@ import type { BffProcessConfig } from "../config/config.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
+  "cognito:username": z.string(),
+  "custom:roles": z.string(),
   sub: z.string(),
-  username: z.string(),
+  // We expect the OIDC token to be an ID token, which contains the role custom attributes.
+  token_use: z.literal("id"),
 });
 
 const ClaimsFromCognito = z.object({
@@ -94,15 +97,24 @@ export function authServiceBuilder(
     }
 
     const cognitoPayload = payloadParsed.data;
-    const groups = cognitoPayload["cognito:groups"];
 
-    const roles = groups
-      .filter((g) => g.startsWith("role:"))
-      .flatMap((g) => {
-        const parsed = UserRole.safeParse(g.slice("role:".length));
-        return parsed.success ? [parsed.data] : [];
+    const roles = cognitoPayload["custom:roles"]
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((role) => {
+        try {
+          return UserRole.parse(role);
+        } catch {
+          throw unauthorizedError(
+            `Invalid role claim in Cognito token: ${role}`,
+          );
+        }
       });
-    const orgGroup = groups.find((g) => g.startsWith("org:"));
+
+    const orgGroup = cognitoPayload["cognito:groups"].find((g) =>
+      g.startsWith("org:"),
+    );
 
     if (!orgGroup) {
       throw unauthorizedError("Missing organization claim in cognito token");
@@ -116,7 +128,7 @@ export function authServiceBuilder(
       organizationId: orgGroup.slice("org:".length),
       roles,
       sub: cognitoPayload.sub,
-      username: cognitoPayload.username,
+      username: cognitoPayload["cognito:username"],
     });
 
     if (!claimsParsed.success) {
