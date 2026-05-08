@@ -54,9 +54,9 @@ if (!key) {
 --alg defaults to ES256; must match the type of the provided private key.
 --htu defaults to ${DEFAULT_HTU} (local authorization-server token endpoint).
    Override with the resource URL (e.g. https://test.knodia.org/testDpop)
-   when minting a proof for a resource call.
+   when minting a proof for a resource call (e.g., mock-eservice endpoints)
 --htm defaults to POST; set to the HTTP method of the target request.
---ath is required when the proof is bound to an access token (resource calls).
+--ath is required when the proof is bound to an access token (resource calls e.g, mock-eservice endpoints).
 
 Use \`pnpm generate-keypair --alg <RS256|ES256>\` first if you don't have a keypair yet.`);
   process.exit(1);
