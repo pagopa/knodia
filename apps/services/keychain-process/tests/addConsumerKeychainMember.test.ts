@@ -99,6 +99,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
+              roles: ["technical"],
               username: memberUsername,
             }),
           ],
@@ -107,10 +108,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
 
       if (input.Username === memberUsername) {
         return {
-          Groups: [
-            { GroupName: `org:${consumerKeychain.ownerId}` },
-            { GroupName: "role:technical" },
-          ],
+          Groups: [{ GroupName: `org:${consumerKeychain.ownerId}` }],
         };
       }
 
@@ -253,6 +251,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
+              roles: ["technical"],
               username: memberUsername,
             }),
           ],
@@ -261,7 +260,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
 
       if (input.Username === memberUsername) {
         return {
-          Groups: [{ GroupName: "role:technical" }],
+          Groups: [],
         };
       }
 
@@ -299,6 +298,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
+              roles: ["administrative"],
               username: memberUsername,
             }),
           ],
@@ -354,6 +354,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
+              roles: ["technical"],
               username: memberUsername,
             }),
           ],
@@ -362,10 +363,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
 
       if (input.Username === memberUsername) {
         return {
-          Groups: [
-            { GroupName: `org:${keychainWithExistingMember.ownerId}` },
-            { GroupName: "role:technical" },
-          ],
+          Groups: [{ GroupName: `org:${keychainWithExistingMember.ownerId}` }],
         };
       }
 
