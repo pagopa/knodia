@@ -1,4 +1,5 @@
 import {
+  type EserviceId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -9,7 +10,10 @@ import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-c
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { ChooseTemplateModal } from "@/features/purpose/components/ChooseTemplateModal/ChooseTemplateModal";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
-import { purposeTemplateDetailsQuery } from "@/features/purpose/services/queries";
+import {
+  purposeTemplateDetailsQuery,
+  purposeTemplatesQuery,
+} from "@/features/purpose/services/queries";
 import { requireRole } from "@/libs/routeGuards";
 
 export const Route = createFileRoute(
@@ -30,18 +34,27 @@ export const Route = createFileRoute(
     const eserviceDetail = await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(id, knodeId),
     );
-    // Fall back to the from-scratch flow if the templateId is unknown
-    // (stale bookmark, removed template, manual URL tampering).
-    const templateDetail = templateId
-      ? await context.queryClient
-          .ensureQueryData(
-            purposeTemplateDetailsQuery(
-              unsafeBrandId<PurposeTemplateId>(templateId),
-              knodeId,
-            ),
-          )
-          .catch(() => undefined)
-      : undefined;
+    // Fall back to the from-scratch flow if the templateId does not resolve
+    // to a template valid for this E-service and form schema version
+    // (stale bookmark, removed template, manual URL tampering, mismatched
+    // E-service or schema). The list endpoint applies those availability
+    // constraints server-side, so a template present in the list is safe to
+    // pre-fill. Transient query failures are not swallowed — they propagate
+    // to the route error boundary instead of silently degrading to from-scratch.
+    let templateDetail;
+    if (templateId) {
+      const availableTemplates = await context.queryClient.ensureQueryData(
+        purposeTemplatesQuery(knodeId, unsafeBrandId<EserviceId>(id)),
+      );
+      if (availableTemplates.some((t) => t.id === templateId)) {
+        templateDetail = await context.queryClient.ensureQueryData(
+          purposeTemplateDetailsQuery(
+            unsafeBrandId<PurposeTemplateId>(templateId),
+            knodeId,
+          ),
+        );
+      }
+    }
     return { eserviceDetail, templateDetail };
   },
   validateSearch: createPurposeSearchSchema,
