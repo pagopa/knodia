@@ -13,14 +13,12 @@ import {
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
-import { CreatePurposeBlockedModal } from "@/features/purpose/components/CreatePurposeBlockedModal";
 import { CreatePurposeButton } from "@/features/purpose/components/CreatePurposeButton";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { useCreatePurposeAction } from "@/features/purpose/hooks/useCreatePurposeAction";
 import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
 export function EservicePurposeSection({
@@ -42,19 +40,13 @@ export function EservicePurposeSection({
   );
   const purposes = data?.results ?? [];
 
-  const navigate = useNavigate();
-  const isBlocked =
-    eserviceState === "Archived" || agreementState === "Archived";
-  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
-
-  const onCreatePurposePress = isBlocked
-    ? () => setIsBlockedModalOpen(true)
-    : () =>
-        navigate({
-          params: { id: eserviceId },
-          search: { knodeId },
-          to: "/consumption/e-services/$id/purposes/new",
-        });
+  const { blockedModal, isBlocked, onCreatePurposePress } =
+    useCreatePurposeAction({
+      agreementState,
+      eserviceId,
+      eserviceState,
+      knodeId,
+    });
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -78,12 +70,7 @@ export function EservicePurposeSection({
         onCreatePurposePress={onCreatePurposePress}
         purposes={purposes}
       />
-      <CreatePurposeBlockedModal
-        agreementState={agreementState}
-        eserviceState={eserviceState}
-        isOpen={isBlockedModalOpen}
-        onOpenChange={setIsBlockedModalOpen}
-      />
+      {blockedModal}
     </div>
   );
 }

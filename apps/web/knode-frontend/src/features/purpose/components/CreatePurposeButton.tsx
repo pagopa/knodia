@@ -60,19 +60,15 @@ export function CreatePurposeButton({
       </Button>
       <Menu
         onAction={(key) => {
-          if (key === "scratch") {
-            navigate({
-              params: { id: eserviceId },
-              search: { knodeId },
-              to: "/consumption/e-services/$id/purposes/new",
-            });
-          } else if (key === "template") {
-            navigate({
-              params: { id: eserviceId },
-              search: { from: "template", knodeId },
-              to: "/consumption/e-services/$id/purposes/new",
-            });
-          }
+          if (key !== "scratch" && key !== "template") return;
+          navigate({
+            params: { id: eserviceId },
+            search: {
+              knodeId,
+              ...(key === "template" && { from: "template" }),
+            },
+            to: "/consumption/e-services/$id/purposes/new",
+          });
         }}
       >
         <MenuItem id="scratch">From scratch</MenuItem>
