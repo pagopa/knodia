@@ -16,7 +16,10 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { API_GetPurposesQueryParams } from "../src/models/api.ts";
+import type {
+  API_GetPurposesQueryParams,
+  API_Purpose,
+} from "../src/models/api.ts";
 
 import {
   consumerId1,
@@ -268,7 +271,7 @@ describe("GET /purposes (getPurposes)", () => {
     expect(response.statusCode).toBe(200);
 
     const results = response.json<{
-      results: { id: string; template?: unknown }[];
+      results: API_Purpose[];
     }>().results;
     const match = results.find((p) => p.id === purposeWithTemplate.id);
     expect(match?.template).toEqual(template);
