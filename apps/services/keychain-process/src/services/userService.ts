@@ -5,68 +5,78 @@ import {
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { UserRole } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type OrganizationId,
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
-
-export type UserService = ReturnType<typeof userServiceBuilder>;
-
-export const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
-export const getOrganizationGroupName = (organizationId: OrganizationId) =>
-  `org:${organizationId}`;
+import { CommaSeparatedList } from "@knodia/common-models/types";
 
 export interface IdmUser {
   email: string;
   id: UserId;
+  roles: UserRole[];
   username: string;
 }
 
-export interface OrganizationUser extends IdmUser {
-  isTechnical: boolean;
-}
+export type UserService = ReturnType<typeof userServiceBuilder>;
 
 export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   const client = new CognitoIdentityProviderClient();
 
-  async function listUsersInGroup(groupName: string): Promise<IdmUser[]> {
-    const users: UserType[] = [];
-    let nextToken: string | undefined;
-
-    do {
-      const response = await client.send(
-        new ListUsersInGroupCommand({
-          GroupName: groupName,
-          Limit: 60, // Max limit per AWS docs
-          NextToken: nextToken,
-          UserPoolId: userPoolId,
-        }),
-      );
-
-      users.push(...(response.Users ?? []));
-      nextToken = response.NextToken;
-    } while (nextToken);
-
-    return users.map(toIdmUser);
-  }
-
   return {
+    async checkUserBelongsToOrganization(
+      user: IdmUser,
+      organizationId: OrganizationId,
+    ): Promise<boolean> {
+      let nextToken: string | undefined;
+
+      do {
+        const response = await client.send(
+          new AdminListGroupsForUserCommand({
+            Limit: 60, // Max limit per AWS docs
+            NextToken: nextToken,
+            Username: user.username,
+            UserPoolId: userPoolId,
+          }),
+        );
+
+        const groupNames =
+          response.Groups?.map((group) => group.GroupName) ?? [];
+
+        if (groupNames.includes(getOrganizationGroupName(organizationId))) {
+          return true;
+        }
+
+        nextToken = response.NextToken;
+      } while (nextToken);
+
+      return false;
+    },
+
     async getOrganizationUsers(
       organizationId: OrganizationId,
-    ): Promise<OrganizationUser[]> {
-      const [organizationUsers, technicalUsers] = await Promise.all([
-        listUsersInGroup(getOrganizationGroupName(organizationId)),
-        listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME),
-      ]);
+    ): Promise<IdmUser[]> {
+      const users: UserType[] = [];
+      let nextToken: string | undefined;
 
-      const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
+      do {
+        const response = await client.send(
+          new ListUsersInGroupCommand({
+            GroupName: getOrganizationGroupName(organizationId),
+            Limit: 60, // Max limit per AWS docs
+            NextToken: nextToken,
+            UserPoolId: userPoolId,
+          }),
+        );
 
-      return organizationUsers.map((user) => ({
-        ...user,
-        isTechnical: technicalUserIds.has(user.id),
-      }));
+        users.push(...(response.Users ?? []));
+        nextToken = response.NextToken;
+      } while (nextToken);
+
+      return users.map(toIdmUser);
     },
 
     async getUserById(userId: UserId): Promise<IdmUser | undefined> {
@@ -78,35 +88,14 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
         }),
       );
 
-      const user = response.Users?.[0];
+      const user = response.Users?.at(0);
       return user ? toIdmUser(user) : undefined;
     },
-
-    async getUserGroups(username: string): Promise<string[]> {
-      const groups: string[] = [];
-      let nextToken: string | undefined;
-
-      do {
-        const response = await client.send(
-          new AdminListGroupsForUserCommand({
-            Limit: 60, // Max limit per AWS docs
-            NextToken: nextToken,
-            Username: username,
-            UserPoolId: userPoolId,
-          }),
-        );
-
-        groups.push(
-          ...(response.Groups ?? []).flatMap((group) =>
-            group.GroupName ? [group.GroupName] : [],
-          ),
-        );
-        nextToken = response.NextToken;
-      } while (nextToken);
-
-      return groups;
-    },
   };
+}
+
+function getOrganizationGroupName(organizationId: OrganizationId) {
+  return `org:${organizationId}`;
 }
 
 function toIdmUser(user: UserType): IdmUser {
@@ -126,6 +115,17 @@ function toIdmUser(user: UserType): IdmUser {
 
   const id = requireAttribute("sub");
   const email = requireAttribute("email", id);
+  const commaSeparatedRoles = requireAttribute("custom:roles", id);
+  const roles = CommaSeparatedList(UserRole).safeParse(commaSeparatedRoles);
+
+  if (!roles.success) {
+    throw genericInternalError(
+      `User ${id} has invalid role claims: ${commaSeparatedRoles}`,
+    );
+  }
+
+  if (roles.data.length === 0)
+    throw genericInternalError(`User ${id} is missing required roles`);
 
   const username = user.Username;
   if (!username)
@@ -134,6 +134,7 @@ function toIdmUser(user: UserType): IdmUser {
   return {
     email,
     id: unsafeBrandUserId(id),
+    roles: roles.data,
     username,
   };
 }
