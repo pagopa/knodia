@@ -1029,6 +1029,54 @@ export type GetConsumerKeychainPurposeResponses = {
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
 
+export type GetKnodeApiKeychainsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodeApiKeychains';
+};
+
+export type GetKnodeApiKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetKnodeApiKeychainsError = GetKnodeApiKeychainsErrors[keyof GetKnodeApiKeychainsErrors];
+
+export type GetKnodeApiKeychainsResponses = {
+    /**
+     * Knode API Keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
+
 export type CreateKnodeApiKeychainData = {
     body: KnodeApiKeychainSeed;
     headers: {
