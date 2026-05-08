@@ -2,9 +2,7 @@
   "name": "@knodia/backend-for-frontend",
   "type": "module",
   "scripts": {
-    "start": "dotenvx run -- node --watch ./src/index.ts",
-    "typecheck:watch": "tsc --watch --pretty",
-    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",

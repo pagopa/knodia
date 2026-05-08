@@ -6,10 +6,6 @@
       "persistent": true,
       "dependsOn": ["^typecheck"]
     },
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
