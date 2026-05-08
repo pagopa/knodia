@@ -143,7 +143,8 @@ export async function assertKeyIsUnique(
 ) {
   const alreadyExists =
     keychainKeys.some((key) => key.kid === kid) ||
-    (await readmodelService.checkConsumerKeychainKeyExists(kid));
+    (await readmodelService.checkConsumerKeychainKeyExists(kid)) ||
+    (await readmodelService.checkKnodeApiKeychainKeyExists(kid));
 
   if (alreadyExists) {
     throw keyAlreadyExists(kid);

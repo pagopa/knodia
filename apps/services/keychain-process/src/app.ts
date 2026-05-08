@@ -111,6 +111,7 @@ export function buildApp({
       knodeApiKeychainService: knodeApiKeychainServiceBuilder(
         eventStoreWriter,
         readmodelService,
+        config,
       ),
     });
     protectedApp.register(userRouter, userService);

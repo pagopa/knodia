@@ -17,15 +17,22 @@ import {
   type KnodeApiKeychainId,
 } from "@knodia/common-models/ids";
 
-import type { API_KnodeApiKeychainSeed } from "../models/api.ts";
+import type {
+  API_KeychainKeySeed,
+  API_KnodeApiKeychainSeed,
+} from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createKnodeApiKeychainCreatedV1Event } from "../models/knodeApiKeychainEventFactory.ts";
+import {
+  createKnodeApiKeychainCreatedV1Event,
+  createKnodeApiKeychainKeyAddedV1Event,
+} from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKnodeApiKeychain,
   retrieveKnodeApiKeychainKey,
 } from "../utils/retrievalUtils.ts";
+import { addKeyToKeychain } from "../utils/utils.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -34,6 +41,7 @@ export type KnodeApiKeychainService = ReturnType<
 export function knodeApiKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  config: { maxKeysPerKeychain: number },
 ) {
   return {
     async createKnodeApiKeychain(
@@ -95,6 +103,41 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
+    },
+    async uploadKnodeApiKeychainKey(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      keySeed: API_KeychainKeySeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KeychainKey>> {
+      logger.info(`Uploading key to Knode API Keychain ${knodeApiKeychainId}`);
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      const { newKey, updatedKeychain: updatedKnodeApiKeychain } =
+        await addKeyToKeychain(
+          knodeApiKeychain.data,
+          authData,
+          keySeed,
+          readmodelService,
+          config.maxKeysPerKeychain,
+        );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainKeyAddedV1Event(
+          updatedKnodeApiKeychain,
+          newKey.kid,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: newKey,
+        metadata: { version: newVersion },
+      };
     },
   };
 }

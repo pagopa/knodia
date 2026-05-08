@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
+import {
+  readmodelConsumerKeychain,
+  readmodelKnodeApiKeychain,
+} from "@knodia/db-readmodel-keychain";
 import {
   type ConsumerKeychainWriterService,
   consumerKeychainWriterServiceBuilder,
@@ -21,12 +24,13 @@ let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let consumerKeychainWriterService: ConsumerKeychainWriterService;
 let knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
-export const mockMaxKeysPerKeychain = 100;
+export const mockMaxKeysPerKeychain = 5;
 
 async function resetTestDatabases() {
   await Promise.all([
     resetTestDatabase(eventStoreDb, eventStoreKeychainEvents),
     resetTestDatabase(readmodelDb, readmodelConsumerKeychain),
+    resetTestDatabase(readmodelDb, readmodelKnodeApiKeychain),
   ]);
 }
 
