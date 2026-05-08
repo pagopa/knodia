@@ -303,28 +303,6 @@ components:
         - id
         - username
       additionalProperties: false
-    OrganizationUser:
-      type: object
-      properties:
-        email:
-          type: string
-        id:
-          $ref: "#/components/schemas/UserId"
-        username:
-          type: string
-        isTechnical:
-          description: Whether the User has the technical role within the Organization
-          type: boolean
-      required:
-        - email
-        - id
-        - username
-        - isTechnical
-      additionalProperties: false
-    OrganizationUsers:
-      type: array
-      items:
-        $ref: "#/components/schemas/OrganizationUser"
     KeychainMemberSeed:
       type: object
       properties:
@@ -1644,54 +1622,6 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users:
-    get:
-      operationId: getOrganizationUsers
-      tags:
-        - user
-      description: Retrieve users of the requesting User's Organization, including
-        whether they have the technical role
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Organization Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Organization Users retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/OrganizationUsers"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Keychain Process API
     url: /
@@ -1702,5 +1632,3 @@ tags:
     name: health
   - description: Consumer keychain routes
     name: consumerKeychain
-  - description: User routes
-    name: user

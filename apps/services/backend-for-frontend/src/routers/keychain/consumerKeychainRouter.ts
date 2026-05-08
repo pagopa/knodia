@@ -30,6 +30,10 @@ import {
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
+import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
@@ -76,6 +80,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  organizationProcessClient: OrganizationProcessClient;
   pollingService: PollingService;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -84,7 +89,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
 > = async (
   fastify,
-  { keychainProcessClient, pollingService, remoteResourcesManagerClient },
+  {
+    keychainProcessClient,
+    organizationProcessClient,
+    pollingService,
+    remoteResourcesManagerClient,
+  },
 ) => {
   const retrieveConsumerKeychainById = async (
     consumerKeychainId: string,
@@ -154,22 +164,22 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
       );
 
-      const [{ data: keys }, { data: users }] = await Promise.all([
+      const [{ data: keys }, { data: operator }] = await Promise.all([
         keychainProcessApi.getConsumerKeychainKeys({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { consumerKeychainId: req.params.consumerKeychainId },
           query: { limit, offset },
         }),
-        keychainProcessApi.getOrganizationUsers({
-          client: keychainProcessClient,
+        organizationProcessApi.getOperators({
+          client: organizationProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
         }),
       ]);
 
       res.send({
         pagination: keys.pagination,
-        results: keys.results.map((key) => toAPI_KeychainKey(key, users)),
+        results: keys.results.map((key) => toAPI_KeychainKey(key, operator)),
       });
     },
     method: "GET",

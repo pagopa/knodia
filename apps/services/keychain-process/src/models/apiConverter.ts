@@ -5,13 +5,10 @@ import type {
   KeychainKey,
 } from "@knodia/keychain-models";
 
-import { UserRole } from "@knodia/common-models/auth";
-
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
   API_KeychainKey,
-  API_OrganizationUser,
   API_User,
 } from "./api.ts";
 
@@ -40,13 +37,6 @@ export const toAPI_User = (idmUser: IdmUser): API_User => ({
   email: idmUser.email,
   id: idmUser.id,
   username: idmUser.username,
-});
-
-export const toAPI_OrganizationUser = (
-  user: IdmUser,
-): API_OrganizationUser => ({
-  ...toAPI_User(user),
-  isTechnical: user.roles.includes(UserRole.enum.technical),
 });
 
 export const toAPI_ConsumerKeychainPurpose = (
