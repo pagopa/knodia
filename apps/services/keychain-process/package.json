@@ -33,7 +33,7 @@
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
-    "@knodia/idm-client": "workspace:*",
+    "@knodia/cognito-idm-client": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",

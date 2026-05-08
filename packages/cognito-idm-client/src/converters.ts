@@ -1,6 +1,6 @@
 import type { UserType } from "@aws-sdk/client-cognito-identity-provider";
 
-import { IdmUser } from "./models.js";
+import { IdmUser } from "./models.ts";
 
 export function toIdmUser(user: UserType): IdmUser {
   const attributes = new Map(

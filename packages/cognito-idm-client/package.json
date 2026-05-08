@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/idm-client",
+  "name": "@knodia/cognito-idm-client",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",

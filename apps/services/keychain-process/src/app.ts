@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -18,7 +19,6 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
-import { createIdmClient } from "@knodia/idm-client";
 
 import type { KeychainProcessConfig } from "./config/config.ts";
 
@@ -75,7 +75,7 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const idmClient = createIdmClient(config);
+  const cognitoIdmClient = buildCognitoIdmClient(config);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -90,12 +90,12 @@ export function buildApp({
       consumerKeychainService: consumerKeychainServiceBuilder(
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
-        idmClient,
+        cognitoIdmClient,
         clients.remoteResourcesManagerClient,
         config,
       ),
     });
-    protectedApp.register(userRouter, idmClient);
+    protectedApp.register(userRouter, cognitoIdmClient);
   });
 
   return app;

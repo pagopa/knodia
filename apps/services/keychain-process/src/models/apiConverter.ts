@@ -1,4 +1,4 @@
-import type { IdmUser } from "@knodia/idm-client";
+import type { IdmUser } from "@knodia/cognito-idm-client";
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,

@@ -1,4 +1,4 @@
-import type { IdmClient } from "@knodia/idm-client";
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -13,9 +13,9 @@ import { API_OrganizationUsers } from "../models/api.ts";
 import { toAPI_OrganizationUser } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
-export const userRouter: FastifyPluginAsyncZod<IdmClient> = async (
+export const userRouter: FastifyPluginAsyncZod<CognitoIdmClient> = async (
   fastify,
-  idmClient,
+  cognitoIdmClient,
 ) => {
   fastify.route({
     handler: async (_req, res) => {
@@ -23,7 +23,7 @@ export const userRouter: FastifyPluginAsyncZod<IdmClient> = async (
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const organizationUsers = await idmClient.getOrganizationUsers(
+      const organizationUsers = await cognitoIdmClient.getOrganizationUsers(
         ctx.authData.organizationId,
       );
 

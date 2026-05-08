@@ -8,10 +8,10 @@ import {
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
 
-import type { IdmClientConfig } from "./config.js";
-import type { IdmUser } from "./models.js";
+import type { IdmClientConfig } from "./config.ts";
+import type { IdmUser } from "./models.ts";
 
-import { toIdmUser } from "./converters.js";
+import { toIdmUser } from "./converters.ts";
 
 export type IdmClient = ReturnType<typeof createIdmClient>;
 
