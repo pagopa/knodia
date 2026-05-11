@@ -4,7 +4,7 @@ import loginBg from "@login-bg.webp";
 import { LockIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { config } from "@/config/config";
 import { useExternalAuth } from "@/contexts/external-auth/useExternalAuth";
@@ -12,9 +12,7 @@ import { externalClient } from "@/libs/external-axios";
 import { endExternalSession } from "@/libs/external-session";
 
 export const Route = createFileRoute("/agreement-activation/")({
-  // Every landing visit starts from a clean slate, so no token bleeds into
-  // the next attempt. beforeLoad runs outside React, so the React-side reset
-  // happens in the component (see endSession below).
+  // Clear any stale token so a previous attempt doesn't bleed into this landing visit.
   beforeLoad: ({ context }) => {
     endExternalSession(context.queryClient);
   },
@@ -23,15 +21,9 @@ export const Route = createFileRoute("/agreement-activation/")({
 
 export function AgreementActivationLandingPage() {
   const router = useRouter();
-  const { acceptSession, endSession } = useExternalAuth();
+  const { acceptSession } = useExternalAuth();
   const magicLinkToken = useMemo(() => readMagicLinkTokenFromHash(), []);
   const [showMissingTokenError, setShowMissingTokenError] = useState(false);
-
-  // Mirror beforeLoad's storage reset in React state, in case the parent
-  // route stayed mounted with a token from a prior step in this tab.
-  useEffect(() => {
-    endSession();
-  }, [endSession]);
 
   const { error, isPending, mutate, reset } = useMutation({
     ...createExternalSessionMutation({ client: externalClient }),

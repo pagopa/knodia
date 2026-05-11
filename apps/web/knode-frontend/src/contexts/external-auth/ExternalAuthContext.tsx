@@ -1,7 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { type ReactNode, useCallback, useState } from "react";
+import { type ReactNode, useCallback, useSyncExternalStore } from "react";
 
-import { getExternalToken } from "@/libs/external-auth";
+import {
+  getExternalToken,
+  subscribeToExternalToken,
+} from "@/libs/external-auth";
 import {
   acceptExternalSession,
   endExternalSession,
@@ -11,19 +14,23 @@ import { ExternalAuthContext } from "./useExternalAuth";
 
 export function ExternalAuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const [token, setToken] = useState<null | string>(getExternalToken);
+  // Storage is the single source of truth; we subscribe so writes made
+  // outside React (e.g., router beforeLoad) propagate without an extra effect.
+  const token = useSyncExternalStore(
+    subscribeToExternalToken,
+    getExternalToken,
+    () => null,
+  );
 
   const acceptSession = useCallback(
     (newToken: string) => {
       acceptExternalSession(queryClient, newToken);
-      setToken(newToken);
     },
     [queryClient],
   );
 
   const endSession = useCallback(() => {
     endExternalSession(queryClient);
-    setToken(null);
   }, [queryClient]);
 
   return (

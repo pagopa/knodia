@@ -2,7 +2,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getExternalToken } from "@/libs/external-auth";
+import {
+  clearExternalToken,
+  getExternalToken,
+  setExternalToken,
+} from "@/libs/external-auth";
 
 import { ExternalAuthProvider } from "./ExternalAuthContext";
 import { useExternalAuth } from "./useExternalAuth";
@@ -38,10 +42,7 @@ describe("ExternalAuthContext", () => {
   });
 
   it("initializes the token from sessionStorage on mount", () => {
-    sessionStorage.setItem(
-      "knodia_external_ui_session_token",
-      "preexisting-token",
-    );
+    setExternalToken("preexisting-token");
     const onAuth = vi.fn();
     renderWithProvider(onAuth);
     expect(onAuth.mock.calls.at(-1)?.[0].token).toBe("preexisting-token");
@@ -63,6 +64,20 @@ describe("ExternalAuthContext", () => {
 
     act(() => onAuth.mock.calls.at(-1)?.[0].acceptSession("token-abc"));
     act(() => onAuth.mock.calls.at(-1)?.[0].endSession());
+    expect(onAuth.mock.calls.at(-1)?.[0].token).toBeNull();
+    expect(getExternalToken()).toBeNull();
+  });
+
+  it("reflects external token clears made outside React (e.g. router beforeLoad)", () => {
+    setExternalToken("preexisting-token");
+    const onAuth = vi.fn();
+    renderWithProvider(onAuth);
+    expect(onAuth.mock.calls.at(-1)?.[0].token).toBe("preexisting-token");
+
+    act(() => {
+      clearExternalToken();
+    });
+
     expect(onAuth.mock.calls.at(-1)?.[0].token).toBeNull();
     expect(getExternalToken()).toBeNull();
   });
