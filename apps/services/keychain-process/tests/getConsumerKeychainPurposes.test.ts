@@ -14,7 +14,7 @@ import {
   consumerKeychain2,
   mockConsumerKeychainPurposes,
 } from "./mockConsumerKeychainPurposes.ts";
-import { keychainWriterService } from "./setup.ts";
+import { consumerKeychainWriterService } from "./setup.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -29,7 +29,7 @@ const seedConsumerKeychains = async () => {
   ]);
   await Promise.all(
     mockConsumerKeychainPurposes.map((ckp) =>
-      keychainWriterService.upsertConsumerKeychainPurpose(ckp, 1),
+      consumerKeychainWriterService.upsertConsumerKeychainPurpose(ckp, 1),
     ),
   );
 };

@@ -30,7 +30,7 @@ export function LoginPage() {
         fetchPriority="high"
         src={loginBg}
       />
-      <div className="elevation-5 relative z-10 mx-6 flex w-full max-w-140 flex-col items-center gap-6 rounded-2xl bg-primary-light px-10 py-16">
+      <div className="elevation-5 relative z-10 mx-6 flex w-full max-w-140 flex-col items-center gap-6 rounded-login-card bg-primary-light px-login-card-x py-login-card-y">
         <div className="flex flex-col gap-3 text-center text-primary-light-high-contrast">
           <p className="title-md">Welcome to</p>
           <h1 className="display-sm-em">{config.knodeId} Knode</h1>

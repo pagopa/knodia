@@ -1,5 +1,14 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
 import {
+  type ClientAssertionHeader,
+  type ClientAssertionRawPayload,
+} from "@knodia/authorization-models/clientAssertion";
+import {
+  type DpopProof,
+  type DpopProofHeader,
+  type DpopProofPayload,
+} from "@knodia/authorization-models/dpop";
+import {
   Algorithm,
   PublicKeyJwkES256,
   PublicKeyJwkRS256,
@@ -10,7 +19,7 @@ import {
   type EserviceTemplateId,
   generateId,
   generateUserId,
-  type PurposeId,
+  type KeyId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
@@ -22,12 +31,13 @@ import {
 } from "@knodia/eservice-models";
 import {
   ConsumerKeychain,
-  type ConsumerKeychainKey,
   ConsumerKeychainPurpose,
+  type KeychainKey,
+  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
-import { type JWTHeaderParameters, type JWTPayload } from "jose";
+import { createHash } from "crypto";
 import { match } from "ts-pattern";
 import { zocker } from "zocker";
 
@@ -61,23 +71,8 @@ export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
       })
       .setSeed(seed)
       .generate(),
-    keys: [getMockConsumerKeychainKey(seed)],
+    keys: [getMockKeychainKey(seed)],
   });
-}
-
-export function getMockConsumerKeychainKey(seed = 0): ConsumerKeychainKey {
-  const baseKey = zocker(ConsumerKeychain.shape.keys.element)
-    .setSeed(seed)
-    .generate();
-
-  return {
-    ...baseKey,
-    encodedPem: `-----BEGIN PUBLIC KEY-----mock-key-${seed}-----END PUBLIC KEY-----`,
-    kid: unsafeBrandKeyId(
-      Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
-    ),
-    userId: generateUserId(),
-  };
 }
 
 export function getMockEservice({
@@ -124,6 +119,35 @@ export function getMockEserviceVersion(seed = 0): EserviceVersion {
   return zocker(EserviceVersion).setSeed(seed).generate();
 }
 
+export function getMockKeychainKey(seed = 0): KeychainKey {
+  const baseKey = zocker(ConsumerKeychain.shape.keys.element)
+    .setSeed(seed)
+    .generate();
+
+  return {
+    ...baseKey,
+    encodedPem: `-----BEGIN PUBLIC KEY-----mock-key-${seed}-----END PUBLIC KEY-----`,
+    kid: unsafeBrandKeyId(
+      Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
+    ),
+    userId: generateUserId(),
+  };
+}
+
+export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
+  // Re-parse through the schema to normalize zocker's mixed-case GUIDs
+  // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
+  return KnodeApiKeychain.parse({
+    ...zocker(KnodeApiKeychain)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+    keys: [getMockKeychainKey(seed)],
+  });
+}
+
 export function getMockOrganization(seed = 0): Organization {
   return zocker(Organization).setSeed(seed).generate();
 }
@@ -150,11 +174,11 @@ export const MOCK_PURPOSE_FORM_ANSWERS = {
 export async function getMockClientAssertion(props?: {
   customClaims?: Record<string, unknown>;
   customHeader?: Record<string, unknown>;
-  standardClaimsOverride?: Partial<JWTPayload>;
+  standardClaimsOverride?: Partial<ClientAssertionRawPayload>;
 }): Promise<{
   clientAssertion: {
-    headers: JWTHeaderParameters;
-    payload: JWTPayload;
+    headers: ClientAssertionHeader;
+    payload: ClientAssertionRawPayload;
   };
   clientAssertionJWS: string;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
@@ -166,7 +190,7 @@ export async function getMockClientAssertion(props?: {
   threeHourLater.setHours(threeHourLater.getHours() + 3);
 
   const consumerKeychainId = generateId<ConsumerKeychainId>();
-  const defaultPayload: JWTPayload & { purpose_id: PurposeId } = {
+  const defaultPayload: ClientAssertionRawPayload = {
     aud: ["test.knodia.com"],
     exp: dateToSeconds(threeHourLater),
     iat: dateToSeconds(new Date()),
@@ -176,15 +200,15 @@ export async function getMockClientAssertion(props?: {
     sub: consumerKeychainId,
   };
 
-  const actualPayload: JWTPayload = {
+  const actualPayload: ClientAssertionRawPayload = {
     ...defaultPayload,
     ...props?.standardClaimsOverride,
     ...props?.customClaims,
   };
 
-  const headers: JWTHeaderParameters = {
+  const headers: ClientAssertionHeader = {
     alg: Algorithm.enum.RS256,
-    kid: "kid",
+    kid: "kid" as KeyId,
     typ: "JWT",
     ...props?.customHeader,
   };
@@ -213,24 +237,33 @@ export function getMockConsumerKeychainPurpose(
 
 export async function getMockDpopProof({
   alg = Algorithm.enum.ES256,
+  customKeySet,
+  dpopBoundToken,
   props,
 }: {
   alg?: Algorithm;
+  customKeySet?: ReturnType<typeof generateKeySet>["keySet"];
+  dpopBoundToken?: string;
   props?: {
-    customHeader?: Record<string, unknown>;
-    customPayload?: Record<string, unknown>;
+    customHeader?: Partial<DpopProofHeader> & Record<string, unknown>;
+    customPayload?: Partial<DpopProofPayload> & Record<string, unknown>;
   };
 } = {}): Promise<{
   dpopProofJWS: string;
-  dpopProofJWT: {
-    headers: JWTHeaderParameters;
-    payload: JWTPayload;
-  };
+  dpopProofJWT: DpopProof;
   keySet: ReturnType<typeof generateKeySet>["keySet"];
 }> {
-  const { keySet, publicKeyJwk } = generateKeySet(alg);
+  const { keySet, publicKeyJwk } = customKeySet
+    ? {
+        keySet: customKeySet,
+        publicKeyJwk: customKeySet.publicKey.export({ format: "jwk" }),
+      }
+    : generateKeySet(alg);
 
-  const payload: JWTPayload = {
+  const payload: DpopProofPayload = {
+    ath: dpopBoundToken
+      ? createHash("sha256").update(dpopBoundToken).digest("base64url")
+      : undefined,
     htm: "POST",
     htu: "https://test.knodia.org/token",
     iat: dateToSeconds(new Date()),
@@ -243,7 +276,7 @@ export async function getMockDpopProof({
     .with(Algorithm.enum.RS256, () => PublicKeyJwkRS256.parse(publicKeyJwk))
     .exhaustive();
 
-  const headers: JWTHeaderParameters = {
+  const headers: DpopProofHeader = {
     alg,
     jwk,
     typ: "dpop+jwt",

@@ -3,12 +3,14 @@ import type { bffApi } from "@knodia/bff-client";
 import {
   Cell,
   Column,
+  Empty,
+  Loader,
   Row,
   Table,
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
@@ -18,9 +20,24 @@ import { AgreementStateChip } from "../AgreementStateChip";
 
 export function ProducerAgreementTable({
   agreements,
+  isLoading,
 }: {
   agreements: bffApi.ProducerAgreement[];
+  isLoading: boolean;
 }) {
+  if (isLoading) {
+    return <Loader className="mx-auto mt-20" label="Loading..." />;
+  }
+
+  if (agreements.length === 0) {
+    return (
+      <Empty
+        icon={<SelectionIcon />}
+        title="No Agreements match the selected filter."
+      />
+    );
+  }
+
   return (
     <Table aria-label="Producer agreements">
       <TableHeader>

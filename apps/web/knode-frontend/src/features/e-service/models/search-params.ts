@@ -2,6 +2,8 @@ import { API_AgreementState } from "@knodia/agreement-models/api";
 import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
+import { config } from "@/config/config";
+
 export const productionEserviceSearchDefaultValues = {
   dataMode: "all",
   offset: 0,
@@ -96,4 +98,24 @@ export type ConsumptionEserviceListParams = z.infer<
 
 export const eserviceDetailSearchSchema = z.object({
   knodeId: KnodeId,
+});
+
+export const eserviceTemplateSearchDefaultValues = {
+  category: "",
+  knodeId: config.knodeId,
+  templateId: undefined,
+};
+
+export const eserviceTemplateSearchSchema = z.object({
+  category: z
+    .string()
+    .default(eserviceTemplateSearchDefaultValues.category)
+    .catch(eserviceTemplateSearchDefaultValues.category),
+  knodeId: KnodeId.default(eserviceTemplateSearchDefaultValues.knodeId).catch(
+    eserviceTemplateSearchDefaultValues.knodeId,
+  ),
+  templateId: z
+    .string()
+    .optional()
+    .catch(eserviceTemplateSearchDefaultValues.templateId),
 });

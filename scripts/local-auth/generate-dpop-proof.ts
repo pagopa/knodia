@@ -1,6 +1,7 @@
-// Signs an ES256 JWT DPoP proof for the local authorization-server
-// and writes it to collections/.env as DPOP_PROOF_JWT so the
-// authorization-server/Create Token.bru call can pick it up.
+// Signs a JWT DPoP proof (ES256 or RS256) for the local
+// authorization-server or mock-eservice and writes it to
+// collections/.env as DPOP_PROOF_JWT so the relevant Bruno
+// requests can pick it up.
 //
 // stdout: the signed JWT and nothing else (so it can be piped / captured).
 // stderr: everything else (logs, usage).
@@ -27,13 +28,15 @@ const SUPPORTED_ALGS = ["ES256", "RS256"];
 const { values } = parseArgs({
   options: {
     alg: { type: "string", default: "ES256" },
+    ath: { type: "string" },
+    htm: { type: "string", default: "POST" },
     htu: { type: "string", default: DEFAULT_HTU },
     key: { type: "string" },
   },
   strict: true,
 });
 
-const { key, htu, alg } = values;
+const { key, htu, alg, htm, ath } = values;
 
 if (!SUPPORTED_ALGS.includes(alg)) {
   console.error(`Error: --alg must be one of: ${SUPPORTED_ALGS.join(", ")}`);
@@ -42,9 +45,18 @@ if (!SUPPORTED_ALGS.includes(alg)) {
 
 if (!key) {
   console.error(`Usage: node scripts/local-auth/generate-dpop-proof.ts \\
-    --key $KEYCHAIN_PRIVATE_ES256_KEY_PATH \\
-    [--alg ES256|RS256] # default: ES256 \\
-    [--htu <url>] # default: https://test.knodia.org/token \\
+  --key <path-to-pem-private-key> \\
+  [--alg ES256|RS256] \\
+  [--htu <url>] \\
+  [--htm <http-method>] \\
+  [--ath <dpop-bound-access-token>]
+
+--alg defaults to ES256; must match the type of the provided private key.
+--htu defaults to ${DEFAULT_HTU} (local authorization-server token endpoint).
+   Override with the resource URL (e.g. https://test.knodia.org/testDpop)
+   when minting a proof for a resource call (e.g., mock-eservice endpoints)
+--htm defaults to POST; set to the HTTP method of the target request.
+--ath is required when the proof is bound to an access token (resource calls, e.g. mock-eservice endpoints).
 
 Use \`pnpm generate-keypair --alg <RS256|ES256>\` first if you don't have a keypair yet.`);
   process.exit(1);
@@ -66,7 +78,10 @@ const header = b64url(
 );
 const payload = b64url(
   JSON.stringify({
-    htm: "POST",
+    ath: ath
+      ? createHash("sha256").update(ath).digest("base64url")
+      : undefined,
+    htm,
     htu,
     iat: now,
     jti: randomUUID(),

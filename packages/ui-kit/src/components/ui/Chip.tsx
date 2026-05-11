@@ -1,7 +1,7 @@
 import { tv, type VariantProps } from "tailwind-variants";
 
 const chip = tv({
-  base: "label-md inline-flex items-center gap-x-0.5 rounded-full px-3 py-1 [&>svg]:size-4 [&>svg]:shrink-0 h-6.25",
+  base: "label-md inline-flex items-center gap-x-0.5 rounded-chip px-3 py-1 [&>svg]:size-4 [&>svg]:shrink-0 h-6.25",
   variants: {
     kind: {
       neutral: "",

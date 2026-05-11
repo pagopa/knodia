@@ -1,11 +1,18 @@
+/* eslint-disable max-lines-per-function */
 import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 
 import {
+  ExternalUISessionMagicLinkTokenClaims,
   UISessionRefreshTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import { OrganizationId, UserId } from "@knodia/common-models/ids";
-import { NonEmptyArray } from "@knodia/common-models/types";
+import {
+  type AgreementId,
+  OrganizationId,
+  UserId,
+} from "@knodia/common-models/ids";
+import { CommaSeparatedList, NonEmptyArray } from "@knodia/common-models/types";
+import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
@@ -15,8 +22,11 @@ import type { BffProcessConfig } from "../config/config.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
+  "cognito:username": z.string(),
+  "custom:roles": CommaSeparatedList(UserRole),
   sub: z.string(),
-  username: z.string(),
+  // We expect the OIDC token to be an ID token, which contains the role custom attributes.
+  token_use: z.literal("id"),
 });
 
 const ClaimsFromCognito = z.object({
@@ -32,11 +42,16 @@ export function authServiceBuilder(
   config: BffProcessConfig,
   tokenGenerator: TokenGenerator,
   refreshTokenStore: JtiReplayStore,
+  magicLinkTokenStore: JtiReplayStore,
 ) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
     createRemoteJWKSet(new URL(url)),
   );
+  const magicLinkJwksSets =
+    config.externalUiSessionMagicLinkAccepted.wellKnownUrls.map((url) =>
+      createRemoteJWKSet(new URL(url)),
+    );
 
   const tokenParams = {
     audience: config.uiSessionJwt.audience,
@@ -82,15 +97,12 @@ export function authServiceBuilder(
     }
 
     const cognitoPayload = payloadParsed.data;
-    const groups = cognitoPayload["cognito:groups"];
 
-    const roles = groups
-      .filter((g) => g.startsWith("role:"))
-      .flatMap((g) => {
-        const parsed = UserRole.safeParse(g.slice("role:".length));
-        return parsed.success ? [parsed.data] : [];
-      });
-    const orgGroup = groups.find((g) => g.startsWith("org:"));
+    const roles = cognitoPayload["custom:roles"];
+
+    const orgGroup = cognitoPayload["cognito:groups"].find((g) =>
+      g.startsWith("org:"),
+    );
 
     if (!orgGroup) {
       throw unauthorizedError("Missing organization claim in cognito token");
@@ -104,7 +116,7 @@ export function authServiceBuilder(
       organizationId: orgGroup.slice("org:".length),
       roles,
       sub: cognitoPayload.sub,
-      username: cognitoPayload.username,
+      username: cognitoPayload["cognito:username"],
     });
 
     if (!claimsParsed.success) {
@@ -127,17 +139,13 @@ export function authServiceBuilder(
   }
 
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
-    const rawPayload = await Promise.any(
-      bffJwksSets.map(async (jwks) => {
-        const { payload } = await jwtVerify(token, jwks, {
-          algorithms: ["RS256"],
-          audience: config.acceptedAudiences,
-          issuer: config.uiSessionJwt.issuer,
-        });
-        return payload;
-      }),
-    ).catch(() => {
-      throw unauthorizedError("Refresh token verification failed");
+    const rawPayload = await verifyAgainstJwksSets({
+      algorithms: ["RS256"],
+      audience: config.acceptedAudiences,
+      errorMessage: "Refresh token verification failed",
+      issuer: config.uiSessionJwt.issuer,
+      jwksSets: bffJwksSets,
+      token,
     });
 
     const parsed = UISessionRefreshTokenClaims.safeParse(rawPayload);
@@ -161,7 +169,72 @@ export function authServiceBuilder(
     });
   }
 
+  async function verifyMagicLinkToken(
+    token: string,
+  ): Promise<ExternalUISessionMagicLinkTokenClaims> {
+    const rawPayload = await verifyAgainstJwksSets({
+      algorithms: ["RS256"],
+      audience: config.externalUiSessionMagicLinkAccepted.audience,
+      errorMessage: "Magic-link token verification failed",
+      issuer: config.externalUiSessionMagicLinkAccepted.issuer,
+      jwksSets: magicLinkJwksSets,
+      token,
+    });
+
+    const parsed = ExternalUISessionMagicLinkTokenClaims.safeParse(rawPayload);
+    if (!parsed.success) {
+      throw unauthorizedError("Invalid magic-link token claims");
+    }
+
+    const firstUse = await magicLinkTokenStore.consume(
+      parsed.data.jti,
+      parsed.data.exp,
+    );
+    if (!firstUse) {
+      throw unauthorizedError("Magic-link token already used");
+    }
+
+    return parsed.data;
+  }
+
   return {
+    async exchangeMagicLinkToken(magicLinkToken: string): Promise<{
+      agreementId: AgreementId;
+      externalUiSessionToken: string;
+    }> {
+      const claims = await verifyMagicLinkToken(magicLinkToken);
+      const { serialized } =
+        await tokenGenerator.generateExternalUISessionToken({
+          agreement: {
+            id: claims.agreement.id,
+            knodeId: claims.agreement.knode_id,
+          },
+          audience: config.externalUiSessionJwt.audience,
+          consumer: {
+            id: claims.consumer.id,
+            knodeId: claims.consumer.knode_id,
+          },
+          eservice: {
+            id: claims.eservice.id,
+            knodeId: claims.eservice.knode_id,
+            version: claims.eservice.version,
+          },
+          issuer: config.externalUiSessionJwt.issuer,
+          kid: config.externalUiSessionJwt.kid,
+          producer: {
+            id: claims.producer.id,
+            knodeId: claims.producer.knode_id,
+          },
+          scope: claims.scope,
+          secondsDuration: config.externalUiSessionJwt.secondsDuration,
+          subject: claims.agreement.id,
+        });
+      return {
+        agreementId: claims.agreement.id,
+        externalUiSessionToken: serialized,
+      };
+    },
+
     async generateUISessionTokenPair(cognitoToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;

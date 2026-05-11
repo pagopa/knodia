@@ -7,7 +7,7 @@ docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
-# local-kms-setup) are expected to exit and are not checked.
+# seed, local-kms-setup) are expected to exit and are not checked.
 failed=0
 while IFS= read -r line; do
   [ -z "$line" ] && continue
@@ -53,6 +53,7 @@ echo "    k2k-gateway:                http://localhost:3101"
 echo "    remote-resources-manager:   http://localhost:4901"
 echo "    bff:                        http://localhost:3601"
 echo "    authorization-server:       http://localhost:3701"
+echo "    signal-hub:                 http://localhost:3801"
 echo "    mock-eservice:              http://localhost:9991"
 echo ""
 echo "  Lynx:"
@@ -66,6 +67,7 @@ echo "    k2k-gateway:                http://localhost:3102"
 echo "    remote-resources-manager:   http://localhost:4902"
 echo "    bff:                        http://localhost:3602"
 echo "    authorization-server:       http://localhost:3702"
+echo "    signal-hub:                 http://localhost:3802"
 echo "    mock-eservice:              http://localhost:9992"
 echo ""
 echo "  Shared:"

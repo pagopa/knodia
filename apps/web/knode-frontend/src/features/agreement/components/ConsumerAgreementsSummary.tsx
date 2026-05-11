@@ -1,7 +1,12 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Button } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
+import {
+  ArchiveIcon,
+  CheckIcon,
+  type Icon,
+  ProhibitIcon,
+} from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
@@ -10,15 +15,18 @@ import { formatNumber } from "@/utils/formatters";
 export function ConsumerAgreementsSummary({
   counters,
 }: {
-  counters: bffApi.ConsumerAgreements["counters"];
+  counters: bffApi.ConsumerAgreementCounters["counters"];
 }) {
   const navigate = useNavigate();
+
+  const { activeAgreements, archivedAgreements, suspendedAgreements } =
+    counters;
 
   return (
     <div className="grid grid-cols-3 gap-4">
       <AgreementCounterCard
-        count={counters.activeAgreements}
-        icon={<CheckIcon />}
+        count={activeAgreements}
+        Icon={CheckIcon}
         kind="success"
         label="Active"
         onViewAll={() =>
@@ -29,8 +37,8 @@ export function ConsumerAgreementsSummary({
         }
       />
       <AgreementCounterCard
-        count={counters.suspendedAgreements}
-        icon={<ProhibitIcon />}
+        count={suspendedAgreements}
+        Icon={ProhibitIcon}
         kind="error"
         label="Suspended"
         onViewAll={() =>
@@ -41,8 +49,8 @@ export function ConsumerAgreementsSummary({
         }
       />
       <AgreementCounterCard
-        count={counters.archivedAgreements}
-        icon={<ArchiveIcon />}
+        count={archivedAgreements}
+        Icon={ArchiveIcon}
         kind="neutral"
         label="Archived"
         onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
@@ -53,13 +61,13 @@ export function ConsumerAgreementsSummary({
 
 function AgreementCounterCard({
   count,
-  icon,
+  Icon,
   kind,
   label,
   onViewAll,
 }: {
   count: number;
-  icon: React.ReactNode;
+  Icon: Icon;
   kind: "error" | "neutral" | "success";
   label: string;
   onViewAll: () => void;
@@ -82,16 +90,17 @@ function AgreementCounterCard({
 
   return (
     <div
-      className={`${cardBg} flex flex-col gap-4 rounded-2xl pb-4 pl-4 pr-6 pt-4`}
+      className={`${cardBg} flex flex-col gap-counter-card-gap rounded-card pb-counter-card pl-counter-card pr-counter-card-right pt-counter-card`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`${iconBg} flex size-8 items-center justify-center rounded-lg p-2 [&>svg]:size-4`}
+            className={`${iconBg} flex size-counter-card-icon items-center justify-center rounded-counter-card-icon p-2 [&>svg]:size-counter-card-svg`}
           >
-            {icon}
+            <Icon className="orion-only" />
+            <Icon className="lynx-only" weight="bold" />
           </span>
-          <span className="label-lg text-primary-light-mid-contrast">
+          <span className="counter-card-label text-primary-light-mid-contrast">
             {label}
           </span>
         </div>

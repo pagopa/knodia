@@ -1,3 +1,4 @@
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   EserviceInterfaceId,
@@ -6,7 +7,7 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { EserviceVersionState } from "@knodia/eservice-models";
+import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -32,6 +33,7 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0009",
   NOT_ESERVICE_PRODUCER: "0010",
   ESERVICE_TEMPLATE_NOT_FOUND: "0011",
+  ESERVICE_TEMPLATE_INSTANCE_CANNOT_BE_UPDATED: "0012",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -56,6 +58,19 @@ export function eserviceNotFound(id: EserviceId) {
     detail: `E-service with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Not Found",
+  });
+}
+
+export function eserviceTemplateInstanceFieldsCannotBeUpdated(
+  eserviceId: EserviceId,
+  templateId: ExternalId<EserviceTemplateId>,
+  fields: (keyof Eservice)[],
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_TEMPLATE_INSTANCE_CANNOT_BE_UPDATED",
+    detail: `E-service ${eserviceId} is an instance of template ${templateId}; template-defined fields ${fields.join(", ")} cannot be updated`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "E-service Template Instance Cannot Be Updated",
   });
 }
 

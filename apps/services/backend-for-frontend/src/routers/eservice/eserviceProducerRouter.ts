@@ -390,10 +390,10 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         { data: eservice },
         { data: latestVersion },
         { data: latestVersionInterface },
-        { data: allAgreements },
         { data: activeAgreements },
-        { data: allPurposes },
+        { data: suspendedAgreements },
         { data: activePurposes },
+        { data: suspendedPurposes },
         { data: totalDailyCalls },
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
@@ -418,6 +418,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
+            state: [API_AgreementState.enum.Active],
           },
         }),
         agreementProcessApi.getAgreements({
@@ -427,16 +428,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             eserviceId: req.params.eserviceId,
             limit: 1,
             offset: 0,
-            state: [API_AgreementState.enum.Active],
-          },
-        }),
-        purposeProcessApi.getPurposes({
-          client: purposeProcessClient,
-          headers,
-          query: {
-            eserviceId: req.params.eserviceId,
-            limit: 1,
-            offset: 0,
+            state: [API_AgreementState.enum.Suspended],
           },
         }),
         purposeProcessApi.getPurposes({
@@ -447,6 +439,16 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             limit: 1,
             offset: 0,
             state: [API_PurposeState.enum.Active],
+          },
+        }),
+        purposeProcessApi.getPurposes({
+          client: purposeProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+            state: [API_PurposeState.enum.Suspended],
           },
         }),
         purposeProcessApi.getPurposesTotalDailyCalls({
@@ -464,11 +466,11 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           counters: {
             agreements: {
               active: activeAgreements.pagination.total,
-              total: allAgreements.pagination.total,
+              suspended: suspendedAgreements.pagination.total,
             },
             purposes: {
               active: activePurposes.pagination.total,
-              total: allPurposes.pagination.total,
+              suspended: suspendedPurposes.pagination.total,
               totalApiCallsPerDay: totalDailyCalls.totalDailyCalls,
             },
           },
@@ -534,6 +536,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],
     },

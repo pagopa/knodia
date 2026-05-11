@@ -2,7 +2,7 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { describe, expect, it } from "vitest";
 
-import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
+import type { EServiceFromScratchFormData } from "@/features/e-service/types/eserviceCreateForm";
 
 import {
   toConsumptionEserviceDetail,
@@ -32,6 +32,7 @@ function createBffDetail(
     },
     isSignalHubEnabled: false,
     latestVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    latestVersionUpdatedAt: "2026-04-30T10:00:00.000Z",
     maxDailyCalls: {
       perConsumer: 1000,
       perKnode: 10000,
@@ -52,8 +53,8 @@ function createBffDetail(
 }
 
 function createFormData(
-  overrides?: Partial<EServiceFormData>,
-): EServiceFormData {
+  overrides?: Partial<EServiceFromScratchFormData>,
+): EServiceFromScratchFormData {
   return {
     accessTokenAudience: "https://api.example.com",
     accessTokenDuration: 60,

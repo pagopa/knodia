@@ -129,6 +129,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
         { tokenType: "internal" },
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
       ]);
 
       const {
@@ -403,5 +404,44 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId/reactivateByProducer",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.archiveAgreement(req.params.agreementId, ctx);
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Archive an Agreement on behalf of its Consumer",
+      headers: KnodiaServiceHeaders,
+      operationId: "archiveAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement archived successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/archive",
   });
 };
