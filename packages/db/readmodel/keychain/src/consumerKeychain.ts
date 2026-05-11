@@ -4,7 +4,6 @@ import {
   bigint,
   foreignKey,
   jsonb,
-  pgSchema,
   primaryKey,
   text,
   timestamp,
@@ -12,11 +11,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { readmodelKeychainConfig } from "../config/config.ts";
-
-export const keychainSchema = pgSchema(
-  readmodelKeychainConfig.readmodelDbKeychainSchema,
-);
+import { keychainSchema } from "./keychainSchema.ts";
 
 export const readmodelConsumerKeychain = keychainSchema.table(
   "consumer_keychain",

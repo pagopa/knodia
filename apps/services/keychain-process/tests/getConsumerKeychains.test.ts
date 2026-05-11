@@ -15,7 +15,7 @@ import type { API_GetConsumerKeychainsQueryParams } from "../src/models/api.ts";
 
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
-import { keychainWriterService } from "./setup.ts";
+import { consumerKeychainWriterService } from "./setup.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -90,19 +90,19 @@ const consumerKeychainIdsWithLinkedPurpose1 = new Set([
 ]);
 const seedConsumerKeychainPurpose = async () => {
   await Promise.all([
-    keychainWriterService.upsertConsumerKeychainPurpose(
+    consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[0]!,
       0,
     ),
-    keychainWriterService.upsertConsumerKeychainPurpose(
+    consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[1]!,
       0,
     ),
-    keychainWriterService.upsertConsumerKeychainPurpose(
+    consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[2]!,
       0,
     ),
-    keychainWriterService.upsertConsumerKeychainPurpose(
+    consumerKeychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[3]!,
       0,
     ),
