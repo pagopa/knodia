@@ -26,10 +26,12 @@ export const consumerEserviceDetailsQuery = (
       path: { eserviceId },
       query: { knodeId },
     }),
-    // Stop window-focus refetches once the agreement leaves the pending state.
+    // "always" (not true) so the focus refetch bypasses the global staleTime.
     refetchOnWindowFocus: (query) =>
       query.state.data?.agreement?.state ===
-      API_AgreementState.enum.PendingConsumerOperatorIdentification,
+      API_AgreementState.enum.PendingConsumerOperatorIdentification
+        ? "always"
+        : false,
   });
 
 export const consumerEservicesQuery = (
