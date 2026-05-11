@@ -5,28 +5,26 @@ signs a client assertion, signs a DPoP proof and exchanges it for a DPoP access 
 
 ## Prerequisite
 
-The flow needs:
-- an **RSA keypair** to sign the client assertion (always RS256);
-- a keypair to sign the DPoP proof — RS256 or ES256.
+The flow needs two distinct keypairs:
+- an **RS256 keypair** to sign the client assertion;
+- a separate keypair to sign the DPoP proof — RS256 or ES256.
 
-The simplest setup is a single RSA keypair, used for both:
-
-```
-pnpm generate-keypair
-```
-
-Generates an RSA keypair under `docker/keys/` and writes
-`KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64` into
-`collections/.env`. Run once, or again to rotate the key.
-
-If you want a separate ES256 keypair for the DPoP proof, also run:
+Reusing the same key for both would collapse the client credential and the
+DPoP proof-of-possession key into one, which defeats the sender-constraining
+purpose of DPoP. Generate them separately:
 
 ```
-pnpm generate-keypair --alg ES256
+pnpm generate-keypair             # RS256 — client assertion
+pnpm generate-keypair --alg ES256 # ES256 — DPoP proof
 ```
 
-This writes `KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64`
-into `collections/.env`.
+These write `KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64`
+and `KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64` into
+`collections/.env`. Run again to rotate.
+
+If you specifically need to exercise the RS256 DPoP path, generate a second
+RS256 keypair and point the DPoP proof at it — never reuse the client
+assertion key.
 
 ## Run
 

@@ -35,17 +35,11 @@ script:post-response {
   
   const rsaKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH")
   const ecKeyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_ES256_KEY_PATH")
-  let dpopAlg, dpopKeyPath
-  if (ecKeyPath) {
-    dpopAlg = "ES256"
-    dpopKeyPath = ecKeyPath
-  } else if (rsaKeyPath) {
-    dpopAlg = "RS256"
-    dpopKeyPath = rsaKeyPath
-  } else {
-    dpopAlg = "<RS256|ES256>"
-    dpopKeyPath = "<path-to-private-key>"
-  }
+  const dpopAlg = ecKeyPath ? "ES256" : "<RS256|ES256>"
+  const dpopKeyPath = ecKeyPath || "<path-to-private-key>"
+  const dpopKeyHint = ecKeyPath
+    ? ""
+    : `   No DPoP key found in collections/.env. Generate an ES256 keypair first with \`pnpm generate-keypair --alg ES256\`, then:\n`
   const keychainId = bru.getVar("consumerKeychainId") || bru.getEnvVar("consumerKeychainId") || "<consumerKeychainId>"
   const purposeId = bru.getVar("purposeId") || bru.getEnvVar("purposeId") || "<purposeId>"
   const clientAssertionStep = rsaKeyPath
@@ -57,6 +51,7 @@ script:post-response {
     `1. Regenerate the client assertion (if missing or stale):\n` +
     `${clientAssertionStep}\n\n` +
     `2. Regenerate the DPoP proof (if missing or stale):\n` +
+    `${dpopKeyHint}` +
     `   pnpm generate-dpop-proof --key ${dpopKeyPath} --alg ${dpopAlg} --htu https://test.knodia.org/token\n\n` +
     `Then re-run this call.`
   )
