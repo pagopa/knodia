@@ -65,13 +65,11 @@ function makeCognitoPayload(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
   return {
-    "cognito:groups": [
-      `org:${TEST_ORG_ID}`,
-      "role:administrative",
-      "role:technical",
-    ],
+    "cognito:groups": [`org:${TEST_ORG_ID}`],
+    "cognito:username": "test-user",
+    "custom:roles": "administrative,technical",
     sub: TEST_USER_ID,
-    username: "test-user",
+    token_use: "id",
     ...overrides,
   };
 }
@@ -228,8 +226,8 @@ describe("auth integration", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it("returns 401 when no org: group is present", async () => {
-      setupValidCognitoToken({ "cognito:groups": ["role:administrative"] });
+    it("returns 401 when groups is empty", async () => {
+      setupValidCognitoToken({ "cognito:groups": [] });
 
       const response = await app.inject({
         method: "POST",
@@ -240,9 +238,9 @@ describe("auth integration", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it("returns 401 when no valid role: group is present", async () => {
+    it("returns 401 when no org: group is present", async () => {
       setupValidCognitoToken({
-        "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
+        "cognito:groups": ["test-group", "test-group-2"],
       });
 
       const response = await app.inject({
@@ -252,13 +250,119 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when custom:roles contains no roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "",
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when custom:roles contains only invalid roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "invalidrole1,invalidrole2",
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when custom:roles contains an invalid role", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "administrative,invalidrole",
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("ignores empty entries in custom:roles", async () => {
+      setupValidCognitoToken({
+        "custom:roles": "administrative, , technical,",
+      });
+      setupKmsSignature();
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = response.json<{ uiSessionToken: string }>();
+      const uiPayload = UISessionTokenClaims.parse(
+        parseJwtPayload(body.uiSessionToken),
+      );
+      expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+    });
+
+    it("returns 401 when token_use is access", async () => {
+      setupValidCognitoToken({ token_use: "access" });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when token_use is missing", async () => {
+      setupValidCognitoToken({ token_use: undefined });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("accepts custom:roles with spaces around commas", async () => {
+      setupValidCognitoToken({ "custom:roles": "administrative, technical" });
+      setupKmsSignature();
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = response.json<{ uiSessionToken: string }>();
+      const uiPayload = UISessionTokenClaims.parse(
+        parseJwtPayload(body.uiSessionToken),
+      );
+      expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     });
 
     it("returns 401 when username is missing from Cognito token", async () => {
       mockJwtVerify.mockResolvedValue({
         payload: {
-          "cognito:groups": [`org:${TEST_ORG_ID}`, "role:administrative"],
+          "cognito:groups": [`org:${TEST_ORG_ID}`],
+          "custom:roles": "administrative",
           sub: TEST_USER_ID,
+          token_use: "id",
         },
         protectedHeader: { alg: "RS256" },
       });
@@ -288,7 +392,8 @@ describe("auth integration", () => {
     it("extracts org ID by stripping the 'org:' prefix", async () => {
       const customOrgId = "30000000-3000-1000-8000-000000000003";
       setupValidCognitoToken({
-        "cognito:groups": [`org:${customOrgId}`, "role:technical"],
+        "cognito:groups": [`org:${customOrgId}`],
+        "custom:roles": "technical",
       });
       setupKmsSignature();
 
@@ -305,14 +410,14 @@ describe("auth integration", () => {
       expect(payload.organizationId).toBe(customOrgId);
     });
 
-    it("ignores groups that do not start with 'org:' or 'role:'", async () => {
+    it("ignores groups that do not start with 'org:'", async () => {
       setupValidCognitoToken({
         "cognito:groups": [
           `org:${TEST_ORG_ID}`,
-          "role:administrative",
           "team:frontend",
           "random-group",
         ],
+        "custom:roles": "administrative",
       });
       setupKmsSignature();
 
