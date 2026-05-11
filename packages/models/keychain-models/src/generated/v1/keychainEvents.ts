@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { ConsumerKeychainLinkedPurposeV1, ConsumerKeychainV1 } from "./keychain.ts";
+import { ConsumerKeychainLinkedPurposeV1, ConsumerKeychainV1, KnodeApiKeychainV1 } from "./keychain.ts";
 
 export const protobufPackage = "keychain.v1";
 
@@ -51,6 +51,10 @@ export interface ConsumerKeychainKeyAddedV1 {
 export interface ConsumerKeychainKeyRemovedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   kid: string;
+}
+
+export interface KnodeApiKeychainCreatedV1 {
+  knodeApiKeychain: KnodeApiKeychainV1 | undefined;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -751,6 +755,70 @@ export const ConsumerKeychainKeyRemovedV1: MessageFns<ConsumerKeychainKeyRemoved
       ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
       : undefined;
     message.kid = object.kid ?? "";
+    return message;
+  },
+};
+
+function createBaseKnodeApiKeychainCreatedV1(): KnodeApiKeychainCreatedV1 {
+  return { knodeApiKeychain: undefined };
+}
+
+export const KnodeApiKeychainCreatedV1: MessageFns<KnodeApiKeychainCreatedV1> = {
+  encode(message: KnodeApiKeychainCreatedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.knodeApiKeychain !== undefined) {
+      KnodeApiKeychainV1.encode(message.knodeApiKeychain, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): KnodeApiKeychainCreatedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseKnodeApiKeychainCreatedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.knodeApiKeychain = KnodeApiKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): KnodeApiKeychainCreatedV1 {
+    return {
+      knodeApiKeychain: isSet(object.knodeApiKeychain)
+        ? KnodeApiKeychainV1.fromJSON(object.knodeApiKeychain)
+        : undefined,
+    };
+  },
+
+  toJSON(message: KnodeApiKeychainCreatedV1): unknown {
+    const obj: any = {};
+    if (message.knodeApiKeychain !== undefined) {
+      obj.knodeApiKeychain = KnodeApiKeychainV1.toJSON(message.knodeApiKeychain);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<KnodeApiKeychainCreatedV1>, I>>(base?: I): KnodeApiKeychainCreatedV1 {
+    return KnodeApiKeychainCreatedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainCreatedV1>, I>>(object: I): KnodeApiKeychainCreatedV1 {
+    const message = createBaseKnodeApiKeychainCreatedV1();
+    message.knodeApiKeychain = (object.knodeApiKeychain !== undefined && object.knodeApiKeychain !== null)
+      ? KnodeApiKeychainV1.fromPartial(object.knodeApiKeychain)
+      : undefined;
     return message;
   },
 };

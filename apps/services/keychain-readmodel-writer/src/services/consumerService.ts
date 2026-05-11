@@ -1,10 +1,14 @@
-import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-keychain/services";
+import type {
+  ConsumerKeychainWriterService,
+  KnodeApiKeychainWriterService,
+} from "@knodia/db-readmodel-keychain/services";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
+  fromKnodeApiKeychainV1,
   type KeychainEventEnvelopeV1,
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
@@ -13,8 +17,10 @@ export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
     consumerKeychainWriterService,
+    knodeApiKeychainWriterService,
   }: {
     consumerKeychainWriterService: ConsumerKeychainWriterService;
+    knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -74,6 +80,13 @@ export async function handleKeychainEvent(
             knodeId: KnodeId.parse(purpose.knodeId),
           },
         },
+        message.version,
+      );
+    })
+    .with({ type: "KnodeApiKeychainCreatedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "knodeApiKeychain");
+      await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
         message.version,
       );
     })

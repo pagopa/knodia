@@ -10,13 +10,17 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   keychainEvents,
+  type KnodeApiKeychain,
   toConsumerKeychainV1,
+  toKnodeApiKeychainV1,
 } from "@knodia/keychain-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
   getMockConsumerKeychainPurpose,
+  getMockKnodeApiKeychain,
   toExpectConsumerKeychain,
+  toExpectKnodeApiKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -29,10 +33,11 @@ import {
 } from "./setup.ts";
 import {
   getAllConsumerKeychains,
+  getAllKnodeApiKeychains,
   getConsumerKeychainPurposesByKeychainId,
 } from "./utils.ts";
 
-describe("Consumer keychain read model writer tests", async () => {
+describe("Keychain read model writer tests", async () => {
   it("ConsumerKeychainCreatedV1", async () => {
     const consumerKeychain = getMockConsumerKeychain();
 
@@ -189,5 +194,34 @@ describe("Consumer keychain read model writer tests", async () => {
       data: consumerKeychainPurpose2,
       metadata: { version: newMetadataVersion },
     } satisfies WithMetadata<ConsumerKeychainPurpose>);
+  });
+
+  it("KnodeApiKeychainCreatedV1", async () => {
+    const knodeApiKeychain = getMockKnodeApiKeychain();
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainCreatedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(knodeApiKeychain),
+    });
+
+    const metadataVersion = 0;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainCreatedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(knodeApiKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
   });
 });

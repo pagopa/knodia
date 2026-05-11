@@ -1,5 +1,9 @@
 import { ExternalId } from "@knodia/common-models/externalResource";
-import { ConsumerKeychainId, type PurposeId } from "@knodia/common-models/ids";
+import {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
@@ -20,6 +24,14 @@ export const API_ConsumerKeychainIdPathParam = z.strictObject({
 });
 export type API_ConsumerKeychainIdPathParam = z.infer<
   typeof API_ConsumerKeychainIdPathParam
+>;
+
+/** @knipignore */
+export const API_KnodeApiKeychainIdPathParam = z.strictObject({
+  knodeApiKeychainId: KnodeApiKeychainId,
+});
+export type API_KnodeApiKeychainIdPathParam = z.infer<
+  typeof API_KnodeApiKeychainIdPathParam
 >;
 
 export const API_KeychainLocalizedName = LocalizedText(
