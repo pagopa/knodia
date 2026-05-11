@@ -294,7 +294,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           tx
             .select({ keychainId: readmodelKnodeApiKeychain.id })
             .from(readmodelKnodeApiKeychain)
-            .groupBy(readmodelKnodeApiKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
