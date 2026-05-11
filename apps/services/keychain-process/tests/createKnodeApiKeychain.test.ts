@@ -66,13 +66,12 @@ describe("POST /knodeApiKeychains (createKnodeApiKeychain)", () => {
       version: 0,
     });
 
-    const parsedCreatedEvent = KeychainEventV1.parse(createdEvent);
-    if (parsedCreatedEvent.type !== "KnodeApiKeychainCreatedV1") {
-      throw new Error(`Unexpected event type: ${parsedCreatedEvent.type}`);
-    }
-    expect(parsedCreatedEvent.data.knodeApiKeychain).toMatchObject(
-      toKnodeApiKeychainV1(expectedKnodeApiKeychain),
-    );
+    expect(KeychainEventV1.parse(createdEvent)).toMatchObject({
+      data: {
+        knodeApiKeychain: toKnodeApiKeychainV1(expectedKnodeApiKeychain),
+      },
+      type: "KnodeApiKeychainCreatedV1",
+    });
   });
 
   it.each([
