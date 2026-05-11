@@ -43,6 +43,7 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId (getKnodeApiKeychain)", () 
       expect(body).toEqual(toAPI_Keychain(knodeApiKeychain));
     },
   );
+
   it("should return the same knode API keychain as the list endpoint", async () => {
     await seedKnodeApiKeychain(knodeApiKeychain);
 
