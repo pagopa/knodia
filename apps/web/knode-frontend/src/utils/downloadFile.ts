@@ -1,3 +1,5 @@
+import type { AxiosHeaderValue } from "axios";
+
 export const downloadFile = (file: File | null | undefined) => {
   if (!file) return;
 
