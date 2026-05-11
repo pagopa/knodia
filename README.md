@@ -10,7 +10,7 @@ pnpm install
 
 ```bash
 # Start all local dev services (infra starts automatically)
-pnpm dev:services
+pnpm start:services
 
 # Start specific services
 pnpm --filter @knodia/eservice-process --filter @knodia/k2k-gateway dev

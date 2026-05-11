@@ -32,6 +32,7 @@ export const API_EserviceTemplateDetails = z
     description: API_LocalizedDescription,
     eserviceFields: API_EserviceTemplateEserviceFields,
     id: z.uuid(),
+    knodeId: API_KnodeId,
     name: API_LocalizedName,
   })
   .meta({ id: "EserviceTemplateDetails" });
@@ -41,8 +42,10 @@ export type API_EserviceTemplateDetails = z.infer<
 
 export const API_EserviceTemplate = z
   .strictObject({
+    categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
+    mode: API_EserviceMode,
     name: API_LocalizedName,
   })
   .meta({ id: "EserviceTemplate" });

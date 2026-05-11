@@ -2,7 +2,9 @@
   "name": "@knodia/eservice-process",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
     "typecheck": "tsc",
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
