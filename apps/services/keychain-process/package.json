@@ -2,7 +2,9 @@
   "name": "@knodia/keychain-process",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
     "typecheck": "tsc",
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
@@ -24,7 +26,6 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/crypto": "workspace:*",
@@ -34,6 +35,7 @@
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/cognito-idm-client": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
