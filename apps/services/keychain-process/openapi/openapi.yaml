@@ -1738,6 +1738,19 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
+            type: string
+          in: query
+          name: name
+          required: false
+          description: Filter by Knode API Keychain name
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: ownerId
+          required: false
+          description: Filter by owner Organization ID
+        - schema:
             allOf:
               - $ref: "#/components/schemas/CorrelationId"
           in: header

@@ -89,6 +89,28 @@ describe("GET /knodeApiKeychains (getKnodeApiKeychains)", () => {
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: seededKnodeApiKeychains.length,
     },
+    {
+      expectedResult: sortedMockKnodeApiKeychains.filter(
+        (ck) => ck.ownerId === ownerIdFilter,
+      ),
+      query: {
+        ...defaultQuery,
+        ownerId: ownerIdFilter,
+      },
+      testCase: "filter by ownerId, sort by updatedAt desc by default",
+      totalCount: 3,
+    },
+    {
+      expectedResult: sortedMockKnodeApiKeychains.filter((ck) =>
+        ck.name.en.toLowerCase().includes(matchingNamePrefix),
+      ),
+      query: {
+        ...defaultQuery,
+        name: matchingNamePrefix.toUpperCase(),
+      },
+      testCase: "filter by name, case insensitive",
+      totalCount: 2,
+    },
   ] satisfies {
     expectedResult: KnodeApiKeychain[];
     query: z.input<typeof API_GetKnodeApiKeychainsQueryParams>;

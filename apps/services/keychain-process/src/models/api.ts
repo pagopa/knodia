@@ -248,7 +248,15 @@ export type API_KnodeApiKeychainKeyPathParams = z.infer<
   typeof API_KnodeApiKeychainKeyPathParams
 >;
 
-export const API_GetKnodeApiKeychainsQueryParams = API_PaginationQueryParams;
+export const API_GetKnodeApiKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    name: z.string().optional().meta({
+      description: "Filter by Knode API Keychain name",
+    }),
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
+  });
 export type API_GetKnodeApiKeychainsQueryParams = z.infer<
   typeof API_GetKnodeApiKeychainsQueryParams
 >;

@@ -281,7 +281,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getKnodeApiKeychains(
       params: API_GetKnodeApiKeychainsQueryParams,
     ): Promise<ListResult<FlatKnodeApiKeychain>> {
-      const { limit, offset } = params;
+      const { limit, name, offset, ownerId } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -294,6 +294,20 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           tx
             .select({ keychainId: readmodelKnodeApiKeychain.id })
             .from(readmodelKnodeApiKeychain)
+            .where(
+              and(
+                name
+                  ? ilikeJsonB({
+                      column: readmodelKnodeApiKeychain.name,
+                      value: name,
+                    })
+                  : undefined,
+                ownerId
+                  ? eq(readmodelKnodeApiKeychain.ownerId, ownerId)
+                  : undefined,
+              ),
+            )
+            .groupBy(readmodelKnodeApiKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
