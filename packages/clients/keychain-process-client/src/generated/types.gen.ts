@@ -572,10 +572,6 @@ export type RemoveConsumerKeychainKeyErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
@@ -1112,6 +1108,52 @@ export type GetKnodeApiKeychainResponses = {
 };
 
 export type GetKnodeApiKeychainResponse = GetKnodeApiKeychainResponses[keyof GetKnodeApiKeychainResponses];
+
+export type RemoveKnodeApiKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodeApiKeychainId: string;
+        keyId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
+};
+
+export type RemoveKnodeApiKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveKnodeApiKeychainKeyError = RemoveKnodeApiKeychainKeyErrors[keyof RemoveKnodeApiKeychainKeyErrors];
+
+export type RemoveKnodeApiKeychainKeyResponses = {
+    /**
+     * Knode API Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveKnodeApiKeychainKeyResponse = RemoveKnodeApiKeychainKeyResponses[keyof RemoveKnodeApiKeychainKeyResponses];
 
 export type GetKnodeApiKeychainKeyData = {
     body?: never;
