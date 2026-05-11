@@ -33,7 +33,11 @@ export const operatorRouter: FastifyPluginAsyncZod<
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
 
-      res.send(data.map(toAPI_Operator));
+      res.send(
+        data
+          .map(toAPI_Operator)
+          .toSorted((a, b) => a.username.localeCompare(b.username)),
+      );
     },
     method: "GET",
     schema: {
