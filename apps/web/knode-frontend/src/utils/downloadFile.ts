@@ -12,7 +12,7 @@ export const downloadFile = (file: File | null | undefined) => {
 export const downloadResponseAsFile = (
   data: unknown,
   fileName: string,
-  contentType: unknown,
+  contentType: AxiosHeaderValue | undefined,
 ) => {
   const content =
     typeof data === "string" ? data : JSON.stringify(data, null, 2);
