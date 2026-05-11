@@ -1047,6 +1047,14 @@ export type GetKnodeApiKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Knode API Keychain name
+         */
+        name?: string;
+        /**
+         * Filter by owner Organization ID
+         */
+        ownerId?: OrganizationId;
     };
     url: '/knodeApiKeychains';
 };
