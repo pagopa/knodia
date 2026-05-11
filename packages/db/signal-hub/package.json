@@ -1,0 +1,31 @@
+{
+  "name": "@knodia/db-signal-hub",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
+    "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
+    "db:schema-normalize": "node ../../../scripts/normalize-drizzle-output.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/signalHub.ts",
+    "./config": "./src/config/config.ts"
+  }
+}

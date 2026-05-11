@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -49,7 +50,6 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { IdmUser, UserService } from "./userService.ts";
 
 import {
   consumerKeychainNotFound,
@@ -95,7 +95,7 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
-  userService: UserService,
+  cognitoIdmClient: CognitoIdmClient,
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
@@ -103,7 +103,7 @@ export function consumerKeychainServiceBuilder(
     userId: UserId,
     consumerKeychainId: ConsumerKeychainId,
   ): Promise<IdmUser> {
-    const user = await userService.getUserById(userId);
+    const user = await cognitoIdmClient.getUserById(userId);
     if (!user) {
       /**
        * This should not happen as users are validated when added as members.
@@ -143,7 +143,7 @@ export function consumerKeychainServiceBuilder(
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
-      const user = await userService.getUserById(userId);
+      const user = await cognitoIdmClient.getUserById(userId);
 
       if (!user) {
         throw userNotFound(userId);
@@ -152,7 +152,7 @@ export function consumerKeychainServiceBuilder(
       await assertUserBelongsToOrganization(
         user,
         authData.organizationId,
-        userService,
+        cognitoIdmClient,
       );
       assertUserHasTechnicalRole(user);
 
