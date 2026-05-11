@@ -14,9 +14,13 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
     z
       .object({
         AGREEMENT_PROCESS_URL: z.url(),
+        AUTH_COOKIE_ALLOWED_ORIGINS: z
+          .string()
+          .min(1)
+          .transform((value) => value.split(",").map((u) => u.trim()))
+          .pipe(z.string().array()),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
-        COOKIE_DOMAIN: z.string().optional(),
         COOKIE_PATH_PREFIX: z.string(),
         COOKIE_SECURE: z.coerce.boolean().default(true),
         DYNAMODB_MAGIC_LINK_TOKENS_TABLE: z
@@ -64,10 +68,10 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       })
       .transform((c) => ({
         agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
+        authCookieAllowedOrigins: c.AUTH_COOKIE_ALLOWED_ORIGINS,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         cookie: {
-          domain: c.COOKIE_DOMAIN,
           pathPrefix: c.COOKIE_PATH_PREFIX,
           secure: c.COOKIE_SECURE,
         },

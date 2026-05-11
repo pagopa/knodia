@@ -23,11 +23,11 @@ beforeAll(async () => {
     {
       acceptedAudiences: ["test-audience"],
       agreementProcessUrl: "http://localhost:0",
+      authCookieAllowedOrigins: ["http://localhost:5173"],
       cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
       cognitoJwksUrl:
         "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
       cookie: {
-        domain: undefined,
         pathPrefix: "",
         secure: false,
       },
