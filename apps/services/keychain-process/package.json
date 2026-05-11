@@ -26,7 +26,6 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/crypto": "workspace:*",
@@ -36,6 +35,7 @@
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/cognito-idm-client": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
