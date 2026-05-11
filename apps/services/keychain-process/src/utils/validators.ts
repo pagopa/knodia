@@ -1,3 +1,4 @@
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
@@ -26,7 +27,6 @@ import {
   userNotAllowed,
   userNotFound,
 } from "../models/errors.ts";
-import { type IdmUser, type UserService } from "../services/userService.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -69,10 +69,13 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
 export async function assertUserBelongsToOrganization(
   user: IdmUser,
   organizationId: OrganizationId,
-  userService: UserService,
+  cognitoIdmClient: CognitoIdmClient,
 ): Promise<void> {
   if (
-    !(await userService.checkUserBelongsToOrganization(user, organizationId))
+    !(await cognitoIdmClient.checkUserBelongsToOrganization(
+      user,
+      organizationId,
+    ))
   ) {
     throw userNotFound(user.id);
   }
