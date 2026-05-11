@@ -1,9 +1,9 @@
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
+  API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeFormAnswers,
-  API_PurposeFormSchemaVersion,
 } from "@knodia/purpose-models/api";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ export const API_PurposeTemplateDetails = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid().optional(),
     formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: API_PurposeFormSchemaVersion,
+    formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
     id: z.uuid(),
     name: API_LocalizedPurposeName,
   })
