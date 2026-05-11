@@ -442,7 +442,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
-        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.consumerKeychain],
     },

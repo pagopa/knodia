@@ -23,9 +23,11 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { keyNotFoundInKeychain } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
+  createKnodeApiKeychainKeyRemovedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
@@ -33,6 +35,10 @@ import {
   retrieveKnodeApiKeychainKey,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain } from "../utils/utils.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserIsAllowedToRemoveKey,
+} from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -103,6 +109,59 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
+    },
+    async removeKnodeApiKeychainKey(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      kid: KeyId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Removing key ${kid} from Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      assertUserIsAllowedToRemoveKey(
+        authData,
+        knodeApiKeychainId,
+        knodeApiKeychain.data.users,
+      );
+
+      const keyToRemove = knodeApiKeychain.data.keys.find(
+        (key) => key.kid === kid,
+      );
+
+      if (!keyToRemove) {
+        throw keyNotFoundInKeychain(kid, knodeApiKeychainId);
+      }
+
+      const updatedKnodeApiKeychain: KnodeApiKeychain = {
+        ...knodeApiKeychain.data,
+        keys: knodeApiKeychain.data.keys.filter((key) => key.kid !== kid),
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainKeyRemovedV1Event(
+          updatedKnodeApiKeychain,
+          kid,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
     },
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
