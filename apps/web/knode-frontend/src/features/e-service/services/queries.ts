@@ -1,5 +1,6 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerEserviceDetailsOptions,
@@ -28,7 +29,7 @@ export const consumerEserviceDetailsQuery = (
     // Stop window-focus refetches once the agreement leaves the pending state.
     refetchOnWindowFocus: (query) =>
       query.state.data?.agreement?.state ===
-      "PendingConsumerOperatorIdentification",
+      API_AgreementState.enum.PendingConsumerOperatorIdentification,
   });
 
 export const consumerEservicesQuery = (
