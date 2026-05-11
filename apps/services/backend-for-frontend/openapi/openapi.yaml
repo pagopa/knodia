@@ -1475,10 +1475,6 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
-    PurposeFormSchemaVersion:
-      type: string
-      enum:
-        - "1.0"
     PurposeFormTexts:
       type: object
       properties:
@@ -1881,7 +1877,9 @@ components:
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
         id:
           type: string
           format: uuid

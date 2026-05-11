@@ -696,8 +696,6 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
-export type PurposeFormSchemaVersion = '1.0';
-
 export type PurposeFormTexts = {
     en: {
         [key: string]: string;
@@ -883,7 +881,10 @@ export type PurposeTemplateDetails = {
     description: LocalizedPurposeDescription;
     eserviceId?: string;
     formAnswersJson: PurposeFormAnswers;
-    formSchemaVersion: PurposeFormSchemaVersion;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
     id: string;
     name: LocalizedPurposeName;
 };
