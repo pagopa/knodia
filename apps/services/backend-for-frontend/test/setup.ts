@@ -9,6 +9,8 @@ import { buildAppFromConfig } from "../src/app.ts";
 const refreshTokenTableName = "knodia-bff-refresh-tokens";
 const magicLinkTokenTableName = "knodia-bff-magic-link-tokens";
 
+export const TEST_ALLOWED_ORIGIN = "http://localhost:5173";
+
 let app: ReturnType<typeof buildAppFromConfig>;
 let dynamoClient: DynamoDBClient;
 
@@ -23,7 +25,7 @@ beforeAll(async () => {
     {
       acceptedAudiences: ["test-audience"],
       agreementProcessUrl: "http://localhost:0",
-      authCookieAllowedOrigins: ["http://localhost:5173"],
+      authCookieAllowedOrigins: [TEST_ALLOWED_ORIGIN],
       cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
       cognitoJwksUrl:
         "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",

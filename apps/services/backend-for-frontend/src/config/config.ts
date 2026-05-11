@@ -18,7 +18,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .string()
           .min(1)
           .transform((value) => value.split(",").map((u) => u.trim()))
-          .pipe(z.string().array()),
+          .pipe(z.url().array().min(1)),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         COOKIE_PATH_PREFIX: z.string(),

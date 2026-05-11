@@ -32,9 +32,8 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-import { app } from "./setup.ts";
+import { app, TEST_ALLOWED_ORIGIN } from "./setup.ts";
 
-const ALLOWED_ORIGIN = "http://localhost:5173";
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
 
@@ -68,7 +67,7 @@ function injectWithAllowedOrigin(options: InjectOptions) {
   return app.inject({
     ...options,
     headers: {
-      origin: ALLOWED_ORIGIN,
+      origin: TEST_ALLOWED_ORIGIN,
       ...options.headers,
     },
   });
@@ -160,7 +159,7 @@ describe("auth integration", () => {
       expect(response.statusCode).toBe(403);
     });
 
-    it("returns 403 before consuming refresh cookies", async () => {
+    it("returns 403 on /auth/ui-session/refresh without touching the refresh cookie", async () => {
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
@@ -168,9 +167,11 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(403);
+      expect(mockDecodeJwt).not.toHaveBeenCalled();
+      expect(mockJwtVerify).not.toHaveBeenCalled();
     });
 
-    it("returns 403 before revoking refresh cookies", async () => {
+    it("returns 403 on /auth/logout without revoking the refresh cookie", async () => {
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
@@ -178,6 +179,7 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(403);
+      expect(mockDecodeJwt).not.toHaveBeenCalled();
     });
   });
 
@@ -795,7 +797,7 @@ describe("auth integration", () => {
       setupValidMagicLinkToken();
       setupKmsSignature();
 
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "valid.magic.link" },
         url: "/auth/externalUiSession",
@@ -853,7 +855,7 @@ describe("auth integration", () => {
       setupValidMagicLinkToken();
       setupKmsSignature();
 
-      await injectWithAllowedOrigin({
+      await app.inject({
         method: "POST",
         payload: { magicLinkToken: "valid.magic.link" },
         url: "/auth/externalUiSession",
@@ -869,7 +871,7 @@ describe("auth integration", () => {
       setupValidMagicLinkToken();
       setupKmsSignature();
 
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "valid.magic.link" },
         url: "/auth/externalUiSession",
@@ -882,7 +884,7 @@ describe("auth integration", () => {
     it("returns 401 when the magic-link JWT verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "bad.token" },
         url: "/auth/externalUiSession",
@@ -897,7 +899,7 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "malformed-claims" },
         url: "/auth/externalUiSession",
@@ -909,7 +911,7 @@ describe("auth integration", () => {
     it("returns 401 when the scope is wrong", async () => {
       setupValidMagicLinkToken({ scope: "other-scope" });
 
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "wrong-scope" },
         url: "/auth/externalUiSession",
@@ -923,7 +925,7 @@ describe("auth integration", () => {
       setupValidMagicLinkToken({ jti });
       setupKmsSignature();
 
-      const first = await injectWithAllowedOrigin({
+      const first = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "valid.magic.link" },
         url: "/auth/externalUiSession",
@@ -932,7 +934,7 @@ describe("auth integration", () => {
 
       setupValidMagicLinkToken({ jti });
 
-      const second = await injectWithAllowedOrigin({
+      const second = await app.inject({
         method: "POST",
         payload: { magicLinkToken: "replay.magic.link" },
         url: "/auth/externalUiSession",
@@ -941,7 +943,7 @@ describe("auth integration", () => {
     });
 
     it("returns 400 when request body is missing magicLinkToken", async () => {
-      const response = await injectWithAllowedOrigin({
+      const response = await app.inject({
         method: "POST",
         payload: {},
         url: "/auth/externalUiSession",
