@@ -25,24 +25,6 @@ export async function getAllKeychainEvents() {
 
 export const injectAppRequest = createInjectAppRequest(() => app);
 
-export function makeCognitoUser({
-  email,
-  id,
-  username,
-}: {
-  email: string;
-  id: string;
-  username: string;
-}) {
-  return {
-    Attributes: [
-      { Name: "sub", Value: id },
-      { Name: "email", Value: email },
-    ],
-    Username: username,
-  };
-}
-
 export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
     createConsumerKeychainCreatedV1Event(consumerKeychain, generateId()),

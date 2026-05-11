@@ -2,14 +2,15 @@
 
 ## `compose.yaml`: single-node infrastructure
 
-Runs only the shared infrastructure services needed for local development: PostgreSQL, Kafka, Debezium, MinIO, pgAdmin, Kafka UI, and supporting init containers (Flyway migrations, readmodel seed, etc.).
+Runs only the shared infrastructure services needed for local development: PostgreSQL, Kafka, Debezium, MinIO, pgAdmin, Kafka UI, and supporting init containers (Flyway migrations, readmodel + S3 seed, etc.).
 
 Application services (process, readmodel-writer, BFF, frontend) are started separately via `pnpm dev` in their respective packages.
 
 ```bash
-pnpm infra:start    # start infrastructure (+ generate local dev tokens)
-pnpm infra:stop     # stop containers (preserves volumes)
-pnpm infra:destroy  # stop and remove containers (volumes are preserved)
+pnpm infra:start                # start infrastructure (+ generate local dev tokens)
+pnpm infra:stop                 # stop containers (preserves volumes)
+pnpm infra:destroy              # stop and remove containers (volumes are preserved)
+pnpm infra:destroy -- --volumes # stop and remove containers and volumes (useful to recover from Debezium/event-consumption failures caused by stale state)
 ```
 
 ## `compose.multinode.yaml`: multi-node environment

@@ -11,7 +11,7 @@ import {
   OrganizationId,
   UserId,
 } from "@knodia/common-models/ids";
-import { NonEmptyArray } from "@knodia/common-models/types";
+import { CommaSeparatedList, NonEmptyArray } from "@knodia/common-models/types";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
@@ -22,8 +22,11 @@ import type { BffProcessConfig } from "../config/config.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
+  "cognito:username": z.string(),
+  "custom:roles": CommaSeparatedList(UserRole),
   sub: z.string(),
-  username: z.string(),
+  // We expect the OIDC token to be an ID token, which contains the role custom attributes.
+  token_use: z.literal("id"),
 });
 
 const ClaimsFromCognito = z.object({
@@ -94,15 +97,12 @@ export function authServiceBuilder(
     }
 
     const cognitoPayload = payloadParsed.data;
-    const groups = cognitoPayload["cognito:groups"];
 
-    const roles = groups
-      .filter((g) => g.startsWith("role:"))
-      .flatMap((g) => {
-        const parsed = UserRole.safeParse(g.slice("role:".length));
-        return parsed.success ? [parsed.data] : [];
-      });
-    const orgGroup = groups.find((g) => g.startsWith("org:"));
+    const roles = cognitoPayload["custom:roles"];
+
+    const orgGroup = cognitoPayload["cognito:groups"].find((g) =>
+      g.startsWith("org:"),
+    );
 
     if (!orgGroup) {
       throw unauthorizedError("Missing organization claim in cognito token");
@@ -116,7 +116,7 @@ export function authServiceBuilder(
       organizationId: orgGroup.slice("org:".length),
       roles,
       sub: cognitoPayload.sub,
-      username: cognitoPayload.username,
+      username: cognitoPayload["cognito:username"],
     });
 
     if (!claimsParsed.success) {
