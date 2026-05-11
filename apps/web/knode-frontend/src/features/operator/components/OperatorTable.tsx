@@ -33,11 +33,9 @@ export function OperatorTable({ isLoading, operators }: OperatorTableProps) {
       <TableBody items={operators}>
         {(operator) => (
           <Row id={operator.id}>
-            <Cell>
-              <span className="body-md-em">{operator.username}</span>
-            </Cell>
-            <Cell>{operator.email}</Cell>
-            <Cell>{formatRoles(operator.roles)}</Cell>
+            <Cell className="body-md-em">{operator.username}</Cell>
+            <Cell className="body-md-em">{operator.email}</Cell>
+            <Cell className="body-md-em">{formatRoles(operator.roles)}</Cell>
           </Row>
         )}
       </TableBody>
