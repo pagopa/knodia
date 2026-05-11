@@ -683,6 +683,9 @@ components:
           description: Purpose counters
           allOf:
             - $ref: "#/components/schemas/ProducerEserviceDetailsPurposeCounters"
+        template:
+          allOf:
+            - $ref: "#/components/schemas/EserviceTemplateReference"
         updatedAt:
           type: string
           format: date-time
@@ -1418,6 +1421,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedName"
       required:
@@ -1425,22 +1430,31 @@ components:
         - description
         - eserviceFields
         - id
+        - knodeId
         - name
       additionalProperties: false
     EserviceTemplate:
       type: object
       properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
       required:
+        - categories
         - description
         - id
+        - mode
         - name
       additionalProperties: false
     EserviceTemplates:
@@ -2698,6 +2712,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:

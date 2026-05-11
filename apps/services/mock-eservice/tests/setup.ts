@@ -15,10 +15,8 @@ import { afterAll, beforeAll, inject } from "vitest";
 import { buildApp } from "../src/app.ts";
 import "@knodia/test-commons/dynamodb";
 
-export const ACCEPTED_AUDIENCES: [string, ...string[]] = [
-  "mock-eservice.knodia.local",
-];
-export const EXPECTED_ISSUER = "https://knodia.org";
+export const ACCEPTED_AUDIENCES: [string, ...string[]] = ["test.audience"];
+export const EXPECTED_ISSUER = "knodia.org";
 export const TEST_KID = "test-mock-eservice-kid";
 export const TEST_KNODE_ID = KnodeId.enum.Orion;
 

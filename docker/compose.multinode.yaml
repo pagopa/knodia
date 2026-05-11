@@ -42,6 +42,7 @@ services:
       - ../migration/event-store:/flyway/databases/orion_event_store:ro
       - ../migration/read-model:/flyway/databases/orion_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/orion_remote_resource:ro
+      - ../migration/signal-hub:/flyway/databases/orion_signal_hub:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -63,6 +64,7 @@ services:
       - ../migration/event-store:/flyway/databases/lynx_event_store:ro
       - ../migration/read-model:/flyway/databases/lynx_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/lynx_remote_resource:ro
+      - ../migration/signal-hub:/flyway/databases/lynx_signal_hub:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -74,32 +76,39 @@ services:
       flyway-orion:
         condition: service_completed_successfully
 
-  readmodel-seed:
+  seed:
     security_opt:
       - no-new-privileges:true
-    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-multinode-readmodel-seed
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-multinode-seed
     depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
       flyway-lynx:
         condition: service_completed_successfully
+      minio-setup:
+        condition: service_completed_successfully
     volumes:
-      - ./readmodel-seed:/seed:ro
+      - ../scripts/seed:/seed:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
       PGPASSWORD: root
+      S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_REGION: eu-south-1
+    # `-e` makes the shell fail fast on the first tenant error.
     entrypoint:
       - /bin/sh
+      - -e
       - -c
       - |
-        for pair in "orion_readmodel:local_orion" "lynx_readmodel:local_lynx"; do
-          db=$${pair%%:*}
-          ns=$${pair##*:}
-          for f in /seed/*.sql; do
-            sed "s/\$${NAMESPACE}/$$ns/g" "$$f" | psql -d "$$db"
-          done
-        done
-        echo 'Read-model seeded'
+        dnf install -qy postgresql15 >/dev/null
+        SQL_DIR=/seed/sql/orion PGDATABASE=orion_readmodel NAMESPACE=local_orion ENVIRONMENT=local S3_BUCKET=knodia-orion-eservice-interfaces /seed/seed.sh
+        SQL_DIR=/seed/sql/lynx  PGDATABASE=lynx_readmodel  NAMESPACE=local_lynx  ENVIRONMENT=local S3_BUCKET=knodia-lynx-eservice-interfaces  /seed/seed.sh
 
   # ============================================================
   # Kafka
@@ -300,16 +309,11 @@ services:
     depends_on:
       minio:
         condition: service_healthy
-    volumes:
-      - ../apps/services/mock-eservice/openapi/openapi.yaml:/seed/mock-eservice.yaml:ro
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
-      mc cp /seed/mock-eservice.yaml local/knodia-orion-eservice-interfaces/interfaces/mock-eservice.yaml;
-      mc cp /seed/mock-eservice.yaml local/knodia-lynx-eservice-interfaces/interfaces/mock-eservice.yaml;
-      exit 0;
       "
 
   # ============================================================
@@ -892,10 +896,14 @@ services:
       KNODE_ID: "Orion"
       CONSUMER_KNODE_URL: "http://k2k-gateway-lynx:3000"
       ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
-      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "https://orion.local.knodia.com"
+      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
+      JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_orion_authorization_server_user
       READMODEL_DB_PASSWORD: local_orion_authorization_server_user
       READMODEL_DB_HOST: postgres
@@ -909,10 +917,13 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
       local-kms-setup:
+        condition: service_completed_successfully
+      dynamodb-setup:
         condition: service_completed_successfully
 
   mock-eservice-orion:
@@ -933,12 +944,40 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Orion"
-      ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
-      EXPECTED_ISSUER: "https://orion.local.knodia.com"
+      ACCEPTED_AUDIENCES: "mock.orion.local.knodia.com"
+      EXPECTED_ISSUER: "auth.orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
+      JWT_CLOCK_TOLERANCE_SECONDS: "30"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
     depends_on:
       local-kms-setup:
         condition: service_completed_successfully
+      dynamodb-setup:
+        condition: service_completed_successfully
+
+  signal-hub-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signal-hub-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub/Dockerfile
+    ports:
+      - 3801:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
 
   # ============================================================
   # Lynx Node
@@ -1495,10 +1534,14 @@ services:
       KNODE_ID: "Lynx"
       CONSUMER_KNODE_URL: "http://k2k-gateway-orion:3000"
       ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
-      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "https://lynx.local.knodia.com"
+      GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
+      JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_lynx_authorization_server_user
       READMODEL_DB_PASSWORD: local_lynx_authorization_server_user
       READMODEL_DB_HOST: postgres
@@ -1512,10 +1555,13 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
       local-kms-setup:
+        condition: service_completed_successfully
+      dynamodb-setup:
         condition: service_completed_successfully
 
   mock-eservice-lynx:
@@ -1536,12 +1582,40 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Lynx"
-      ACCEPTED_AUDIENCES: "mock-eservice.knodia.local"
-      EXPECTED_ISSUER: "https://lynx.local.knodia.com"
+      ACCEPTED_AUDIENCES: "mock.lynx.local.knodia.com"
+      EXPECTED_ISSUER: "auth.lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
+      JWT_CLOCK_TOLERANCE_SECONDS: "30"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
     depends_on:
       local-kms-setup:
         condition: service_completed_successfully
+      dynamodb-setup:
+        condition: service_completed_successfully
+
+  signal-hub-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signal-hub-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub/Dockerfile
+    ports:
+      - 3802:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
 
   # ============================================================
   # Frontends

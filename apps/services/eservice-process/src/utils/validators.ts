@@ -16,6 +16,7 @@ import {
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  eserviceTemplateInstanceFieldsCannotBeUpdated,
   eserviceTokenClaimMismatch,
   eserviceVersionNotInExpectedStates,
   type ExternalUISessionEserviceClaimField,
@@ -30,6 +31,16 @@ export const assertIsEserviceProducer = (
 ): void => {
   if (eservice.producerId !== organizationId) {
     throw notEserviceProducer(eservice.id, organizationId);
+  }
+};
+
+export const assertCategoriesCanBeUpdated = (eservice: Eservice): void => {
+  if (eservice.template !== undefined) {
+    throw eserviceTemplateInstanceFieldsCannotBeUpdated(
+      eservice.id,
+      eservice.template.id,
+      ["categories"],
+    );
   }
 };
 

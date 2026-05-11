@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -12,9 +13,9 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   ConsumerKeychain,
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  KeychainKey,
 } from "@knodia/keychain-models";
 
 import {
@@ -49,7 +50,6 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { IdmUser, UserService } from "./userService.ts";
 
 import {
   consumerKeychainNotFound,
@@ -95,7 +95,7 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
-  userService: UserService,
+  cognitoIdmClient: CognitoIdmClient,
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
@@ -103,7 +103,7 @@ export function consumerKeychainServiceBuilder(
     userId: UserId,
     consumerKeychainId: ConsumerKeychainId,
   ): Promise<IdmUser> {
-    const user = await userService.getUserById(userId);
+    const user = await cognitoIdmClient.getUserById(userId);
     if (!user) {
       /**
        * This should not happen as users are validated when added as members.
@@ -143,20 +143,18 @@ export function consumerKeychainServiceBuilder(
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
-      const user = await userService.getUserById(userId);
+      const user = await cognitoIdmClient.getUserById(userId);
 
       if (!user) {
         throw userNotFound(userId);
       }
 
-      const userGroups = await userService.getUserGroups(user.username);
-
-      assertUserBelongsToOrganization(
-        userId,
+      await assertUserBelongsToOrganization(
+        user,
         authData.organizationId,
-        userGroups,
+        cognitoIdmClient,
       );
-      assertUserHasTechnicalRole(userId, userGroups);
+      assertUserHasTechnicalRole(user);
 
       const now = new Date();
       const updatedConsumerKeychain: ConsumerKeychain = {
@@ -257,7 +255,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<ConsumerKeychainKey> {
+    ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
       );
@@ -274,7 +272,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<ConsumerKeychainKey>> {
+    ): Promise<ListResult<KeychainKey>> {
       logger.info(
         { params },
         `Getting keys of Consumer Keychain with ID ${consumerKeychainId}`,
@@ -648,7 +646,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       keySeed: API_KeychainKeySeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychainKey>> {
+    ): Promise<WithMetadata<KeychainKey>> {
       logger.info(`Uploading key to Consumer Keychain ${consumerKeychainId}`);
 
       const consumerKeychain = await retrieveConsumerKeychain(
@@ -695,7 +693,7 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      const newKey: ConsumerKeychainKey = {
+      const newKey: KeychainKey = {
         algorithm: "RS256",
         createdAt: new Date(),
         encodedPem: keySeed.encodedPem,

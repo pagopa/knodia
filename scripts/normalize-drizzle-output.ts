@@ -64,7 +64,7 @@ interface ConfigInfo {
  * - Whether this is an event-store package (for bytea column handling)
  */
 function parseConfigFile(): ConfigInfo {
-  const candidates = ["config/config.ts", "src/config.ts"];
+  const candidates = ["config/config.ts", "src/config.ts", "src/config/config.ts"];
   const configPath = candidates
     .map((c) => resolve(cwd(), c))
     .find((p) => existsSync(p));
