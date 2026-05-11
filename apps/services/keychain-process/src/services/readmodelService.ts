@@ -38,6 +38,7 @@ import type {
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
+  API_GetKnodeApiKeychainKeysQueryParams,
 } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
@@ -273,6 +274,47 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await knodeApiKeychainReadmodelService.getKnodeApiKeychainById(
         knodeApiKeychainId,
       );
+    },
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+    ): Promise<ListResult<KeychainKey>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const createFilterQuery = () =>
+          tx
+            .select({ kid: readmodelKnodeApiKeychainKey.kid })
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select()
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .orderBy(desc(readmodelKnodeApiKeychainKey.createdAt))
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        return {
+          results: queryRes.map(toKeychainKey),
+          totalCount,
+        };
+      });
     },
   };
 }
