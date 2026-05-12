@@ -2,7 +2,6 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   Cell,
-  Chip,
   Column,
   Empty,
   Loader,
@@ -11,10 +10,12 @@ import {
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, SelectionIcon } from "@phosphor-icons/react";
+import { SelectionIcon } from "@phosphor-icons/react";
 
 import { RouterLink } from "@/components/routerLinks";
 import { formatNumericDate } from "@/utils/formatters";
+
+import { AgreementStateChip } from "../AgreementStateChip";
 
 export function ProducerArchivedAgreementTable({
   agreements,
@@ -52,10 +53,9 @@ export function ProducerArchivedAgreementTable({
         {(agreement) => (
           <Row id={agreement.id}>
             <Cell>
-              <Chip
-                icon={<ArchiveIcon />}
-                kind="neutral"
+              <AgreementStateChip
                 label={formatNumericDate(agreement.updatedAt)}
+                state="Archived"
                 type="light"
               />
             </Cell>
