@@ -24,7 +24,7 @@ let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let consumerKeychainWriterService: ConsumerKeychainWriterService;
 let knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
-export const mockMaxKeysPerKeychain = 100;
+export const mockMaxKeysPerKeychain = 5;
 
 async function resetTestDatabases() {
   await Promise.all([

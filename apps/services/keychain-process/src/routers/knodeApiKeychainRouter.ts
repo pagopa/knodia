@@ -17,6 +17,7 @@ import type { KnodeApiKeychainService } from "../services/knodeApiKeychainServic
 import {
   API_Keychain,
   API_KeychainKey,
+  API_KeychainKeySeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
@@ -142,5 +143,48 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.knodeApiKeychain],
     },
     url: "/knodeApiKeychains/:knodeApiKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: key,
+        metadata: { version },
+      } = await knodeApiKeychainService.uploadKnodeApiKeychainKey(
+        req.params.knodeApiKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_KeychainKey(key));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "uploadKnodeApiKeychainKey",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_KeychainKey.meta({
+            description: "Knode API Keychain Key uploaded successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId/keys",
   });
 };

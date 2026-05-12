@@ -22,7 +22,7 @@ import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

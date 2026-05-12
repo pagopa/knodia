@@ -6,12 +6,12 @@ import {
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { API_OrganizationUsers } from "../src/models/api.ts";
+import { API_OrganizationUsers } from "../../src/models/api.ts";
 import {
   cognitoIdmClientMock,
   cognitoIdmClientModuleMock,
-} from "./cognitoIdmClientMock.ts";
-import { injectAppRequest } from "./utils.ts";
+} from "../cognitoIdmClientMock.ts";
+import { injectAppRequest } from "../utils.ts";
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 

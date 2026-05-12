@@ -21,6 +21,7 @@ import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
+  readmodelKnodeApiKeychainKey,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
@@ -53,6 +54,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .select({ kid: readmodelConsumerKeychainKey.kid })
         .from(readmodelConsumerKeychainKey)
         .where(eq(readmodelConsumerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
+    async checkKnodeApiKeychainKeyExists(kid: KeyId) {
+      const queryResult = await readmodelDb
+        .select({ kid: readmodelKnodeApiKeychainKey.kid })
+        .from(readmodelKnodeApiKeychainKey)
+        .where(eq(readmodelKnodeApiKeychainKey.kid, kid))
         .limit(1);
 
       return queryResult.length > 0;
