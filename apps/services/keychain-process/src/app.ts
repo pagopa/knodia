@@ -106,7 +106,11 @@ export function buildApp({
       ),
     });
     protectedApp.register(knodeApiKeychainRouter, {
-      knodeApiKeychainService: knodeApiKeychainServiceBuilder(eventStoreWriter),
+      knodeApiKeychainService: knodeApiKeychainServiceBuilder(
+        eventStoreWriter,
+        readmodelService,
+        config,
+      ),
     });
     protectedApp.register(userRouter, cognitoIdmClient);
   });

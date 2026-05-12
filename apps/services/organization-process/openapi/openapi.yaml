@@ -105,6 +105,11 @@ components:
         - offset
         - total
       additionalProperties: false
+    UserId:
+      description: Unique identifier of the User
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
     Organization:
       type: object
       properties:
@@ -146,6 +151,32 @@ components:
         - pagination
         - results
       additionalProperties: false
+    Operator:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - administrative
+              - technical
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - roles
+        - username
+      additionalProperties: false
+    Operators:
+      type: array
+      items:
+        $ref: "#/components/schemas/Operator"
     OrganizationSeed:
       type: object
       properties:
@@ -373,6 +404,53 @@ paths:
                 description: Organization not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /operators:
+    get:
+      operationId: getOperators
+      tags:
+        - operator
+      description: Retrieve Operators of the requesting User's Organization
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Operators retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Operators retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Operators"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Organization Process API
     url: /
@@ -383,3 +461,5 @@ tags:
     name: health
   - description: Organization routes
     name: organization
+  - description: Operator routes
+    name: operator

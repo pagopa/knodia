@@ -55,7 +55,9 @@ import {
   purposeWriterService,
 } from "./setup.ts";
 
-const getClientAssertionVerificationDataMock = vi.hoisted(() => vi.fn());
+const getConsumerClientAssertionVerificationDataMock = vi.hoisted(() =>
+  vi.fn(),
+);
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -65,8 +67,8 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
-      getClientAssertionVerificationData:
-        getClientAssertionVerificationDataMock,
+      getConsumerClientAssertionVerificationData:
+        getConsumerClientAssertionVerificationDataMock,
     },
   };
 });
@@ -170,21 +172,22 @@ describe("POST /token", async () => {
     props: { customPayload: { htu: `${dpopProofHtuBaseUrl}///?test=12345/` } }, // intentionally malformed htu to test the normalization
   });
 
-  const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
-    consumerAttributes: [
-      commonAttribute,
-      {
-        code: "vc_organizational_units",
-        scheme: "nuts2",
+  const mockK2KResponse: k2kGatewayApi.ConsumerClientAssertionVerificationResponse =
+    {
+      consumerAttributes: [
+        commonAttribute,
+        {
+          code: "vc_organizational_units",
+          scheme: "nuts2",
+        },
+      ],
+      publicKey: {
+        algorithm: clientAssertion.headers.alg,
+        encodedPem: publicKeyEncodedPem,
+        format: "PublicKey",
+        kid: "kid",
       },
-    ],
-    publicKey: {
-      algorithm: clientAssertion.headers.alg,
-      encodedPem: publicKeyEncodedPem,
-      format: "PublicKey",
-      kid: "kid",
-    },
-  };
+    };
 
   const defaultBody: API_TokenRequest = {
     client_assertion: clientAssertionJWS,
@@ -241,13 +244,13 @@ describe("POST /token", async () => {
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
+    getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
   }
 
   beforeEach(() => {
-    getClientAssertionVerificationDataMock.mockReset();
+    getConsumerClientAssertionVerificationDataMock.mockReset();
   });
 
   it.each(EserviceAccessTokenType.options)(
@@ -481,7 +484,7 @@ describe("POST /token", async () => {
   ])(
     "should return 401 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
-      getClientAssertionVerificationDataMock.mockResolvedValue({
+      getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
       });
 
@@ -623,7 +626,9 @@ describe("POST /token", async () => {
     async (status) => {
       const axiosError = new AxiosError("K2K Gateway Error");
       axiosError.status = status;
-      getClientAssertionVerificationDataMock.mockRejectedValue(axiosError);
+      getConsumerClientAssertionVerificationDataMock.mockRejectedValue(
+        axiosError,
+      );
 
       const response = await createToken();
 
@@ -641,14 +646,14 @@ describe("POST /token", async () => {
     const { publicKeyEncodedPem: invalidPublicKeyEncodedPem } =
       await getMockClientAssertion();
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
+    getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
         ...mockK2KResponse,
         publicKey: {
           ...mockK2KResponse.publicKey,
           encodedPem: invalidPublicKeyEncodedPem,
         },
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
@@ -681,11 +686,11 @@ describe("POST /token", async () => {
 
   it("should return 401 if the public key algorithm does not match the client assertion algorithm", async () => {
     const wrongAlg = "ES256";
-    getClientAssertionVerificationDataMock.mockResolvedValue({
+    getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
         ...mockK2KResponse,
         publicKey: { ...mockK2KResponse.publicKey, algorithm: wrongAlg },
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
@@ -759,7 +764,7 @@ describe("POST /token", async () => {
         purposeWriterService.upsertPurpose(purpose, 0),
       ]);
 
-      getClientAssertionVerificationDataMock.mockResolvedValue({
+      getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
       });
 
@@ -814,7 +819,7 @@ describe("POST /token", async () => {
           : Promise.resolve(),
       ]);
 
-      getClientAssertionVerificationDataMock.mockResolvedValue({
+      getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
       });
 
@@ -831,7 +836,7 @@ describe("POST /token", async () => {
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
+    getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
         ...mockK2KResponse,
         consumerAttributes: [
@@ -840,7 +845,7 @@ describe("POST /token", async () => {
             scheme: "nuts3",
           },
         ],
-      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+      } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
     const response = await createToken();
@@ -881,7 +886,7 @@ describe("POST /token", async () => {
       purposeWriterService.upsertPurpose(purpose, 0),
     ]);
 
-    getClientAssertionVerificationDataMock.mockResolvedValue({
+    getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
 

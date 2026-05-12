@@ -126,7 +126,7 @@ export async function verifyClientAssertionSignature(
 
     const {
       data: { consumerAttributes, publicKey },
-    } = await k2kGatewayApi.getClientAssertionVerificationData({
+    } = await k2kGatewayApi.getConsumerClientAssertionVerificationData({
       body: {
         keychainId: consumerKeychainId,
         kid,
