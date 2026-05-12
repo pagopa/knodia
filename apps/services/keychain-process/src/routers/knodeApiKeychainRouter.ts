@@ -213,7 +213,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve keys of a Consumer Keychain",
+      description: "Retrieve keys of a Knode API Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "getKnodeApiKeychainKeys",
       params: API_KnodeApiKeychainIdPathParam,

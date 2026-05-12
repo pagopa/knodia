@@ -1935,7 +1935,7 @@ paths:
       operationId: getKnodeApiKeychainKeys
       tags:
         - knodeApiKeychain
-      description: Retrieve keys of a Consumer Keychain
+      description: Retrieve keys of a Knode API Keychain
       parameters:
         - schema:
             format: int32

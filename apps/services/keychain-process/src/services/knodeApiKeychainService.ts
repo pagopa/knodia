@@ -27,7 +27,6 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { knodeApiKeychainNotFound } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
@@ -120,12 +119,10 @@ export function knodeApiKeychainServiceBuilder(
         `Getting keys of Knode API Keychain with ID ${knodeApiKeychainId}`,
       );
 
-      const knodeApiKeychain =
-        await readmodelService.getFlatKnodeApiKeychainById(knodeApiKeychainId);
-
-      if (!knodeApiKeychain) {
-        throw knodeApiKeychainNotFound(knodeApiKeychainId);
-      }
+      const knodeApiKeychain = await retrieveFlatKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,

@@ -248,7 +248,7 @@ export const getKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
- * Retrieve keys of a Consumer Keychain
+ * Retrieve keys of a Knode API Keychain
  */
 export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainKeysErrors, ThrowOnError>({
     responseType: 'json',
