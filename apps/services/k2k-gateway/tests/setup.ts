@@ -28,7 +28,7 @@ beforeAll(async () => {
     },
     magicLinkConfig: {
       audience: "test-magic-link-audience",
-      frontendActivationPath: "/activate",
+      frontendActivationPath: "/ui/agreement-activation",
       frontendBaseUrl: "https://test-frontend.example",
       issuer: "test-magic-link-issuer",
       kid: "test-magic-link-kid",

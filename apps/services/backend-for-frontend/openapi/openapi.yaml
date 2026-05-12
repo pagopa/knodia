@@ -1082,6 +1082,23 @@ components:
         - id
         - state
       additionalProperties: false
+    AgreementActivationDetails:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/CompactAgreement"
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - agreement
+        - consumer
+        - eservice
+        - producer
+      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -3442,11 +3459,22 @@ paths:
           description: Pagination starting position
         - schema:
             type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+          description: Filter by E-service ID. Returns Consumer Keychains linked to any
+            Active or Suspended Purpose belonging to the given E-service.
+            Mutually exclusive with `purpose`.
+        - schema:
+            type: string
           in: query
           name: purpose
           required: false
           description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
-            (e.g. Orion:00000000-0000-0000-0000-000000000000)"
+            (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually
+            exclusive with `eserviceId`."
       responses:
         "200":
           description: Consumer Keychains retrieved successfully
@@ -5958,22 +5986,13 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /external/agreements/{agreementId}/activate:
+  /external/agreementActivation/activate:
     post:
       operationId: activateAgreement
       summary: Activate an Agreement
       tags:
         - agreement
-      description: Activate an Agreement using a scoped external-ui-session token
-        obtained from the magic-link exchange
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: agreementId
-          required: true
+      description: Activate the Agreement embedded in the external-ui-session token claims
       responses:
         "204":
           description: Agreement activated successfully
@@ -6015,6 +6034,56 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /external/agreementActivation/details:
+    get:
+      operationId: getAgreementActivationDetails
+      summary: Get Agreement activation details
+      tags:
+        - agreement
+      description: Retrieve the recap details (e-service, producer, consumer,
+        agreement state) for the Agreement embedded in the external-ui-session
+        token
+      responses:
+        "200":
+          description: Agreement activation details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement activation details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/AgreementActivationDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
