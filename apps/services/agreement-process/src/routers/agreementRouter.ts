@@ -4,8 +4,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { AgreementActor } from "@knodia/agreement-models";
 import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
+import { type OrganizationId, unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -45,10 +45,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         metadata: { version },
       } = await agreementService.createAgreement(
         {
-          consumer: {
-            id: unsafeBrandExternalId(req.body.consumer.id),
-            knodeId: KnodeId.parse(req.body.consumer.knodeId),
-          },
+          consumer: fromExternalResource<OrganizationId>(req.body.consumer),
           consumerAttributes: req.body.consumer.attributes,
           eserviceId: unsafeBrandId(req.body.eserviceId),
           eserviceVersionId: unsafeBrandId(req.body.eserviceVersionId),

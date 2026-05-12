@@ -2,7 +2,9 @@
   "name": "@knodia/backend-for-frontend",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
     "typecheck": "tsc",
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
@@ -44,6 +46,7 @@
     "@knodia/polling": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/purpose-process-client": "workspace:*",
+    "@knodia/purpose-template-models": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "axios": "catalog:",

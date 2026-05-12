@@ -65,7 +65,7 @@ jobs:
 
       - name: Apply base branch migrations
         working-directory: base
-        run: ../pr/scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" migrate
+        run: scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" migrate
 
       - name: Create databases and roles (PR)
         working-directory: pr

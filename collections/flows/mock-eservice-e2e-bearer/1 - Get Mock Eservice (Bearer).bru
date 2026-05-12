@@ -1,5 +1,5 @@
 meta {
-  name: 1 - Get Mock Eservice
+  name: 1 - Get Mock Eservice (Bearer)
   type: http
   seq: 1
 }
@@ -17,6 +17,10 @@ params:path {
 headers {
   X-Correlation-Id: {{correlation-id}}
   Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
 }
 
 vars:post-response {

@@ -1,5 +1,5 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import { type EserviceTemplateId, generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
@@ -26,12 +26,10 @@ describe("EserviceEventV1 codec", () => {
     mode: "ProvideData",
     name: { en: "Test Service" },
     producerId: generateId(),
-    template: {
-      id: unsafeBrandExternalId<EserviceTemplateId>(
-        "11111111-1111-4111-8111-111111111111",
-      ),
-      knodeId: "Lynx",
-    },
+    template: toExternalResource<EserviceTemplateId>(
+      "11111111-1111-4111-8111-111111111111",
+      "Lynx",
+    ),
     updatedAt: new Date(1),
     versions: [
       {

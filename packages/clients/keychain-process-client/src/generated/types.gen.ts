@@ -113,6 +113,11 @@ export type ConsumerKeychainSeed = {
     name: KeychainLocalizedName;
 };
 
+export type KnodeApiKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
+};
+
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
@@ -1011,3 +1016,42 @@ export type GetConsumerKeychainPurposeResponses = {
 };
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
+
+export type CreateKnodeApiKeychainData = {
+    body: KnodeApiKeychainSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/knodeApiKeychains';
+};
+
+export type CreateKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
+
+export type CreateKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain created successfully
+     */
+    201: Keychain;
+};
+
+export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
