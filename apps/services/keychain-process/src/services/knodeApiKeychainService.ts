@@ -269,7 +269,6 @@ export function knodeApiKeychainServiceBuilder(
 
       return await readmodelService.getKnodeApiKeychains(params);
     },
-
     async removeKnodeApiKeychainMember(
       knodeApiKeychainId: KnodeApiKeychainId,
       userId: UserId,
