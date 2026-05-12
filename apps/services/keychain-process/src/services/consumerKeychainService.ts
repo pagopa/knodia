@@ -71,9 +71,9 @@ import {
 } from "../models/errors.ts";
 import {
   retrieveConsumerKeychain,
-  retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
+  retrieveKeychainKey,
 } from "../utils/retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
@@ -266,7 +266,7 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      return retrieveConsumerKeychainKey(consumerKeychain.data, kid);
+      return retrieveKeychainKey(consumerKeychain.data, kid);
     },
 
     async getConsumerKeychainKeys(

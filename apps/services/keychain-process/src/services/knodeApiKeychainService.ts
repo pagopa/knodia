@@ -23,8 +23,8 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import { createKnodeApiKeychainCreatedV1Event } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
+  retrieveKeychainKey,
   retrieveKnodeApiKeychain,
-  retrieveKnodeApiKeychainKey,
 } from "../utils/retrievalUtils.ts";
 
 export type KnodeApiKeychainService = ReturnType<
@@ -94,7 +94,7 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
+      return retrieveKeychainKey(knodeApiKeychain.data, kid);
     },
   };
 }
