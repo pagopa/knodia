@@ -109,6 +109,7 @@ export function buildApp({
       knodeApiKeychainService: knodeApiKeychainServiceBuilder(
         eventStoreWriter,
         readmodelService,
+        cognitoIdmClient,
         config,
       ),
     });

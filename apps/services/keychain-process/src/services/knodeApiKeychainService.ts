@@ -1,3 +1,4 @@
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -15,17 +16,21 @@ import {
   generateId,
   type KeyId,
   type KnodeApiKeychainId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 
 import type {
   API_KeychainKeySeed,
+  API_KeychainMemberSeed,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
+  createKnodeApiKeychainMemberAddedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
@@ -33,6 +38,11 @@ import {
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain } from "../utils/utils.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserBelongsToOrganization,
+  assertUserHasTechnicalRole,
+} from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -41,9 +51,72 @@ export type KnodeApiKeychainService = ReturnType<
 export function knodeApiKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  cognitoIdmClient: CognitoIdmClient,
   config: { maxKeysPerKeychain: number },
 ) {
   return {
+    async addKnodeApiKeychainMember(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      member: API_KeychainMemberSeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Adding member ${member.userId} to Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      const userId = unsafeBrandUserId(member.userId);
+
+      if (knodeApiKeychain.data.users.some((user) => user.userId === userId)) {
+        throw userAlreadyMember(knodeApiKeychainId, userId);
+      }
+
+      const user = await cognitoIdmClient.getUserById(userId);
+
+      if (!user) {
+        throw userNotFound(userId);
+      }
+
+      await assertUserBelongsToOrganization(
+        user,
+        authData.organizationId,
+        cognitoIdmClient,
+      );
+      assertUserHasTechnicalRole(user);
+
+      const now = new Date();
+      const updatedKnodeApiKeychain: KnodeApiKeychain = {
+        ...knodeApiKeychain.data,
+        updatedAt: now,
+        users: [
+          ...knodeApiKeychain.data.users,
+          { addedAt: now, userId: user.id },
+        ],
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainMemberAddedV1Event(
+          updatedKnodeApiKeychain,
+          user.id,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
+    },
     async createKnodeApiKeychain(
       seed: API_KnodeApiKeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
