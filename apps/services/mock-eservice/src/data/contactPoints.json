@@ -1,0 +1,293 @@
+{
+  "BNCFNC67D61H703B": {
+    "hasEmail": "Francesca.Bianchi@emailsample.org"
+  },
+  "BNCLRN83L04H118T": {
+    "hasEmail": "Lorenzo.Bianchi@emailsample.org"
+  },
+  "BNCMRA03P60L833V": {
+    "hasEmail": "Maria.Bianchi@emailsample.org"
+  },
+  "BRNFNC87H46E506V": {
+    "hasEmail": "Francesca.Bruno@emailsample.org"
+  },
+  "BRNLCA03M54F839V": {
+    "hasEmail": "Alice.Bruno@emailsample.org"
+  },
+  "BRNLNR90C12L407T": {
+    "hasEmail": "Leonardo.Bruno@emailsample.org"
+  },
+  "BRNNDR83T01F205C": {
+    "hasEmail": "Andrea.Bruno@emailsample.org"
+  },
+  "CLMRLN82L65B832B": {
+    "hasEmail": "Elena.Colombo@emailsample.org"
+  },
+  "CNTLCC89E26L378K": {
+    "hasEmail": "Luca.Conti@emailsample.org"
+  },
+  "CNTLNR65T08A064Y": {
+    "hasEmail": "Leonardo.Conti@emailsample.org"
+  },
+  "CNTLRN88E03G999M": {
+    "hasEmail": "Lorenzo.Conti@emailsample.org"
+  },
+  "CNTLSN01P18E289Y": {
+    "hasEmail": "Alessandro.Conti@emailsample.org"
+  },
+  "CNTMRA73T25I690S": {
+    "hasEmail": "Mario.Conti@emailsample.org"
+  },
+  "CNTMRA79M63A662O": {
+    "hasEmail": "Maria.Conti@emailsample.org"
+  },
+  "CNTMRA82C14A794X": {
+    "hasEmail": "Mario.Conti@emailsample.org"
+  },
+  "CNTMRA93H01D548C": {
+    "hasEmail": "Mario.Conti@emailsample.org"
+  },
+  "CNTNNA87H58B963N": {
+    "hasEmail": "Anna.Conti@emailsample.org"
+  },
+  "CNTSFO71S48E715B": {
+    "hasEmail": "Sofia.Conti@emailsample.org"
+  },
+  "CNTSFO82A41H163W": {
+    "hasEmail": "Sofia.Conti@emailsample.org"
+  },
+  "CSTFNC85D51D150B": {
+    "hasEmail": "Francesca.Costa@emailsample.org"
+  },
+  "CSTGLI84P56D960K": {
+    "hasEmail": "Giulia.Costa@emailsample.org"
+  },
+  "CSTGLI89T58L483O": {
+    "hasEmail": "Giulia.Costa@emailsample.org"
+  },
+  "CSTGRG86S65E463Q": {
+    "hasEmail": "Giorgia.Costa@emailsample.org"
+  },
+  "CSTLCA90E67A225Z": {
+    "hasEmail": "Alice.Costa@emailsample.org"
+  },
+  "CSTLCU86D08D086A": {
+    "hasEmail": "Luca.Costa@emailsample.org"
+  },
+  "CSTLRN66L15H199F": {
+    "hasEmail": "Lorenzo.Costa@emailsample.org"
+  },
+  "CSTLRN99C29D704L": {
+    "hasEmail": "Lorenzo.Costa@emailsample.org"
+  },
+  "CSTSFO96S68I480S": {
+    "hasEmail": "Sofia.Costa@emailsample.org"
+  },
+  "DLCLCA93P56A952U": {
+    "hasEmail": "Alice.DeLuca@emailsample.org"
+  },
+  "DLCMRA90C52A783M": {
+    "hasEmail": "Maria.DeLuca@emailsample.org"
+  },
+  "DLCMRA93H50C502E": {
+    "hasEmail": "Maria.DeLuca@emailsample.org"
+  },
+  "DLCMTT99S03G535X": {
+    "hasEmail": "Matteo.DeLuca@emailsample.org"
+  },
+  "DLCNND91H18F052N": {
+    "hasEmail": "Andrea.DeLuca@emailsample.org"
+  },
+  "DLCNND91M10F704V": {
+    "hasEmail": "Andrea.DeLuca@emailsample.org"
+  },
+  "FRRGBR72L06M297U": {
+    "hasEmail": "Gabriele.Ferrari@emailsample.org"
+  },
+  "FRRGRG71R48L872B": {
+    "hasEmail": "Giorgia.Ferrari@emailsample.org"
+  },
+  "FRRLCU95L07L736P": {
+    "hasEmail": "Luca.Ferrari@emailsample.org"
+  },
+  "FRRLNE82B58G337U": {
+    "hasEmail": "Elena.Ferrari@emailsample.org"
+  },
+  "FRRLNR70S09H294Y": {
+    "hasEmail": "Leonardo.Ferrari@emailsample.org"
+  },
+  "FRRLNR94D07E441B": {
+    "hasEmail": "Leonardo.Ferrari@emailsample.org"
+  },
+  "FRRLRN80E10A479N": {
+    "hasEmail": "Lorenzo.Ferrari@emailsample.org"
+  },
+  "FRRNNA63C52L219S": {
+    "hasEmail": "Anna.Ferrari@emailsample.org"
+  },
+  "FRRSFO04S53L424N": {
+    "hasEmail": "Sofia.Ferrari@emailsample.org"
+  },
+  "GLLGBR78A01B354R": {
+    "hasEmail": "Gabriele.Gallo@emailsample.org"
+  },
+  "GLLGPP62T29C352V": {
+    "hasEmail": "Giuseppe.Gallo@emailsample.org"
+  },
+  "GLLLCA98T57A271Y": {
+    "hasEmail": "Alice.Gallo@emailsample.org"
+  },
+  "GLLLNR84T06L331I": {
+    "hasEmail": "Leonardo.Gallo@emailsample.org"
+  },
+  "GLLMRA03D69E472T": {
+    "hasEmail": "Maria.Gallo@emailsample.org"
+  },
+  "GLLSFO79C41C933T": {
+    "hasEmail": "Sofia.Gallo@emailsample.org"
+  },
+  "GLLSFO92P57F257O": {
+    "hasEmail": "Sofia.Gallo@emailsample.org"
+  },
+  "GRCCHR80P42I452C": {
+    "hasEmail": "Chiara.Greco@emailsample.org"
+  },
+  "GRCCHR86M49B157V": {
+    "hasEmail": "Chiara.Greco@emailsample.org"
+  },
+  "GRCLRN80D09L049W": {
+    "hasEmail": "Lorenzo.Greco@emailsample.org"
+  },
+  "GRCRRA04S42A944D": {
+    "hasEmail": "Aurora.Greco@emailsample.org"
+  },
+  "MRNCHR84L48G224J": {
+    "hasEmail": "Chiara.Marini@emailsample.org"
+  },
+  "MRNFNC77T59G478T": {
+    "hasEmail": "Francesca.Marini@emailsample.org"
+  },
+  "MRNFNC88S59G713N": {
+    "hasEmail": "Francesca.Marini@emailsample.org"
+  },
+  "MRNGBR91M28L781W": {
+    "hasEmail": "Gabriele.Marini@emailsample.org"
+  },
+  "MRNLCA75B66M088V": {
+    "hasEmail": "Alice.Marini@emailsample.org"
+  },
+  "MRNLCA85L62C292E": {
+    "hasEmail": "Alice.Marini@emailsample.org"
+  },
+  "MRNLCU76T15C129N": {
+    "hasEmail": "Luca.Marini@emailsample.org"
+  },
+  "RCCFNC68B26D643F": {
+    "hasEmail": "Francesco.Ricci@emailsample.org"
+  },
+  "RCCLCU82T12B300F": {
+    "hasEmail": "Luca.Ricci@emailsample.org"
+  },
+  "RCCLNR68T12F952Y": {
+    "hasEmail": "Leonardo.Ricci@emailsample.org"
+  },
+  "RCCLSN00T07G479K": {
+    "hasEmail": "Alessandro.Ricci@emailsample.org"
+  },
+  "RCCLSN98P24D488N": {
+    "hasEmail": "Alessandro.Ricci@emailsample.org"
+  },
+  "RMNFNC04D62L117N": {
+    "hasEmail": "Francesca.Romano@emailsample.org"
+  },
+  "RMNFNC78B52F284G": {
+    "hasEmail": "Francesca.Romano@emailsample.org"
+  },
+  "RMNLCU64E04A345G": {
+    "hasEmail": "Luca.Romano@emailsample.org"
+  },
+  "RMNLNR03H12H501Z": {
+    "hasEmail": "Leonardo.Romano@emailsample.org"
+  },
+  "RMNLNR74D20F158G": {
+    "hasEmail": "Leonardo.Romano@emailsample.org"
+  },
+  "RMNNDR93E03M208F": {
+    "hasEmail": "Andrea.Romano@emailsample.org"
+  },
+  "RMNRRA70S49D969I": {
+    "hasEmail": "Aurora.Romano@emailsample.org"
+  },
+  "RSSFNC72L48G811U": {
+    "hasEmail": "Francesca.Rossi@emailsample.org"
+  },
+  "RSSGBR04D08I754F": {
+    "hasEmail": "Gabriele.Russo@emailsample.org"
+  },
+  "RSSGBR04M12C707K": {
+    "hasEmail": "Gabriele.Russo@emailsample.org"
+  },
+  "RSSGLI87E64D122X": {
+    "hasEmail": "Giulia.Russo@emailsample.org"
+  },
+  "RSSGRG65D48G702L": {
+    "hasEmail": "Giorgia.Rossi@emailsample.org"
+  },
+  "RSSGRG69H67F023M": {
+    "hasEmail": "Giorgia.Rossi@emailsample.org"
+  },
+  "RSSGRG94P56A089S": {
+    "hasEmail": "Giorgia.Rossi@emailsample.org"
+  },
+  "RSSLCA96B67L840B": {
+    "hasEmail": "Alice.Rossi@emailsample.org"
+  },
+  "RSSLCU05R22A182F": {
+    "hasEmail": "Luca.Russo@emailsample.org"
+  },
+  "RSSLRN03R07G942J": {
+    "hasEmail": "Lorenzo.Russo@emailsample.org"
+  },
+  "RSSLRN75E21G482P": {
+    "hasEmail": "Lorenzo.Russo@emailsample.org"
+  },
+  "RSSLSN89D11M082J": {
+    "hasEmail": "Alessandro.Russo@emailsample.org"
+  },
+  "RSSMRA66P55A669A": {
+    "hasEmail": "Maria.Russo@emailsample.org"
+  },
+  "RSSMRA68L46A285H": {
+    "hasEmail": "Maria.Russo@emailsample.org"
+  },
+  "RSSMRA82P64L682H": {
+    "hasEmail": "Maria.Russo@emailsample.org"
+  },
+  "RSSMRA86E14B429A": {
+    "hasEmail": "Mario.Russo@emailsample.org"
+  },
+  "RSSMRA90M25G388F": {
+    "hasEmail": "Mario.Russo@emailsample.org"
+  },
+  "RSSMRA93E54A390R": {
+    "hasEmail": "Maria.Russo@emailsample.org"
+  },
+  "RSSMTT05S12G273F": {
+    "hasEmail": "Matteo.Russo@emailsample.org"
+  },
+  "RSSNDR89R08B819V": {
+    "hasEmail": "Andrea.Russo@emailsample.org"
+  },
+  "RSSSFO71A68E625W": {
+    "hasEmail": "Sofia.Russo@emailsample.org"
+  },
+  "SPSCHR95C51C351Y": {
+    "hasEmail": "Chiara.Esposito@emailsample.org"
+  },
+  "SPSLNR85A05E202U": {
+    "hasEmail": "Leonardo.Esposito@emailsample.org"
+  },
+  "SPSMTT85M22D612K": {
+    "hasEmail": "Matteo.Esposito@emailsample.org"
+  }
+}

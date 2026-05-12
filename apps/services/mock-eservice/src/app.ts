@@ -27,12 +27,13 @@ import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
-    "Mock e-service endpoints protected by Bearer token access tokens",
-  name: apiTags.bearerTokenMock,
+    "Personal information lookup by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected)",
+  name: apiTags.personalInformation,
 };
 const dpopAppTag: OpenAPIV3.TagObject = {
-  description: "Mock e-service endpoints protected by DPoP-bound access tokens",
-  name: apiTags.dpopTokenMock,
+  description:
+    "Digital contact lookup by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected)",
+  name: apiTags.digitalContact,
 };
 
 export function buildApp({
