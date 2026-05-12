@@ -1,6 +1,9 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { KnodeId, OrganizationId } from "@knodia/common-models/ids";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  ExternalUISessionAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import {
@@ -15,6 +18,7 @@ import type {
 } from "../models/organization/api.ts";
 
 import { toAPI_Organization } from "../models/organization/apiConverter.ts";
+import { assertTokenRemoteOrganizationClaimsMatchRequest } from "../utils/validators.ts";
 
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
@@ -25,11 +29,22 @@ export function organizationServiceBuilder(
     async getOrganization(
       organizationId: ExternalId<OrganizationId>,
       knodeId: KnodeId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<ExternalUISessionAuthData | UISessionAuthData>,
     ): Promise<API_Organization> {
       logger.info(
         `Getting Organization ${organizationId} from Knode ${knodeId}`,
       );
+
+      if (authData.tokenType === "external-ui-session") {
+        assertTokenRemoteOrganizationClaimsMatchRequest(
+          authData,
+          organizationId,
+          knodeId,
+        );
+      }
 
       const { data } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,

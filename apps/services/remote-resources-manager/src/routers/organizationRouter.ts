@@ -29,6 +29,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
       ]);
 
       const data = await organizationService.getOrganization(
