@@ -1858,6 +1858,55 @@ components:
       required:
         - kid
       additionalProperties: false
+    SessionOrganization:
+      description: Organization details for the current session, including attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - id
+        - knodeId
+        - name
+      additionalProperties: false
+    Operator:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - administrative
+              - technical
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - roles
+        - username
+      additionalProperties: false
+    Operators:
+      type: array
+      items:
+        $ref: "#/components/schemas/Operator"
     PurposeTemplate:
       type: object
       properties:
@@ -2129,29 +2178,6 @@ components:
         - suspendedByConsumerAt
         - suspendedByProducerAt
         - updatedAt
-      additionalProperties: false
-    SessionOrganization:
-      description: Organization details for the current session, including attributes
-      type: object
-      properties:
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          type: string
-          minLength: 1
-      required:
-        - attributes
-        - id
-        - knodeId
-        - name
       additionalProperties: false
 paths:
   /status:
@@ -4273,6 +4299,45 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /operators:
+    get:
+      operationId: getOperators
+      tags:
+        - operator
+      description: Retrieve Operators of the requesting User's Organization
+      responses:
+        "200":
+          description: Operators retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Operators retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Operators"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -6103,6 +6168,8 @@ tags:
     name: purpose
   - description: User routes
     name: user
+  - description: Operator routes
+    name: operator
   - description: E-service Templates routes
     name: eserviceTemplate
   - description: Purpose Templates routes
