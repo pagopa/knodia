@@ -1,4 +1,5 @@
 import { Algorithm } from "@knodia/common-models/crypto";
+import { decodeBase64Pem } from "@knodia/crypto";
 import { createPrivateKey, generateKeyPairSync } from "crypto";
 import { type JWTHeaderParameters, type JWTPayload, SignJWT } from "jose";
 import { match } from "ts-pattern";
@@ -51,6 +52,35 @@ NkBdKFk0r+U+fNZKt6gkEkvSJoJYvam+EnyKzNy4feCP2TYRsli+lqJYaJxmbd2H
 e8gii0NdJ5Sv/VTFpB11GXvlDOKV7w2hRbx8vvkLL0THvq0s5YmcRg6Urqm82n8y
 wDbhe/fDrePo0lGawqs+LRA=
 -----END CERTIFICATE-----`;
+
+export function createEcPublicKeyBase64() {
+  return toBase64(createEcKeyPair().publicKey);
+}
+
+export function createMultiplePublicKeysBase64() {
+  return toBase64(
+    [
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
+    ].join("\n"),
+  );
+}
+
+export function createRsaPrivateKeyBase64() {
+  return toBase64(createRsaKeyPair(2048).privateKey);
+}
+
+export function createRsaPublicKeyBase64() {
+  return toBase64(createRsaKeyPair(2048).publicKey);
+}
+
+export function createShortRsaPublicKeyBase64() {
+  return toBase64(createRsaKeyPair(1024).publicKey);
+}
+
+export function createX509CertificateBase64() {
+  return toBase64(rsaX509CertificatePem);
+}
 
 export function generateKeySet(alg: Algorithm = Algorithm.enum.RS256) {
   const keySet = match(alg)

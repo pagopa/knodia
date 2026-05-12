@@ -19,12 +19,14 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import {
-  createEcKeyPair,
-  createRsaKeyPair,
+  createEcPublicKeyBase64,
+  createMultiplePublicKeysBase64,
+  createRsaPrivateKeyBase64,
+  createRsaPublicKeyBase64,
+  createShortRsaPublicKeyBase64,
+  createX509CertificateBase64,
   getMockKeychainKey,
   getMockKnodeApiKeychain,
-  rsaX509CertificatePem,
-  toBase64,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -44,27 +46,6 @@ import {
 const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
-
-const createRsaPublicKeyBase64 = () =>
-  toBase64(createRsaKeyPair(2048).publicKey);
-
-const createRsaPrivateKeyBase64 = () =>
-  toBase64(createRsaKeyPair(2048).privateKey);
-
-const createEcPublicKeyBase64 = () => toBase64(createEcKeyPair().publicKey);
-
-const createShortRsaPublicKeyBase64 = () =>
-  toBase64(createRsaKeyPair(1024).publicKey);
-
-const createMultiplePublicKeysBase64 = () =>
-  toBase64(
-    [
-      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
-      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
-    ].join("\n"),
-  );
-
-const createX509CertificateBase64 = () => toBase64(rsaX509CertificatePem);
 
 const mockSeed: API_KeychainKeySeed = {
   encodedPem: createRsaPublicKeyBase64(),

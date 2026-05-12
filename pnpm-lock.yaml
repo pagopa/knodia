@@ -3444,6 +3444,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      '@knodia/crypto':
+        specifier: workspace:*
+        version: link:../crypto
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../models/eservice-models
