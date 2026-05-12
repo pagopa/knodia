@@ -869,6 +869,25 @@ export type CreatedKeyResource = {
     kid: KeyId;
 };
 
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
+
 export type PurposeTemplate = {
     description: LocalizedPurposeDescription;
     eserviceId?: string;
@@ -890,25 +909,6 @@ export type PurposeTemplateDetails = {
 };
 
 export type PurposeTemplates = Array<PurposeTemplate>;
-
-/**
- * Organization details for the current session, including attributes
- */
-export type SessionOrganization = {
-    attributes: Array<Attribute>;
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
-
-export type Operator = {
-    email: string;
-    id: UserId;
-    roles: Array<'administrative' | 'technical'>;
-    username: string;
-};
-
-export type Operators = Array<Operator>;
 
 /**
  * Seed data to create a new Purpose
