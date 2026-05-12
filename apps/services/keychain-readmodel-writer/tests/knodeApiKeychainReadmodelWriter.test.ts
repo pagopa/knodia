@@ -152,11 +152,10 @@ describe("Knode API keychain read model writer tests", async () => {
       knodeApiKeychain: toKnodeApiKeychainV1(knodeApiKeychain),
     });
 
-    const metadataVersion = 0;
     await sendTestEvent({
       data: eventData,
       eventType: "KnodeApiKeychainDeletedV1",
-      metadataVersion,
+      metadataVersion: 1,
       producer,
       streamId: knodeApiKeychain.id,
       topicName,
