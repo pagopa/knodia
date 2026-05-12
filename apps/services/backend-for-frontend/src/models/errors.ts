@@ -1,4 +1,8 @@
-import type { EserviceTemplateId, KnodeId } from "@knodia/common-models/ids";
+import type {
+  EserviceTemplateId,
+  KnodeId,
+  PurposeTemplateId,
+} from "@knodia/common-models/ids";
 
 import {
   type ApiError,
@@ -11,6 +15,7 @@ const { HTTP_STATUS_NOT_FOUND } = constants;
 
 const errorCodes = {
   ESERVICE_TEMPLATE_NOT_FOUND: "0001",
+  PURPOSE_TEMPLATE_NOT_FOUND: "0002",
 };
 
 type ErrorCodes = keyof typeof errorCodes;
@@ -29,5 +34,17 @@ export function eserviceTemplateNotFound(
     detail: `E-service Template with ID ${eserviceTemplateId} not found in Knode ${knodeId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Template not found",
+  });
+}
+
+export function purposeTemplateNotFound(
+  purposeTemplateId: PurposeTemplateId,
+  knodeId: KnodeId,
+): ApiError<ErrorCodes> {
+  return createApiError({
+    code: "PURPOSE_TEMPLATE_NOT_FOUND",
+    detail: `Purpose Template with ID ${purposeTemplateId} not found in Knode ${knodeId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Purpose Template not found",
   });
 }

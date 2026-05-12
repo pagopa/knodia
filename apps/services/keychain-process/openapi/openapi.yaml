@@ -226,6 +226,17 @@ components:
       required:
         - name
       additionalProperties: false
+    KnodeApiKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - name
+      additionalProperties: false
     ConsumerKeychainPatch:
       type: object
       properties:
@@ -303,6 +314,28 @@ components:
         - id
         - username
       additionalProperties: false
+    OrganizationUser:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+        isTechnical:
+          description: Whether the User has the technical role within the Organization
+          type: boolean
+      required:
+        - email
+        - id
+        - username
+        - isTechnical
+      additionalProperties: false
+    OrganizationUsers:
+      type: array
+      items:
+        $ref: "#/components/schemas/OrganizationUser"
     KeychainMemberSeed:
       type: object
       properties:
@@ -1622,6 +1655,113 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /knodeApiKeychains:
+    post:
+      operationId: createKnodeApiKeychain
+      tags:
+        - knodeApiKeychain
+      description: Create a new Knode API Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KnodeApiKeychainSeed"
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Knode API Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Knode API Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /users:
+    get:
+      operationId: getOrganizationUsers
+      tags:
+        - user
+      description: Retrieve users of the requesting User's Organization, including
+        whether they have the technical role
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Organization Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organization Users retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/OrganizationUsers"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Keychain Process API
     url: /
@@ -1632,3 +1772,7 @@ tags:
     name: health
   - description: Consumer keychain routes
     name: consumerKeychain
+  - description: Knode API keychain routes
+    name: knodeApiKeychain
+  - description: User routes
+    name: user

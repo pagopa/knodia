@@ -113,6 +113,11 @@ export type ConsumerKeychainSeed = {
     name: KeychainLocalizedName;
 };
 
+export type KnodeApiKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
+};
+
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
@@ -143,6 +148,18 @@ export type User = {
     id: UserId;
     username: string;
 };
+
+export type OrganizationUser = {
+    email: string;
+    id: UserId;
+    username: string;
+    /**
+     * Whether the User has the technical role within the Organization
+     */
+    isTechnical: boolean;
+};
+
+export type OrganizationUsers = Array<OrganizationUser>;
 
 export type KeychainMemberSeed = {
     userId: UserId;
@@ -1011,3 +1028,81 @@ export type GetConsumerKeychainPurposeResponses = {
 };
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
+
+export type CreateKnodeApiKeychainData = {
+    body: KnodeApiKeychainSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/knodeApiKeychains';
+};
+
+export type CreateKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
+
+export type CreateKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain created successfully
+     */
+    201: Keychain;
+};
+
+export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
+
+export type GetOrganizationUsersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/users';
+};
+
+export type GetOrganizationUsersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
+
+export type GetOrganizationUsersResponses = {
+    /**
+     * Organization Users retrieved successfully
+     */
+    200: OrganizationUsers;
+};
+
+export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];

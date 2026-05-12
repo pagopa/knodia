@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { KnodeId } from "@knodia/common-models/ids";
+import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 import type z from "zod";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -66,22 +66,22 @@ const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
   {
     consumerKeychainId: seededConsumerKeychains[0]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
+    purpose: toExternalResource<PurposeId>(purpose1.id, knodeId),
   },
   {
     consumerKeychainId: seededConsumerKeychains[4]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
+    purpose: toExternalResource<PurposeId>(purpose1.id, knodeId),
   },
   {
     consumerKeychainId: seededConsumerKeychains[4]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId },
+    purpose: toExternalResource<PurposeId>(purpose2.id, knodeId),
   },
   {
     consumerKeychainId: seededConsumerKeychains[2]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
+    purpose: toExternalResource<PurposeId>(purpose2.id, otherKnodeId),
   },
 ];
 const consumerKeychainIdsWithLinkedPurpose1 = new Set([

@@ -6,4 +6,5 @@ export const apiTags = {
   eserviceTemplate: "eserviceTemplate",
   operator: "operator",
   purpose: "purpose",
+  purposeTemplate: "purposeTemplate",
 } as const;

@@ -82,6 +82,14 @@ export const API_ConsumerKeychainSeed = z
   .meta({ id: "ConsumerKeychainSeed" });
 export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
 
+export const API_KnodeApiKeychainSeed = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.optional(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "KnodeApiKeychainSeed" });
+export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+
 export const API_ConsumerKeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
