@@ -65,6 +65,7 @@ export function ConsumerPurposeDetail({
     <>
       <PageHeader
         actions={headerActions}
+        copyableId={purpose.id}
         description={purpose.description.en}
         resourceStatusChip={headerStatusChip}
         title={purpose.name.en}
