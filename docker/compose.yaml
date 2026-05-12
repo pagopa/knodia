@@ -32,6 +32,7 @@ services:
       - ../migration/event-store:/flyway/databases/event_store:ro
       - ../migration/read-model:/flyway/databases/readmodel:ro
       - ../migration/remote-resource:/flyway/databases/remote_resource:ro
+      - ../migration/signal-hub:/flyway/databases/signal_hub:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -43,29 +44,40 @@ services:
       postgres:
         condition: service_healthy
 
-  readmodel-seed:
+  seed:
     security_opt:
       - no-new-privileges:true
-    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-readmodel-seed
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-seed
     depends_on:
       flyway:
         condition: service_completed_successfully
+      minio-setup:
+        condition: service_completed_successfully
     volumes:
-      - ./readmodel-seed:/seed:ro
+      - ../scripts/seed:/seed:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
       PGPASSWORD: root
       PGDATABASE: readmodel
       NAMESPACE: local
+      ENVIRONMENT: local
+      SQL_DIR: /seed/sql/orion
+      S3_BUCKET: knodia-eservice-interfaces
+      S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_REGION: eu-south-1
     entrypoint:
       - /bin/sh
+      - -e
       - -c
       - |
-        for f in /seed/*.sql; do
-          sed "s/\$${NAMESPACE}/$$NAMESPACE/g" "$$f" | psql
-        done
+        dnf install -qy postgresql15 >/dev/null
+        /seed/seed.sh
 
   kafka:
     security_opt:
@@ -232,16 +244,10 @@ services:
     depends_on:
       minio:
         condition: service_healthy
-    volumes:
-      - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/seed/mock-bearer-eservice.yaml:ro
-      - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/seed/mock-dpop-eservice.yaml:ro
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
-      mc cp /seed/mock-bearer-eservice.yaml local/knodia-eservice-interfaces/interfaces/mock-bearer-eservice.yaml;
-      mc cp /seed/mock-dpop-eservice.yaml local/knodia-eservice-interfaces/interfaces/mock-dpop-eservice.yaml;
-      exit 0;
       "
   # Web GUI for PostgreSQL
   pgadmin:

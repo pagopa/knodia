@@ -15,44 +15,12 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const sendMock = vi.hoisted(() => vi.fn());
+import {
+  cognitoIdmClientMock,
+  cognitoIdmClientModuleMock,
+} from "../cognitoIdmClientMock.ts";
 
-vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
-  class CognitoIdentityProviderClient {
-    send = sendMock;
-  }
-
-  class AdminListGroupsForUserCommand {
-    input: unknown;
-
-    constructor(input: unknown) {
-      this.input = input;
-    }
-  }
-
-  class ListUsersCommand {
-    input: unknown;
-
-    constructor(input: unknown) {
-      this.input = input;
-    }
-  }
-
-  class ListUsersInGroupCommand {
-    input: unknown;
-
-    constructor(input: unknown) {
-      this.input = input;
-    }
-  }
-
-  return {
-    AdminListGroupsForUserCommand,
-    CognitoIdentityProviderClient,
-    ListUsersCommand,
-    ListUsersInGroupCommand,
-  };
-});
+vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
 import type {
   API_Keychain,
@@ -63,7 +31,6 @@ import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
-  makeCognitoUser,
   seedConsumerKeychain,
 } from "../utils.ts";
 
@@ -75,7 +42,8 @@ const consumerKeychain = getMockConsumerKeychain();
 
 describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember)", () => {
   beforeEach(() => {
-    sendMock.mockReset();
+    cognitoIdmClientMock.getUserById.mockReset();
+    cognitoIdmClientMock.checkUserBelongsToOrganization.mockReset();
   });
 
   it("should correctly create consumer keychain update event when adding a member", async () => {
@@ -87,37 +55,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
       userId: memberId,
     };
 
-    sendMock.mockImplementation(async (command: { input: unknown }) => {
-      const input = command.input as {
-        Filter?: string;
-        Username?: string;
-      };
-
-      if (input.Filter === `sub = "${memberId}"`) {
-        return {
-          Users: [
-            makeCognitoUser({
-              email: "mario.rossi@example.com",
-              id: memberId,
-              username: memberUsername,
-            }),
-          ],
-        };
-      }
-
-      if (input.Username === memberUsername) {
-        return {
-          Groups: [
-            { GroupName: `org:${consumerKeychain.ownerId}` },
-            { GroupName: "role:technical" },
-          ],
-        };
-      }
-
-      throw new Error(
-        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
-      );
+    cognitoIdmClientMock.getUserById.mockResolvedValue({
+      email: "mario.rossi@example.com",
+      id: memberId,
+      roles: ["technical"],
+      username: memberUsername,
     });
+    cognitoIdmClientMock.checkUserBelongsToOrganization.mockResolvedValue(true);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
@@ -210,19 +154,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
 
     const missingUserId = "10000000-1000-1000-8000-000000000099";
 
-    sendMock.mockImplementation(async (command: { input: unknown }) => {
-      const input = command.input as {
-        Filter?: string;
-      };
-
-      if (input.Filter === `sub = "${missingUserId}"`) {
-        return { Users: [] };
-      }
-
-      throw new Error(
-        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
-      );
-    });
+    cognitoIdmClientMock.getUserById.mockResolvedValue(undefined);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
@@ -241,34 +173,15 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const memberId = "10000000-1000-1000-8000-000000000011";
     const memberUsername = "Mario Rossi";
 
-    sendMock.mockImplementation(async (command: { input: unknown }) => {
-      const input = command.input as {
-        Filter?: string;
-        Username?: string;
-      };
-
-      if (input.Filter === `sub = "${memberId}"`) {
-        return {
-          Users: [
-            makeCognitoUser({
-              email: "mario.rossi@example.com",
-              id: memberId,
-              username: memberUsername,
-            }),
-          ],
-        };
-      }
-
-      if (input.Username === memberUsername) {
-        return {
-          Groups: [{ GroupName: "role:technical" }],
-        };
-      }
-
-      throw new Error(
-        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
-      );
+    cognitoIdmClientMock.getUserById.mockResolvedValue({
+      email: "mario.rossi@example.com",
+      id: memberId,
+      roles: ["technical"],
+      username: memberUsername,
     });
+    cognitoIdmClientMock.checkUserBelongsToOrganization.mockResolvedValue(
+      false,
+    );
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
@@ -287,34 +200,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const memberId = "10000000-1000-1000-8000-000000000011";
     const memberUsername = "Mario Rossi";
 
-    sendMock.mockImplementation(async (command: { input: unknown }) => {
-      const input = command.input as {
-        Filter?: string;
-        Username?: string;
-      };
-
-      if (input.Filter === `sub = "${memberId}"`) {
-        return {
-          Users: [
-            makeCognitoUser({
-              email: "mario.rossi@example.com",
-              id: memberId,
-              username: memberUsername,
-            }),
-          ],
-        };
-      }
-
-      if (input.Username === memberUsername) {
-        return {
-          Groups: [{ GroupName: `org:${consumerKeychain.ownerId}` }],
-        };
-      }
-
-      throw new Error(
-        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
-      );
+    cognitoIdmClientMock.getUserById.mockResolvedValue({
+      email: "mario.rossi@example.com",
+      id: memberId,
+      roles: ["administrative"],
+      username: memberUsername,
     });
+    cognitoIdmClientMock.checkUserBelongsToOrganization.mockResolvedValue(true);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
@@ -328,7 +220,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
   });
 
   it("should return 409 if the user is already a member", async () => {
-    const memberUsername = "Mario Rossi";
     const memberId = "10000000-1000-1000-8000-000000000011";
     const keychainWithExistingMember: ConsumerKeychain = {
       ...consumerKeychain,
@@ -341,38 +232,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     };
 
     await seedConsumerKeychain(keychainWithExistingMember);
-
-    sendMock.mockImplementation(async (command: { input: unknown }) => {
-      const input = command.input as {
-        Filter?: string;
-        Username?: string;
-      };
-
-      if (input.Filter === `sub = "${memberId}"`) {
-        return {
-          Users: [
-            makeCognitoUser({
-              email: "mario.rossi@example.com",
-              id: memberId,
-              username: memberUsername,
-            }),
-          ],
-        };
-      }
-
-      if (input.Username === memberUsername) {
-        return {
-          Groups: [
-            { GroupName: `org:${keychainWithExistingMember.ownerId}` },
-            { GroupName: "role:technical" },
-          ],
-        };
-      }
-
-      throw new Error(
-        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
-      );
-    });
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,

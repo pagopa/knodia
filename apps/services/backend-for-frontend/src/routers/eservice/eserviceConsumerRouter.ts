@@ -228,10 +228,16 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           responseType: "arraybuffer",
         });
 
+      const rawContentType = downloadHeaders["content-type"];
+      const rawContentDisposition = downloadHeaders["content-disposition"];
       const contentType =
-        downloadHeaders["content-type"] ?? "application/octet-stream";
+        typeof rawContentType === "string"
+          ? rawContentType
+          : "application/octet-stream";
       const fileName = parseContentDispositionFileName(
-        downloadHeaders["content-disposition"],
+        typeof rawContentDisposition === "string"
+          ? rawContentDisposition
+          : undefined,
       );
 
       sendFileDownload(

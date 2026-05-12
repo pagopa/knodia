@@ -633,7 +633,7 @@ components:
       type: object
       properties:
         keychainId:
-          description: Unique identifier of the Consumer Keychain
+          description: Unique identifier of the Knode API Keychain
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -938,8 +938,8 @@ paths:
         token emission
       tags:
         - operation
-      description: Verify that the key and purpose are associated with the consumer
-        keychain, and return the public key and consumer attributes for further
+      description: Verify that the key and purpose are associated with the Consumer
+        Keychain, and return the public key and consumer attributes for further
         verification by the auth server
       requestBody:
         required: true
@@ -979,7 +979,7 @@ paths:
         token emission
       tags:
         - operation
-      description: Verify that the key is associated with the Knode API keychain, and
+      description: Verify that the key is associated with the Knode API Keychain, and
         return the public key for further verification by the auth server
       requestBody:
         required: true

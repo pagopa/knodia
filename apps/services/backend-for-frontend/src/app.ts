@@ -29,6 +29,7 @@ import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRoute
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { userRouter } from "./routers/keychain/userRouter.ts";
+import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
@@ -92,6 +93,10 @@ export function buildAppFromConfig(
             description: "E-service Templates routes",
             name: apiTags.eserviceTemplate,
           },
+          {
+            description: "Purpose Templates routes",
+            name: apiTags.purposeTemplate,
+          },
         ],
       },
     },
@@ -127,6 +132,9 @@ export function buildAppFromConfig(
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceTemplateRouter);
+    protectedApp.register(purposeTemplateRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
     protectedApp.register(eserviceProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       config,
@@ -182,7 +190,11 @@ export function buildAppFromConfig(
     });
     protectedApp.register(agreementExternalRouter, {
       agreementProcessClient: clients.agreementProcessClient,
+      config,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
 

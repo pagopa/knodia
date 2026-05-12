@@ -1,7 +1,14 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  toExternalResource,
+  toOptionalExternalResource,
+} from "@knodia/common-models/externalResource";
+import {
+  type OrganizationId,
+  type PurposeTemplateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import {
   aggregateByPKString,
@@ -32,10 +39,10 @@ const LocalizedDescription = LocalizedText(
 
 const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
   const purpose: Purpose = {
-    consumer: {
-      id: unsafeBrandExternalId(purposeSQL.consumerId),
-      knodeId: KnodeId.parse(purposeSQL.consumerKnodeId),
-    },
+    consumer: toExternalResource<OrganizationId>(
+      purposeSQL.consumerId,
+      purposeSQL.consumerKnodeId,
+    ),
     createdAt: purposeSQL.createdAt,
     dailyCalls: purposeSQL.dailyCalls,
     description: LocalizedDescription.parse(purposeSQL.description),
@@ -49,6 +56,10 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     state: PurposeState.parse(purposeSQL.state),
     suspendedByConsumerAt: purposeSQL.suspendedByConsumerAt,
     suspendedByProducerAt: purposeSQL.suspendedByProducerAt,
+    template: toOptionalExternalResource<PurposeTemplateId>(
+      purposeSQL.templateId,
+      purposeSQL.templateKnodeId,
+    ),
     updatedAt: purposeSQL.updatedAt,
   };
   return {

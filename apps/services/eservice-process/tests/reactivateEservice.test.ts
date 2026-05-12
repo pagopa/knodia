@@ -37,7 +37,7 @@ describe("POST /eservices/:eserviceId/reactivate (reactivateEservice)", () => {
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
     const responseBody = response.json();
-    expect(responseBody).toMatchObject({
+    expect(responseBody).toEqual({
       ...toAPI_Eservice(eservice),
       updatedAt: expect.any(String),
     });
