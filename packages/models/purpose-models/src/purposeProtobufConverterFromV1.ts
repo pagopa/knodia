@@ -1,17 +1,12 @@
 import {
-  type ExternalResource,
-  unsafeBrandExternalId,
+  fromExternalResource,
+  fromOptionalExternalResource,
 } from "@knodia/common-models/externalResource";
-import {
-  KnodeId,
-  type OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
-  type PurposeConsumerV1,
   PurposeFormSchemaVersionV1,
   PurposeStateV1,
   type PurposeV1,
@@ -30,7 +25,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
 
   return {
     ...input,
-    consumer: fromPurposeConsumerV1(input.consumer),
+    consumer: fromExternalResource(input.consumer),
     createdAt: new Date(input.createdAt),
     description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
@@ -49,6 +44,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
       input.suspendedByProducerAt != null
         ? new Date(input.suspendedByProducerAt)
         : null,
+    template: fromOptionalExternalResource(input.template),
     updatedAt: new Date(input.updatedAt),
   };
 };
@@ -72,10 +68,3 @@ const fromPurposeFormSchemaVersionV1 = (
       throw new Error("Unrecognized PurposeFormSchemaVersionV1 value");
     })
     .exhaustive();
-
-const fromPurposeConsumerV1 = (
-  input: PurposeConsumerV1,
-): ExternalResource<OrganizationId> => ({
-  id: unsafeBrandExternalId(input.id),
-  knodeId: KnodeId.parse(input.knodeId),
-});

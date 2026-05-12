@@ -15,6 +15,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/purpose-template-models": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",

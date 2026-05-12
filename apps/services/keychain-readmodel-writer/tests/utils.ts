@@ -8,9 +8,13 @@ import {
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
+  readmodelKnodeApiKeychain,
+  readmodelKnodeApiKeychainKey,
+  readmodelKnodeApiKeychainUser,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateConsumerKeychains,
+  aggregateKnodeApiKeychains,
   toConsumerKeychainPurpose,
 } from "@knodia/db-readmodel-keychain/converters";
 import { eq } from "drizzle-orm";
@@ -39,6 +43,32 @@ export async function getAllConsumerKeychains(readmodelDb: NodePgDatabase) {
     );
 
   return aggregateConsumerKeychains(queryRes);
+}
+
+export async function getAllKnodeApiKeychains(readmodelDb: NodePgDatabase) {
+  const queryRes = await readmodelDb
+    .select({
+      key: readmodelKnodeApiKeychainKey,
+      knodeApiKeychain: readmodelKnodeApiKeychain,
+      user: readmodelKnodeApiKeychainUser,
+    })
+    .from(readmodelKnodeApiKeychain)
+    .leftJoin(
+      readmodelKnodeApiKeychainUser,
+      eq(
+        readmodelKnodeApiKeychain.id,
+        readmodelKnodeApiKeychainUser.knodeApiKeychainId,
+      ),
+    )
+    .leftJoin(
+      readmodelKnodeApiKeychainKey,
+      eq(
+        readmodelKnodeApiKeychain.id,
+        readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+      ),
+    );
+
+  return aggregateKnodeApiKeychains(queryRes);
 }
 
 export async function getConsumerKeychainPurposesByKeychainId(

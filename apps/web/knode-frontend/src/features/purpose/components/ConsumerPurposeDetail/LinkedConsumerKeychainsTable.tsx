@@ -2,27 +2,12 @@ import type { bffApi } from "@knodia/bff-client";
 import type { KnodeId } from "@knodia/common-models/ids";
 
 import { unlinkPurposeFromConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
-import {
-  Banner,
-  Button,
-  Cell,
-  Column,
-  Loader,
-  Modal,
-  Row,
-  Table,
-  TableBody,
-  TableHeader,
-} from "@knodia/ui-kit/ui";
-import {
-  ArrowRightIcon,
-  MinusSquareIcon,
-  SelectionPlusIcon,
-} from "@phosphor-icons/react";
+import { Button, Modal } from "@knodia/ui-kit/ui";
+import { MinusSquareIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger } from "react-aria-components";
 
-import { ButtonLinkWithPreload } from "@/components/routerLinks";
+import { ConsumerKeychainsTable } from "@/features/keychain/components/ConsumerKeychainsTable";
 import { client } from "@/libs/axios";
 
 import { purposeLinkedConsumerKeychainsQueryKey } from "../../services/queries";
@@ -42,61 +27,27 @@ export function LinkedConsumerKeychainsTable({
   knodeId,
   purposeId,
 }: LinkedConsumerKeychainsTableProps) {
-  if (isLoading) {
-    return <Loader className="mx-auto mt-20" label="Loading..." />;
-  }
-
-  if (keychains.length === 0) {
-    return (
-      <Banner icon={<SelectionPlusIcon />} kind="neutral">
-        Link a Keychain to this Purpose to request an access token for the
-        related E-Service.
-      </Banner>
-    );
-  }
-
   return (
-    <Table aria-label="Keychains table">
-      <TableHeader>
-        <Column id="name" isRowHeader>
-          Name
-        </Column>
-        <Column id="keys">Keys</Column>
-        <Column id="actions">
-          <span className="sr-only">Actions</span>
-        </Column>
-      </TableHeader>
-      <TableBody items={keychains}>
-        {(keychain) => (
-          <Row id={keychain.id}>
-            <Cell>
-              <span className="body-md-em">{keychain.name.en}</span>
-            </Cell>
-            <Cell>{keychain.keysCount}</Cell>
-            <Cell>
-              <div className="flex justify-end items-center gap-2">
-                {canManagePurpose && (
-                  <UnlinkConsumerKeychainAction
-                    consumerKeychainId={keychain.id}
-                    knodeId={knodeId}
-                    purposeId={purposeId}
-                  />
-                )}
-                <ButtonLinkWithPreload
-                  hierarchy="neutral"
-                  kind="outlined"
-                  params={{ id: keychain.id }}
-                  size="icon-sm"
-                  to="/keychains/consumption/$id"
-                >
-                  <ArrowRightIcon />
-                </ButtonLinkWithPreload>
-              </div>
-            </Cell>
-          </Row>
-        )}
-      </TableBody>
-    </Table>
+    <ConsumerKeychainsTable
+      emptyState={{
+        icon: <SelectionPlusIcon />,
+        message:
+          "Link a Keychain to this Purpose to request an access token for the related E-Service.",
+      }}
+      isLoading={isLoading}
+      keychains={keychains}
+      rowActions={
+        canManagePurpose
+          ? (keychain) => (
+              <UnlinkConsumerKeychainAction
+                consumerKeychainId={keychain.id}
+                knodeId={knodeId}
+                purposeId={purposeId}
+              />
+            )
+          : undefined
+      }
+    />
   );
 }
 

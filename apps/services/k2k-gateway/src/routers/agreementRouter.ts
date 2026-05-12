@@ -10,7 +10,7 @@ import {
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
 import { ExternalUISessionScope } from "@knodia/common-models/auth";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
 import {
   type CorrelationId,
   KnodeId,
@@ -67,10 +67,7 @@ async function buildActivationMagicLink(
         knodeId: KnodeId.parse(claims.agreement.knodeId),
       },
       audience: magicLinkConfig.audience,
-      consumer: {
-        id: unsafeBrandExternalId<OrganizationId>(claims.consumer.id),
-        knodeId: KnodeId.parse(claims.consumer.knodeId),
-      },
+      consumer: fromExternalResource<OrganizationId>(claims.consumer),
       eservice: {
         id: unsafeBrandId(claims.eservice.id),
         knodeId: KnodeId.parse(claims.eservice.knodeId),
