@@ -1,4 +1,7 @@
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
+import {
+  readmodelConsumerKeychain,
+  readmodelKnodeApiKeychain,
+} from "@knodia/db-readmodel-keychain";
 import {
   type ConsumerKeychainWriterService,
   consumerKeychainWriterServiceBuilder,
@@ -41,7 +44,11 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetTestDatabase(readmodelDb, readmodelConsumerKeychain);
+  await resetTestDatabase(
+    readmodelDb,
+    readmodelConsumerKeychain,
+    readmodelKnodeApiKeychain,
+  );
 });
 
 afterAll(async () => {

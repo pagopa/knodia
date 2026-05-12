@@ -3,6 +3,7 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   KeyId,
+  KnodeApiKeychainId,
   OrganizationId,
   PurposeId,
   UserId,
@@ -89,7 +90,7 @@ export function assertUserHasTechnicalRole(user: IdmUser): void {
 
 export function assertUserIsAllowedToPerformKeychainOperation(
   userId: UserId,
-  keychainId: ConsumerKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
   members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
@@ -100,7 +101,7 @@ export function assertUserIsAllowedToPerformKeychainOperation(
 
 export function assertUserIsAllowedToRemoveKey(
   authData: UISessionAuthData,
-  keychainId: ConsumerKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
   members: KeychainUser[],
 ): void {
   const { userId, userRoles } = authData;
@@ -114,7 +115,7 @@ export function assertUserIsAllowedToRemoveKey(
 
 export function assertUserIsMemberOfKeychain(
   userId: UserId,
-  keychainId: ConsumerKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
   members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
@@ -124,7 +125,7 @@ export function assertUserIsMemberOfKeychain(
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
-  keychainId: ConsumerKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
   maxKeysPerKeychain: number,
   size: number,
 ): void => {
