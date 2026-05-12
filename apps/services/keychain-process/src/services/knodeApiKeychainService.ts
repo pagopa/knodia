@@ -35,6 +35,7 @@ import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
   createKnodeApiKeychainMemberAddedV1Event,
+  createKnodeApiKeychainMemberRemovedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
@@ -42,7 +43,11 @@ import {
   retrieveKnodeApiKeychain,
   retrieveUserFromKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
+import {
+  addKeyToKeychain,
+  addMemberToKeychain,
+  removeMemberFromKeychain,
+} from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertUserIsMemberOfKeychain,
@@ -225,6 +230,38 @@ export function knodeApiKeychainServiceBuilder(
           ),
         ),
         totalCount: knodeApiKeychain.users.length,
+      };
+    },
+
+    async removeKnodeApiKeychainMember(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      userId: UserId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Removing member ${userId} from Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      const { updatedKeychain: updatedKnodeApiKeychain } =
+        removeMemberFromKeychain(knodeApiKeychain.data, userId, authData);
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainMemberRemovedV1Event(
+          updatedKnodeApiKeychain,
+          userId,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
       };
     },
 

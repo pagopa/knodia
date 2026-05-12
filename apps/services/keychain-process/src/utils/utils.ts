@@ -33,6 +33,7 @@ import {
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
+  assertUserIsMemberOfKeychain,
 } from "./validators.ts";
 
 export async function addKeyToKeychain<
@@ -138,6 +139,26 @@ export async function addMemberToKeychain<
       ...keychain,
       updatedAt: now,
       users: [...keychain.users, { addedAt: now, userId: user.id }],
+    },
+  };
+}
+
+export function removeMemberFromKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(
+  keychain: K,
+  userId: UserId,
+  authData: UISessionAuthData,
+): { updatedKeychain: K } {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+
+  assertUserIsMemberOfKeychain(userId, keychain.id, keychain.users);
+
+  return {
+    updatedKeychain: {
+      ...keychain,
+      updatedAt: new Date(),
+      users: keychain.users.filter((member) => member.userId !== userId),
     },
   };
 }
