@@ -6,8 +6,17 @@ import {
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+<<<<<<<< HEAD:apps/services/organization-process/tests/getOperators.test.ts
 import { API_Operators } from "../src/models/api.ts";
 import { injectAppRequest } from "./utils.ts";
+========
+import { API_OrganizationUsers } from "../../src/models/api.ts";
+import {
+  cognitoIdmClientMock,
+  cognitoIdmClientModuleMock,
+} from "../cognitoIdmClientMock.ts";
+import { injectAppRequest } from "../utils.ts";
+>>>>>>>> main:apps/services/keychain-process/tests/user/getOrganizationUsers.test.ts
 
 const getOrganizationUsersMock = vi.hoisted(() => vi.fn());
 

@@ -18,21 +18,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   cognitoIdmClientMock,
   cognitoIdmClientModuleMock,
-} from "./cognitoIdmClientMock.ts";
+} from "../cognitoIdmClientMock.ts";
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
 import type {
   API_Keychain,
   API_KeychainMemberSeed,
-} from "../src/models/api.ts";
+} from "../../src/models/api.ts";
 
-import { toAPI_Keychain } from "../src/models/apiConverter.ts";
+import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

@@ -6106,6 +6106,8 @@ tags:
     name: purpose
   - description: Operator routes
     name: operator
+  - description: Operator routes
+    name: operator
   - description: E-service Templates routes
     name: eserviceTemplate
   - description: Purpose Templates routes

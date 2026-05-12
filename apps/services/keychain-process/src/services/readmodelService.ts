@@ -1,5 +1,9 @@
 /* eslint-disable max-lines-per-function */
-import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KeyId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychainPurpose,
@@ -17,19 +21,24 @@ import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
+  readmodelKnodeApiKeychainKey,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
   toConsumerKeychainPurpose,
   toKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
-import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
+import {
+  consumerKeychainReadmodelServiceBuilder,
+  knodeApiKeychainReadmodelServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
 import { and, desc, eq, exists } from "drizzle-orm";
 
 import type {
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
+  API_GetKnodeApiKeychainKeysQueryParams,
 } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
@@ -37,6 +46,8 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const consumerKeychainReadmodelService =
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
+  const knodeApiKeychainReadmodelService =
+    knodeApiKeychainReadmodelServiceBuilder(readmodelDb);
 
   return {
     async checkConsumerKeychainKeyExists(kid: KeyId) {
@@ -44,6 +55,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .select({ kid: readmodelConsumerKeychainKey.kid })
         .from(readmodelConsumerKeychainKey)
         .where(eq(readmodelConsumerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
+    async checkKnodeApiKeychainKeyExists(kid: KeyId) {
+      const queryResult = await readmodelDb
+        .select({ kid: readmodelKnodeApiKeychainKey.kid })
+        .from(readmodelKnodeApiKeychainKey)
+        .where(eq(readmodelKnodeApiKeychainKey.kid, kid))
         .limit(1);
 
       return queryResult.length > 0;
@@ -244,6 +264,57 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await consumerKeychainReadmodelService.getFlatConsumerKeychainById(
         consumerKeychainId,
       );
+    },
+    async getFlatKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {
+      return await knodeApiKeychainReadmodelService.getFlatKnodeApiKeychainById(
+        knodeApiKeychainId,
+      );
+    },
+    async getKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {
+      return await knodeApiKeychainReadmodelService.getKnodeApiKeychainById(
+        knodeApiKeychainId,
+      );
+    },
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+    ): Promise<ListResult<KeychainKey>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const createFilterQuery = () =>
+          tx
+            .select({ kid: readmodelKnodeApiKeychainKey.kid })
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select()
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .orderBy(desc(readmodelKnodeApiKeychainKey.createdAt))
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        return {
+          results: queryRes.map(toKeychainKey),
+          totalCount,
+        };
+      });
     },
   };
 }
