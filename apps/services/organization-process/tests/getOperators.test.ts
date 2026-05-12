@@ -27,7 +27,7 @@ describe("GET /operators (getOperators)", () => {
     getOrganizationUsersMock.mockReset();
   });
 
-  it("should return all organization operators with their roles (ordered by username)", async () => {
+  it("should return all organization operators with their roles", async () => {
     getOrganizationUsersMock.mockResolvedValue([
       {
         email: "mario.rossi@example.com",
@@ -54,28 +54,26 @@ describe("GET /operators (getOperators)", () => {
     );
 
     expect(response.statusCode).toBe(200);
-    expect(API_Operators.parse(response.json())).toEqual(
-      [
-        {
-          email: "mario.rossi@example.com",
-          id: "10000000-1000-1000-8000-000000000011",
-          roles: ["administrative", "technical"],
-          username: "Mario Rossi",
-        },
-        {
-          email: "giulia.bianchi@example.com",
-          id: "10000000-1000-1000-8000-000000000012",
-          roles: ["administrative"],
-          username: "Giulia Bianchi",
-        },
-        {
-          email: "luca.neri@example.com",
-          id: "10000000-1000-1000-8000-000000000013",
-          roles: ["technical"],
-          username: "Luca Neri",
-        },
-      ].toSorted((a, b) => a.username.localeCompare(b.username)),
-    );
+    expect(API_Operators.parse(response.json())).toEqual([
+      {
+        email: "mario.rossi@example.com",
+        id: "10000000-1000-1000-8000-000000000011",
+        roles: ["administrative", "technical"],
+        username: "Mario Rossi",
+      },
+      {
+        email: "giulia.bianchi@example.com",
+        id: "10000000-1000-1000-8000-000000000012",
+        roles: ["administrative"],
+        username: "Giulia Bianchi",
+      },
+      {
+        email: "luca.neri@example.com",
+        id: "10000000-1000-1000-8000-000000000013",
+        roles: ["technical"],
+        username: "Luca Neri",
+      },
+    ]);
     expect(getOrganizationUsersMock).toHaveBeenCalledWith(TEST_ORGANIZATION_ID);
     expect(getOrganizationUsersMock).toHaveBeenCalledTimes(1);
   });
