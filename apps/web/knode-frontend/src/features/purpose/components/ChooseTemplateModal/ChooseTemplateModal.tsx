@@ -28,6 +28,7 @@ export function ChooseTemplateModal({
 }: Props) {
   const queryClient = useQueryClient();
   const [isSelecting, setIsSelecting] = useState(false);
+  const [hasSelectError, setHasSelectError] = useState(false);
 
   const { data, isError, isPending } = useQuery(
     purposeTemplatesQuery(knodeId, eserviceId),
@@ -35,6 +36,7 @@ export function ChooseTemplateModal({
 
   const handleSelect = async (templateId: string) => {
     setIsSelecting(true);
+    setHasSelectError(false);
     try {
       const details = await queryClient.fetchQuery(
         purposeTemplateDetailsQuery(
@@ -45,6 +47,8 @@ export function ChooseTemplateModal({
         ),
       );
       onTemplateSelected(details);
+    } catch {
+      setHasSelectError(true);
     } finally {
       setIsSelecting(false);
     }
@@ -65,6 +69,12 @@ export function ChooseTemplateModal({
         {isError && (
           <Banner kind="error">
             Failed to load purpose templates. Please try again later.
+          </Banner>
+        )}
+
+        {hasSelectError && (
+          <Banner kind="error">
+            Failed to load the selected template. Please try again.
           </Banner>
         )}
 
