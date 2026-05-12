@@ -1,0 +1,13 @@
+meta {
+  name: Get Operators
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/operators
+  body: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

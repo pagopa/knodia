@@ -4,6 +4,7 @@ export const apiTags = {
   consumerKeychain: "consumerKeychain",
   eservice: "eservice",
   eserviceTemplate: "eserviceTemplate",
+  operator: "operator",
   purpose: "purpose",
   purposeTemplate: "purposeTemplate",
   user: "user",
