@@ -2476,39 +2476,6 @@ export type GetOperatorsResponses = {
 
 export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
 
-export type GetOperatorsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/operators';
-};
-
-export type GetOperatorsErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
-
-export type GetOperatorsResponses = {
-    /**
-     * Operators retrieved successfully
-     */
-    200: Operators;
-};
-
-export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
-
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
     path?: never;

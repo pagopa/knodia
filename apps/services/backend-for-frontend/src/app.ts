@@ -156,9 +156,6 @@ export function buildAppFromConfig(
     protectedApp.register(operatorRouter, {
       organizationProcessClient: clients.organizationProcessClient,
     });
-    protectedApp.register(operatorRouter, {
-      organizationProcessClient: clients.organizationProcessClient,
-    });
     protectedApp.register(eserviceConsumerRouter, {
       config,
       keychainProcessClient: clients.keychainProcessClient,

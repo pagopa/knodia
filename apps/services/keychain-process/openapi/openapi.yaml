@@ -1692,8 +1692,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-<<<<<<< HEAD
-=======
   /knodeApiKeychains/{knodeApiKeychainId}:
     get:
       operationId: getKnodeApiKeychain
@@ -1911,55 +1909,6 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users:
-    get:
-      operationId: getOrganizationUsers
-      tags:
-        - user
-      description: Retrieve users of the requesting User's Organization, including
-        whether they have the technical role
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Organization Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Organization Users retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/OrganizationUsers"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
->>>>>>> main
 servers:
   - description: Keychain Process API
     url: /

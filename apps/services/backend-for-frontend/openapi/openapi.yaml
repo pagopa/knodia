@@ -4276,45 +4276,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /operators:
-    get:
-      operationId: getOperators
-      tags:
-        - operator
-      description: Retrieve Operators of the requesting User's Organization
-      responses:
-        "200":
-          description: Operators retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Operators retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/Operators"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -6143,11 +6104,8 @@ tags:
     name: consumerKeychain
   - description: Purpose routes
     name: purpose
-<<<<<<< HEAD
-=======
-  - description: User routes
-    name: user
->>>>>>> main
+  - description: Operator routes
+    name: operator
   - description: Operator routes
     name: operator
   - description: E-service Templates routes
