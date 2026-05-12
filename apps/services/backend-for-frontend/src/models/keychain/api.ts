@@ -252,19 +252,6 @@ export const API_User = z
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;
 
-export const API_OrganizationUser = API_User.extend({
-  isTechnical: z.boolean().meta({
-    description:
-      "Whether the User has the technical role within the Organization",
-  }),
-}).meta({ id: "OrganizationUser" });
-export type API_OrganizationUser = z.infer<typeof API_OrganizationUser>;
-
-export const API_OrganizationUsers = z
-  .array(API_OrganizationUser)
-  .meta({ id: "OrganizationUsers" });
-export type API_OrganizationUsers = z.infer<typeof API_OrganizationUsers>;
-
 export const API_KeychainMembers = z
   .strictObject({
     pagination: API_Pagination,

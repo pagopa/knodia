@@ -1,4 +1,5 @@
 import type { keychainProcessApi } from "@knodia/keychain-process-client";
+import type { organizationProcessApi } from "@knodia/organization-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
@@ -7,7 +8,6 @@ import type {
   API_Keychain,
   API_KeychainDetails,
   API_KeychainKey,
-  API_OrganizationUser,
   API_User,
 } from "./api.ts";
 
@@ -58,9 +58,9 @@ export const toAPI_ConsumerKeychainPurpose = (
 
 export const toAPI_KeychainKey = (
   key: keychainProcessApi.KeychainKey,
-  users: keychainProcessApi.OrganizationUsers,
+  operators: organizationProcessApi.Operators,
 ): API_KeychainKey => {
-  const owner = users.find((user) => user.id === key.userId);
+  const owner = operators.find((operator) => operator.id === key.userId);
 
   return {
     createdAt: key.createdAt,
@@ -74,11 +74,4 @@ export const toAPI_User = (user: keychainProcessApi.User): API_User => ({
   email: user.email,
   id: user.id,
   username: user.username,
-});
-
-export const toAPI_OrganizationUser = (
-  user: keychainProcessApi.OrganizationUser,
-): API_OrganizationUser => ({
-  ...toAPI_User(user),
-  isTechnical: user.isTechnical,
 });
