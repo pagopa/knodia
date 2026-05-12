@@ -9,6 +9,10 @@ const API_ConsumerKeychainId = z.uuid().meta({
   description: "Unique identifier of the Consumer Keychain",
 });
 
+const API_KnodeApiKeychainId = z.uuid().meta({
+  description: "Unique identifier of the Knode API Keychain",
+});
+
 export const API_TokenRequest = z
   .strictObject({
     client_assertion: z.jwt(),
@@ -27,3 +31,24 @@ export const API_TokenResponse = z
   })
   .meta({ id: "TokenResponse" });
 export type API_TokenResponse = z.infer<typeof API_TokenResponse>;
+
+export const API_KnodeApiTokenRequest = z
+  .strictObject({
+    client_assertion: z.jwt(),
+    client_assertion_type: z.literal(EXPECTED_CLIENT_ASSERTION_TYPE),
+    client_id: API_KnodeApiKeychainId,
+    grant_type: z.literal(EXPECTED_GRANT_TYPE),
+  })
+  .meta({ id: "KnodeApiTokenRequest" });
+export type API_KnodeApiTokenRequest = z.infer<typeof API_KnodeApiTokenRequest>;
+
+export const API_KnodeApiTokenResponse = z
+  .strictObject({
+    access_token: z.string(),
+    expires_in: z.number().meta({ format: "int32" }),
+    token_type: z.literal("Bearer"),
+  })
+  .meta({ id: "KnodeApiTokenResponse" });
+export type API_KnodeApiTokenResponse = z.infer<
+  typeof API_KnodeApiTokenResponse
+>;

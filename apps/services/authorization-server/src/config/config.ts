@@ -28,7 +28,21 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         DYNAMODB_DPOP_PROOFS_TABLE: z.string(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.string(),
+        GENERATED_KNODE_API_TOKEN_AUDIENCE: z.string().min(1),
+        GENERATED_KNODE_API_TOKEN_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
+        KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z
+          .string()
+          .min(1)
+          .transform((value) => value.split(",").map((a) => a.trim()))
+          .pipe(z.string().array()),
+        KNODE_API_CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: z.coerce
+          .number()
+          .int()
+          .positive(),
+        KNODE_API_KEYCHAIN_KNODE_URL: z.url(),
+        KNODE_API_TOKEN_DURATION_SECONDS: z.coerce.number().int().positive(),
+        KNODE_API_TOKEN_JWT_KID: z.string(),
         KNODE_ID: KnodeId,
       })
       .transform((c) => ({
@@ -42,7 +56,16 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
+        generatedKnodeApiTokenAudience: c.GENERATED_KNODE_API_TOKEN_AUDIENCE,
+        generatedKnodeApiTokenIssuer: c.GENERATED_KNODE_API_TOKEN_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
+        knodeApiClientAssertionAcceptedAudiences:
+          c.KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
+        knodeApiClientAssertionMaxTokenAgeSeconds:
+          c.KNODE_API_CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS,
+        knodeApiKeychainKnodeUrl: c.KNODE_API_KEYCHAIN_KNODE_URL,
+        knodeApiTokenDurationSeconds: c.KNODE_API_TOKEN_DURATION_SECONDS,
+        knodeApiTokenJwtKid: c.KNODE_API_TOKEN_JWT_KID,
         knodeId: c.KNODE_ID,
       })),
   );

@@ -12,3 +12,13 @@ export function getK2K2GatewayApiClient({
     baseURL: consumerKnodeUrl,
   });
 }
+
+export function getKnodeApiKeychainK2K2GatewayApiClient({
+  knodeApiKeychainKnodeUrl,
+}: {
+  knodeApiKeychainKnodeUrl: string;
+}): K2K2GatewayApiClient {
+  return createK2K2GatewayApiClient({
+    baseURL: knodeApiKeychainKnodeUrl,
+  });
+}

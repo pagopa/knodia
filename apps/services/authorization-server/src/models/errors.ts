@@ -58,6 +58,8 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   INVALID_DPOP_PROOF_SIGNATURE: "0021",
   DPOP_PROOF_EXPIRED: "0022",
   DPOP_PROOF_ALREADY_USED: "0023",
+  KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND: "0024",
+  UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0025",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -252,6 +254,27 @@ export function unexpectedConsumerKnodeVerificationDataRetrievalError(
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
     detail: `An unexpected error occurred during retrieval of the Consumer's Knode verification data: ${error.message}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "invalid_client",
+  });
+}
+
+export function knodeApiKeychainKnodeVerificationDataNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND",
+    detail:
+      "Verification data for the Knode API Keychain's Knode was not found",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError(
+  error: AxiosError,
+) {
+  return createApiError<ErrorCodes>({
+    code: "UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
+    detail: `An unexpected error occurred during retrieval of the Knode API Keychain's Knode verification data: ${error.message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
   });

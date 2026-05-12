@@ -109,6 +109,48 @@ components:
         - expires_in
         - token_type
       additionalProperties: false
+    KnodeApiTokenRequest:
+      type: object
+      properties:
+        client_assertion:
+          type: string
+          format: jwt
+        client_assertion_type:
+          type: string
+          enum:
+            - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_id:
+          description: Unique identifier of the Knode API Keychain
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
+      required:
+        - client_assertion
+        - client_assertion_type
+        - client_id
+        - grant_type
+      additionalProperties: false
+    KnodeApiTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          format: int32
+          type: number
+        token_type:
+          type: string
+          enum:
+            - Bearer
+      required:
+        - access_token
+        - expires_in
+        - token_type
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -156,6 +198,45 @@ paths:
                 description: Token issued successfully
                 allOf:
                   - $ref: "#/components/schemas/TokenResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /knodeApiToken:
+    post:
+      operationId: createKnodeApiToken
+      summary: Create Knode API Token
+      tags:
+        - token
+      description: Issue a Knode API access token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/KnodeApiTokenRequest"
+      security: []
+      responses:
+        "200":
+          description: Token issued successfully
+          content:
+            application/json:
+              schema:
+                description: Token issued successfully
+                allOf:
+                  - $ref: "#/components/schemas/KnodeApiTokenResponse"
         "400":
           description: Bad Request
           content:

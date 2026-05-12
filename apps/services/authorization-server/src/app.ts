@@ -13,10 +13,15 @@ import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
-import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
+import {
+  getK2K2GatewayApiClient,
+  getKnodeApiKeychainK2K2GatewayApiClient,
+} from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { knodeApiTokenRouter } from "./routers/knodeApiTokenRouter.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
+import { knodeApiTokenServiceBuilder } from "./services/knodeApiTokenService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
@@ -32,6 +37,10 @@ export function buildApp({
   const k2kGatewayClient = getK2K2GatewayApiClient({
     consumerKnodeUrl: config.consumerKnodeUrl,
   });
+  const knodeApiKeychainK2KGatewayClient =
+    getKnodeApiKeychainK2K2GatewayApiClient({
+      knodeApiKeychainKnodeUrl: config.knodeApiKeychainKnodeUrl,
+    });
   const tokenGenerator = tokenGeneratorBuilder();
 
   const dpopProofStore = createJtiReplayStore(
@@ -72,6 +81,14 @@ export function buildApp({
       dpopProofStore,
       k2kGatewayClient,
       readmodelService: readmodelServiceBuilder(readmodelDb),
+      tokenGenerator,
+    }),
+  });
+  app.register(knodeApiTokenRouter, {
+    config,
+    knodeApiTokenService: knodeApiTokenServiceBuilder({
+      config,
+      knodeApiKeychainK2KGatewayClient,
       tokenGenerator,
     }),
   });
