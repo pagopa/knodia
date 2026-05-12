@@ -91,22 +91,6 @@ components:
         - dateOfBirth
       additionalProperties: false
 paths:
-  /status:
-    get:
-      operationId: getStatus
-      tags:
-        - health
-      description: Check the health status of the service
-      security: []
-      responses:
-        "200":
-          description: Service status OK
-          content:
-            application/problem+json:
-              schema:
-                description: Service status OK
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /natural-persons/{notation}:
     get:
       operationId: getPersonalInformation
@@ -160,8 +144,6 @@ servers:
 security:
   - bearerAuth: []
 tags:
-  - description: Health check routes
-    name: health
   - description: Personal information lookup by Codice Fiscale (Cross-Border
       E-Service 01, Bearer-protected)
     name: personalInformation

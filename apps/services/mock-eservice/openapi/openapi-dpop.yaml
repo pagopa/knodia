@@ -189,22 +189,6 @@ components:
         - naturalPerson
       additionalProperties: false
 paths:
-  /status:
-    get:
-      operationId: getStatus
-      tags:
-        - health
-      description: Check the health status of the service
-      security: []
-      responses:
-        "200":
-          description: Service status OK
-          content:
-            application/problem+json:
-              schema:
-                description: Service status OK
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /natural-persons/{notation}/digital-contact:
     get:
       operationId: getDigitalContact
@@ -265,8 +249,6 @@ security:
   - dpopAuth: []
     dpopProof: []
 tags:
-  - description: Health check routes
-    name: health
   - description: Digital contact lookup by Codice Fiscale (Cross-Border E-Service
       02, DPoP-protected)
     name: digitalContact
