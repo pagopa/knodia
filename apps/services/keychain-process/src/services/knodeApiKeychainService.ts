@@ -1,3 +1,4 @@
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -24,6 +25,7 @@ import type {
   API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
+  API_KeychainMemberSeed,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -31,13 +33,14 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
+  createKnodeApiKeychainMemberAddedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain } from "../utils/utils.ts";
+import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
@@ -47,9 +50,46 @@ export type KnodeApiKeychainService = ReturnType<
 export function knodeApiKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  cognitoIdmClient: CognitoIdmClient,
   config: { maxKeysPerKeychain: number },
 ) {
   return {
+    async addKnodeApiKeychainMember(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      member: API_KeychainMemberSeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Adding member ${member.userId} to Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      const { addedUserId, updatedKeychain: updatedKnodeApiKeychain } =
+        await addMemberToKeychain(
+          knodeApiKeychain.data,
+          member,
+          authData,
+          cognitoIdmClient,
+        );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainMemberAddedV1Event(
+          updatedKnodeApiKeychain,
+          addedUserId,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
+    },
     async createKnodeApiKeychain(
       seed: API_KnodeApiKeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
