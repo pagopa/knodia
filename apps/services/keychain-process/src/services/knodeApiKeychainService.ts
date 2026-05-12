@@ -16,7 +16,6 @@ import {
   generateId,
   type KeyId,
   type KnodeApiKeychainId,
-  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 
 import type {
@@ -26,7 +25,6 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
@@ -37,12 +35,7 @@ import {
   retrieveKeychainKey,
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain } from "../utils/utils.ts";
-import {
-  assertOrganizationIsKeychainOwner,
-  assertUserBelongsToOrganization,
-  assertUserHasTechnicalRole,
-} from "../utils/validators.ts";
+import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -69,44 +62,18 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        knodeApiKeychain.data,
-      );
-
-      const userId = unsafeBrandUserId(member.userId);
-
-      if (knodeApiKeychain.data.users.some((user) => user.userId === userId)) {
-        throw userAlreadyMember(knodeApiKeychainId, userId);
-      }
-
-      const user = await cognitoIdmClient.getUserById(userId);
-
-      if (!user) {
-        throw userNotFound(userId);
-      }
-
-      await assertUserBelongsToOrganization(
-        user,
-        authData.organizationId,
-        cognitoIdmClient,
-      );
-      assertUserHasTechnicalRole(user);
-
-      const now = new Date();
-      const updatedKnodeApiKeychain: KnodeApiKeychain = {
-        ...knodeApiKeychain.data,
-        updatedAt: now,
-        users: [
-          ...knodeApiKeychain.data.users,
-          { addedAt: now, userId: user.id },
-        ],
-      };
+      const { addedUserId, updatedKeychain: updatedKnodeApiKeychain } =
+        await addMemberToKeychain(
+          knodeApiKeychain.data,
+          member,
+          authData,
+          cognitoIdmClient,
+        );
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createKnodeApiKeychainMemberAddedV1Event(
           updatedKnodeApiKeychain,
-          user.id,
+          addedUserId,
           correlationId,
           knodeApiKeychain.metadata.version,
         ),

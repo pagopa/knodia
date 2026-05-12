@@ -1,5 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
+import { generateUserId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   keychainEvents,
@@ -91,6 +92,48 @@ describe("Knode API keychain read model writer tests", async () => {
     expect(retrievedKeychains.length).toBe(1);
     expect(retrievedKeychains[0]).toEqual({
       data: toExpectKnodeApiKeychain(keychainWithKeyAdded),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainMemberAddedV1", async () => {
+    const knodeApiKeychain = getMockKnodeApiKeychain();
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const userId = generateUserId();
+
+    const keychainWithMemberAdded: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      users: [...knodeApiKeychain.users, { addedAt: new Date(), userId }],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainMemberAddedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(keychainWithMemberAdded),
+      userId,
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainMemberAddedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(keychainWithMemberAdded),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<KnodeApiKeychain>);
   });
