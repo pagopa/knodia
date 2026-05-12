@@ -43,6 +43,7 @@ export const makeEserviceWithVersionState = (
 ): Eservice => ({
   ...getMockEservice({ seed }),
   producerId,
+  template: undefined,
   versions: [
     {
       ...getMockEserviceVersion(seed),

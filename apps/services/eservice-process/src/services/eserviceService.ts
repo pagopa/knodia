@@ -4,17 +4,20 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
+  type EserviceTemplateId,
   type EserviceVersionId,
   generateId,
+  type KnodeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -57,10 +60,12 @@ import {
   updateEserviceVersionState,
 } from "../utils/utils.ts";
 import {
+  assertCategoriesCanBeUpdated,
   assertEserviceVersionIsActive,
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
+  assertTokenEserviceClaimsMatchPathParam,
   assertValidCategories,
 } from "../utils/validators.ts";
 
@@ -70,7 +75,10 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
-  config: { isConsumerOperatorIdentificationRequired: boolean },
+  config: {
+    isConsumerOperatorIdentificationRequired: boolean;
+    knodeId: KnodeId;
+  },
 ) {
   return {
     async archiveEservice(
@@ -208,9 +216,22 @@ export function eserviceServiceBuilder(
     },
     async getEservice(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<
+        ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
+      >,
     ): Promise<WithMetadata<Eservice>> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
+
+      if (authData.tokenType === "external-ui-session") {
+        assertTokenEserviceClaimsMatchPathParam(
+          authData,
+          eserviceId,
+          config.knodeId,
+        );
+      }
 
       return await retrieveEservice(eserviceId, readmodelService);
     },
@@ -329,7 +350,10 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      assertValidCategories(update.categories);
+      if (update.categories !== undefined) {
+        assertCategoriesCanBeUpdated(eservice);
+        assertValidCategories(update.categories);
+      }
 
       const now = new Date();
 
@@ -371,10 +395,7 @@ function resolveTemplateFixedFields(
       categories: template.eserviceFields.categories,
       mode: template.eserviceFields.mode,
       requiredAttributes: template.eserviceFields.requiredAttributes,
-      template: {
-        id: unsafeBrandExternalId(seed.template.id),
-        knodeId: seed.template.knodeId,
-      },
+      template: fromExternalResource<EserviceTemplateId>(seed.template),
     };
   }
 

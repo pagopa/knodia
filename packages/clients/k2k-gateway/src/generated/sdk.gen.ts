@@ -30,7 +30,7 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 /**
  * Get Consumer client assertion verification data for E-service access token emission
  *
- * Verify that the key and purpose are associated with the consumer keychain, and return the public key and consumer attributes for further verification by the auth server
+ * Verify that the key and purpose are associated with the Consumer Keychain, and return the public key and consumer attributes for further verification by the auth server
  */
 export const getConsumerClientAssertionVerificationData = <ThrowOnError extends boolean = true>(options: Options<GetConsumerClientAssertionVerificationDataData, ThrowOnError>) => (options.client ?? client).post<GetConsumerClientAssertionVerificationDataResponses, GetConsumerClientAssertionVerificationDataErrors, ThrowOnError>({
     responseType: 'json',
@@ -45,7 +45,7 @@ export const getConsumerClientAssertionVerificationData = <ThrowOnError extends 
 /**
  * Get Knode API client assertion verification data for Knode API access token emission
  *
- * Verify that the key is associated with the Knode API keychain, and return the public key for further verification by the auth server
+ * Verify that the key is associated with the Knode API Keychain, and return the public key for further verification by the auth server
  */
 export const getKnodeApiClientAssertionVerificationData = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiClientAssertionVerificationDataData, ThrowOnError>) => (options.client ?? client).post<GetKnodeApiClientAssertionVerificationDataResponses, GetKnodeApiClientAssertionVerificationDataErrors, ThrowOnError>({
     responseType: 'json',

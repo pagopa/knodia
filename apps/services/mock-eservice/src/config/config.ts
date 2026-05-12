@@ -14,7 +14,7 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
       DPOP_PROOF_HTU_BASE_URL: z.url(),
       DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: z.coerce.number().int().positive(),
       DYNAMODB_DPOP_PROOFS_TABLE: z.string(),
-      EXPECTED_ISSUER: z.url(),
+      EXPECTED_ISSUER: z.string(),
       JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
       KNODE_ID: KnodeId,
       WELL_KNOWN_URLS: z

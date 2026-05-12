@@ -1,4 +1,9 @@
-import type { OrganizationId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  KnodeId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
+import type { ExternalUISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import { getCategory } from "@knodia/category-models";
 import {
@@ -11,7 +16,10 @@ import {
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  eserviceTemplateInstanceFieldsCannotBeUpdated,
+  eserviceTokenClaimMismatch,
   eserviceVersionNotInExpectedStates,
+  type ExternalUISessionEserviceClaimField,
   invalidCategory,
   notEserviceProducer,
   organizationNotFound,
@@ -23,6 +31,16 @@ export const assertIsEserviceProducer = (
 ): void => {
   if (eservice.producerId !== organizationId) {
     throw notEserviceProducer(eservice.id, organizationId);
+  }
+};
+
+export const assertCategoriesCanBeUpdated = (eservice: Eservice): void => {
+  if (eservice.template !== undefined) {
+    throw eserviceTemplateInstanceFieldsCannotBeUpdated(
+      eservice.id,
+      eservice.template.id,
+      ["categories"],
+    );
   }
 };
 
@@ -66,5 +84,34 @@ export async function assertOrganizationExists(
     await readmodelService.getOrganizationById(organizationId);
   if (organization === undefined) {
     throw organizationNotFound(organizationId);
+  }
+}
+
+export function assertTokenEserviceClaimsMatchPathParam(
+  authData: ExternalUISessionAuthData,
+  pathEserviceId: EserviceId,
+  thisKnodeId: KnodeId,
+): void {
+  const checks: {
+    expectedValue: string;
+    field: ExternalUISessionEserviceClaimField;
+    tokenValue: string;
+  }[] = [
+    {
+      expectedValue: pathEserviceId,
+      field: "eservice.id",
+      tokenValue: authData.eservice.id,
+    },
+    {
+      expectedValue: thisKnodeId,
+      field: "eservice.knodeId",
+      tokenValue: authData.eservice.knodeId,
+    },
+  ];
+
+  for (const { expectedValue, field, tokenValue } of checks) {
+    if (tokenValue !== expectedValue) {
+      throw eserviceTokenClaimMismatch(field, tokenValue, expectedValue);
+    }
   }
 }

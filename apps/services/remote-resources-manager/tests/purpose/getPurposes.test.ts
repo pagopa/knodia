@@ -127,6 +127,26 @@ describe("GET /purposes (getPurposes)", () => {
     );
   });
 
+  it("should pass multi-value state filter to K2K gateway", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, state: ["Active", "Suspended"] });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          state: ["ACTIVE", "SUSPENDED"],
+        }),
+      }),
+    );
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

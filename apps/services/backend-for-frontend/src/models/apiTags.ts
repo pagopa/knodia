@@ -5,5 +5,6 @@ export const apiTags = {
   eservice: "eservice",
   eserviceTemplate: "eserviceTemplate",
   purpose: "purpose",
+  purposeTemplate: "purposeTemplate",
   user: "user",
 } as const;
