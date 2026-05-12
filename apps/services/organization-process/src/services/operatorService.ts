@@ -12,9 +12,11 @@ export function operatorServiceBuilder(cognitoIdmClient: CognitoIdmClient) {
     }: AuthorizedContext<UISessionAuthData>): Promise<IdmUser[]> {
       logger.info("Getting Operators of the requesting Organization");
 
-      return await cognitoIdmClient.getOrganizationUsers(
+      const operators = await cognitoIdmClient.getOrganizationUsers(
         authData.organizationId,
       );
+
+      return operators.toSorted((a, b) => a.username.localeCompare(b.username));
     },
   };
 }
