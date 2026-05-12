@@ -7,5 +7,4 @@ export const apiTags = {
   operator: "operator",
   purpose: "purpose",
   purposeTemplate: "purposeTemplate",
-  user: "user",
 } as const;

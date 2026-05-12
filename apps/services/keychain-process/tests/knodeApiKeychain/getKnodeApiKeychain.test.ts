@@ -44,10 +44,26 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId (getKnodeApiKeychain)", () 
     },
   );
 
-  // TODO: re-enable this test once the list endpoint is implemented
-  // eslint-disable-next-line vitest/no-commented-out-tests
-  // it("should return the same knode API keychain as the list endpoint", async () => {
-  // });
+  it("should return the same knode API keychain as the list endpoint", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const uiToken: TestToken = {
+      roles: ["administrative"],
+      type: "ui-session",
+    };
+    const listResponse = await injectAppRequest(uiToken)
+      .get("/knodeApiKeychains")
+      .query({ limit: "50", offset: "0" });
+    const listBody = listResponse.json<{ results: API_Keychain[] }>();
+    const expectedItem = listBody.results.find(
+      (i) => i.id === VALID_KNODE_API_KEYCHAIN_ID,
+    );
+
+    const response = await getKnodeApiKeychain(VALID_KNODE_API_KEYCHAIN_ID);
+    const body = response.json<API_Keychain>();
+
+    expect(body).toEqual(expectedItem!);
+  });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
