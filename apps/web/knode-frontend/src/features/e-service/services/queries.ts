@@ -1,9 +1,10 @@
-import type { KnodeId } from "@knodia/common-models/ids";
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerEserviceDetailsOptions,
   getConsumerEservicesOptions,
+  getConsumerKeychainsOptions,
   getEserviceTemplateOptions,
   getEserviceTemplatesOptions,
   getProducerEserviceDetailsOptions,
@@ -16,6 +17,7 @@ import type { ConsumptionEserviceListParams } from "@/features/e-service/models/
 import { client } from "@/libs/axios";
 
 const DEFAULT_PAGE_LIMIT = 10;
+const ESERVICE_LINKED_KEYCHAINS_SECTION_LIMIT = 50;
 
 export const consumerEserviceDetailsQuery = (
   eserviceId: string,
@@ -72,6 +74,17 @@ export const producerEserviceOptionsQuery = () =>
       limit: ESERVICE_OPTIONS_LIMIT,
       offset: 0,
       state: ["Active", "Suspended"],
+    },
+  });
+
+// TODO(KN-473): replace hardcoded limit with pagination when the number of keychains linked to an e-service grows
+export const eserviceLinkedConsumerKeychainsQuery = (eserviceId: EserviceId) =>
+  getConsumerKeychainsOptions({
+    client,
+    query: {
+      eserviceId,
+      limit: ESERVICE_LINKED_KEYCHAINS_SECTION_LIMIT,
+      offset: 0,
     },
   });
 
