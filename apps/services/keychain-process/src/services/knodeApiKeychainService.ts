@@ -22,6 +22,7 @@ import {
 
 import type {
   API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
@@ -133,6 +134,14 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychainId,
         params,
       );
+    },
+    async getKnodeApiKeychains(
+      params: API_GetKnodeApiKeychainsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<FlatKnodeApiKeychain>> {
+      logger.info({ params }, "Getting Knode API keychains with params");
+
+      return await readmodelService.getKnodeApiKeychains(params);
     },
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
