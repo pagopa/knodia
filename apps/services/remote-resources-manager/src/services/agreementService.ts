@@ -50,18 +50,12 @@ export function agreementServiceBuilder(
         `Archiving Agreement ${agreementId} on Knode ${targetKnodeId}`,
       );
 
-      await retrieveOrganization(authData.organizationId, readmodelService);
-
-      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+      await verifyConsumerCanActOnAgreement(
         agreementId,
         targetKnodeId,
-      );
-
-      assertAgreementExists(remoteAgreement, agreementId);
-      assertOrganizationIsAgreementConsumer(
-        remoteAgreement,
-        agreementId,
         authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
       );
 
       const { data } = await k2kGatewayApi.archiveAgreement({
@@ -84,16 +78,12 @@ export function agreementServiceBuilder(
         `Creating activation magic link for Agreement ${agreementId} on Knode ${targetKnodeId}`,
       );
 
-      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+      await verifyConsumerCanActOnAgreement(
         agreementId,
         targetKnodeId,
-      );
-
-      assertAgreementExists(remoteAgreement, agreementId);
-      assertOrganizationIsAgreementConsumer(
-        remoteAgreement,
-        agreementId,
         authData.organizationId,
+        remoteResourceDbService,
+        readmodelService,
       );
 
       const { data } = await k2kGatewayApi.createAgreementActivationMagicLink({

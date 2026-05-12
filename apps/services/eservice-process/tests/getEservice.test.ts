@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { type EserviceId, generateId } from "@knodia/common-models/ids";
+import {
+  type EserviceId,
+  generateId,
+  KnodeId,
+} from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
@@ -78,5 +82,46 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   it("should return 400 for invalid e-service id format", async () => {
     const response = await getEservice("not-a-uuid");
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return the e-service for an external-ui-session token whose eservice.id matches the path and eservice.knodeId matches the running knode", async () => {
+    await seedEservice(eservice);
+
+    const response = await injectAppRequest({
+      eserviceId: VALID_ESERVICE_ID,
+      eserviceKnodeId: KnodeId.enum.Orion,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/eservices/${VALID_ESERVICE_ID}`);
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<API_Eservice>();
+    expect(body).toEqual(toExpectAPI_Eservice(eservice));
+  });
+
+  it("should return 403 for an external-ui-session token whose eservice.id does not match the path", async () => {
+    await seedEservice(eservice);
+
+    const response = await injectAppRequest({
+      eserviceId: NON_EXISTENT_ESERVICE_ID,
+      eserviceKnodeId: KnodeId.enum.Orion,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/eservices/${VALID_ESERVICE_ID}`);
+
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 for an external-ui-session token whose eservice.knodeId does not match the running knode", async () => {
+    await seedEservice(eservice);
+
+    const response = await injectAppRequest({
+      eserviceId: VALID_ESERVICE_ID,
+      eserviceKnodeId: KnodeId.enum.Lynx,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/eservices/${VALID_ESERVICE_ID}`);
+
+    expect(response.statusCode).toBe(403);
   });
 });

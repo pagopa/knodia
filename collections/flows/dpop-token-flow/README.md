@@ -5,27 +5,26 @@ signs a client assertion, signs a DPoP proof and exchanges it for a DPoP access 
 
 ## Prerequisite
 
-### For Client Assertion
+The flow needs two distinct keypairs:
+- an **RS256 keypair** to sign the client assertion;
+- a separate keypair to sign the DPoP proof — RS256 or ES256.
+
+Reusing the same key for both would collapse the client credential and the
+DPoP proof-of-possession key into one, which defeats the sender-constraining
+purpose of DPoP. Generate them separately:
 
 ```
-pnpm generate-keypair
+pnpm generate-keypair             # RS256 — client assertion
+pnpm generate-keypair --alg ES256 # ES256 — DPoP proof
 ```
 
-Generates an RSA keypair under `docker/keys/` and writes
-`KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64` into
-`collections/.env`. Run once, or again to rotate the key.
+These write `KEYCHAIN_PRIVATE_RS256_KEY_PATH` + `KEYCHAIN_PUBLIC_RS256_KEY_B64`
+and `KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64` into
+`collections/.env`. Run again to rotate.
 
-### For DPoP Proof
-
-```
-pnpm generate-keypair --alg ES256
-```
-
-Generates an EC keypair under `docker/keys/` and writes
-`KEYCHAIN_PRIVATE_ES256_KEY_PATH` + `KEYCHAIN_PUBLIC_ES256_KEY_B64` into
-`collections/.env`. Run once, or again to rotate the key.
-
-The DPoP proof can also be signed with an RSA key.
+If you specifically need to exercise the RS256 DPoP path, generate a second
+RS256 keypair and point the DPoP proof at it — never reuse the client
+assertion key.
 
 ## Run
 
@@ -39,9 +38,9 @@ pnpm generate-client-assertion \
   --purposeId <purposeId>
 
 pnpm generate-dpop-proof \
-  --key $KEYCHAIN_PRIVATE_ES256_KEY_PATH \
-  --htu <htu> \
-  --alg <alg>
+  --key $KEYCHAIN_PRIVATE_<RS256|ES256>_KEY_PATH \
+  --alg <RS256|ES256> \
+  --htu https://test.knodia.org/token
 ```
 
 They write `CLIENT_ASSERTION_JWT` and `DPOP_PROOF_JWT` to `collections/.env`. Step 11 picks them
