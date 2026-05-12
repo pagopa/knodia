@@ -3,6 +3,10 @@ import z from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
 
+const API_OrganizationId = z.uuid().meta({
+  description: "Unique identifier of an Organization",
+});
+
 const API_ConsumerKeychainId = z.uuid().meta({
   description: "Unique identifier of the Consumer Keychain",
 });
@@ -59,6 +63,9 @@ export type API_ConsumerClientAssertionVerificationResponse = z.infer<
 
 export const API_KnodeApiClientAssertionVerificationResponse = z
   .strictObject({
+    ownerId: API_OrganizationId.meta({
+      description: "Organization that owns the Knode API Keychain",
+    }),
     publicKey: API_PublicKeyForVerification,
   })
   .meta({ id: "KnodeApiClientAssertionVerificationResponse" });

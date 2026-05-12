@@ -402,6 +402,10 @@ export type ConsumerClientAssertionVerificationResponse = {
 };
 
 export type KnodeApiClientAssertionVerificationResponse = {
+    /**
+     * Organization that owns the Knode API Keychain
+     */
+    ownerId: string;
     publicKey: PublicKeyForVerification;
 };
 
