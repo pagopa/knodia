@@ -1112,6 +1112,51 @@ export type CreateKnodeApiKeychainResponses = {
 
 export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
 
+export type DeleteKnodeApiKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}';
+};
+
+export type DeleteKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteKnodeApiKeychainError = DeleteKnodeApiKeychainErrors[keyof DeleteKnodeApiKeychainErrors];
+
+export type DeleteKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteKnodeApiKeychainResponse = DeleteKnodeApiKeychainResponses[keyof DeleteKnodeApiKeychainResponses];
+
 export type GetKnodeApiKeychainData = {
     body?: never;
     headers: {
