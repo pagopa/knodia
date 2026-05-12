@@ -92,5 +92,12 @@ export async function handleKeychainEvent(
         );
       },
     )
+    .with({ type: "KnodeApiKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "knodeApiKeychain");
+      await knodeApiKeychainWriterService.deleteKnodeApiKeychain(
+        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain).id,
+        message.version,
+      );
+    })
     .exhaustive();
 }

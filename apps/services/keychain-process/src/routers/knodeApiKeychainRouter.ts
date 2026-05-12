@@ -12,6 +12,7 @@ import {
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_KnodeApiKeychainIdPathParam } from "@knodia/keychain-models/api";
+import z from "zod";
 
 import type { KnodeApiKeychainService } from "../services/knodeApiKeychainService.ts";
 
@@ -270,5 +271,38 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.knodeApiKeychain],
     },
     url: "/knodeApiKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      await knodeApiKeychainService.deleteKnodeApiKeychain(
+        req.params.knodeApiKeychainId,
+        ctx,
+      );
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Delete a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "deleteKnodeApiKeychain",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Knode API Keychain deleted successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId",
   });
 };
