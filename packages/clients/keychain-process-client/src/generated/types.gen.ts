@@ -1350,3 +1350,52 @@ export type UploadKnodeApiKeychainKeyResponses = {
 };
 
 export type UploadKnodeApiKeychainKeyResponse = UploadKnodeApiKeychainKeyResponses[keyof UploadKnodeApiKeychainKeyResponses];
+
+export type AddKnodeApiKeychainMemberData = {
+    body: KeychainMemberSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members';
+};
+
+export type AddKnodeApiKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddKnodeApiKeychainMemberError = AddKnodeApiKeychainMemberErrors[keyof AddKnodeApiKeychainMemberErrors];
+
+export type AddKnodeApiKeychainMemberResponses = {
+    /**
+     * Knode API Keychain member added successfully
+     */
+    200: Keychain;
+};
+
+export type AddKnodeApiKeychainMemberResponse = AddKnodeApiKeychainMemberResponses[keyof AddKnodeApiKeychainMemberResponses];

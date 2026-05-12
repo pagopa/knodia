@@ -56,6 +56,11 @@ message KnodeApiKeychainKeyAddedV1 {
   string kid = 2;
 }
 
+message KnodeApiKeychainMemberAddedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string userId = 2;
+}
+
 message KnodeApiKeychainDeletedV1 {
   KnodeApiKeychainV1 knodeApiKeychain = 1;
 }
