@@ -85,7 +85,6 @@ export const KnodeApiKeychain = z.strictObject({
 });
 export type KnodeApiKeychain = z.infer<typeof KnodeApiKeychain>;
 
-/** @knipignore */
 export const FlatKnodeApiKeychain = KnodeApiKeychain.omit({
   keys: true,
   users: true,

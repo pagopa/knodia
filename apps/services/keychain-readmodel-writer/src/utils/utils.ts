@@ -4,7 +4,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Logger } from "pino";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { consumerKeychainWriterServiceBuilder } from "@knodia/db-readmodel-keychain/services";
+import {
+  consumerKeychainWriterServiceBuilder,
+  knodeApiKeychainWriterServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
 
@@ -16,6 +19,8 @@ export const createProcessMessage = (
 ) => {
   const consumerKeychainWriterService =
     consumerKeychainWriterServiceBuilder(readmodelDb);
+  const knodeApiKeychainWriterService =
+    knodeApiKeychainWriterServiceBuilder(readmodelDb);
 
   return async function processMessage({
     message,
@@ -32,7 +37,10 @@ export const createProcessMessage = (
     };
     const messageLogger = logger.child(loggerMetadata);
 
-    await handleKeychainEvent(event, { consumerKeychainWriterService });
+    await handleKeychainEvent(event, {
+      consumerKeychainWriterService,
+      knodeApiKeychainWriterService,
+    });
 
     messageLogger.info(
       `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,
