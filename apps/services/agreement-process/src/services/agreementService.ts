@@ -80,7 +80,7 @@ type CallerIdentity =
 export function agreementServiceBuilder(
   eventStoreWriter: AgreementEventStoreWriter,
   readmodelService: ReadmodelService,
-  currentKnodeId: KnodeId,
+  thisKnodeId: KnodeId,
 ) {
   return {
     async activateAgreement(
@@ -100,11 +100,7 @@ export function agreementServiceBuilder(
         metadata: { version },
       } = await retrieveAgreement(agreementId, readmodelService);
 
-      assertTokenResourceClaimsMatchAgreement(
-        authData,
-        agreement,
-        currentKnodeId,
-      );
+      assertTokenResourceClaimsMatchAgreement(authData, agreement, thisKnodeId);
       assertAgreementIsPendingConsumerOperatorIdentification(agreement);
 
       const updatedAgreement: Agreement = {
@@ -270,7 +266,7 @@ export function agreementServiceBuilder(
       );
       assertAgreementIsPendingConsumerOperatorIdentification(agreement);
 
-      return toAPI_AgreementActivationClaims(agreement, currentKnodeId);
+      return toAPI_AgreementActivationClaims(agreement, thisKnodeId);
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
