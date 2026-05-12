@@ -46,7 +46,7 @@ vi.mock("@knodia/organization-process-client", async (importOriginal) => {
 });
 
 // Must import after vi.mock
-import { injectRequest } from "./utils.ts";
+import { injectRequest } from "../utils.ts";
 
 function makeAxios404(title: string): AxiosError {
   const error = new AxiosError("Request failed with status code 404");
@@ -118,11 +118,11 @@ beforeEach(() => {
   getOrganizationMock.mockReset();
 });
 
-describe("POST /clientAssertionVerificationData (getClientAssertionVerificationData)", () => {
-  const makeRequest = () =>
+describe("POST /consumerClientAssertionVerificationData (getConsumerClientAssertionVerificationData)", () => {
+  const makeRequest = (body = makeRequestBody()) =>
     injectRequest()
-      .post("/clientAssertionVerificationData")
-      .payload(makeRequestBody());
+      .post("/consumerClientAssertionVerificationData")
+      .payload(body);
 
   it("should return 200 with public key and consumer attributes on success", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
@@ -259,9 +259,7 @@ describe("POST /clientAssertionVerificationData (getClientAssertionVerificationD
   ])(
     "should return 400 for invalid request body: $testCase",
     async ({ body }) => {
-      const response = await injectRequest()
-        .post("/clientAssertionVerificationData")
-        .payload(body);
+      const response = await makeRequest(body as never);
 
       expect(response.statusCode).toBe(400);
     },

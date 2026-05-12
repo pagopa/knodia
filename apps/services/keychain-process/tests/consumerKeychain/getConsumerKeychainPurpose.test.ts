@@ -7,9 +7,9 @@ import {
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
-import { consumerKeychainWriterService } from "./setup.ts";
-import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
+import { toAPI_ConsumerKeychainPurpose } from "../../src/models/apiConverter.ts";
+import { consumerKeychainWriterService } from "../setup.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 
 const allowedUiSessionTestTokens: Extract<TestToken, { type: "ui-session" }>[] =
   [
