@@ -20,6 +20,7 @@ import {
   API_GetKnodeApiKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
+  API_KeychainKeys,
   API_KeychainKeySeed,
   API_Keychains,
   API_KnodeApiKeychainKeyPathParams,
