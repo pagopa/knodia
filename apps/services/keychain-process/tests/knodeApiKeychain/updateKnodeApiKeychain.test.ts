@@ -45,6 +45,16 @@ describe("PATCH /knodeApiKeychains/:knodeApiKeychainId (KnodeApiKeychainPatch)",
         description: null,
       } satisfies API_KnodeApiKeychainPatch,
     },
+    {
+      body: {
+        name: { en: "Updated Knode API keychain name" },
+      } satisfies API_KnodeApiKeychainPatch,
+    },
+    {
+      body: {
+        description: { en: "Updated Knode API keychain description" },
+      } satisfies API_KnodeApiKeychainPatch,
+    },
   ])(
     "should correctly create Knode API keychain update event with body %S",
     async ({ body }) => {
