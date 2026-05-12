@@ -28,7 +28,6 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { keyNotFoundInKeychain } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
@@ -173,13 +172,7 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain.data.users,
       );
 
-      const keyToRemove = knodeApiKeychain.data.keys.find(
-        (key) => key.kid === kid,
-      );
-
-      if (!keyToRemove) {
-        throw keyNotFoundInKeychain(kid, knodeApiKeychainId);
-      }
+      retrieveKeychainKey(knodeApiKeychain.data, kid);
 
       const updatedKnodeApiKeychain: KnodeApiKeychain = {
         ...knodeApiKeychain.data,
