@@ -3,7 +3,6 @@ import { AxiosError, type AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getKnodeApiKeychainKeyMock = vi.hoisted(() => vi.fn());
-const getKnodeApiKeychainMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/token-generator/refreshable", () => ({
   refreshableInternalTokenGenerator: () => ({
@@ -21,7 +20,6 @@ vi.mock("@knodia/keychain-process-client", async (importOriginal) => {
     ...original,
     keychainProcessApi: {
       ...original.keychainProcessApi,
-      getKnodeApiKeychain: getKnodeApiKeychainMock,
       getKnodeApiKeychainKey: getKnodeApiKeychainKeyMock,
     },
   };
@@ -48,16 +46,6 @@ function makeAxios404(title: string): AxiosError {
 const mockKeychainId = generateId<KnodeApiKeychainId>();
 const mockKid = "test-kid-123";
 
-const mockKeychainResponse = {
-  data: {
-    createdAt: "2026-01-01T00:00:00.000Z",
-    id: mockKeychainId,
-    name: { en: "Test Keychain" },
-    ownerId: generateId(),
-    updatedAt: "2026-01-01T00:00:00.000Z",
-  },
-};
-
 const mockKeyResponse = {
   data: {
     algorithm: "RS256",
@@ -77,7 +65,6 @@ const makeRequestBody = () => ({
 
 beforeEach(() => {
   getKnodeApiKeychainKeyMock.mockReset();
-  getKnodeApiKeychainMock.mockReset();
 });
 
 describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssertionVerificationData)", () => {
@@ -88,7 +75,6 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
 
   it("should return 200 with public key on success", async () => {
     getKnodeApiKeychainKeyMock.mockResolvedValue(mockKeyResponse);
-    getKnodeApiKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     const response = await makeRequest();
 
@@ -105,7 +91,6 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
 
   it("should call keychain-process with correct parameters", async () => {
     getKnodeApiKeychainKeyMock.mockResolvedValue(mockKeyResponse);
-    getKnodeApiKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     await makeRequest();
 
@@ -117,27 +102,19 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
         },
       }),
     );
-
-    expect(getKnodeApiKeychainMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: { knodeApiKeychainId: mockKeychainId },
-      }),
-    );
   });
 
   it("should return 404 when key is not found", async () => {
     getKnodeApiKeychainKeyMock.mockRejectedValue(
       makeAxios404("Key Not Found in Keychain"),
     );
-    getKnodeApiKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     const response = await makeRequest();
     expect(response.statusCode).toBe(404);
   });
 
   it("should return 404 when keychain is not found", async () => {
-    getKnodeApiKeychainKeyMock.mockResolvedValue(mockKeyResponse);
-    getKnodeApiKeychainMock.mockRejectedValue(
+    getKnodeApiKeychainKeyMock.mockRejectedValue(
       makeAxios404("Knode API Keychain Not Found"),
     );
 
