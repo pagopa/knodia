@@ -25,15 +25,17 @@ export const PurposeTemplate = z.strictObject({
 });
 export type PurposeTemplate = z.infer<typeof PurposeTemplate>;
 
-// TODO: align with eservice mocks once they exist with stable UUIDs
-const PLACEHOLDER_ESERVICE_ORION_01 = unsafeBrandId<EserviceId>(
-  "11111111-1111-4111-8111-000000000001",
+// E-service IDs seeded in the Orion namespace by scripts/seed/sql/orion/*.sql
+const ORION_BEARER_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "e7f5837e-75f4-431d-9465-73366d27bef2",
 );
-const PLACEHOLDER_ESERVICE_ORION_02 = unsafeBrandId<EserviceId>(
-  "11111111-1111-4111-8111-000000000002",
+const ORION_DPOP_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "905c4569-95db-4670-a146-8239fcb3f41a",
 );
-const PLACEHOLDER_ESERVICE_LYNX_05 = unsafeBrandId<EserviceId>(
-  "11111111-1111-4111-8111-000000000005",
+// TODO: replace with a Lynx-specific UUID once Lynx has its own distinct mock
+// e-service IDs (the seed currently reuses the Orion UUIDs in the Lynx namespace).
+const LYNX_BEARER_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "e7f5837e-75f4-431d-9465-73366d27bef2",
 );
 
 /** @knipignore */
@@ -62,13 +64,13 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
-        en: "Basic-form blueprint for cross-border consultation of Lynx citizen residence data.",
+        en: "Basic-form blueprint for cross-border institutional consumption of the Lynx Mock E-service.",
       },
-      eserviceId: PLACEHOLDER_ESERVICE_LYNX_05,
+      eserviceId: LYNX_BEARER_ESERVICE_ID,
       formAnswersJson: {
         declarationConfirmGDPR: "true",
         institutionalPurpose:
-          "Cross-border consultation of citizen residence place for administrative procedures.",
+          "Cross-border institutional consumption of the Lynx Mock E-service for administrative procedures.",
         legalBasis: ["PUBLIC_INTEREST"],
         personalDataTypes: ["WITH_IDENTIFYING_DATA"],
         purpose: "INSTITUTIONAL",
@@ -78,7 +80,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0001-4000-8000-000000000002",
       ),
-      name: { en: "Lynx residence cross-border consultation (basic)" },
+      name: { en: "Mock E-service Lynx cross-border consumption (basic)" },
     },
   ],
   Orion: [
@@ -115,9 +117,9 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
-        en: "Risk-analysis blueprint for cross-border consumption of Orion PA address data.",
+        en: "Risk-analysis blueprint for cross-border institutional consumption of the Orion Mock E-service.",
       },
-      eserviceId: PLACEHOLDER_ESERVICE_ORION_01,
+      eserviceId: ORION_BEARER_ESERVICE_ID,
       formAnswersJson: {
         checkedExistenceMereCorrectnessInteropCatalogue: "true",
         confirmPrincipleIntegrityAndDiscretion: "true",
@@ -128,7 +130,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         deliveryMethod: "CLEARTEXT",
         doneDpia: "NO",
         institutionalPurpose:
-          "Cross-border consultation of public administration addresses for routing official communications.",
+          "Cross-border institutional consumption of the Orion Mock E-service for routine administrative procedures.",
         isRequestOnBehalfOfThirdParties: "NO",
         knowsDataQuantity: "YES",
         legalBasis: ["LEGAL_OBLIGATION"],
@@ -146,14 +148,14 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000002",
       ),
-      name: { en: "Orion PA address cross-border consumption" },
+      name: { en: "Mock E-service Orion cross-border consumption" },
     },
     {
       createdAt: new Date("2025-01-03T00:00:00Z"),
       description: {
-        en: "Risk-analysis blueprint for cross-border consumption of Orion PA typology data.",
+        en: "Risk-analysis blueprint for cross-border aggregate consumption of the Orion Mock DPoP E-service.",
       },
-      eserviceId: PLACEHOLDER_ESERVICE_ORION_02,
+      eserviceId: ORION_DPOP_ESERVICE_ID,
       formAnswersJson: {
         administrativeActText:
           "Council Decision 2009/917/JHA on use of information technology for customs purposes.",
@@ -164,7 +166,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         deliveryMethod: "AGGREGATE",
         doneDpia: "NO",
         institutionalPurpose:
-          "Cross-border statistical analysis of public administration typology.",
+          "Cross-border aggregate consumption of the Orion Mock DPoP E-service for institutional analysis.",
         isRequestOnBehalfOfThirdParties: "NO",
         knowsDataQuantity: "NO",
         legalBasis: ["PUBLIC_INTEREST"],
@@ -181,7 +183,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000003",
       ),
-      name: { en: "Orion PA typology cross-border statistics" },
+      name: { en: "Mock DPoP E-service Orion cross-border statistics" },
     },
   ],
 };
