@@ -13,6 +13,7 @@ import {
 import { SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RouterLink } from "@/components/routerLinks";
 import { formatNumericDate } from "@/utils/formatters";
 
 import { PurposeStateChip } from "../PurposeStateChip";
@@ -62,7 +63,13 @@ export function ProducerArchivedPurposeTable({
               {purpose.name.en}
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
-              {purpose.eservice.name.en}
+              <RouterLink
+                className="text-primary-light-mid-contrast"
+                params={{ id: purpose.eservice.id }}
+                to="/production/e-services/$id"
+              >
+                {purpose.eservice.name.en}
+              </RouterLink>
             </Cell>
             <Cell>
               <KnodeAvatar

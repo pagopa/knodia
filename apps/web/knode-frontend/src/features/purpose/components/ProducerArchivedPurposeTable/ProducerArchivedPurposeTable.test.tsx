@@ -36,6 +36,7 @@ function renderTable(
 ) {
   return renderWithProviders(
     <ProducerArchivedPurposeTable isLoading={isLoading} purposes={purposes} />,
+    { routes: [{ path: "/production/e-services/$id" }] },
   );
 }
 
@@ -80,10 +81,23 @@ describe("ProducerArchivedPurposeTable", () => {
     expect(screen.getByText("Comune di Roma")).toBeInTheDocument();
   });
 
-  it("does not render any link or detail arrow on rows", () => {
+  it("renders the e-service name as a link to the producer e-service detail page", () => {
+    renderTable([
+      createPurpose({
+        eservice: { id: "eservice-42", name: { en: "Tax Service" } },
+      }),
+    ]);
+
+    const link = screen.getByRole("link", { name: "Tax Service" });
+    expect(link).toHaveAttribute("href", "/production/e-services/eservice-42");
+  });
+
+  it("does not render a purpose detail arrow on rows", () => {
     renderTable([createPurpose()]);
 
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /go to purpose/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders multiple purposes", () => {
