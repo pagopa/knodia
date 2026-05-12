@@ -1147,6 +1147,60 @@ export type GetKnodeApiKeychainKeyResponses = {
 
 export type GetKnodeApiKeychainKeyResponse = GetKnodeApiKeychainKeyResponses[keyof GetKnodeApiKeychainKeyResponses];
 
+export type GetKnodeApiKeychainKeysData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys';
+};
+
+export type GetKnodeApiKeychainKeysErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodeApiKeychainKeysError = GetKnodeApiKeychainKeysErrors[keyof GetKnodeApiKeychainKeysErrors];
+
+export type GetKnodeApiKeychainKeysResponses = {
+    /**
+     * Knode API Keychain keys retrieved successfully
+     */
+    200: KeychainKeys;
+};
+
+export type GetKnodeApiKeychainKeysResponse = GetKnodeApiKeychainKeysResponses[keyof GetKnodeApiKeychainKeysResponses];
+
 export type UploadKnodeApiKeychainKeyData = {
     body: KeychainKeySeed;
     headers: {
