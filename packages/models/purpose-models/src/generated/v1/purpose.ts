@@ -97,9 +97,15 @@ export interface PurposeV1 {
   formSchemaVersion: PurposeFormSchemaVersionV1;
   suspendedByConsumerAt?: number | undefined;
   suspendedByProducerAt?: number | undefined;
+  template?: PurposeTemplateV1 | undefined;
 }
 
 export interface PurposeConsumerV1 {
+  id: string;
+  knodeId: string;
+}
+
+export interface PurposeTemplateV1 {
   id: string;
   knodeId: string;
 }
@@ -123,6 +129,7 @@ function createBasePurposeV1(): PurposeV1 {
     formSchemaVersion: 0,
     suspendedByConsumerAt: undefined,
     suspendedByProducerAt: undefined,
+    template: undefined,
   };
 }
 
@@ -166,6 +173,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     }
     if (message.suspendedByProducerAt !== undefined) {
       writer.uint32(104).int64(message.suspendedByProducerAt);
+    }
+    if (message.template !== undefined) {
+      PurposeTemplateV1.encode(message.template, writer.uint32(114).fork()).join();
     }
     return writer;
   },
@@ -281,6 +291,14 @@ export const PurposeV1: MessageFns<PurposeV1> = {
           message.suspendedByProducerAt = longToNumber(reader.int64());
           continue;
         }
+        case 14: {
+          if (tag !== 114) {
+            break;
+          }
+
+          message.template = PurposeTemplateV1.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -311,6 +329,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       suspendedByProducerAt: isSet(object.suspendedByProducerAt)
         ? globalThis.Number(object.suspendedByProducerAt)
         : undefined,
+      template: isSet(object.template) ? PurposeTemplateV1.fromJSON(object.template) : undefined,
     };
   },
 
@@ -355,6 +374,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.suspendedByProducerAt !== undefined) {
       obj.suspendedByProducerAt = Math.round(message.suspendedByProducerAt);
     }
+    if (message.template !== undefined) {
+      obj.template = PurposeTemplateV1.toJSON(message.template);
+    }
     return obj;
   },
 
@@ -382,6 +404,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     message.formSchemaVersion = object.formSchemaVersion ?? 0;
     message.suspendedByConsumerAt = object.suspendedByConsumerAt ?? undefined;
     message.suspendedByProducerAt = object.suspendedByProducerAt ?? undefined;
+    message.template = (object.template !== undefined && object.template !== null)
+      ? PurposeTemplateV1.fromPartial(object.template)
+      : undefined;
     return message;
   },
 };
@@ -456,6 +481,82 @@ export const PurposeConsumerV1: MessageFns<PurposeConsumerV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<PurposeConsumerV1>, I>>(object: I): PurposeConsumerV1 {
     const message = createBasePurposeConsumerV1();
+    message.id = object.id ?? "";
+    message.knodeId = object.knodeId ?? "";
+    return message;
+  },
+};
+
+function createBasePurposeTemplateV1(): PurposeTemplateV1 {
+  return { id: "", knodeId: "" };
+}
+
+export const PurposeTemplateV1: MessageFns<PurposeTemplateV1> = {
+  encode(message: PurposeTemplateV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.knodeId !== "") {
+      writer.uint32(18).string(message.knodeId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeTemplateV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeTemplateV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.knodeId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeTemplateV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      knodeId: isSet(object.knodeId) ? globalThis.String(object.knodeId) : "",
+    };
+  },
+
+  toJSON(message: PurposeTemplateV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.knodeId !== "") {
+      obj.knodeId = message.knodeId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeTemplateV1>, I>>(base?: I): PurposeTemplateV1 {
+    return PurposeTemplateV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeTemplateV1>, I>>(object: I): PurposeTemplateV1 {
+    const message = createBasePurposeTemplateV1();
     message.id = object.id ?? "";
     message.knodeId = object.knodeId ?? "";
     return message;

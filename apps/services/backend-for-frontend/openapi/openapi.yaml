@@ -683,6 +683,9 @@ components:
           description: Purpose counters
           allOf:
             - $ref: "#/components/schemas/ProducerEserviceDetailsPurposeCounters"
+        template:
+          allOf:
+            - $ref: "#/components/schemas/EserviceTemplateReference"
         updatedAt:
           type: string
           format: date-time
@@ -1843,6 +1846,63 @@ components:
       required:
         - kid
       additionalProperties: false
+    PurposeTemplate:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - description
+        - id
+        - name
+      additionalProperties: false
+    PurposeTemplateDetails:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - createdAt
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeTemplates:
+      type: array
+      items:
+        $ref: "#/components/schemas/PurposeTemplate"
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -2400,6 +2460,119 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /purposeTemplates:
+    get:
+      operationId: getPurposeTemplates
+      tags:
+        - purposeTemplate
+      description: Retrieve a list of Purpose Templates available for a given Knode,
+        optionally filtered by E-service
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+      responses:
+        "200":
+          description: Purpose Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose Templates retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeTemplates"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposeTemplates/{purposeTemplateId}:
+    get:
+      operationId: getPurposeTemplate
+      tags:
+        - purposeTemplate
+      description: Retrieve a Purpose Template with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeTemplateId
+          required: true
+      responses:
+        "200":
+          description: Purpose Template retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose Template retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeTemplateDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Purpose Template not found
+          content:
+            application/problem+json:
+              schema:
+                description: Purpose Template not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -2702,6 +2875,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
@@ -5873,3 +6054,5 @@ tags:
     name: user
   - description: E-service Templates routes
     name: eserviceTemplate
+  - description: Purpose Templates routes
+    name: purposeTemplate

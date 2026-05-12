@@ -70,16 +70,20 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       version: 1,
     });
 
-    const removedEventData = KeychainEventV1.parse(removedEvent).data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       keys: [],
-      updatedAt: new Date(removedEventData.consumerKeychain!.updatedAt),
     };
 
-    expect(removedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
-      kid: keyId,
+    expect(KeychainEventV1.parse(removedEvent)).toMatchObject({
+      data: {
+        consumerKeychain: {
+          ...toConsumerKeychainV1(expectedConsumerKeychain),
+          updatedAt: expect.any(Number),
+        },
+        kid: keyId,
+      },
+      type: "ConsumerKeychainKeyRemovedV1",
     });
   });
 

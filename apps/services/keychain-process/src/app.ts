@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -25,10 +26,11 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
+import { knodeApiKeychainRouter } from "./routers/knodeApiKeychainRouter.ts";
 import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
+import { knodeApiKeychainServiceBuilder } from "./services/knodeApiKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
-import { userServiceBuilder } from "./services/userService.ts";
 
 export function buildApp({
   config,
@@ -65,6 +67,10 @@ export function buildApp({
             name: apiTags.consumerKeychain,
           },
           {
+            description: "Knode API keychain routes",
+            name: apiTags.knodeApiKeychain,
+          },
+          {
             description: "User routes",
             name: apiTags.user,
           },
@@ -75,9 +81,7 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const userService = userServiceBuilder({
-    userPoolId: config.cognitoUserPoolId,
-  });
+  const cognitoIdmClient = buildCognitoIdmClient(config);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -88,16 +92,23 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+
+    const eventStoreWriter = keychainEventStoreWriterBuilder(eventStoreDb);
+    const readmodelService = readmodelServiceBuilder(readmodelDb);
+
     protectedApp.register(consumerKeychainRouter, {
       consumerKeychainService: consumerKeychainServiceBuilder(
-        keychainEventStoreWriterBuilder(eventStoreDb),
-        readmodelServiceBuilder(readmodelDb),
-        userService,
+        eventStoreWriter,
+        readmodelService,
+        cognitoIdmClient,
         clients.remoteResourcesManagerClient,
         config,
       ),
     });
-    protectedApp.register(userRouter, userService);
+    protectedApp.register(knodeApiKeychainRouter, {
+      knodeApiKeychainService: knodeApiKeychainServiceBuilder(eventStoreWriter),
+    });
+    protectedApp.register(userRouter, cognitoIdmClient);
   });
 
   return app;

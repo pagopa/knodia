@@ -1,10 +1,13 @@
+import type { IdmUser } from "@knodia/cognito-idm-client";
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodeApiKeychain,
   KeychainKey,
 } from "@knodia/keychain-models";
 
-import type { IdmUser, OrganizationUser } from "../services/userService.ts";
+import { UserRole } from "@knodia/common-models/auth";
+
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
@@ -14,7 +17,7 @@ import type {
 } from "./api.ts";
 
 export const toAPI_Keychain = (
-  keychain: FlatConsumerKeychain,
+  keychain: FlatConsumerKeychain | FlatKnodeApiKeychain,
 ): API_Keychain => ({
   createdAt: keychain.createdAt.toISOString(),
   description: keychain.description,
@@ -41,10 +44,10 @@ export const toAPI_User = (idmUser: IdmUser): API_User => ({
 });
 
 export const toAPI_OrganizationUser = (
-  user: OrganizationUser,
+  user: IdmUser,
 ): API_OrganizationUser => ({
   ...toAPI_User(user),
-  isTechnical: user.isTechnical,
+  isTechnical: user.roles.includes(UserRole.enum.technical),
 });
 
 export const toAPI_ConsumerKeychainPurpose = (

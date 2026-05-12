@@ -2,7 +2,10 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  toExternalResource,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import {
   generateId,
   KnodeId,
@@ -61,10 +64,10 @@ describe("POST /agreements (createAgreement)", () => {
 
   const agreement: Agreement = {
     ...getMockAgreement(),
-    consumer: {
-      id: unsafeBrandExternalId(TEST_ORGANIZATION_ID),
-      knodeId: KnodeId.parse(body.knodeId),
-    },
+    consumer: toExternalResource<OrganizationId>(
+      TEST_ORGANIZATION_ID,
+      body.knodeId,
+    ),
     eserviceId: unsafeBrandId(body.eserviceId),
     eserviceVersionId: unsafeBrandId(body.eserviceVersionId),
   };

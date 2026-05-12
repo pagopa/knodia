@@ -126,16 +126,20 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       version: 1,
     });
 
-    const addedEventData = KeychainEventV1.parse(addedEvent).data;
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       keys: [...consumerKeychain.keys, expectedKey],
-      updatedAt: new Date(addedEventData.consumerKeychain!.updatedAt),
     };
 
-    expect(addedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
-      kid: expectedKid,
+    expect(KeychainEventV1.parse(addedEvent)).toMatchObject({
+      data: {
+        consumerKeychain: {
+          ...toConsumerKeychainV1(expectedConsumerKeychain),
+          updatedAt: expect.any(Number),
+        },
+        kid: expectedKid,
+      },
+      type: "ConsumerKeychainKeyAddedV1",
     });
   });
 

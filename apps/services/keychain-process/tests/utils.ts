@@ -16,7 +16,7 @@ import { expect } from "vitest";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
-} from "../src/models/keychainEventFactory.ts";
+} from "../src/models/consumerKeychainEventFactory.ts";
 import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
@@ -24,24 +24,6 @@ export async function getAllKeychainEvents() {
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
-
-export function makeCognitoUser({
-  email,
-  id,
-  username,
-}: {
-  email: string;
-  id: string;
-  username: string;
-}) {
-  return {
-    Attributes: [
-      { Name: "sub", Value: id },
-      { Name: "email", Value: email },
-    ],
-    Username: username,
-  };
-}
 
 export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
