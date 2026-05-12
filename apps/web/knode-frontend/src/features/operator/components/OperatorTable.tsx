@@ -22,7 +22,7 @@ export function OperatorTable({ isLoading, operators }: OperatorTableProps) {
   }
 
   return (
-    <Table aria-label="Keychains table">
+    <Table aria-label="Operators table">
       <TableHeader>
         <Column id="name" isRowHeader>
           Name
