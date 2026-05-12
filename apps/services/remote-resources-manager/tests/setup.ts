@@ -42,7 +42,10 @@ beforeAll(async () => {
     },
     readmodelDb,
     remoteResourceDb,
-    targetKnodeUrls: { Orion: "http://localhost:0" },
+    targetKnodeUrls: {
+      Lynx: "http://localhost:0",
+      Orion: "http://localhost:0",
+    },
   });
 
   remoteResourceDbService = remoteResourceDbServiceBuilder(remoteResourceDb);
