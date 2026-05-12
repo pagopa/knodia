@@ -8,6 +8,7 @@ import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
+  FlatKnodeApiKeychain,
   KeychainKey,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -21,10 +22,12 @@ import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
+  readmodelKnodeApiKeychain,
   readmodelKnodeApiKeychainKey,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
+  aggregateFlatKnodeApiKeychains,
   toConsumerKeychainPurpose,
   toKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
@@ -38,6 +41,8 @@ import type {
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
+  API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKnodeApiKeychainsQueryParams,
 } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
@@ -228,7 +233,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   : undefined,
               ),
             )
-            .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
@@ -273,6 +277,106 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await knodeApiKeychainReadmodelService.getKnodeApiKeychainById(
         knodeApiKeychainId,
       );
+    },
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+    ): Promise<ListResult<KeychainKey>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const createFilterQuery = () =>
+          tx
+            .select({ kid: readmodelKnodeApiKeychainKey.kid })
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select()
+            .from(readmodelKnodeApiKeychainKey)
+            .where(
+              eq(
+                readmodelKnodeApiKeychainKey.knodeApiKeychainId,
+                knodeApiKeychainId,
+              ),
+            )
+            .orderBy(desc(readmodelKnodeApiKeychainKey.createdAt))
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        return {
+          results: queryRes.map(toKeychainKey),
+          totalCount,
+        };
+      });
+    },
+    async getKnodeApiKeychains(
+      params: API_GetKnodeApiKeychainsQueryParams,
+    ): Promise<ListResult<FlatKnodeApiKeychain>> {
+      const { limit, name, offset, ownerId } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
+          sortOrder: "desc",
+          table: readmodelKnodeApiKeychain,
+        });
+
+        const createFilterQuery = () =>
+          tx
+            .select({ keychainId: readmodelKnodeApiKeychain.id })
+            .from(readmodelKnodeApiKeychain)
+            .where(
+              and(
+                name
+                  ? ilikeJsonB({
+                      column: readmodelKnodeApiKeychain.name,
+                      value: name,
+                    })
+                  : undefined,
+                ownerId
+                  ? eq(readmodelKnodeApiKeychain.ownerId, ownerId)
+                  : undefined,
+              ),
+            )
+            .$dynamic();
+
+        const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("paginatedIds");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select({
+              knodeApiKeychain: readmodelKnodeApiKeychain,
+            })
+            .from(readmodelKnodeApiKeychain)
+            .innerJoin(
+              paginatedIds,
+              eq(readmodelKnodeApiKeychain.id, paginatedIds.keychainId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const keychains = aggregateFlatKnodeApiKeychains(queryRes);
+
+        return {
+          results: keychains.map((e) => e.data),
+          totalCount,
+        };
+      });
     },
   };
 }

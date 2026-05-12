@@ -149,18 +149,6 @@ export type User = {
     username: string;
 };
 
-export type OrganizationUser = {
-    email: string;
-    id: UserId;
-    username: string;
-    /**
-     * Whether the User has the technical role within the Organization
-     */
-    isTechnical: boolean;
-};
-
-export type OrganizationUsers = Array<OrganizationUser>;
-
 export type KeychainMemberSeed = {
     userId: UserId;
 };
@@ -1029,6 +1017,62 @@ export type GetConsumerKeychainPurposeResponses = {
 
 export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
 
+export type GetKnodeApiKeychainsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Knode API Keychain name
+         */
+        name?: string;
+        /**
+         * Filter by owner Organization ID
+         */
+        ownerId?: OrganizationId;
+    };
+    url: '/knodeApiKeychains';
+};
+
+export type GetKnodeApiKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetKnodeApiKeychainsError = GetKnodeApiKeychainsErrors[keyof GetKnodeApiKeychainsErrors];
+
+export type GetKnodeApiKeychainsResponses = {
+    /**
+     * Knode API Keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
+
 export type CreateKnodeApiKeychainData = {
     body: KnodeApiKeychainSeed;
     headers: {
@@ -1159,6 +1203,60 @@ export type GetKnodeApiKeychainKeyResponses = {
 
 export type GetKnodeApiKeychainKeyResponse = GetKnodeApiKeychainKeyResponses[keyof GetKnodeApiKeychainKeyResponses];
 
+export type GetKnodeApiKeychainKeysData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys';
+};
+
+export type GetKnodeApiKeychainKeysErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodeApiKeychainKeysError = GetKnodeApiKeychainKeysErrors[keyof GetKnodeApiKeychainKeysErrors];
+
+export type GetKnodeApiKeychainKeysResponses = {
+    /**
+     * Knode API Keychain keys retrieved successfully
+     */
+    200: KeychainKeys;
+};
+
+export type GetKnodeApiKeychainKeysResponse = GetKnodeApiKeychainKeysResponses[keyof GetKnodeApiKeychainKeysResponses];
+
 export type UploadKnodeApiKeychainKeyData = {
     body: KeychainKeySeed;
     headers: {
@@ -1208,20 +1306,22 @@ export type UploadKnodeApiKeychainKeyResponses = {
 
 export type UploadKnodeApiKeychainKeyResponse = UploadKnodeApiKeychainKeyResponses[keyof UploadKnodeApiKeychainKeyResponses];
 
-export type GetOrganizationUsersData = {
-    body?: never;
+export type AddKnodeApiKeychainMemberData = {
+    body: KeychainMemberSeed;
     headers: {
         /**
          * Unique identifier of the request
          */
         'x-correlation-id': CorrelationId;
     };
-    path?: never;
+    path: {
+        knodeApiKeychainId: string;
+    };
     query?: never;
-    url: '/users';
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members';
 };
 
-export type GetOrganizationUsersErrors = {
+export type AddKnodeApiKeychainMemberErrors = {
     /**
      * Bad Request
      */
@@ -1234,15 +1334,23 @@ export type GetOrganizationUsersErrors = {
      * Forbidden
      */
     403: Problem;
-};
-
-export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
-
-export type GetOrganizationUsersResponses = {
     /**
-     * Organization Users retrieved successfully
+     * Knode API Keychain not found
      */
-    200: OrganizationUsers;
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
-export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
+export type AddKnodeApiKeychainMemberError = AddKnodeApiKeychainMemberErrors[keyof AddKnodeApiKeychainMemberErrors];
+
+export type AddKnodeApiKeychainMemberResponses = {
+    /**
+     * Knode API Keychain member added successfully
+     */
+    200: Keychain;
+};
+
+export type AddKnodeApiKeychainMemberResponse = AddKnodeApiKeychainMemberResponses[keyof AddKnodeApiKeychainMemberResponses];
