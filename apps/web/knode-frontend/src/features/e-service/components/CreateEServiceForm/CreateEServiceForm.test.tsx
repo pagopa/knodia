@@ -103,6 +103,7 @@ async function fillGeneralStep(user: ReturnType<typeof renderWizard>["user"]) {
 /** Helper: fill TechnicalStep and click Next */
 async function fillTechnicalStep(
   user: ReturnType<typeof renderWizard>["user"],
+  { enableSignalHub = false }: { enableSignalHub?: boolean } = {},
 ) {
   // React Aria NumberField renders <input type="text"> (implicit "textbox" role)
   const durationInput = await screen.findByRole("textbox", {
@@ -124,6 +125,14 @@ async function fillTechnicalStep(
   });
   await user.clear(perConsumerInput);
   await user.type(perConsumerInput, "100");
+
+  if (enableSignalHub) {
+    const signalHubCheckbox = screen.getByRole("checkbox", {
+      name: "I will notify data changes on Signal Hub",
+    });
+    expect(signalHubCheckbox).toBeEnabled();
+    await user.click(signalHubCheckbox);
+  }
 
   await user.click(screen.getByRole("button", { name: "Next" }));
   expect(
@@ -428,6 +437,30 @@ describe("CreateEServiceForm — publish flow", () => {
       expect(router.state.location.pathname).toBe(
         "/production/e-services/new-eservice-123",
       );
+    });
+  });
+
+  it("publishes a from-scratch E-Service with Signal Hub enabled", async () => {
+    let capturedBody: unknown;
+
+    server.use(
+      http.post(`${BASE_URL}/producer/eservices`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "new-eservice-123" }, { status: 201 });
+      }),
+    );
+
+    const { user } = renderWizard();
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user, { enableSignalHub: true });
+    await fillDocsStep(user);
+    await fillAttributesStep(user);
+
+    await user.click(screen.getByRole("button", { name: "Publish" }));
+
+    await waitFor(() => {
+      expect(capturedBody).toMatchObject({ isSignalHubEnabled: true });
     });
   });
 
