@@ -25,7 +25,9 @@ import {
 import { match, P } from "ts-pattern";
 
 import type {
+  API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainMembersQueryParams,
+  API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_KnodeApiKeychainPatch,
@@ -164,6 +166,32 @@ export function knodeApiKeychainServiceBuilder(
       return retrieveKeychainKey(knodeApiKeychain.data, kid);
     },
 
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<KeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Knode API Keychain with ID ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveFlatKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      return await readmodelService.getKnodeApiKeychainKeys(
+        knodeApiKeychainId,
+        params,
+      );
+    },
+
     async getKnodeApiKeychainMember(
       knodeApiKeychainId: KnodeApiKeychainId,
       userId: UserId,
@@ -234,6 +262,15 @@ export function knodeApiKeychainServiceBuilder(
         ),
         totalCount: knodeApiKeychain.users.length,
       };
+    },
+
+    async getKnodeApiKeychains(
+      params: API_GetKnodeApiKeychainsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<FlatKnodeApiKeychain>> {
+      logger.info({ params }, "Getting Knode API keychains with params");
+
+      return await readmodelService.getKnodeApiKeychains(params);
     },
 
     async removeKnodeApiKeychainMember(

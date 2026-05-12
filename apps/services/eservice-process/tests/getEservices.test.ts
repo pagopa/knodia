@@ -35,7 +35,7 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[2],
         mockEservices[3],
       ] as Eservice[],
-      query: { ...defaultQuery },
+      query: defaultQuery,
       testCase: "pagination only (1st page), sort by name asc by default",
       totalCount: mockEservices.length,
     },
@@ -162,7 +162,6 @@ describe("GET /eservices (getEservices)", () => {
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/eservices")
-
         .query(query);
 
       expect(response.statusCode).toBe(200);

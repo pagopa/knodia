@@ -149,19 +149,6 @@ export const API_User = z
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;
 
-export const API_OrganizationUser = API_User.extend({
-  isTechnical: z.boolean().meta({
-    description:
-      "Whether the User has the technical role within the Organization",
-  }),
-}).meta({ id: "OrganizationUser" });
-export type API_OrganizationUser = z.infer<typeof API_OrganizationUser>;
-
-export const API_OrganizationUsers = z
-  .array(API_OrganizationUser)
-  .meta({ id: "OrganizationUsers" });
-export type API_OrganizationUsers = z.infer<typeof API_OrganizationUsers>;
-
 export const API_KeychainMemberSeed = z
   .strictObject({
     userId: API_UserId,
@@ -270,4 +257,22 @@ export const API_GetKnodeApiKeychainMembersQueryParams =
   API_PaginationQueryParams;
 export type API_GetKnodeApiKeychainMembersQueryParams = z.infer<
   typeof API_GetKnodeApiKeychainMembersQueryParams
+>;
+
+export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainKeysQueryParams
+>;
+
+export const API_GetKnodeApiKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    name: z.string().optional().meta({
+      description: "Filter by Knode API Keychain name",
+    }),
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
+  });
+export type API_GetKnodeApiKeychainsQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainsQueryParams
 >;
