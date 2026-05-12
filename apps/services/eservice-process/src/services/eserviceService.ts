@@ -4,6 +4,7 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
@@ -16,6 +17,7 @@ import {
   type EserviceTemplateId,
   type EserviceVersionId,
   generateId,
+  type KnodeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -63,6 +65,7 @@ import {
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
+  assertTokenEserviceClaimsMatchPathParam,
   assertValidCategories,
 } from "../utils/validators.ts";
 
@@ -72,7 +75,10 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
-  config: { isConsumerOperatorIdentificationRequired: boolean },
+  config: {
+    isConsumerOperatorIdentificationRequired: boolean;
+    knodeId: KnodeId;
+  },
 ) {
   return {
     async archiveEservice(
@@ -210,9 +216,22 @@ export function eserviceServiceBuilder(
     },
     async getEservice(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<
+        ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
+      >,
     ): Promise<WithMetadata<Eservice>> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
+
+      if (authData.tokenType === "external-ui-session") {
+        assertTokenEserviceClaimsMatchPathParam(
+          authData,
+          eserviceId,
+          config.knodeId,
+        );
+      }
 
       return await retrieveEservice(eserviceId, readmodelService);
     },
