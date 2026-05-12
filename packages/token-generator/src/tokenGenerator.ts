@@ -4,6 +4,7 @@ import type {
   ExternalUISessionScope,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
+  KnodeApiAccessTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
@@ -17,6 +18,7 @@ import type {
   ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   KnodeId,
   OrganizationId,
   PurposeId,
@@ -36,6 +38,7 @@ import type {
   ExternalUISessionMagicLinkToken,
   ExternalUISessionToken,
   InternalToken,
+  KnodeApiAccessToken,
   UISessionRefreshToken,
   UISessionToken,
 } from "./models.ts";
@@ -59,6 +62,12 @@ interface EserviceAccessTokenInput extends TokenParams {
   producer: { id: OrganizationId; knodeId: KnodeId };
   purposeId: PurposeId;
   subject: ConsumerKeychainId;
+}
+
+interface KnodeApiAccessTokenInput extends TokenParams {
+  audience: string[];
+  keychain: { id: KnodeApiKeychainId; knodeId: KnodeId };
+  organization: { id: OrganizationId; knodeId: KnodeId };
 }
 
 // Magic-link tokens accept the same input shape as regular external-ui-session
@@ -135,6 +144,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | ExternalUISessionMagicLinkTokenClaims
       | ExternalUISessionTokenClaims
       | InternalTokenClaims
+      | KnodeApiAccessTokenClaims
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
@@ -214,6 +224,35 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         producer: { id: input.producer.id, knode_id: input.producer.knodeId },
         purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
+      };
+
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+
+      return {
+        header,
+        payload: claims,
+        serialized,
+      };
+    },
+
+    async generateKnodeApiAccessToken(
+      input: KnodeApiAccessTokenInput,
+    ): Promise<KnodeApiAccessToken> {
+      const now = dateToSeconds(new Date());
+      const claims: KnodeApiAccessTokenClaims = {
+        aud: input.audience,
+        client_id: input.keychain.id,
+        exp: now + input.secondsDuration,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        keychain: { id: input.keychain.id, knode_id: input.keychain.knodeId },
+        nbf: now,
+        organization: {
+          id: input.organization.id,
+          knode_id: input.organization.knodeId,
+        },
+        sub: input.keychain.id,
       };
 
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
