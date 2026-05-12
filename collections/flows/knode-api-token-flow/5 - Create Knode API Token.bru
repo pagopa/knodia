@@ -1,0 +1,40 @@
+meta {
+  name: 5 - Create Knode API Token
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host-authorization-server}}/knodeApiToken
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  client_assertion: {{process.env.KNODE_API_CLIENT_ASSERTION_JWT}}
+  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+  client_id: {{knodeApiKeychainId}}
+  grant_type: client_credentials
+}
+
+assert {
+  res.status: eq 200
+  res.body.token_type: eq Bearer
+}
+
+vars:post-response {
+  access_token: res.body.access_token
+}
+
+script:post-response {
+  if (res.status === 200) return
+
+  const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-key>"
+  const keychainId = bru.getVar("knodeApiKeychainId") || bru.getEnvVar("knodeApiKeychainId") || "<knodeApiKeychainId>"
+  const knodeId = bru.getEnvVar("local-knode-id") || "Orion"
+  throw new Error(
+    `Request failed with status ${res.status}. If you haven't signed a Knode API client assertion yet, or you rotated the keypair and KNODE_API_CLIENT_ASSERTION_JWT in collections/.env is stale, run:\n\n` +
+    `  pnpm generate-client-assertion --knode-api --key ${keyPath} --keychainId ${keychainId} --knodeId ${knodeId}\n\n` +
+    "then re-run this call."
+  )
+}
