@@ -668,6 +668,9 @@ importers:
       '@knodia/purpose-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/purpose-process-client
+      '@knodia/purpose-template-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-template-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
