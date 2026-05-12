@@ -19,12 +19,6 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import {
-  createEcPublicKeyBase64,
-  createMultiplePublicKeysBase64,
-  createRsaPrivateKeyBase64,
-  createRsaPublicKeyBase64,
-  createShortRsaPublicKeyBase64,
-  createX509CertificateBase64,
   getMockConsumerKeychain,
   getMockKeychainKey,
 } from "@knodia/test-commons/utils";
@@ -38,6 +32,12 @@ import type {
 import { toAPI_KeychainKey } from "../../src/models/apiConverter.ts";
 import { mockMaxKeysPerKeychain } from "../setup.ts";
 import {
+  createEcPublicKeyBase64,
+  createMultiplePublicKeysBase64,
+  createRsaPrivateKeyBase64,
+  createRsaPublicKeyBase64,
+  createShortRsaPublicKeyBase64,
+  createX509CertificateBase64,
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,

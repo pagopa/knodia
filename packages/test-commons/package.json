@@ -13,7 +13,6 @@
     "@knodia/agreement-models": "workspace:*",
     "@knodia/authorization-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
-    "@knodia/crypto": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/organization-models": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
