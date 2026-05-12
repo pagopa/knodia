@@ -8,8 +8,8 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   'e7f5837e-75f4-431d-9465-73366d27bef2',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mock E-service Lynx"}'::jsonb,
-  '{"en": "Mock e-service used to validate the access-token flow end-to-end"}'::jsonb,
+  '{"en": "Mockup 01 Personal Information (Bearer) - Lynx"}'::jsonb,
+  '{"en": "Cross-Border E-Service that returns the date of birth of a natural person identified by Codice Fiscale, with Bearer-token access."}'::jsonb,
   'ProvideData',
   false, false,
   0, now(), now()
@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'd44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad',
   'e7f5837e-75f4-431d-9465-73366d27bef2',
   '29721f0d-e36e-4157-bcdc-9629ace0f85b',
-  '3084f7bd01f1d1e06567f19d7e25c3f3f94368582ee5a614bca4806576a48d64',
+  '788dd312f14e635fe883f9c39051317921e380f6bb791b4ddbdebac68e72574f',
   'application/yaml',
   'mock-bearer-eservice.yaml',
   'd44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml',
@@ -78,10 +78,15 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 
+-- Wipe all categories for this eservice and reinsert the canonical set, so
+-- any future category change is captured idempotently on dev/multinode reruns.
+DELETE FROM ${NAMESPACE}_eservice."eservice_category"
+ WHERE eservice_id = 'e7f5837e-75f4-431d-9465-73366d27bef2';
+
 INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
   eservice_id, scheme, code, metadata_version
 ) VALUES (
   'e7f5837e-75f4-431d-9465-73366d27bef2',
   'vc_example_eservice_categories', 'citizen.identity.birth_date',
   0
-) ON CONFLICT ON CONSTRAINT eservice_category_pk DO NOTHING;
+);
