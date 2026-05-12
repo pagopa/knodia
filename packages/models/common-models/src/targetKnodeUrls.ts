@@ -19,7 +19,7 @@ export const TargetKnodeUrls = z
   .pipe(z.partialRecord(KnodeId, z.url()));
 export type TargetKnodeUrls = z.infer<typeof TargetKnodeUrls>;
 
-export type TargetKnodeUrlsErrorCode = "TARGET_KNODE_NOT_CONFIGURED";
+type TargetKnodeUrlsErrorCode = "TARGET_KNODE_NOT_CONFIGURED";
 
 export function getTargetKnodeUrl(
   targetKnodeUrls: TargetKnodeUrls,
@@ -32,7 +32,7 @@ export function getTargetKnodeUrl(
   return url;
 }
 
-export function targetKnodeNotConfiguredError(
+function targetKnodeNotConfiguredError(
   targetKnodeId: KnodeId,
 ): InternalError<TargetKnodeUrlsErrorCode> {
   return new InternalError({
