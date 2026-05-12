@@ -30,6 +30,7 @@ import {
   KnodeApiKeychainKeyAddedV1,
   KnodeApiKeychainMemberAddedV1,
   KnodeApiKeychainMemberRemovedV1,
+  KnodeApiKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
 import {
@@ -150,6 +151,11 @@ describe("KeychainEventV1 codec", () => {
       type: "KnodeApiKeychainCreatedV1" as const,
     },
     {
+      data: { knodeApiKeychain: knodeApiKeychainV1 },
+      message: KnodeApiKeychainUpdatedV1,
+      type: "KnodeApiKeychainUpdatedV1" as const,
+    },
+    {
       data: {
         kid: Buffer.from(crypto.randomUUID(), "utf-8").toString("base64"),
         knodeApiKeychain: knodeApiKeychainV1,
@@ -212,8 +218,10 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
-        .with({ type: "KnodeApiKeychainCreatedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
+        .with(
+          { type: "KnodeApiKeychainCreatedV1" },
+          { type: "KnodeApiKeychainUpdatedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
         )
         .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
@@ -266,8 +274,10 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
         )
-        .with({ type: "KnodeApiKeychainCreatedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
+        .with(
+          { type: "KnodeApiKeychainCreatedV1" },
+          { type: "KnodeApiKeychainUpdatedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
         )
         .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
