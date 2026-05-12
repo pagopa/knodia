@@ -13,9 +13,9 @@ import {
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { API_KeychainKeys } from "../src/models/api.ts";
-import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
-import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
+import { API_KeychainKeys } from "../../src/models/api.ts";
+import { toAPI_KeychainKey } from "../../src/models/apiConverter.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 
 const existingKeys = [
   { ...getMockKeychainKey(0), createdAt: new Date(1) },

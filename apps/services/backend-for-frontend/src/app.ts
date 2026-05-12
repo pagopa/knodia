@@ -90,6 +90,10 @@ export function buildAppFromConfig(
             name: apiTags.operator,
           },
           {
+            description: "Operator routes",
+            name: apiTags.operator,
+          },
+          {
             description: "E-service Templates routes",
             name: apiTags.eserviceTemplate,
           },
@@ -148,6 +152,9 @@ export function buildAppFromConfig(
       organizationProcessClient: clients.organizationProcessClient,
       pollingService,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(operatorRouter, {
+      organizationProcessClient: clients.organizationProcessClient,
     });
     protectedApp.register(operatorRouter, {
       organizationProcessClient: clients.organizationProcessClient,

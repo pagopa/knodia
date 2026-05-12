@@ -29,7 +29,7 @@ import {
   seedConsumerKeychain,
   seedConsumerKeychainPurpose,
   toExpectConsumerKeychainV1,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

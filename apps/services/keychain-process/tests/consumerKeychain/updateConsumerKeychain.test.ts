@@ -14,14 +14,14 @@ import { describe, expect, it } from "vitest";
 import type {
   API_ConsumerKeychainPatch,
   API_Keychain,
-} from "../src/models/api.ts";
+} from "../../src/models/api.ts";
 
-import { toAPI_Keychain } from "../src/models/apiConverter.ts";
+import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
-} from "./utils.ts";
+} from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

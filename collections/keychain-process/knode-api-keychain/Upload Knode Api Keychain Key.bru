@@ -1,0 +1,47 @@
+meta {
+  name: Upload Knode Api Keychain Key
+  type: http
+}
+
+post {
+  url: {{host-keychain-process}}/knodeApiKeychains/:knodeApiKeychainId/keys
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{randomKeyName}}"
+    },
+    "encodedPem": "{{process.env.KEYCHAIN_PUBLIC_RS256_KEY_B64}}"
+  }
+}
+
+vars:post-response {
+  knodeApiKeychainKeyId: res.body.kid
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomKeyName", `Test Consumer Key ${random}`)
+}
+
+script:post-response {
+  if (res.status === 201) return
+
+  throw new Error(
+    `Request failed with status ${res.status}. If you haven't generated a keypair yet, or you need a fresh one because the current kid already exists in another keychain, run:\n\n` +
+    "  pnpm generate-keypair\n\n" +
+    "then re-run this call."
+  )
+}
