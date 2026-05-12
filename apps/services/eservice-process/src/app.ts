@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -33,7 +34,10 @@ export function buildApp({
   readmodelDb,
 }: {
   config: AuthConfig &
-    LoggerConfig & { isConsumerOperatorIdentificationRequired: boolean };
+    LoggerConfig & {
+      isConsumerOperatorIdentificationRequired: boolean;
+      knodeId: KnodeId;
+    };
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -78,6 +82,7 @@ export function buildApp({
         {
           isConsumerOperatorIdentificationRequired:
             config.isConsumerOperatorIdentificationRequired,
+          knodeId: config.knodeId,
         },
       ),
     );

@@ -4,13 +4,9 @@ meta {
 }
 
 post {
-  url: {{host-backend-for-frontend}}/external/agreements/:agreementId/activate
+  url: {{host-backend-for-frontend}}/external/agreementActivation/activate
   body: none
   auth: none
-}
-
-params:path {
-  agreementId: {{agreementId}}
 }
 
 headers {

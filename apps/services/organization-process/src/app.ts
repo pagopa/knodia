@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -32,7 +33,7 @@ export function buildApp({
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig & LoggerConfig & { knodeId: KnodeId };
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -74,6 +75,7 @@ export function buildApp({
       organizationServiceBuilder(
         organizationEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        { knodeId: config.knodeId },
       ),
     );
   });

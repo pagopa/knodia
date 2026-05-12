@@ -29,6 +29,7 @@ import { ArchiveAgreementModal } from "@/features/agreement/components/ArchiveAg
 import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
 import { useArchiveAgreementByConsumer } from "@/features/agreement/hooks/useArchiveAgreementByConsumer";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
+import { useRequestAgreementMagicLink } from "@/features/agreement/hooks/useRequestAgreementMagicLink";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
 import { EserviceConsumerKeychainsSection } from "./EserviceConsumerKeychainsSection";
@@ -95,6 +96,12 @@ function AgreementStatusBanner({
 }) {
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
 
+  const { isPending: isRequestMagicLinkPending, requestMagicLink } =
+    useRequestAgreementMagicLink({
+      agreementId,
+      knodeId,
+    });
+
   const banner = match(agreement.state)
     .with("Active", () =>
       canManageAgreement ? (
@@ -125,6 +132,15 @@ function AgreementStatusBanner({
     ))
     .with("PendingConsumerOperatorIdentification", () => (
       <Banner
+        action={
+          canManageAgreement
+            ? {
+                isDisabled: isRequestMagicLinkPending,
+                label: "Go to Producer Knode",
+                onPress: requestMagicLink,
+              }
+            : undefined
+        }
         icon={<WarningCircleIcon />}
         kind="informative"
         size="md"

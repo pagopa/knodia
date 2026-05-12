@@ -9,10 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AgreementActivationRouteRouteImport } from './routes/agreement-activation/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as CallbackIndexRouteImport } from './routes/callback/index'
+import { Route as AgreementActivationIndexRouteImport } from './routes/agreement-activation/index'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AgreementActivationRecapRouteImport } from './routes/agreement-activation/recap'
 import { Route as AuthenticatedOperatorsRouteImport } from './routes/_authenticated/operators'
 import { Route as AuthenticatedProductionIndexRouteImport } from './routes/_authenticated/production/index'
 import { Route as AuthenticatedKeychainsIndexRouteImport } from './routes/_authenticated/keychains/index'
@@ -41,6 +44,12 @@ import { Route as AuthenticatedConsumptionEServicesIdRouteImport } from './route
 import { Route as AuthenticatedConsumptionAgreementsArchiveRouteImport } from './routes/_authenticated/consumption/agreements/archive'
 import { Route as AuthenticatedConsumptionEServicesIdPurposesNewRouteImport } from './routes/_authenticated/consumption/e-services/$id_/purposes/new'
 
+const AgreementActivationRouteRoute =
+  AgreementActivationRouteRouteImport.update({
+    id: '/agreement-activation',
+    path: '/agreement-activation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -55,11 +64,23 @@ const CallbackIndexRoute = CallbackIndexRouteImport.update({
   path: '/callback/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgreementActivationIndexRoute =
+  AgreementActivationIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AgreementActivationRouteRoute,
+  } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AgreementActivationRecapRoute =
+  AgreementActivationRecapRouteImport.update({
+    id: '/recap',
+    path: '/recap',
+    getParentRoute: () => AgreementActivationRouteRoute,
+  } as any)
 const AuthenticatedOperatorsRoute = AuthenticatedOperatorsRouteImport.update({
   id: '/operators',
   path: '/operators',
@@ -223,8 +244,11 @@ const AuthenticatedConsumptionEServicesIdPurposesNewRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/agreement-activation': typeof AgreementActivationRouteRouteWithChildren
   '/operators': typeof AuthenticatedOperatorsRoute
+  '/agreement-activation/recap': typeof AgreementActivationRecapRoute
   '/': typeof AuthenticatedIndexRoute
+  '/agreement-activation/': typeof AgreementActivationIndexRoute
   '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption': typeof AuthenticatedConsumptionIndexRoute
@@ -256,7 +280,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/operators': typeof AuthenticatedOperatorsRoute
+  '/agreement-activation/recap': typeof AgreementActivationRecapRoute
   '/': typeof AuthenticatedIndexRoute
+  '/agreement-activation': typeof AgreementActivationIndexRoute
   '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption': typeof AuthenticatedConsumptionIndexRoute
@@ -289,8 +315,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/agreement-activation': typeof AgreementActivationRouteRouteWithChildren
   '/_authenticated/operators': typeof AuthenticatedOperatorsRoute
+  '/agreement-activation/recap': typeof AgreementActivationRecapRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/agreement-activation/': typeof AgreementActivationIndexRoute
   '/callback/': typeof CallbackIndexRoute
   '/login/': typeof LoginIndexRoute
   '/_authenticated/consumption/': typeof AuthenticatedConsumptionIndexRoute
@@ -323,8 +352,11 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/agreement-activation'
     | '/operators'
+    | '/agreement-activation/recap'
     | '/'
+    | '/agreement-activation/'
     | '/callback'
     | '/login'
     | '/consumption'
@@ -356,7 +388,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/operators'
+    | '/agreement-activation/recap'
     | '/'
+    | '/agreement-activation'
     | '/callback'
     | '/login'
     | '/consumption'
@@ -388,8 +422,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/agreement-activation'
     | '/_authenticated/operators'
+    | '/agreement-activation/recap'
     | '/_authenticated/'
+    | '/agreement-activation/'
     | '/callback/'
     | '/login/'
     | '/_authenticated/consumption/'
@@ -422,12 +459,20 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AgreementActivationRouteRoute: typeof AgreementActivationRouteRouteWithChildren
   CallbackIndexRoute: typeof CallbackIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/agreement-activation': {
+      id: '/agreement-activation'
+      path: '/agreement-activation'
+      fullPath: '/agreement-activation'
+      preLoaderRoute: typeof AgreementActivationRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -449,12 +494,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallbackIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agreement-activation/': {
+      id: '/agreement-activation/'
+      path: '/'
+      fullPath: '/agreement-activation/'
+      preLoaderRoute: typeof AgreementActivationIndexRouteImport
+      parentRoute: typeof AgreementActivationRouteRoute
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/agreement-activation/recap': {
+      id: '/agreement-activation/recap'
+      path: '/recap'
+      fullPath: '/agreement-activation/recap'
+      preLoaderRoute: typeof AgreementActivationRecapRouteImport
+      parentRoute: typeof AgreementActivationRouteRoute
     }
     '/_authenticated/operators': {
       id: '/_authenticated/operators'
@@ -736,8 +795,25 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AgreementActivationRouteRouteChildren {
+  AgreementActivationRecapRoute: typeof AgreementActivationRecapRoute
+  AgreementActivationIndexRoute: typeof AgreementActivationIndexRoute
+}
+
+const AgreementActivationRouteRouteChildren: AgreementActivationRouteRouteChildren =
+  {
+    AgreementActivationRecapRoute: AgreementActivationRecapRoute,
+    AgreementActivationIndexRoute: AgreementActivationIndexRoute,
+  }
+
+const AgreementActivationRouteRouteWithChildren =
+  AgreementActivationRouteRoute._addFileChildren(
+    AgreementActivationRouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AgreementActivationRouteRoute: AgreementActivationRouteRouteWithChildren,
   CallbackIndexRoute: CallbackIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
 }
