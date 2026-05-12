@@ -1,6 +1,9 @@
 import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   InternalAuthData,
   UISessionAuthData,
@@ -19,6 +22,8 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_KnodeApiKeychainSeed,
@@ -36,6 +41,7 @@ import {
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -143,6 +149,39 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return retrieveKeychainKey(knodeApiKeychain.data, kid);
+    },
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<KeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Knode API Keychain with ID ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveFlatKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      return await readmodelService.getKnodeApiKeychainKeys(
+        knodeApiKeychainId,
+        params,
+      );
+    },
+    async getKnodeApiKeychains(
+      params: API_GetKnodeApiKeychainsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<FlatKnodeApiKeychain>> {
+      logger.info({ params }, "Getting Knode API keychains with params");
+
+      return await readmodelService.getKnodeApiKeychains(params);
     },
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
