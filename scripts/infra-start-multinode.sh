@@ -22,6 +22,20 @@ docker compose -f docker/compose.multinode.yaml up -d --wait "${build_flag[@]}" 
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
 # seed, local-kms-setup) are expected to exit and are not checked.
 failed=0
+check_output=$(docker ps -a \
+  --filter "label=com.docker.compose.project=knodia-multinode" \
+  --filter "label=knodia.check.on.startup=true" \
+  --format '{{.Label "com.docker.compose.service"}}\t{{.Status}}')
+
+# If `up` was skipped because of a build/start failure (swallowed by `|| true`
+# above to ignore the expected init-container exit), no containers exist and
+# the per-service loop below would have nothing to check — fail explicitly so
+# the success banner isn't printed.
+if [ -z "$check_output" ]; then
+  echo "ERROR: no multinode containers found — build or compose up failed"
+  failed=1
+fi
+
 while IFS= read -r line; do
   [ -z "$line" ] && continue
   name=$(echo "$line" | awk -F'\t' '{print $1}')
@@ -33,10 +47,7 @@ while IFS= read -r line; do
     echo "ERROR: service $name is not healthy ($status)"
     failed=1
   fi
-done < <(docker ps -a \
-  --filter "label=com.docker.compose.project=knodia-multinode" \
-  --filter "label=knodia.check.on.startup=true" \
-  --format '{{.Label "com.docker.compose.service"}}\t{{.Status}}')
+done <<< "$check_output"
 
 if [ "$failed" -ne 0 ]; then
   echo ""
