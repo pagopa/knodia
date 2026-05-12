@@ -2,8 +2,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import {
+  type PurposeId,
   unsafeBrandId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
@@ -591,10 +592,10 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         {
           consumerKeychainPurpose: {
             consumerKeychainId: req.params.consumerKeychainId,
-            purpose: {
-              id: unsafeBrandExternalId(req.body.purposeId),
-              knodeId: req.body.knodeId,
-            },
+            purpose: toExternalResource<PurposeId>(
+              req.body.purposeId,
+              req.body.knodeId,
+            ),
           },
           headers: getKnodiaServiceHeaders(req, ctx.correlationId),
         },

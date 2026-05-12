@@ -27,5 +27,7 @@ const toPurposeSQL = (
   state: purpose.state,
   suspendedByConsumerAt: purpose.suspendedByConsumerAt,
   suspendedByProducerAt: purpose.suspendedByProducerAt,
+  templateId: purpose.template?.id ?? null,
+  templateKnodeId: purpose.template?.knodeId ?? null,
   updatedAt: purpose.updatedAt,
 });
