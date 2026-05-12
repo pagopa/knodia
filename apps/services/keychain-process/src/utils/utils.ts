@@ -41,15 +41,17 @@ export async function addKeyToKeychain(
   newKey: KeychainKey;
   updatedKeychain: KnodeApiKeychain;
 }>;
-export async function addKeyToKeychain(
-  keychain: ConsumerKeychain | KnodeApiKeychain,
+export async function addKeyToKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(
+  keychain: K,
   authData: UISessionAuthData,
   keySeed: API_KeychainKeySeed,
   readmodelService: ReadmodelService,
   maxKeysPerKeychain: number,
 ): Promise<{
   newKey: KeychainKey;
-  updatedKeychain: ConsumerKeychain | KnodeApiKeychain;
+  updatedKeychain: K;
 }> {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
 

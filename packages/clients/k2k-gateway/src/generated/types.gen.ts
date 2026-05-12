@@ -380,7 +380,7 @@ export type ConsumerClientAssertionVerificationRequest = {
 
 export type KnodeApiClientAssertionVerificationRequest = {
     /**
-     * Unique identifier of the Consumer Keychain
+     * Unique identifier of the Knode API Keychain
      */
     keychainId: string;
     kid: KeyId;

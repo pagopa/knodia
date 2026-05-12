@@ -58,7 +58,7 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const [, keyResponse, keychainResponse] = await Promise.all([
-        // Verify purpose is linked to keychain, we just need a 200 and discard the return value
+        // Verify purpose is linked to Consumer Keychain, we just need a 200 and discard the return value
         keychainProcessApi.getConsumerKeychainPurpose({
           client: keychainProcessClient,
           headers,
@@ -101,7 +101,7 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_ConsumerClientAssertionVerificationRequest,
       description:
-        "Verify that the key and purpose are associated with the consumer keychain, and return the public key and consumer attributes for further verification by the auth server",
+        "Verify that the key and purpose are associated with the Consumer Keychain, and return the public key and consumer attributes for further verification by the auth server",
       operationId: "getConsumerClientAssertionVerificationData",
       response: {
         200: API_ConsumerClientAssertionVerificationResponse.meta({
@@ -129,22 +129,14 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const [, keyResponse] = await Promise.all([
-        // Verify that the Knode API keychain exists, we just need a 200 and discard the return value
-        keychainProcessApi.getKnodeApiKeychain({
-          client: keychainProcessClient,
-          headers,
-          path: { knodeApiKeychainId: req.body.keychainId },
-        }),
-        keychainProcessApi.getKnodeApiKeychainKey({
-          client: keychainProcessClient,
-          headers,
-          path: {
-            keyId: req.body.kid,
-            knodeApiKeychainId: req.body.keychainId,
-          },
-        }),
-      ]);
+      const keyResponse = await keychainProcessApi.getKnodeApiKeychainKey({
+        client: keychainProcessClient,
+        headers,
+        path: {
+          keyId: req.body.kid,
+          knodeApiKeychainId: req.body.keychainId,
+        },
+      });
 
       res.send(
         toAPI_KnodeApiClientAssertionVerificationResponse(keyResponse.data),
@@ -154,7 +146,7 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_KnodeApiClientAssertionVerificationRequest,
       description:
-        "Verify that the key is associated with the Knode API keychain, and return the public key for further verification by the auth server",
+        "Verify that the key is associated with the Knode API Keychain, and return the public key for further verification by the auth server",
       operationId: "getKnodeApiClientAssertionVerificationData",
       response: {
         200: API_KnodeApiClientAssertionVerificationResponse.meta({

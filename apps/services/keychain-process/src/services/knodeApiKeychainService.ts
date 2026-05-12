@@ -34,8 +34,8 @@ import {
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
+  retrieveKeychainKey,
   retrieveKnodeApiKeychain,
-  retrieveKnodeApiKeychainKey,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain } from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
@@ -108,7 +108,7 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      return retrieveKnodeApiKeychainKey(knodeApiKeychain.data, kid);
+      return retrieveKeychainKey(knodeApiKeychain.data, kid);
     },
     async getKnodeApiKeychainKeys(
       knodeApiKeychainId: KnodeApiKeychainId,

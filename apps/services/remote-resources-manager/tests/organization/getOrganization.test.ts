@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { KnodeId } from "@knodia/common-models/ids";
-
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,7 +31,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 });
 
 describe("GET /organizations/:organizationId (getOrganization)", () => {
-  const knodeId: KnodeId = "Orion";
+  const knodeId: KnodeId = KnodeId.enum.Orion;
 
   const organization = getMockOrganization();
   const k2kOrganization = toK2KOrganization(organization);
@@ -84,4 +84,57 @@ describe("GET /organizations/:organizationId (getOrganization)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 200 for an external-ui-session token whose consumer.id and consumer.knodeId match the request", async () => {
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+
+    const consumerExternalId = unsafeBrandExternalId<OrganizationId>(
+      organization.id,
+    );
+
+    const response = await injectAppRequest({
+      consumerId: consumerExternalId,
+      consumerKnodeId: KnodeId.enum.Lynx,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    })
+      .get(`/organizations/${organization.id}`)
+      .query({ knodeId: KnodeId.enum.Lynx });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual(expectedApiDetail);
+  });
+
+  it("should return 403 for an external-ui-session token whose consumer.id does not match the path", async () => {
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+
+    const response = await injectAppRequest({
+      consumerKnodeId: KnodeId.enum.Lynx,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    })
+      .get(`/organizations/${organization.id}`)
+      .query({ knodeId: KnodeId.enum.Lynx });
+
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 for an external-ui-session token whose consumer.knodeId does not match the query.knodeId", async () => {
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+
+    const consumerExternalId = unsafeBrandExternalId<OrganizationId>(
+      organization.id,
+    );
+
+    const response = await injectAppRequest({
+      consumerId: consumerExternalId,
+      consumerKnodeId: KnodeId.enum.Lynx,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    })
+      .get(`/organizations/${organization.id}`)
+      .query({ knodeId: KnodeId.enum.Orion });
+
+    expect(response.statusCode).toBe(403);
+  });
 });

@@ -1,0 +1,18 @@
+meta {
+  name: Get Purpose Templates
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/purposeTemplates?knodeId={{other-knode-id}}
+  body: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

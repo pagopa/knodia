@@ -1,6 +1,7 @@
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
+import { KnodeId } from "@knodia/common-models/ids";
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import {
@@ -42,6 +43,7 @@ beforeAll(async () => {
       acceptedAudiences: ["test-audience"],
       isConsumerOperatorIdentificationRequired: false,
       isProduction: false,
+      knodeId: KnodeId.enum.Orion,
       logLevel: "silent",
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
