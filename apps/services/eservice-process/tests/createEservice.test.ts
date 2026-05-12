@@ -1,8 +1,9 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
+  type EserviceTemplateId,
   generateId,
   KnodeId,
   type OrganizationId,
@@ -152,10 +153,10 @@ describe("POST /eservices (createEservice)", () => {
       mode: templateSeed.eserviceFields.mode,
       name: bodyFromTemplate.name,
       producerId: TEST_ORGANIZATION_ID,
-      template: {
-        id: unsafeBrandExternalId(templateSeed.id),
-        knodeId: bodyFromTemplate.template.knodeId,
-      },
+      template: toExternalResource<EserviceTemplateId>(
+        templateSeed.id,
+        bodyFromTemplate.template.knodeId,
+      ),
       updatedAt: new Date(responseBody.createdAt),
       versions: [
         {

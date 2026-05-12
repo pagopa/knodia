@@ -52,13 +52,6 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
-  consumerKeychainNotFound,
-  jwkDecodingError,
-  keyNotFoundInKeychain,
-  userAlreadyMember,
-  userNotFound,
-} from "../models/errors.ts";
-import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainKeyAddedV1Event,
@@ -68,7 +61,14 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
-} from "../models/keychainEventFactory.ts";
+} from "../models/consumerKeychainEventFactory.ts";
+import {
+  consumerKeychainNotFound,
+  jwkDecodingError,
+  keyNotFoundInKeychain,
+  userAlreadyMember,
+  userNotFound,
+} from "../models/errors.ts";
 import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainKey,
@@ -189,7 +189,7 @@ export function consumerKeychainServiceBuilder(
       const { organizationId: ownerId } = authData;
 
       logger.info(
-        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId} `,
+        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId}`,
       );
 
       const now = new Date();

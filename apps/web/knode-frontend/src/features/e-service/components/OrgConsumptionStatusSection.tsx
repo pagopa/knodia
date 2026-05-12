@@ -11,7 +11,6 @@ import {
   ArchiveIcon,
   CaretDownIcon,
   CaretUpIcon,
-  SelectionIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useContext, useState } from "react";
@@ -33,6 +32,7 @@ import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/use
 import { useRequestAgreementMagicLink } from "@/features/agreement/hooks/useRequestAgreementMagicLink";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
+import { EserviceConsumerKeychainsSection } from "./EserviceConsumerKeychainsSection";
 import { EservicePurposeSection } from "./EservicePurposeSection";
 
 export function OrgConsumptionStatusSection({
@@ -74,17 +74,7 @@ export function OrgConsumptionStatusSection({
                 eserviceState={eserviceState}
                 knodeId={knodeId}
               />
-
-              <div className="mt-4 flex flex-col gap-4">
-                <h3 className="title-md-em text-primary-light-low-contrast">
-                  Keychains
-                </h3>
-                <Banner icon={<SelectionIcon />} kind="neutral">
-                  To request an access token for this E-Service, associate a
-                  Keychain to a Purpose from the Purpose page. Associated
-                  Keychains will appear here.
-                </Banner>
-              </div>
+              <EserviceConsumerKeychainsSection eserviceId={eserviceId} />
             </>
           ))
           .otherwise(() => null)}
