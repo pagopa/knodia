@@ -206,11 +206,10 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "KnodeApiKeychainCreatedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
-        .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
-        )
-        .with({ type: "KnodeApiKeychainKeyRemovedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
+        .with(
+          { type: "KnodeApiKeychainKeyAddedV1" },
+          { type: "KnodeApiKeychainKeyRemovedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
         )
         .exhaustive();
     },
@@ -257,11 +256,10 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "KnodeApiKeychainCreatedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
         )
-        .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
-        )
-        .with({ type: "KnodeApiKeychainKeyRemovedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
+        .with(
+          { type: "KnodeApiKeychainKeyAddedV1" },
+          { type: "KnodeApiKeychainKeyRemovedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
         )
         .exhaustive();
     },
