@@ -1,5 +1,5 @@
 meta {
-  name: 2 - Call Mock Eservice
+  name: 2 - Call Mock Eservice (Bearer)
   type: http
   seq: 2
 }
@@ -20,9 +20,18 @@ assert {
 }
 
 script:pre-request {
-  if (!bru.getVar("access_token")) {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
     throw new Error(
       "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
     )
   }
+}
+
+script:post-response {
+  if (res.status === 200) return
+
+  throw new Error(
+    `Request failed with status ${res.status}.\n\n` +
+    `The access_token may be expired or invalid. Re-run the bearer-token-flow (steps 2-11, skipping step 1) to mint a fresh one, then re-run this call.`
+  )
 }
