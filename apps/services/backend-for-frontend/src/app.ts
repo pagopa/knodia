@@ -90,10 +90,6 @@ export function buildAppFromConfig(
             name: apiTags.operator,
           },
           {
-            description: "Operator routes",
-            name: apiTags.operator,
-          },
-          {
             description: "E-service Templates routes",
             name: apiTags.eserviceTemplate,
           },
