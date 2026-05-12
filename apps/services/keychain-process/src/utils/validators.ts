@@ -1,3 +1,4 @@
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
@@ -27,10 +28,6 @@ import {
   userNotAllowed,
   userNotFound,
 } from "../models/errors.ts";
-import {
-  getOrganizationGroupName,
-  TECHNICAL_ROLE_GROUP_NAME,
-} from "../services/userService.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -70,23 +67,24 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
   }
 }
 
-export function assertUserBelongsToOrganization(
-  userId: UserId,
+export async function assertUserBelongsToOrganization(
+  user: IdmUser,
   organizationId: OrganizationId,
-  userGroups: string[],
-): void {
-  const organizationGroupName = getOrganizationGroupName(organizationId);
-  if (!userGroups.includes(organizationGroupName)) {
-    throw userNotFound(userId);
+  cognitoIdmClient: CognitoIdmClient,
+): Promise<void> {
+  if (
+    !(await cognitoIdmClient.checkUserBelongsToOrganization(
+      user,
+      organizationId,
+    ))
+  ) {
+    throw userNotFound(user.id);
   }
 }
 
-export function assertUserHasTechnicalRole(
-  userId: UserId,
-  userGroups: string[],
-): void {
-  if (!userGroups.includes(TECHNICAL_ROLE_GROUP_NAME)) {
-    throw invalidUserRole(userId, TECHNICAL_ROLE_GROUP_NAME);
+export function assertUserHasTechnicalRole(user: IdmUser): void {
+  if (!user.roles.includes(UserRole.enum.technical)) {
+    throw invalidUserRole(user.id, UserRole.enum.technical);
   }
 }
 
@@ -141,10 +139,16 @@ export async function assertKeyIsUnique(
   keychainKeys: { kid: KeyId }[],
   readmodelService: ReadmodelService,
 ) {
+  const [consumerKeychainKeyExists, knodeApiKeychainKeyExists] =
+    await Promise.all([
+      readmodelService.checkConsumerKeychainKeyExists(kid),
+      readmodelService.checkKnodeApiKeychainKeyExists(kid),
+    ]);
+
   const alreadyExists =
     keychainKeys.some((key) => key.kid === kid) ||
-    (await readmodelService.checkConsumerKeychainKeyExists(kid)) ||
-    (await readmodelService.checkKnodeApiKeychainKeyExists(kid));
+    consumerKeychainKeyExists ||
+    knodeApiKeychainKeyExists;
 
   if (alreadyExists) {
     throw keyAlreadyExists(kid);

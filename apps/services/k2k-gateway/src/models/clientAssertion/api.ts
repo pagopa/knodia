@@ -7,6 +7,10 @@ const API_ConsumerKeychainId = z.uuid().meta({
   description: "Unique identifier of the Consumer Keychain",
 });
 
+const API_KnodeApiKeychainId = z.uuid().meta({
+  description: "Unique identifier of the Knode API Keychain",
+});
+
 const API_PurposeId = z.uuid().meta({
   description: "Unique identifier of the Purpose",
 });
@@ -24,7 +28,7 @@ export type API_ConsumerClientAssertionVerificationRequest = z.infer<
 
 export const API_KnodeApiClientAssertionVerificationRequest = z
   .strictObject({
-    keychainId: API_ConsumerKeychainId,
+    keychainId: API_KnodeApiKeychainId,
     kid: API_KeyId,
   })
   .meta({ id: "KnodeApiClientAssertionVerificationRequest" });

@@ -120,6 +120,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
       ]);
 
       const {
@@ -190,6 +191,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],
     },

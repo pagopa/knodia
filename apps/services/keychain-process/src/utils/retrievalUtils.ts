@@ -88,27 +88,14 @@ export const retrieveConsumerKeychainPurpose = async (
   return consumerKeychainPurposeResult;
 };
 
-export const retrieveConsumerKeychainKey = (
-  consumerKeychain: ConsumerKeychain,
+export const retrieveKeychainKey = (
+  keychain: ConsumerKeychain | KnodeApiKeychain,
   kid: KeyId,
 ) => {
-  const key = consumerKeychain.keys.find((key) => key.kid === kid);
+  const key = keychain.keys.find((key) => key.kid === kid);
 
   if (!key) {
-    throw keyNotFoundInKeychain(kid, consumerKeychain.id);
-  }
-
-  return key;
-};
-
-export const retrieveKnodeApiKeychainKey = (
-  knodeApiKeychain: KnodeApiKeychain,
-  kid: KeyId,
-) => {
-  const key = knodeApiKeychain.keys.find((key) => key.kid === kid);
-
-  if (!key) {
-    throw keyNotFoundInKeychain(kid, knodeApiKeychain.id);
+    throw keyNotFoundInKeychain(kid, keychain.id);
   }
 
   return key;
