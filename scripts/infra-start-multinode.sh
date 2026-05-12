@@ -1,41 +1,26 @@
 #!/bin/bash
 
-# Set SEQUENTIAL_BUILD=1 to build images one at a time instead of letting
-# `docker compose up --build` run them in parallel — needed on hosts that
-# OOM under the multinode build. Services with `image:` only (no `build:`)
-# are skipped by compose.
+# Build images separately from `up` so that build failures cause the script
+# to exit immediately. Set SEQUENTIAL_BUILD=1 to build images one at a time
+# instead of in parallel — needed on hosts that OOM under the multinode build.
+# Services with `image:` only (no `build:`) are skipped by compose.
 if [ "${SEQUENTIAL_BUILD:-0}" = "1" ]; then
   for svc in $(docker compose -f docker/compose.multinode.yaml config --services); do
     docker compose -f docker/compose.multinode.yaml build "$svc" || exit 1
   done
-  build_flag=()
 else
-  build_flag=(--build)
+  docker compose -f docker/compose.multinode.yaml build || exit 1
 fi
 
 # --wait exits 1 when init containers (flyway, debezium-setup, etc.) exit,
 # even with exit code 0. This is expected, so we suppress it.
 # See: https://github.com/docker/compose/issues/10596.
-docker compose -f docker/compose.multinode.yaml up -d --wait "${build_flag[@]}" || true
+docker compose -f docker/compose.multinode.yaml up -d --wait || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,
 # seed, local-kms-setup) are expected to exit and are not checked.
 failed=0
-check_output=$(docker ps -a \
-  --filter "label=com.docker.compose.project=knodia-multinode" \
-  --filter "label=knodia.check.on.startup=true" \
-  --format '{{.Label "com.docker.compose.service"}}\t{{.Status}}')
-
-# If `up` was skipped because of a build/start failure (swallowed by `|| true`
-# above to ignore the expected init-container exit), no containers exist and
-# the per-service loop below would have nothing to check — fail explicitly so
-# the success banner isn't printed.
-if [ -z "$check_output" ]; then
-  echo "ERROR: no multinode containers found — build or compose up failed"
-  failed=1
-fi
-
 while IFS= read -r line; do
   [ -z "$line" ] && continue
   name=$(echo "$line" | awk -F'\t' '{print $1}')
@@ -47,7 +32,10 @@ while IFS= read -r line; do
     echo "ERROR: service $name is not healthy ($status)"
     failed=1
   fi
-done <<< "$check_output"
+done < <(docker ps -a \
+  --filter "label=com.docker.compose.project=knodia-multinode" \
+  --filter "label=knodia.check.on.startup=true" \
+  --format '{{.Label "com.docker.compose.service"}}\t{{.Status}}')
 
 if [ "$failed" -ne 0 ]; then
   echo ""
