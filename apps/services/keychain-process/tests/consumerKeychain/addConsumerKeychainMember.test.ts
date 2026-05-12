@@ -18,7 +18,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   cognitoIdmClientMock,
   cognitoIdmClientModuleMock,
-} from "./cognitoIdmClientMock.ts";
+} from "../cognitoIdmClientMock.ts";
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
