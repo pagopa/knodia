@@ -6,7 +6,7 @@
 # are skipped by compose.
 if [ "${SEQUENTIAL_BUILD:-0}" = "1" ]; then
   for svc in $(docker compose -f docker/compose.multinode.yaml config --services); do
-    docker compose -f docker/compose.multinode.yaml build "$svc"
+    docker compose -f docker/compose.multinode.yaml build "$svc" || exit 1
   done
   build_flag=()
 else
