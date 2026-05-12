@@ -64,13 +64,13 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
-        en: "Basic-form blueprint for cross-border institutional consumption of the Lynx Mock E-service.",
+        en: "Basic-form blueprint for cross-border birth-date lookups against the Lynx Mock E-service.",
       },
       eserviceId: LYNX_BEARER_ESERVICE_ID,
       formAnswersJson: {
         declarationConfirmGDPR: "true",
         institutionalPurpose:
-          "Cross-border institutional consumption of the Lynx Mock E-service for administrative procedures.",
+          "Cross-border birth-date lookups against the Lynx Mock E-service for administrative procedures.",
         legalBasis: ["PUBLIC_INTEREST"],
         personalDataTypes: ["WITH_IDENTIFYING_DATA"],
         purpose: "INSTITUTIONAL",
@@ -80,7 +80,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0001-4000-8000-000000000002",
       ),
-      name: { en: "Mock E-service Lynx cross-border consumption (basic)" },
+      name: { en: "Mock E-service Lynx birth-date lookup (basic)" },
     },
   ],
   Orion: [
@@ -117,7 +117,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
-        en: "Risk-analysis blueprint for cross-border institutional consumption of the Orion Mock E-service.",
+        en: "Risk-analysis blueprint for cross-border bulk birth-date lookups against the Orion Mock E-service.",
       },
       eserviceId: ORION_BEARER_ESERVICE_ID,
       formAnswersJson: {
@@ -130,7 +130,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         deliveryMethod: "CLEARTEXT",
         doneDpia: "NO",
         institutionalPurpose:
-          "Cross-border institutional consumption of the Orion Mock E-service for routine administrative procedures.",
+          "Cross-border bulk birth-date lookups against the Orion Mock E-service for routine administrative procedures.",
         isRequestOnBehalfOfThirdParties: "NO",
         knowsDataQuantity: "YES",
         legalBasis: ["LEGAL_OBLIGATION"],
@@ -148,12 +148,12 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000002",
       ),
-      name: { en: "Mock E-service Orion cross-border consumption" },
+      name: { en: "Mock E-service Orion bulk birth-date lookups" },
     },
     {
       createdAt: new Date("2025-01-03T00:00:00Z"),
       description: {
-        en: "Risk-analysis blueprint for cross-border aggregate consumption of the Orion Mock DPoP E-service.",
+        en: "Risk-analysis blueprint for cross-border aggregate analytics on digital-contact data from the Orion Mock DPoP E-service.",
       },
       eserviceId: ORION_DPOP_ESERVICE_ID,
       formAnswersJson: {
@@ -166,7 +166,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
         deliveryMethod: "AGGREGATE",
         doneDpia: "NO",
         institutionalPurpose:
-          "Cross-border aggregate consumption of the Orion Mock DPoP E-service for institutional analysis.",
+          "Cross-border aggregate analytics on citizen digital-contact data exposed by the Orion Mock DPoP E-service.",
         isRequestOnBehalfOfThirdParties: "NO",
         knowsDataQuantity: "NO",
         legalBasis: ["PUBLIC_INTEREST"],
@@ -183,7 +183,7 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
       id: unsafeBrandId<PurposeTemplateId>(
         "a1b2c3d4-0002-4000-8000-000000000003",
       ),
-      name: { en: "Mock DPoP E-service Orion cross-border statistics" },
+      name: { en: "Mock DPoP E-service Orion digital-contact stats" },
     },
   ],
 };
