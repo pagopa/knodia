@@ -1,3 +1,4 @@
+import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -21,7 +22,6 @@ import {
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
-import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
@@ -36,18 +36,15 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   config,
-  knodeUrl,
   readmodelDb,
   remoteResourceDb,
+  targetKnodeUrls,
 }: {
   config: AuthConfig & LoggerConfig;
-  knodeUrl: string;
   readmodelDb: NodePgDatabase;
   remoteResourceDb: NodePgDatabase;
+  targetKnodeUrls: TargetKnodeUrls;
 }) {
-  const k2kGatewayClient = getK2K2GatewayApiClient({
-    knodeUrl,
-  });
   const remoteResourceDbService =
     remoteResourceDbServiceBuilder(remoteResourceDb);
   const readmodelService = readmodelServiceBuilder(readmodelDb);
@@ -99,26 +96,26 @@ export function buildApp({
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(eserviceRouter, {
       eserviceService: eserviceServiceBuilder(
-        k2kGatewayClient,
+        targetKnodeUrls,
         remoteResourceDbService,
       ),
     });
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(
-        k2kGatewayClient,
+        targetKnodeUrls,
         remoteResourceDbService,
         readmodelService,
       ),
     });
     protectedApp.register(purposeRouter, {
       purposeService: purposeServiceBuilder(
-        k2kGatewayClient,
+        targetKnodeUrls,
         remoteResourceDbService,
         readmodelService,
       ),
     });
     protectedApp.register(organizationRouter, {
-      organizationService: organizationServiceBuilder(k2kGatewayClient),
+      organizationService: organizationServiceBuilder(targetKnodeUrls),
     });
   });
 
@@ -133,9 +130,9 @@ export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
 
   const app = buildApp({
     config,
-    knodeUrl: config.knodeUrl,
     readmodelDb,
     remoteResourceDb,
+    targetKnodeUrls: config.targetKnodeUrls,
   });
 
   app.addHook("onClose", async () => {

@@ -1,3 +1,4 @@
+import { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
 import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
 import {
@@ -15,10 +16,10 @@ const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
-        KNODE_URL: z.url(),
+        TARGET_KNODE_URLS: TargetKnodeUrls,
       })
       .transform((c) => ({
-        knodeUrl: c.KNODE_URL,
+        targetKnodeUrls: c.TARGET_KNODE_URLS,
       })),
   );
 export type RemoteResourcesManagerConfig = z.infer<

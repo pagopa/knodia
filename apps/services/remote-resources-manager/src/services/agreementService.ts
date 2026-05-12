@@ -6,14 +6,12 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
+import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
   API_Agreement,
@@ -24,6 +22,7 @@ import type {
 } from "../models/agreement/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import {
   toAPI_Agreement,
   toK2KAPI_AgreementState,
@@ -37,23 +36,25 @@ import {
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
+  targetKnodeUrls: TargetKnodeUrls,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
 ) {
   return {
     async archiveAgreement(
       agreementId: ExternalId<AgreementId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreement> {
-      logger.info(`Archiving Agreement ${agreementId} on Knode ${knodeId}`);
+      logger.info(
+        `Archiving Agreement ${agreementId} on Knode ${targetKnodeId}`,
+      );
 
       await retrieveOrganization(authData.organizationId, readmodelService);
 
       const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
-        knodeId,
+        targetKnodeId,
       );
 
       assertAgreementExists(remoteAgreement, agreementId);
@@ -64,25 +65,28 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.archiveAgreement({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data, knodeId);
+      return toAPI_Agreement(data, targetKnodeId);
     },
 
     async createActivationMagicLink(
       agreementId: ExternalId<AgreementId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_MagicLink> {
       logger.info(
-        `Creating activation magic link for Agreement ${agreementId} on Knode ${knodeId}`,
+        `Creating activation magic link for Agreement ${agreementId} on Knode ${targetKnodeId}`,
       );
 
       const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
-        knodeId,
+        targetKnodeId,
       );
 
       assertAgreementExists(remoteAgreement, agreementId);
@@ -93,7 +97,10 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.createAgreementActivationMagicLink({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
         path: { agreementId },
       });
 
@@ -104,12 +111,12 @@ export function agreementServiceBuilder(
       reqBody: API_AgreementSeed,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedAgreementResource> {
-      const { eserviceId, eserviceVersionId, knodeId } = reqBody;
+      const { eserviceId, eserviceVersionId, knodeId: targetKnodeId } = reqBody;
       const { organizationId: consumerId } = authData;
 
       logger.info(
         { requestBody: reqBody },
-        `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
+        `Creating agreement for e-service owned by Knode ${targetKnodeId} with body data`,
       );
 
       const organization = await retrieveOrganization(
@@ -124,7 +131,10 @@ export function agreementServiceBuilder(
           eserviceId,
           eserviceVersionId,
         },
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
       });
 
       await remoteResourceDbService.insertAgreement({
@@ -132,7 +142,7 @@ export function agreementServiceBuilder(
         consumerId,
         eserviceId,
         eserviceVersionId,
-        knodeId,
+        knodeId: targetKnodeId,
         producerId: data.producerId,
       });
 
@@ -141,24 +151,29 @@ export function agreementServiceBuilder(
 
     async getAgreement(
       agreementId: ExternalId<AgreementId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreement> {
-      logger.info(`Getting Agreement ${agreementId} from Knode ${knodeId}`);
+      logger.info(
+        `Getting Agreement ${agreementId} from Knode ${targetKnodeId}`,
+      );
 
       const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
-        knodeId,
+        targetKnodeId,
       );
 
       assertAgreementExists(remoteAgreement, agreementId);
 
       const { data } = await k2kGatewayApi.getAgreement({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data, knodeId);
+      return toAPI_Agreement(data, targetKnodeId);
     },
 
     async getAgreements(
@@ -175,14 +190,17 @@ export function agreementServiceBuilder(
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
         );
-      for (const knodeId of knodesWithAgreements) {
+      for (const targetKnodeId of knodesWithAgreements) {
         logger.info(
           { requestQuery },
-          `Getting Agreements from Knode ${knodeId} with query params`,
+          `Getting Agreements from Knode ${targetKnodeId} with query params`,
         );
 
         const { data } = await k2kGatewayApi.getAgreements({
-          client: k2kGatewayClient,
+          client: getK2K2GatewayApiClientForTarget(
+            targetKnodeUrls,
+            targetKnodeId,
+          ),
           query: {
             consumerId: authData.organizationId,
             limit: dynamicLimit,
@@ -194,7 +212,7 @@ export function agreementServiceBuilder(
         if (results.length < limit) {
           results = results.concat(
             data.results.map((agreement) =>
-              toAPI_Agreement(agreement, knodeId),
+              toAPI_Agreement(agreement, targetKnodeId),
             ),
           );
 
@@ -217,55 +235,65 @@ export function agreementServiceBuilder(
 
     async reactivateAgreement(
       agreementId: ExternalId<AgreementId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreement> {
-      logger.info(`Reactivating Agreement ${agreementId} on Knode ${knodeId}`);
+      logger.info(
+        `Reactivating Agreement ${agreementId} on Knode ${targetKnodeId}`,
+      );
 
       await verifyConsumerCanActOnAgreement(
         agreementId,
-        knodeId,
+        targetKnodeId,
         authData.organizationId,
         remoteResourceDbService,
         readmodelService,
       );
 
       const { data } = await k2kGatewayApi.reactivateAgreement({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data, knodeId);
+      return toAPI_Agreement(data, targetKnodeId);
     },
 
     async suspendAgreement(
       agreementId: ExternalId<AgreementId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreement> {
-      logger.info(`Suspending Agreement ${agreementId} on Knode ${knodeId}`);
+      logger.info(
+        `Suspending Agreement ${agreementId} on Knode ${targetKnodeId}`,
+      );
 
       await verifyConsumerCanActOnAgreement(
         agreementId,
-        knodeId,
+        targetKnodeId,
         authData.organizationId,
         remoteResourceDbService,
         readmodelService,
       );
 
       const { data } = await k2kGatewayApi.suspendAgreement({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClientForTarget(
+          targetKnodeUrls,
+          targetKnodeId,
+        ),
         path: { agreementId },
       });
 
-      return toAPI_Agreement(data, knodeId);
+      return toAPI_Agreement(data, targetKnodeId);
     },
   };
 }
 
 async function verifyConsumerCanActOnAgreement(
   agreementId: ExternalId<AgreementId>,
-  knodeId: KnodeId,
+  targetKnodeId: KnodeId,
   organizationId: OrganizationId,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
@@ -274,7 +302,7 @@ async function verifyConsumerCanActOnAgreement(
 
   const remoteAgreement = await remoteResourceDbService.getAgreementById(
     agreementId,
-    knodeId,
+    targetKnodeId,
   );
 
   assertAgreementExists(remoteAgreement, agreementId);
