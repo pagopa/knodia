@@ -10,9 +10,10 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
+  type EserviceTemplateId,
   type EserviceVersionId,
   generateId,
   unsafeBrandId,
@@ -57,6 +58,7 @@ import {
   updateEserviceVersionState,
 } from "../utils/utils.ts";
 import {
+  assertCategoriesCanBeUpdated,
   assertEserviceVersionIsActive,
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
@@ -329,7 +331,10 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      assertValidCategories(update.categories);
+      if (update.categories !== undefined) {
+        assertCategoriesCanBeUpdated(eservice);
+        assertValidCategories(update.categories);
+      }
 
       const now = new Date();
 
@@ -371,10 +376,7 @@ function resolveTemplateFixedFields(
       categories: template.eserviceFields.categories,
       mode: template.eserviceFields.mode,
       requiredAttributes: template.eserviceFields.requiredAttributes,
-      template: {
-        id: unsafeBrandExternalId(seed.template.id),
-        knodeId: seed.template.knodeId,
-      },
+      template: fromExternalResource<EserviceTemplateId>(seed.template),
     };
   }
 

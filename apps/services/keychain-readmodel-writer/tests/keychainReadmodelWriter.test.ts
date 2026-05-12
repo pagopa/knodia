@@ -37,7 +37,7 @@ import {
   getConsumerKeychainPurposesByKeychainId,
 } from "./utils.ts";
 
-describe("Consumer keychain read model writer tests", async () => {
+describe("Keychain read model writer tests", async () => {
   it("ConsumerKeychainCreatedV1", async () => {
     const consumerKeychain = getMockConsumerKeychain();
 

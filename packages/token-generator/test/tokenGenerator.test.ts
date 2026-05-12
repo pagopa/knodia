@@ -14,7 +14,7 @@ import { type SignCommand } from "@aws-sdk/client-kms";
 import {
   type ExternalResource,
   generateExternalId,
-  unsafeBrandExternalId,
+  toExternalResource,
 } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
@@ -66,12 +66,10 @@ const externalUISessionResourceInput = {
     id: unsafeBrandId<AgreementId>("770e8400-e29b-41d4-a716-446655440000"),
     knodeId: KnodeId.enum.Orion,
   },
-  consumer: {
-    id: unsafeBrandExternalId<OrganizationId>(
-      "880e8400-e29b-41d4-a716-446655440000",
-    ),
-    knodeId: KnodeId.enum.Lynx,
-  },
+  consumer: toExternalResource<OrganizationId>(
+    "880e8400-e29b-41d4-a716-446655440000",
+    KnodeId.enum.Lynx,
+  ),
   eservice: {
     id: unsafeBrandId<EserviceId>("990e8400-e29b-41d4-a716-446655440000"),
     knodeId: KnodeId.enum.Orion,

@@ -2,8 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
+import { toExternalResource } from "@knodia/common-models/externalResource";
+import { type EserviceId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
@@ -73,10 +73,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       ]);
 
       const detail = await eserviceService.getEserviceDetails(
-        {
-          id: unsafeBrandExternalId(req.params.eserviceId),
-          knodeId: KnodeId.parse(req.query.knodeId),
-        },
+        toExternalResource<EserviceId>(
+          req.params.eserviceId,
+          req.query.knodeId,
+        ),
         ctx,
       );
 
@@ -141,10 +141,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const { buffer, contentType, fileName } =
         await eserviceService.downloadEserviceLatestVersionInterface(
-          {
-            id: unsafeBrandExternalId(req.params.eserviceId),
-            knodeId: KnodeId.parse(req.query.knodeId),
-          },
+          toExternalResource<EserviceId>(
+            req.params.eserviceId,
+            req.query.knodeId,
+          ),
           ctx,
         );
 

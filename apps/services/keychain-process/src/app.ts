@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
 import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
@@ -30,7 +31,6 @@ import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { knodeApiKeychainServiceBuilder } from "./services/knodeApiKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
-import { userServiceBuilder } from "./services/userService.ts";
 
 export function buildApp({
   config,
@@ -81,9 +81,7 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const userService = userServiceBuilder({
-    userPoolId: config.cognitoUserPoolId,
-  });
+  const cognitoIdmClient = buildCognitoIdmClient(config);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -102,7 +100,7 @@ export function buildApp({
       consumerKeychainService: consumerKeychainServiceBuilder(
         eventStoreWriter,
         readmodelService,
-        userService,
+        cognitoIdmClient,
         clients.remoteResourcesManagerClient,
         config,
       ),
@@ -113,7 +111,7 @@ export function buildApp({
         readmodelService,
       ),
     });
-    protectedApp.register(userRouter, userService);
+    protectedApp.register(userRouter, cognitoIdmClient);
   });
 
   return app;

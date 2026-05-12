@@ -1,26 +1,21 @@
--- Local development seed data (idempotent)
--- Placeholder ${NAMESPACE} is replaced at runtime via sed (same convention as Flyway)
--- Organization IDs match scripts/local-auth/local-cognito.mjs and generate-token.mjs
-
--- Organizations
+-- Organization IDs match scripts/local-auth/local-cognito.mjs and generate-token.mjs.
+-- ${NAMESPACE} is substituted at runtime by seed.sh via sed.
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)
-VALUES ('00000000-0000-4000-8000-000000000002', 'Comune di Roma', 0, now(), now())
-ON CONFLICT (id) DO NOTHING;
+VALUES ('00000000-0000-4000-8000-000000000002', 'Test Org Lynx 1', 0, now(), now())
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)
-VALUES ('00000000-0000-4000-8000-000000000003', 'Regione Lazio', 0, now(), now())
-ON CONFLICT (id) DO NOTHING;
+VALUES ('00000000-0000-4000-8000-000000000003', 'Test Org Lynx 2', 0, now(), now())
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)
-VALUES ('00000000-0000-4000-8000-000000000004', 'Ministero dell''Interno', 0, now(), now())
-ON CONFLICT (id) DO NOTHING;
+VALUES ('00000000-0000-4000-8000-000000000004', 'Test Org Lynx 3', 0, now(), now())
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)
-VALUES ('00000000-0000-4000-8000-000000000005', 'INPS', 0, now(), now())
-ON CONFLICT (id) DO NOTHING;
-
--- Organization attributes (vc_territorial_units)
+VALUES ('00000000-0000-4000-8000-000000000005', 'Test Org Lynx 4', 0, now(), now())
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
 VALUES ('00000000-0000-4000-8000-000000000002', 'vc_territorial_units', 'nuts3', 0)
