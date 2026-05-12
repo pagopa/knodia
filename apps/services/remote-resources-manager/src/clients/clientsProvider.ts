@@ -1,9 +1,6 @@
 import type { KnodeId } from "@knodia/common-models/ids";
+import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 
-import {
-  getTargetKnodeUrl,
-  type TargetKnodeUrls,
-} from "@knodia/common-models/targetKnodeUrls";
 import {
   createK2K2GatewayApiClient,
   type K2K2GatewayApiClient,
@@ -18,7 +15,7 @@ export function getK2K2GatewayApiClientForTarget(
   const cached = clientCache.get(targetKnodeId);
   if (cached) return cached;
   const client = createK2K2GatewayApiClient({
-    baseURL: getTargetKnodeUrl(targetKnodeUrls, targetKnodeId),
+    baseURL: targetKnodeUrls[targetKnodeId],
   });
   clientCache.set(targetKnodeId, client);
   return client;
