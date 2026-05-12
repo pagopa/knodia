@@ -38,11 +38,8 @@ import {
   retrieveKeychainKey,
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain } from "../utils/utils.ts";
-import {
-  assertOrganizationIsKeychainOwner,
-  assertUserIsAllowedToRemoveKey,
-} from "../utils/validators.ts";
+import { addKeyToKeychain, removeKeyFromKeychain } from "../utils/utils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -161,24 +158,11 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedKnodeApiKeychain = removeKeyFromKeychain(
         knodeApiKeychain.data,
-      );
-
-      assertUserIsAllowedToRemoveKey(
         authData,
-        knodeApiKeychainId,
-        knodeApiKeychain.data.users,
+        kid,
       );
-
-      retrieveKeychainKey(knodeApiKeychain.data, kid);
-
-      const updatedKnodeApiKeychain: KnodeApiKeychain = {
-        ...knodeApiKeychain.data,
-        keys: knodeApiKeychain.data.keys.filter((key) => key.kid !== kid),
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createKnodeApiKeychainKeyRemovedV1Event(

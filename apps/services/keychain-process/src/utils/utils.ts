@@ -6,19 +6,21 @@ import type {
 } from "@knodia/keychain-models";
 
 import { InternalError } from "@knodia/common-models/errors";
-import { unsafeBrandKeyId } from "@knodia/common-models/ids";
+import { type KeyId, unsafeBrandKeyId } from "@knodia/common-models/ids";
 import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 
 import type { API_KeychainKeySeed } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { jwkDecodingError } from "../models/errors.ts";
+import { retrieveKeychainKey } from "./retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,
   assertNotX509Certificate,
   assertOrganizationIsKeychainOwner,
   assertUserIsAllowedToPerformKeychainOperation,
+  assertUserIsAllowedToRemoveKey,
 } from "./validators.ts";
 
 export async function addKeyToKeychain(
@@ -102,5 +104,19 @@ export async function addKeyToKeychain<
       keys: [...keychain.keys, newKey],
       updatedAt: new Date(),
     },
+  };
+}
+
+export function removeKeyFromKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+  assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);
+  retrieveKeychainKey(keychain, kid);
+
+  return {
+    ...keychain,
+    keys: keychain.keys.filter((key) => key.kid !== kid),
+    updatedAt: new Date(),
   };
 }
