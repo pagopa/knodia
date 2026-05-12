@@ -21,6 +21,22 @@ export const createKnodeApiKeychainCreatedV1Event = (
   streamId: keychain.id,
 });
 
+export const createKnodeApiKeychainUpdatedV1Event = (
+  keychain: KnodeApiKeychain,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      knodeApiKeychain: toKnodeApiKeychainV1(keychain),
+    },
+    type: "KnodeApiKeychainUpdatedV1",
+  },
+  streamId: keychain.id,
+});
+
 export const createKnodeApiKeychainKeyAddedV1Event = (
   keychain: KnodeApiKeychain,
   kid: KeyId,

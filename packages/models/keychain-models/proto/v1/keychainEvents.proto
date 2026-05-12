@@ -51,6 +51,10 @@ message KnodeApiKeychainCreatedV1 {
   KnodeApiKeychainV1 knodeApiKeychain = 1;
 }
 
+message KnodeApiKeychainUpdatedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+}
+
 message KnodeApiKeychainKeyAddedV1 {
   KnodeApiKeychainV1 knodeApiKeychain = 1;
   string kid = 2;

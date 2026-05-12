@@ -101,6 +101,16 @@ export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
 
+export const API_KnodeApiKeychainPatch = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.nullable().optional(),
+    name: API_KeychainLocalizedName.optional(),
+  })
+  .meta({ id: "KnodeApiKeychainPatch" });
+export type API_KnodeApiKeychainPatch = z.infer<
+  typeof API_KnodeApiKeychainPatch
+>;
+
 export const API_KeychainKeySeed = z
   .strictObject({
     encodedPem: z.string(),
