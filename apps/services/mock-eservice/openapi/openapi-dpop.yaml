@@ -189,7 +189,7 @@ components:
         - naturalPerson
       additionalProperties: false
 paths:
-  /natural-persons/{notation}/digital-contact:
+  /natural-persons/{identifierNotation}/digital-contact:
     get:
       operationId: getDigitalContact
       summary: Get digital contact
@@ -201,7 +201,7 @@ paths:
         - schema:
             $ref: "#/components/schemas/Notation"
           in: path
-          name: notation
+          name: identifierNotation
           required: true
         - schema:
             type: string

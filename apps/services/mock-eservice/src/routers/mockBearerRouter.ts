@@ -48,14 +48,14 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      const { notation } = req.params;
-      const result = findPersonalInformation(notation);
+      const { identifierNotation } = req.params;
+      const result = findPersonalInformation(identifierNotation);
       if (!result) {
-        throw naturalPersonNotFound(notation);
+        throw naturalPersonNotFound(identifierNotation);
       }
 
       logger.info(
-        `Mock e-service /natural-persons/${notation} returned personal information`,
+        `Mock e-service /natural-persons/${identifierNotation} returned personal information`,
       );
       res.status(200).send(result);
     },
@@ -64,7 +64,7 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
       description:
         "Returns the date of birth of a natural person identified by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected).",
       operationId: "getPersonalInformation",
-      params: z.strictObject({ notation: API_Notation }),
+      params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
         200: API_PersonalInformation.meta({
           description: "Personal information for the requested natural person",
@@ -78,6 +78,6 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
       summary: "Get personal information",
       tags: [apiTags.personalInformation],
     },
-    url: "/natural-persons/:notation",
+    url: "/natural-persons/:identifierNotation",
   });
 };

@@ -49,14 +49,14 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      const { notation } = req.params;
-      const result = findDigitalContact(notation);
+      const { identifierNotation } = req.params;
+      const result = findDigitalContact(identifierNotation);
       if (!result) {
-        throw naturalPersonNotFound(notation);
+        throw naturalPersonNotFound(identifierNotation);
       }
 
       logger.info(
-        `Mock e-service /natural-persons/${notation}/digital-contact returned digital contact`,
+        `Mock e-service /natural-persons/${identifierNotation}/digital-contact returned digital contact`,
       );
       res.status(200).send(result);
     },
@@ -66,7 +66,7 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
         "Returns the digital contact of a natural person identified by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected).",
       headers: MockEserviceHeaders,
       operationId: "getDigitalContact",
-      params: z.strictObject({ notation: API_Notation }),
+      params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
         200: API_DigitalContact.meta({
           description: "Digital contact for the requested natural person",
@@ -80,6 +80,6 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
       summary: "Get digital contact",
       tags: [apiTags.digitalContact],
     },
-    url: "/natural-persons/:notation/digital-contact",
+    url: "/natural-persons/:identifierNotation/digital-contact",
   });
 };

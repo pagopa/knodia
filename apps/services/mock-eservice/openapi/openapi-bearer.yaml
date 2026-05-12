@@ -91,7 +91,7 @@ components:
         - dateOfBirth
       additionalProperties: false
 paths:
-  /natural-persons/{notation}:
+  /natural-persons/{identifierNotation}:
     get:
       operationId: getPersonalInformation
       summary: Get personal information
@@ -103,7 +103,7 @@ paths:
         - schema:
             $ref: "#/components/schemas/Notation"
           in: path
-          name: notation
+          name: identifierNotation
           required: true
       responses:
         "200":
