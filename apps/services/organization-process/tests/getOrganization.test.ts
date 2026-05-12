@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Organization } from "@knodia/organization-models";
 
-import { generateId, type OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -65,5 +69,44 @@ describe("GET /organizations/:organizationId (getOrganization)", () => {
   it("should return 400 for invalid organization id format", async () => {
     const response = await getOrganization("not-a-uuid");
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return the organization for an external-ui-session token whose producer.id matches the path and producer.knodeId matches the running knode", async () => {
+    await seedOrganization(mockOrganization);
+
+    const response = await injectAppRequest({
+      producerId: VALID_ORGANIZATION_ID,
+      producerKnodeId: KnodeId.enum.Orion,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/organizations/${VALID_ORGANIZATION_ID}`);
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<API_Organization>();
+    expect(body).toEqual(toExpectAPI_Organization(mockOrganization));
+  });
+
+  it("should return 403 for an external-ui-session token whose producer.id does not match the path", async () => {
+    await seedOrganization(mockOrganization);
+
+    const response = await injectAppRequest({
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/organizations/${VALID_ORGANIZATION_ID}`);
+
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 for an external-ui-session token whose producer.knodeId does not match the running knode", async () => {
+    await seedOrganization(mockOrganization);
+
+    const response = await injectAppRequest({
+      producerId: VALID_ORGANIZATION_ID,
+      producerKnodeId: KnodeId.enum.Lynx,
+      scope: "agreement-activation",
+      type: "external-ui-session",
+    }).get(`/organizations/${VALID_ORGANIZATION_ID}`);
+
+    expect(response.statusCode).toBe(403);
   });
 });

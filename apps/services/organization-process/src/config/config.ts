@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { EventStoreOrganizationConfig } from "@knodia/db-event-store-organization/config";
 import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
 import {
@@ -5,12 +6,21 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { type z } from "zod";
+import { z } from "zod";
 
 const OrganizationProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStoreOrganizationConfig)
-  .and(ReadmodelOrganizationConfig);
+  .and(ReadmodelOrganizationConfig)
+  .and(
+    z
+      .object({
+        KNODE_ID: KnodeId,
+      })
+      .transform((c) => ({
+        knodeId: c.KNODE_ID,
+      })),
+  );
 export type OrganizationProcessConfig = z.infer<
   typeof OrganizationProcessConfig
 >;
