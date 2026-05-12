@@ -21,6 +21,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KnodeApiKeychainSeed,
@@ -37,6 +38,7 @@ import {
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain } from "../utils/utils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -108,6 +110,31 @@ export function knodeApiKeychainServiceBuilder(
 
       return retrieveKeychainKey(knodeApiKeychain.data, kid);
     },
+    async getKnodeApiKeychainKeys(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      params: API_GetKnodeApiKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<KeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Knode API Keychain with ID ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveFlatKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      return await readmodelService.getKnodeApiKeychainKeys(
+        knodeApiKeychainId,
+        params,
+      );
+    },
     async getKnodeApiKeychains(
       params: API_GetKnodeApiKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -116,7 +143,6 @@ export function knodeApiKeychainServiceBuilder(
 
       return await readmodelService.getKnodeApiKeychains(params);
     },
-
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       keySeed: API_KeychainKeySeed,

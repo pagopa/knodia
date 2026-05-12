@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -15,6 +16,7 @@ import { API_KnodeApiKeychainIdPathParam } from "@knodia/keychain-models/api";
 import type { KnodeApiKeychainService } from "../services/knodeApiKeychainService.ts";
 
 import {
+  API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
@@ -184,6 +186,48 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const keys = await knodeApiKeychainService.getKnodeApiKeychainKeys(
+        req.params.knodeApiKeychainId,
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: keys.totalCount,
+        },
+        results: keys.results.map(toAPI_KeychainKey),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve keys of a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getKnodeApiKeychainKeys",
+      params: API_KnodeApiKeychainIdPathParam,
+      querystring: API_GetKnodeApiKeychainKeysQueryParams,
+      response: {
+        200: API_KeychainKeys.meta({
+          description: "Knode API Keychain keys retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
       },
       tags: [apiTags.knodeApiKeychain],
     },

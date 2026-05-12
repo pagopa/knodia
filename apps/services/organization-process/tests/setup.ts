@@ -36,6 +36,7 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      cognitoUserPoolId: "test-user-pool-id",
       isProduction: false,
       knodeId: KnodeId.enum.Orion,
       logLevel: "silent",

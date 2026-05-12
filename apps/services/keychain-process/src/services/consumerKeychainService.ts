@@ -57,12 +57,7 @@ import {
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/consumerKeychainEventFactory.ts";
-import {
-  consumerKeychainNotFound,
-  keyNotFoundInKeychain,
-  userAlreadyMember,
-  userNotFound,
-} from "../models/errors.ts";
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainPurpose,
@@ -270,12 +265,10 @@ export function consumerKeychainServiceBuilder(
         `Getting keys of Consumer Keychain with ID ${consumerKeychainId}`,
       );
 
-      const consumerKeychain =
-        await readmodelService.getFlatConsumerKeychainById(consumerKeychainId);
-
-      if (!consumerKeychain) {
-        throw consumerKeychainNotFound(consumerKeychainId);
-      }
+      const consumerKeychain = await retrieveFlatConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
@@ -478,13 +471,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      const keyToRemove = consumerKeychain.data.keys.find(
-        (key) => key.kid === kid,
-      );
-
-      if (!keyToRemove) {
-        throw keyNotFoundInKeychain(kid, consumerKeychainId);
-      }
+      retrieveKeychainKey(consumerKeychain.data, kid);
 
       const updatedConsumerKeychain: ConsumerKeychain = {
         ...consumerKeychain.data,

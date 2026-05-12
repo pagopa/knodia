@@ -1,3 +1,4 @@
+import { CognitoIdmClientConfig } from "@knodia/cognito-idm-client";
 import { KnodeId } from "@knodia/common-models/ids";
 import { EventStoreOrganizationConfig } from "@knodia/db-event-store-organization/config";
 import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
@@ -12,6 +13,7 @@ const OrganizationProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStoreOrganizationConfig)
   .and(ReadmodelOrganizationConfig)
+  .and(CognitoIdmClientConfig)
   .and(
     z
       .object({
