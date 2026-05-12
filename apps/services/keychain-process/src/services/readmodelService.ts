@@ -232,7 +232,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   : undefined,
               ),
             )
-            .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
@@ -307,7 +306,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   : undefined,
               ),
             )
-            .groupBy(readmodelKnodeApiKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
