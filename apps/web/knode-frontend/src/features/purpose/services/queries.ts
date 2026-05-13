@@ -24,7 +24,8 @@ import { client } from "@/libs/axios";
 const PURPOSES_PAGE_LIMIT = 9;
 const PURPOSES_SECTION_LIMIT = 50;
 const PURPOSES_LINKED_KEYCHAINS_LIMIT = 10;
-const NON_ARCHIVED_STATES: bffApi.PurposeState[] = ["Active", "Suspended"];
+const VISIBLE_PURPOSE_STATES: bffApi.PurposeState[] = ["Active", "Suspended"];
+const ARCHIVED_PURPOSE_STATES: bffApi.PurposeState[] = ["Archived"];
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -45,7 +46,7 @@ export const consumerPurposesQuery = (offset: number) =>
     query: {
       limit: PURPOSES_PAGE_LIMIT,
       offset,
-      state: NON_ARCHIVED_STATES,
+      state: VISIBLE_PURPOSE_STATES,
     },
   });
 
@@ -55,7 +56,7 @@ export const consumerArchivedPurposesQuery = (offset: number) =>
     query: {
       limit: PURPOSES_PAGE_LIMIT,
       offset,
-      state: ["Archived"],
+      state: ARCHIVED_PURPOSE_STATES,
     },
   });
 
@@ -67,7 +68,7 @@ export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
       eserviceId,
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
-      state: NON_ARCHIVED_STATES,
+      state: VISIBLE_PURPOSE_STATES,
     },
   });
 
@@ -81,7 +82,17 @@ export const producerPurposesQuery = (
       eserviceId,
       limit: PURPOSES_PAGE_LIMIT,
       offset,
-      state: NON_ARCHIVED_STATES,
+      state: VISIBLE_PURPOSE_STATES,
+    },
+  });
+
+export const producerArchivedPurposesQuery = (offset: number) =>
+  getProducerPurposesOptions({
+    client,
+    query: {
+      limit: PURPOSES_PAGE_LIMIT,
+      offset,
+      state: ARCHIVED_PURPOSE_STATES,
     },
   });
 
@@ -93,7 +104,7 @@ export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
       agreementId,
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
-      state: NON_ARCHIVED_STATES,
+      state: VISIBLE_PURPOSE_STATES,
     },
   });
 
@@ -106,7 +117,7 @@ export const producerRecentPurposesByEserviceQuery = (eserviceId: EserviceId) =>
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
       recentlyUpdated: "true",
-      state: NON_ARCHIVED_STATES,
+      state: VISIBLE_PURPOSE_STATES,
     },
   });
 

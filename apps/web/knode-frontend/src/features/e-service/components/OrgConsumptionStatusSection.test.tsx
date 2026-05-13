@@ -387,10 +387,10 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
       await screen.findByRole("button", { name: "Create Purpose" }),
     );
 
-    expect(screen.getByText("You don't have an Agreement")).toBeInTheDocument();
+    expect(screen.getByText("Your Agreement is archived")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "To create a Purpose, you should have an Agreement for this E-Service.",
+        "To create a Purpose, you should have an active Agreement.",
       ),
     ).toBeInTheDocument();
   });
@@ -409,7 +409,7 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
 
     expect(screen.getByText("This E-Service is Archived")).toBeInTheDocument();
     expect(
-      screen.queryByText("You don't have an Agreement"),
+      screen.queryByText("Your Agreement is archived"),
     ).not.toBeInTheDocument();
   });
 
@@ -426,7 +426,7 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
       screen.queryByText("This E-Service is Archived"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText("You don't have an Agreement"),
+      screen.queryByText("Your Agreement is archived"),
     ).not.toBeInTheDocument();
   });
 });
