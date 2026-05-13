@@ -438,7 +438,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({
-          description: "Knode API Keychain or member not found",
+          description: "Knode API Keychain or Member not found",
         }),
       },
       tags: [apiTags.knodeApiKeychain],
