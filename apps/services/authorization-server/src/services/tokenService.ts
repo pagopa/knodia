@@ -56,7 +56,6 @@ export function tokenServiceBuilder({
           logger,
         );
 
-
       const token = await tokenGenerator.generateKnodeApiAccessToken({
         audience: [config.generatedKnodeApiTokenAudience],
         issuer: config.generatedKnodeApiTokenIssuer,

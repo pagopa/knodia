@@ -1,11 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-  KnodeId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
@@ -17,7 +11,13 @@ import {
 } from "@knodia/authorization-models/clientAssertion";
 import { KnodeApiClientAssertion } from "@knodia/authorization-models/clientAssertion/knodeApi";
 import { type Algorithm } from "@knodia/common-models/crypto";
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  type KnodeApiKeychainId,
+  type KnodeId,
+  type OrganizationId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -41,6 +41,7 @@ import { type z, ZodError } from "zod";
 import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
+
 import {
   accessTokenTypeMismatch,
   agreementNotActive,

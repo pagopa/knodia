@@ -227,15 +227,6 @@ export function knodeApiKeychainNotFound(
   });
 }
 
-export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
-  return createApiError<ErrorCodes>({
-    code: "TARGET_KNODE_URL_NOT_CONFIGURED",
-    detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
-    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-    title: "internal_error",
-  });
-}
-
 export function platformStatesNotActive(
   errors: (ApiError<ErrorCodes> | undefined)[],
 ) {
@@ -279,6 +270,15 @@ export function purposeNotFound(id: PurposeId) {
     detail: `Purpose with ID ${id} was not found`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "unauthorized_client",
+  });
+}
+
+export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
+  return createApiError<ErrorCodes>({
+    code: "TARGET_KNODE_URL_NOT_CONFIGURED",
+    detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "internal_error",
   });
 }
 

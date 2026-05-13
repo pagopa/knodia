@@ -8,6 +8,10 @@ import {
 
 import { targetKnodeUrlNotConfigured } from "../models/errors.ts";
 
+export type K2K2GatewayApiClientFactory = ReturnType<
+  typeof makeK2K2GatewayApiClientFactory
+>;
+
 export function makeK2K2GatewayApiClientFactory(
   targetKnodeUrls: TargetKnodeUrls,
 ) {
@@ -26,7 +30,3 @@ export function makeK2K2GatewayApiClientFactory(
     return client;
   };
 }
-
-export type K2K2GatewayApiClientFactory = ReturnType<
-  typeof makeK2K2GatewayApiClientFactory
->;
