@@ -1,0 +1,16 @@
+meta {
+  name: Get Knode API Client Assertion Verification Data
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/knodeApiClientAssertionVerificationData
+  body: json
+}
+
+body:json {
+  {
+    "keychainId": "{{knodeApiKeychainId}}",
+    "kid": "{{knodeApiKeychainKeyId}}"
+  }
+}

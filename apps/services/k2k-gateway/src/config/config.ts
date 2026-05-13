@@ -21,7 +21,9 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
           .int()
           .positive()
           .default(120),
-        FRONTEND_ACTIVATION_PATH: z.string().default("/activate"),
+        FRONTEND_ACTIVATION_PATH: z
+          .string()
+          .default("/ui/agreement-activation"),
         FRONTEND_BASE_URL: z.url(),
         INTERNAL_JWT_AUDIENCE: z.string(),
         INTERNAL_JWT_ISSUER: z.string(),

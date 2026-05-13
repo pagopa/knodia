@@ -119,7 +119,7 @@ describe("POST /agreements/:agreementId/activationMagicLink (createAgreementActi
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       expiresAt: new Date(mockTokenExpiresAt * 1000).toISOString(),
-      url: `https://test-frontend.example/activate#token=${encodeURIComponent(mockToken.serialized)}`,
+      url: `https://test-frontend.example/ui/agreement-activation#token=${encodeURIComponent(mockToken.serialized)}`,
     });
   });
 

@@ -536,6 +536,13 @@ export type CompactAgreement = {
     state: AgreementState;
 };
 
+export type AgreementActivationDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    producer: CompactOrganization;
+};
+
 /**
  * Seed data to create a new Agreement
  */
@@ -845,18 +852,6 @@ export type User = {
     username: string;
 };
 
-export type OrganizationUser = {
-    email: string;
-    id: UserId;
-    username: string;
-    /**
-     * Whether the User has the technical role within the Organization
-     */
-    isTechnical: boolean;
-};
-
-export type OrganizationUsers = Array<OrganizationUser>;
-
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
@@ -868,6 +863,47 @@ export type KeychainMembers = {
 export type CreatedKeyResource = {
     kid: KeyId;
 };
+
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
+
+export type PurposeTemplate = {
+    description: LocalizedPurposeDescription;
+    eserviceId?: string;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplateDetails = {
+    createdAt: string;
+    description: LocalizedPurposeDescription;
+    eserviceId?: string;
+    formAnswersJson: PurposeFormAnswers;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplates = Array<PurposeTemplate>;
 
 /**
  * Seed data to create a new Purpose
@@ -947,16 +983,6 @@ export type PurposeDetails = {
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
     updatedAt: string;
-};
-
-/**
- * Organization details for the current session, including attributes
- */
-export type SessionOrganization = {
-    attributes: Array<Attribute>;
-    id: string;
-    knodeId: KnodeId;
-    name: string;
 };
 
 export type GetStatusData = {
@@ -1190,6 +1216,83 @@ export type DownloadEserviceTemplateInterfaceResponses = {
 };
 
 export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
+
+export type GetPurposeTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        eserviceId?: string;
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates';
+};
+
+export type GetPurposeTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposeTemplatesError = GetPurposeTemplatesErrors[keyof GetPurposeTemplatesErrors];
+
+export type GetPurposeTemplatesResponses = {
+    /**
+     * Purpose Templates retrieved successfully
+     */
+    200: PurposeTemplates;
+};
+
+export type GetPurposeTemplatesResponse = GetPurposeTemplatesResponses[keyof GetPurposeTemplatesResponses];
+
+export type GetPurposeTemplateData = {
+    body?: never;
+    path: {
+        purposeTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates/{purposeTemplateId}';
+};
+
+export type GetPurposeTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose Template not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeTemplateError = GetPurposeTemplateErrors[keyof GetPurposeTemplateErrors];
+
+export type GetPurposeTemplateResponses = {
+    /**
+     * Purpose Template retrieved successfully
+     */
+    200: PurposeTemplateDetails;
+};
+
+export type GetPurposeTemplateResponse = GetPurposeTemplateResponses[keyof GetPurposeTemplateResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -1761,7 +1864,11 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.
          */
         purpose?: string;
     };
@@ -2336,14 +2443,14 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetOrganizationUsersData = {
+export type GetOperatorsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/users';
+    url: '/operators';
 };
 
-export type GetOrganizationUsersErrors = {
+export type GetOperatorsErrors = {
     /**
      * Bad Request
      */
@@ -2358,16 +2465,16 @@ export type GetOrganizationUsersErrors = {
     403: Problem;
 };
 
-export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
+export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
 
-export type GetOrganizationUsersResponses = {
+export type GetOperatorsResponses = {
     /**
-     * Organization Users retrieved successfully
+     * Operators retrieved successfully
      */
-    200: OrganizationUsers;
+    200: Operators;
 };
 
-export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
+export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -3573,11 +3680,9 @@ export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses
 
 export type ActivateAgreementData = {
     body?: never;
-    path: {
-        agreementId: string;
-    };
+    path?: never;
     query?: never;
-    url: '/external/agreements/{agreementId}/activate';
+    url: '/external/agreementActivation/activate';
 };
 
 export type ActivateAgreementErrors = {
@@ -3613,3 +3718,40 @@ export type ActivateAgreementResponses = {
 };
 
 export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
+
+export type GetAgreementActivationDetailsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/external/agreementActivation/details';
+};
+
+export type GetAgreementActivationDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementActivationDetailsError = GetAgreementActivationDetailsErrors[keyof GetAgreementActivationDetailsErrors];
+
+export type GetAgreementActivationDetailsResponses = {
+    /**
+     * Agreement activation details retrieved successfully
+     */
+    200: AgreementActivationDetails;
+};
+
+export type GetAgreementActivationDetailsResponse = GetAgreementActivationDetailsResponses[keyof GetAgreementActivationDetailsResponses];

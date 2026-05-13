@@ -20,7 +20,7 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
-const currentKnodeId: KnodeId = KnodeId.enum.Orion;
+const thisKnodeId: KnodeId = KnodeId.enum.Orion;
 
 let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
@@ -45,7 +45,7 @@ beforeAll(async () => {
     config: {
       acceptedAudiences: ["test-audience"],
       isProduction: false,
-      knodeId: currentKnodeId,
+      knodeId: thisKnodeId,
       logLevel: "silent",
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
