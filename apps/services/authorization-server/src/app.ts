@@ -13,6 +13,7 @@ import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
+import { makeK2K2GatewayApiClientFactory } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
@@ -29,6 +30,9 @@ export function buildApp({
   readmodelDb: NodePgDatabase;
 }) {
   const tokenGenerator = tokenGeneratorBuilder();
+  const getK2K2GatewayApiClient = makeK2K2GatewayApiClientFactory(
+    config.targetKnodeUrls,
+  );
 
   const dpopProofStore = createJtiReplayStore(
     config.dynamoDbDpopProofsTable,
@@ -65,6 +69,7 @@ export function buildApp({
     tokenService: tokenServiceBuilder({
       config,
       dpopProofStore,
+      getK2K2GatewayApiClient,
       readmodelService: readmodelServiceBuilder(readmodelDb),
       tokenGenerator,
     }),

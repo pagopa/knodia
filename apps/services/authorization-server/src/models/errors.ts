@@ -5,6 +5,8 @@ import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
+  KnodeId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -62,6 +64,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0025",
   KNODE_API_KEYCHAIN_NOT_FOUND: "0026",
   KNODE_API_KEYCHAIN_KEY_NOT_FOUND: "0027",
+  TARGET_KNODE_URL_NOT_CONFIGURED: "0028",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -192,7 +195,7 @@ export function invalidClientAssertionSignature() {
 }
 
 export function knodeApiKeychainKeyNotFound(
-  knodeApiKeychainId: string,
+  knodeApiKeychainId: KnodeApiKeychainId,
   kid: string,
 ) {
   return createApiError<ErrorCodes>({
@@ -213,7 +216,9 @@ export function knodeApiKeychainKnodeVerificationDataNotFound() {
   });
 }
 
-export function knodeApiKeychainNotFound(knodeApiKeychainId: string) {
+export function knodeApiKeychainNotFound(
+  knodeApiKeychainId: KnodeApiKeychainId,
+) {
   return createApiError<ErrorCodes>({
     code: "KNODE_API_KEYCHAIN_NOT_FOUND",
     detail: `Knode API Keychain with ID ${knodeApiKeychainId} was not found`,
@@ -265,6 +270,15 @@ export function purposeNotFound(id: PurposeId) {
     detail: `Purpose with ID ${id} was not found`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "unauthorized_client",
+  });
+}
+
+export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
+  return createApiError<ErrorCodes>({
+    code: "TARGET_KNODE_URL_NOT_CONFIGURED",
+    detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "internal_error",
   });
 }
 

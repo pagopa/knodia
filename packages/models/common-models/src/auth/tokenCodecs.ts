@@ -31,6 +31,9 @@ const UserTokenClaims = BaseJwtClaims.extend({
   username: z.string(),
 });
 
+// E-service access tokens are consumed by external platforms that don't need
+// to discriminate Knodia token types, so this codec deliberately omits the
+// `type` literal carried by every other token codec in this file.
 export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
   cnf: z.strictObject({ jkt: z.string() }).optional(),

@@ -1,11 +1,13 @@
-import { Algorithm } from "@knodia/common-models/crypto";
 import { KeyId, KnodeApiKeychainId, KnodeId } from "@knodia/common-models/ids";
 import z from "zod";
 
-import { EXPECTED_CLIENT_ASSERTION_TYP } from "./clientAssertion.ts";
+import {
+  EXPECTED_CLIENT_ASSERTION_ALGORITHM,
+  EXPECTED_CLIENT_ASSERTION_TYP,
+} from "./clientAssertion.ts";
 
 const KnodeApiClientAssertionHeader = z.strictObject({
-  alg: z.literal(Algorithm.enum.RS256),
+  alg: z.literal(EXPECTED_CLIENT_ASSERTION_ALGORITHM),
   kid: KeyId,
   typ: z.literal(EXPECTED_CLIENT_ASSERTION_TYP),
 });
