@@ -1,7 +1,10 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 import type { FastifyBaseLogger } from "fastify";
 
-import { type ConsumerKeychainId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  type KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 import { type JtiReplayStore } from "@knodia/db-jti-replay-store";
 import {
   assertDpopProofNotReplayed,
@@ -16,15 +19,12 @@ import { EXPECTED_DPOP_PROOF_HTM } from "../models/constants.ts";
 import {
   validatePlatformObjects,
   verifyClientAssertionSignature,
+  verifyKnodeApiClientAssertionSignature,
 } from "../utils/validators.ts";
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;
 export function tokenServiceBuilder({
-  config: {
-    eserviceAccessTokenJwtKid,
-    generatedEserviceAccessTokenIssuer,
-    knodeId,
-  },
+  config,
   dpopProofStore,
   k2kGatewayClient,
   readmodelService,
@@ -47,13 +47,6 @@ export function tokenServiceBuilder({
         consumerKeychainId: ConsumerKeychainId;
         dpopProofJWS: string | undefined;
       },
-      {
-        clientAssertionAcceptedAudiences,
-        clientAssertionMaxTokenAgeSeconds,
-        dpopProofHtuBaseUrl,
-        dpopProofMaxTokenAgeSeconds,
-        jwtClockToleranceSeconds,
-      }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
       // Verify DPoP proof signature and claims if a DPoP proof is provided in the request headers
@@ -61,9 +54,9 @@ export function tokenServiceBuilder({
         dpopProofJWS,
         {
           expectedHtm: EXPECTED_DPOP_PROOF_HTM,
-          expectedHtu: dpopProofHtuBaseUrl,
-          jwtClockToleranceSeconds,
-          maxTokenAgeSeconds: dpopProofMaxTokenAgeSeconds,
+          expectedHtu: config.dpopProofHtuBaseUrl,
+          jwtClockToleranceSeconds: config.jwtClockToleranceSeconds,
+          maxTokenAgeSeconds: config.dpopProofMaxTokenAgeSeconds,
         },
         logger,
       );
@@ -72,9 +65,9 @@ export function tokenServiceBuilder({
       const { consumerAttributes, purposeId } =
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
-          clientAssertionAcceptedAudiences,
-          jwtClockToleranceSeconds,
-          clientAssertionMaxTokenAgeSeconds,
+          config.clientAssertionAcceptedAudiences,
+          config.jwtClockToleranceSeconds,
+          config.clientAssertionMaxTokenAgeSeconds,
           k2kGatewayClient,
           logger,
         );
@@ -83,9 +76,9 @@ export function tokenServiceBuilder({
       if (dpopProofJWT) {
         await assertDpopProofNotReplayed(
           dpopProofJWT,
-          dpopProofMaxTokenAgeSeconds,
+          config.dpopProofMaxTokenAgeSeconds,
           dpopProofStore,
-          jwtClockToleranceSeconds,
+          config.jwtClockToleranceSeconds,
         );
       }
 
@@ -106,9 +99,9 @@ export function tokenServiceBuilder({
         dpopJWK: dpopProofJWT?.headers.jwk,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
-        issuer: generatedEserviceAccessTokenIssuer,
-        kid: eserviceAccessTokenJwtKid,
-        producer: { id: agreement.producerId, knodeId },
+        issuer: config.generatedEserviceAccessTokenIssuer,
+        kid: config.eserviceAccessTokenJwtKid,
+        producer: { id: agreement.producerId, knodeId: config.knodeId },
         purposeId: purpose.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,
@@ -118,6 +111,48 @@ export function tokenServiceBuilder({
         access_token: token.serialized,
         expires_in: token.payload.exp - token.payload.iat,
         token_type: dpopProofJWT ? ("DPoP" as const) : ("Bearer" as const),
+      };
+    },
+
+    async issueKnodeApiToken(
+      {
+        clientAssertionJWS,
+        knodeApiKeychainId,
+      }: {
+        clientAssertionJWS: string;
+        knodeApiKeychainId: KnodeApiKeychainId;
+      },
+      logger: FastifyBaseLogger,
+    ) {
+      const { keychainKnodeId, ownerId } =
+        await verifyKnodeApiClientAssertionSignature(
+          { clientAssertionJWS, knodeApiKeychainId },
+          {
+            clientAssertionAcceptedAudiences:
+              config.clientAssertionAcceptedAudiences,
+            clientAssertionMaxTokenAgeSeconds:
+              config.clientAssertionMaxTokenAgeSeconds,
+            jwtClockToleranceSeconds: config.jwtClockToleranceSeconds,
+            localKnodeId: config.knodeId,
+            readmodelService,
+            targetKnodeUrls: config.targetKnodeUrls,
+          },
+          logger,
+        );
+
+      const token = await tokenGenerator.generateKnodeApiAccessToken({
+        audience: [config.generatedKnodeApiTokenAudience],
+        issuer: config.generatedKnodeApiTokenIssuer,
+        keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
+        kid: config.knodeApiTokenJwtKid,
+        organization: { id: ownerId, knodeId: keychainKnodeId },
+        secondsDuration: config.knodeApiTokenDurationSeconds,
+      });
+
+      return {
+        access_token: token.serialized,
+        expires_in: token.payload.exp - token.payload.iat,
+        token_type: "Bearer" as const,
       };
     },
   };

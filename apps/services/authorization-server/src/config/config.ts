@@ -1,6 +1,8 @@
 import { KnodeId } from "@knodia/common-models/ids";
+import { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import { ReadmodelAgreementConfig } from "@knodia/db-readmodel-agreement/config";
 import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
+import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import { ReadmodelPurposeConfig } from "@knodia/db-readmodel-purpose/config";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
@@ -9,6 +11,7 @@ import { z } from "zod";
 const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(ReadmodelAgreementConfig)
   .and(ReadmodelEserviceConfig)
+  .and(ReadmodelKeychainConfig)
   .and(ReadmodelPurposeConfig)
   .and(
     z
@@ -31,19 +34,10 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         GENERATED_KNODE_API_TOKEN_AUDIENCE: z.string().min(1),
         GENERATED_KNODE_API_TOKEN_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
-        KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z
-          .string()
-          .min(1)
-          .transform((value) => value.split(",").map((a) => a.trim()))
-          .pipe(z.string().array()),
-        KNODE_API_CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: z.coerce
-          .number()
-          .int()
-          .positive(),
-        KNODE_API_KEYCHAIN_KNODE_URL: z.url(),
         KNODE_API_TOKEN_DURATION_SECONDS: z.coerce.number().int().positive(),
         KNODE_API_TOKEN_JWT_KID: z.string(),
         KNODE_ID: KnodeId,
+        TARGET_KNODE_URLS: TargetKnodeUrls,
       })
       .transform((c) => ({
         clientAssertionAcceptedAudiences: c.CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
@@ -59,14 +53,10 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         generatedKnodeApiTokenAudience: c.GENERATED_KNODE_API_TOKEN_AUDIENCE,
         generatedKnodeApiTokenIssuer: c.GENERATED_KNODE_API_TOKEN_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
-        knodeApiClientAssertionAcceptedAudiences:
-          c.KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
-        knodeApiClientAssertionMaxTokenAgeSeconds:
-          c.KNODE_API_CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS,
-        knodeApiKeychainKnodeUrl: c.KNODE_API_KEYCHAIN_KNODE_URL,
         knodeApiTokenDurationSeconds: c.KNODE_API_TOKEN_DURATION_SECONDS,
         knodeApiTokenJwtKid: c.KNODE_API_TOKEN_JWT_KID,
         knodeId: c.KNODE_ID,
+        targetKnodeUrls: c.TARGET_KNODE_URLS,
       })),
   );
 

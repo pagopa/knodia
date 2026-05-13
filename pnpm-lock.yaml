@@ -520,6 +520,9 @@ importers:
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
+      '@knodia/db-readmodel-keychain':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/keychain
       '@knodia/db-readmodel-purpose':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/purpose

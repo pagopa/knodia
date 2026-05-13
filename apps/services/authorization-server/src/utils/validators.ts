@@ -2,6 +2,8 @@ import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
+  KnodeApiKeychainId,
+  KnodeId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -13,7 +15,9 @@ import {
   ClientAssertion,
   EXPECTED_CLIENT_ASSERTION_TYP,
 } from "@knodia/authorization-models/clientAssertion";
+import { KnodeApiClientAssertion } from "@knodia/authorization-models/clientAssertion/knodeApi";
 import { type Algorithm } from "@knodia/common-models/crypto";
+import { type TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -39,6 +43,7 @@ import { ZodError } from "zod";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
+import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import {
   accessTokenTypeMismatch,
   agreementNotActive,
@@ -49,17 +54,26 @@ import {
   eserviceVersionNotActive,
   invalidClientAssertionJWS,
   invalidClientAssertionSignature,
+  knodeApiKeychainKnodeVerificationDataNotFound,
+  knodeApiKeychainKeyNotFound,
+  knodeApiKeychainNotFound,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
   unexpectedConsumerKnodeVerificationDataRetrievalError,
+  unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError,
 } from "../models/errors.ts";
 import {
   retrieveAgreement,
   retrieveEserviceVersion,
   retrievePurpose,
 } from "./readmodelUtils.ts";
+
+interface PublicKeyForVerification {
+  algorithm: string;
+  encodedPem: string;
+}
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,
@@ -109,20 +123,12 @@ export async function verifyClientAssertionSignature(
   logger: FastifyBaseLogger,
 ) {
   try {
-    const protectedHeader = decodeProtectedHeader(clientAssertionJWS);
-    const payload = decodeJwt(clientAssertionJWS);
-
-    logger.info(
-      `Verifying Client Assertion (JTI=${payload.jti}) signature for Consumer Keychain ${consumerKeychainId} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
-    );
-
-    const {
-      headers: { alg: clientAssertionAlg, kid },
-      payload: { purposeId },
-    } = ClientAssertion.parse({
-      headers: protectedHeader,
-      payload,
-    });
+    const { clientAssertionAlg, kid, purposeId } =
+      decodeAndParseClientAssertion(
+        clientAssertionJWS,
+        `Consumer Keychain ${consumerKeychainId}`,
+        logger,
+      );
 
     const {
       data: { consumerAttributes, publicKey },
@@ -135,23 +141,14 @@ export async function verifyClientAssertionSignature(
       client: k2kGatewayClient,
     });
 
-    assertPublicKeyAlgEqualToClientAssertionAlg(
-      publicKey.algorithm,
+    await verifyClientAssertionJwtSignature({
+      acceptedAudiences: clientAssertionAcceptedAudiences,
       clientAssertionAlg,
-    );
-
-    const verificationKey = createPublicKey({
-      pemKey: decodeBase64Pem(publicKey.encodedPem),
-    });
-
-    await jwtVerify(clientAssertionJWS, verificationKey, {
-      algorithms: [publicKey.algorithm],
-      audience: clientAssertionAcceptedAudiences,
-      clockTolerance: jwtClockToleranceSeconds,
-      issuer: consumerKeychainId,
-      maxTokenAge: clientAssertionMaxTokenAgeSeconds,
+      clientAssertionJWS,
+      jwtClockToleranceSeconds,
+      maxTokenAgeSeconds: clientAssertionMaxTokenAgeSeconds,
+      publicKey,
       subject: consumerKeychainId,
-      typ: EXPECTED_CLIENT_ASSERTION_TYP,
     });
 
     return {
@@ -159,27 +156,77 @@ export async function verifyClientAssertionSignature(
       purposeId,
     };
   } catch (error) {
-    throw match(error)
-      .with(P.instanceOf(JWTExpired), () => clientAssertionExpired())
-      .with(
-        P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
-        (e) => clientAssertionClaimsValidationError(e),
-      )
-      .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
-        invalidClientAssertionSignature(),
-      )
-      .with(P.instanceOf(JWSInvalid), (e) =>
-        invalidClientAssertionJWS(e.message),
-      )
-      .with(P.instanceOf(ApiError), (e) => e)
-      .with(P.instanceOf(AxiosError), (e) => {
-        if (e.status === 404) {
-          return consumerKnodeVerificationDataNotFound();
-        } else {
-          return unexpectedConsumerKnodeVerificationDataRetrievalError(e);
-        }
-      })
-      .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
+    throw translateClientAssertionVerificationError(error, {
+      onNotFound: consumerKnodeVerificationDataNotFound,
+      onUnexpectedAxios: unexpectedConsumerKnodeVerificationDataRetrievalError,
+    });
+  }
+}
+
+export async function verifyKnodeApiClientAssertionSignature(
+  {
+    clientAssertionJWS,
+    knodeApiKeychainId,
+  }: {
+    clientAssertionJWS: string;
+    knodeApiKeychainId: KnodeApiKeychainId;
+  },
+  {
+    clientAssertionAcceptedAudiences,
+    clientAssertionMaxTokenAgeSeconds,
+    jwtClockToleranceSeconds,
+    localKnodeId,
+    readmodelService,
+    targetKnodeUrls,
+  }: {
+    clientAssertionAcceptedAudiences: string[];
+    clientAssertionMaxTokenAgeSeconds: number;
+    jwtClockToleranceSeconds: number;
+    localKnodeId: KnodeId;
+    readmodelService: ReadmodelService;
+    targetKnodeUrls: TargetKnodeUrls;
+  },
+  logger: FastifyBaseLogger,
+) {
+  try {
+    const { clientAssertionAlg, kid, knodeId } =
+      decodeAndParseKnodeApiClientAssertion(
+        clientAssertionJWS,
+        `Knode API Keychain ${knodeApiKeychainId}`,
+        logger,
+      );
+
+    const { ownerId, publicKey } =
+      knodeId === localKnodeId
+        ? await resolveLocalKnodeApiKeychainKey(
+            knodeApiKeychainId,
+            kid,
+            readmodelService,
+          )
+        : await resolveRemoteKnodeApiKeychainKey(
+            knodeApiKeychainId,
+            kid,
+            knodeId,
+            targetKnodeUrls,
+          );
+
+    await verifyClientAssertionJwtSignature({
+      acceptedAudiences: clientAssertionAcceptedAudiences,
+      clientAssertionAlg,
+      clientAssertionJWS,
+      jwtClockToleranceSeconds,
+      maxTokenAgeSeconds: clientAssertionMaxTokenAgeSeconds,
+      publicKey,
+      subject: knodeApiKeychainId,
+    });
+
+    return { keychainKnodeId: knodeId, ownerId };
+  } catch (error) {
+    throw translateClientAssertionVerificationError(error, {
+      onNotFound: knodeApiKeychainKnodeVerificationDataNotFound,
+      onUnexpectedAxios:
+        unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError,
+    });
   }
 }
 
@@ -262,4 +309,149 @@ function assertPublicKeyAlgEqualToClientAssertionAlg(
       clientAssertionAlg,
     );
   }
+}
+
+function decodeAndParseClientAssertion(
+  clientAssertionJWS: string,
+  subjectLabel: string,
+  logger: FastifyBaseLogger,
+) {
+  const protectedHeader = decodeProtectedHeader(clientAssertionJWS);
+  const payload = decodeJwt(clientAssertionJWS);
+
+  logger.info(
+    `Verifying Client Assertion (JTI=${payload.jti}) signature for ${subjectLabel} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
+  );
+
+  const {
+    headers: { alg: clientAssertionAlg, kid },
+    payload: { purposeId },
+  } = ClientAssertion.parse({ headers: protectedHeader, payload });
+
+  return { clientAssertionAlg, kid, purposeId };
+}
+
+function decodeAndParseKnodeApiClientAssertion(
+  clientAssertionJWS: string,
+  subjectLabel: string,
+  logger: FastifyBaseLogger,
+) {
+  const protectedHeader = decodeProtectedHeader(clientAssertionJWS);
+  const payload = decodeJwt(clientAssertionJWS);
+
+  logger.info(
+    `Verifying Knode API Client Assertion (JTI=${payload.jti}) signature for ${subjectLabel} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
+  );
+
+  const {
+    headers: { alg: clientAssertionAlg, kid },
+    payload: { knodeId },
+  } = KnodeApiClientAssertion.parse({ headers: protectedHeader, payload });
+
+  return { clientAssertionAlg, kid, knodeId };
+}
+
+async function resolveLocalKnodeApiKeychainKey(
+  knodeApiKeychainId: KnodeApiKeychainId,
+  kid: string,
+  readmodelService: ReadmodelService,
+): Promise<{ ownerId: OrganizationId; publicKey: PublicKeyForVerification }> {
+  const keychain = await readmodelService.getKnodeApiKeychain(
+    knodeApiKeychainId,
+  );
+  if (!keychain) {
+    throw knodeApiKeychainNotFound(knodeApiKeychainId);
+  }
+  const key = keychain.data.keys.find((k) => k.kid === kid);
+  if (!key) {
+    throw knodeApiKeychainKeyNotFound(knodeApiKeychainId, kid);
+  }
+  return {
+    ownerId: keychain.data.ownerId,
+    publicKey: { algorithm: key.algorithm, encodedPem: key.encodedPem },
+  };
+}
+
+async function resolveRemoteKnodeApiKeychainKey(
+  knodeApiKeychainId: KnodeApiKeychainId,
+  kid: string,
+  targetKnodeId: KnodeId,
+  targetKnodeUrls: TargetKnodeUrls,
+): Promise<{ ownerId: OrganizationId; publicKey: PublicKeyForVerification }> {
+  const {
+    data: { ownerId, publicKey },
+  } = await k2kGatewayApi.getKnodeApiClientAssertionVerificationData({
+    body: { keychainId: knodeApiKeychainId, kid },
+    client: getK2K2GatewayApiClientForTarget(targetKnodeUrls, targetKnodeId),
+  });
+  return {
+    ownerId: ownerId as OrganizationId,
+    publicKey: { algorithm: publicKey.algorithm, encodedPem: publicKey.encodedPem },
+  };
+}
+
+function translateClientAssertionVerificationError(
+  error: unknown,
+  {
+    onNotFound,
+    onUnexpectedAxios,
+  }: {
+    onNotFound: () => ApiError<string>;
+    onUnexpectedAxios: (error: AxiosError) => ApiError<string>;
+  },
+) {
+  return match(error)
+    .with(P.instanceOf(JWTExpired), () => clientAssertionExpired())
+    .with(
+      P.union(P.instanceOf(JWTClaimValidationFailed), P.instanceOf(ZodError)),
+      (e) => clientAssertionClaimsValidationError(e),
+    )
+    .with(P.instanceOf(JWSSignatureVerificationFailed), () =>
+      invalidClientAssertionSignature(),
+    )
+    .with(P.instanceOf(JWSInvalid), (e) =>
+      invalidClientAssertionJWS(e.message),
+    )
+    .with(P.instanceOf(ApiError), (e) => e)
+    .with(P.instanceOf(AxiosError), (e) =>
+      e.status === 404 ? onNotFound() : onUnexpectedAxios(e),
+    )
+    .otherwise((e) => unexpectedClientAssertionSignatureVerificationError(e));
+}
+
+async function verifyClientAssertionJwtSignature({
+  acceptedAudiences,
+  clientAssertionAlg,
+  clientAssertionJWS,
+  jwtClockToleranceSeconds,
+  maxTokenAgeSeconds,
+  publicKey,
+  subject,
+}: {
+  acceptedAudiences: string[];
+  clientAssertionAlg: Algorithm;
+  clientAssertionJWS: string;
+  jwtClockToleranceSeconds: number;
+  maxTokenAgeSeconds: number;
+  publicKey: PublicKeyForVerification;
+  subject: string;
+}): Promise<void> {
+  assertPublicKeyAlgEqualToClientAssertionAlg(
+    publicKey.algorithm,
+    clientAssertionAlg,
+  );
+
+  const verificationKey = createPublicKey({
+    pemKey: decodeBase64Pem(publicKey.encodedPem),
+  });
+
+  await jwtVerify(clientAssertionJWS, verificationKey, {
+    algorithms: [publicKey.algorithm],
+    audience: acceptedAudiences,
+    clockTolerance: jwtClockToleranceSeconds,
+    issuer: subject,
+    maxTokenAge: maxTokenAgeSeconds,
+    subject,
+    typ: EXPECTED_CLIENT_ASSERTION_TYP,
+  });
 }

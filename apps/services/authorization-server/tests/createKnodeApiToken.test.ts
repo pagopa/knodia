@@ -8,9 +8,11 @@ import {
   generateId,
   type KnodeApiKeychainId,
   type OrganizationId,
+  unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import {
   getMockKnodeApiClientAssertion,
+  getMockKnodeApiKeychain,
   signJWT,
 } from "@knodia/test-commons/utils";
 import { AxiosError } from "axios";
@@ -27,7 +29,11 @@ import {
   invalidClientAssertionSignature,
   publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
-import { app, producerKnodeId } from "./setup.ts";
+import {
+  app,
+  knodeApiKeychainWriterService,
+  producerKnodeId,
+} from "./setup.ts";
 
 const getKnodeApiClientAssertionVerificationDataMock = vi.hoisted(() =>
   vi.fn(),
@@ -52,25 +58,34 @@ const ownerId = generateId<OrganizationId>();
 const MOCK_NOW_SECONDS = 1_000_000_000;
 const MOCK_TOKEN = "mock-knode-api-access-token";
 const MOCK_TOKEN_DURATION_SECONDS = 3600;
+const remoteKnodeId = "Lynx";
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateEserviceAccessToken: vi.fn(),
-    generateKnodeApiAccessToken: vi.fn().mockResolvedValue({
-      payload: {
-        aud: ["test-knode-api-audience"],
-        client_id: knodeApiKeychainId,
-        exp: MOCK_NOW_SECONDS + MOCK_TOKEN_DURATION_SECONDS,
-        iat: MOCK_NOW_SECONDS,
-        iss: "knodia.org",
-        jti: generateId(),
-        keychain: { id: knodeApiKeychainId, knode_id: producerKnodeId },
-        nbf: MOCK_NOW_SECONDS,
-        organization: { id: ownerId, knode_id: producerKnodeId },
-        sub: knodeApiKeychainId,
-      } satisfies KnodeApiAccessTokenClaims,
-      serialized: MOCK_TOKEN,
-    }),
+    generateKnodeApiAccessToken: vi.fn().mockImplementation((input) =>
+      Promise.resolve({
+        payload: {
+          aud: ["test-knode-api-audience"],
+          client_id: input.keychain.id,
+          exp: MOCK_NOW_SECONDS + MOCK_TOKEN_DURATION_SECONDS,
+          iat: MOCK_NOW_SECONDS,
+          iss: "knodia.org",
+          jti: generateId(),
+          keychain: {
+            id: input.keychain.id,
+            knode_id: input.keychain.knodeId,
+          },
+          nbf: MOCK_NOW_SECONDS,
+          organization: {
+            id: input.organization.id,
+            knode_id: input.organization.knodeId,
+          },
+          sub: input.keychain.id,
+        } satisfies KnodeApiAccessTokenClaims,
+        serialized: MOCK_TOKEN,
+      }),
+    ),
   }),
 }));
 
@@ -86,9 +101,9 @@ describe("POST /knodeApiToken", async () => {
     publicKeyEncodedPem,
   } = await getMockKnodeApiClientAssertion({
     standardClaimsOverride: {
-      aud: ["test-knode-api-assertion-audience"],
+      aud: ["test-audience-1"],
       iss: knodeApiKeychainId,
-      knode_id: producerKnodeId,
+      knode_id: remoteKnodeId,
       sub: knodeApiKeychainId,
     },
   });
@@ -100,7 +115,7 @@ describe("POST /knodeApiToken", async () => {
         algorithm: clientAssertion.headers.alg,
         encodedPem: publicKeyEncodedPem,
         format: "PublicKey",
-        kid: "kid",
+        kid: clientAssertion.headers.kid,
       },
     };
 
@@ -126,7 +141,7 @@ describe("POST /knodeApiToken", async () => {
     getKnodeApiClientAssertionVerificationDataMock.mockReset();
   });
 
-  it("should return 200 and a valid Bearer token", async () => {
+  it("should return 200 and a valid Bearer token for a remote-knode keychain (K2K path)", async () => {
     getKnodeApiClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
@@ -150,6 +165,50 @@ describe("POST /knodeApiToken", async () => {
         client: expect.anything(),
       },
     );
+  });
+
+  it("should return 200 for a same-knode keychain via the local readmodel (no K2K call)", async () => {
+    const mockKeychain = getMockKnodeApiKeychain();
+    const [baseKey] = mockKeychain.keys;
+    if (!baseKey) {
+      throw new Error("mock keychain unexpectedly has no key");
+    }
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      {
+        ...mockKeychain,
+        id: knodeApiKeychainId,
+        keys: [
+          {
+            ...baseKey,
+            algorithm: clientAssertion.headers.alg,
+            encodedPem: publicKeyEncodedPem,
+            kid: unsafeBrandKeyId(clientAssertion.headers.kid),
+          },
+        ],
+        ownerId,
+      },
+      0,
+    );
+
+    const sameKnodeJWS = await signJWT({
+      jwt: {
+        headers: clientAssertion.headers,
+        payload: {
+          ...clientAssertion.payload,
+          knode_id: producerKnodeId,
+        },
+      },
+      keySet: clientAssertionKeySet,
+    });
+
+    const response = await createKnodeApiToken({
+      body: { ...defaultBody, client_assertion: sameKnodeJWS },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(
+      getKnodeApiClientAssertionVerificationDataMock,
+    ).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -250,10 +309,13 @@ describe("POST /knodeApiToken", async () => {
     const { publicKeyEncodedPem: otherPubKey } =
       await getMockKnodeApiClientAssertion();
     getKnodeApiClientAssertionVerificationDataMock.mockResolvedValue({
-      data: { ...mockK2KResponse, publicKey: {
-        ...mockK2KResponse.publicKey,
-        encodedPem: otherPubKey,
-      } },
+      data: {
+        ...mockK2KResponse,
+        publicKey: {
+          ...mockK2KResponse.publicKey,
+          encodedPem: otherPubKey,
+        },
+      },
     });
 
     const response = await createKnodeApiToken();
