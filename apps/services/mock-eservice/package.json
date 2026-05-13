@@ -9,7 +9,7 @@
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi-bearer.yaml ./openapi/openapi-dpop.yaml --ruleset=./spectral.yaml"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",

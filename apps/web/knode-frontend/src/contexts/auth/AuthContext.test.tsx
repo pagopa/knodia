@@ -84,7 +84,7 @@ describe("AuthContext", () => {
 
   it("exchanges OIDC token and navigates to / on success", async () => {
     server.use(
-      http.post(`${BFF_URL}/auth/ui-session`, () =>
+      http.post(`${BFF_URL}/auth/uiSession`, () =>
         HttpResponse.json({
           refreshToken: "refresh-token",
           uiSessionToken: "session-token",
