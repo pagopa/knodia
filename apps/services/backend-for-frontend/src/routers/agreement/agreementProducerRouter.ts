@@ -3,10 +3,7 @@ import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import {
-  API_AgreementIdPathParam,
-  API_AgreementState,
-} from "@knodia/agreement-models/api";
+import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import {
   agreementProcessApi,
   type AgreementProcessClient,
@@ -56,11 +53,6 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
-
-const producerVisibleStates: API_AgreementState[] = [
-  API_AgreementState.enum.Active,
-  API_AgreementState.enum.Suspended,
-];
 
 const enrichAgreements = async ({
   agreements,
@@ -186,7 +178,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Agreements with query parameters",
       );
 
-      const { eserviceId, limit, offset, recentlyUpdated } = req.query;
+      const { eserviceId, limit, offset, recentlyUpdated, state } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const updatedSince = recentlyUpdated
@@ -201,7 +193,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           limit,
           offset,
           producerId,
-          state: producerVisibleStates,
+          state,
           updatedSince,
         },
       });
