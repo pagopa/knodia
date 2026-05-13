@@ -76,20 +76,20 @@ components:
           type: string
           enum:
             - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
         client_id:
           description: Unique identifier of the Consumer Keychain
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        grant_type:
-          type: string
-          enum:
-            - client_credentials
       required:
         - client_assertion
         - client_assertion_type
-        - client_id
         - grant_type
+        - client_id
       additionalProperties: false
     TokenResponse:
       type: object
@@ -119,20 +119,20 @@ components:
           type: string
           enum:
             - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
         client_id:
           description: Unique identifier of the Knode API Keychain
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        grant_type:
-          type: string
-          enum:
-            - client_credentials
       required:
         - client_assertion
         - client_assertion_type
-        - client_id
         - grant_type
+        - client_id
       additionalProperties: false
     KnodeApiTokenResponse:
       type: object

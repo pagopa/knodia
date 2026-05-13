@@ -51,7 +51,6 @@ import {
   eserviceVersionNotActive,
   invalidClientAssertionJWS,
   invalidClientAssertionSignature,
-  knodeApiKeychainKeyNotFound,
   knodeApiKeychainKnodeVerificationDataNotFound,
   platformStatesNotActive,
   publicKeyAlgNotMatchingClientAssertionAlg,
@@ -63,7 +62,7 @@ import {
 import {
   retrieveAgreement,
   retrieveEserviceVersion,
-  retrieveKnodeApiKeychain,
+  retrieveKnodeApiKeychainKey,
   retrievePurpose,
 } from "./readmodelUtils.ts";
 
@@ -342,16 +341,13 @@ async function resolveKnodeApiKeychainKeyFromReadmodel(
   kid: string,
   readmodelService: ReadmodelService,
 ): Promise<{ ownerId: OrganizationId; publicKey: PublicKeyForVerification }> {
-  const keychain = await retrieveKnodeApiKeychain(
+  const { key, knodeApiKeychain } = await retrieveKnodeApiKeychainKey(
     knodeApiKeychainId,
+    kid,
     readmodelService,
   );
-  const key = keychain.data.keys.find((k) => k.kid === kid);
-  if (!key) {
-    throw knodeApiKeychainKeyNotFound(knodeApiKeychainId, kid);
-  }
   return {
-    ownerId: keychain.data.ownerId,
+    ownerId: knodeApiKeychain.data.ownerId,
     publicKey: { algorithm: key.algorithm, encodedPem: key.encodedPem },
   };
 }

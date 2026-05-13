@@ -12,6 +12,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   agreementNotFound,
   eserviceVersionNotFound,
+  knodeApiKeychainKeyNotFound,
   knodeApiKeychainNotFound,
   purposeNotFound,
 } from "../models/errors.ts";
@@ -47,8 +48,9 @@ export async function retrieveEserviceVersion(
   return eserviceVersion;
 }
 
-export async function retrieveKnodeApiKeychain(
+export async function retrieveKnodeApiKeychainKey(
   knodeApiKeychainId: KnodeApiKeychainId,
+  kid: string,
   readmodelService: ReadmodelService,
 ) {
   const knodeApiKeychain =
@@ -58,7 +60,13 @@ export async function retrieveKnodeApiKeychain(
     throw knodeApiKeychainNotFound(knodeApiKeychainId);
   }
 
-  return knodeApiKeychain;
+  const key = knodeApiKeychain.data.keys.find((k) => k.kid === kid);
+
+  if (!key) {
+    throw knodeApiKeychainKeyNotFound(knodeApiKeychainId, kid);
+  }
+
+  return { key, knodeApiKeychain };
 }
 
 export async function retrievePurpose(
