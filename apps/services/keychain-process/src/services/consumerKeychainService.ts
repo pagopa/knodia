@@ -62,7 +62,11 @@ import {
   retrieveKeychainKey,
   retrieveKeychainUser,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
+import {
+  addKeyToKeychain,
+  addMemberToKeychain,
+  removeMemberFromKeychain,
+} from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
@@ -470,24 +474,8 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        updatedAt: new Date(),
-        users: consumerKeychain.data.users.filter(
-          (member) => member.userId !== userId,
-        ),
-      };
+      const { updatedKeychain: updatedConsumerKeychain } =
+        removeMemberFromKeychain(consumerKeychain.data, userId, authData);
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberRemovedV1Event(
