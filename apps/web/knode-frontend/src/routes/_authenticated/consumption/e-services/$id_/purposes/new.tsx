@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { createPurposeSearchSchema } from "@/features/e-service/models/search-params";
+import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
@@ -19,7 +19,7 @@ export const Route = createFileRoute(
     );
     return { eserviceDetail };
   },
-  validateSearch: createPurposeSearchSchema,
+  validateSearch: eserviceDetailSearchSchema,
 });
 
 function RouteComponent() {
