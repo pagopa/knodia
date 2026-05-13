@@ -73,3 +73,8 @@ message KnodeApiKeychainMemberRemovedV1 {
 message KnodeApiKeychainDeletedV1 {
   KnodeApiKeychainV1 knodeApiKeychain = 1;
 }
+
+message KnodeApiKeychainKeyRemovedV1 {
+  KnodeApiKeychainV1 knodeApiKeychain = 1;
+  string kid = 2;
+}
