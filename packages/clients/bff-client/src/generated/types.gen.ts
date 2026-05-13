@@ -831,6 +831,11 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KnodeApiKeychainPatch = {
+    description?: KeychainLocalizedDescription | null;
+    name?: KeychainLocalizedName;
+};
+
 export type KeychainKeySeed = {
     encodedPem: string;
     name: KeychainKeyLocalizedName;
@@ -2533,6 +2538,123 @@ export type CreateKnodeApiKeychainResponses = {
 };
 
 export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
+
+export type DeleteKnodeApiKeychainData = {
+    body?: never;
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}';
+};
+
+export type DeleteKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteKnodeApiKeychainError = DeleteKnodeApiKeychainErrors[keyof DeleteKnodeApiKeychainErrors];
+
+export type DeleteKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteKnodeApiKeychainResponse = DeleteKnodeApiKeychainResponses[keyof DeleteKnodeApiKeychainResponses];
+
+export type GetKnodeApiKeychainDetailsData = {
+    body?: never;
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}';
+};
+
+export type GetKnodeApiKeychainDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetKnodeApiKeychainDetailsError = GetKnodeApiKeychainDetailsErrors[keyof GetKnodeApiKeychainDetailsErrors];
+
+export type GetKnodeApiKeychainDetailsResponses = {
+    /**
+     * Knode API Keychain details retrieved successfully
+     */
+    200: KeychainDetails;
+};
+
+export type GetKnodeApiKeychainDetailsResponse = GetKnodeApiKeychainDetailsResponses[keyof GetKnodeApiKeychainDetailsResponses];
+
+export type UpdateKnodeApiKeychainData = {
+    body: KnodeApiKeychainPatch;
+    path: {
+        knodeApiKeychainId: string;
+    };
+    query?: never;
+    url: '/knodeApiKeychains/{knodeApiKeychainId}';
+};
+
+export type UpdateKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Knode API Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateKnodeApiKeychainError = UpdateKnodeApiKeychainErrors[keyof UpdateKnodeApiKeychainErrors];
+
+export type UpdateKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain updated successfully
+     */
+    204: void;
+};
+
+export type UpdateKnodeApiKeychainResponse = UpdateKnodeApiKeychainResponses[keyof UpdateKnodeApiKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;
