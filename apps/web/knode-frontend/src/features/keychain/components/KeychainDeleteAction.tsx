@@ -1,4 +1,7 @@
-import { deleteConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  deleteConsumerKeychainMutation,
+  deleteKnodeApiKeychainMutation,
+} from "@knodia/bff-client/tanstack-query";
 import { Button, Modal } from "@knodia/ui-kit/ui";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -18,13 +21,26 @@ export function KeychainDeleteAction({
 }) {
   const navigate = useNavigate();
   const {
-    isError,
-    isPending: isDeleting,
+    isError: isConsumerError,
+    isPending: isConsumerDeleting,
     mutate: deleteConsumerKeychain,
   } = useMutation({
     ...deleteConsumerKeychainMutation({ client }),
     onSuccess: () => navigate({ to: "/keychains" }),
   });
+
+  const {
+    isError: isApiError,
+    isPending: isApiDeleting,
+    mutate: deleteKnodeApiKeychain,
+  } = useMutation({
+    ...deleteKnodeApiKeychainMutation({ client }),
+    onSuccess: () =>
+      navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isDeleting = isConsumerDeleting || isApiDeleting;
 
   function handleDelete() {
     match(type)
@@ -34,9 +50,9 @@ export function KeychainDeleteAction({
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        deleteKnodeApiKeychain({ path: { knodeApiKeychainId: keychainId } }),
+      )
       .exhaustive();
   }
 

@@ -11,3 +11,8 @@ export const consumerKeychainDetailsTab = z.enum([
 export type ConsumerKeychainDetailsTab = z.infer<
   typeof consumerKeychainDetailsTab
 >;
+
+export const knodeApiKeychainDetailsTab = z.enum(["members", "public-keys"]);
+export type KnodeApiKeychainDetailsTab = z.infer<
+  typeof knodeApiKeychainDetailsTab
+>;

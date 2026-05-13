@@ -1,5 +1,7 @@
 import {
+  getConsumerKeychainDetailsOptions,
   getConsumerKeychainsOptions,
+  getKnodeApiKeychainDetailsOptions,
   getKnodeApiKeychainsOptions,
 } from "@knodia/bff-client/tanstack-query";
 
@@ -17,4 +19,16 @@ export const knodeApiKeychainsQuery = (offset: number) =>
   getKnodeApiKeychainsOptions({
     client,
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
+  });
+
+export const consumerKeychainDetailsQuery = (consumerKeychainId: string) =>
+  getConsumerKeychainDetailsOptions({
+    client,
+    path: { consumerKeychainId },
+  });
+
+export const knodeApiKeychainDetailsQuery = (knodeApiKeychainId: string) =>
+  getKnodeApiKeychainDetailsOptions({
+    client,
+    path: { knodeApiKeychainId },
   });

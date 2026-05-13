@@ -2,7 +2,9 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getConsumerKeychainDetailsQueryKey,
+  getKnodeApiKeychainDetailsQueryKey,
   updateConsumerKeychainMutation,
+  updateKnodeApiKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
@@ -68,8 +70,8 @@ function EditKeychainModal({
   const queryClient = useQueryClient();
 
   const {
-    isError,
-    isPending,
+    isError: isConsumerError,
+    isPending: isConsumerPending,
     mutate: editConsumerKeychain,
   } = useMutation({
     ...updateConsumerKeychainMutation({
@@ -86,8 +88,30 @@ function EditKeychainModal({
     },
   });
 
+  const {
+    isError: isApiError,
+    isPending: isApiPending,
+    mutate: editKnodeApiKeychain,
+  } = useMutation({
+    ...updateKnodeApiKeychainMutation({
+      client,
+    }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: getKnodeApiKeychainDetailsQueryKey({
+          client,
+          path: { knodeApiKeychainId: keychain.id },
+        }),
+      });
+      onClose();
+    },
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isPending = isConsumerPending || isApiPending;
+
   function handleEditKeychain(seed: EditKeychainFormValues) {
-    const body: bffApi.ConsumerKeychainPatch = {
+    const body = {
       description: seed.description ? { en: seed.description } : null,
       name: { en: seed.name },
     };
@@ -95,16 +119,19 @@ function EditKeychainModal({
     match(type)
       .with("consumption", () =>
         editConsumerKeychain({
-          body,
+          body: body satisfies bffApi.ConsumerKeychainPatch,
           path: { consumerKeychainId: keychain.id },
         }),
       )
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        editKnodeApiKeychain({
+          body: body satisfies bffApi.KnodeApiKeychainPatch,
+          path: { knodeApiKeychainId: keychain.id },
+        }),
+      )
       .exhaustive();
   }
 
