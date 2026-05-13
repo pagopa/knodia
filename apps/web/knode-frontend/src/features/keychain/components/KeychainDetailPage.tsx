@@ -4,6 +4,8 @@ import {
   getConsumerKeychainKeysOptions,
   getConsumerKeychainMembersOptions,
   getConsumerKeychainPurposesOptions,
+  getKnodeApiKeychainKeysOptions,
+  getKnodeApiKeychainMembersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
@@ -37,12 +39,6 @@ import { client } from "@/libs/axios";
 
 import type { KeychainType } from "../models/commons";
 
-interface ConsumerTabProps {
-  keychainId: string;
-  offset: number;
-  onOffsetChange: (offset: number) => void;
-}
-
 interface KeychainDetailPageProps<TTab extends string> {
   activeTab: TTab;
   keychain: bffApi.KeychainDetails;
@@ -50,8 +46,17 @@ interface KeychainDetailPageProps<TTab extends string> {
   offset: number;
   onOffsetChange: (offset: number) => void;
   onTabChange: (tab: TTab) => void;
-  type: Extract<KeychainType, "api" | "consumption">;
+  type: SupportedKeychainType;
 }
+
+interface KeychainTabProps {
+  keychainId: string;
+  offset: number;
+  onOffsetChange: (offset: number) => void;
+  type: SupportedKeychainType;
+}
+
+type SupportedKeychainType = Extract<KeychainType, "api" | "consumption">;
 
 export function KeychainDetailPage<TTab extends string>({
   activeTab,
@@ -111,16 +116,12 @@ export function KeychainDetailPage<TTab extends string>({
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
-            {match(type)
-              .with("consumption", () => (
-                <ConsumerPublicKeysTab
-                  keychainId={keychainId}
-                  offset={offset}
-                  onOffsetChange={onOffsetChange}
-                />
-              ))
-              .with("api", () => <ApiPublicKeysTab keychainId={keychainId} />)
-              .exhaustive()}
+            <PublicKeysTab
+              keychainId={keychainId}
+              offset={offset}
+              onOffsetChange={onOffsetChange}
+              type={type}
+            />
           </TabPanel>
           {type === "consumption" && (
             <TabPanel id="purposes" key="purposes">
@@ -132,155 +133,15 @@ export function KeychainDetailPage<TTab extends string>({
             </TabPanel>
           )}
           <TabPanel id="members" key="members">
-            {match(type)
-              .with("consumption", () => (
-                <ConsumerMembersTab
-                  keychainId={keychainId}
-                  offset={offset}
-                  onOffsetChange={onOffsetChange}
-                />
-              ))
-              .with("api", () => <ApiMembersTab keychainId={keychainId} />)
-              .exhaustive()}
+            <MembersTab
+              keychainId={keychainId}
+              offset={offset}
+              onOffsetChange={onOffsetChange}
+              type={type}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </>
-  );
-}
-
-function ApiMembersTab({ keychainId }: { keychainId: string }) {
-  return (
-    <Section title="Members">
-      <KeychainMembersTable
-        isLoading={false}
-        keychainId={keychainId}
-        members={[]}
-        type="api"
-      />
-    </Section>
-  );
-}
-
-// TODO KN-619: wire up Public Keys and Members tabs for API keychains
-// (upload/download/delete keys, add/remove members). The tables below render
-// their native empty banner while the API endpoints are not yet wired.
-function ApiPublicKeysTab({ keychainId }: { keychainId: string }) {
-  return (
-    <Section title="Public Keys">
-      <KeychainPublicKeysTable
-        canDownloadKey={false}
-        isLoading={false}
-        keychainId={keychainId}
-        keys={[]}
-        type="api"
-      />
-    </Section>
-  );
-}
-
-function ConsumerMembersTab({
-  keychainId,
-  offset,
-  onOffsetChange,
-}: ConsumerTabProps) {
-  const { data, isLoading } = useQuery(
-    getConsumerKeychainMembersOptions({
-      client,
-      path: { consumerKeychainId: keychainId },
-      query: { limit: 50, offset },
-    }),
-  );
-
-  return (
-    <Section
-      actions={
-        <AddKeychainMemberAction
-          keychainId={keychainId}
-          keychainType="consumption"
-        />
-      }
-      description="Only the Keychain members can upload public keys."
-      title="Members"
-    >
-      <KeychainMembersTable
-        isLoading={isLoading}
-        keychainId={keychainId}
-        members={data?.results ?? []}
-        type="consumption"
-      />
-      <Pagination
-        className="mx-auto mt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={offset}
-        onOffsetChange={onOffsetChange}
-        totalItems={data?.pagination.total ?? 0}
-      />
-    </Section>
-  );
-}
-
-function ConsumerPublicKeysTab({
-  keychainId,
-  offset,
-  onOffsetChange,
-}: ConsumerTabProps) {
-  const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
-
-  const { data, isLoading } = useQuery(
-    getConsumerKeychainKeysOptions({
-      client,
-      path: { consumerKeychainId: keychainId },
-      query: { limit: 50, offset },
-    }),
-  );
-
-  const hasReachedMaxKeys = data
-    ? data.pagination.total >= config.maxKeysPerKeychain
-    : false;
-
-  const isKeychainMember = useIsCurrentUserKeychainMember(keychainId);
-  const canDownloadKey = useHasRole("administrative") || isKeychainMember;
-
-  return (
-    <>
-      <Section
-        actions={
-          <Button
-            hierarchy="brand"
-            kind="filled"
-            onClick={() => setIsUploadKeyModalOpen(true)}
-            size="md"
-          >
-            Upload key
-          </Button>
-        }
-        title="Public Keys"
-      >
-        <KeychainPublicKeysTable
-          canDownloadKey={canDownloadKey}
-          isLoading={isLoading}
-          keychainId={keychainId}
-          keys={data?.results ?? []}
-          type="consumption"
-        />
-        <Pagination
-          className="mx-auto mt-6"
-          limit={data?.pagination.limit ?? 0}
-          offset={offset}
-          onOffsetChange={onOffsetChange}
-          totalItems={data?.pagination.total ?? 0}
-        />
-      </Section>
-
-      <UploadPublicKeyModal
-        hasReachedMaxKeys={hasReachedMaxKeys}
-        isKeychainMember={isKeychainMember}
-        isOpen={isUploadKeyModalOpen}
-        keychainId={keychainId}
-        onClose={() => setIsUploadKeyModalOpen(false)}
-        type="consumption"
-      />
     </>
   );
 }
@@ -289,7 +150,11 @@ function ConsumerPurposesTab({
   keychainId,
   offset,
   onOffsetChange,
-}: ConsumerTabProps) {
+}: {
+  keychainId: string;
+  offset: number;
+  onOffsetChange: (offset: number) => void;
+}) {
   const { data, isLoading } = useQuery(
     getConsumerKeychainPurposesOptions({
       client,
@@ -315,5 +180,140 @@ function ConsumerPurposesTab({
         totalItems={data?.pagination.total ?? 0}
       />
     </Section>
+  );
+}
+
+function MembersTab({
+  keychainId,
+  offset,
+  onOffsetChange,
+  type,
+}: KeychainTabProps) {
+  const consumerMembersQuery = useQuery({
+    ...getConsumerKeychainMembersOptions({
+      client,
+      path: { consumerKeychainId: keychainId },
+      query: { limit: 50, offset },
+    }),
+    enabled: type === "consumption",
+  });
+
+  const apiMembersQuery = useQuery({
+    ...getKnodeApiKeychainMembersOptions({
+      client,
+      path: { knodeApiKeychainId: keychainId },
+      query: { limit: 50, offset },
+    }),
+    enabled: type === "api",
+  });
+
+  const { data, isLoading } = match(type)
+    .with("consumption", () => consumerMembersQuery)
+    .with("api", () => apiMembersQuery)
+    .exhaustive();
+
+  return (
+    <Section
+      actions={
+        <AddKeychainMemberAction keychainId={keychainId} keychainType={type} />
+      }
+      description="Only the Keychain members can upload public keys."
+      title="Members"
+    >
+      <KeychainMembersTable
+        isLoading={isLoading}
+        keychainId={keychainId}
+        members={data?.results ?? []}
+        type={type}
+      />
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={offset}
+        onOffsetChange={onOffsetChange}
+        totalItems={data?.pagination.total ?? 0}
+      />
+    </Section>
+  );
+}
+
+function PublicKeysTab({
+  keychainId,
+  offset,
+  onOffsetChange,
+  type,
+}: KeychainTabProps) {
+  const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
+
+  const consumerKeysQuery = useQuery({
+    ...getConsumerKeychainKeysOptions({
+      client,
+      path: { consumerKeychainId: keychainId },
+      query: { limit: 50, offset },
+    }),
+    enabled: type === "consumption",
+  });
+
+  const apiKeysQuery = useQuery({
+    ...getKnodeApiKeychainKeysOptions({
+      client,
+      path: { knodeApiKeychainId: keychainId },
+      query: { limit: 50, offset },
+    }),
+    enabled: type === "api",
+  });
+
+  const { data, isLoading } = match(type)
+    .with("consumption", () => consumerKeysQuery)
+    .with("api", () => apiKeysQuery)
+    .exhaustive();
+
+  const hasReachedMaxKeys = data
+    ? data.pagination.total >= config.maxKeysPerKeychain
+    : false;
+
+  const isKeychainMember = useIsCurrentUserKeychainMember(keychainId, type);
+  const canDownloadKey = useHasRole("administrative") || isKeychainMember;
+
+  return (
+    <>
+      <Section
+        actions={
+          <Button
+            hierarchy="brand"
+            kind="filled"
+            onClick={() => setIsUploadKeyModalOpen(true)}
+            size="md"
+          >
+            Upload key
+          </Button>
+        }
+        title="Public Keys"
+      >
+        <KeychainPublicKeysTable
+          canDownloadKey={canDownloadKey}
+          isLoading={isLoading}
+          keychainId={keychainId}
+          keys={data?.results ?? []}
+          type={type}
+        />
+        <Pagination
+          className="mx-auto mt-6"
+          limit={data?.pagination.limit ?? 0}
+          offset={offset}
+          onOffsetChange={onOffsetChange}
+          totalItems={data?.pagination.total ?? 0}
+        />
+      </Section>
+
+      <UploadPublicKeyModal
+        hasReachedMaxKeys={hasReachedMaxKeys}
+        isKeychainMember={isKeychainMember}
+        isOpen={isUploadKeyModalOpen}
+        keychainId={keychainId}
+        onClose={() => setIsUploadKeyModalOpen(false)}
+        type={type}
+      />
+    </>
   );
 }

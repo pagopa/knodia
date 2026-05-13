@@ -1,8 +1,11 @@
 import { bffApi } from "@knodia/bff-client";
 import {
   addConsumerKeychainMemberMutation,
+  addKnodeApiKeychainMemberMutation,
   getConsumerKeychainMembershipQueryKey,
   getConsumerKeychainMembersQueryKey,
+  getKnodeApiKeychainMembershipQueryKey,
+  getKnodeApiKeychainMembersQueryKey,
   getOperatorsOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
@@ -54,6 +57,7 @@ export function AddKeychainMemberAction({
   );
 }
 
+// eslint-disable-next-line max-lines-per-function
 function AddKeychainMemberModal({
   isOpen,
   keychainId,
@@ -69,8 +73,8 @@ function AddKeychainMemberModal({
 
   const queryClient = useQueryClient();
   const {
-    isError,
-    isPending,
+    isError: isConsumerError,
+    isPending: isConsumerPending,
     mutate: addConsumerKeychainMember,
   } = useMutation({
     ...addConsumerKeychainMemberMutation({ client }),
@@ -94,6 +98,36 @@ function AddKeychainMemberModal({
       onClose();
     },
   });
+
+  const {
+    isError: isApiError,
+    isPending: isApiPending,
+    mutate: addKnodeApiKeychainMember,
+  } = useMutation({
+    ...addKnodeApiKeychainMemberMutation({ client }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getKnodeApiKeychainMembersQueryKey({
+          client,
+          path: { knodeApiKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
+        }),
+      });
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: getKnodeApiKeychainMembershipQueryKey({
+            client,
+            path: { knodeApiKeychainId: keychainId, userId },
+          }),
+        });
+      }
+      onClose();
+    },
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isPending = isConsumerPending || isApiPending;
 
   const { data: operators = [] } = useQuery(getOperatorsOptions({ client }));
 
@@ -120,9 +154,12 @@ function AddKeychainMemberModal({
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        addKnodeApiKeychainMember({
+          body: { userId },
+          path: { knodeApiKeychainId: keychainId },
+        }),
+      )
       .exhaustive();
   };
 
@@ -139,9 +176,12 @@ function AddKeychainMemberModal({
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        bffApi.getKnodeApiKeychainMembership({
+          client,
+          path: { knodeApiKeychainId: keychainId, userId },
+        }),
+      )
       .exhaustive();
 
     return isMember;

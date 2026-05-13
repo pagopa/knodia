@@ -2,7 +2,9 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getConsumerKeychainMembersQueryKey,
+  getKnodeApiKeychainMembersQueryKey,
   removeConsumerKeychainMemberMutation,
+  removeKnodeApiKeychainMemberMutation,
 } from "@knodia/bff-client/tanstack-query";
 import {
   Banner,
@@ -102,8 +104,8 @@ function RemoveFromKeychainAction({
 }) {
   const queryClient = useQueryClient();
   const {
-    isError,
-    isPending,
+    isError: isConsumerError,
+    isPending: isConsumerPending,
     mutate: deleteConsumerKeychainMember,
   } = useMutation({
     ...removeConsumerKeychainMemberMutation({ client }),
@@ -119,6 +121,27 @@ function RemoveFromKeychainAction({
     },
   });
 
+  const {
+    isError: isApiError,
+    isPending: isApiPending,
+    mutate: deleteKnodeApiKeychainMember,
+  } = useMutation({
+    ...removeKnodeApiKeychainMemberMutation({ client }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getKnodeApiKeychainMembersQueryKey({
+          client,
+          path: { knodeApiKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
+        }),
+      });
+    },
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isPending = isConsumerPending || isApiPending;
+
   function handleDelete() {
     match(type)
       .with("consumption", () => {
@@ -133,7 +156,12 @@ function RemoveFromKeychainAction({
         throw new Error("Producer keychains are not supported yet.");
       })
       .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
+        deleteKnodeApiKeychainMember({
+          path: {
+            knodeApiKeychainId: keychainId,
+            userId,
+          },
+        });
       })
       .exhaustive();
   }

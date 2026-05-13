@@ -2,7 +2,9 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getConsumerKeychainKeysQueryKey,
+  getKnodeApiKeychainKeysQueryKey,
   uploadConsumerKeychainKeyMutation,
+  uploadKnodeApiKeychainKeyMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Banner, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
@@ -29,6 +31,7 @@ interface Props {
   type: KeychainType;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
   isKeychainMember,
@@ -45,8 +48,8 @@ export function UploadPublicKeyModal({
   }
 
   const {
-    isError,
-    isPending,
+    isError: isConsumerError,
+    isPending: isConsumerPending,
     mutate: uploadConsumerKeychainKey,
   } = useMutation({
     ...uploadConsumerKeychainKeyMutation({
@@ -54,8 +57,21 @@ export function UploadPublicKeyModal({
     }),
   });
 
+  const {
+    isError: isApiError,
+    isPending: isApiPending,
+    mutate: uploadKnodeApiKeychainKey,
+  } = useMutation({
+    ...uploadKnodeApiKeychainKeyMutation({
+      client,
+    }),
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isPending = isConsumerPending || isApiPending;
+
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
-    const body: bffApi.UploadConsumerKeychainKeyData["body"] = {
+    const body = {
       encodedPem: btoa(seed.pem),
       name: { en: seed.name },
     };
@@ -64,7 +80,7 @@ export function UploadPublicKeyModal({
       .with("consumption", () =>
         uploadConsumerKeychainKey(
           {
-            body,
+            body: body satisfies bffApi.UploadConsumerKeychainKeyData["body"],
             path: { consumerKeychainId: keychainId },
           },
           {
@@ -85,9 +101,27 @@ export function UploadPublicKeyModal({
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        uploadKnodeApiKeychainKey(
+          {
+            body: body satisfies bffApi.UploadKnodeApiKeychainKeyData["body"],
+            path: { knodeApiKeychainId: keychainId },
+          },
+          {
+            onSuccess() {
+              queryClient.invalidateQueries({
+                queryKey: getKnodeApiKeychainKeysQueryKey({
+                  client,
+                  path: { knodeApiKeychainId: keychainId },
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  query: undefined!,
+                }),
+              });
+              handleClose();
+            },
+          },
+        ),
+      )
       .exhaustive();
   }
 
