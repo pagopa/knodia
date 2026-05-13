@@ -5,6 +5,7 @@ import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   KnodeId,
   OrganizationId,
   PurposeId,
@@ -194,7 +195,7 @@ export function invalidClientAssertionSignature() {
 }
 
 export function knodeApiKeychainKeyNotFound(
-  knodeApiKeychainId: string,
+  knodeApiKeychainId: KnodeApiKeychainId,
   kid: string,
 ) {
   return createApiError<ErrorCodes>({
@@ -215,7 +216,9 @@ export function knodeApiKeychainKnodeVerificationDataNotFound() {
   });
 }
 
-export function knodeApiKeychainNotFound(knodeApiKeychainId: string) {
+export function knodeApiKeychainNotFound(
+  knodeApiKeychainId: KnodeApiKeychainId,
+) {
   return createApiError<ErrorCodes>({
     code: "KNODE_API_KEYCHAIN_NOT_FOUND",
     detail: `Knode API Keychain with ID ${knodeApiKeychainId} was not found`,

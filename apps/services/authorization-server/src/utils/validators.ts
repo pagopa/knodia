@@ -17,6 +17,7 @@ import {
 } from "@knodia/authorization-models/clientAssertion";
 import { KnodeApiClientAssertion } from "@knodia/authorization-models/clientAssertion/knodeApi";
 import { type Algorithm } from "@knodia/common-models/crypto";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -335,7 +336,7 @@ async function resolveKnodeApiKeychainKeyViaK2K(
     client: getK2K2GatewayApiClient(targetKnodeId),
   });
   return {
-    ownerId: ownerId as OrganizationId,
+    ownerId: unsafeBrandId<OrganizationId>(ownerId),
     publicKey: {
       algorithm: publicKey.algorithm,
       encodedPem: publicKey.encodedPem,
