@@ -4,6 +4,7 @@ import {
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { type QueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 
@@ -51,37 +52,55 @@ export const Route = createFileRoute(
         to: "/consumption/e-services/$id/purposes/new",
       });
     }
-    // Always warm the list cache (needed by the selector and by templateId
-    // anti-tamper validation below). Scoped by eserviceId so templates tied
-    // to other E-Services can't sneak through.
-    const availableTemplates = await context.queryClient.ensureQueryData(
-      purposeTemplatesQuery(knodeId, eserviceId),
-    );
 
-    let templateDetail;
-    if (templateId) {
-      // The detail endpoint validates only templateId + knodeId, not eserviceId,
-      // so we re-check membership in the scoped list before fetching details.
-      if (!availableTemplates.some((t) => t.id === templateId)) {
-        throw redirect({
-          params: { id },
-          replace: true,
-          search: { knodeId },
-          to: "/consumption/e-services/$id/purposes/new",
-        });
-      }
-      templateDetail = await context.queryClient.ensureQueryData(
-        purposeTemplateDetailsQuery(
-          unsafeBrandId<PurposeTemplateId>(templateId),
+    const templateDetail = templateId
+      ? await loadTemplateDetail({
+          eserviceId,
+          id,
           knodeId,
-        ),
-      );
-    }
+          queryClient: context.queryClient,
+          templateId,
+        })
+      : undefined;
 
     return { eserviceDetail, templateDetail };
   },
   validateSearch: searchSchema,
 });
+
+async function loadTemplateDetail({
+  eserviceId,
+  id,
+  knodeId,
+  queryClient,
+  templateId,
+}: {
+  eserviceId: EserviceId;
+  id: string;
+  knodeId: KnodeId;
+  queryClient: QueryClient;
+  templateId: string;
+}) {
+  // The detail endpoint validates only templateId + knodeId, not eserviceId,
+  // so we re-check membership in the scoped list before fetching details.
+  const availableTemplates = await queryClient.ensureQueryData(
+    purposeTemplatesQuery(knodeId, eserviceId),
+  );
+  if (!availableTemplates.some((t) => t.id === templateId)) {
+    throw redirect({
+      params: { id },
+      replace: true,
+      search: { knodeId },
+      to: "/consumption/e-services/$id/purposes/new",
+    });
+  }
+  return queryClient.ensureQueryData(
+    purposeTemplateDetailsQuery(
+      unsafeBrandId<PurposeTemplateId>(templateId),
+      knodeId,
+    ),
+  );
+}
 
 function RouteComponent() {
   const { eserviceDetail, templateDetail } = Route.useLoaderData();

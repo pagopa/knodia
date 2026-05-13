@@ -4,7 +4,6 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 import { Button, Menu, MenuItem, MenuTrigger } from "@knodia/ui-kit/ui";
 import { CaretDownIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
-import { match } from "ts-pattern";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
@@ -24,6 +23,13 @@ export function CreatePurposeButton({
   onBlockedPress,
 }: Props) {
   const navigate = useNavigate();
+
+  const goToCreate = (target: "from-template" | "new") =>
+    navigate({
+      params: { id: eserviceId },
+      search: { knodeId },
+      to: `/consumption/e-services/$id/purposes/${target}`,
+    });
 
   if (isBlocked) {
     return (
@@ -59,28 +65,11 @@ export function CreatePurposeButton({
         Create Purpose
         <CaretDownIcon />
       </Button>
-      <Menu
-        onAction={(key) =>
-          match(key)
-            .with("scratch", () =>
-              navigate({
-                params: { id: eserviceId },
-                search: { knodeId },
-                to: "/consumption/e-services/$id/purposes/new",
-              }),
-            )
-            .with("template", () =>
-              navigate({
-                params: { id: eserviceId },
-                search: { knodeId },
-                to: "/consumption/e-services/$id/purposes/from-template",
-              }),
-            )
-            .otherwise(() => undefined)
-        }
-      >
-        <MenuItem id="scratch">From scratch</MenuItem>
-        <MenuItem id="template">From template</MenuItem>
+      <Menu>
+        <MenuItem onAction={() => goToCreate("new")}>From scratch</MenuItem>
+        <MenuItem onAction={() => goToCreate("from-template")}>
+          From template
+        </MenuItem>
       </Menu>
     </MenuTrigger>
   );

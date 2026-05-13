@@ -34,7 +34,7 @@ export function ChooseTemplateModal({
   return (
     <FullPageModal onClose={onClose} title="Create Purpose">
       <div className="mx-auto flex max-w-160 flex-col gap-10 p-10 pb-16">
-        <StepHeader description="" title="Choose template" />
+        <StepHeader title="Choose template" />
 
         {isPending && <Loader className="mx-auto mt-10" label="Loading..." />}
 

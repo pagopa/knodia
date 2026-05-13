@@ -40,13 +40,10 @@ export function EservicePurposeSection({
   );
   const purposes = data?.results ?? [];
 
-  const { blockedModal, isBlocked, onCreatePurposePress } =
-    useCreatePurposeAction({
-      agreementState,
-      eserviceId,
-      eserviceState,
-      knodeId,
-    });
+  const { blockedModal, isBlocked, onBlockedPress } = useCreatePurposeAction({
+    agreementState,
+    eserviceState,
+  });
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -60,7 +57,7 @@ export function EservicePurposeSection({
             eserviceMode={eserviceMode}
             isBlocked={isBlocked}
             knodeId={knodeId}
-            onBlockedPress={onCreatePurposePress}
+            onBlockedPress={onBlockedPress}
           />
         )}
       </div>
