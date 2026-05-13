@@ -1,9 +1,5 @@
 import { Algorithm } from "@knodia/common-models/crypto";
-import {
-  KeyId,
-  KnodeApiKeychainId,
-  KnodeId,
-} from "@knodia/common-models/ids";
+import { KeyId, KnodeApiKeychainId, KnodeId } from "@knodia/common-models/ids";
 import z from "zod";
 
 import { EXPECTED_CLIENT_ASSERTION_TYP } from "./clientAssertion.ts";

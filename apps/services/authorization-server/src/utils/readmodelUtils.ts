@@ -2,6 +2,7 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -11,6 +12,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   agreementNotFound,
   eserviceVersionNotFound,
+  knodeApiKeychainNotFound,
   purposeNotFound,
 } from "../models/errors.ts";
 
@@ -43,6 +45,20 @@ export async function retrieveEserviceVersion(
   }
 
   return eserviceVersion;
+}
+
+export async function retrieveKnodeApiKeychain(
+  knodeApiKeychainId: KnodeApiKeychainId,
+  readmodelService: ReadmodelService,
+) {
+  const knodeApiKeychain =
+    await readmodelService.getKnodeApiKeychain(knodeApiKeychainId);
+
+  if (!knodeApiKeychain) {
+    throw knodeApiKeychainNotFound(knodeApiKeychainId);
+  }
+
+  return knodeApiKeychain;
 }
 
 export async function retrievePurpose(

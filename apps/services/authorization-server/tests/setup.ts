@@ -78,7 +78,6 @@ beforeAll(async () => {
     config: {
       clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
       clientAssertionMaxTokenAgeSeconds: 300,
-      consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
       dynamoDbDpopProofsTable,
@@ -105,7 +104,10 @@ beforeAll(async () => {
       readmodelDbPurposeSchema: "test_purpose_schema",
       readmodelDbUser: "test_db_user",
       readmodelDbUseSsl: false,
-      targetKnodeUrls: { Lynx: "http://localhost:0", Orion: "http://localhost:0" },
+      targetKnodeUrls: {
+        Lynx: "http://localhost:0",
+        Orion: "http://localhost:0",
+      },
     },
     dynamoClient,
     readmodelDb,

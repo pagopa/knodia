@@ -6,19 +6,17 @@ import {
   type K2K2GatewayApiClient,
 } from "@knodia/k2k-gateway-client";
 
-export function getK2K2GatewayApiClient(baseURL: string): K2K2GatewayApiClient {
-  return createK2K2GatewayApiClient({ baseURL });
-}
-
 const clientCache = new Map<KnodeId, K2K2GatewayApiClient>();
 
-export function getK2K2GatewayApiClientForTarget(
+export function getK2K2GatewayApiClient(
   targetKnodeUrls: TargetKnodeUrls,
   targetKnodeId: KnodeId,
 ): K2K2GatewayApiClient {
   const cached = clientCache.get(targetKnodeId);
   if (cached) return cached;
-  const client = getK2K2GatewayApiClient(targetKnodeUrls[targetKnodeId]);
+  const client = createK2K2GatewayApiClient({
+    baseURL: targetKnodeUrls[targetKnodeId],
+  });
   clientCache.set(targetKnodeId, client);
   return client;
 }

@@ -191,6 +191,37 @@ export function invalidClientAssertionSignature() {
   });
 }
 
+export function knodeApiKeychainKeyNotFound(
+  knodeApiKeychainId: string,
+  kid: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_KEY_NOT_FOUND",
+    detail: `Key with KID ${kid} was not found in Knode API Keychain ${knodeApiKeychainId}`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function knodeApiKeychainKnodeVerificationDataNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND",
+    detail:
+      "Verification data for the Knode API Keychain's Knode was not found",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function knodeApiKeychainNotFound(knodeApiKeychainId: string) {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_NOT_FOUND",
+    detail: `Knode API Keychain with ID ${knodeApiKeychainId} was not found`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
 export function platformStatesNotActive(
   errors: (ApiError<ErrorCodes> | undefined)[],
 ) {
@@ -261,16 +292,6 @@ export function unexpectedConsumerKnodeVerificationDataRetrievalError(
   });
 }
 
-export function knodeApiKeychainKnodeVerificationDataNotFound() {
-  return createApiError<ErrorCodes>({
-    code: "KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND",
-    detail:
-      "Verification data for the Knode API Keychain's Knode was not found",
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
-  });
-}
-
 export function unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError(
   error: AxiosError,
 ) {
@@ -278,27 +299,6 @@ export function unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError(
     code: "UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
     detail: `An unexpected error occurred during retrieval of the Knode API Keychain's Knode verification data: ${error.message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-    title: "invalid_client",
-  });
-}
-
-export function knodeApiKeychainNotFound(knodeApiKeychainId: string) {
-  return createApiError<ErrorCodes>({
-    code: "KNODE_API_KEYCHAIN_NOT_FOUND",
-    detail: `Knode API Keychain with ID ${knodeApiKeychainId} was not found`,
-    status: HTTP_STATUS_UNAUTHORIZED,
-    title: "invalid_client",
-  });
-}
-
-export function knodeApiKeychainKeyNotFound(
-  knodeApiKeychainId: string,
-  kid: string,
-) {
-  return createApiError<ErrorCodes>({
-    code: "KNODE_API_KEYCHAIN_KEY_NOT_FOUND",
-    detail: `Key with KID ${kid} was not found in Knode API Keychain ${knodeApiKeychainId}`,
-    status: HTTP_STATUS_UNAUTHORIZED,
     title: "invalid_client",
   });
 }

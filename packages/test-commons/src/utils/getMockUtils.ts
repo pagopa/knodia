@@ -234,64 +234,6 @@ export async function getMockClientAssertion(props?: {
   };
 }
 
-export async function getMockKnodeApiClientAssertion(props?: {
-  customClaims?: Record<string, unknown>;
-  customHeader?: Record<string, unknown>;
-  standardClaimsOverride?: Partial<KnodeApiClientAssertionRawPayload>;
-}): Promise<{
-  clientAssertion: {
-    headers: KnodeApiClientAssertionHeader;
-    payload: KnodeApiClientAssertionRawPayload;
-  };
-  clientAssertionJWS: string;
-  keySet: ReturnType<typeof generateKeySet>["keySet"];
-  publicKeyEncodedPem: string;
-}> {
-  const { keySet, publicKeyEncodedPem } = generateKeySet();
-
-  const threeHourLater = new Date();
-  threeHourLater.setHours(threeHourLater.getHours() + 3);
-
-  const knodeApiKeychainId = generateId<KnodeApiKeychainId>();
-  const defaultPayload: KnodeApiClientAssertionRawPayload = {
-    aud: ["test.knodia.com"],
-    exp: dateToSeconds(threeHourLater),
-    iat: dateToSeconds(new Date()),
-    iss: knodeApiKeychainId,
-    jti: generateId(),
-    knode_id: "Orion",
-    sub: knodeApiKeychainId,
-  };
-
-  const actualPayload: KnodeApiClientAssertionRawPayload = {
-    ...defaultPayload,
-    ...props?.standardClaimsOverride,
-    ...props?.customClaims,
-  };
-
-  const headers: KnodeApiClientAssertionHeader = {
-    alg: Algorithm.enum.RS256,
-    kid: "kid" as KeyId,
-    typ: "JWT",
-    ...props?.customHeader,
-  };
-
-  const clientAssertionJWS = await signJWT({
-    jwt: { headers, payload: actualPayload },
-    keySet,
-  });
-
-  return {
-    clientAssertion: {
-      headers,
-      payload: actualPayload,
-    },
-    clientAssertionJWS,
-    keySet,
-    publicKeyEncodedPem,
-  };
-}
-
 export function getMockConsumerKeychainPurpose(
   seed = 0,
 ): ConsumerKeychainPurpose {
@@ -358,6 +300,64 @@ export async function getMockDpopProof({
       payload,
     },
     keySet,
+  };
+}
+
+export async function getMockKnodeApiClientAssertion(props?: {
+  customClaims?: Record<string, unknown>;
+  customHeader?: Record<string, unknown>;
+  standardClaimsOverride?: Partial<KnodeApiClientAssertionRawPayload>;
+}): Promise<{
+  clientAssertion: {
+    headers: KnodeApiClientAssertionHeader;
+    payload: KnodeApiClientAssertionRawPayload;
+  };
+  clientAssertionJWS: string;
+  keySet: ReturnType<typeof generateKeySet>["keySet"];
+  publicKeyEncodedPem: string;
+}> {
+  const { keySet, publicKeyEncodedPem } = generateKeySet();
+
+  const threeHourLater = new Date();
+  threeHourLater.setHours(threeHourLater.getHours() + 3);
+
+  const knodeApiKeychainId = generateId<KnodeApiKeychainId>();
+  const defaultPayload: KnodeApiClientAssertionRawPayload = {
+    aud: ["test.knodia.com"],
+    exp: dateToSeconds(threeHourLater),
+    iat: dateToSeconds(new Date()),
+    iss: knodeApiKeychainId,
+    jti: generateId(),
+    knode_id: "Orion",
+    sub: knodeApiKeychainId,
+  };
+
+  const actualPayload: KnodeApiClientAssertionRawPayload = {
+    ...defaultPayload,
+    ...props?.standardClaimsOverride,
+    ...props?.customClaims,
+  };
+
+  const headers: KnodeApiClientAssertionHeader = {
+    alg: Algorithm.enum.RS256,
+    kid: "kid" as KeyId,
+    typ: "JWT",
+    ...props?.customHeader,
+  };
+
+  const clientAssertionJWS = await signJWT({
+    jwt: { headers, payload: actualPayload },
+    keySet,
+  });
+
+  return {
+    clientAssertion: {
+      headers,
+      payload: actualPayload,
+    },
+    clientAssertionJWS,
+    keySet,
+    publicKeyEncodedPem,
   };
 }
 

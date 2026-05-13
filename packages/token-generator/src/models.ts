@@ -12,10 +12,6 @@ export interface EserviceAccessToken extends BaseToken {
   payload: EserviceAccessTokenClaims;
 }
 
-export interface KnodeApiAccessToken extends BaseToken {
-  payload: KnodeApiAccessTokenClaims;
-}
-
 export interface ExternalUISessionMagicLinkToken extends BaseToken {
   payload: ExternalUISessionMagicLinkTokenClaims;
   type: "external-ui-session-magic-link";
@@ -29,6 +25,10 @@ export interface ExternalUISessionToken extends BaseToken {
 export interface InternalToken extends BaseToken {
   payload: InternalTokenClaims;
   type: "internal";
+}
+
+export interface KnodeApiAccessToken extends BaseToken {
+  payload: KnodeApiAccessTokenClaims;
 }
 
 export interface UISessionRefreshToken extends BaseToken {
