@@ -4,12 +4,14 @@ import {
   consumerKeychainDetailsTab,
   type ConsumerKeychainDetailsTab,
   keychainType,
-  type KeychainType,
 } from "./commons";
+
+const supportedKeychainTab = keychainType.exclude(["production"]);
+type SupportedKeychainTab = z.infer<typeof supportedKeychainTab>;
 
 export const keychainSearchDefaultValues = {
   offset: 0,
-  type: "consumption" satisfies KeychainType,
+  type: "consumption" satisfies SupportedKeychainTab,
 } as const;
 
 export const keychainSearchSchema = z.object({
@@ -18,7 +20,7 @@ export const keychainSearchSchema = z.object({
     .min(0)
     .default(keychainSearchDefaultValues.offset)
     .catch(keychainSearchDefaultValues.offset),
-  type: keychainType
+  type: supportedKeychainTab
     .default(keychainSearchDefaultValues.type)
     .catch(keychainSearchDefaultValues.type),
 });
