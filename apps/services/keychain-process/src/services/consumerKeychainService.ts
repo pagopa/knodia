@@ -60,7 +60,7 @@ import {
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
-  retrieveUserFromKeychain,
+  retrieveKeychainUser,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
 import {
@@ -258,7 +258,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      return await retrieveUserFromKeychain(
+      return await retrieveKeychainUser(
         userId,
         consumerKeychainId,
         "Consumer Keychain",
@@ -293,7 +293,7 @@ export function consumerKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveUserFromKeychain(
+            retrieveKeychainUser(
               userId,
               consumerKeychainId,
               "Consumer Keychain",

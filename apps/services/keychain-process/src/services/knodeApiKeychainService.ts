@@ -41,8 +41,8 @@ import {
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
+  retrieveKeychainUser,
   retrieveKnodeApiKeychain,
-  retrieveUserFromKeychain,
 } from "../utils/retrievalUtils.ts";
 import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
 import {
@@ -209,7 +209,7 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain.data.users,
       );
 
-      return await retrieveUserFromKeychain(
+      return await retrieveKeychainUser(
         userId,
         knodeApiKeychainId,
         "Knode API Keychain",
@@ -244,7 +244,7 @@ export function knodeApiKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveUserFromKeychain(
+            retrieveKeychainUser(
               userId,
               knodeApiKeychainId,
               "Knode API Keychain",
