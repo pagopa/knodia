@@ -1,3 +1,4 @@
+import type { bffApi } from "@knodia/bff-client";
 import type { KnodeId } from "@knodia/common-models/ids";
 
 import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
@@ -26,11 +27,17 @@ import { DynamicFormStep } from "./steps/DynamicFormStep";
 
 interface Props {
   eservice: ConsumptionEserviceDetail;
+  initialTemplate?: bffApi.PurposeTemplateDetails;
   knodeId: KnodeId;
   onClose: () => void;
 }
 
-export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
+export function CreatePurposeModal({
+  eservice,
+  initialTemplate,
+  knodeId,
+  onClose,
+}: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
@@ -121,6 +128,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
           <PurposeFormProvider
             eservice={eservice}
             formSchemaVersion={formSchemaVersion}
+            initialTemplate={initialTemplate}
             knodeId={knodeId}
           >
             <ModalContent />

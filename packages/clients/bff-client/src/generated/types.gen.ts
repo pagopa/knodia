@@ -1016,7 +1016,7 @@ export type CreateSessionData = {
     body: SessionRequest;
     path?: never;
     query?: never;
-    url: '/auth/ui-session';
+    url: '/auth/uiSession';
 };
 
 export type CreateSessionErrors = {
@@ -1045,7 +1045,7 @@ export type RefreshSessionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/ui-session/refresh';
+    url: '/auth/uiSession/refresh';
 };
 
 export type RefreshSessionErrors = {

@@ -1,4 +1,4 @@
 export const apiTags = {
-  bearerTokenMock: "bearerTokenMock",
-  dpopTokenMock: "dpopTokenMock",
+  digitalContact: "digitalContact",
+  personalInformation: "personalInformation",
 } as const;

@@ -32,7 +32,7 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
  */
 export const createSession = <ThrowOnError extends boolean = true>(options: Options<CreateSessionData, ThrowOnError>) => (options.client ?? client).post<CreateSessionResponses, CreateSessionErrors, ThrowOnError>({
     responseType: 'json',
-    url: '/auth/ui-session',
+    url: '/auth/uiSession',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const createSession = <ThrowOnError extends boolean = true>(options: Opti
  */
 export const refreshSession = <ThrowOnError extends boolean = true>(options: Options<RefreshSessionData, ThrowOnError>) => (options.client ?? client).post<RefreshSessionResponses, RefreshSessionErrors, ThrowOnError>({
     responseType: 'json',
-    url: '/auth/ui-session/refresh',
+    url: '/auth/uiSession/refresh',
     ...options
 });
 

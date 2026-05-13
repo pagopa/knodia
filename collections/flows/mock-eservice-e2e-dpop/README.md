@@ -19,15 +19,16 @@ e-service.
      --key $KEYCHAIN_PRIVATE_<RS256|ES256>_KEY_PATH \
      --alg <RS256|ES256> \
      --htm GET \
-     --htu https://test.knodia.org/testDpop \
+     --htu https://test.knodia.org/natural-persons/RMNLNR03H12H501Z/digital-contact \
      --ath <access_token-from-step-11>
    ```
 
    The proof used in step 11 (`htm=POST`, `htu=<token-endpoint>`,
    no `ath`) cannot be reused — the mock-eservice expects a proof
    bound to the access token (`ath`) and matching the request
-   method/path (`GET /testDpop`).
-4. **Step 2 – Call Mock Eservice (DPoP)** — calls `GET /testDpop`
-   with the `access_token` captured by step 11 and the freshly
-   re-signed `DPOP_PROOF_JWT` from `collections/.env` →
-   expect `200 {status: "ok"}`.
+   method/path (`GET /natural-persons/RMNLNR03H12H501Z/digital-contact`).
+4. **Step 2 – Get Digital Contact (DPoP)** — calls
+   `GET /natural-persons/RMNLNR03H12H501Z/digital-contact` with the
+   `access_token` captured by step 11 and the freshly re-signed
+   `DPOP_PROOF_JWT` from `collections/.env` → expect `200` with the
+   digital-contact body.
