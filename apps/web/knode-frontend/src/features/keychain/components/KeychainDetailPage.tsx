@@ -69,7 +69,7 @@ export function KeychainDetailPage<TTab extends string>({
 }: KeychainDetailPageProps<TTab>) {
   const chipLabel = match(type)
     .with("consumption", () => "Consumption")
-    .with("api", () => "api")
+    .with("api", () => "API")
     .exhaustive();
 
   return (
