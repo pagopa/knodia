@@ -11,6 +11,7 @@ import {
   verifyDpopProofSignature,
 } from "@knodia/dpop-validator";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -25,11 +26,13 @@ export type TokenService = ReturnType<typeof tokenServiceBuilder>;
 export function tokenServiceBuilder({
   config,
   dpopProofStore,
+  getK2K2GatewayApiClient,
   readmodelService,
   tokenGenerator,
 }: {
   config: AuthorizationServerConfig;
   dpopProofStore: JtiReplayStore;
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
 }) {
@@ -48,9 +51,11 @@ export function tokenServiceBuilder({
         await verifyKnodeApiClientAssertionSignature(
           { clientAssertionJWS, knodeApiKeychainId },
           config,
+          getK2K2GatewayApiClient,
           readmodelService,
           logger,
         );
+
 
       const token = await tokenGenerator.generateKnodeApiAccessToken({
         audience: [config.generatedKnodeApiTokenAudience],
@@ -97,6 +102,7 @@ export function tokenServiceBuilder({
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
           config,
+          getK2K2GatewayApiClient,
           readmodelService,
           logger,
         );

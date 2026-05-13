@@ -17,7 +17,6 @@ import {
 } from "@knodia/authorization-models/clientAssertion";
 import { KnodeApiClientAssertion } from "@knodia/authorization-models/clientAssertion/knodeApi";
 import { type Algorithm } from "@knodia/common-models/crypto";
-import { type TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import { createPublicKey, decodeBase64Pem } from "@knodia/crypto";
 import { type EserviceVersion } from "@knodia/eservice-models";
 import { ApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -38,10 +37,9 @@ import {
 import { match, P } from "ts-pattern";
 import { type z, ZodError } from "zod";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
-
-import { getK2K2GatewayApiClient } from "../clients/clientsProvider.ts";
 import {
   accessTokenTypeMismatch,
   agreementNotActive,
@@ -112,6 +110,7 @@ export async function verifyClientAssertionSignature(
     consumerKeychainId: ConsumerKeychainId;
   },
   config: AuthorizationServerConfig,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   readmodelService: ReadmodelService,
   logger: FastifyBaseLogger,
 ): Promise<{
@@ -138,10 +137,7 @@ export async function verifyClientAssertionSignature(
         kid,
         purposeId,
       },
-      client: getK2K2GatewayApiClient(
-        config.targetKnodeUrls,
-        purpose.data.consumer.knodeId,
-      ),
+      client: getK2K2GatewayApiClient(purpose.data.consumer.knodeId),
     });
 
     await verifyClientAssertionJwtSignature({
@@ -173,6 +169,7 @@ export async function verifyKnodeApiClientAssertionSignature(
     knodeApiKeychainId: KnodeApiKeychainId;
   },
   config: AuthorizationServerConfig,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   readmodelService: ReadmodelService,
   logger: FastifyBaseLogger,
 ) {
@@ -197,7 +194,7 @@ export async function verifyKnodeApiClientAssertionSignature(
             knodeApiKeychainId,
             kid,
             knodeId,
-            config.targetKnodeUrls,
+            getK2K2GatewayApiClient,
           );
 
     await verifyClientAssertionJwtSignature({
@@ -329,13 +326,13 @@ async function resolveKnodeApiKeychainKeyViaK2K(
   knodeApiKeychainId: KnodeApiKeychainId,
   kid: string,
   targetKnodeId: KnodeId,
-  targetKnodeUrls: TargetKnodeUrls,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
 ): Promise<{ ownerId: OrganizationId; publicKey: PublicKeyForVerification }> {
   const {
     data: { ownerId, publicKey },
   } = await k2kGatewayApi.getKnodeApiClientAssertionVerificationData({
     body: { keychainId: knodeApiKeychainId, kid },
-    client: getK2K2GatewayApiClient(targetKnodeUrls, targetKnodeId),
+    client: getK2K2GatewayApiClient(targetKnodeId),
   });
   return {
     ownerId: ownerId as OrganizationId,
