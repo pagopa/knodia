@@ -1,6 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { createConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  createConsumerKeychainMutation,
+  createKnodeApiKeychainMutation,
+} from "@knodia/bff-client/tanstack-query";
 import {
   Modal,
   Select,
@@ -32,8 +35,8 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
 
   const {
-    isError,
-    isPending,
+    isError: isConsumerError,
+    isPending: isConsumerPending,
     mutate: createConsumerKeychain,
   } = useMutation({
     ...createConsumerKeychainMutation({
@@ -44,20 +47,44 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
     },
   });
 
+  const {
+    isError: isApiError,
+    isPending: isApiPending,
+    mutate: createKnodeApiKeychain,
+  } = useMutation({
+    ...createKnodeApiKeychainMutation({
+      client,
+    }),
+    onSuccess: () => {
+      // TODO KN-618: navigate to the API keychain details page once it exists.
+      navigate({ to: "/keychains" });
+      onClose();
+    },
+  });
+
+  const isError = isConsumerError || isApiError;
+  const isPending = isConsumerPending || isApiPending;
+
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
-    const body: bffApi.ConsumerKeychainSeed = {
+    const body = {
       description: seed.description ? { en: seed.description } : undefined,
       name: { en: seed.name },
     };
 
     match(seed.type)
-      .with("consumption", () => createConsumerKeychain({ body }))
+      .with("consumption", () =>
+        createConsumerKeychain({
+          body: body satisfies bffApi.ConsumerKeychainSeed,
+        }),
+      )
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with("api", () =>
+        createKnodeApiKeychain({
+          body: body satisfies bffApi.KnodeApiKeychainSeed,
+        }),
+      )
       .exhaustive();
   }
 
@@ -150,7 +177,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
               {keychainTypeOptions.map((option) => (
                 <SelectItem
                   id={option.id}
-                  isDisabled={option.id !== "consumption"}
+                  isDisabled={option.id === "production"}
                   key={option.id}
                 >
                   {option.label}
