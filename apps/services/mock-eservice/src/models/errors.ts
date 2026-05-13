@@ -14,6 +14,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   INVALID_DPOP_PROOF_JWS_FORMAT: "0008",
   INVALID_DPOP_PROOF_ATH: "0009",
   INVALID_DPOP_THUMBPRINT: "0010",
+  NATURAL_PERSON_NOT_FOUND: "0011",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -61,5 +62,14 @@ export function invalidDpopThumbprint(
     detail: `DPoP proof thumbprint does not match the expected one. Expected: ${expectedThumbprint}, Received: ${dpopProofThumbprint}`,
     status: 401,
     title: "invalid_dpop_proof",
+  });
+}
+
+export function naturalPersonNotFound(notation: string) {
+  return createApiError({
+    code: "NATURAL_PERSON_NOT_FOUND",
+    detail: `No natural person found for notation ${notation}`,
+    status: 404,
+    title: "natural_person_not_found",
   });
 }

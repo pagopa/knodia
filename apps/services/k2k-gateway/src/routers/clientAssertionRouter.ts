@@ -16,10 +16,15 @@ import {
 
 import { apiTags } from "../models/apiTags.ts";
 import {
-  API_ClientAssertionVerificationRequest,
-  API_ClientAssertionVerificationResponse,
+  API_ConsumerClientAssertionVerificationRequest,
+  API_ConsumerClientAssertionVerificationResponse,
+  API_KnodeApiClientAssertionVerificationRequest,
+  API_KnodeApiClientAssertionVerificationResponse,
 } from "../models/clientAssertion/api.ts";
-import { toAPI_ClientAssertionVerificationResponse } from "../models/clientAssertion/apiConverters.ts";
+import {
+  toAPI_ConsumerClientAssertionVerificationResponse,
+  toAPI_KnodeApiClientAssertionVerificationResponse,
+} from "../models/clientAssertion/apiConverters.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface ClientAssertionRouterOptions {
@@ -46,14 +51,14 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestBody: req.body },
-        "Verifying client assertion data for access token emission",
+        "Verifying client assertion data for E-service access token emission",
       );
 
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const [, keyResponse, keychainResponse] = await Promise.all([
-        // Verify purpose is linked to keychain, we just need a 200 and discard the return value
+        // Verify purpose is linked to Consumer Keychain, we just need a 200 and discard the return value
         keychainProcessApi.getConsumerKeychainPurpose({
           client: keychainProcessClient,
           headers,
@@ -86,7 +91,7 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
         });
 
       res.send(
-        toAPI_ClientAssertionVerificationResponse(
+        toAPI_ConsumerClientAssertionVerificationResponse(
           keyResponse.data,
           organization,
         ),
@@ -94,21 +99,67 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_ClientAssertionVerificationRequest,
+      body: API_ConsumerClientAssertionVerificationRequest,
       description:
-        "Verify that the key and purpose are associated with the consumer keychain, and return the public key and consumer attributes for further verification by the auth server",
-      operationId: "getClientAssertionVerificationData",
+        "Verify that the key and purpose are associated with the Consumer Keychain, and return the public key and consumer attributes for further verification by the auth server",
+      operationId: "getConsumerClientAssertionVerificationData",
       response: {
-        200: API_ClientAssertionVerificationResponse.meta({
+        200: API_ConsumerClientAssertionVerificationResponse.meta({
           description:
-            "Client assertion verification data retrieved successfully",
+            "Consumer client assertion verification data retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Get client assertion verification data",
+      summary:
+        "Get Consumer client assertion verification data for E-service access token emission",
       tags: [apiTags.operation],
     },
-    url: "/clientAssertionVerificationData",
+    url: "/consumerClientAssertionVerificationData",
+  });
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body },
+        "Verifying client assertion data for Knode API access token emission",
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const keyResponse = await keychainProcessApi.getKnodeApiKeychainKey({
+        client: keychainProcessClient,
+        headers,
+        path: {
+          keyId: req.body.kid,
+          knodeApiKeychainId: req.body.keychainId,
+        },
+      });
+
+      res.send(
+        toAPI_KnodeApiClientAssertionVerificationResponse(keyResponse.data),
+      );
+    },
+    method: "POST",
+    schema: {
+      body: API_KnodeApiClientAssertionVerificationRequest,
+      description:
+        "Verify that the key is associated with the Knode API Keychain, and return the public key for further verification by the auth server",
+      operationId: "getKnodeApiClientAssertionVerificationData",
+      response: {
+        200: API_KnodeApiClientAssertionVerificationResponse.meta({
+          description:
+            "Knode API client assertion verification data retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary:
+        "Get Knode API client assertion verification data for Knode API access token emission",
+      tags: [apiTags.operation],
+    },
+    url: "/knodeApiClientAssertionVerificationData",
   });
 };

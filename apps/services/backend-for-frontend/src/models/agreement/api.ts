@@ -26,6 +26,18 @@ export const API_CompactAgreement = z
     id: "CompactAgreement",
   });
 
+export const API_AgreementActivationDetails = z
+  .strictObject({
+    agreement: API_CompactAgreement,
+    consumer: API_CompactOrganization,
+    eservice: API_CompactEservice,
+    producer: API_CompactOrganization,
+  })
+  .meta({ id: "AgreementActivationDetails" });
+export type API_AgreementActivationDetails = z.infer<
+  typeof API_AgreementActivationDetails
+>;
+
 export const API_AgreementSeed = z
   .strictObject({
     eserviceId: z.uuid(),
@@ -61,6 +73,9 @@ export const API_GetProducerAgreementsQueryParams =
         description:
           "Filter to only Agreements updated within the recent update window",
       }),
+    state: arrayQueryParam(API_AgreementState)
+      .optional()
+      .meta({ description: "Filter by Agreement State" }),
   });
 export type API_GetProducerAgreementsQueryParams = z.infer<
   typeof API_GetProducerAgreementsQueryParams
@@ -75,6 +90,7 @@ export const API_ProducerAgreement = z
     }),
     id: z.uuid(),
     state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;

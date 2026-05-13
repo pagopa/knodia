@@ -9,3 +9,10 @@ export function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
     .with("LYNX", () => "Lynx" as const)
     .exhaustive();
 }
+
+export function toK2KAPI_KnodeId(knodeId: API_KnodeId): k2kGatewayApi.KnodeId {
+  return match(knodeId)
+    .with("Orion", () => "ORION" as const)
+    .with("Lynx", () => "LYNX" as const)
+    .exhaustive();
+}

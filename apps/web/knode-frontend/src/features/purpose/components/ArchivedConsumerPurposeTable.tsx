@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Empty, Loader } from "@knodia/ui-kit/ui";
-import { ArchiveIcon } from "@phosphor-icons/react";
+import { SelectionPlusIcon } from "@phosphor-icons/react";
 
 import { useHasRole } from "@/contexts/auth";
 
@@ -24,7 +24,7 @@ export function ArchivedConsumerPurposeTable({
     return (
       <Empty
         description="Archived Purposes will appear here."
-        icon={<ArchiveIcon />}
+        icon={<SelectionPlusIcon />}
         kind="brand-soft"
         title={
           canManagePurposes

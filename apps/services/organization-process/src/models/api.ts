@@ -2,7 +2,9 @@ import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_Pagination,
   API_PaginationQueryParams,
+  API_UserId,
 } from "@knodia/common-models/api";
+import { UserRole } from "@knodia/common-models/auth";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
@@ -24,6 +26,19 @@ export const API_Organizations = z
   })
   .meta({ id: "Organizations" });
 export type API_Organizations = z.infer<typeof API_Organizations>;
+
+export const API_Operator = z
+  .strictObject({
+    email: z.string(),
+    id: API_UserId,
+    roles: z.array(UserRole),
+    username: z.string(),
+  })
+  .meta({ id: "Operator" });
+export type API_Operator = z.infer<typeof API_Operator>;
+
+export const API_Operators = z.array(API_Operator).meta({ id: "Operators" });
+export type API_Operators = z.infer<typeof API_Operators>;
 
 export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
   {

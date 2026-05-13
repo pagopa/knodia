@@ -16,6 +16,7 @@ message PurposeV1 {
   PurposeFormSchemaVersionV1 formSchemaVersion = 11;
   optional int64 suspendedByConsumerAt = 12;
   optional int64 suspendedByProducerAt = 13;
+  optional PurposeTemplateV1 template = 14;
 }
 
 enum PurposeStateV1 {
@@ -29,6 +30,11 @@ enum PurposeFormSchemaVersionV1 {
 }
 
 message PurposeConsumerV1 {
+  string id = 1;
+  string knodeId = 2;
+}
+
+message PurposeTemplateV1 {
   string id = 1;
   string knodeId = 2;
 }
