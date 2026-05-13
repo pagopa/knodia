@@ -2,6 +2,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  type KnodeApiKeychainId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -37,7 +41,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
   KnodeApiKeychainRouterOptions
 > = async (fastify, { keychainProcessClient, pollingService }) => {
   const retrieveKnodeApiKeychainById = async (
-    knodeApiKeychainId: string,
+    knodeApiKeychainId: KnodeApiKeychainId,
     headers: KnodiaServiceHeaders,
   ) =>
     await keychainProcessApi.getKnodeApiKeychain({
@@ -49,7 +53,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
   const pollKnodeApiKeychain = (
     response: AxiosResponse<unknown>,
     headers: KnodiaServiceHeaders,
-    knodeApiKeychainId: string,
+    knodeApiKeychainId: KnodeApiKeychainId,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
       retrieveKnodeApiKeychainById(knodeApiKeychainId, headers),
@@ -74,7 +78,11 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollKnodeApiKeychain(response, headers, response.data.id);
+      await pollKnodeApiKeychain(
+        response,
+        headers,
+        unsafeBrandId<KnodeApiKeychainId>(response.data.id),
+      );
 
       res.status(201).send({ id: response.data.id });
     },
