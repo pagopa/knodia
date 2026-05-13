@@ -212,6 +212,56 @@ describe("POST /knodeApiToken", async () => {
     ).not.toHaveBeenCalled();
   });
 
+  it("should return 401 when the same-knode Knode API Keychain is not found", async () => {
+    const sameKnodeJWS = await signJWT({
+      jwt: {
+        headers: clientAssertion.headers,
+        payload: {
+          ...clientAssertion.payload,
+          knode_id: producerKnodeId,
+        },
+      },
+      keySet: clientAssertionKeySet,
+    });
+
+    const response = await createKnodeApiToken({
+      body: { ...defaultBody, client_assertion: sameKnodeJWS },
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(
+      getKnodeApiClientAssertionVerificationDataMock,
+    ).not.toHaveBeenCalled();
+  });
+
+  it("should return 401 when the same-knode Knode API Keychain does not contain the requested key", async () => {
+    const mockKeychain = getMockKnodeApiKeychain();
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      { ...mockKeychain, id: knodeApiKeychainId, keys: [], ownerId },
+      0,
+    );
+
+    const sameKnodeJWS = await signJWT({
+      jwt: {
+        headers: clientAssertion.headers,
+        payload: {
+          ...clientAssertion.payload,
+          knode_id: producerKnodeId,
+        },
+      },
+      keySet: clientAssertionKeySet,
+    });
+
+    const response = await createKnodeApiToken({
+      body: { ...defaultBody, client_assertion: sameKnodeJWS },
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(
+      getKnodeApiClientAssertionVerificationDataMock,
+    ).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["invalid property", { ...defaultBody, wrongProperty: "wrong" }],
     [
