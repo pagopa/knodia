@@ -10,6 +10,7 @@ import {
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
+  API_KnodeApiKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
@@ -194,6 +195,46 @@ export const API_KnodeApiKeychainPatch = z
 
 export type API_KnodeApiKeychainPatch = z.infer<
   typeof API_KnodeApiKeychainPatch
+>;
+
+export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainKeysQueryParams
+>;
+
+export const API_GetKnodeApiKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainMembersQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainMembersQueryParams
+>;
+
+export const API_KnodeApiKeychainMemberPathParams = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_KnodeApiKeychainIdPathParam.shape);
+
+export type API_KnodeApiKeychainMemberPathParams = z.infer<
+  typeof API_KnodeApiKeychainMemberPathParams
+>;
+
+export const API_KnodeApiKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_KnodeApiKeychainIdPathParam.shape);
+
+export type API_KnodeApiKeychainKeyPathParams = z.infer<
+  typeof API_KnodeApiKeychainKeyPathParams
+>;
+
+export const API_KnodeApiKeychainMembershipCheckResult = z
+  .strictObject({
+    isMember: z.boolean(),
+  })
+  .meta({ id: "KnodeApiKeychainMembershipCheckResult" });
+export type API_KnodeApiKeychainMembershipCheckResult = z.infer<
+  typeof API_KnodeApiKeychainMembershipCheckResult
 >;
 
 export const API_KeychainKeySeed = z

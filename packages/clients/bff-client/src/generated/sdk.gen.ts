@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ActivateAgreementData, ActivateAgreementErrors, ActivateAgreementResponses, AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, ArchiveAgreementByConsumerData, ArchiveAgreementByConsumerErrors, ArchiveAgreementByConsumerResponses, ArchiveProducerEserviceData, ArchiveProducerEserviceErrors, ArchiveProducerEserviceResponses, ArchivePurposeByConsumerData, ArchivePurposeByConsumerErrors, ArchivePurposeByConsumerResponses, CreateAgreementConsumerActivationMagicLinkData, CreateAgreementConsumerActivationMagicLinkErrors, CreateAgreementConsumerActivationMagicLinkResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceFromTemplateData, CreateEserviceFromTemplateErrors, CreateEserviceFromTemplateResponses, CreateEserviceResponses, CreateExternalSessionData, CreateExternalSessionErrors, CreateExternalSessionResponses, CreateKnodeApiKeychainData, CreateKnodeApiKeychainErrors, CreateKnodeApiKeychainResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DeleteKnodeApiKeychainData, DeleteKnodeApiKeychainErrors, DeleteKnodeApiKeychainResponses, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyErrors, DownloadConsumerKeychainKeyResponses, DownloadEserviceTemplateInterfaceData, DownloadEserviceTemplateInterfaceErrors, DownloadEserviceTemplateInterfaceResponses, GetAgreementActivationDetailsData, GetAgreementActivationDetailsErrors, GetAgreementActivationDetailsResponses, GetConsumerAgreementCountersData, GetConsumerAgreementCountersErrors, GetConsumerAgreementCountersResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasErrors, GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipErrors, GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembersResponses, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsErrors, GetConsumerKeychainOptionsResponses, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkErrors, GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsErrors, GetConsumerPurposeDetailsResponses, GetConsumerPurposesData, GetConsumerPurposesErrors, GetConsumerPurposesResponses, GetEserviceTemplateData, GetEserviceTemplateErrors, GetEserviceTemplateResponses, GetEserviceTemplatesData, GetEserviceTemplatesErrors, GetEserviceTemplatesResponses, GetKnodeApiKeychainDetailsData, GetKnodeApiKeychainDetailsErrors, GetKnodeApiKeychainDetailsResponses, GetKnodeApiKeychainsData, GetKnodeApiKeychainsErrors, GetKnodeApiKeychainsResponses, GetOperatorsData, GetOperatorsErrors, GetOperatorsResponses, GetPendingConsumerAgreementsData, GetPendingConsumerAgreementsErrors, GetPendingConsumerAgreementsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetPurposeTemplateData, GetPurposeTemplateErrors, GetPurposeTemplateResponses, GetPurposeTemplatesData, GetPurposeTemplatesErrors, GetPurposeTemplatesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, LogoutData, LogoutResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, ReactivateAgreementByProducerData, ReactivateAgreementByProducerErrors, ReactivateAgreementByProducerResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses, SuspendAgreementByProducerData, SuspendAgreementByProducerErrors, SuspendAgreementByProducerResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateKnodeApiKeychainData, UpdateKnodeApiKeychainErrors, UpdateKnodeApiKeychainResponses, UpdateProducerEserviceData, UpdateProducerEserviceErrors, UpdateProducerEserviceResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
+import type { ActivateAgreementData, ActivateAgreementErrors, ActivateAgreementResponses, AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, AddKnodeApiKeychainMemberData, AddKnodeApiKeychainMemberErrors, AddKnodeApiKeychainMemberResponses, ArchiveAgreementByConsumerData, ArchiveAgreementByConsumerErrors, ArchiveAgreementByConsumerResponses, ArchiveProducerEserviceData, ArchiveProducerEserviceErrors, ArchiveProducerEserviceResponses, ArchivePurposeByConsumerData, ArchivePurposeByConsumerErrors, ArchivePurposeByConsumerResponses, CreateAgreementConsumerActivationMagicLinkData, CreateAgreementConsumerActivationMagicLinkErrors, CreateAgreementConsumerActivationMagicLinkResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceFromTemplateData, CreateEserviceFromTemplateErrors, CreateEserviceFromTemplateResponses, CreateEserviceResponses, CreateExternalSessionData, CreateExternalSessionErrors, CreateExternalSessionResponses, CreateKnodeApiKeychainData, CreateKnodeApiKeychainErrors, CreateKnodeApiKeychainResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DeleteKnodeApiKeychainData, DeleteKnodeApiKeychainErrors, DeleteKnodeApiKeychainResponses, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyErrors, DownloadConsumerKeychainKeyResponses, DownloadEserviceTemplateInterfaceData, DownloadEserviceTemplateInterfaceErrors, DownloadEserviceTemplateInterfaceResponses, DownloadKnodeApiKeychainKeyData, DownloadKnodeApiKeychainKeyErrors, DownloadKnodeApiKeychainKeyResponses, GetAgreementActivationDetailsData, GetAgreementActivationDetailsErrors, GetAgreementActivationDetailsResponses, GetConsumerAgreementCountersData, GetConsumerAgreementCountersErrors, GetConsumerAgreementCountersResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasErrors, GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipErrors, GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembersResponses, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsErrors, GetConsumerKeychainOptionsResponses, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkErrors, GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsErrors, GetConsumerPurposeDetailsResponses, GetConsumerPurposesData, GetConsumerPurposesErrors, GetConsumerPurposesResponses, GetEserviceTemplateData, GetEserviceTemplateErrors, GetEserviceTemplateResponses, GetEserviceTemplatesData, GetEserviceTemplatesErrors, GetEserviceTemplatesResponses, GetKnodeApiKeychainDetailsData, GetKnodeApiKeychainDetailsErrors, GetKnodeApiKeychainDetailsResponses, GetKnodeApiKeychainKeysData, GetKnodeApiKeychainKeysErrors, GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainMembersData, GetKnodeApiKeychainMembersErrors, GetKnodeApiKeychainMembershipData, GetKnodeApiKeychainMembershipErrors, GetKnodeApiKeychainMembershipResponses, GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainsData, GetKnodeApiKeychainsErrors, GetKnodeApiKeychainsResponses, GetOperatorsData, GetOperatorsErrors, GetOperatorsResponses, GetPendingConsumerAgreementsData, GetPendingConsumerAgreementsErrors, GetPendingConsumerAgreementsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetPurposeTemplateData, GetPurposeTemplateErrors, GetPurposeTemplateResponses, GetPurposeTemplatesData, GetPurposeTemplatesErrors, GetPurposeTemplatesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, LogoutData, LogoutResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, ReactivateAgreementByProducerData, ReactivateAgreementByProducerErrors, ReactivateAgreementByProducerResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, RemoveKnodeApiKeychainKeyData, RemoveKnodeApiKeychainKeyErrors, RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainMemberData, RemoveKnodeApiKeychainMemberErrors, RemoveKnodeApiKeychainMemberResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses, SuspendAgreementByProducerData, SuspendAgreementByProducerErrors, SuspendAgreementByProducerResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateKnodeApiKeychainData, UpdateKnodeApiKeychainErrors, UpdateKnodeApiKeychainResponses, UpdateProducerEserviceData, UpdateProducerEserviceErrors, UpdateProducerEserviceResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses, UploadKnodeApiKeychainKeyData, UploadKnodeApiKeychainKeyErrors, UploadKnodeApiKeychainKeyResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -466,6 +466,91 @@ export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
         'Content-Type': 'application/merge-patch+json',
         ...options.headers
     }
+});
+
+/**
+ * Retrieve keys of a Knode API Keychain
+ */
+export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainKeysErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys',
+    ...options
+});
+
+/**
+ * Upload a key to a Knode API Keychain
+ */
+export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadKnodeApiKeychainKeyResponses, UploadKnodeApiKeychainKeyErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove a key from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainKeyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}',
+    ...options
+});
+
+/**
+ * Download a Knode API Keychain Key
+ */
+export const downloadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<DownloadKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<DownloadKnodeApiKeychainKeyResponses, DownloadKnodeApiKeychainKeyErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}',
+    ...options
+});
+
+/**
+ * Retrieve members of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainMembersErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members',
+    ...options
+});
+
+/**
+ * Add a member to a Knode API Keychain
+ */
+export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddKnodeApiKeychainMemberResponses, AddKnodeApiKeychainMemberErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove a Member from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainMemberResponses, RemoveKnodeApiKeychainMemberErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members/{userId}',
+    ...options
+});
+
+/**
+ * Check whether the given User is a Member of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembership = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembershipData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembershipResponses, GetKnodeApiKeychainMembershipErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/membership/{userId}',
+    ...options
 });
 
 /**

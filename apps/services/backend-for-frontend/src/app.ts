@@ -156,6 +156,7 @@ export function buildAppFromConfig(
     });
     protectedApp.register(knodeApiKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
     });
     protectedApp.register(operatorRouter, {
