@@ -3,7 +3,6 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import {
   Banner,
-  Button,
   Cell,
   Column,
   Loader,
@@ -14,23 +13,24 @@ import {
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
-import { CreatePurposeBlockedModal } from "@/features/purpose/components/CreatePurposeBlockedModal";
+import { CreatePurposeButton } from "@/features/purpose/components/CreatePurposeButton";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { useCreatePurposeAction } from "@/features/purpose/hooks/useCreatePurposeAction";
 import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
 export function EservicePurposeSection({
   agreementState,
   eserviceId,
+  eserviceMode,
   eserviceState,
   knodeId,
 }: {
   agreementState: bffApi.AgreementState;
   eserviceId: EserviceId;
+  eserviceMode: bffApi.EserviceMode;
   eserviceState: bffApi.EserviceVersionState;
   knodeId: KnodeId;
 }) {
@@ -40,19 +40,10 @@ export function EservicePurposeSection({
   );
   const purposes = data?.results ?? [];
 
-  const navigate = useNavigate();
-  const isBlocked =
-    eserviceState === "Archived" || agreementState === "Archived";
-  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
-
-  const onCreatePurposePress = isBlocked
-    ? () => setIsBlockedModalOpen(true)
-    : () =>
-        navigate({
-          params: { id: eserviceId },
-          search: { knodeId },
-          to: "/consumption/e-services/$id/purposes/new",
-        });
+  const { blockedModal, isBlocked, onBlockedPress } = useCreatePurposeAction({
+    agreementState,
+    eserviceState,
+  });
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -60,77 +51,27 @@ export function EservicePurposeSection({
         <h3 className="title-md-em text-primary-light-low-contrast">
           Purposes
         </h3>
-        {canManageConsumption && purposes.length > 0 && (
+        {canManageConsumption && (
           <CreatePurposeButton
             eserviceId={eserviceId}
+            eserviceMode={eserviceMode}
             isBlocked={isBlocked}
             knodeId={knodeId}
-            onBlockedPress={onCreatePurposePress}
+            onBlockedPress={onBlockedPress}
           />
         )}
       </div>
-      <EservicePurposeTable
-        canManageConsumption={canManageConsumption}
-        isLoading={isLoading}
-        onCreatePurposePress={onCreatePurposePress}
-        purposes={purposes}
-      />
-      <CreatePurposeBlockedModal
-        agreementState={agreementState}
-        eserviceState={eserviceState}
-        isOpen={isBlockedModalOpen}
-        onOpenChange={setIsBlockedModalOpen}
-      />
+      <EservicePurposeTable isLoading={isLoading} purposes={purposes} />
+      {blockedModal}
     </div>
   );
 }
 
-function CreatePurposeButton({
-  eserviceId,
-  isBlocked,
-  knodeId,
-  onBlockedPress,
-}: {
-  eserviceId: EserviceId;
-  isBlocked: boolean;
-  knodeId: KnodeId;
-  onBlockedPress: () => void;
-}) {
-  if (isBlocked) {
-    return (
-      <Button
-        hierarchy="neutral"
-        kind="tonal"
-        onPress={onBlockedPress}
-        size="sm"
-      >
-        Create Purpose
-      </Button>
-    );
-  }
-  return (
-    <ButtonLinkWithPreload
-      hierarchy="neutral"
-      kind="tonal"
-      params={{ id: eserviceId }}
-      search={{ knodeId }}
-      size="sm"
-      to="/consumption/e-services/$id/purposes/new"
-    >
-      Create Purpose
-    </ButtonLinkWithPreload>
-  );
-}
-
 function EservicePurposeTable({
-  canManageConsumption,
   isLoading,
-  onCreatePurposePress,
   purposes,
 }: {
-  canManageConsumption: boolean;
   isLoading: boolean;
-  onCreatePurposePress: () => void;
   purposes: bffApi.ConsumerPurpose[];
 }) {
   if (isLoading) {
@@ -139,15 +80,7 @@ function EservicePurposeTable({
 
   if (purposes.length === 0) {
     return (
-      <Banner
-        action={
-          canManageConsumption
-            ? { label: "Create Purpose", onPress: onCreatePurposePress }
-            : undefined
-        }
-        icon={<SelectionPlusIcon />}
-        kind="neutral"
-      >
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
         You don&apos;t have any Purpose for this E-Service.
       </Banner>
     );
