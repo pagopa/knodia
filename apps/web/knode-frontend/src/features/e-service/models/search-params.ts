@@ -121,7 +121,5 @@ export const eserviceTemplateSearchSchema = z.object({
 });
 
 export const createPurposeSearchSchema = z.object({
-  from: z.enum(["template"]).optional().catch(undefined),
   knodeId: KnodeId,
-  templateId: z.uuid().optional().catch(undefined),
 });

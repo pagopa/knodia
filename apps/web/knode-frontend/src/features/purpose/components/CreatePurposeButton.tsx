@@ -72,8 +72,8 @@ export function CreatePurposeButton({
             .with("template", () =>
               navigate({
                 params: { id: eserviceId },
-                search: { from: "template", knodeId },
-                to: "/consumption/e-services/$id/purposes/new",
+                search: { knodeId },
+                to: "/consumption/e-services/$id/purposes/from-template",
               }),
             )
             .otherwise(() => undefined)

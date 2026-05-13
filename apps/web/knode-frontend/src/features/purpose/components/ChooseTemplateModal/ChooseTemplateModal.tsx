@@ -3,21 +3,17 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { Banner, Button, Loader } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { StepHeader } from "@/components/StepHeader";
-import {
-  purposeTemplateDetailsQuery,
-  purposeTemplatesQuery,
-} from "@/features/purpose/services/queries";
+import { purposeTemplatesQuery } from "@/features/purpose/services/queries";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
 interface Props {
   eserviceId: EserviceId;
   knodeId: KnodeId;
   onClose: () => void;
-  onTemplateSelected: (template: bffApi.PurposeTemplateDetails) => void;
+  onTemplateSelected: (templateId: string) => void;
 }
 
 export function ChooseTemplateModal({
@@ -26,33 +22,9 @@ export function ChooseTemplateModal({
   onClose,
   onTemplateSelected,
 }: Props) {
-  const queryClient = useQueryClient();
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [hasSelectError, setHasSelectError] = useState(false);
-
   const { data, isError, isPending } = useQuery(
     purposeTemplatesQuery(knodeId, eserviceId),
   );
-
-  const handleSelect = async (templateId: string) => {
-    setIsSelecting(true);
-    setHasSelectError(false);
-    try {
-      const details = await queryClient.fetchQuery(
-        purposeTemplateDetailsQuery(
-          // The generated client types `id` as plain string; the underlying
-          // value is a UUID, so we forward it as-is to the detail query.
-          templateId as Parameters<typeof purposeTemplateDetailsQuery>[0],
-          knodeId,
-        ),
-      );
-      onTemplateSelected(details);
-    } catch {
-      setHasSelectError(true);
-    } finally {
-      setIsSelecting(false);
-    }
-  };
 
   const eserviceTemplates =
     data?.filter((t) => t.eserviceId === eserviceId) ?? [];
@@ -72,12 +44,6 @@ export function ChooseTemplateModal({
           </Banner>
         )}
 
-        {hasSelectError && (
-          <Banner kind="error">
-            Failed to load the selected template. Please try again.
-          </Banner>
-        )}
-
         {data && data.length === 0 && (
           <Banner kind="neutral">
             No templates available for this E-Service.
@@ -86,8 +52,7 @@ export function ChooseTemplateModal({
 
         {eserviceTemplates.length > 0 && (
           <TemplateSection
-            isDisabled={isSelecting}
-            onSelect={handleSelect}
+            onSelect={onTemplateSelected}
             templates={eserviceTemplates}
             title="Purpose templates for this E-Service"
           />
@@ -95,8 +60,7 @@ export function ChooseTemplateModal({
 
         {genericTemplates.length > 0 && (
           <TemplateSection
-            isDisabled={isSelecting}
-            onSelect={handleSelect}
+            onSelect={onTemplateSelected}
             templates={genericTemplates}
             title="Purpose templates for this Knode"
           />
@@ -107,11 +71,9 @@ export function ChooseTemplateModal({
 }
 
 function TemplateCard({
-  isDisabled,
   onSelect,
   template,
 }: {
-  isDisabled: boolean;
   onSelect: () => void;
   template: bffApi.PurposeTemplate;
 }) {
@@ -128,7 +90,6 @@ function TemplateCard({
       <Button
         aria-label={`Use template ${template.name.en}`}
         hierarchy="neutral"
-        isDisabled={isDisabled}
         kind="outlined"
         onPress={onSelect}
         size="icon-md"
@@ -140,12 +101,10 @@ function TemplateCard({
 }
 
 function TemplateSection({
-  isDisabled,
   onSelect,
   templates,
   title,
 }: {
-  isDisabled: boolean;
   onSelect: (templateId: string) => void;
   templates: bffApi.PurposeTemplate[];
   title: string;
@@ -155,7 +114,6 @@ function TemplateSection({
       <h2 className="title-md text-primary-light-high-contrast">{title}</h2>
       {templates.map((template) => (
         <TemplateCard
-          isDisabled={isDisabled}
           key={template.id}
           onSelect={() => onSelect(template.id)}
           template={template}

@@ -16,6 +16,7 @@ const KNODE_ID = KnodeId.enum.Orion;
 
 const routes = [
   { path: "/consumption/e-services/$id/purposes/new" },
+  { path: "/consumption/e-services/$id/purposes/from-template" },
   { path: "/consumption/e-services/$id" },
 ];
 
@@ -131,7 +132,7 @@ describe("CreatePurposeButton — eserviceMode", () => {
     ).toBeInTheDocument();
   });
 
-  it("navigates to /purposes/new with from=template when 'From template' is selected", async () => {
+  it("navigates to /purposes/from-template when 'From template' is selected", async () => {
     const { router, user } = renderWithProviders(
       <CreatePurposeButton
         eserviceId={ESERVICE_ID}
@@ -147,10 +148,9 @@ describe("CreatePurposeButton — eserviceMode", () => {
     await user.click(screen.getByRole("menuitem", { name: "From template" }));
 
     expect(router.state.location.pathname).toBe(
-      `/consumption/e-services/${ESERVICE_ID}/purposes/new`,
+      `/consumption/e-services/${ESERVICE_ID}/purposes/from-template`,
     );
     expect(router.state.location.search).toMatchObject({
-      from: "template",
       knodeId: KNODE_ID,
     });
   });
