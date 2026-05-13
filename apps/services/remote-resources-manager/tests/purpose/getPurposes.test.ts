@@ -42,6 +42,12 @@ const toK2KResult = (apiResult: API_Purpose): k2kGatewayApi.Purpose => ({
   state: toK2KPurposeState(apiResult.state),
   suspendedByConsumerAt: apiResult.suspendedByConsumerAt,
   suspendedByProducerAt: apiResult.suspendedByProducerAt,
+  template: apiResult.template
+    ? {
+        id: apiResult.template.id,
+        knodeId: toK2KKnodeId(apiResult.template.knodeId),
+      }
+    : undefined,
   updatedAt: apiResult.updatedAt,
 });
 

@@ -105,6 +105,33 @@ describe("POST /purposes (createPurpose)", () => {
     expect(remoteResourcePurpose).toEqual(expectedRemoteResourcePurpose);
   });
 
+  it("should forward template to k2k-gateway when present in body", async () => {
+    const templateId = generateId();
+    const templateKnodeId = "Orion";
+
+    createPurposeMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        template: { id: templateId, knodeId: templateKnodeId },
+      });
+
+    expect(response.statusCode).toBe(201);
+
+    expect(createPurposeMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: {
+          ...k2kBody,
+          template: { id: templateId, knodeId: "ORION" },
+        },
+      }),
+    );
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

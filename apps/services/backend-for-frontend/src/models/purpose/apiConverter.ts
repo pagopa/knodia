@@ -67,6 +67,7 @@ export const toAPI_ProducerPurpose = ({
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,
+  updatedAt: purpose.updatedAt,
 });
 
 export const toAPI_ConsumerPurposeDetails = ({

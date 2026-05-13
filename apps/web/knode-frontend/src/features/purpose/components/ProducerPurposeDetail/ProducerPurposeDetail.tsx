@@ -90,16 +90,18 @@ export function ProducerPurposeDetail({
 
       <PurposeAgreementCard
         action={
-          <ButtonLinkWithPreload
-            aria-label="Go to agreement"
-            hierarchy="neutral"
-            kind="tonal"
-            params={{ id: purpose.agreement.id }}
-            size="icon-md"
-            to="/production/agreements/$id"
-          >
-            <ArrowRightIcon />
-          </ButtonLinkWithPreload>
+          purpose.agreement.state !== "Archived" && (
+            <ButtonLinkWithPreload
+              aria-label="Go to agreement"
+              hierarchy="neutral"
+              kind="tonal"
+              params={{ id: purpose.agreement.id }}
+              size="icon-md"
+              to="/production/agreements/$id"
+            >
+              <ArrowRightIcon />
+            </ButtonLinkWithPreload>
+          )
         }
         agreement={purpose.agreement}
       />
