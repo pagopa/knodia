@@ -1,22 +1,15 @@
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { z } from "zod";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { ArchivedConsumerPurposeTable } from "@/features/purpose/components/ArchivedConsumerPurposeTable";
+import {
+  archivedPurposesSearchDefaultValues,
+  archivedPurposesSearchSchema,
+} from "@/features/purpose/models/search-params";
 import { consumerArchivedPurposesQuery } from "@/features/purpose/services/queries";
-
-const archivedPurposesSearchDefaultValues = { offset: 0 };
-
-const archivedPurposesSearchSchema = z.object({
-  offset: z
-    .number()
-    .min(0)
-    .default(archivedPurposesSearchDefaultValues.offset)
-    .catch(archivedPurposesSearchDefaultValues.offset),
-});
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/purposes/archive",
