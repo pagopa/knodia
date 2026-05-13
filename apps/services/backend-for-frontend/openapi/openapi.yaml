@@ -2212,7 +2212,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session:
+  /auth/uiSession:
     post:
       operationId: createSession
       tags:
@@ -2251,7 +2251,7 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session/refresh:
+  /auth/uiSession/refresh:
     post:
       operationId: refreshSession
       tags:

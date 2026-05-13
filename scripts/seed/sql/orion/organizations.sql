@@ -10,7 +10,7 @@ VALUES ('00000000-0000-4000-8000-000000000003', 'Test Org Orion 2', 0, now(), no
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)
-VALUES ('00000000-0000-4000-8000-000000000004', 'Test Org Orion 3', 0, now(), now())
+VALUES ('00000000-0000-4000-8000-000000000004', 'Mockup Confederate Organization Orion', 0, now(), now())
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, updated_at = now();
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)

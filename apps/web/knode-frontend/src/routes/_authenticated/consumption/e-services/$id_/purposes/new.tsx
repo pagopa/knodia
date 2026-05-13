@@ -14,19 +14,20 @@ export const Route = createFileRoute(
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ context, deps: { knodeId }, params: { id } }) => {
     requireRole(context, "administrative");
-    return await context.queryClient.ensureQueryData(
+    const eserviceDetail = await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(id, knodeId),
     );
+    return { eserviceDetail };
   },
   validateSearch: eserviceDetailSearchSchema,
 });
 
 function RouteComponent() {
-  const bffDetail = Route.useLoaderData();
+  const { eserviceDetail } = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const eservice = toConsumptionEserviceDetail(bffDetail);
+  const eservice = toConsumptionEserviceDetail(eserviceDetail);
 
   const onClose = () =>
     navigate({
