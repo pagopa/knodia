@@ -1472,6 +1472,20 @@ components:
         - Active
         - Suspended
         - Archived
+    PurposeTemplateReference:
+      description: Reference to a Purpose statement template
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1972,6 +1986,9 @@ components:
           $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
+        template:
+          allOf:
+            - $ref: "#/components/schemas/PurposeTemplateReference"
       required:
         - dailyCalls
         - description

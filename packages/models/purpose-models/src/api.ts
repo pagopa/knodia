@@ -32,6 +32,19 @@ export const API_PurposeConsumer = z
   .meta({ id: "PurposeConsumer" });
 export type API_PurposeConsumer = z.infer<typeof API_PurposeConsumer>;
 
+export const API_PurposeTemplateReference = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Reference to a Purpose statement template",
+    id: "PurposeTemplateReference",
+  });
+export type API_PurposeTemplateReference = z.infer<
+  typeof API_PurposeTemplateReference
+>;
+
 export const API_LocalizedPurposeName = LocalizedText(
   minNameLength,
   maxNameLength,
