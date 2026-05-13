@@ -10,9 +10,12 @@ import {
 } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import z from "zod";
 
-import { API_TestResponse } from "../models/api.ts";
+import { findDigitalContact } from "../data/naturalPersons.ts";
+import { API_DigitalContact, API_Notation } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { naturalPersonNotFound } from "../models/errors.ts";
 import { MockEserviceHeaders } from "../models/headers.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
@@ -36,7 +39,7 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
   MockDpopRouterOptions
 > = async (fastify, { knodeId }) => {
   fastify.route({
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
@@ -46,24 +49,37 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
+      const { identifierNotation } = req.params;
+      const result = findDigitalContact(identifierNotation);
+      if (!result) {
+        throw naturalPersonNotFound(identifierNotation);
+      }
+
       logger.info(
-        "Mock e-service /testDpop invoked with valid DPoP access token",
+        `Mock e-service /natural-persons/${identifierNotation}/digital-contact returned digital contact`,
       );
-      res.status(200).send({ status: "ok" });
+      res.status(200).send(result);
     },
     method: "GET",
     schema: {
       description:
-        "Validates the incoming DPoP access token and returns a static success response",
+        "Returns the digital contact of a natural person identified by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected).",
       headers: MockEserviceHeaders,
-      operationId: "testDpop",
+      operationId: "getDigitalContact",
+      params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
-        200: API_TestResponse.meta({ description: "Access token accepted" }),
+        200: API_DigitalContact.meta({
+          description: "Digital contact for the requested natural person",
+        }),
+        400: API_Problem.meta({ description: "Invalid Codice Fiscale" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        404: API_Problem.meta({
+          description: "No natural person found for the given Codice Fiscale",
+        }),
       },
-      summary: "Mock e-service DPoP endpoint",
-      tags: [apiTags.dpopTokenMock],
+      summary: "Get digital contact",
+      tags: [apiTags.digitalContact],
     },
-    url: "/testDpop",
+    url: "/natural-persons/:identifierNotation/digital-contact",
   });
 };

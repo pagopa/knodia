@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -33,7 +34,7 @@ const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
 );
 
-const ENDPOINT = "/test";
+const ENDPOINT = "/natural-persons/RMNLNR03H12H501Z";
 const OTHER_KNODE_ID = KnodeId.enum.Lynx;
 
 async function signToken(
@@ -86,7 +87,7 @@ async function signToken(
 }
 
 describe("mock-eservice Bearer access-token verification", () => {
-  it("returns 200 for a valid access token", async () => {
+  it("returns 200 with the personal information for a known notation", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
       headers: {
@@ -96,7 +97,43 @@ describe("mock-eservice Bearer access-token verification", () => {
       url: ENDPOINT,
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: "ok" });
+    expect(res.json()).toEqual({ dateOfBirth: "2003-06-12" });
+  });
+
+  it("returns 404 when the notation is not in the dataset", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: "/natural-persons/AAAAAA00A00A000A",
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it("returns 400 when the notation does not match the codice fiscale regex", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: "/natural-persons/not-a-codice-fiscale",
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it("returns 400 when the notation is lowercase (uppercase-only regex)", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: "/natural-persons/rmnlnr03h12h501z",
+    });
+    expect(res.statusCode).toBe(400);
   });
 
   it("returns 401 when the Authorization header is missing", async () => {
