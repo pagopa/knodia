@@ -82,6 +82,7 @@ vi.mock("@knodia/token-generator", () => ({
             knode_id: input.organization.knodeId,
           },
           sub: input.keychain.id,
+          type: "knode-api",
         } satisfies KnodeApiAccessTokenClaims,
         serialized: MOCK_TOKEN,
       }),

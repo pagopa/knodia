@@ -302,6 +302,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
           knode_id: input.organization.knodeId,
         },
         sub: input.keychain.id,
+        type: "knode-api",
       };
 
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
@@ -310,6 +311,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
+        type: "knode-api",
       };
     },
 

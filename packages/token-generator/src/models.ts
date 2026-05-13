@@ -29,6 +29,7 @@ export interface InternalToken extends BaseToken {
 
 export interface KnodeApiAccessToken extends BaseToken {
   payload: KnodeApiAccessTokenClaims;
+  type: "knode-api";
 }
 
 export interface UISessionRefreshToken extends BaseToken {
