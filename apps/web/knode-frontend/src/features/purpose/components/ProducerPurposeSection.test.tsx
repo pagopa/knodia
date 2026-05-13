@@ -26,6 +26,7 @@ function createPurpose(
     id: "purpose-1",
     name: { en: "Purpose Alpha" },
     state: "Active",
+    updatedAt: "2026-01-01T00:00:00.000Z",
     ...overrides,
   };
 }

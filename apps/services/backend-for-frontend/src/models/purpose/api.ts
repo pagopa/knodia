@@ -141,6 +141,7 @@ export const API_ProducerPurpose = z
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerPurpose" });
 export type API_ProducerPurpose = z.infer<typeof API_ProducerPurpose>;
