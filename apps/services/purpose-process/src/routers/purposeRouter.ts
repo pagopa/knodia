@@ -1,8 +1,15 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { fromExternalResource } from "@knodia/common-models/externalResource";
-import { type OrganizationId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  fromExternalResource,
+  fromOptionalExternalResource,
+} from "@knodia/common-models/externalResource";
+import {
+  type OrganizationId,
+  type PurposeTemplateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -54,6 +61,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
           formAnswersJson: req.body.formAnswersJson,
           formSchemaVersion: req.body.formSchemaVersion,
           name: req.body.name,
+          template: fromOptionalExternalResource<PurposeTemplateId>(
+            req.body.template,
+          ),
         },
         ctx,
       );

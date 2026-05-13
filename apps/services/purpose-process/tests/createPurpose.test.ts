@@ -6,6 +6,7 @@ import {
   generateId,
   KnodeId,
   type OrganizationId,
+  type PurposeTemplateId,
 } from "@knodia/common-models/ids";
 import { EserviceMode, EserviceVersionState } from "@knodia/eservice-models";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
@@ -100,6 +101,7 @@ describe("POST /purposes (createPurpose)", () => {
       };
 
       expect(responseBody).toMatchObject(toExpectAPI_Purpose(expectedPurpose));
+      expect(responseBody).not.toHaveProperty("template");
 
       const events = await getAllPurposeEvents();
       expect(events).toHaveLength(1);
@@ -115,8 +117,34 @@ describe("POST /purposes (createPurpose)", () => {
       const createdEventData = PurposeEventV1.parse(createdEvent).data;
       const createdPurpose = fromPurposeV1(createdEventData.purpose!);
       expect(createdPurpose).toMatchObject(expectedPurpose);
+      expect(createdPurpose.template).toBeUndefined();
     },
   );
+
+  it("should persist template reference when provided", async () => {
+    await setupEserviceAndAgreement();
+
+    const template = {
+      id: generateExternalId<PurposeTemplateId>(),
+      knodeId: consumerKnodeId,
+    };
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({ ...body, template } satisfies API_PurposeSeed);
+
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Purpose>();
+    expect(responseBody.template).toEqual(template);
+
+    const events = await getAllPurposeEvents();
+    expect(events).toHaveLength(1);
+
+    const createdEventData = PurposeEventV1.parse(events[0]).data;
+    const createdPurpose = fromPurposeV1(createdEventData.purpose!);
+    expect(createdPurpose.template).toEqual(template);
+  });
 
   const notAllowedEserviceModes = EserviceMode.options.filter(
     (m) => m !== "ProvideData",
