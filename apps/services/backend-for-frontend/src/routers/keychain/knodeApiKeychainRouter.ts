@@ -51,7 +51,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollKnodeApiKeychain = (
-    response: AxiosResponse<unknown>,
+    response: AxiosResponse<keychainProcessApi.Keychain>,
     headers: KnodiaServiceHeaders,
     knodeApiKeychainId: KnodeApiKeychainId,
   ) =>
