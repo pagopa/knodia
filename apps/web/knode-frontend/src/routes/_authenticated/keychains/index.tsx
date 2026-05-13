@@ -9,6 +9,7 @@ import {
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -18,6 +19,7 @@ import { KeychainTable } from "@/features/keychain/components/KeychainTable";
 import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
+  supportedKeychainTab,
 } from "@/features/keychain/models/search-params";
 import {
   consumerKeychainsQuery,
@@ -32,11 +34,11 @@ export const Route = createFileRoute("/_authenticated/keychains/")({
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset, type } }) => {
-    if (type === "api") {
-      queryClient.prefetchQuery(knodeApiKeychainsQuery(offset));
-    } else {
-      queryClient.prefetchQuery(consumerKeychainsQuery(offset));
-    }
+    const query = match(type)
+      .with("api", () => knodeApiKeychainsQuery(offset))
+      .with("consumption", () => consumerKeychainsQuery(offset))
+      .exhaustive();
+    queryClient.prefetchQuery(query);
   },
   search: {
     middlewares: [stripSearchParams(keychainSearchDefaultValues)],
@@ -64,7 +66,10 @@ function RouteComponent() {
     placeholderData: keepPreviousData,
   });
 
-  const activeData = selectedTab === "api" ? apiData : consumerData;
+  const activeData = match(selectedTab)
+    .with("api", () => apiData)
+    .with("consumption", () => consumerData)
+    .exhaustive();
 
   function handleSearchChange(values: Partial<typeof search>) {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
@@ -98,8 +103,9 @@ function RouteComponent() {
       <Tabs
         kind="hug"
         onSelectionChange={(key) => {
-          if (key === "api" || key === "consumption") {
-            handleSearchChange({ offset: 0, type: key });
+          const parsed = supportedKeychainTab.safeParse(key);
+          if (parsed.success) {
+            handleSearchChange({ offset: 0, type: parsed.data });
           }
         }}
         selectedKey={selectedTab}

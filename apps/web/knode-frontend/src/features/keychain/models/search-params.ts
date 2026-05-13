@@ -6,7 +6,7 @@ import {
   keychainType,
 } from "./commons";
 
-const supportedKeychainTab = keychainType.exclude(["production"]);
+export const supportedKeychainTab = keychainType.exclude(["production"]);
 type SupportedKeychainTab = z.infer<typeof supportedKeychainTab>;
 
 export const keychainSearchDefaultValues = {
