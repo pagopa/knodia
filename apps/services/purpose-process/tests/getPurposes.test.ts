@@ -2,15 +2,24 @@
 import type z from "zod";
 
 import { AgreementState } from "@knodia/agreement-models";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { type PurposeTemplateId } from "@knodia/common-models/ids";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { splitPurposeIntoObjectsSQL } from "@knodia/db-readmodel-purpose/converters";
 import { EserviceMode, EserviceVersionState } from "@knodia/eservice-models";
 import { type Purpose, PurposeState } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockEservice,
+  getMockPurpose,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { API_GetPurposesQueryParams } from "../src/models/api.ts";
+import type {
+  API_GetPurposesQueryParams,
+  API_Purpose,
+} from "../src/models/api.ts";
 
 import {
   consumerId1,
@@ -239,4 +248,32 @@ describe("GET /purposes (getPurposes)", () => {
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should expose the template reference for purposes created from a template", async () => {
+    const template = {
+      id: generateExternalId<PurposeTemplateId>(),
+      knodeId: consumerKnodeId1,
+    };
+    const purposeWithTemplate: Purpose = {
+      ...getMockPurpose(99),
+      consumer: { id: consumerId1, knodeId: consumerKnodeId1 },
+      eserviceId: eserviceId1,
+      template,
+    };
+    await readmodelDb
+      .insert(readmodelPurpose)
+      .values(splitPurposeIntoObjectsSQL(purposeWithTemplate, 0).purposeSQL);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ limit: "50", offset: "0" });
+
+    expect(response.statusCode).toBe(200);
+
+    const results = response.json<{
+      results: API_Purpose[];
+    }>().results;
+    const match = results.find((p) => p.id === purposeWithTemplate.id);
+    expect(match?.template).toEqual(template);
+  });
 });

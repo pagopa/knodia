@@ -13,3 +13,12 @@ export function toAPI_KnodeId(
     .with("Lynx", () => "LYNX" as const)
     .exhaustive();
 }
+
+export function toProcessAPI_KnodeId(
+  knodeId: API_KnodeId,
+): purposeProcessApi.KnodeId {
+  return match(knodeId)
+    .with("ORION", () => "Orion" as const)
+    .with("LYNX", () => "Lynx" as const)
+    .exhaustive();
+}

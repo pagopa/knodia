@@ -51,6 +51,7 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     state: purpose.state,
     suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
     suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
+    ...(purpose.template ? { template: purpose.template } : {}),
     updatedAt: toExpectIsoOrNull(purpose.updatedAt),
   };
 }
