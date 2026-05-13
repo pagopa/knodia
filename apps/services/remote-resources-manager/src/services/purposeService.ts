@@ -23,6 +23,7 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { toK2KAPI_KnodeId } from "../models/knode/apiConverter.ts";
 import {
   toAPI_Purpose,
   toK2KAPI_PurposeState,
@@ -76,6 +77,7 @@ export function purposeServiceBuilder(
         formSchemaVersion,
         knodeId,
         name,
+        template,
       } = reqBody;
       const { organizationId: consumerId } = authData;
 
@@ -95,6 +97,9 @@ export function purposeServiceBuilder(
           formAnswersJson,
           formSchemaVersion,
           name,
+          template: template
+            ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
+            : undefined,
         },
         client: k2kGatewayClient,
       });
