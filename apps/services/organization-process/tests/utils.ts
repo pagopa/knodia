@@ -10,7 +10,10 @@ import { createOrganizationCreatedV1Event } from "../src/models/organizationEven
 import { app, eventStoreDb, organizationWriterService } from "./setup.ts";
 
 export async function getAllOrganizationEvents() {
-  return await eventStoreDb.select().from(eventStoreOrganizationEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStoreOrganizationEvents)
+    .orderBy(eventStoreOrganizationEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);

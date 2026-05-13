@@ -16,7 +16,10 @@ import { createEserviceVersionActivatedV1Event } from "../src/models/eserviceEve
 import { app, eserviceWriterService, eventStoreDb } from "./setup.ts";
 
 export async function getAllEserviceEvents() {
-  return await eventStoreDb.select().from(eventStoreEserviceEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStoreEserviceEvents)
+    .orderBy(eventStoreEserviceEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);

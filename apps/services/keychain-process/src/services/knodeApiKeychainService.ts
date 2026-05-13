@@ -37,6 +37,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   createKnodeApiKeychainCreatedV1Event,
+  createKnodeApiKeychainDeletedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
   createKnodeApiKeychainMemberAddedV1Event,
   createKnodeApiKeychainMemberRemovedV1Event,
@@ -137,6 +138,30 @@ export function knodeApiKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+    async deleteKnodeApiKeychain(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(`Deleting Knode API Keychain ${knodeApiKeychainId}`);
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainDeletedV1Event(
+          knodeApiKeychain.data,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+    },
     async getKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -148,7 +173,6 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
     },
-
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
