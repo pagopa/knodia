@@ -47,16 +47,8 @@ export function tokenServiceBuilder({
       const { keychainKnodeId, ownerId } =
         await verifyKnodeApiClientAssertionSignature(
           { clientAssertionJWS, knodeApiKeychainId },
-          {
-            clientAssertionAcceptedAudiences:
-              config.clientAssertionAcceptedAudiences,
-            clientAssertionMaxTokenAgeSeconds:
-              config.clientAssertionMaxTokenAgeSeconds,
-            jwtClockToleranceSeconds: config.jwtClockToleranceSeconds,
-            localKnodeId: config.knodeId,
-            readmodelService,
-            targetKnodeUrls: config.targetKnodeUrls,
-          },
+          config,
+          readmodelService,
           logger,
         );
 
@@ -104,15 +96,8 @@ export function tokenServiceBuilder({
       const { consumerAttributes, purpose } =
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
-          {
-            clientAssertionAcceptedAudiences:
-              config.clientAssertionAcceptedAudiences,
-            clientAssertionMaxTokenAgeSeconds:
-              config.clientAssertionMaxTokenAgeSeconds,
-            jwtClockToleranceSeconds: config.jwtClockToleranceSeconds,
-            readmodelService,
-            targetKnodeUrls: config.targetKnodeUrls,
-          },
+          config,
+          readmodelService,
           logger,
         );
 

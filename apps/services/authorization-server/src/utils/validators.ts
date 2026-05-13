@@ -38,6 +38,7 @@ import {
 import { match, P } from "ts-pattern";
 import { type z, ZodError } from "zod";
 
+import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { getK2K2GatewayApiClient } from "../clients/clientsProvider.ts";
@@ -110,19 +111,8 @@ export async function verifyClientAssertionSignature(
     clientAssertionJWS: string;
     consumerKeychainId: ConsumerKeychainId;
   },
-  {
-    clientAssertionAcceptedAudiences,
-    clientAssertionMaxTokenAgeSeconds,
-    jwtClockToleranceSeconds,
-    readmodelService,
-    targetKnodeUrls,
-  }: {
-    clientAssertionAcceptedAudiences: string[];
-    clientAssertionMaxTokenAgeSeconds: number;
-    jwtClockToleranceSeconds: number;
-    readmodelService: ReadmodelService;
-    targetKnodeUrls: TargetKnodeUrls;
-  },
+  config: AuthorizationServerConfig,
+  readmodelService: ReadmodelService,
   logger: FastifyBaseLogger,
 ): Promise<{
   consumerAttributes: k2kGatewayApi.Attribute[];
@@ -149,17 +139,15 @@ export async function verifyClientAssertionSignature(
         purposeId,
       },
       client: getK2K2GatewayApiClient(
-        targetKnodeUrls,
+        config.targetKnodeUrls,
         purpose.data.consumer.knodeId,
       ),
     });
 
     await verifyClientAssertionJwtSignature({
-      acceptedAudiences: clientAssertionAcceptedAudiences,
       clientAssertionAlg,
       clientAssertionJWS,
-      jwtClockToleranceSeconds,
-      maxTokenAgeSeconds: clientAssertionMaxTokenAgeSeconds,
+      config,
       publicKey,
       subject: consumerKeychainId,
     });
@@ -184,21 +172,8 @@ export async function verifyKnodeApiClientAssertionSignature(
     clientAssertionJWS: string;
     knodeApiKeychainId: KnodeApiKeychainId;
   },
-  {
-    clientAssertionAcceptedAudiences,
-    clientAssertionMaxTokenAgeSeconds,
-    jwtClockToleranceSeconds,
-    localKnodeId,
-    readmodelService,
-    targetKnodeUrls,
-  }: {
-    clientAssertionAcceptedAudiences: string[];
-    clientAssertionMaxTokenAgeSeconds: number;
-    jwtClockToleranceSeconds: number;
-    localKnodeId: KnodeId;
-    readmodelService: ReadmodelService;
-    targetKnodeUrls: TargetKnodeUrls;
-  },
+  config: AuthorizationServerConfig,
+  readmodelService: ReadmodelService,
   logger: FastifyBaseLogger,
 ) {
   try {
@@ -212,7 +187,7 @@ export async function verifyKnodeApiClientAssertionSignature(
     );
 
     const { ownerId, publicKey } =
-      knodeId === localKnodeId
+      knodeId === config.knodeId
         ? await resolveKnodeApiKeychainKeyFromReadmodel(
             knodeApiKeychainId,
             kid,
@@ -222,15 +197,13 @@ export async function verifyKnodeApiClientAssertionSignature(
             knodeApiKeychainId,
             kid,
             knodeId,
-            targetKnodeUrls,
+            config.targetKnodeUrls,
           );
 
     await verifyClientAssertionJwtSignature({
-      acceptedAudiences: clientAssertionAcceptedAudiences,
       clientAssertionAlg,
       clientAssertionJWS,
-      jwtClockToleranceSeconds,
-      maxTokenAgeSeconds: clientAssertionMaxTokenAgeSeconds,
+      config,
       publicKey,
       subject: knodeApiKeychainId,
     });
@@ -401,19 +374,19 @@ function translateClientAssertionVerificationError(
 }
 
 async function verifyClientAssertionJwtSignature({
-  acceptedAudiences,
   clientAssertionAlg,
   clientAssertionJWS,
-  jwtClockToleranceSeconds,
-  maxTokenAgeSeconds,
+  config: {
+    clientAssertionAcceptedAudiences,
+    clientAssertionMaxTokenAgeSeconds,
+    jwtClockToleranceSeconds,
+  },
   publicKey,
   subject,
 }: {
-  acceptedAudiences: string[];
   clientAssertionAlg: Algorithm;
   clientAssertionJWS: string;
-  jwtClockToleranceSeconds: number;
-  maxTokenAgeSeconds: number;
+  config: AuthorizationServerConfig;
   publicKey: PublicKeyForVerification;
   subject: string;
 }): Promise<void> {
@@ -428,10 +401,10 @@ async function verifyClientAssertionJwtSignature({
 
   await jwtVerify(clientAssertionJWS, verificationKey, {
     algorithms: [publicKey.algorithm],
-    audience: acceptedAudiences,
+    audience: clientAssertionAcceptedAudiences,
     clockTolerance: jwtClockToleranceSeconds,
     issuer: subject,
-    maxTokenAge: maxTokenAgeSeconds,
+    maxTokenAge: clientAssertionMaxTokenAgeSeconds,
     subject,
     typ: EXPECTED_CLIENT_ASSERTION_TYP,
   });
