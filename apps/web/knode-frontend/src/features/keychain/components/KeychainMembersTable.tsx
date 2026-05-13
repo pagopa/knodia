@@ -72,7 +72,7 @@ export function KeychainMembersTable({
             <Cell>
               <span className="body-md-em">{member.username}</span>
             </Cell>
-            <Cell>{member.email}</Cell>
+            <Cell className="body-md-em">{member.email}</Cell>
             {isAdmin && (
               <Cell>
                 <div className="flex justify-end">

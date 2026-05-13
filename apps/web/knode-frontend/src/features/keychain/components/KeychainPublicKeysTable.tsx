@@ -80,9 +80,11 @@ export function KeychainPublicKeysTable({
             <Cell>
               <span className="body-md-em">{key.name.en}</span>
             </Cell>
-            <Cell>{key?.uploaderUsername ?? "Removed User"}</Cell>
-            <Cell>{formatShortDate(key.createdAt)}</Cell>
-            <Cell>
+            <Cell className="body-md">
+              {key?.uploaderUsername ?? "Removed User"}
+            </Cell>
+            <Cell className="body-md">{formatShortDate(key.createdAt)}</Cell>
+            <Cell className="body-sm text-primary-light-high-contrast">
               <div className="flex items-center">
                 {key.kid} <CopyButton className="ml-2" textToCopy={key.kid} />
               </div>
