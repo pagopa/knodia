@@ -57,7 +57,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
     }),
     onSuccess: () => {
       // TODO KN-618: navigate to the API keychain details page once it exists.
-      navigate({ to: "/keychains" });
+      navigate({ search: { offset: 0, type: "api" }, to: "/keychains" });
       onClose();
     },
   });
