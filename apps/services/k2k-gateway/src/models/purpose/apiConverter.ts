@@ -3,7 +3,7 @@ import type { purposeProcessApi } from "@knodia/purpose-process-client";
 
 import { match } from "ts-pattern";
 
-import { toAPI_KnodeId } from "../knode/apiConverter.ts";
+import { toAPI_KnodeId, toProcessAPI_KnodeId } from "../knode/apiConverter.ts";
 import {
   type API_Purpose,
   type API_PurposeSeed,
@@ -24,6 +24,12 @@ export function toAPI_Purpose(purpose: purposeProcessApi.Purpose): API_Purpose {
     state: toAPI_PurposeState(purpose.state),
     suspendedByConsumerAt: purpose.suspendedByConsumerAt,
     suspendedByProducerAt: purpose.suspendedByProducerAt,
+    template: purpose.template
+      ? {
+          id: purpose.template.id,
+          knodeId: toAPI_KnodeId(purpose.template.knodeId),
+        }
+      : undefined,
     updatedAt: purpose.updatedAt,
   };
 }
@@ -46,6 +52,12 @@ export function toProcessAPI_PurposeSeed(
     formSchemaVersion:
       purposeSeed.formSchemaVersion as purposeProcessApi.PurposeFormSchemaVersion,
     name: purposeSeed.name,
+    template: purposeSeed.template
+      ? {
+          id: purposeSeed.template.id,
+          knodeId: toProcessAPI_KnodeId(purposeSeed.template.knodeId),
+        }
+      : undefined,
   };
 }
 

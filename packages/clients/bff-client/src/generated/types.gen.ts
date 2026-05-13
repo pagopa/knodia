@@ -561,6 +561,7 @@ export type ProducerAgreement = {
     hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
+    updatedAt: string;
 };
 
 export type ProducerAgreementDetails = {
@@ -568,11 +569,11 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+    updatedAt: string;
     latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
-    updatedAt: string;
 };
 
 export type ProducerAgreements = {
@@ -684,6 +685,14 @@ export type EserviceTemplate = {
 export type EserviceTemplates = Array<EserviceTemplate>;
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Reference to a Purpose statement template
+ */
+export type PurposeTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
 
 /**
  * Name of the Purpose
@@ -852,18 +861,6 @@ export type User = {
     username: string;
 };
 
-export type OrganizationUser = {
-    email: string;
-    id: UserId;
-    username: string;
-    /**
-     * Whether the User has the technical role within the Organization
-     */
-    isTechnical: boolean;
-};
-
-export type OrganizationUsers = Array<OrganizationUser>;
-
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
@@ -931,6 +928,7 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+    template?: PurposeTemplateReference;
 };
 
 export type ConsumerPurpose = {
@@ -968,6 +966,7 @@ export type ProducerPurpose = {
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
+    updatedAt: string;
 };
 
 export type ProducerPurposes = {
@@ -1017,7 +1016,7 @@ export type CreateSessionData = {
     body: SessionRequest;
     path?: never;
     query?: never;
-    url: '/auth/ui-session';
+    url: '/auth/uiSession';
 };
 
 export type CreateSessionErrors = {
@@ -1046,7 +1045,7 @@ export type RefreshSessionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/ui-session/refresh';
+    url: '/auth/uiSession/refresh';
 };
 
 export type RefreshSessionErrors = {
@@ -2455,39 +2454,6 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetOrganizationUsersData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/users';
-};
-
-export type GetOrganizationUsersErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
-
-export type GetOrganizationUsersResponses = {
-    /**
-     * Organization Users retrieved successfully
-     */
-    200: OrganizationUsers;
-};
-
-export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
-
 export type GetOperatorsData = {
     body?: never;
     path?: never;
@@ -3385,6 +3351,10 @@ export type GetProducerAgreementsData = {
          * Filter to only Agreements updated within the recent update window
          */
         recentlyUpdated?: 'true' | 'false';
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/producer/agreements';
 };

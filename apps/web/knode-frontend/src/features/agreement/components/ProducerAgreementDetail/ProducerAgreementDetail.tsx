@@ -11,6 +11,7 @@ import { RouterLink } from "@/components/routerLinks";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { formatNumericDate } from "@/utils/formatters";
 
 import { useReactivateAgreementByProducer } from "../../hooks/useReactivateAgreementByProducer";
 import { useSuspendAgreementByProducer } from "../../hooks/useSuspendAgreementByProducer";
@@ -32,7 +33,7 @@ export function ProducerAgreementDetail({
         actions={
           isArchived ? (
             <AgreementStateChip
-              archivedAt={agreement.updatedAt}
+              label={`Archived ${formatNumericDate(agreement.updatedAt)}`}
               state="Archived"
             />
           ) : (

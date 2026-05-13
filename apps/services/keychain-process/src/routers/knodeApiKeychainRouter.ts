@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -16,10 +17,13 @@ import type { KnodeApiKeychainService } from "../services/knodeApiKeychainServic
 
 import {
   API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKnodeApiKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
   API_KeychainKeys,
   API_KeychainKeySeed,
+  API_KeychainMemberSeed,
+  API_Keychains,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
@@ -230,5 +234,85 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.knodeApiKeychain],
     },
     url: "/knodeApiKeychains/:knodeApiKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } =
+        await knodeApiKeychainService.getKnodeApiKeychains(req.query, ctx);
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_Keychain),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Knode API Keychains",
+      headers: KnodiaServiceHeaders,
+      operationId: "getKnodeApiKeychains",
+      querystring: API_GetKnodeApiKeychainsQueryParams,
+      response: {
+        200: API_Keychains.meta({
+          description: "Knode API Keychains retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: knodeApiKeychain,
+        metadata: { version },
+      } = await knodeApiKeychainService.addKnodeApiKeychainMember(
+        req.params.knodeApiKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(knodeApiKeychain));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainMemberSeed,
+      description: "Add a member to a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "addKnodeApiKeychainMember",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Knode API Keychain member added successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId/members",
   });
 };

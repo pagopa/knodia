@@ -16,7 +16,8 @@ interface CreatePurposeInput {
 export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data, formSchemaVersion } = usePurposeWizardContext();
+  const { data, formSchemaVersion, selectedTemplate } =
+    usePurposeWizardContext();
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerPurposeMutation({ client }),
@@ -44,6 +45,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
         formSchemaVersion,
         knodeId,
         name: { en: data.name },
+        ...(selectedTemplate && { template: selectedTemplate }),
       },
     });
   };
