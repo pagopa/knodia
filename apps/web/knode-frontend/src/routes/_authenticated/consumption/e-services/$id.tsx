@@ -200,6 +200,7 @@ function RouteComponent() {
           <OrgConsumptionStatusSection
             agreement={agreement}
             eserviceId={eservice.id}
+            eserviceMode={eservice.mode}
             eserviceState={eservice.state}
             hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
             knodeId={knodeId}
