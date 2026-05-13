@@ -653,7 +653,7 @@ export type RemoveConsumerKeychainMemberErrors = {
      */
     403: Problem;
     /**
-     * Consumer Keychain or member not found
+     * Consumer Keychain or Member not found
      */
     404: Problem;
 };
@@ -1439,7 +1439,7 @@ export type RemoveKnodeApiKeychainMemberErrors = {
      */
     403: Problem;
     /**
-     * Knode API Keychain or member not found
+     * Knode API Keychain or Member not found
      */
     404: Problem;
 };
