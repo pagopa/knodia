@@ -16,3 +16,7 @@ params:query {
 headers {
   Authorization: {{ui-session-jwt}}
 }
+
+vars:post-response {
+  purposeTemplateId: res.body[0].id
+}
