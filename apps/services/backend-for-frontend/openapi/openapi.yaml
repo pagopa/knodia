@@ -1609,6 +1609,17 @@ components:
       required:
         - name
       additionalProperties: false
+    KnodeApiKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - name
+      additionalProperties: false
     Keychain:
       type: object
       properties:
@@ -4254,6 +4265,108 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /knodeApiKeychains:
+    post:
+      operationId: createKnodeApiKeychain
+      tags:
+        - knodeApiKeychain
+      description: Create a new Knode API Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KnodeApiKeychainSeed"
+      responses:
+        "201":
+          description: Knode API Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Knode API Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getKnodeApiKeychains
+      tags:
+        - knodeApiKeychain
+      description: Retrieve a paginated list of Knode API Keychains owned by the
+        current user organization
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Knode API Keychains retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Knode API Keychains retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychains"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /operators:
     get:
       operationId: getOperators
@@ -6119,6 +6232,8 @@ tags:
     name: eservice
   - description: Consumer Keychains routes
     name: consumerKeychain
+  - description: Knode API Keychains routes
+    name: knodeApiKeychain
   - description: Purpose routes
     name: purpose
   - description: Operator routes
