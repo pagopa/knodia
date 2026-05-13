@@ -56,12 +56,6 @@ describe("GET /operators (getOperators)", () => {
     expect(response.statusCode).toBe(200);
     expect(API_Operators.parse(response.json())).toEqual([
       {
-        email: "mario.rossi@example.com",
-        id: "10000000-1000-1000-8000-000000000011",
-        roles: ["administrative", "technical"],
-        username: "Mario Rossi",
-      },
-      {
         email: "giulia.bianchi@example.com",
         id: "10000000-1000-1000-8000-000000000012",
         roles: ["administrative"],
@@ -72,6 +66,12 @@ describe("GET /operators (getOperators)", () => {
         id: "10000000-1000-1000-8000-000000000013",
         roles: ["technical"],
         username: "Luca Neri",
+      },
+      {
+        email: "mario.rossi@example.com",
+        id: "10000000-1000-1000-8000-000000000011",
+        roles: ["administrative", "technical"],
+        username: "Mario Rossi",
       },
     ]);
     expect(getOrganizationUsersMock).toHaveBeenCalledWith(TEST_ORGANIZATION_ID);
