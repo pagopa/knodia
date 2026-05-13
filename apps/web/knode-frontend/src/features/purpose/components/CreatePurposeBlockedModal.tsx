@@ -22,8 +22,8 @@ export function CreatePurposeBlockedModal({
       : agreementState === "Archived"
         ? {
             description:
-              "To create a Purpose, you should have an Agreement for this E-Service.",
-            title: "You don't have an Agreement",
+              "To create a Purpose, you should have an active Agreement.",
+            title: "Your Agreement is archived",
           }
         : null;
 

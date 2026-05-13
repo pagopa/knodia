@@ -17,6 +17,18 @@ export const producerAgreementSearchSchema = z.object({
     .catch(producerAgreementSearchDefaultValues.offset),
 });
 
+export const archivedAgreementsSearchDefaultValues = {
+  offset: 0,
+} as const;
+
+export const archivedAgreementsSearchSchema = z.object({
+  offset: z
+    .number()
+    .min(0)
+    .default(archivedAgreementsSearchDefaultValues.offset)
+    .catch(archivedAgreementsSearchDefaultValues.offset),
+});
+
 export const requestAgreementSearchSchema = z.object({
   eserviceId: z.string(),
   knodeId: KnodeId,
