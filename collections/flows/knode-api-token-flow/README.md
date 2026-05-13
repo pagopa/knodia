@@ -20,7 +20,7 @@ Steps 1–4 set up the keychain. Between step 4 and step 5 run the
 signing script:
 
 ```
-pnpm generate-client-assertion --knode-api \
+pnpm generate-client-assertion \
   --key $KEYCHAIN_PRIVATE_RS256_KEY_PATH \
   --keychainId <knodeApiKeychainId> \
   --knodeId <Orion|Lynx>

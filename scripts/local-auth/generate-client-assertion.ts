@@ -1,11 +1,9 @@
 // Signs an RS256 JWT client assertion for the local authorization-server
 // and writes it to collections/.env so the Bruno collections can pick it up.
 //
-// Two modes:
-//   - default: e-service access token assertion (writes CLIENT_ASSERTION_JWT).
-//     Requires --purposeId and a Consumer Keychain id in --keychainId.
-//   - --knode-api: Knode API token assertion (writes KNODE_API_CLIENT_ASSERTION_JWT).
-//     Requires --knodeId and a Knode API Keychain id in --keychainId. No --purposeId.
+// Pass --knodeId for a Knode API token assertion (writes
+// KNODE_API_CLIENT_ASSERTION_JWT). Pass --purposeId for an e-service access
+// token assertion (writes CLIENT_ASSERTION_JWT). One of the two is required.
 //
 // stdout: the signed JWT and nothing else (so it can be piped / captured).
 // stderr: everything else (logs, usage).
@@ -25,9 +23,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
 
 // Defaults target the local authorization-server. Override with --aud / --duration
-// when signing for dev/prod envs whose CLIENT_ASSERTION_ACCEPTED_AUDIENCES
-// (or KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES) and
-// CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS are configured differently.
+// for envs whose CLIENT_ASSERTION_ACCEPTED_AUDIENCES /
+// CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS differ.
 const DEFAULT_AUD = "test.knodia.org";
 const DEFAULT_DURATION_SECONDS = 300;
 
@@ -37,51 +34,40 @@ const { values } = parseArgs({
     duration: { type: "string" },
     key: { type: "string" },
     keychainId: { type: "string" },
-    "knode-api": { type: "boolean" },
     knodeId: { type: "string" },
     purposeId: { type: "string" },
   },
   strict: true,
 });
 
-const isKnodeApi = values["knode-api"] === true;
-
-function exitWithUsage(): never {
+const isKnodeApi = values.knodeId !== undefined;
+if (
+  !values.key ||
+  !values.keychainId ||
+  (isKnodeApi && values.purposeId) ||
+  (!isKnodeApi && !values.purposeId)
+) {
   console.error(`Usage:
-  E-service access token assertion (default):
-    node scripts/local-auth/generate-client-assertion.ts \\
+  E-service access token assertion:
+    pnpm generate-client-assertion \\
       --key <path-to-pem-private-key> \\
       --keychainId <consumer-keychain-uuid> \\
       --purposeId <uuid> \\
-      [--aud <audience>] \\
-      [--duration <seconds>]
+      [--aud <audience>] [--duration <seconds>]
 
   Knode API token assertion:
-    node scripts/local-auth/generate-client-assertion.ts --knode-api \\
+    pnpm generate-client-assertion \\
       --key <path-to-pem-private-key> \\
       --keychainId <knode-api-keychain-uuid> \\
       --knodeId <Orion|Lynx> \\
-      [--aud <audience>] \\
-      [--duration <seconds>]
+      [--aud <audience>] [--duration <seconds>]
 
---aud defaults to ${DEFAULT_AUD} (local authorization-server).
+--aud defaults to ${DEFAULT_AUD}.
 --duration defaults to ${DEFAULT_DURATION_SECONDS}s; must not exceed the
-  server's accepted max token age or the assertion is rejected before
-  it expires.
+  server's accepted max token age.
 
 Use \`pnpm generate-keypair\` first if you don't have a keypair yet.`);
   process.exit(1);
-}
-
-if (!values.key || !values.keychainId) {
-  exitWithUsage();
-}
-if (isKnodeApi) {
-  if (!values.knodeId || values.purposeId) {
-    exitWithUsage();
-  }
-} else if (!values.purposeId) {
-  exitWithUsage();
 }
 
 const { key: keyPath, keychainId } = values;
@@ -128,27 +114,17 @@ console.error(`kid: ${kid}`);
 const now = Math.floor(Date.now() / 1000);
 const header = b64url(JSON.stringify({ alg: "RS256", kid, typ: "JWT" }));
 const payload = b64url(
-  JSON.stringify(
-    isKnodeApi
-      ? {
-          aud,
-          exp: now + durationSeconds,
-          iat: now,
-          iss: keychainId,
-          jti: randomUUID(),
-          knode_id: values.knodeId,
-          sub: keychainId,
-        }
-      : {
-          aud,
-          exp: now + durationSeconds,
-          iat: now,
-          iss: keychainId,
-          jti: randomUUID(),
-          purpose_id: values.purposeId,
-          sub: keychainId,
-        },
-  ),
+  JSON.stringify({
+    aud,
+    exp: now + durationSeconds,
+    iat: now,
+    iss: keychainId,
+    jti: randomUUID(),
+    sub: keychainId,
+    ...(isKnodeApi
+      ? { knode_id: values.knodeId }
+      : { purpose_id: values.purposeId }),
+  }),
 );
 const signingInput = `${header}.${payload}`;
 const signer = createSign("RSA-SHA256");

@@ -34,7 +34,7 @@ script:post-response {
   const knodeId = bru.getEnvVar("local-knode-id") || "Orion"
   throw new Error(
     `Request failed with status ${res.status}. If you haven't signed a Knode API client assertion yet, or you rotated the keypair and KNODE_API_CLIENT_ASSERTION_JWT in collections/.env is stale, run:\n\n` +
-    `  pnpm generate-client-assertion --knode-api --key ${keyPath} --keychainId ${keychainId} --knodeId ${knodeId}\n\n` +
+    `  pnpm generate-client-assertion --key ${keyPath} --keychainId ${keychainId} --knodeId ${knodeId}\n\n` +
     "then re-run this call."
   )
 }
