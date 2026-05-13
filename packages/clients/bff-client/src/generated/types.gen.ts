@@ -853,18 +853,6 @@ export type User = {
     username: string;
 };
 
-export type OrganizationUser = {
-    email: string;
-    id: UserId;
-    username: string;
-    /**
-     * Whether the User has the technical role within the Organization
-     */
-    isTechnical: boolean;
-};
-
-export type OrganizationUsers = Array<OrganizationUser>;
-
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
@@ -876,6 +864,25 @@ export type KeychainMembers = {
 export type CreatedKeyResource = {
     kid: KeyId;
 };
+
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
 
 export type PurposeTemplate = {
     description: LocalizedPurposeDescription;
@@ -978,16 +985,6 @@ export type PurposeDetails = {
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
     updatedAt: string;
-};
-
-/**
- * Organization details for the current session, including attributes
- */
-export type SessionOrganization = {
-    attributes: Array<Attribute>;
-    id: string;
-    knodeId: KnodeId;
-    name: string;
 };
 
 export type GetStatusData = {
@@ -2448,14 +2445,14 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetOrganizationUsersData = {
+export type GetOperatorsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/users';
+    url: '/operators';
 };
 
-export type GetOrganizationUsersErrors = {
+export type GetOperatorsErrors = {
     /**
      * Bad Request
      */
@@ -2470,16 +2467,16 @@ export type GetOrganizationUsersErrors = {
     403: Problem;
 };
 
-export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
+export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
 
-export type GetOrganizationUsersResponses = {
+export type GetOperatorsResponses = {
     /**
-     * Organization Users retrieved successfully
+     * Operators retrieved successfully
      */
-    200: OrganizationUsers;
+    200: Operators;
 };
 
-export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
+export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;

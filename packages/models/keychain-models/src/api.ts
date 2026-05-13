@@ -26,7 +26,6 @@ export type API_ConsumerKeychainIdPathParam = z.infer<
   typeof API_ConsumerKeychainIdPathParam
 >;
 
-/** @knipignore */
 export const API_KnodeApiKeychainIdPathParam = z.strictObject({
   knodeApiKeychainId: KnodeApiKeychainId,
 });

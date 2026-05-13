@@ -1,0 +1,14 @@
+meta {
+  name: Get Operators
+  type: http
+}
+
+get {
+  url: {{host-organization-process}}/operators
+  body: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

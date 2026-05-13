@@ -44,6 +44,11 @@ export type Pagination = {
     total: number;
 };
 
+/**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
 export type Organization = {
     attributes: Array<Attribute>;
     createdAt: string;
@@ -56,6 +61,15 @@ export type Organizations = {
     pagination: Pagination;
     results: Array<Organization>;
 };
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
 
 export type OrganizationSeed = {
     attributes: Array<Attribute>;
@@ -217,3 +231,42 @@ export type GetOrganizationResponses = {
 };
 
 export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
+
+export type GetOperatorsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/operators';
+};
+
+export type GetOperatorsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
+
+export type GetOperatorsResponses = {
+    /**
+     * Operators retrieved successfully
+     */
+    200: Operators;
+};
+
+export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];

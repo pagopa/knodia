@@ -28,7 +28,7 @@ import { eserviceTemplateRouter } from "./routers/eservice-template/eserviceTemp
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
-import { userRouter } from "./routers/keychain/userRouter.ts";
+import { operatorRouter } from "./routers/operatorRouter.ts";
 import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
@@ -86,8 +86,8 @@ export function buildAppFromConfig(
             name: apiTags.purpose,
           },
           {
-            description: "User routes",
-            name: apiTags.user,
+            description: "Operator routes",
+            name: apiTags.operator,
           },
           {
             description: "E-service Templates routes",
@@ -145,11 +145,12 @@ export function buildAppFromConfig(
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
-    protectedApp.register(userRouter, {
-      keychainProcessClient: clients.keychainProcessClient,
+    protectedApp.register(operatorRouter, {
+      organizationProcessClient: clients.organizationProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,

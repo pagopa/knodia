@@ -1,4 +1,6 @@
 import { API_Attribute } from "@knodia/attribute-models/api";
+import { API_UserId } from "@knodia/common-models/api";
+import { UserRole } from "@knodia/common-models/auth";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
 
@@ -15,3 +17,16 @@ export const API_SessionOrganization = z
     id: "SessionOrganization",
   });
 export type API_SessionOrganization = z.infer<typeof API_SessionOrganization>;
+
+export const API_Operator = z
+  .strictObject({
+    email: z.string(),
+    id: API_UserId,
+    roles: z.array(UserRole),
+    username: z.string(),
+  })
+  .meta({ id: "Operator" });
+export type API_Operator = z.infer<typeof API_Operator>;
+
+export const API_Operators = z.array(API_Operator).meta({ id: "Operators" });
+export type API_Operators = z.infer<typeof API_Operators>;

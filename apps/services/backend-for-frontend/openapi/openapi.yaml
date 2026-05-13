@@ -1819,28 +1819,6 @@ components:
         - id
         - username
       additionalProperties: false
-    OrganizationUser:
-      type: object
-      properties:
-        email:
-          type: string
-        id:
-          $ref: "#/components/schemas/UserId"
-        username:
-          type: string
-        isTechnical:
-          description: Whether the User has the technical role within the Organization
-          type: boolean
-      required:
-        - email
-        - id
-        - username
-        - isTechnical
-      additionalProperties: false
-    OrganizationUsers:
-      type: array
-      items:
-        $ref: "#/components/schemas/OrganizationUser"
     KeychainMembers:
       type: object
       properties:
@@ -1863,6 +1841,55 @@ components:
       required:
         - kid
       additionalProperties: false
+    SessionOrganization:
+      description: Organization details for the current session, including attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - id
+        - knodeId
+        - name
+      additionalProperties: false
+    Operator:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - administrative
+              - technical
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - roles
+        - username
+      additionalProperties: false
+    Operators:
+      type: array
+      items:
+        $ref: "#/components/schemas/Operator"
     PurposeTemplate:
       type: object
       properties:
@@ -2139,29 +2166,6 @@ components:
         - suspendedByConsumerAt
         - suspendedByProducerAt
         - updatedAt
-      additionalProperties: false
-    SessionOrganization:
-      description: Organization details for the current session, including attributes
-      type: object
-      properties:
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          type: string
-          minLength: 1
-      required:
-        - attributes
-        - id
-        - knodeId
-        - name
       additionalProperties: false
 paths:
   /status:
@@ -4243,22 +4247,21 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users:
+  /operators:
     get:
-      operationId: getOrganizationUsers
+      operationId: getOperators
       tags:
-        - user
-      description: Retrieve users of the requesting User's Organization, including
-        whether they have the technical role
+        - operator
+      description: Retrieve Operators of the requesting User's Organization
       responses:
         "200":
-          description: Organization Users retrieved successfully
+          description: Operators retrieved successfully
           content:
             application/json:
               schema:
-                description: Organization Users retrieved successfully
+                description: Operators retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/OrganizationUsers"
+                  - $ref: "#/components/schemas/Operators"
         "400":
           description: Bad Request
           content:
@@ -6119,8 +6122,8 @@ tags:
     name: consumerKeychain
   - description: Purpose routes
     name: purpose
-  - description: User routes
-    name: user
+  - description: Operator routes
+    name: operator
   - description: E-service Templates routes
     name: eserviceTemplate
   - description: Purpose Templates routes
