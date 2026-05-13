@@ -206,17 +206,15 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "ConsumerKeychainPurposeUnlinkedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
-        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
+        .with(
+          { type: "ConsumerKeychainMemberAddedV1" },
+          { type: "ConsumerKeychainMemberRemovedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
         )
-        .with({ type: "ConsumerKeychainMemberRemovedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
-        )
-        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
-        )
-        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
+        .with(
+          { type: "ConsumerKeychainKeyAddedV1" },
+          { type: "ConsumerKeychainKeyRemovedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
         )
         .with(
           { type: "KnodeApiKeychainCreatedV1" },
@@ -226,11 +224,10 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
-        .with({ type: "KnodeApiKeychainMemberAddedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
-        )
-        .with({ type: "KnodeApiKeychainMemberRemovedV1" }, ({ data, type }) =>
-          testFullCodec({ data, type }),
+        .with(
+          { type: "KnodeApiKeychainMemberAddedV1" },
+          { type: "KnodeApiKeychainMemberRemovedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
         )
         .exhaustive();
     },
@@ -261,18 +258,15 @@ describe("KeychainEventV1 codec", () => {
           { type: "ConsumerKeychainPurposeUnlinkedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
-        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
-        )
         .with(
+          { type: "ConsumerKeychainMemberAddedV1" },
           { type: "ConsumerKeychainMemberRemovedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
-        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
-        )
-        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
+        .with(
+          { type: "ConsumerKeychainKeyAddedV1" },
+          { type: "ConsumerKeychainKeyRemovedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
         )
         .with(
           { type: "KnodeApiKeychainCreatedV1" },
@@ -282,10 +276,8 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "KnodeApiKeychainKeyAddedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
         )
-        .with({ type: "KnodeApiKeychainMemberAddedV1" }, ({ data, message }) =>
-          testProtobufCodec(message, data),
-        )
         .with(
+          { type: "KnodeApiKeychainMemberAddedV1" },
           { type: "KnodeApiKeychainMemberRemovedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )

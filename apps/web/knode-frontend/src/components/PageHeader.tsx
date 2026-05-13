@@ -51,7 +51,7 @@ export function PageHeader({
           />
         )}
         {description && (
-          <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
+          <p className="mt-2 body-md text-primary-light-low-contrast max-w-160">
             {description}
           </p>
         )}

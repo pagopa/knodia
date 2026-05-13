@@ -1176,11 +1176,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer Keychain not found
+          description: Consumer Keychain or Member not found
           content:
             application/problem+json:
               schema:
-                description: Consumer Keychain not found
+                description: Consumer Keychain or Member not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members:
@@ -2439,11 +2439,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Knode API Keychain not found
+          description: Knode API Keychain or Member not found
           content:
             application/problem+json:
               schema:
-                description: Knode API Keychain not found
+                description: Knode API Keychain or Member not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
