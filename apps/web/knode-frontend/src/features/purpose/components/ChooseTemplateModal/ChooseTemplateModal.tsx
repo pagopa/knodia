@@ -36,6 +36,12 @@ export function ChooseTemplateModal({
       <div className="mx-auto flex max-w-160 flex-col gap-10 p-10 pb-16">
         <StepHeader title="Choose template" />
 
+        <Banner kind="warning">
+          Selecting a template pre-fills the Purpose fields. You can edit any
+          field, and you remain responsible for the accuracy of the final
+          answers.
+        </Banner>
+
         {isPending && <Loader className="mx-auto mt-10" label="Loading..." />}
 
         {isError && (
