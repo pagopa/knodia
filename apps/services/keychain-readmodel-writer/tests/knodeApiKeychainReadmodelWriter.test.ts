@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { generateUserId } from "@knodia/common-models/ids";
