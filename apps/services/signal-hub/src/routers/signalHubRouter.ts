@@ -5,11 +5,10 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import z from "zod";
 
 import type { SignalHubService } from "../services/signalHubService.ts";
 
-import { API_PushSeed } from "../models/api.ts";
+import { API_PushResponse, API_PushSeed } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignalHubRouterOptions {
@@ -49,7 +48,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
         ctx,
       );
 
-      res.status(200).send(signalId);
+      res.status(200).send({ signalId });
     },
     method: "POST",
     schema: {
@@ -57,7 +56,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
       description: "Push a signal for an E-service",
       operationId: "pushSignal",
       response: {
-        200: z.number().meta({
+        200: API_PushResponse.meta({
           description: "Signal accepted",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

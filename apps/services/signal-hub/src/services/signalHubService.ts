@@ -64,8 +64,6 @@ export function signalHubServiceBuilder(
         signalType,
       };
       await signalHubDbService.insertSignal(signal);
-
-      return signalId;
     },
   };
 }

@@ -92,6 +92,7 @@ components:
         objectType:
           type: string
         signalId:
+          format: int32
           type: number
         signalType:
           $ref: "#/components/schemas/SignalType"
@@ -101,6 +102,15 @@ components:
         - objectType
         - signalId
         - signalType
+      additionalProperties: false
+    PushResponse:
+      type: object
+      properties:
+        signalId:
+          format: int32
+          type: number
+      required:
+        - signalId
       additionalProperties: false
 paths:
   /status:
@@ -139,7 +149,8 @@ paths:
             application/json:
               schema:
                 description: Signal accepted
-                type: number
+                allOf:
+                  - $ref: "#/components/schemas/PushResponse"
         "400":
           description: Bad Request
           content:
