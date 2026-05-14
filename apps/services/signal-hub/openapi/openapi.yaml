@@ -7,6 +7,13 @@ info:
   title: Knodia Signal Hub API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -83,9 +90,86 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /signals:
+    post:
+      operationId: pushSignal
+      tags:
+        - signalHub
+      description: Push a signal for an E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eserviceId:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                objectId:
+                  type: string
+                objectType:
+                  type: string
+                signalId:
+                  format: int64
+                  type: integer
+                  exclusiveMinimum: true
+                  maximum: 9007199254740991
+                signalType:
+                  type: string
+                  enum:
+                    - CREATE
+                    - UPDATE
+                    - DELETE
+                    - SEEDUPDATE
+              required:
+                - eserviceId
+                - objectId
+                - objectType
+                - signalId
+                - signalType
+              additionalProperties: false
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "204":
+          description: Signal accepted
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Signal Hub API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

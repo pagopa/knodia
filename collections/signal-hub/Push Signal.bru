@@ -1,0 +1,25 @@
+meta {
+  name: Push Signal
+  type: http
+}
+
+post {
+  url: {{host-signal-hub}}/signals
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{knode-api-jwt}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{$randomUUID}}",
+    "objectId": "object-1",
+    "objectType": "test",
+    "signalId": 1,
+    "signalType": "CREATE"
+  }
+}
