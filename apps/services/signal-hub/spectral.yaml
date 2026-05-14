@@ -1,1 +1,9 @@
 "extends": ["@knodia/spectral-config/spectral.yaml"]
+# POST /signals is a placeholder while the push API logic lands (KN-541).
+# The handler returns 501 Not Implemented, so the operation legitimately
+# has no 2xx/3xx response yet.
+"overrides":
+  - "files":
+      - "**#/paths/~1signals/post"
+    "rules":
+      "operation-success-response": "off"

@@ -1,8 +1,5 @@
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
-import {
-  createFastifyApp,
-  requireCorrelationIdHeaderPlugin,
-} from "@knodia/fastify-zod-api-commons/fastify";
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -52,12 +49,13 @@ function buildApp({ config }: { config: SignalHubConfig }) {
   // Public routes (no auth required)
   app.register(healthRouter);
 
-  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
-  // hooks are scoped to this context only.
+  // Protected routes — authenticationPlugin is scoped to this context only.
+  // signal-hub is a frontier service: it does not require an inbound
+  // x-correlation-id header (correlationId is generated per request by
+  // createFastifyApp's genReqId).
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
-    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(signalRouter);
   });
 
