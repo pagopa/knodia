@@ -31,6 +31,9 @@ const UserTokenClaims = BaseJwtClaims.extend({
   username: z.string(),
 });
 
+// E-service access tokens are consumed by external platforms that don't need
+// to discriminate Knodia token types, so this codec deliberately omits the
+// `type` literal carried by every other token codec in this file.
 export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
   cnf: z.strictObject({ jkt: z.string() }).optional(),
@@ -117,6 +120,8 @@ export type ExternalUISessionMagicLinkTokenClaims = z.infer<
 
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
+// Knode API access tokens are deliberately not included yet: the
+// signal-hub auth plugin that consumes them is tracked separately.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,

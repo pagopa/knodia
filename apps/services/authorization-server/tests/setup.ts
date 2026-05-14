@@ -14,6 +14,15 @@ import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
+import {
+  readmodelKnodeApiKeychain,
+  readmodelKnodeApiKeychainKey,
+  readmodelKnodeApiKeychainUser,
+} from "@knodia/db-readmodel-keychain";
+import {
+  type KnodeApiKeychainWriterService,
+  knodeApiKeychainWriterServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import {
   type PurposeWriterService,
@@ -32,6 +41,7 @@ let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let agreementWriterService: AgreementWriterService;
 let eserviceWriterService: EserviceWriterService;
+let knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
 let purposeWriterService: PurposeWriterService;
 let dynamoClient: DynamoDBClient;
 const producerKnodeId: KnodeId = "Orion";
@@ -44,6 +54,9 @@ async function resetTestDatabases() {
       readmodelDb,
       readmodelAgreement,
       readmodelEservice,
+      readmodelKnodeApiKeychain,
+      readmodelKnodeApiKeychainKey,
+      readmodelKnodeApiKeychainUser,
       readmodelPurpose,
     ),
     resetDynamoTable(dynamoDbDpopProofsTable, "jti", dynamoClient),
@@ -65,15 +78,18 @@ beforeAll(async () => {
     config: {
       clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
       clientAssertionMaxTokenAgeSeconds: 300,
-      consumerKnodeUrl: "http://localhost:0",
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
       dynamoDbDpopProofsTable,
       eserviceAccessTokenJwtKid: "test-kid",
       generatedEserviceAccessTokenIssuer: "knodia.org",
+      generatedKnodeApiTokenAudience: "test-knode-api-audience",
+      generatedKnodeApiTokenIssuer: "knodia.org",
       host: "test_host",
       isProduction: false,
       jwtClockToleranceSeconds: 30,
+      knodeApiTokenDurationSeconds: 3600,
+      knodeApiTokenJwtKid: "test-knode-api-kid",
       knodeId: producerKnodeId,
       logLevel: "silent",
       nodeEnv: "test",
@@ -81,12 +97,17 @@ beforeAll(async () => {
       readmodelDbAgreementSchema: "test_agreement_schema",
       readmodelDbEserviceSchema: "test_eservice_schema",
       readmodelDbHost: "test_db_host",
+      readmodelDbKeychainSchema: "test_keychain_schema",
       readmodelDbName: "test_db_name",
       readmodelDbPassword: "test_db_password",
       readmodelDbPort: 0,
       readmodelDbPurposeSchema: "test_purpose_schema",
       readmodelDbUser: "test_db_user",
       readmodelDbUseSsl: false,
+      targetKnodeUrls: {
+        Lynx: "http://localhost:0",
+        Orion: "http://localhost:0",
+      },
     },
     dynamoClient,
     readmodelDb,
@@ -96,6 +117,8 @@ beforeAll(async () => {
 
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
+  knodeApiKeychainWriterService =
+    knodeApiKeychainWriterServiceBuilder(readmodelDb);
   purposeWriterService = purposeWriterServiceBuilder(readmodelDb);
 });
 
@@ -115,6 +138,7 @@ export {
   dynamoClient,
   dynamoDbDpopProofsTable,
   eserviceWriterService,
+  knodeApiKeychainWriterService,
   producerKnodeId,
   purposeWriterService,
 };

@@ -249,8 +249,9 @@ describe("POST /token", async () => {
     });
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     getConsumerClientAssertionVerificationDataMock.mockReset();
+    await purposeWriterService.upsertPurpose(purpose, 0);
   });
 
   it.each(EserviceAccessTokenType.options)(
@@ -781,29 +782,20 @@ describe("POST /token", async () => {
     {
       agreement: undefined,
       eserviceVersion,
-      purpose,
       testCase: "agreement not found",
     },
     {
       agreement,
       eserviceVersion: undefined,
-      purpose,
       testCase: "e-service version not found",
-    },
-    {
-      agreement,
-      eserviceVersion,
-      purpose: undefined,
-      testCase: "purpose not found",
     },
   ] satisfies {
     agreement: Agreement | undefined;
     eserviceVersion: EserviceVersion | undefined;
-    purpose: Purpose | undefined;
     testCase: string;
   }[])(
     "should return 400 when platform objects are not found: $testCase (seed #%#)",
-    async ({ agreement, eserviceVersion, purpose }) => {
+    async ({ agreement, eserviceVersion }) => {
       await Promise.all([
         agreement
           ? agreementWriterService.upsertAgreement(agreement, 0)
@@ -813,9 +805,6 @@ describe("POST /token", async () => {
               { ...eservice, versions: [eserviceVersion] },
               0,
             )
-          : Promise.resolve(),
-        purpose
-          ? purposeWriterService.upsertPurpose(purpose, 0)
           : Promise.resolve(),
       ]);
 
@@ -828,6 +817,24 @@ describe("POST /token", async () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 400 when the Purpose is not found", async () => {
+    const { clientAssertionJWS: missingPurposeAssertionJWS } =
+      await getMockClientAssertion({
+        standardClaimsOverride: {
+          aud: ["test-audience-1"],
+          iss: consumerKeychainId,
+          purpose_id: generateId(),
+          sub: consumerKeychainId,
+        },
+      });
+
+    const response = await createToken({
+      body: { ...defaultBody, client_assertion: missingPurposeAssertionJWS },
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
 
   it("should return 400 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
     await Promise.all([

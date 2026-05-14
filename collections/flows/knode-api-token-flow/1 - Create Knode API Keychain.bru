@@ -1,0 +1,40 @@
+meta {
+  name: 1 - Create Knode API Keychain
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-keychain-process}}/knodeApiKeychains
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{randomKeychainName}}"
+    },
+    "description": {
+      "en": "Keychain for the Knode API token flow"
+    }
+  }
+}
+
+vars:post-response {
+  knodeApiKeychainId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomKeychainName", `Knode API Token Flow Keychain ${random}`)
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1500))
+}
