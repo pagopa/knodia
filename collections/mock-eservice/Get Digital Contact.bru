@@ -1,16 +1,17 @@
 meta {
-  name: Call Test With Bearer Token
+  name: Get Digital Contact
   type: http
 }
 
 get {
-  url: {{host-mock-eservice}}/test
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z/digital-contact
   body: none
   auth: none
 }
 
 headers {
-  Authorization: Bearer {{access_token}}
+  Authorization: DPoP {{access_token}}
+  DPoP: {{process.env.DPOP_PROOF_JWT}}
 }
 
 script:pre-request {

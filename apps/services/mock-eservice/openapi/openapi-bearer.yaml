@@ -73,51 +73,55 @@ components:
         - status
         - title
       additionalProperties: false
-    TestResponse:
-      description: Static success response returned when the access token is valid
+    Notation:
+      description: Italian Codice Fiscale, uppercase only. Acts as the natural-person
+        identifier in the path.
+      example: RMNLNR03H12H501Z
+      type: string
+      pattern: ^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$
+    PersonalInformation:
+      description: Personal information returned by the Cross-Border E-Service 01
       type: object
       properties:
-        status:
+        dateOfBirth:
           type: string
-          enum:
-            - ok
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
       required:
-        - status
+        - dateOfBirth
       additionalProperties: false
 paths:
-  /status:
+  /natural-persons/{identifierNotation}:
     get:
-      operationId: getStatus
+      operationId: getPersonalInformation
+      summary: Get personal information
       tags:
-        - health
-      description: Check the health status of the service
-      security: []
+        - personalInformation
+      description: Returns the date of birth of a natural person identified by Codice
+        Fiscale (Cross-Border E-Service 01, Bearer-protected).
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/Notation"
+          in: path
+          name: identifierNotation
+          required: true
       responses:
         "200":
-          description: Service status OK
-          content:
-            application/problem+json:
-              schema:
-                description: Service status OK
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /test:
-    get:
-      operationId: test
-      summary: Mock e-service endpoint
-      tags:
-        - bearerTokenMock
-      description: Validates the incoming Bearer access token and returns a static
-        success response
-      responses:
-        "200":
-          description: Access token accepted
+          description: Personal information for the requested natural person
           content:
             application/json:
               schema:
-                description: Access token accepted
+                description: Personal information for the requested natural person
                 allOf:
-                  - $ref: "#/components/schemas/TestResponse"
+                  - $ref: "#/components/schemas/PersonalInformation"
+        "400":
+          description: Invalid Codice Fiscale
+          content:
+            application/problem+json:
+              schema:
+                description: Invalid Codice Fiscale
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -126,13 +130,20 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "404":
+          description: No natural person found for the given Codice Fiscale
+          content:
+            application/problem+json:
+              schema:
+                description: No natural person found for the given Codice Fiscale
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Mock E-service API
     url: /
 security:
   - bearerAuth: []
 tags:
-  - description: Health check routes
-    name: health
-  - description: Mock e-service endpoints protected by Bearer token access tokens
-    name: bearerTokenMock
+  - description: Personal information lookup by Codice Fiscale (Cross-Border
+      E-Service 01, Bearer-protected)
+    name: personalInformation
