@@ -73,6 +73,35 @@ components:
         - status
         - title
       additionalProperties: false
+    SignalType:
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
+        - SEEDUPDATE
+    PushSeed:
+      type: object
+      properties:
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        objectId:
+          type: string
+        objectType:
+          type: string
+        signalId:
+          type: number
+        signalType:
+          $ref: "#/components/schemas/SignalType"
+      required:
+        - eserviceId
+        - objectId
+        - objectType
+        - signalId
+        - signalType
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -93,12 +122,40 @@ paths:
   /signals:
     post:
       operationId: pushSignal
+      summary: Push Signal
       tags:
         - signalHub
-      description: Push a signal for an E-service
+      description: Push new Signal to Signal Hub
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushSeed"
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
       responses:
         "200":
-          description: Signal accepted
+          description: Signal pushed successfully
+          content:
+            application/json:
+              schema:
+                description: Signal pushed successfully
+                type: number
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -113,6 +170,22 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
