@@ -9,7 +9,7 @@ const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
-  ESERVICE_NOT_FOUND: "0001",
+  ESERVICE_NOT_FOUND_FOR_PRODUCER: "0001",
   ESERVICE_NOT_ACTIVE: "0002",
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
@@ -32,15 +32,15 @@ export function eserviceNotActive(eserviceId: EserviceId) {
   });
 }
 
-export function eserviceNotFound(
+export function eserviceNotFoundForProducer(
   eserviceId: EserviceId,
   producerId: OrganizationId,
 ) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_NOT_FOUND",
+    code: "ESERVICE_NOT_FOUND_FOR_PRODUCER",
     detail: `E-service with id ${eserviceId} not found for producer ${producerId}`,
     status: HTTP_STATUS_NOT_FOUND,
-    title: "E-service Not Found",
+    title: "E-service Not Found For Producer",
   });
 }
 

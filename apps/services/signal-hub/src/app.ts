@@ -25,27 +25,7 @@ import { signalHubRouter } from "./routers/signalHubRouter.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 
-export function buildAppFromConfig(config: SignalHubConfig) {
-  const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
-  const { db: signalHubDb, pool: signalHubPool } =
-    makeSignalHubDrizzleConnection(config);
-
-  const app = buildApp({
-    config,
-    readmodelDb,
-    signalHubDb,
-    timeWindowInSeconds: config.timeWindowInSeconds,
-  });
-
-  app.addHook("onClose", async () => {
-    await Promise.all([readmodelPool.end(), signalHubPool.end()]);
-  });
-
-  return app;
-}
-
-function buildApp({
+export function buildApp({
   config,
   readmodelDb,
   signalHubDb,
@@ -97,6 +77,26 @@ function buildApp({
       ),
       timeWindowInSeconds,
     });
+  });
+
+  return app;
+}
+
+export function buildAppFromConfig(config: SignalHubConfig) {
+  const { db: readmodelDb, pool: readmodelPool } =
+    makeReadmodelDrizzleConnection(config);
+  const { db: signalHubDb, pool: signalHubPool } =
+    makeSignalHubDrizzleConnection(config);
+
+  const app = buildApp({
+    config,
+    readmodelDb,
+    signalHubDb,
+    timeWindowInSeconds: config.timeWindowInSeconds,
+  });
+
+  app.addHook("onClose", async () => {
+    await Promise.all([readmodelPool.end(), signalHubPool.end()]);
   });
 
   return app;

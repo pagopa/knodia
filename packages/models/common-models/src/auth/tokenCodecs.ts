@@ -6,6 +6,7 @@ import {
   ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   OrganizationId,
   PurposeId,
 } from "../ids/brandedIds.ts";
@@ -49,6 +50,18 @@ export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
 });
 export type EserviceAccessTokenClaims = z.infer<
   typeof EserviceAccessTokenClaims
+>;
+
+export const KnodeApiAccessTokenClaims = BaseJwtClaims.extend({
+  client_id: KnodeApiKeychainId,
+  keychain: z.strictObject({ id: KnodeApiKeychainId, knode_id: KnodeId }),
+  nbf: z.int(),
+  organization: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
+  sub: KnodeApiKeychainId,
+  type: z.literal("knode-api"),
+});
+export type KnodeApiAccessTokenClaims = z.infer<
+  typeof KnodeApiAccessTokenClaims
 >;
 
 export const UISessionTokenClaims = UserTokenClaims.extend({

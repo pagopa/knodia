@@ -2,6 +2,7 @@ import type {
   ExternalUISessionScope,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
+  KnodeApiAccessTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -15,6 +16,7 @@ import {
   type AgreementId,
   type EserviceId,
   type EserviceVersionId,
+  type KnodeApiKeychainId,
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
@@ -45,6 +47,9 @@ const TEST_PRODUCER_ID = unsafeBrandId<OrganizationId>(
 const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
   "70000000-7000-1000-8000-000000000007",
 );
+const TEST_KNODE_API_KEYCHAIN_ID = unsafeBrandId<KnodeApiKeychainId>(
+  "80000000-8000-1000-8000-000000000008",
+);
 
 export type TestToken =
   | {
@@ -67,7 +72,8 @@ export type TestToken =
       userId?: UserId;
       username?: string;
     }
-  | { type: "internal" };
+  | { type: "internal" }
+  | { type: "knode-api" };
 
 /**
  * Creates an unsecured JWT (`alg: "none"`) from test claims.
@@ -89,6 +95,7 @@ export function createTestTokenPayload(spec: TestToken): string {
     .with({ type: "external-ui-session" }, (props) =>
       getTestExternalUISessionTokenClaims(props),
     )
+    .with({ type: "knode-api" }, () => getTestIKnodeApiTokenClaims())
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
 }
@@ -133,6 +140,32 @@ export function getTestExternalUISessionTokenClaims(
     scope: props.scope ?? "agreement-activation",
     sub: "test-external-user",
     type: "external-ui-session",
+  };
+}
+
+export function getTestIKnodeApiTokenClaims({
+  organizationId,
+}: {
+  organizationId?: OrganizationId;
+} = {}): KnodeApiAccessTokenClaims {
+  return {
+    aud: "test-audience",
+    client_id: TEST_KNODE_API_KEYCHAIN_ID,
+    exp: 9999999999,
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    keychain: {
+      id: TEST_KNODE_API_KEYCHAIN_ID,
+      knode_id: KnodeId.enum.Lynx,
+    },
+    nbf: 0,
+    organization: {
+      id: organizationId ?? TEST_ORGANIZATION_ID,
+      knode_id: KnodeId.enum.Lynx,
+    },
+    sub: TEST_KNODE_API_KEYCHAIN_ID,
+    type: "knode-api",
   };
 }
 

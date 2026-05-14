@@ -15,6 +15,7 @@
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",

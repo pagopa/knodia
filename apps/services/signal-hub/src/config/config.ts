@@ -10,7 +10,7 @@ const SignalHubConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
-        TIME_WINDOW_IN_SECONDS: z.int().positive(),
+        TIME_WINDOW_IN_SECONDS: z.coerce.number().int().positive(),
       })
       .transform((c) => ({
         timeWindowInSeconds: c.TIME_WINDOW_IN_SECONDS,

@@ -28,15 +28,17 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
         );
     },
     async getSignal(signalId: number, eserviceId: EserviceId) {
-      return await db
+      const rows = await db
         .select()
         .from(signalHubSignal)
         .where(
           and(
-            eq(signalHubSignal.id, signalId),
+            eq(signalHubSignal.signalId, signalId),
             eq(signalHubSignal.eserviceId, eserviceId),
           ),
-        );
+        )
+        .limit(1);
+      return rows[0];
     },
     async insertSignal(signal: NewSignalHubSignal): Promise<void> {
       await db.insert(signalHubSignal).values(signal);
