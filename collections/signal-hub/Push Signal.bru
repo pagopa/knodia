@@ -1,0 +1,42 @@
+meta {
+  name: Push Signal
+  type: http
+}
+
+post {
+  url: {{host-signal-hub}}/signals
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{access_token}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{eserviceId}}",
+    "objectId": "test-object-id",
+    "objectType": "test-object-type",
+    "signalId": {{signalId}},
+    "signalType": "CREATE"
+  }
+}
+
+script:pre-request {
+  const eserviceId = bru.getVar("eserviceId");
+  const countersRaw = bru.getVar("signalIdCounters") || "{}";
+  const counters = JSON.parse(countersRaw);
+  bru.setVar("signalId", (counters[eserviceId] ?? 0) + 1);
+}
+
+script:post-response {
+  if (res.status >= 200 && res.status < 300) {
+    const eserviceId = bru.getVar("eserviceId");
+    const countersRaw = bru.getVar("signalIdCounters") || "{}";
+    const counters = JSON.parse(countersRaw);
+    counters[eserviceId] = bru.getVar("signalId");
+    bru.setVar("signalIdCounters", JSON.stringify(counters));
+  }
+}

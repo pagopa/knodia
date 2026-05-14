@@ -38,8 +38,8 @@ const eservice = {
 
 const defaultBody: API_PushSeed = {
   eserviceId: eservice.id,
-  objectId: "object-id-test",
-  objectType: "object-type-test",
+  objectId: "test-object-id",
+  objectType: "test-object-type",
   signalId: 1,
   signalType: "CREATE",
 };
