@@ -77,43 +77,132 @@ components:
         - status
         - title
       additionalProperties: false
-    TestResponse:
-      description: Static success response returned when the access token is valid
+    Notation:
+      description: Italian Codice Fiscale, uppercase only. Acts as the natural-person
+        identifier in the path.
+      example: RMNLNR03H12H501Z
+      type: string
+      pattern: ^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$
+    UriScheme:
+      description: Identifier scheme URI accepted by Knodia mock e-services
+      type: string
+      enum:
+        - http://memberstate.ms/PIdentifier
+        - http://memberstate.ms/VAT
+    Identifier:
+      description: Globally unique identifier of an entity (Core Person Vocabulary 2.1.1)
       type: object
       properties:
-        status:
+        notation:
+          $ref: "#/components/schemas/Notation"
+        schemeName:
           type: string
-          enum:
-            - ok
+        schemeURI:
+          $ref: "#/components/schemas/UriScheme"
       required:
-        - status
+        - notation
+        - schemeName
+        - schemeURI
+      additionalProperties: false
+    Location:
+      description: Geographic place, modelled after Core Person Vocabulary 2.1.1
+        (GeoNames URI + name)
+      type: object
+      properties:
+        geographicIdentifier:
+          type: string
+          format: uri
+        geographicName:
+          type: string
+      required:
+        - geographicIdentifier
+        - geographicName
+      additionalProperties: false
+    Sex:
+      description: Sex of a natural person (derived from the EU human-sex authority
+        vocabulary)
+      type: string
+      enum:
+        - FEMALE
+        - MALE
+        - NAP
+        - NKN
+        - NST
+    NaturalPerson:
+      description: Natural person, modelled after Core Person Vocabulary 2.1.1
+      type: object
+      properties:
+        alternativeName:
+          type: array
+          items:
+            type: string
+        dateOfBirth:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+        dateOfDeath:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+        familyName:
+          type: string
+        givenName:
+          type: string
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+        placeOfBirth:
+          $ref: "#/components/schemas/Location"
+        placeOfDeath:
+          allOf:
+            - $ref: "#/components/schemas/Location"
+        sex:
+          $ref: "#/components/schemas/Sex"
+      required:
+        - dateOfBirth
+        - familyName
+        - givenName
+        - identifier
+        - placeOfBirth
+        - sex
+      additionalProperties: false
+    ContactPoint:
+      description: Digital contact point of a natural person (Core Person Vocabulary 2.1.1)
+      type: object
+      properties:
+        hasEmail:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+        hasTelephone:
+          type: string
+      additionalProperties: false
+    DigitalContact:
+      description: Digital contact returned by the Cross-Border E-Service 02
+      type: object
+      properties:
+        contactPoint:
+          $ref: "#/components/schemas/ContactPoint"
+        naturalPerson:
+          $ref: "#/components/schemas/NaturalPerson"
+      required:
+        - contactPoint
+        - naturalPerson
       additionalProperties: false
 paths:
-  /status:
+  /natural-persons/{identifierNotation}/digital-contact:
     get:
-      operationId: getStatus
+      operationId: getDigitalContact
+      summary: Get digital contact
       tags:
-        - health
-      description: Check the health status of the service
-      security: []
-      responses:
-        "200":
-          description: Service status OK
-          content:
-            application/problem+json:
-              schema:
-                description: Service status OK
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /testDpop:
-    get:
-      operationId: testDpop
-      summary: Mock e-service DPoP endpoint
-      tags:
-        - dpopTokenMock
-      description: Validates the incoming DPoP access token and returns a static
-        success response
+        - digitalContact
+      description: Returns the digital contact of a natural person identified by
+        Codice Fiscale (Cross-Border E-Service 02, DPoP-protected).
       parameters:
+        - schema:
+            $ref: "#/components/schemas/Notation"
+          in: path
+          name: identifierNotation
+          required: true
         - schema:
             type: string
           in: header
@@ -122,19 +211,35 @@ paths:
           description: DPoP proof JWT
       responses:
         "200":
-          description: Access token accepted
+          description: Digital contact for the requested natural person
           content:
             application/json:
               schema:
-                description: Access token accepted
+                description: Digital contact for the requested natural person
                 allOf:
-                  - $ref: "#/components/schemas/TestResponse"
+                  - $ref: "#/components/schemas/DigitalContact"
+        "400":
+          description: Invalid Codice Fiscale
+          content:
+            application/problem+json:
+              schema:
+                description: Invalid Codice Fiscale
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
             application/problem+json:
               schema:
                 description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: No natural person found for the given Codice Fiscale
+          content:
+            application/problem+json:
+              schema:
+                description: No natural person found for the given Codice Fiscale
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
@@ -144,7 +249,6 @@ security:
   - dpopAuth: []
     dpopProof: []
 tags:
-  - description: Health check routes
-    name: health
-  - description: Mock e-service endpoints protected by DPoP-bound access tokens
-    name: dpopTokenMock
+  - description: Digital contact lookup by Codice Fiscale (Cross-Border E-Service
+      02, DPoP-protected)
+    name: digitalContact

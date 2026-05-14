@@ -1,11 +1,11 @@
 meta {
-  name: 2 - Call Mock Eservice (Bearer)
+  name: 2 - Get Personal Information (Bearer)
   type: http
   seq: 2
 }
 
 get {
-  url: {{host-mock-eservice}}/test
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z
   body: none
   auth: none
 }
@@ -16,7 +16,7 @@ headers {
 
 assert {
   res.status: eq 200
-  res.body.status: eq ok
+  res.body.dateOfBirth: eq 2003-06-12
 }
 
 script:pre-request {
