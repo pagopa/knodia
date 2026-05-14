@@ -23,8 +23,17 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-eservice": "workspace:*",
+    "@knodia/db-signal-hub": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@fastify/request-context": "catalog:",
+    "drizzle-orm": "catalog:",
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }

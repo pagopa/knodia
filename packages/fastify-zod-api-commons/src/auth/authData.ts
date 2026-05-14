@@ -19,6 +19,7 @@ import { match } from "ts-pattern";
 export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
+  | KnodeApiAuthData
   | UISessionAuthData;
 
 export interface ExternalUISessionAuthData {
@@ -45,6 +46,15 @@ export interface ExternalUISessionAuthData {
 
 export interface InternalAuthData {
   tokenType: "internal";
+}
+
+// TODO: add other fields
+export interface KnodeApiAuthData {
+  organization: {
+    id: OrganizationId;
+    knodeId: KnodeId;
+  };
+  tokenType: "knode-api";
 }
 
 export interface UISessionAuthData {

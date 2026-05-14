@@ -1,33 +1,71 @@
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
+import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
+import { signalHubDbServiceBuilder } from "@knodia/db-signal-hub/services";
+import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
+import {
+  createFastifyApp,
+  requireCorrelationIdHeaderPlugin,
+} from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  bearerAuthSecurity,
+  bearerAuthSecurityScheme,
+} from "@knodia/fastify-zod-api-commons/security";
 
 import type { SignalHubConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { signalHubRouter } from "./routers/signalHubRouter.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
+import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 
 export function buildAppFromConfig(config: SignalHubConfig) {
+  const { db: readmodelDb, pool: readmodelPool } =
+    makeReadmodelDrizzleConnection(config);
+  const { db: signalHubDb, pool: signalHubPool } =
+    makeSignalHubDrizzleConnection(config);
+
   const app = buildApp({
     config,
+    readmodelDb,
+    signalHubDb,
+    timeWindowInSeconds: config.timeWindowInSeconds,
+  });
+
+  app.addHook("onClose", async () => {
+    await Promise.all([readmodelPool.end(), signalHubPool.end()]);
   });
 
   return app;
 }
 
-function buildApp({ config }: { config: LoggerConfig }) {
+function buildApp({
+  config,
+  readmodelDb,
+  signalHubDb,
+  timeWindowInSeconds,
+}: {
+  config: LoggerConfig;
+  readmodelDb: NodePgDatabase;
+  signalHubDb: NodePgDatabase;
+  timeWindowInSeconds: number;
+}) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
+        components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
           description: "API for managing Knodia Signal Hub",
           title: "Knodia Signal Hub API",
           version: "1.0.0",
         },
+        security: bearerAuthSecurity,
         servers: [{ description: "Signal Hub API", url: "/" }],
         tags: [
           healthRouterTag,
@@ -44,6 +82,22 @@ function buildApp({ config }: { config: LoggerConfig }) {
 
   // Public routes (no auth required)
   app.register(healthRouter);
+
+  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
+  // hooks are scoped to this context only.
+  // See https://fastify.dev/docs/latest/Reference/Encapsulation/
+  app.register(async (protectedApp) => {
+    // TODO: add token authentication plugin
+
+    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    protectedApp.register(signalHubRouter, {
+      signalHubService: signalHubServiceBuilder(
+        readmodelServiceBuilder(readmodelDb),
+        signalHubDbServiceBuilder(signalHubDb),
+      ),
+      timeWindowInSeconds,
+    });
+  });
 
   return app;
 }
