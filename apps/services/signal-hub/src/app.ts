@@ -4,10 +4,8 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { signalHubDbServiceBuilder } from "@knodia/db-signal-hub/services";
 import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
-import {
-  createFastifyApp,
-  requireCorrelationIdHeaderPlugin,
-} from "@knodia/fastify-zod-api-commons/fastify";
+import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -63,13 +61,10 @@ export function buildApp({
   // Public routes (no auth required)
   app.register(healthRouter);
 
-  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
-  // hooks are scoped to this context only.
+  // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
-    // TODO: add token authentication plugin
-
-    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    protectedApp.register(authenticationPlugin, config);
     protectedApp.register(signalHubRouter, {
       signalHubService: signalHubServiceBuilder(
         readmodelServiceBuilder(readmodelDb),

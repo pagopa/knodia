@@ -12,6 +12,7 @@ import type {
   AuthData,
   ExternalUISessionAuthData,
   InternalAuthData,
+  KnodeApiAuthData,
   UISessionAuthData,
 } from "./authData.ts";
 
@@ -29,7 +30,7 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   // If there's a rule with tokenType "knode-api", add KnodeApiAuthData
   | (Extract<Rules[number], { tokenType: "knode-api" }> extends never
       ? never
-      : Extract<AuthData, { tokenType: "knode-api" }>)
+      : KnodeApiAuthData)
   // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never

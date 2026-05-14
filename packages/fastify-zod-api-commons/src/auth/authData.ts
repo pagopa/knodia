@@ -8,6 +8,7 @@ import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   KnodeId,
   OrganizationId,
   UserId,
@@ -48,8 +49,11 @@ export interface InternalAuthData {
   tokenType: "internal";
 }
 
-// TODO: add other fields
 export interface KnodeApiAuthData {
+  keychain: {
+    id: KnodeApiKeychainId;
+    knodeId: KnodeId;
+  };
   organization: {
     id: OrganizationId;
     knodeId: KnodeId;
@@ -105,6 +109,20 @@ export function extractAuthDataFromToken(
         },
         scope: c.scope,
         tokenType: "external-ui-session",
+      }),
+    )
+    .with(
+      { type: "knode-api" },
+      (c): KnodeApiAuthData => ({
+        keychain: {
+          id: c.keychain.id,
+          knodeId: c.keychain.knode_id,
+        },
+        organization: {
+          id: c.organization.id,
+          knodeId: c.organization.knode_id,
+        },
+        tokenType: "knode-api",
       }),
     )
     .exhaustive();

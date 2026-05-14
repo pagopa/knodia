@@ -1,10 +1,14 @@
 import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import { SignalHubDbConfig } from "@knodia/db-signal-hub/config";
-import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
+import {
+  AuthConfig,
+  HTTPServerConfig,
+} from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import z from "zod";
 
 const SignalHubConfig = LoggerConfig.and(HTTPServerConfig)
+  .and(AuthConfig)
   .and(ReadmodelEserviceConfig)
   .and(SignalHubDbConfig)
   .and(
