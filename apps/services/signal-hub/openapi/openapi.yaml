@@ -125,28 +125,20 @@ paths:
       summary: Push Signal
       tags:
         - signalHub
-      description: Push new Signal to Signal Hub
+      description: Push a signal for an E-service
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/PushSeed"
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
       responses:
         "200":
-          description: Signal pushed successfully
+          description: Signal accepted
           content:
             application/json:
               schema:
-                description: Signal pushed successfully
+                description: Signal accepted
                 type: number
         "400":
           description: Bad Request

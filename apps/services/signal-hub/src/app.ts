@@ -1,3 +1,4 @@
+import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -29,7 +30,7 @@ export function buildApp({
   signalHubDb,
   timeWindowInSeconds,
 }: {
-  config: LoggerConfig;
+  config: AuthConfig & LoggerConfig;
   readmodelDb: NodePgDatabase;
   signalHubDb: NodePgDatabase;
   timeWindowInSeconds: number;
