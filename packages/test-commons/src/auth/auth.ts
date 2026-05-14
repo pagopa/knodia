@@ -149,32 +149,6 @@ export function getTestExternalUISessionTokenClaims(
   };
 }
 
-export function getTestIKnodeApiTokenClaims({
-  organizationId,
-}: {
-  organizationId?: OrganizationId;
-} = {}): KnodeApiAccessTokenClaims {
-  return {
-    aud: "test-audience",
-    client_id: TEST_KNODE_API_KEYCHAIN_ID,
-    exp: 9999999999,
-    iat: 0,
-    iss: "test-issuer",
-    jti: "test-jti",
-    keychain: {
-      id: TEST_KNODE_API_KEYCHAIN_ID,
-      knode_id: KnodeId.enum.Lynx,
-    },
-    nbf: 0,
-    organization: {
-      id: organizationId ?? TEST_ORGANIZATION_ID,
-      knode_id: KnodeId.enum.Lynx,
-    },
-    sub: TEST_KNODE_API_KEYCHAIN_ID,
-    type: "knode-api",
-  };
-}
-
 export function getTestInternalTokenClaims(): InternalTokenClaims {
   return {
     aud: "test-audience",

@@ -11,7 +11,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   '{"en": "Mockup 01 Personal Information (Bearer) - Lynx"}'::jsonb,
   '{"en": "Cross-Border E-Service that returns the date of birth of a natural person identified by Codice Fiscale, with Bearer-token access."}'::jsonb,
   'ProvideData',
-  true, false,
+  false, false,
   0, now(), now()
 ) ON CONFLICT (id) DO UPDATE SET
   producer_id = EXCLUDED.producer_id,
