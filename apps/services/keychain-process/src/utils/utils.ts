@@ -146,6 +146,20 @@ export async function addMemberToKeychain<
   };
 }
 
+export function removeKeyFromKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+  assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);
+  retrieveKeychainKey(keychain, kid);
+
+  return {
+    ...keychain,
+    keys: keychain.keys.filter((key) => key.kid !== kid),
+    updatedAt: new Date(),
+  };
+}
+
 export function removeMemberFromKeychain<
   K extends ConsumerKeychain | KnodeApiKeychain,
 >(
@@ -163,19 +177,5 @@ export function removeMemberFromKeychain<
       updatedAt: new Date(),
       users: keychain.users.filter((member) => member.userId !== userId),
     },
-  };
-}
-
-export function removeKeyFromKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
->(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
-  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
-  assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);
-  retrieveKeychainKey(keychain, kid);
-
-  return {
-    ...keychain,
-    keys: keychain.keys.filter((key) => key.kid !== kid),
-    updatedAt: new Date(),
   };
 }
