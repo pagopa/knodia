@@ -49,10 +49,7 @@ function buildApp({ config }: { config: SignalHubConfig }) {
   // Public routes (no auth required)
   app.register(healthRouter);
 
-  // Protected routes — authenticationPlugin is scoped to this context only.
-  // signal-hub is a frontier service: it does not require an inbound
-  // x-correlation-id header (correlationId is generated per request by
-  // createFastifyApp's genReqId).
+  // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);

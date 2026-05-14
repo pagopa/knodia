@@ -97,6 +97,8 @@ paths:
         - signalHub
       description: Push a signal for an E-service
       responses:
+        "200":
+          description: Signal accepted
         "401":
           description: Unauthorized
           content:
@@ -113,8 +115,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "501":
-          description: Not implemented
 servers:
   - description: Signal Hub API
     url: /

@@ -5,21 +5,10 @@ meta {
 
 post {
   url: {{host-signal-hub}}/signals
-  body: json
+  body: none
   auth: none
 }
 
 headers {
-  X-Correlation-Id: {{correlation-id}}
   Authorization: {{knode-api-jwt}}
-}
-
-body:json {
-  {
-    "eserviceId": "{{$randomUUID}}",
-    "objectId": "object-1",
-    "objectType": "test",
-    "signalId": 1,
-    "signalType": "CREATE"
-  }
 }

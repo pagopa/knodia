@@ -19,16 +19,17 @@ export const signalRouter: FastifyPluginAsyncZod = async (fastify) => {
         `Push signal request received from organization ${ctx.authData.organization.id} (knode ${ctx.authData.organization.knodeId})`,
       );
 
-      res.status(501).send();
+      // TODO(KN-541): persist the signal and apply Push API authorization checks.
+      res.status(200).send();
     },
     method: "POST",
     schema: {
       description: "Push a signal for an E-service",
       operationId: "pushSignal",
       response: {
+        200: z.undefined().meta({ description: "Signal accepted" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        501: z.undefined().meta({ description: "Not implemented" }),
       },
       tags: [apiTags.signalHub],
     },
