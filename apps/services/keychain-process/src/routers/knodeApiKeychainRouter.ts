@@ -320,6 +320,48 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await knodeApiKeychainService.removeKnodeApiKeychainKey(
+        req.params.knodeApiKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a key from a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeKnodeApiKeychainKey",
+      params: API_KnodeApiKeychainKeyPathParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Knode API Keychain Key removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Knode API Keychain or Key not found",
+        }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
