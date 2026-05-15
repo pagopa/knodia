@@ -23,7 +23,6 @@ let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let eserviceWriterService: EserviceWriterService;
 let signalHubDbService: SignalHubDbService;
-const timeWindowInSeconds = 2;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -48,7 +47,6 @@ beforeAll(async () => {
     },
     readmodelDb,
     signalHubDb,
-    timeWindowInSeconds,
   });
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
@@ -63,4 +61,4 @@ afterAll(async () => {
   await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService, signalHubDbService, timeWindowInSeconds };
+export { app, eserviceWriterService, signalHubDbService };

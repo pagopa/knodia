@@ -29,14 +29,12 @@ export function signalHubServiceBuilder(
         objectType,
         signalId,
         signalType,
-        timeWindowInSeconds,
       }: {
         eserviceId: EserviceId;
         objectId: string;
         objectType: string;
         signalId: number;
         signalType: string;
-        timeWindowInSeconds: number;
       },
       { authData, correlationId, logger }: AuthorizedContext<KnodeApiAuthData>,
     ) {
@@ -49,12 +47,7 @@ export function signalHubServiceBuilder(
         organization.id,
         readmodelService,
       );
-      await assertSignalCanBePushed(
-        signalId,
-        eserviceId,
-        timeWindowInSeconds,
-        signalHubDbService,
-      );
+      await assertSignalCanBePushed(signalId, eserviceId, signalHubDbService);
 
       const signal: Omit<SignalHubSignalSQL, "id"> = {
         correlationId,

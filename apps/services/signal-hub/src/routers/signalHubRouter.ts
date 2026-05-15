@@ -13,12 +13,11 @@ import { apiTags } from "../models/apiTags.ts";
 
 interface SignalHubRouterOptions {
   signalHubService: SignalHubService;
-  timeWindowInSeconds: number;
 }
 
 export const signalHubRouter: FastifyPluginAsyncZod<
   SignalHubRouterOptions
-> = async (fastify, { signalHubService, timeWindowInSeconds }) => {
+> = async (fastify, { signalHubService }) => {
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
@@ -43,7 +42,6 @@ export const signalHubRouter: FastifyPluginAsyncZod<
           objectType,
           signalId,
           signalType,
-          timeWindowInSeconds,
         },
         ctx,
       );

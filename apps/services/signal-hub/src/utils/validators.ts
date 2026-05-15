@@ -9,8 +9,8 @@ import {
   eserviceNotActive,
   eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
+  newerSignalsExist,
   signalAlreadyExists,
-  signalsWithHigherIdExist,
 } from "../models/errors.ts";
 
 export async function assertEserviceIsActiveWithSignalHubEnabled(
@@ -31,7 +31,6 @@ export async function assertEserviceIsActiveWithSignalHubEnabled(
 export async function assertSignalCanBePushed(
   signalId: number,
   eserviceId: EserviceId,
-  timeWindowInSeconds: number,
   signalHubDbService: SignalHubDbService,
 ) {
   const signal = await signalHubDbService.getSignal(signalId, eserviceId);
@@ -39,13 +38,12 @@ export async function assertSignalCanBePushed(
     throw signalAlreadyExists(signalId, eserviceId);
   }
 
-  const recentSignals = await signalHubDbService.getRecentSignalsWithHigherId(
-    eserviceId,
+  const newerSignals = await signalHubDbService.getNewerSignals(
     signalId,
-    timeWindowInSeconds,
+    eserviceId,
   );
-  if (recentSignals.length > 0) {
-    throw signalsWithHigherIdExist(signalId, eserviceId, timeWindowInSeconds);
+  if (newerSignals.length > 0) {
+    throw newerSignalsExist(signalId, eserviceId);
   }
 }
 

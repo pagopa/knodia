@@ -16,14 +16,10 @@ import {
   eserviceNotActive,
   eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
+  newerSignalsExist,
   signalAlreadyExists,
-  signalsWithHigherIdExist,
 } from "../src/models/errors.ts";
-import {
-  eserviceWriterService,
-  signalHubDbService,
-  timeWindowInSeconds,
-} from "./setup.ts";
+import { eserviceWriterService, signalHubDbService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
@@ -132,28 +128,19 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 409 when a signal with a higher signalId was already consolidated", async () => {
+  it("should return 409 when signals with a higher signalId already exist", async () => {
     await seedEservice();
 
     // Insert directly with a backdated createdAt so it's already past the time window
     await signalHubDbService.insertSignal({
       ...defaultBody,
       correlationId: generateId(),
-      createdAt: new Date(Date.now() - timeWindowInSeconds * 1000 - 1),
-      signalId: 10,
+      signalId: defaultBody.signalId + 1,
     });
 
-    const lowerSignalId = 5;
-    const response = await pushSignal({
-      ...defaultBody,
-      signalId: lowerSignalId,
-    });
+    const response = await pushSignal();
 
-    const error = signalsWithHigherIdExist(
-      lowerSignalId,
-      eservice.id,
-      timeWindowInSeconds,
-    );
+    const error = newerSignalsExist(defaultBody.signalId, eservice.id);
 
     expect(response.statusCode).toBe(409);
     expect(response.json<API_Problem>().title).toEqual(error.title);

@@ -28,12 +28,10 @@ export function buildApp({
   config,
   readmodelDb,
   signalHubDb,
-  timeWindowInSeconds,
 }: {
   config: AuthConfig & LoggerConfig;
   readmodelDb: NodePgDatabase;
   signalHubDb: NodePgDatabase;
-  timeWindowInSeconds: number;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -71,7 +69,6 @@ export function buildApp({
         readmodelServiceBuilder(readmodelDb),
         signalHubDbServiceBuilder(signalHubDb),
       ),
-      timeWindowInSeconds,
     });
   });
 
@@ -88,7 +85,6 @@ export function buildAppFromConfig(config: SignalHubConfig) {
     config,
     readmodelDb,
     signalHubDb,
-    timeWindowInSeconds: config.timeWindowInSeconds,
   });
 
   app.addHook("onClose", async () => {
