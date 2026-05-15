@@ -1082,6 +1082,23 @@ components:
         - id
         - state
       additionalProperties: false
+    AgreementActivationDetails:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/CompactAgreement"
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - agreement
+        - consumer
+        - eservice
+        - producer
+      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -1117,12 +1134,17 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - consumer
         - eservice
         - hasRecentlyBeenUpdated
         - id
         - state
+        - updatedAt
       additionalProperties: false
     ProducerAgreementDetails:
       type: object
@@ -1137,6 +1159,10 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         latestEserviceVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         producer:
@@ -1151,20 +1177,16 @@ components:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - consumer
         - eservice
         - id
         - state
+        - updatedAt
         - latestEserviceVersionState
         - producer
         - suspendedByConsumerAt
         - suspendedByProducerAt
-        - updatedAt
       additionalProperties: false
     ProducerAgreements:
       type: object
@@ -1450,6 +1472,20 @@ components:
         - Active
         - Suspended
         - Archived
+    PurposeTemplateReference:
+      description: Reference to a Purpose statement template
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1797,28 +1833,6 @@ components:
         - id
         - username
       additionalProperties: false
-    OrganizationUser:
-      type: object
-      properties:
-        email:
-          type: string
-        id:
-          $ref: "#/components/schemas/UserId"
-        username:
-          type: string
-        isTechnical:
-          description: Whether the User has the technical role within the Organization
-          type: boolean
-      required:
-        - email
-        - id
-        - username
-        - isTechnical
-      additionalProperties: false
-    OrganizationUsers:
-      type: array
-      items:
-        $ref: "#/components/schemas/OrganizationUser"
     KeychainMembers:
       type: object
       properties:
@@ -1841,6 +1855,112 @@ components:
       required:
         - kid
       additionalProperties: false
+    SessionOrganization:
+      description: Organization details for the current session, including attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - id
+        - knodeId
+        - name
+      additionalProperties: false
+    Operator:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - administrative
+              - technical
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - roles
+        - username
+      additionalProperties: false
+    Operators:
+      type: array
+      items:
+        $ref: "#/components/schemas/Operator"
+    PurposeTemplate:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - description
+        - id
+        - name
+      additionalProperties: false
+    PurposeTemplateDetails:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - createdAt
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeTemplates:
+      type: array
+      items:
+        $ref: "#/components/schemas/PurposeTemplate"
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -1866,6 +1986,9 @@ components:
           $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
+        template:
+          allOf:
+            - $ref: "#/components/schemas/PurposeTemplateReference"
       required:
         - dailyCalls
         - description
@@ -1957,6 +2080,10 @@ components:
           $ref: "#/components/schemas/LocalizedPurposeName"
         state:
           $ref: "#/components/schemas/PurposeState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - consumer
         - dailyCalls
@@ -1966,6 +2093,7 @@ components:
         - id
         - name
         - state
+        - updatedAt
       additionalProperties: false
     ProducerPurposes:
       type: object
@@ -2056,29 +2184,6 @@ components:
         - suspendedByProducerAt
         - updatedAt
       additionalProperties: false
-    SessionOrganization:
-      description: Organization details for the current session, including attributes
-      type: object
-      properties:
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          type: string
-          minLength: 1
-      required:
-        - attributes
-        - id
-        - knodeId
-        - name
-      additionalProperties: false
 paths:
   /status:
     get:
@@ -2096,7 +2201,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session:
+  /auth/uiSession:
     post:
       operationId: createSession
       tags:
@@ -2143,7 +2248,7 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session/refresh:
+  /auth/uiSession/refresh:
     post:
       operationId: refreshSession
       tags:
@@ -2415,6 +2520,119 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposeTemplates:
+    get:
+      operationId: getPurposeTemplates
+      tags:
+        - purposeTemplate
+      description: Retrieve a list of Purpose Templates available for a given Knode,
+        optionally filtered by E-service
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+      responses:
+        "200":
+          description: Purpose Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose Templates retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeTemplates"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposeTemplates/{purposeTemplateId}:
+    get:
+      operationId: getPurposeTemplate
+      tags:
+        - purposeTemplate
+      description: Retrieve a Purpose Template with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeTemplateId
+          required: true
+      responses:
+        "200":
+          description: Purpose Template retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose Template retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeTemplateDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Purpose Template not found
+          content:
+            application/problem+json:
+              schema:
+                description: Purpose Template not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices:
@@ -3292,11 +3510,22 @@ paths:
           description: Pagination starting position
         - schema:
             type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+          description: Filter by E-service ID. Returns Consumer Keychains linked to any
+            Active or Suspended Purpose belonging to the given E-service.
+            Mutually exclusive with `purpose`.
+        - schema:
+            type: string
           in: query
           name: purpose
           required: false
           description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
-            (e.g. Orion:00000000-0000-0000-0000-000000000000)"
+            (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually
+            exclusive with `eserviceId`."
       responses:
         "200":
           description: Consumer Keychains retrieved successfully
@@ -4059,22 +4288,21 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /users:
+  /operators:
     get:
-      operationId: getOrganizationUsers
+      operationId: getOperators
       tags:
-        - user
-      description: Retrieve users of the requesting User's Organization, including
-        whether they have the technical role
+        - operator
+      description: Retrieve Operators of the requesting User's Organization
       responses:
         "200":
-          description: Organization Users retrieved successfully
+          description: Operators retrieved successfully
           content:
             application/json:
               schema:
-                description: Organization Users retrieved successfully
+                description: Operators retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/OrganizationUsers"
+                  - $ref: "#/components/schemas/Operators"
         "400":
           description: Bad Request
           content:
@@ -5346,6 +5574,14 @@ paths:
           name: recentlyUpdated
           required: false
           description: Filter to only Agreements updated within the recent update window
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Agreement State
       responses:
         "200":
           description: Producer Agreements retrieved successfully
@@ -5809,22 +6045,13 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /external/agreements/{agreementId}/activate:
+  /external/agreementActivation/activate:
     post:
       operationId: activateAgreement
       summary: Activate an Agreement
       tags:
         - agreement
-      description: Activate an Agreement using a scoped external-ui-session token
-        obtained from the magic-link exchange
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: agreementId
-          required: true
+      description: Activate the Agreement embedded in the external-ui-session token claims
       responses:
         "204":
           description: Agreement activated successfully
@@ -5868,6 +6095,56 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /external/agreementActivation/details:
+    get:
+      operationId: getAgreementActivationDetails
+      summary: Get Agreement activation details
+      tags:
+        - agreement
+      description: Retrieve the recap details (e-service, producer, consumer,
+        agreement state) for the Agreement embedded in the external-ui-session
+        token
+      responses:
+        "200":
+          description: Agreement activation details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement activation details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/AgreementActivationDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -5886,7 +6163,9 @@ tags:
     name: consumerKeychain
   - description: Purpose routes
     name: purpose
-  - description: User routes
-    name: user
+  - description: Operator routes
+    name: operator
   - description: E-service Templates routes
     name: eserviceTemplate
+  - description: Purpose Templates routes
+    name: purposeTemplate

@@ -40,7 +40,7 @@ const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
 );
 
-const ENDPOINT = "/testDpop";
+const ENDPOINT = "/natural-persons/RMNLNR03H12H501Z/digital-contact";
 const OTHER_KNODE_ID = KnodeId.enum.Lynx;
 
 async function getMockDpopProofJWS(
@@ -62,7 +62,7 @@ async function getMockDpopProofJWS(
     props: {
       customPayload: {
         htm: "GET",
-        htu: "http://localhost/testDpop",
+        htu: "http://localhost/natural-persons/RMNLNR03H12H501Z/digital-contact",
         ...customPayload,
       },
       ...customHeader,
@@ -139,7 +139,61 @@ describe("mock-eservice DPoP access-token verification", () => {
       url: ENDPOINT,
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: "ok" });
+    expect(res.json()).toEqual({
+      contactPoint: { hasEmail: "Leonardo.Romano@emailsample.org" },
+      naturalPerson: {
+        dateOfBirth: "2003-06-12",
+        familyName: "Romano",
+        givenName: "Leonardo",
+        identifier: {
+          notation: "RMNLNR03H12H501Z",
+          schemeName: "Codice Fiscale",
+          schemeURI: "http://memberstate.ms/PIdentifier",
+        },
+        placeOfBirth: {
+          geographicIdentifier: "https://geonames.org/3169071",
+          geographicName: "Roma",
+        },
+        sex: "MALE",
+      },
+    });
+  });
+
+  it("returns 404 when the notation is not in the dataset", async () => {
+    const token = await signToken();
+    const unknownEndpoint = "/natural-persons/AAAAAA00A00A000A/digital-contact";
+    const dpopProofJWS = await getMockDpopProofJWS(token, {
+      customPayload: { htu: `http://localhost${unknownEndpoint}` },
+    });
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: unknownEndpoint,
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it("returns 400 when the notation does not match the codice fiscale regex", async () => {
+    const token = await signToken();
+    const malformedEndpoint =
+      "/natural-persons/not-a-codice-fiscale/digital-contact";
+    const dpopProofJWS = await getMockDpopProofJWS(token, {
+      customPayload: { htu: `http://localhost${malformedEndpoint}` },
+    });
+
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `DPoP ${token}`,
+        dpop: dpopProofJWS,
+      },
+      method: "GET",
+      url: malformedEndpoint,
+    });
+    expect(res.statusCode).toBe(400);
   });
 
   it("returns 401 when the Authorization header is missing", async () => {

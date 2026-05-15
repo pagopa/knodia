@@ -1,4 +1,4 @@
 export const apiTags = {
   consumerKeychain: "consumerKeychain",
-  user: "user",
+  knodeApiKeychain: "knodeApiKeychain",
 } as const;

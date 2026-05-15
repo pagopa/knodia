@@ -17,6 +17,7 @@ import {
   generateId,
   type OrganizationId,
   type PurposeId,
+  type PurposeTemplateId,
 } from "@knodia/common-models/ids";
 import { EserviceMode } from "@knodia/eservice-models";
 import {
@@ -126,6 +127,7 @@ export function purposeServiceBuilder(
         formAnswersJson,
         formSchemaVersion,
         name,
+        template,
       }: {
         consumer: ExternalResource<OrganizationId>;
         dailyCalls: number;
@@ -134,6 +136,7 @@ export function purposeServiceBuilder(
         formAnswersJson: PurposeFormAnswers;
         formSchemaVersion: PurposeFormSchemaVersion;
         name: LocalizedPurposeName;
+        template?: ExternalResource<PurposeTemplateId>;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<WithMetadata<Purpose>> {
@@ -176,6 +179,8 @@ export function purposeServiceBuilder(
         state: PurposeState.enum.Active,
         suspendedByConsumerAt: null,
         suspendedByProducerAt: null,
+        // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
+        template,
         updatedAt: now,
       };
 

@@ -11,7 +11,6 @@ import {
   ArchiveIcon,
   CaretDownIcon,
   CaretUpIcon,
-  SelectionIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useContext, useState } from "react";
@@ -30,19 +29,23 @@ import { ArchiveAgreementModal } from "@/features/agreement/components/ArchiveAg
 import { SuspendAgreementModal } from "@/features/agreement/components/SuspendAgreementModal";
 import { useArchiveAgreementByConsumer } from "@/features/agreement/hooks/useArchiveAgreementByConsumer";
 import { useReactivateAgreementByConsumer } from "@/features/agreement/hooks/useReactivateAgreementByConsumer";
+import { useRequestAgreementMagicLink } from "@/features/agreement/hooks/useRequestAgreementMagicLink";
 import { useSuspendAgreementByConsumer } from "@/features/agreement/hooks/useSuspendAgreementByConsumer";
 
+import { EserviceConsumerKeychainsSection } from "./EserviceConsumerKeychainsSection";
 import { EservicePurposeSection } from "./EservicePurposeSection";
 
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
+  eserviceMode,
   eserviceState,
   hasRecentlyBeenUpdated,
   knodeId,
 }: {
   agreement: bffApi.EserviceAgreementDetail;
   eserviceId: EserviceId;
+  eserviceMode: bffApi.EserviceMode;
   eserviceState: bffApi.EserviceVersionState;
   hasRecentlyBeenUpdated: boolean;
   knodeId: KnodeId;
@@ -70,20 +73,11 @@ export function OrgConsumptionStatusSection({
               <EservicePurposeSection
                 agreementState={agreement.state}
                 eserviceId={eserviceId}
+                eserviceMode={eserviceMode}
                 eserviceState={eserviceState}
                 knodeId={knodeId}
               />
-
-              <div className="mt-4 flex flex-col gap-4">
-                <h3 className="title-md-em text-primary-light-low-contrast">
-                  Keychains
-                </h3>
-                <Banner icon={<SelectionIcon />} kind="neutral">
-                  To request an access token for this E-Service, associate a
-                  Keychain to a Purpose from the Purpose page. Associated
-                  Keychains will appear here.
-                </Banner>
-              </div>
+              <EserviceConsumerKeychainsSection eserviceId={eserviceId} />
             </>
           ))
           .otherwise(() => null)}
@@ -104,6 +98,12 @@ function AgreementStatusBanner({
   knodeId: KnodeId;
 }) {
   const agreementId = unsafeBrandId<AgreementId>(agreement.id);
+
+  const { isPending: isRequestMagicLinkPending, requestMagicLink } =
+    useRequestAgreementMagicLink({
+      agreementId,
+      knodeId,
+    });
 
   const banner = match(agreement.state)
     .with("Active", () =>
@@ -135,6 +135,15 @@ function AgreementStatusBanner({
     ))
     .with("PendingConsumerOperatorIdentification", () => (
       <Banner
+        action={
+          canManageAgreement
+            ? {
+                isDisabled: isRequestMagicLinkPending,
+                label: "Go to Producer Knode",
+                onPress: requestMagicLink,
+              }
+            : undefined
+        }
         icon={<WarningCircleIcon />}
         kind="informative"
         size="md"

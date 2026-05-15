@@ -1,1 +1,12 @@
-"extends": ["@knodia/spectral-config/spectral.yaml"]
+extends:
+  - "@knodia/spectral-config/spectral.yaml"
+overrides:
+  # False positive: "knodeApiKeychainId" contains "apikey" (case-insensitive) due to the
+  # resource name "KnodeApiKeychain", but it is a path identifier, not a credential.
+  - files:
+      - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D"
+      - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1keys"
+      - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1keys~1%7BkeyId%7D"
+      - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1members"
+    rules:
+      sec-credentials-parameters: off

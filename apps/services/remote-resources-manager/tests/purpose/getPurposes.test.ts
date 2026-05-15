@@ -42,6 +42,12 @@ const toK2KResult = (apiResult: API_Purpose): k2kGatewayApi.Purpose => ({
   state: toK2KPurposeState(apiResult.state),
   suspendedByConsumerAt: apiResult.suspendedByConsumerAt,
   suspendedByProducerAt: apiResult.suspendedByProducerAt,
+  template: apiResult.template
+    ? {
+        id: apiResult.template.id,
+        knodeId: toK2KKnodeId(apiResult.template.knodeId),
+      }
+    : undefined,
   updatedAt: apiResult.updatedAt,
 });
 
@@ -122,6 +128,26 @@ describe("GET /purposes (getPurposes)", () => {
       expect.objectContaining({
         query: expect.objectContaining({
           state: ["ACTIVE"],
+        }),
+      }),
+    );
+  });
+
+  it("should pass multi-value state filter to K2K gateway", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, state: ["Active", "Suspended"] });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          state: ["ACTIVE", "SUSPENDED"],
         }),
       }),
     );
