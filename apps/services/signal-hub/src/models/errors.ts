@@ -56,7 +56,7 @@ export function eserviceSignalHubNotEnabled(eserviceId: EserviceId) {
 export function newerSignalsExist(signalId: number, eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "NEWER_SIGNALS_EXIST",
-    detail: `Signals with id greater than ${signalId} have been pushed for E-service ${eserviceId}`,
+    detail: `Signals with id greater than ${signalId} have already been pushed for E-service ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Newer Signals Exist",
   });
