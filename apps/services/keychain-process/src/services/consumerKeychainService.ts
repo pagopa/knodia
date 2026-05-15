@@ -24,7 +24,6 @@ import {
   generateId,
   type KeyId,
   type PurposeId,
-  unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
 import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
@@ -57,20 +56,21 @@ import {
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/consumerKeychainEventFactory.ts";
-import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain, removeKeyFromKeychain } from "../utils/utils.ts";
+import {
+  addKeyToKeychain,
+  addMemberToKeychain,
+  removeKeyFromKeychain,
+} from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserBelongsToOrganization,
-  assertUserHasTechnicalRole,
   assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
@@ -118,44 +118,18 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      const userId = unsafeBrandUserId(member.userId);
-
-      if (consumerKeychain.data.users.some((user) => user.userId === userId)) {
-        throw userAlreadyMember(consumerKeychainId, userId);
-      }
-
-      const user = await cognitoIdmClient.getUserById(userId);
-
-      if (!user) {
-        throw userNotFound(userId);
-      }
-
-      await assertUserBelongsToOrganization(
-        user,
-        authData.organizationId,
-        cognitoIdmClient,
-      );
-      assertUserHasTechnicalRole(user);
-
-      const now = new Date();
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        updatedAt: now,
-        users: [
-          ...consumerKeychain.data.users,
-          { addedAt: now, userId: user.id },
-        ],
-      };
+      const { addedUserId, updatedKeychain: updatedConsumerKeychain } =
+        await addMemberToKeychain(
+          consumerKeychain.data,
+          member,
+          authData,
+          cognitoIdmClient,
+        );
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberAddedV1Event(
           updatedConsumerKeychain,
-          user.id,
+          addedUserId,
           correlationId,
           consumerKeychain.metadata.version,
         ),

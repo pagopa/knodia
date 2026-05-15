@@ -1,3 +1,4 @@
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
@@ -6,43 +7,37 @@ import type {
 } from "@knodia/keychain-models";
 
 import { InternalError } from "@knodia/common-models/errors";
-import { type KeyId, unsafeBrandKeyId } from "@knodia/common-models/ids";
+import {
+  type KeyId,
+  unsafeBrandKeyId,
+  unsafeBrandUserId,
+  type UserId,
+} from "@knodia/common-models/ids";
 import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 
-import type { API_KeychainKeySeed } from "../models/api.ts";
+import type {
+  API_KeychainKeySeed,
+  API_KeychainMemberSeed,
+} from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { jwkDecodingError } from "../models/errors.ts";
+import {
+  jwkDecodingError,
+  userAlreadyMember,
+  userNotFound,
+} from "../models/errors.ts";
 import { retrieveKeychainKey } from "./retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,
   assertNotX509Certificate,
   assertOrganizationIsKeychainOwner,
+  assertUserBelongsToOrganization,
+  assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
   assertUserIsAllowedToRemoveKey,
 } from "./validators.ts";
 
-export async function addKeyToKeychain(
-  keychain: ConsumerKeychain,
-  authData: UISessionAuthData,
-  keySeed: API_KeychainKeySeed,
-  readmodelService: ReadmodelService,
-  maxKeysPerKeychain: number,
-): Promise<{
-  newKey: KeychainKey;
-  updatedKeychain: ConsumerKeychain;
-}>;
-export async function addKeyToKeychain(
-  keychain: KnodeApiKeychain,
-  authData: UISessionAuthData,
-  keySeed: API_KeychainKeySeed,
-  readmodelService: ReadmodelService,
-  maxKeysPerKeychain: number,
-): Promise<{
-  newKey: KeychainKey;
-  updatedKeychain: KnodeApiKeychain;
-}>;
 export async function addKeyToKeychain<
   K extends ConsumerKeychain | KnodeApiKeychain,
 >(
@@ -103,6 +98,49 @@ export async function addKeyToKeychain<
       ...keychain,
       keys: [...keychain.keys, newKey],
       updatedAt: new Date(),
+    },
+  };
+}
+
+export async function addMemberToKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(
+  keychain: K,
+  member: API_KeychainMemberSeed,
+  authData: UISessionAuthData,
+  cognitoIdmClient: CognitoIdmClient,
+): Promise<{
+  addedUserId: UserId;
+  updatedKeychain: K;
+}> {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+
+  const userId = unsafeBrandUserId(member.userId);
+
+  if (keychain.users.some((u) => u.userId === userId)) {
+    throw userAlreadyMember(keychain.id, userId);
+  }
+
+  const user = await cognitoIdmClient.getUserById(userId);
+
+  if (!user) {
+    throw userNotFound(userId);
+  }
+
+  await assertUserBelongsToOrganization(
+    user,
+    authData.organizationId,
+    cognitoIdmClient,
+  );
+  assertUserHasTechnicalRole(user);
+
+  const now = new Date();
+  return {
+    addedUserId: user.id,
+    updatedKeychain: {
+      ...keychain,
+      updatedAt: now,
+      users: [...keychain.users, { addedAt: now, userId: user.id }],
     },
   };
 }

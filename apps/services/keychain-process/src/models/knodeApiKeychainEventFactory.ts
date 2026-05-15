@@ -1,4 +1,4 @@
-import type { CorrelationId, KeyId } from "@knodia/common-models/ids";
+import type { CorrelationId, KeyId, UserId } from "@knodia/common-models/ids";
 import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/keychain";
 
 import {
@@ -35,6 +35,24 @@ export const createKnodeApiKeychainKeyAddedV1Event = (
       knodeApiKeychain: toKnodeApiKeychainV1(keychain),
     },
     type: "KnodeApiKeychainKeyAddedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createKnodeApiKeychainMemberAddedV1Event = (
+  keychain: KnodeApiKeychain,
+  userId: UserId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      knodeApiKeychain: toKnodeApiKeychainV1(keychain),
+      userId,
+    },
+    type: "KnodeApiKeychainMemberAddedV1",
   },
   streamId: keychain.id,
 });

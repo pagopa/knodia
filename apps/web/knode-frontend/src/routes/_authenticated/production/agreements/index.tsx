@@ -1,8 +1,10 @@
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { ProducerAgreementSection } from "@/features/agreement/components/ProducerAgreementSection";
 import {
   producerAgreementSearchDefaultValues,
@@ -47,7 +49,20 @@ function RouteComponent() {
         totalItems: data?.pagination.total ?? 0,
       }}
     >
-      <PageHeader overline="Production" title="Agreements" />
+      <PageHeader
+        actions={
+          <ButtonLinkWithPreload
+            hierarchy="neutral"
+            kind="ghost"
+            to="/production/agreements/archive"
+          >
+            <ArchiveIcon />
+            Archive
+          </ButtonLinkWithPreload>
+        }
+        overline="Production"
+        title="Agreements"
+      />
 
       <ProducerAgreementSection
         agreements={data?.results ?? []}

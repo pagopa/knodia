@@ -1,0 +1,55 @@
+meta {
+  name: Create Purpose From Template
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "dailyCalls": 1000,
+    "description": {
+      "en": "Purpose description"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "formAnswersJson": {
+      "checkedExistenceMereCorrectnessInteropCatalogue": "true",
+      "confirmPrincipleIntegrityAndDiscretion": "true",
+      "dataDownload": "NO",
+      "declarationConfirmGDPR": "true",
+      "deliveryMethod": "CLEARTEXT",
+      "doneDpia": "NO",
+      "institutionalPurpose": "Test purpose",
+      "isRequestOnBehalfOfThirdParties": "NO",
+      "knowsDataQuantity": "NO",
+      "legalBasis": ["CONSENT"],
+      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
+      "policyProvided": "YES",
+      "policyProvidedMedium": "PRINT",
+      "purpose": "INSTITUTIONAL",
+      "purposePursuit": "MERE_CORRECTNESS",
+      "usesPersonalData": "YES"
+    },
+    "formSchemaVersion": "1.0",
+    "knodeId": "{{other-knode-id}}",
+    "name": {
+      "en": "Test Purpose"
+    },
+    "template": {
+      "id": "{{purposeTemplateId}}",
+      "knodeId": "{{other-knode-id}}"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}

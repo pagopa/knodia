@@ -38,12 +38,14 @@ import { EservicePurposeSection } from "./EservicePurposeSection";
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
+  eserviceMode,
   eserviceState,
   hasRecentlyBeenUpdated,
   knodeId,
 }: {
   agreement: bffApi.EserviceAgreementDetail;
   eserviceId: EserviceId;
+  eserviceMode: bffApi.EserviceMode;
   eserviceState: bffApi.EserviceVersionState;
   hasRecentlyBeenUpdated: boolean;
   knodeId: KnodeId;
@@ -71,6 +73,7 @@ export function OrgConsumptionStatusSection({
               <EservicePurposeSection
                 agreementState={agreement.state}
                 eserviceId={eserviceId}
+                eserviceMode={eserviceMode}
                 eserviceState={eserviceState}
                 knodeId={knodeId}
               />
