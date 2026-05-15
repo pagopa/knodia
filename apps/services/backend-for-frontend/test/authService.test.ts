@@ -142,7 +142,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(403);
@@ -153,17 +153,17 @@ describe("auth integration", () => {
         headers: { origin: "https://evil.knodia.org" },
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(403);
     });
 
-    it("returns 403 on /auth/ui-session/refresh without touching the refresh cookie", async () => {
+    it("returns 403 on /auth/uiSession/refresh without touching the refresh cookie", async () => {
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(403);
