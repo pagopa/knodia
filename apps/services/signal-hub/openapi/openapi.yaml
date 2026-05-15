@@ -94,7 +94,7 @@ components:
         signalId:
           format: int32
           type: integer
-          minimum: -9007199254740991
+          exclusiveMinimum: true
           maximum: 9007199254740991
         signalType:
           $ref: "#/components/schemas/SignalType"
@@ -111,7 +111,7 @@ components:
         signalId:
           format: int32
           type: integer
-          minimum: -9007199254740991
+          exclusiveMinimum: true
           maximum: 9007199254740991
       required:
         - signalId

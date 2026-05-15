@@ -145,4 +145,18 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.statusCode).toBe(409);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
+
+  it.each([
+    ["invalid property", { ...defaultBody, wrongProperty: "wrong" }],
+    ["eserviceId is not a uuid", { ...defaultBody, eserviceId: 99 }],
+    ["signalId is negative", { ...defaultBody, signalId: -1 }],
+    ["invalid signalType", { ...defaultBody, signalType: "wrong-signal-type" }],
+    ["empty body", {}],
+  ])(
+    "should return 400 if the body is not correctly formatted - %s",
+    async (_label, body) => {
+      const response = await pushSignal(body as never);
+      expect(response.statusCode).toBe(400);
+    },
+  );
 });
