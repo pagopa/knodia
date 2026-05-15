@@ -3,6 +3,7 @@ import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { SignalType } from "@knodia/signal-hub-models";
 
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
@@ -34,7 +35,7 @@ export function signalHubServiceBuilder(
         objectId: string;
         objectType: string;
         signalId: number;
-        signalType: string;
+        signalType: SignalType;
       },
       { authData, correlationId, logger }: AuthorizedContext<KnodeApiAuthData>,
     ) {
@@ -62,7 +63,10 @@ export function signalHubServiceBuilder(
       try {
         await signalHubDbService.insertSignal(signal);
       } catch (error) {
-        console.log(error);
+        logger.error(
+          { error },
+          `Failed to insert signal ${signalId} for E-service ${eserviceId}`,
+        );
         if (
           error instanceof DrizzleQueryError &&
           error.cause instanceof DatabaseError &&

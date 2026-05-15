@@ -33,6 +33,7 @@
     "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/signal-hub-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

@@ -54,21 +54,34 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
 
       const correlationId = unsafeBrandId<CorrelationId>(request.id);
       const loggerMetadata: HTTPServiceLoggerMetadata = match(authData)
-        .with({ tokenType: "ui-session" }, (a) => ({
-          correlationId,
-          organizationId: a.organizationId,
-          userId: a.userId,
-        }))
-        .with({ tokenType: "internal" }, () => ({
-          correlationId,
-        }))
-        .with({ tokenType: "external-ui-session" }, () => ({
-          correlationId,
-        }))
-        .with({ tokenType: "knode-api" }, (a) => ({
-          correlationId,
-          organization: a.organization,
-        }))
+        .with(
+          { tokenType: "ui-session" },
+          (a): HTTPServiceLoggerMetadata => ({
+            correlationId,
+            organizationId: a.organizationId,
+            userId: a.userId,
+          }),
+        )
+        .with(
+          { tokenType: "internal" },
+          (): HTTPServiceLoggerMetadata => ({
+            correlationId,
+          }),
+        )
+        .with(
+          { tokenType: "external-ui-session" },
+          (): HTTPServiceLoggerMetadata => ({
+            correlationId,
+          }),
+        )
+        .with(
+          { tokenType: "knode-api" },
+          (a): HTTPServiceLoggerMetadata => ({
+            correlationId,
+            organizationId: a.organization.id,
+            organizationKnodeId: a.organization.knodeId,
+          }),
+        )
         .exhaustive();
       const logger = request.log.child(loggerMetadata);
       request.log = logger;

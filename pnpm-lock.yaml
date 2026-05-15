@@ -1688,6 +1688,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/signal-hub-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/signal-hub-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
@@ -3388,6 +3391,28 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../purpose-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/models/signal-hub-models:
+    dependencies:
       zod:
         specifier: 'catalog:'
         version: 4.2.0

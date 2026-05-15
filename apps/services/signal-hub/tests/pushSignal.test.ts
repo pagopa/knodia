@@ -19,7 +19,7 @@ import {
   newerSignalsExist,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
-import { eserviceWriterService, signalHubDbService } from "./setup.ts";
+import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
@@ -131,10 +131,8 @@ describe("POST /signals (pushSignal)", () => {
   it("should return 409 when signals with a higher signalId already exist", async () => {
     await seedEservice();
 
-    // Insert directly with a backdated createdAt so it's already past the time window
-    await signalHubDbService.insertSignal({
+    await pushSignal({
       ...defaultBody,
-      correlationId: generateId(),
       signalId: defaultBody.signalId + 1,
     });
 

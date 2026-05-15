@@ -7,10 +7,6 @@ import {
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
 import { signalHubSignal } from "@knodia/db-signal-hub";
-import {
-  type SignalHubDbService,
-  signalHubDbServiceBuilder,
-} from "@knodia/db-signal-hub/services";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { setupSignalHubTestDatabase } from "@knodia/test-commons/signalHubDb";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
@@ -22,7 +18,6 @@ let signalHubDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let eserviceWriterService: EserviceWriterService;
-let signalHubDbService: SignalHubDbService;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -50,7 +45,6 @@ beforeAll(async () => {
   });
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
-  signalHubDbService = signalHubDbServiceBuilder(signalHubDb);
 });
 
 afterEach(async () => {
@@ -61,4 +55,4 @@ afterAll(async () => {
   await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService, signalHubDbService };
+export { app, eserviceWriterService };
