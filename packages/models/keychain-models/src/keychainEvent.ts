@@ -14,6 +14,7 @@ import {
   ConsumerKeychainUpdatedV1,
   KnodeApiKeychainCreatedV1,
   KnodeApiKeychainKeyAddedV1,
+  KnodeApiKeychainKeyRemovedV1,
   KnodeApiKeychainMemberAddedV1,
   KnodeApiKeychainMemberRemovedV1,
 } from "./generated/v1/keychainEvents.ts";
@@ -70,6 +71,10 @@ export const KeychainEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(KnodeApiKeychainMemberRemovedV1),
     type: z.literal("KnodeApiKeychainMemberRemovedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(KnodeApiKeychainKeyRemovedV1),
+    type: z.literal("KnodeApiKeychainKeyRemovedV1"),
   }),
 ]);
 export type KeychainEventV1 = z.infer<typeof KeychainEventV1>;
