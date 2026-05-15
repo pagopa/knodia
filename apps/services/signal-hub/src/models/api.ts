@@ -9,7 +9,7 @@ export const API_PushSeed = z
     eserviceId: z.uuid(),
     objectId: z.string(),
     objectType: z.string(),
-    signalId: z.number().meta({ format: "int32" }),
+    signalId: z.int().meta({ format: "int32" }),
     signalType: API_SignalType,
   })
   .meta({ id: "PushSeed" });
@@ -17,7 +17,7 @@ export type API_PushSeed = z.infer<typeof API_PushSeed>;
 
 export const API_PushResponse = z
   .strictObject({
-    signalId: z.number().meta({ format: "int32" }),
+    signalId: z.int().meta({ format: "int32" }),
   })
   .meta({ id: "PushResponse" });
 export type API_PushResponse = z.infer<typeof API_PushResponse>;

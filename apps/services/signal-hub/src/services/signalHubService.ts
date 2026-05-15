@@ -4,8 +4,12 @@ import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { DrizzleQueryError } from "drizzle-orm";
+import { DatabaseError } from "pg";
+
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { signalAlreadyExists } from "../models/errors.ts";
 import {
   assertEserviceIsActiveWithSignalHubEnabled,
   assertSignalCanBePushed,
@@ -40,19 +44,17 @@ export function signalHubServiceBuilder(
 
       const { organization } = authData;
 
-      await Promise.all([
-        assertEserviceIsActiveWithSignalHubEnabled(
-          eserviceId,
-          organization.id,
-          readmodelService,
-        ),
-        assertSignalCanBePushed(
-          signalId,
-          eserviceId,
-          timeWindowInSeconds,
-          signalHubDbService,
-        ),
-      ]);
+      await assertEserviceIsActiveWithSignalHubEnabled(
+        eserviceId,
+        organization.id,
+        readmodelService,
+      );
+      await assertSignalCanBePushed(
+        signalId,
+        eserviceId,
+        timeWindowInSeconds,
+        signalHubDbService,
+      );
 
       const signal: Omit<SignalHubSignalSQL, "id"> = {
         correlationId,
@@ -63,7 +65,20 @@ export function signalHubServiceBuilder(
         signalId,
         signalType,
       };
-      await signalHubDbService.insertSignal(signal);
+
+      try {
+        await signalHubDbService.insertSignal(signal);
+      } catch (error) {
+        console.log(error);
+        if (
+          error instanceof DrizzleQueryError &&
+          error.cause instanceof DatabaseError &&
+          error.cause?.code === "23505" // unique_violation
+        ) {
+          throw signalAlreadyExists(signalId, eserviceId);
+        }
+        throw error;
+      }
     },
   };
 }

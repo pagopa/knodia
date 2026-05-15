@@ -19,6 +19,7 @@
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
+    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -35,6 +36,7 @@
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "pg": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }

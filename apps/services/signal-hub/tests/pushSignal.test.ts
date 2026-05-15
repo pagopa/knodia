@@ -57,7 +57,7 @@ describe("POST /signals (pushSignal)", () => {
     const response = await pushSignal(defaultBody);
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toBe(defaultBody.signalId);
+    expect(response.json()).toEqual({ signalId: defaultBody.signalId });
   });
 
   it("should return 404 when the e-service does not exist", async () => {
