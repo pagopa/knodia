@@ -127,7 +127,7 @@ describe("auth integration", () => {
 
   // --- Login ---
 
-  describe("POST /auth/ui-session", () => {
+  describe("POST /auth/uiSession", () => {
     it("generates valid session and refresh tokens on successful login", async () => {
       setupValidCognitoToken();
       setupKmsSignature();
@@ -135,7 +135,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -163,7 +163,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const refreshCookie = getSetCookie(response, "refresh");
@@ -188,7 +188,7 @@ describe("auth integration", () => {
       await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(mockKmsSend).toHaveBeenCalledTimes(2);
@@ -205,7 +205,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "bad-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -220,7 +220,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -232,7 +232,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -246,7 +246,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -260,7 +260,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -274,7 +274,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -288,7 +288,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -303,7 +303,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -320,7 +320,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -332,7 +332,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -345,7 +345,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -370,7 +370,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -383,7 +383,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(500);
@@ -400,7 +400,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const body = response.json<{ uiSessionToken: string }>();
@@ -424,7 +424,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const body = response.json<{ uiSessionToken: string }>();
@@ -438,7 +438,7 @@ describe("auth integration", () => {
 
   // --- Refresh ---
 
-  describe("POST /auth/ui-session/refresh", () => {
+  describe("POST /auth/uiSession/refresh", () => {
     it("reads refresh token from cookie and returns new session", async () => {
       setupValidRefreshToken();
       setupKmsSignature();
@@ -446,7 +446,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "valid-refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(200);
@@ -482,7 +482,7 @@ describe("auth integration", () => {
     it("returns 401 when no refresh cookie is present", async () => {
       const response = await app.inject({
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -494,7 +494,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -509,7 +509,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -521,7 +521,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -536,7 +536,7 @@ describe("auth integration", () => {
       const first = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(first.statusCode).toBe(200);
 
@@ -545,7 +545,7 @@ describe("auth integration", () => {
       const second = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(second.statusCode).toBe(401);
     });
@@ -557,7 +557,7 @@ describe("auth integration", () => {
       const first = await app.inject({
         cookies: { refresh: "refresh-jwt-1" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(first.statusCode).toBe(200);
 
@@ -565,7 +565,7 @@ describe("auth integration", () => {
       const second = await app.inject({
         cookies: { refresh: "refresh-jwt-2" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(second.statusCode).toBe(200);
     });
@@ -582,7 +582,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(200);
@@ -596,7 +596,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -609,7 +609,7 @@ describe("auth integration", () => {
       await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       // With 2 wellKnownUrls, jwtVerify should be called for both JWKS sets
@@ -627,7 +627,7 @@ describe("auth integration", () => {
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       const { uiSessionToken } = response.json<{ uiSessionToken: string }>();
@@ -678,7 +678,7 @@ describe("auth integration", () => {
       const refreshResponse = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(refreshResponse.statusCode).toBe(401);
     });
