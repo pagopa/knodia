@@ -9,6 +9,7 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { SignalHubService } from "../services/signalHubService.ts";
 
 import { API_PushResponse, API_PushSeed } from "../models/api.ts";
+import { toSignalType } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignalHubRouterOptions {
@@ -41,7 +42,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
           objectId,
           objectType,
           signalId,
-          signalType,
+          signalType: toSignalType(signalType),
         },
         ctx,
       );

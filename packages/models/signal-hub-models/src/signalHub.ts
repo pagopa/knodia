@@ -1,4 +1,4 @@
 import { z } from "zod";
 
-const SignalType = z.enum(["CREATE", "UPDATE", "DELETE", "SEEDUPDATE"]);
+export const SignalType = z.enum(["Create", "Update", "Delete", "SeedUpdate"]);
 export type SignalType = z.infer<typeof SignalType>;

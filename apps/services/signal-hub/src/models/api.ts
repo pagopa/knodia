@@ -3,6 +3,7 @@ import z from "zod";
 const API_SignalType = z
   .enum(["CREATE", "UPDATE", "DELETE", "SEEDUPDATE"])
   .meta({ id: "SignalType" });
+export type API_SignalType = z.infer<typeof API_SignalType>;
 
 export const API_PushSeed = z
   .strictObject({
