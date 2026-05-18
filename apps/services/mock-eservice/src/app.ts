@@ -27,12 +27,13 @@ import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
-    "Mock e-service endpoints protected by Bearer token access tokens",
-  name: apiTags.bearerTokenMock,
+    "Personal information lookup by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected)",
+  name: apiTags.personalInformation,
 };
 const dpopAppTag: OpenAPIV3.TagObject = {
-  description: "Mock e-service endpoints protected by DPoP-bound access tokens",
-  name: apiTags.dpopTokenMock,
+  description:
+    "Digital contact lookup by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected)",
+  name: apiTags.digitalContact,
 };
 
 export function buildApp({
@@ -68,7 +69,7 @@ export function buildApp({
       title: "Knodia Mock E-service API",
       version: "1.0.0",
     },
-    [bearerAppTag, dpopAppTag],
+    [healthRouterTag, bearerAppTag, dpopAppTag],
   );
 
   // Public routes (no auth required)
@@ -143,8 +144,7 @@ function buildBearerApp({
     [bearerAppTag],
   );
 
-  app.register(healthRouter);
-
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
   app.register(async (protectedApp) => {
     protectedApp.register(bearerAccessTokenAuthPlugin, {
       acceptedAudiences,
@@ -194,8 +194,7 @@ function buildDpopApp({
     [dpopAppTag],
   );
 
-  app.register(healthRouter);
-
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
   app.register(async (protectedApp) => {
     protectedApp.register(dpopAccessTokenAuthPlugin, {
       acceptedAudiences,
@@ -226,7 +225,7 @@ function createMockFastifyApp(
         info,
         security,
         servers: [{ description: "Mock E-service API", url: "/" }],
-        tags: [healthRouterTag, ...tags],
+        tags,
       },
     },
     loggerConfig,

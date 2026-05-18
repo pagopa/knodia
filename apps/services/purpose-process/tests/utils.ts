@@ -18,7 +18,10 @@ import {
 } from "./setup.ts";
 
 export async function getAllPurposeEvents() {
-  return await eventStoreDb.select().from(eventStorePurposeEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStorePurposeEvents)
+    .orderBy(eventStorePurposeEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
@@ -48,6 +51,7 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     state: purpose.state,
     suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
     suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
+    ...(purpose.template ? { template: purpose.template } : {}),
     updatedAt: toExpectIsoOrNull(purpose.updatedAt),
   };
 }

@@ -10,9 +10,12 @@ import {
 } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import z from "zod";
 
-import { API_TestResponse } from "../models/api.ts";
+import { findPersonalInformation } from "../data/naturalPersons.ts";
+import { API_Notation, API_PersonalInformation } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { naturalPersonNotFound } from "../models/errors.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 // Identity of this mock e-service. Hardcoded on purpose.
@@ -35,7 +38,7 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
   MockRouterOptions
 > = async (fastify, { knodeId }) => {
   fastify.route({
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
@@ -45,21 +48,36 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      logger.info("Mock e-service /test invoked with valid access token");
-      res.status(200).send({ status: "ok" });
+      const { identifierNotation } = req.params;
+      const result = findPersonalInformation(identifierNotation);
+      if (!result) {
+        throw naturalPersonNotFound(identifierNotation);
+      }
+
+      logger.info(
+        `Mock e-service /natural-persons/${identifierNotation} returned personal information`,
+      );
+      res.status(200).send(result);
     },
     method: "GET",
     schema: {
       description:
-        "Validates the incoming Bearer access token and returns a static success response",
-      operationId: "test",
+        "Returns the date of birth of a natural person identified by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected).",
+      operationId: "getPersonalInformation",
+      params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
-        200: API_TestResponse.meta({ description: "Access token accepted" }),
+        200: API_PersonalInformation.meta({
+          description: "Personal information for the requested natural person",
+        }),
+        400: API_Problem.meta({ description: "Invalid Codice Fiscale" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        404: API_Problem.meta({
+          description: "No natural person found for the given Codice Fiscale",
+        }),
       },
-      summary: "Mock e-service endpoint",
-      tags: [apiTags.bearerTokenMock],
+      summary: "Get personal information",
+      tags: [apiTags.personalInformation],
     },
-    url: "/test",
+    url: "/natural-persons/:identifierNotation",
   });
 };

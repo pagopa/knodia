@@ -1,11 +1,11 @@
 meta {
-  name: 2 - Call Mock Eservice (DPoP)
+  name: 2 - Get Digital Contact (DPoP)
   type: http
   seq: 2
 }
 
 get {
-  url: {{host-mock-eservice}}/testDpop
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z/digital-contact
   body: none
   auth: none
 }
@@ -17,7 +17,9 @@ headers {
 
 assert {
   res.status: eq 200
-  res.body.status: eq ok
+  res.body.naturalPerson.identifier.notation: eq RMNLNR03H12H501Z
+  res.body.naturalPerson.familyName: eq Romano
+  res.body.contactPoint.hasEmail: eq Leonardo.Romano@emailsample.org
 }
 
 script:pre-request {
@@ -43,9 +45,9 @@ script:post-response {
     throw new Error(
       `Request failed with status ${res.status} (${title}).\n\n` +
       `The DPoP proof is invalid. The most common cause is reusing the proof minted for step 11 (token endpoint).\n` +
-      `Re-sign a fresh DPoP proof bound to the access token and targeting GET /testDpop:\n\n` +
+      `Re-sign a fresh DPoP proof bound to the access token and targeting GET /natural-persons/RMNLNR03H12H501Z/digital-contact:\n\n` +
       `${dpopKeyHint}` +
-      `  pnpm generate-dpop-proof --key ${dpopKeyPath} --alg ${dpopAlg} --htm GET --htu https://test.knodia.org/testDpop --ath ${accessToken}\n\n` +
+      `  pnpm generate-dpop-proof --key ${dpopKeyPath} --alg ${dpopAlg} --htm GET --htu https://test.knodia.org/natural-persons/RMNLNR03H12H501Z/digital-contact --ath ${accessToken}\n\n` +
       `Then re-run this call.`
     )
   }

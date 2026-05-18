@@ -11,11 +11,7 @@ import {
 
 let refreshPromise: null | Promise<boolean> = null;
 
-const authUrls = [
-  "/auth/ui-session",
-  "/auth/ui-session/refresh",
-  "/auth/logout",
-];
+const authUrls = ["/auth/uiSession", "/auth/uiSession/refresh", "/auth/logout"];
 
 function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
   const token = getAuthToken();

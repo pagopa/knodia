@@ -111,7 +111,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       security: [],
       tags: [apiTags.auth],
     },
-    url: "/auth/ui-session",
+    url: "/auth/uiSession",
   });
 
   fastify.route({
@@ -142,7 +142,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       security: [],
       tags: [apiTags.auth],
     },
-    url: "/auth/ui-session/refresh",
+    url: "/auth/uiSession/refresh",
   });
 
   fastify.route({
