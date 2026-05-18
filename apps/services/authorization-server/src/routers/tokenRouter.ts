@@ -26,7 +26,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
-      const { client_assertion_type, client_id, grant_type } = req.body;
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
 
       logger.info(
         {
@@ -38,8 +39,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
 
       const token = await tokenService.issueToken(
         {
-          clientAssertionJWS: req.body.client_assertion,
-          consumerKeychainId: unsafeBrandId(req.body.client_id),
+          clientAssertionJWS: client_assertion,
+          consumerKeychainId: unsafeBrandId(client_id),
           dpopProofJWS: req.headers.dpop,
         },
         logger,
@@ -63,7 +64,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       },
       security: [],
       summary: "Create Token",
-      tags: [apiTags.token],
+      tags: [apiTags.eserviceAccessToken],
     },
     url: "/token",
   });
@@ -71,7 +72,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
-      const { client_assertion_type, client_id, grant_type } = req.body;
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
 
       logger.info(
         {
@@ -83,8 +85,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
 
       const token = await tokenService.issueKnodeApiToken(
         {
-          clientAssertionJWS: req.body.client_assertion,
-          knodeApiKeychainId: unsafeBrandId(req.body.client_id),
+          clientAssertionJWS: client_assertion,
+          knodeApiKeychainId: unsafeBrandId(client_id),
         },
         logger,
       );
@@ -106,7 +108,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       },
       security: [],
       summary: "Create Knode API Token",
-      tags: [apiTags.token],
+      tags: [apiTags.knodeApiToken],
     },
     url: "/knodeApiToken",
   });

@@ -173,7 +173,7 @@ paths:
       operationId: createToken
       summary: Create Token
       tags:
-        - token
+        - e-service-access-token
       description: Issue an E-service access token
       requestBody:
         required: true
@@ -219,7 +219,7 @@ paths:
       operationId: createKnodeApiToken
       summary: Create Knode API Token
       tags:
-        - token
+        - knode-api-token
       description: Issue a Knode API access token
       requestBody:
         required: true
@@ -259,5 +259,7 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: Token routes
-    name: token
+  - description: Issuance of E-service access tokens
+    name: e-service-access-token
+  - description: Issuance of Knode API access tokens
+    name: knode-api-token

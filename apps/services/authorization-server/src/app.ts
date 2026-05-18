@@ -52,8 +52,12 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "Token routes",
-            name: apiTags.token,
+            description: "Issuance of E-service access tokens",
+            name: apiTags.eserviceAccessToken,
+          },
+          {
+            description: "Issuance of Knode API access tokens",
+            name: apiTags.knodeApiToken,
           },
         ],
       },
