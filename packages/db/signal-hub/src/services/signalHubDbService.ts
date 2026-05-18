@@ -33,7 +33,6 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
         )
         .orderBy(signalHubSignal.signalId)
         .limit(limit + 1);
-      console.log("🚀 ~ signalHubDbServiceBuilder ~ signals:", signals);
 
       const nextSignalId =
         signals.length > limit ? signals.pop()?.signalId : undefined;
