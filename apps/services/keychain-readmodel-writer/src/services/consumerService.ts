@@ -85,6 +85,7 @@ export async function handleKeychainEvent(
           "KnodeApiKeychainKeyAddedV1",
           "KnodeApiKeychainMemberAddedV1",
           "KnodeApiKeychainMemberRemovedV1",
+          "KnodeApiKeychainKeyRemovedV1",
         ),
       },
       async (msg) => {

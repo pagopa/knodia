@@ -2223,7 +2223,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session:
+  /auth/uiSession:
     post:
       operationId: createSession
       tags:
@@ -2262,7 +2262,7 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session/refresh:
+  /auth/uiSession/refresh:
     post:
       operationId: refreshSession
       tags:
@@ -3427,14 +3427,6 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "409":
-          description: Conflict
-          content:
-            application/problem+json:
-              schema:
-                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains:

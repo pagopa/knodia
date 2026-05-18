@@ -35,7 +35,7 @@ function setupProtectedEndpoint(responses: { status: number }[]) {
 
 function setupRefreshEndpoint(success: boolean) {
   server.use(
-    http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
+    http.post(`${BFF_URL}/auth/uiSession/refresh`, () => {
       if (success) {
         return HttpResponse.json({
           uiSessionToken: "new-session-token",
@@ -155,10 +155,10 @@ describe("axios interceptors", () => {
 
     it("does not intercept 401 on auth endpoints", async () => {
       server.use(
-        http.post(`${BFF_URL}/auth/ui-session`, () =>
+        http.post(`${BFF_URL}/auth/uiSession`, () =>
           HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
         ),
-        http.post(`${BFF_URL}/auth/ui-session/refresh`, () =>
+        http.post(`${BFF_URL}/auth/uiSession/refresh`, () =>
           HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
         ),
         http.post(`${BFF_URL}/auth/logout`, () =>
@@ -167,10 +167,10 @@ describe("axios interceptors", () => {
       );
 
       await expect(
-        axios.post(`${BFF_URL}/auth/ui-session`, {}),
+        axios.post(`${BFF_URL}/auth/uiSession`, {}),
       ).rejects.toThrow();
       await expect(
-        axios.post(`${BFF_URL}/auth/ui-session/refresh`, {}),
+        axios.post(`${BFF_URL}/auth/uiSession/refresh`, {}),
       ).rejects.toThrow();
       await expect(axios.post(`${BFF_URL}/auth/logout`, {})).rejects.toThrow();
 
@@ -207,7 +207,7 @@ describe("axios interceptors", () => {
             { status: 401 },
           );
         }),
-        http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
+        http.post(`${BFF_URL}/auth/uiSession/refresh`, () => {
           refreshCallCount++;
           return HttpResponse.json({
             uiSessionToken: "new-session-token",

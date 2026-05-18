@@ -25,6 +25,14 @@ pnpm multinode:stop     # stop containers (preserves volumes)
 pnpm multinode:destroy  # stop and remove containers, remove volumes
 ```
 
+### Building images one at a time
+
+`pnpm multinode:start` builds all images in parallel by default. On hosts that run out of memory under the parallel build, set `SEQUENTIAL_BUILD=1` to build one image at a time:
+
+```bash
+SEQUENTIAL_BUILD=1 pnpm multinode:start
+```
+
 ### Rebuilding individual services
 
 To rebuild and restart specific services without touching the rest of the stack:
