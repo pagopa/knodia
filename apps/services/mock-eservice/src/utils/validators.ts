@@ -7,8 +7,9 @@ import type {
 
 import { requestContext } from "@fastify/request-context";
 import { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
+import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
-import { jwtVerify, type JWTVerifyGetKey } from "jose";
+import { type JWTVerifyGetKey } from "jose";
 import { prettifyError } from "zod";
 
 interface VerifyOptions {
@@ -81,21 +82,13 @@ export async function verifyEserviceAccessToken(
   opts: VerifyOptions,
   requireDpopBinding = false,
 ): Promise<EserviceAccessTokenClaims> {
-  const rawPayload = await Promise.any(
-    opts.jwksResolvers.map(async (jwks) => {
-      const { payload } = await jwtVerify(token, jwks, {
-        audience: opts.acceptedAudiences,
-        issuer: opts.expectedIssuer,
-        typ: "at+jwt",
-      });
-      return payload;
-    }),
-  ).catch((err: unknown) => {
-    const reasons =
-      err instanceof AggregateError
-        ? err.errors.map((e) => (e instanceof Error ? e.message : String(e)))
-        : [err instanceof Error ? err.message : String(err)];
-    throw unauthorizedError(`Token verification failed: ${reasons.join("; ")}`);
+  const rawPayload = await verifyAgainstJwksSets({
+    audience: opts.acceptedAudiences,
+    issuer: opts.expectedIssuer,
+    jwksSets: opts.jwksResolvers,
+    propagateReasons: true,
+    token,
+    typ: "at+jwt",
   });
 
   const parsed = EserviceAccessTokenClaims.safeParse(rawPayload);

@@ -1810,10 +1810,6 @@ export type RemoveConsumerKeychainKeyErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
