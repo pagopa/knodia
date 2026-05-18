@@ -46,6 +46,7 @@ function renderSection({
     <OrgConsumptionStatusSection
       agreement={agreement}
       eserviceId={unsafeBrandId<EserviceId>(crypto.randomUUID())}
+      eserviceMode="ProvideData"
       eserviceState={eserviceState}
       hasRecentlyBeenUpdated={hasRecentlyBeenUpdated}
       knodeId={KNODE_ID}
@@ -386,10 +387,10 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
       await screen.findByRole("button", { name: "Create Purpose" }),
     );
 
-    expect(screen.getByText("You don't have an Agreement")).toBeInTheDocument();
+    expect(screen.getByText("Your Agreement is archived")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "To create a Purpose, you should have an Agreement for this E-Service.",
+        "To create a Purpose, you should have an active Agreement.",
       ),
     ).toBeInTheDocument();
   });
@@ -408,7 +409,7 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
 
     expect(screen.getByText("This E-Service is Archived")).toBeInTheDocument();
     expect(
-      screen.queryByText("You don't have an Agreement"),
+      screen.queryByText("Your Agreement is archived"),
     ).not.toBeInTheDocument();
   });
 
@@ -425,7 +426,7 @@ describe("OrgConsumptionStatusSection — Create Purpose blocked modal", () => {
       screen.queryByText("This E-Service is Archived"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText("You don't have an Agreement"),
+      screen.queryByText("Your Agreement is archived"),
     ).not.toBeInTheDocument();
   });
 });
@@ -446,6 +447,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
@@ -467,6 +469,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
           suspendedByConsumerAt: "2026-01-01T00:00:00Z",
         }}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}
@@ -477,6 +480,7 @@ describe("OrgConsumptionStatusSection — suspend modal lifecycle", () => {
       <OrgConsumptionStatusSection
         agreement={defaultAgreement}
         eserviceId={eserviceId}
+        eserviceMode="ProvideData"
         eserviceState="Active"
         hasRecentlyBeenUpdated={false}
         knodeId={KNODE_ID}

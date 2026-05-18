@@ -77,6 +77,7 @@ export const toAPI_ProducerAgreement = ({
   hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(agreement, recentUpdateDays),
   id: agreement.id,
   state: agreement.state,
+  updatedAt: agreement.updatedAt,
 });
 
 export const toAPI_ProducerAgreementDetails = ({

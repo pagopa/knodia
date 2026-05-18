@@ -311,6 +311,7 @@ describe("ProducerAgreementDetail — Purposes section", () => {
         id: purposeId1,
         name: { en: "UE freedom of movement" },
         state: "Active",
+        updatedAt: "2026-01-01T00:00:00.000Z",
       },
       {
         consumer: {
@@ -328,6 +329,7 @@ describe("ProducerAgreementDetail — Purposes section", () => {
         id: purposeId2,
         name: { en: "Cross-border social security coordination" },
         state: "Suspended",
+        updatedAt: "2026-01-01T00:00:00.000Z",
       },
     ];
 

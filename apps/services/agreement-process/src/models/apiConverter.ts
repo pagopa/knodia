@@ -19,17 +19,17 @@ export const toAPI_Agreement = (agreement: Agreement): API_Agreement => ({
 
 export const toAPI_AgreementActivationClaims = (
   agreement: Agreement,
-  currentKnodeId: KnodeId,
+  thisKnodeId: KnodeId,
 ): API_AgreementActivationClaims => ({
-  agreement: { id: agreement.id, knodeId: currentKnodeId },
+  agreement: { id: agreement.id, knodeId: thisKnodeId },
   consumer: {
     id: agreement.consumer.id,
     knodeId: agreement.consumer.knodeId,
   },
   eservice: {
     id: agreement.eserviceId,
-    knodeId: currentKnodeId,
+    knodeId: thisKnodeId,
     version: agreement.eserviceVersionId,
   },
-  producer: { id: agreement.producerId, knodeId: currentKnodeId },
+  producer: { id: agreement.producerId, knodeId: thisKnodeId },
 });

@@ -311,6 +311,14 @@ export type PurposeConsumer = {
 };
 
 /**
+ * Reference to a Purpose statement template
+ */
+export type PurposeTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Name of the Purpose
  */
 export type LocalizedPurposeName = {
@@ -378,6 +386,7 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+    template?: PurposeTemplateReference;
 };
 
 /**
@@ -405,6 +414,7 @@ export type Purpose = {
      * Timestamp when the Purpose was suspended by the Producer
      */
     suspendedByProducerAt: string | null;
+    template?: PurposeTemplateReference;
     updatedAt: string;
 };
 

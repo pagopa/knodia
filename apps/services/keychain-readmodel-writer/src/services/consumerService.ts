@@ -77,10 +77,27 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
-    .with({ type: "KnodeApiKeychainCreatedV1" }, async (msg) => {
+    .with(
+      {
+        type: P.union(
+          "KnodeApiKeychainCreatedV1",
+          "KnodeApiKeychainKeyAddedV1",
+          "KnodeApiKeychainMemberAddedV1",
+          "KnodeApiKeychainKeyRemovedV1",
+        ),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "knodeApiKeychain");
+        await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+          fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
+          message.version,
+        );
+      },
+    )
+    .with({ type: "KnodeApiKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "knodeApiKeychain");
-      await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
-        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
+      await knodeApiKeychainWriterService.deleteKnodeApiKeychain(
+        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain).id,
         message.version,
       );
     })

@@ -13,6 +13,7 @@ import {
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeState,
+  API_PurposeTemplateReference,
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
@@ -28,6 +29,7 @@ export const API_PurposeSeed = z
     formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
     knodeId: API_KnodeId,
     name: API_LocalizedPurposeName,
+    template: API_PurposeTemplateReference.optional(),
   })
   .meta({
     description: "Seed data to create a new Purpose",
@@ -139,6 +141,7 @@ export const API_ProducerPurpose = z
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "ProducerPurpose" });
 export type API_ProducerPurpose = z.infer<typeof API_ProducerPurpose>;

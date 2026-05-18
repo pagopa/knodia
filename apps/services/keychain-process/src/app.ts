@@ -27,7 +27,6 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
 import { knodeApiKeychainRouter } from "./routers/knodeApiKeychainRouter.ts";
-import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { knodeApiKeychainServiceBuilder } from "./services/knodeApiKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
@@ -70,10 +69,6 @@ export function buildApp({
             description: "Knode API keychain routes",
             name: apiTags.knodeApiKeychain,
           },
-          {
-            description: "User routes",
-            name: apiTags.user,
-          },
         ],
       },
     },
@@ -106,9 +101,13 @@ export function buildApp({
       ),
     });
     protectedApp.register(knodeApiKeychainRouter, {
-      knodeApiKeychainService: knodeApiKeychainServiceBuilder(eventStoreWriter),
+      knodeApiKeychainService: knodeApiKeychainServiceBuilder(
+        eventStoreWriter,
+        readmodelService,
+        cognitoIdmClient,
+        config,
+      ),
     });
-    protectedApp.register(userRouter, cognitoIdmClient);
   });
 
   return app;

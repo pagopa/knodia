@@ -1,8 +1,10 @@
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { producerEserviceOptionsQuery } from "@/features/e-service/services/queries";
 import { ProducerPurposeSection } from "@/features/purpose/components/ProducerPurposeSection";
 import {
@@ -47,7 +49,20 @@ function RouteComponent() {
         totalItems: data?.pagination.total ?? 0,
       }}
     >
-      <PageHeader overline="Production" title="Purposes" />
+      <PageHeader
+        actions={
+          <ButtonLinkWithPreload
+            hierarchy="neutral"
+            kind="ghost"
+            to="/production/purposes/archive"
+          >
+            <ArchiveIcon />
+            Archive
+          </ButtonLinkWithPreload>
+        }
+        overline="Production"
+        title="Purposes"
+      />
 
       <ProducerPurposeSection
         eserviceId={search.eserviceId}

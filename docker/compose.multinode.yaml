@@ -362,6 +362,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       EVENTSTORE_DB_USER: local_orion_eservice_process_user
       EVENTSTORE_DB_PASSWORD: local_orion_eservice_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -378,7 +379,7 @@ services:
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
       READMODEL_DB_ORGANIZATION_SCHEMA: local_orion_organization
       IS_CONSUMER_OPERATOR_IDENTIFICATION_REQUIRED: "false"
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-orion:
@@ -420,7 +421,7 @@ services:
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID: "alias/local-knodia-key"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION: "120"
       FRONTEND_BASE_URL: "http://localhost:5001"
-      FRONTEND_ACTIVATION_PATH: "/activate"
+      FRONTEND_ACTIVATION_PATH: "/ui/agreement-activation"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -499,7 +500,7 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_URL: "http://k2k-gateway-lynx:3000"
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       REMOTE_RESOURCE_DB_USER: local_orion_remote_resources_manager_user
       REMOTE_RESOURCE_DB_PASSWORD: local_orion_remote_resources_manager_user
@@ -746,6 +747,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       EVENTSTORE_DB_USER: local_orion_organization_process_user
       EVENTSTORE_DB_PASSWORD: local_orion_organization_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -760,13 +762,20 @@ services:
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ORGANIZATION_SCHEMA: local_orion_organization
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
+      local-cognito:
+        condition: service_started
 
   organization-readmodel-writer-orion:
     security_opt:
@@ -998,6 +1007,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       EVENTSTORE_DB_USER: local_lynx_eservice_process_user
       EVENTSTORE_DB_PASSWORD: local_lynx_eservice_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -1014,7 +1024,7 @@ services:
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
       READMODEL_DB_ORGANIZATION_SCHEMA: local_lynx_organization
       IS_CONSUMER_OPERATOR_IDENTIFICATION_REQUIRED: "true"
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-lynx:
@@ -1056,7 +1066,7 @@ services:
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_KID: "alias/local-knodia-key"
       EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_SECONDS_DURATION: "120"
       FRONTEND_BASE_URL: "http://localhost:5002"
-      FRONTEND_ACTIVATION_PATH: "/activate"
+      FRONTEND_ACTIVATION_PATH: "/ui/agreement-activation"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1135,7 +1145,7 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_URL: "http://k2k-gateway-orion:3000"
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       REMOTE_RESOURCE_DB_USER: local_lynx_remote_resources_manager_user
       REMOTE_RESOURCE_DB_PASSWORD: local_lynx_remote_resources_manager_user
@@ -1382,6 +1392,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       EVENTSTORE_DB_USER: local_lynx_organization_process_user
       EVENTSTORE_DB_PASSWORD: local_lynx_organization_process_user
       EVENTSTORE_DB_HOST: postgres
@@ -1396,13 +1407,20 @@ services:
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ORGANIZATION_SCHEMA: local_lynx_organization
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
+      local-cognito:
+        condition: service_started
 
   organization-readmodel-writer-lynx:
     security_opt:

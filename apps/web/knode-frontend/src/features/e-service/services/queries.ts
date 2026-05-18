@@ -1,5 +1,6 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerEserviceDetailsOptions,
@@ -23,10 +24,18 @@ export const consumerEserviceDetailsQuery = (
   eserviceId: string,
   knodeId: KnodeId,
 ) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
+  queryOptions({
+    ...getConsumerEserviceDetailsOptions({
+      client,
+      path: { eserviceId },
+      query: { knodeId },
+    }),
+    // "always" (not true) so the focus refetch bypasses the global staleTime.
+    refetchOnWindowFocus: (query) =>
+      query.state.data?.agreement?.state ===
+      API_AgreementState.enum.PendingConsumerOperatorIdentification
+        ? "always"
+        : false,
   });
 
 export const consumerEservicesQuery = (
