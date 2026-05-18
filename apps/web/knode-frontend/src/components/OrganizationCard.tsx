@@ -23,7 +23,9 @@ export function OrganizationCard({
         />
         {organization.name}
         {showContact && (
-          <OrganizationContactPopover organization={organization} />
+          <span className="ml-1 align-middle">
+            <OrganizationContactPopover organization={organization} />
+          </span>
         )}
       </span>
     </SettingsCard>
