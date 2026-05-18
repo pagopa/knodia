@@ -145,6 +145,46 @@ function RouteComponent() {
   );
 }
 
+function TemplatesListContent({
+  isLoading,
+  onSelectTemplate,
+  templates,
+}: {
+  isLoading: boolean;
+  onSelectTemplate: (templateId: string) => void;
+  templates: bffApi.EserviceTemplate[];
+}) {
+  if (isLoading) {
+    return <Loader className="mx-auto mb-10" label="Loading templates..." />;
+  }
+  if (templates.length === 0) {
+    return (
+      <Empty
+        className="mt-4"
+        description="Try with different filters."
+        icon={<MagnifyingGlassIcon />}
+        kind="brand-soft"
+        title="No results found for your search."
+      />
+    );
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {templates.map((template) => (
+        <EserviceTemplateCard
+          categories={template.categories}
+          description={template.description.en}
+          id={template.id}
+          key={template.id}
+          mode={template.mode}
+          onSelect={() => onSelectTemplate(template.id)}
+          title={template.name.en}
+        />
+      ))}
+    </div>
+  );
+}
+
 function TemplatesListSelector() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
@@ -217,35 +257,11 @@ function TemplatesListSelector() {
         </ComboBox>
       </div>
 
-      {isLoadingTemplates && (
-        <Loader className="mx-auto mb-10" label="Loading templates..." />
-      )}
-
-      {!isLoadingTemplates && templates.length === 0 && (
-        <Empty
-          className="mt-4"
-          description="Try with different filters."
-          icon={<MagnifyingGlassIcon />}
-          kind="brand-soft"
-          title="No results found for your search."
-        />
-      )}
-
-      {!isLoadingTemplates && templates.length > 0 && (
-        <div className="flex flex-col gap-4">
-          {templates.map((template) => (
-            <EserviceTemplateCard
-              categories={template.categories}
-              description={template.description.en}
-              id={template.id}
-              key={template.id}
-              mode={template.mode}
-              onSelect={() => handleSelectTemplate(template.id)}
-              title={template.name.en}
-            />
-          ))}
-        </div>
-      )}
+      <TemplatesListContent
+        isLoading={isLoadingTemplates}
+        onSelectTemplate={handleSelectTemplate}
+        templates={templates}
+      />
     </div>
   );
 }
