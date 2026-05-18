@@ -28,12 +28,12 @@ export function signalHubServiceBuilder(
     async pullSignals(
       {
         eserviceId,
-        limit,
         signalId,
+        size,
       }: {
         eserviceId: EserviceId;
-        limit: number;
         signalId: number;
+        size: number;
       },
       { authData, logger }: AuthorizedContext<KnodeApiAuthData>,
     ) {
@@ -52,7 +52,7 @@ export function signalHubServiceBuilder(
         readmodelService,
       );
 
-      return await signalHubDbService.getSignals(signalId, eserviceId, limit);
+      return await signalHubDbService.getSignals(signalId, eserviceId, size);
     },
     async pushSignal(
       {

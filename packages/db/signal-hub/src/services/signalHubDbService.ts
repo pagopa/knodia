@@ -21,7 +21,7 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
           ),
         );
     },
-    async getSignals(signalId: number, eserviceId: EserviceId, limit: number) {
+    async getSignals(signalId: number, eserviceId: EserviceId, size: number) {
       const signals = await db
         .select()
         .from(signalHubSignal)
@@ -32,10 +32,10 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
           ),
         )
         .orderBy(signalHubSignal.signalId)
-        .limit(limit + 1);
+        .limit(size + 1);
 
       const nextSignalId =
-        signals.length > limit ? signals.pop()?.signalId : undefined;
+        signals.length > size ? signals.pop()?.signalId : undefined;
       const lastSignalId = signals.at(-1)?.signalId;
 
       return { lastSignalId, nextSignalId, signals: signals.map(toSignal) };

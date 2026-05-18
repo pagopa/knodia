@@ -87,7 +87,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
       } = ctx;
 
       const { eserviceId } = req.params;
-      const { limit, signalId } = req.query;
+      const { signalId, size } = req.query;
 
       logger.info(
         `Pull signals request received for E-service ${eserviceId} from organization ${organization.id} (Knode ${organization.knodeId})`,
@@ -97,8 +97,8 @@ export const signalHubRouter: FastifyPluginAsyncZod<
         await signalHubService.pullSignals(
           {
             eserviceId,
-            limit,
             signalId,
+            size,
           },
           ctx,
         );

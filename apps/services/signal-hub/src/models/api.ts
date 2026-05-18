@@ -35,12 +35,12 @@ export const API_PullResponse = z
 export type API_PullResponse = z.infer<typeof API_PullResponse>;
 
 export const API_PullSignalsQueryParams = z.strictObject({
-  limit: z.coerce.number().min(1).max(100).default(10).meta({
-    description: "Maximum number of signals returned",
-    format: "int32",
-  }),
   signalId: z.coerce.number().min(0).default(0).meta({
     description: "The ID of the last signal received, used for pagination",
+    format: "int32",
+  }),
+  size: z.coerce.number().min(1).max(100).default(10).meta({
+    description: "Maximum number of signals returned",
     format: "int32",
   }),
 });
