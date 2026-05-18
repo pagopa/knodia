@@ -17,6 +17,10 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
       EXPECTED_ISSUER: z.string(),
       JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
       KNODE_ID: KnodeId,
+      SEED_ALGORITHM: z.string().default("sha256"),
+      SEED_EXPIRE_SECONDS: z.coerce.number().int().positive(),
+      SEED_SALT_LENGTH: z.coerce.number().int().positive(),
+      SEED_START_DATE_MS: z.coerce.number().int().nonnegative(),
       WELL_KNOWN_URLS: z
         .string()
         .min(1)
@@ -31,6 +35,10 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig).and(
       expectedIssuer: c.EXPECTED_ISSUER,
       jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
       knodeId: c.KNODE_ID,
+      seedAlgorithm: c.SEED_ALGORITHM,
+      seedExpireSeconds: c.SEED_EXPIRE_SECONDS,
+      seedSaltLength: c.SEED_SALT_LENGTH,
+      seedStartDateMs: c.SEED_START_DATE_MS,
       wellKnownUrls: c.WELL_KNOWN_URLS,
     })),
 );

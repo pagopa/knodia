@@ -24,6 +24,7 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
@@ -34,6 +35,11 @@ const dpopAppTag: OpenAPIV3.TagObject = {
   description:
     "Digital contact lookup by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected)",
   name: apiTags.digitalContact,
+};
+const signalHubAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-Service 03, Bearer-protected)",
+  name: apiTags.residence,
 };
 
 export function buildApp({
@@ -53,6 +59,10 @@ export function buildApp({
     expectedIssuer,
     jwtClockToleranceSeconds,
     knodeId,
+    seedAlgorithm,
+    seedExpireSeconds,
+    seedSaltLength,
+    seedStartDateMs,
   } = config;
 
   const dpopProofStore = createJtiReplayStore(
@@ -69,7 +79,7 @@ export function buildApp({
       title: "Knodia Mock E-service API",
       version: "1.0.0",
     },
-    [healthRouterTag, bearerAppTag, dpopAppTag],
+    [healthRouterTag, bearerAppTag, dpopAppTag, signalHubAppTag],
   );
 
   // Public routes (no auth required)
@@ -83,6 +93,13 @@ export function buildApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+    protectedApp.register(mockSignalHubRouter, {
+      knodeId,
+      seedAlgorithm,
+      seedExpireSeconds,
+      seedSaltLength,
+      seedStartDateMs,
+    });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -111,6 +128,13 @@ export function buildAppFromConfig(config: MockEserviceConfig) {
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerSignalHubAppFromConfig(config: MockEserviceConfig) {
+  return buildBearerSignalHubApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -152,6 +176,55 @@ function buildBearerApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerSignalHubApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const {
+    acceptedAudiences,
+    expectedIssuer,
+    knodeId,
+    seedAlgorithm,
+    seedExpireSeconds,
+    seedSaltLength,
+    seedStartDateMs,
+  } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for Signal Hub (residence + pseudonymization)",
+      title: "Knodia Mock E-service API (Signal Hub)",
+      version: "1.0.0",
+    },
+    [signalHubAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockSignalHubRouter, {
+      knodeId,
+      seedAlgorithm,
+      seedExpireSeconds,
+      seedSaltLength,
+      seedStartDateMs,
+    });
   });
 
   return app;

@@ -1,0 +1,142 @@
+{
+  "BNCFNC67D61H703B": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Roma 12, 84121 Salerno SA",
+    "postCode": "84121",
+    "postName": "Salerno"
+  },
+  "BNCLRN83L04H118T": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Cagliari 3, 09045 Quartu Sant'Elena CA",
+    "postCode": "09045",
+    "postName": "Quartu Sant'Elena"
+  },
+  "BRNFNC87H46E506V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Salento 8, 73100 Lecce LE",
+    "postCode": "73100",
+    "postName": "Lecce"
+  },
+  "BRNNDR83T01F205C": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lombardia",
+    "fullAddress": "Via Manzoni 21, 20121 Milano MI",
+    "postCode": "20121",
+    "postName": "Milano"
+  },
+  "CLMRLN82L65B832B": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Marmi 5, 54033 Carrara MS",
+    "postCode": "54033",
+    "postName": "Carrara"
+  },
+  "CNTLNR65T08A064Y": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Roma 9, 80021 Afragola NA",
+    "postCode": "80021",
+    "postName": "Afragola"
+  },
+  "CSTGLI84P56D960K": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Sicilia 17, 93012 Gela CL",
+    "postCode": "93012",
+    "postName": "Gela"
+  },
+  "DLCMRA90C52A783M": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Sannio 4, 82100 Benevento BN",
+    "postCode": "82100",
+    "postName": "Benevento"
+  },
+  "FRRGRG71R48L872B": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lombardia",
+    "fullAddress": "Via Lomellina 11, 27029 Vigevano PV",
+    "postCode": "27029",
+    "postName": "Vigevano"
+  },
+  "GLLGPP62T29C352V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Calabria",
+    "fullAddress": "Via Sila 6, 88100 Catanzaro CZ",
+    "postCode": "88100",
+    "postName": "Catanzaro"
+  },
+  "GRCCHR80P42I452C": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Mazzini 14, 07100 Sassari SS",
+    "postCode": "07100",
+    "postName": "Sassari"
+  },
+  "MRNCHR84L48G224J": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Cavour 7, 35121 Padova PD",
+    "postCode": "35121",
+    "postName": "Padova"
+  },
+  "RCCFNC68B26D643F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Tavoliere 19, 71121 Foggia FG",
+    "postCode": "71121",
+    "postName": "Foggia"
+  },
+  "RMNFNC04D62L117N": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Umbria",
+    "fullAddress": "Via Terni 2, 05100 Terni TR",
+    "postCode": "05100",
+    "postName": "Terni"
+  },
+  "RSSFNC72L48G811U": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Pontina 30, 00071 Pomezia RM",
+    "postCode": "00071",
+    "postName": "Pomezia"
+  },
+  "RSSGBR04D08I754F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Arenella 22, 96100 Siracusa SR",
+    "postCode": "96100",
+    "postName": "Siracusa"
+  },
+  "RSSLRN03R07G942J": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Basilicata",
+    "fullAddress": "Via Appia 18, 85100 Potenza PZ",
+    "postCode": "85100",
+    "postName": "Potenza"
+  },
+  "RSSMRA82P64L682H": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lombardia",
+    "fullAddress": "Via Garibaldi 25, 21100 Varese VA",
+    "postCode": "21100",
+    "postName": "Varese"
+  },
+  "SPSCHR95C51C351Y": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Etnea 88, 95100 Catania CT",
+    "postCode": "95100",
+    "postName": "Catania"
+  },
+  "SPSMTT85M22D612K": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via dei Calzaiuoli 10, 50123 Firenze FI",
+    "postCode": "50123",
+    "postName": "Firenze"
+  }
+}

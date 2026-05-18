@@ -98,3 +98,41 @@ export const API_DigitalContact = z
     id: "DigitalContact",
   });
 export type API_DigitalContact = z.infer<typeof API_DigitalContact>;
+
+export const API_Address = z
+  .strictObject({
+    adminUnitL1: z.string(),
+    adminUnitL2: z.string(),
+    fullAddress: z.string(),
+    postCode: z.string().optional(),
+    postName: z.string().optional(),
+  })
+  .meta({
+    description:
+      "Address, modelled after Core Person Vocabulary 2.1.1 / Core Business Vocabulary 2.2.0",
+    id: "Address",
+  });
+export type API_Address = z.infer<typeof API_Address>;
+
+export const API_Residence = z
+  .strictObject({
+    address: API_Address,
+    naturalPerson: API_NaturalPerson,
+  })
+  .meta({
+    description: "Residence returned by the Cross-Border E-Service 03",
+    id: "Residence",
+  });
+export type API_Residence = z.infer<typeof API_Residence>;
+
+export const API_Pseudonymization = z
+  .strictObject({
+    cryptoHashFunction: z.literal("sha256"),
+    seed: z.string().min(1),
+  })
+  .meta({
+    description:
+      "Pseudonymization parameters used by the Producer to publish Signal Hub signals for this e-service",
+    id: "Pseudonymization",
+  });
+export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;
