@@ -235,6 +235,20 @@ export type API_KnodeApiKeychainKeyPathParams = z.infer<
   typeof API_KnodeApiKeychainKeyPathParams
 >;
 
+export const API_KnodeApiKeychainMemberPathParams =
+  API_KnodeApiKeychainIdPathParam.extend({
+    userId: API_UserId,
+  });
+export type API_KnodeApiKeychainMemberPathParams = z.infer<
+  typeof API_KnodeApiKeychainMemberPathParams
+>;
+
+export const API_GetKnodeApiKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainMembersQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainMembersQueryParams
+>;
+
 export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
 export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
   typeof API_GetKnodeApiKeychainKeysQueryParams
