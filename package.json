@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "typecheck": "turbo run typecheck",
+    "start": "NODE_OPTIONS='--max-old-space-size=150' turbo run start",
     "start:services": "NODE_OPTIONS='--max-old-space-size=150' turbo run start --concurrency=20 --filter='./apps/**/*'",
     "start:process": "NODE_OPTIONS='--max-old-space-size=150' turbo run start --filter @knodia/*-process",
     "start:rmw": "NODE_OPTIONS='--max-old-space-size=150' turbo run start --filter @knodia/*-readmodel-writer",
