@@ -62,7 +62,6 @@ const remoteKnodeId = "Lynx";
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
-    generateEserviceAccessToken: vi.fn(),
     generateKnodeApiAccessToken: vi.fn().mockImplementation((input) =>
       Promise.resolve({
         payload: {

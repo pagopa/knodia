@@ -37,42 +37,7 @@ export function tokenServiceBuilder({
   tokenGenerator: TokenGenerator;
 }) {
   return {
-    async issueKnodeApiToken(
-      {
-        clientAssertionJWS,
-        knodeApiKeychainId,
-      }: {
-        clientAssertionJWS: string;
-        knodeApiKeychainId: KnodeApiKeychainId;
-      },
-      logger: FastifyBaseLogger,
-    ) {
-      const { keychainKnodeId, ownerId } =
-        await verifyKnodeApiClientAssertionSignature(
-          { clientAssertionJWS, knodeApiKeychainId },
-          config,
-          getK2K2GatewayApiClient,
-          readmodelService,
-          logger,
-        );
-
-      const token = await tokenGenerator.generateKnodeApiAccessToken({
-        audience: [config.generatedKnodeApiTokenAudience],
-        issuer: config.generatedKnodeApiTokenIssuer,
-        keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
-        kid: config.knodeApiTokenJwtKid,
-        organization: { id: ownerId, knodeId: keychainKnodeId },
-        secondsDuration: config.knodeApiTokenDurationSeconds,
-      });
-
-      return {
-        access_token: token.serialized,
-        expires_in: token.payload.exp - token.payload.iat,
-        token_type: "Bearer" as const,
-      };
-    },
-
-    async issueToken(
+    async issueEserviceAccessToken(
       {
         clientAssertionJWS,
         consumerKeychainId,
@@ -116,7 +81,7 @@ export function tokenServiceBuilder({
         );
       }
 
-      // Check that the platform objects (agreement, e-service version) are in a consumable state and that the Consumer meets the E-service version required attributes
+      // Check that the platform objects (purpose, agreement, e-service version) are in a consumable state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion } = await validatePlatformObjects(
         purpose.data,
         consumerAttributes,
@@ -144,6 +109,41 @@ export function tokenServiceBuilder({
         access_token: token.serialized,
         expires_in: token.payload.exp - token.payload.iat,
         token_type: dpopProofJWT ? ("DPoP" as const) : ("Bearer" as const),
+      };
+    },
+
+    async issueKnodeApiToken(
+      {
+        clientAssertionJWS,
+        knodeApiKeychainId,
+      }: {
+        clientAssertionJWS: string;
+        knodeApiKeychainId: KnodeApiKeychainId;
+      },
+      logger: FastifyBaseLogger,
+    ) {
+      const { keychainKnodeId, ownerId } =
+        await verifyKnodeApiClientAssertionSignature(
+          { clientAssertionJWS, knodeApiKeychainId },
+          config,
+          getK2K2GatewayApiClient,
+          readmodelService,
+          logger,
+        );
+
+      const token = await tokenGenerator.generateKnodeApiAccessToken({
+        audience: [config.generatedKnodeApiTokenAudience],
+        issuer: config.generatedKnodeApiTokenIssuer,
+        keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
+        kid: config.knodeApiTokenJwtKid,
+        organization: { id: ownerId, knodeId: keychainKnodeId },
+        secondsDuration: config.knodeApiTokenDurationSeconds,
+      });
+
+      return {
+        access_token: token.serialized,
+        expires_in: token.payload.exp - token.payload.iat,
+        token_type: "Bearer" as const,
       };
     },
   };

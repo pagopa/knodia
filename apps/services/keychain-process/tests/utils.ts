@@ -34,7 +34,10 @@ import {
 } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
-  return await eventStoreDb.select().from(eventStoreKeychainEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStoreKeychainEvents)
+    .orderBy(eventStoreKeychainEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
