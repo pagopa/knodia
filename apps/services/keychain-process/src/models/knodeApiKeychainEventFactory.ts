@@ -92,3 +92,19 @@ export const createKnodeApiKeychainKeyRemovedV1Event = (
   },
   streamId: keychain.id,
 });
+
+export const createKnodeApiKeychainDeletedV1Event = (
+  keychain: KnodeApiKeychain,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      knodeApiKeychain: toKnodeApiKeychainV1(keychain),
+    },
+    type: "KnodeApiKeychainDeletedV1",
+  },
+  streamId: keychain.id,
+});
