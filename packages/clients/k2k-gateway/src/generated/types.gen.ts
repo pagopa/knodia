@@ -405,7 +405,7 @@ export type KnodeApiClientAssertionVerificationResponse = {
     /**
      * Organization that owns the Knode API Keychain
      */
-    ownerId: string;
+    ownerId: OrganizationId;
     publicKey: PublicKeyForVerification;
 };
 

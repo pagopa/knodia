@@ -1,11 +1,7 @@
-import { API_KeyId } from "@knodia/common-models/api";
+import { API_KeyId, API_OrganizationId } from "@knodia/common-models/api";
 import z from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
-
-const API_OrganizationId = z.uuid().meta({
-  description: "Unique identifier of an Organization",
-});
 
 const API_ConsumerKeychainId = z.uuid().meta({
   description: "Unique identifier of the Consumer Keychain",
