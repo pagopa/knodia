@@ -24,15 +24,19 @@ const API_TokenResponseBase = z.strictObject({
   expires_in: z.number().meta({ format: "int32" }),
 });
 
-export const API_TokenRequest = API_TokenRequestBase.extend({
+export const API_EserviceAccessTokenRequest = API_TokenRequestBase.extend({
   client_id: API_ConsumerKeychainId,
-}).meta({ id: "TokenRequest" });
-export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
+}).meta({ id: "EserviceAccessTokenRequest" });
+export type API_EserviceAccessTokenRequest = z.infer<
+  typeof API_EserviceAccessTokenRequest
+>;
 
-export const API_TokenResponse = API_TokenResponseBase.extend({
+export const API_EserviceAccessTokenResponse = API_TokenResponseBase.extend({
   token_type: z.enum(["Bearer", "DPoP"]),
-}).meta({ id: "TokenResponse" });
-export type API_TokenResponse = z.infer<typeof API_TokenResponse>;
+}).meta({ id: "EserviceAccessTokenResponse" });
+export type API_EserviceAccessTokenResponse = z.infer<
+  typeof API_EserviceAccessTokenResponse
+>;
 
 export const API_KnodeApiTokenRequest = API_TokenRequestBase.extend({
   client_id: API_KnodeApiKeychainId,

@@ -14,11 +14,7 @@ import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
-import {
-  readmodelKnodeApiKeychain,
-  readmodelKnodeApiKeychainKey,
-  readmodelKnodeApiKeychainUser,
-} from "@knodia/db-readmodel-keychain";
+import { readmodelKnodeApiKeychain } from "@knodia/db-readmodel-keychain";
 import {
   type KnodeApiKeychainWriterService,
   knodeApiKeychainWriterServiceBuilder,
@@ -50,13 +46,12 @@ const dynamoDbDpopProofsTable = "knodia-auth-server-dpop-proofs";
 
 async function resetTestDatabases() {
   await Promise.all([
+    // TRUNCATE CASCADE handles knode_api_keychain_user/key via ON DELETE CASCADE.
     resetTestDatabase(
       readmodelDb,
       readmodelAgreement,
       readmodelEservice,
       readmodelKnodeApiKeychain,
-      readmodelKnodeApiKeychainKey,
-      readmodelKnodeApiKeychainUser,
       readmodelPurpose,
     ),
     resetDynamoTable(dynamoDbDpopProofsTable, "jti", dynamoClient),
