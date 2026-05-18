@@ -8,5 +8,6 @@ overrides:
       - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1keys"
       - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1keys~1%7BkeyId%7D"
       - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1members"
+      - "openapi/openapi.yaml#/paths/~1knodeApiKeychains~1%7BknodeApiKeychainId%7D~1members~1%7BuserId%7D"
     rules:
       sec-credentials-parameters: off
