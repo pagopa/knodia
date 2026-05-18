@@ -6,10 +6,10 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import {
+  API_EserviceAccessTokenRequest,
+  API_EserviceAccessTokenResponse,
   API_KnodeApiTokenRequest,
   API_KnodeApiTokenResponse,
-  API_TokenRequest,
-  API_TokenResponse,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { AuthServerHeaders } from "../models/headers.ts";
@@ -26,7 +26,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
-      const { client_assertion_type, client_id, grant_type } = req.body;
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
 
       logger.info(
         {
@@ -36,10 +37,10 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         "Issuing an E-service access token",
       );
 
-      const token = await tokenService.issueToken(
+      const token = await tokenService.issueEserviceAccessToken(
         {
-          clientAssertionJWS: req.body.client_assertion,
-          consumerKeychainId: unsafeBrandId(req.body.client_id),
+          clientAssertionJWS: client_assertion,
+          consumerKeychainId: unsafeBrandId(client_id),
           dpopProofJWS: req.headers.dpop,
         },
         logger,
@@ -49,21 +50,21 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
     },
     method: "POST",
     schema: {
-      body: API_TokenRequest,
+      body: API_EserviceAccessTokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
       description: "Issue an E-service access token",
       headers: AuthServerHeaders,
-      operationId: "createToken",
+      operationId: "createEserviceAccessToken",
       response: {
-        200: API_TokenResponse.meta({
+        200: API_EserviceAccessTokenResponse.meta({
           description: "Token issued successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
       security: [],
-      summary: "Create Token",
-      tags: [apiTags.token],
+      summary: "Create E-service Access Token",
+      tags: [apiTags.eserviceAccessToken],
     },
     url: "/token",
   });
@@ -71,7 +72,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
-      const { client_assertion_type, client_id, grant_type } = req.body;
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
 
       logger.info(
         {
@@ -83,8 +85,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
 
       const token = await tokenService.issueKnodeApiToken(
         {
-          clientAssertionJWS: req.body.client_assertion,
-          knodeApiKeychainId: unsafeBrandId(req.body.client_id),
+          clientAssertionJWS: client_assertion,
+          knodeApiKeychainId: unsafeBrandId(client_id),
         },
         logger,
       );
@@ -106,7 +108,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       },
       security: [],
       summary: "Create Knode API Token",
-      tags: [apiTags.token],
+      tags: [apiTags.knodeApiToken],
     },
     url: "/knodeApiToken",
   });
