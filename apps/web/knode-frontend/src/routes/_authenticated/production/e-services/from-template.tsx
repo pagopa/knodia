@@ -2,8 +2,14 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { categories } from "@knodia/category-models";
 import { KnodeId } from "@knodia/common-models/ids";
-import { Button, ComboBox, ComboBoxItem, Loader } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import {
+  Button,
+  ComboBox,
+  ComboBoxItem,
+  Empty,
+  Loader,
+} from "@knodia/ui-kit/ui";
+import { ArrowRightIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -215,19 +221,31 @@ function TemplatesListSelector() {
         <Loader className="mx-auto mb-10" label="Loading templates..." />
       )}
 
-      <div className="flex flex-col gap-4">
-        {templates?.map((template) => (
-          <EserviceTemplateCard
-            categories={template.categories}
-            description={template.description.en}
-            id={template.id}
-            key={template.id}
-            mode={template.mode}
-            onSelect={() => handleSelectTemplate(template.id)}
-            title={template.name.en}
-          />
-        ))}
-      </div>
+      {!isLoadingTemplates && templates.length === 0 && (
+        <Empty
+          className="mt-4"
+          description="Try with different filters."
+          icon={<MagnifyingGlassIcon />}
+          kind="brand-soft"
+          title="No results found for your search."
+        />
+      )}
+
+      {!isLoadingTemplates && templates.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {templates.map((template) => (
+            <EserviceTemplateCard
+              categories={template.categories}
+              description={template.description.en}
+              id={template.id}
+              key={template.id}
+              mode={template.mode}
+              onSelect={() => handleSelectTemplate(template.id)}
+              title={template.name.en}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
