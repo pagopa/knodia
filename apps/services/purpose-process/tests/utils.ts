@@ -18,7 +18,10 @@ import {
 } from "./setup.ts";
 
 export async function getAllPurposeEvents() {
-  return await eventStoreDb.select().from(eventStorePurposeEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStorePurposeEvents)
+    .orderBy(eventStorePurposeEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
