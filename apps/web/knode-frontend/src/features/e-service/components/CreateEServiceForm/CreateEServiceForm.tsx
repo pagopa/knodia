@@ -1,6 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Steps } from "@knodia/ui-kit/ui";
+import { useEffect, useRef } from "react";
 
 import {
   type StepConfig,
@@ -48,15 +49,23 @@ export function CreateEServiceForm({
 function EserviceFormCurrentStep() {
   const { currentStepIndex, stepLabels } = useStepsContext();
   const { content } = useCurrentStep();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    containerRef.current?.parentElement?.scrollTo?.(0, 0);
+  }, [currentStepIndex]);
 
   return (
-    <>
+    <div
+      className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16"
+      ref={containerRef}
+    >
       <Steps
         ariaLabel="E-Service creation steps"
         current={currentStepIndex}
         steps={stepLabels}
       />
       {content}
-    </>
+    </div>
   );
 }

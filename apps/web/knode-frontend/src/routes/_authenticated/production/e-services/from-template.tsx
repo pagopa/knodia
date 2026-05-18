@@ -173,7 +173,7 @@ function TemplatesListSelector() {
   );
 
   return (
-    <div>
+    <div className="mx-auto max-w-160 p-10 pb-16">
       <h2 className="headline-lg-em text-primary-light-high-contrast mb-10">
         Choose template
       </h2>
