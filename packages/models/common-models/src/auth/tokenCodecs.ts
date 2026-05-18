@@ -120,8 +120,8 @@ export type ExternalUISessionMagicLinkTokenClaims = z.infer<
 
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
-// Knode API access tokens are deliberately not included yet: the
-// signal-hub auth plugin that consumes them is tracked separately.
+// TODO: include KnodeApiAccessTokenClaims once the signal-hub auth plugin
+// that consumes Knode API access tokens lands.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
