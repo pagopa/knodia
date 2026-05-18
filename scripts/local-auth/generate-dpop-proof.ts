@@ -53,7 +53,7 @@ if (!key) {
 
 --alg defaults to ES256; must match the type of the provided private key.
 --htu defaults to ${DEFAULT_HTU} (local authorization-server token endpoint).
-   Override with the resource URL (e.g. https://test.knodia.org/testDpop)
+   Override with the resource URL (e.g. https://test.knodia.org/natural-persons/RMNLNR03H12H501Z/digital-contact)
    when minting a proof for a resource call (e.g., mock-eservice endpoints)
 --htm defaults to POST; set to the HTTP method of the target request.
 --ath is required when the proof is bound to an access token (resource calls, e.g. mock-eservice endpoints).

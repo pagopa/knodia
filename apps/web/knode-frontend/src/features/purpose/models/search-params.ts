@@ -32,3 +32,15 @@ export const producerPurposeSearchSchema = z.object({
     .default(producerPurposeSearchDefaultValues.offset)
     .catch(producerPurposeSearchDefaultValues.offset),
 });
+
+export const archivedPurposesSearchDefaultValues = {
+  offset: 0,
+} as const;
+
+export const archivedPurposesSearchSchema = z.object({
+  offset: z
+    .number()
+    .min(0)
+    .default(archivedPurposesSearchDefaultValues.offset)
+    .catch(archivedPurposesSearchDefaultValues.offset),
+});
