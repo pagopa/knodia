@@ -70,8 +70,8 @@ const purpose: Purpose = {
 };
 
 const defaultQuery = {
-  limit: "10",
   signalId: "0",
+  size: "10",
 };
 
 const pullSignal = (query = defaultQuery) =>
@@ -130,8 +130,8 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     await seedData();
 
     const signals: API_Signal[] = [];
-    const limit = 10;
-    for (let i = 1; i <= limit + 1; i++) {
+    const size = 10;
+    for (let i = 1; i <= size + 1; i++) {
       const signal: API_Signal = {
         eserviceId: eservice.id,
         objectId: `object-${i}`,
@@ -145,13 +145,13 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     }
 
     const response = await pullSignal({
-      limit: String(limit),
       signalId: "0",
+      size: String(size),
     });
 
     const expectedResponse: API_PullResponse = {
-      lastSignalId: limit,
-      signals: signals.slice(0, limit),
+      lastSignalId: size,
+      signals: signals.slice(0, size),
     };
     expect(response.statusCode).toBe(206);
     expect(response.json<API_PullResponse>()).toEqual(expectedResponse);
@@ -221,9 +221,9 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
   );
 
   it.each([
-    ["limit is out of range (too high)", { limit: "101", signalId: "1" }],
-    ["limit is out of range (zero)", { limit: "0", signalId: "0" }],
-    ["signalId is not a number", { limit: "10", signalId: "abc" }],
+    ["size is out of range (too high)", { signalId: "1", size: "101" }],
+    ["size is out of range (zero)", { signalId: "0", size: "0" }],
+    ["signalId is not a number", { signalId: "abc", size: "10" }],
   ])(
     "should return 400 if the query is not correctly formatted - %s",
     async (_label, query) => {

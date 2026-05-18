@@ -223,16 +223,6 @@ paths:
       parameters:
         - schema:
             format: int32
-            default: 10
-            type: number
-            minimum: 1
-            maximum: 100
-          in: query
-          name: limit
-          required: false
-          description: Maximum number of signals returned
-        - schema:
-            format: int32
             default: 0
             type: number
             minimum: 0
@@ -240,6 +230,16 @@ paths:
           name: signalId
           required: false
           description: The ID of the last signal received, used for pagination
+        - schema:
+            format: int32
+            default: 10
+            type: number
+            minimum: 1
+            maximum: 100
+          in: query
+          name: size
+          required: false
+          description: Maximum number of signals returned
         - schema:
             type: string
             format: uuid
