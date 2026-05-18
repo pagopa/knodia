@@ -16,7 +16,10 @@ import {
 import { agreementWriterService, app, eventStoreDb } from "./setup.ts";
 
 export async function getAllAgreementEvents() {
-  return await eventStoreDb.select().from(eventStoreAgreementEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStoreAgreementEvents)
+    .orderBy(eventStoreAgreementEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
