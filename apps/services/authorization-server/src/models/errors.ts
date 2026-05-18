@@ -278,7 +278,7 @@ export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
     code: "TARGET_KNODE_URL_NOT_CONFIGURED",
     detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-    title: "internal_error",
+    title: "server_error",
   });
 }
 
