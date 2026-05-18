@@ -71,7 +71,7 @@ function EserviceTemplateCard({
   title: string;
 }) {
   return (
-    <article className="p-4 flex flex-col gap-4 rounded-2xl elevation-1 border border-slate-100">
+    <article className="p-4 flex flex-col gap-4 rounded-eservice-card elevation-1 border border-eservice-card-border">
       <header className="flex gap-10 items-start">
         <div className="flex min-w-0 flex-1 flex-col">
           <h3 className="min-w-0 title-md-em truncate">{title}</h3>
