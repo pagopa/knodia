@@ -252,9 +252,8 @@ describe("POST /token", async () => {
     });
   }
 
-  beforeEach(async () => {
+  beforeEach(() => {
     getConsumerClientAssertionVerificationDataMock.mockReset();
-    await purposeWriterService.upsertPurpose(purpose, 0);
   });
 
   it.each(EserviceAccessTokenType.options)(
@@ -488,6 +487,7 @@ describe("POST /token", async () => {
   ])(
     "should return 401 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
+      await purposeWriterService.upsertPurpose(purpose, 0);
       getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
       });
@@ -628,6 +628,7 @@ describe("POST /token", async () => {
   it.each([404, 400, 500])(
     "should return 401 or 500 when the k2k gateway call fails",
     async (status) => {
+      await purposeWriterService.upsertPurpose(purpose, 0);
       const axiosError = new AxiosError("K2K Gateway Error");
       axiosError.status = status;
       getConsumerClientAssertionVerificationDataMock.mockRejectedValue(
@@ -689,6 +690,7 @@ describe("POST /token", async () => {
   });
 
   it("should return 401 if the public key algorithm does not match the client assertion algorithm", async () => {
+    await purposeWriterService.upsertPurpose(purpose, 0);
     const wrongAlg = "ES256";
     getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
@@ -785,20 +787,29 @@ describe("POST /token", async () => {
     {
       agreement: undefined,
       eserviceVersion,
+      purpose,
       testCase: "agreement not found",
     },
     {
       agreement,
       eserviceVersion: undefined,
+      purpose,
       testCase: "e-service version not found",
+    },
+    {
+      agreement,
+      eserviceVersion,
+      purpose: undefined,
+      testCase: "purpose not found",
     },
   ] satisfies {
     agreement: Agreement | undefined;
     eserviceVersion: EserviceVersion | undefined;
+    purpose: Purpose | undefined;
     testCase: string;
   }[])(
     "should return 400 when platform objects are not found: $testCase (seed #%#)",
-    async ({ agreement, eserviceVersion }) => {
+    async ({ agreement, eserviceVersion, purpose }) => {
       await Promise.all([
         agreement
           ? agreementWriterService.upsertAgreement(agreement, 0)
@@ -808,6 +819,9 @@ describe("POST /token", async () => {
               { ...eservice, versions: [eserviceVersion] },
               0,
             )
+          : Promise.resolve(),
+        purpose
+          ? purposeWriterService.upsertPurpose(purpose, 0)
           : Promise.resolve(),
       ]);
 
@@ -820,24 +834,6 @@ describe("POST /token", async () => {
       expect(response.statusCode).toBe(400);
     },
   );
-
-  it("should return 400 when the Purpose is not found", async () => {
-    const { clientAssertionJWS: missingPurposeAssertionJWS } =
-      await getMockClientAssertion({
-        standardClaimsOverride: {
-          aud: ["test-audience-1"],
-          iss: consumerKeychainId,
-          purpose_id: generateId(),
-          sub: consumerKeychainId,
-        },
-      });
-
-    const response = await createEserviceAccessToken({
-      body: { ...defaultBody, client_assertion: missingPurposeAssertionJWS },
-    });
-
-    expect(response.statusCode).toBe(400);
-  });
 
   it("should return 400 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
     await Promise.all([
