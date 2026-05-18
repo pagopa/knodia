@@ -71,18 +71,25 @@ beforeAll(async () => {
 
   app = buildApp({
     config: {
-      clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
       clientAssertionMaxTokenAgeSeconds: 300,
       dpopProofHtuBaseUrl,
       dpopProofMaxTokenAgeSeconds: 300,
       dynamoDbDpopProofsTable,
       eserviceAccessTokenJwtKid: "test-kid",
+      eserviceClientAssertionAcceptedAudiences: [
+        "test-eservice-audience-1",
+        "test-eservice-audience-2",
+      ],
       generatedEserviceAccessTokenIssuer: "knodia.org",
       generatedKnodeApiTokenAudience: "test-knode-api-audience",
       generatedKnodeApiTokenIssuer: "knodia.org",
       host: "test_host",
       isProduction: false,
       jwtClockToleranceSeconds: 30,
+      knodeApiClientAssertionAcceptedAudiences: [
+        "test-knode-api-accepted-audience-1",
+        "test-knode-api-accepted-audience-2",
+      ],
       knodeApiTokenDurationSeconds: 3600,
       knodeApiTokenJwtKid: "test-knode-api-kid",
       knodeId: producerKnodeId,
