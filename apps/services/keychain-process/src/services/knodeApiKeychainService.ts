@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -32,7 +33,9 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   createKnodeApiKeychainCreatedV1Event,
+  createKnodeApiKeychainDeletedV1Event,
   createKnodeApiKeychainKeyAddedV1Event,
+  createKnodeApiKeychainKeyRemovedV1Event,
   createKnodeApiKeychainMemberAddedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
@@ -40,7 +43,11 @@ import {
   retrieveKeychainKey,
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain, addMemberToKeychain } from "../utils/utils.ts";
+import {
+  addKeyToKeychain,
+  addMemberToKeychain,
+  removeKeyFromKeychain,
+} from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
@@ -122,6 +129,30 @@ export function knodeApiKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+    async deleteKnodeApiKeychain(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(`Deleting Knode API Keychain ${knodeApiKeychainId}`);
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainDeletedV1Event(
+          knodeApiKeychain.data,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+    },
     async getKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -133,7 +164,6 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
     },
-
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
@@ -182,6 +212,40 @@ export function knodeApiKeychainServiceBuilder(
       logger.info({ params }, "Getting Knode API keychains with params");
 
       return await readmodelService.getKnodeApiKeychains(params);
+    },
+    async removeKnodeApiKeychainKey(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      kid: KeyId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Removing key ${kid} from Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      const updatedKnodeApiKeychain = removeKeyFromKeychain(
+        knodeApiKeychain.data,
+        authData,
+        kid,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainKeyRemovedV1Event(
+          updatedKnodeApiKeychain,
+          kid,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
     },
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
