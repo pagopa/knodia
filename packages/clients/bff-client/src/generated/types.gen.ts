@@ -1033,6 +1033,10 @@ export type CreateSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1058,6 +1062,10 @@ export type RefreshSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1077,6 +1085,15 @@ export type LogoutData = {
     query?: never;
     url: '/auth/logout';
 };
+
+export type LogoutErrors = {
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
     /**
