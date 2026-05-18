@@ -31,7 +31,7 @@ script:pre-request {
 }
 
 script:post-response {
-  if (res.status >= 200 && res.status < 300) {
+  if (res.status === 200) {
     const eserviceId = bru.getVar("eserviceId");
     const signalId = Number(bru.getVar("signalId"));
     const countersRaw = bru.getVar("signalIdCounters") || "{}";
