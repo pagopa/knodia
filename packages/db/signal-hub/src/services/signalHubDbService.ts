@@ -3,6 +3,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type EserviceId } from "@knodia/common-models/ids";
 import { and, eq, gt } from "drizzle-orm";
 
+import { toSignal } from "../converters/converters.ts";
 import { type NewSignalHubSignal, signalHubSignal } from "../signalHub.ts";
 
 export type SignalHubDbService = ReturnType<typeof signalHubDbServiceBuilder>;
@@ -20,18 +21,25 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
           ),
         );
     },
-    async getSignal(signalId: number, eserviceId: EserviceId) {
-      const rows = await db
+    async getSignals(signalId: number, eserviceId: EserviceId, limit: number) {
+      const signals = await db
         .select()
         .from(signalHubSignal)
         .where(
           and(
-            eq(signalHubSignal.signalId, signalId),
+            gt(signalHubSignal.signalId, signalId),
             eq(signalHubSignal.eserviceId, eserviceId),
           ),
         )
-        .limit(1);
-      return rows[0];
+        .orderBy(signalHubSignal.signalId)
+        .limit(limit + 1);
+      console.log("🚀 ~ signalHubDbServiceBuilder ~ signals:", signals);
+
+      const nextSignalId =
+        signals.length > limit ? signals.pop()?.signalId : undefined;
+      const lastSignalId = signals.at(-1)?.signalId;
+
+      return { lastSignalId, nextSignalId, signals: signals.map(toSignal) };
     },
     async insertSignal(signal: NewSignalHubSignal): Promise<void> {
       await db.insert(signalHubSignal).values(signal);

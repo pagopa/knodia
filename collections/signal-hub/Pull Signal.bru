@@ -1,0 +1,23 @@
+meta {
+  name: Pull Signal
+  type: http
+}
+
+get {
+  url: {{host-signal-hub}}/signals/:eserviceId
+  body: json
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{knode-api-jwt}}
+}
+
+params:query {
+  ~signalId: 0
+  ~limit: 10
+}

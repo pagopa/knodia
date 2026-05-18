@@ -80,7 +80,7 @@ components:
         - UPDATE
         - DELETE
         - SEEDUPDATE
-    PushSeed:
+    Signal:
       type: object
       properties:
         eserviceId:
@@ -105,6 +105,9 @@ components:
         - signalId
         - signalType
       additionalProperties: false
+    PushSeed:
+      allOf:
+        - $ref: "#/components/schemas/Signal"
     PushResponse:
       type: object
       properties:
@@ -115,6 +118,21 @@ components:
           maximum: 9007199254740991
       required:
         - signalId
+      additionalProperties: false
+    PullResponse:
+      type: object
+      properties:
+        lastSignalId:
+          format: int32
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+        signals:
+          type: array
+          items:
+            $ref: "#/components/schemas/Signal"
+      required:
+        - signals
       additionalProperties: false
 paths:
   /status:
@@ -155,6 +173,97 @@ paths:
                 description: Signal accepted
                 allOf:
                   - $ref: "#/components/schemas/PushResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /signals/{eserviceId}:
+    get:
+      operationId: pullSignals
+      summary: Pull Signals
+      tags:
+        - signalHub
+      description: Pull a list of signals for an E-service
+      parameters:
+        - schema:
+            format: int32
+            default: 10
+            type: number
+            minimum: 1
+            maximum: 100
+          in: query
+          name: limit
+          required: false
+          description: Maximum number of signals returned
+        - schema:
+            format: int32
+            default: 0
+            type: number
+            minimum: 0
+          in: query
+          name: signalId
+          required: false
+          description: The ID of the last signal received, used for pagination
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: Signals pulled successfully
+          content:
+            application/json:
+              schema:
+                description: Signals pulled successfully
+                allOf:
+                  - $ref: "#/components/schemas/PullResponse"
+        "206":
+          description: Signals pulled successfully, but there are more signals to pull
+          content:
+            application/json:
+              schema:
+                description: Signals pulled successfully, but there are more signals to pull
+                allOf:
+                  - $ref: "#/components/schemas/PullResponse"
         "400":
           description: Bad Request
           content:

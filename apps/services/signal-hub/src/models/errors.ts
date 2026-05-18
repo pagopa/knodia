@@ -1,3 +1,4 @@
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -14,6 +15,7 @@ const errorCodes = {
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
   NEWER_SIGNALS_EXIST: "0005",
+  CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -22,6 +24,18 @@ type ErrorCodes = keyof typeof errorCodes;
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "signal-hub",
 });
+
+export function consumerNotAuthorizedToPullSignals(
+  eserviceId: EserviceId,
+  { id: organizationId, knodeId }: ExternalResource<OrganizationId>,
+) {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS",
+    detail: `No active Agreement and Purpose found for E-service ${eserviceId} and Consumer ${organizationId} (Knode ${knodeId})`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Consumer Not Authorized To Pull Signals",
+  });
+}
 
 export function eserviceNotActive(eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({

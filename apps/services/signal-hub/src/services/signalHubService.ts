@@ -1,10 +1,11 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
 import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { SignalType } from "@knodia/signal-hub-models";
 
+import { ExternalResource } from "@knodia/common-models/externalResource";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
 
@@ -12,6 +13,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import { signalAlreadyExists } from "../models/errors.ts";
 import {
+  assertConsumerAuthorizedToPullSignals,
   assertEserviceIsActiveWithSignalHubEnabled,
   assertSignalCanBePushed,
 } from "../utils/validators.ts";
@@ -23,6 +25,35 @@ export function signalHubServiceBuilder(
   signalHubDbService: SignalHubDbService,
 ) {
   return {
+    async pullSignals(
+      {
+        eserviceId,
+        limit,
+        signalId,
+      }: {
+        eserviceId: EserviceId;
+        limit: number;
+        signalId: number;
+      },
+      { authData, logger }: AuthorizedContext<KnodeApiAuthData>,
+    ) {
+      logger.info(`Pulling signals for E-service ${eserviceId}`);
+
+      const { organization } = authData;
+
+      await assertEserviceIsActiveWithSignalHubEnabled(
+        eserviceId,
+        organization.id,
+        readmodelService,
+      );
+      await assertConsumerAuthorizedToPullSignals(
+        ExternalResource<OrganizationId>().parse(organization),
+        eserviceId,
+        readmodelService,
+      );
+
+      return await signalHubDbService.getSignals(signalId, eserviceId, limit);
+    },
     async pushSignal(
       {
         eserviceId,
