@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { generateUserId } from "@knodia/common-models/ids";
@@ -268,5 +269,34 @@ describe("Knode API keychain read model writer tests", async () => {
       data: toExpectKnodeApiKeychain(keychainWithKeyRemoved),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainDeletedV1", async () => {
+    const knodeApiKeychain = getMockKnodeApiKeychain();
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainDeletedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(knodeApiKeychain),
+    });
+
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainDeletedV1",
+      metadataVersion: 1,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(0);
   });
 });
