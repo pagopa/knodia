@@ -18,7 +18,6 @@ import type {
   KeychainKey,
 } from "@knodia/keychain-models";
 
-import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
   generateId,
@@ -61,11 +60,13 @@ import {
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
+  retrieveKeychainUser,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
   addMemberToKeychain,
   removeKeyFromKeychain,
+  removeMemberFromKeychain,
 } from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
@@ -85,24 +86,6 @@ export function consumerKeychainServiceBuilder(
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
-  async function retrieveUser(
-    userId: UserId,
-    consumerKeychainId: ConsumerKeychainId,
-  ): Promise<IdmUser> {
-    const user = await cognitoIdmClient.getUserById(userId);
-    if (!user) {
-      /**
-       * This should not happen as users are validated when added as members.
-       * If it does happen, it means there's a data inconsistency that should be investigated.
-       * Hence, we throw a generic internal error.
-       */
-      throw genericInternalError(
-        `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
-      );
-    }
-    return user;
-  }
-
   return {
     async addConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
@@ -279,7 +262,12 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      return await retrieveUser(userId, consumerKeychainId);
+      return await retrieveKeychainUser(
+        userId,
+        consumerKeychainId,
+        "Consumer Keychain",
+        cognitoIdmClient,
+      );
     },
 
     async getConsumerKeychainMembers(
@@ -309,7 +297,12 @@ export function consumerKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveUser(userId, consumerKeychainId),
+            retrieveKeychainUser(
+              userId,
+              consumerKeychainId,
+              "Consumer Keychain",
+              cognitoIdmClient,
+            ),
           ),
         ),
         totalCount: consumerKeychain.users.length,
@@ -468,24 +461,8 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        updatedAt: new Date(),
-        users: consumerKeychain.data.users.filter(
-          (member) => member.userId !== userId,
-        ),
-      };
+      const { updatedKeychain: updatedConsumerKeychain } =
+        removeMemberFromKeychain(consumerKeychain.data, userId, authData);
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberRemovedV1Event(
