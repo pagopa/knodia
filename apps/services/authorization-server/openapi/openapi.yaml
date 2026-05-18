@@ -3,7 +3,8 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for issuing access tokens to consume E-services exposed by a Knode
+  description: "API for issuing access tokens: E-service access tokens and Knode
+    API access tokens"
   title: Knodia Authorization Server API
   version: 1.0.0
 components:
@@ -66,7 +67,7 @@ components:
         - status
         - title
       additionalProperties: false
-    TokenRequest:
+    EserviceAccessTokenRequest:
       type: object
       properties:
         client_assertion:
@@ -91,7 +92,7 @@ components:
         - grant_type
         - client_id
       additionalProperties: false
-    TokenResponse:
+    EserviceAccessTokenResponse:
       type: object
       properties:
         access_token:
@@ -170,8 +171,8 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /token:
     post:
-      operationId: createToken
-      summary: Create Token
+      operationId: createEserviceAccessToken
+      summary: Create E-service Access Token
       tags:
         - e-service-access-token
       description: Issue an E-service access token
@@ -180,7 +181,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/TokenRequest"
+              $ref: "#/components/schemas/EserviceAccessTokenRequest"
       parameters:
         - schema:
             type: string
@@ -197,7 +198,7 @@ paths:
               schema:
                 description: Token issued successfully
                 allOf:
-                  - $ref: "#/components/schemas/TokenResponse"
+                  - $ref: "#/components/schemas/EserviceAccessTokenResponse"
         "400":
           description: Bad Request
           content:
@@ -259,7 +260,7 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: Issuance of E-service access tokens
+  - description: E-service access token issuance
     name: e-service-access-token
-  - description: Issuance of Knode API access tokens
+  - description: Knode API access token issuance
     name: knode-api-token

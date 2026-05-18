@@ -44,7 +44,7 @@ export function buildApp({
       openapi: {
         info: {
           description:
-            "API for issuing access tokens to consume E-services exposed by a Knode",
+            "API for issuing access tokens: E-service access tokens and Knode API access tokens",
           title: "Knodia Authorization Server API",
           version: "1.0.0",
         },
@@ -52,11 +52,11 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "Issuance of E-service access tokens",
+            description: "E-service access token issuance",
             name: apiTags.eserviceAccessToken,
           },
           {
-            description: "Issuance of Knode API access tokens",
+            description: "Knode API access token issuance",
             name: apiTags.knodeApiToken,
           },
         ],
