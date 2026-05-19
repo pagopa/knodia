@@ -410,7 +410,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       sendFileDownload(
         res,
         content,
-        `public_key_${keyId}.pub`,
+        `public_key_${keyId}.pem`,
         "text/plain; charset=utf-8",
       );
     },
