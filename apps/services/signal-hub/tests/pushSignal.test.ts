@@ -132,7 +132,7 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 409 when a signal with the same signalId already exists", async () => {
+  it("should return 400 when a signal with the same signalId already exists", async () => {
     await seedEservice();
     await pushSignal();
 
@@ -140,7 +140,7 @@ describe("POST /signals (pushSignal)", () => {
 
     const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 

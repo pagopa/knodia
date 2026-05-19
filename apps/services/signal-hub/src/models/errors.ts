@@ -66,7 +66,7 @@ export function signalAlreadyExists(signalId: number, eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "SIGNAL_ALREADY_EXISTS",
     detail: `Signal with id ${signalId} already exists for E-service ${eserviceId}`,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_BAD_REQUEST,
     title: "Signal Already Exists",
   });
 }
