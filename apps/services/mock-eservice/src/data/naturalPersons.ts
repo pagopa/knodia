@@ -70,8 +70,8 @@ export function findPersonalInformation(
 // Returns the residence of a natural person.
 // For codici fiscali in the rotating subset, the response cycles per
 // `periodId % 3`: index 0 = address A (CREATE phase), 1 = address B (UPDATE),
-// 2 = null (DELETE → undefined → 404). KN-547 will publish matching
-// CREATE/UPDATE/DELETE signals each period.
+// 2 = null (DELETE → undefined → 404). The mock-eservice-signal-hub-cronjob
+// will publish matching CREATE/UPDATE/DELETE signals each period.
 export function findResidence(
   notation: API_Notation,
   periodId: number,
