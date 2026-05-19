@@ -236,7 +236,6 @@ describe("KeychainEventV1 codec", () => {
           { type: "KnodeApiKeychainCreatedV1" },
           { type: "KnodeApiKeychainUpdatedV1" },
           { type: "KnodeApiKeychainDeletedV1" },
-          { type: "KnodeApiKeychainUpdatedV1" },
           ({ data, type }) => testFullCodec({ data, type }),
         )
         .with(
@@ -292,7 +291,6 @@ describe("KeychainEventV1 codec", () => {
           { type: "KnodeApiKeychainCreatedV1" },
           { type: "KnodeApiKeychainUpdatedV1" },
           { type: "KnodeApiKeychainDeletedV1" },
-          { type: "KnodeApiKeychainUpdatedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
         .with(
