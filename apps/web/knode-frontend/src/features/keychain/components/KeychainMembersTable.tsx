@@ -7,6 +7,12 @@ import {
   removeKnodeApiKeychainMemberMutation,
 } from "@knodia/bff-client/tanstack-query";
 import {
+  type ConsumerKeychainId,
+  type KnodeApiKeychainId,
+  unsafeBrandUserId,
+  type UserId,
+} from "@knodia/common-models/ids";
+import {
   Banner,
   Button,
   Cell,
@@ -30,7 +36,7 @@ import type { KeychainType } from "../models/commons";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   members: bffApi.User[];
   type: KeychainType;
 }
@@ -81,7 +87,7 @@ export function KeychainMembersTable({
                   <RemoveFromKeychainAction
                     keychainId={keychainId}
                     type={type}
-                    userId={member.id}
+                    userId={unsafeBrandUserId(member.id)}
                   />
                 </div>
               </Cell>
@@ -98,9 +104,9 @@ function RemoveFromKeychainAction({
   type,
   userId,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   type: KeychainType;
-  userId: string;
+  userId: UserId;
 }) {
   const queryClient = useQueryClient();
   const {

@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import {
   getConsumerKeychainMembershipOptions,
   getKnodeApiKeychainMembershipOptions,
@@ -11,7 +16,7 @@ import { client } from "@/libs/axios";
 import type { KeychainType } from "../models/commons";
 
 export function useIsCurrentUserKeychainMember(
-  keychainId: string,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
   type: Extract<KeychainType, "api" | "consumption">,
 ) {
   const { userId } = useAuth();

@@ -1,10 +1,7 @@
-import type { bffApi } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainDetailsQueryKey,
   getKnodeApiKeychainDetailsQueryKey,
-  updateConsumerKeychainMutation,
-  updateKnodeApiKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
@@ -69,70 +66,56 @@ function EditKeychainModal({
 }: EditKeychainModalProps) {
   const queryClient = useQueryClient();
 
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: editConsumerKeychain,
-  } = useMutation({
-    ...updateConsumerKeychainMutation({
-      client,
-    }),
+  const { isError, isPending, mutate } = useMutation({
+    mutationFn: (body: bffApi.ConsumerKeychainPatch) =>
+      match(type)
+        .with("consumption", () =>
+          bffApi.updateConsumerKeychain({
+            body,
+            client,
+            path: { consumerKeychainId: keychain.id },
+          }),
+        )
+        .with("api", () =>
+          bffApi.updateKnodeApiKeychain({
+            body,
+            client,
+            path: { knodeApiKeychainId: keychain.id },
+          }),
+        )
+        .with("production", () => {
+          throw new Error("Producer keychains are not supported yet.");
+        })
+        .exhaustive(),
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainDetailsQueryKey({
-          client,
-          path: { consumerKeychainId: keychain.id },
-        }),
+        queryKey: match(type)
+          .with("consumption", () =>
+            getConsumerKeychainDetailsQueryKey({
+              client,
+              path: { consumerKeychainId: keychain.id },
+            }),
+          )
+          .with("api", () =>
+            getKnodeApiKeychainDetailsQueryKey({
+              client,
+              path: { knodeApiKeychainId: keychain.id },
+            }),
+          )
+          .with("production", () => {
+            throw new Error("Producer keychains are not supported yet.");
+          })
+          .exhaustive(),
       });
       onClose();
     },
   });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: editKnodeApiKeychain,
-  } = useMutation({
-    ...updateKnodeApiKeychainMutation({
-      client,
-    }),
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainDetailsQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychain.id },
-        }),
-      });
-      onClose();
-    },
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
-    const body = {
+    mutate({
       description: seed.description ? { en: seed.description } : null,
       name: { en: seed.name },
-    };
-
-    match(type)
-      .with("consumption", () =>
-        editConsumerKeychain({
-          body: body satisfies bffApi.ConsumerKeychainPatch,
-          path: { consumerKeychainId: keychain.id },
-        }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () =>
-        editKnodeApiKeychain({
-          body: body satisfies bffApi.KnodeApiKeychainPatch,
-          path: { knodeApiKeychainId: keychain.id },
-        }),
-      )
-      .exhaustive();
+    });
   }
 
   const form = useForm({

@@ -1,14 +1,17 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 import type { FastifyBaseLogger } from "fastify";
 
-import { type ConsumerKeychainId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  type KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 import { type JtiReplayStore } from "@knodia/db-jti-replay-store";
 import {
   assertDpopProofNotReplayed,
   verifyDpopProofSignature,
 } from "@knodia/dpop-validator";
-import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -16,28 +19,25 @@ import { EXPECTED_DPOP_PROOF_HTM } from "../models/constants.ts";
 import {
   validatePlatformObjects,
   verifyClientAssertionSignature,
+  verifyKnodeApiClientAssertionSignature,
 } from "../utils/validators.ts";
 
 export type TokenService = ReturnType<typeof tokenServiceBuilder>;
 export function tokenServiceBuilder({
-  config: {
-    eserviceAccessTokenJwtKid,
-    generatedEserviceAccessTokenIssuer,
-    knodeId,
-  },
+  config,
   dpopProofStore,
-  k2kGatewayClient,
+  getK2K2GatewayApiClient,
   readmodelService,
   tokenGenerator,
 }: {
   config: AuthorizationServerConfig;
   dpopProofStore: JtiReplayStore;
-  k2kGatewayClient: K2K2GatewayApiClient;
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
 }) {
   return {
-    async issueToken(
+    async issueEserviceAccessToken(
       {
         clientAssertionJWS,
         consumerKeychainId,
@@ -47,13 +47,6 @@ export function tokenServiceBuilder({
         consumerKeychainId: ConsumerKeychainId;
         dpopProofJWS: string | undefined;
       },
-      {
-        clientAssertionAcceptedAudiences,
-        clientAssertionMaxTokenAgeSeconds,
-        dpopProofHtuBaseUrl,
-        dpopProofMaxTokenAgeSeconds,
-        jwtClockToleranceSeconds,
-      }: AuthorizationServerConfig,
       logger: FastifyBaseLogger,
     ) {
       // Verify DPoP proof signature and claims if a DPoP proof is provided in the request headers
@@ -61,21 +54,20 @@ export function tokenServiceBuilder({
         dpopProofJWS,
         {
           expectedHtm: EXPECTED_DPOP_PROOF_HTM,
-          expectedHtu: dpopProofHtuBaseUrl,
-          jwtClockToleranceSeconds,
-          maxTokenAgeSeconds: dpopProofMaxTokenAgeSeconds,
+          expectedHtu: config.dpopProofHtuBaseUrl,
+          jwtClockToleranceSeconds: config.jwtClockToleranceSeconds,
+          maxTokenAgeSeconds: config.dpopProofMaxTokenAgeSeconds,
         },
         logger,
       );
 
       // Verify Client Assertion signature and claims
-      const { consumerAttributes, purposeId } =
+      const { consumerAttributes, purpose } =
         await verifyClientAssertionSignature(
           { clientAssertionJWS, consumerKeychainId },
-          clientAssertionAcceptedAudiences,
-          jwtClockToleranceSeconds,
-          clientAssertionMaxTokenAgeSeconds,
-          k2kGatewayClient,
+          config,
+          getK2K2GatewayApiClient,
+          readmodelService,
           logger,
         );
 
@@ -83,33 +75,32 @@ export function tokenServiceBuilder({
       if (dpopProofJWT) {
         await assertDpopProofNotReplayed(
           dpopProofJWT,
-          dpopProofMaxTokenAgeSeconds,
+          config.dpopProofMaxTokenAgeSeconds,
           dpopProofStore,
-          jwtClockToleranceSeconds,
+          config.jwtClockToleranceSeconds,
         );
       }
 
-      // Check that the platform objects (agreement, e-service version, purpose) are in a consumable state and that the Consumer meets the E-service version required attributes
-      const { agreement, eserviceVersion, purpose } =
-        await validatePlatformObjects(
-          purposeId,
-          consumerAttributes,
-          dpopProofJWT,
-          readmodelService,
-        );
+      // Check that the platform objects (purpose, agreement, e-service version) are in a consumable state and that the Consumer meets the E-service version required attributes
+      const { agreement, eserviceVersion } = await validatePlatformObjects(
+        purpose.data,
+        consumerAttributes,
+        dpopProofJWT,
+        readmodelService,
+      );
 
       // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
         audience: eserviceVersion.accessTokenAudience,
-        consumer: purpose.consumer,
+        consumer: purpose.data.consumer,
         consumerKeychainId,
         dpopJWK: dpopProofJWT?.headers.jwk,
-        eserviceId: purpose.eserviceId,
+        eserviceId: purpose.data.eserviceId,
         eserviceVersionId: eserviceVersion.id,
-        issuer: generatedEserviceAccessTokenIssuer,
-        kid: eserviceAccessTokenJwtKid,
-        producer: { id: agreement.producerId, knodeId },
-        purposeId: purpose.id,
+        issuer: config.generatedEserviceAccessTokenIssuer,
+        kid: config.eserviceAccessTokenJwtKid,
+        producer: { id: agreement.producerId, knodeId: config.knodeId },
+        purposeId: purpose.data.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,
       });
@@ -118,6 +109,41 @@ export function tokenServiceBuilder({
         access_token: token.serialized,
         expires_in: token.payload.exp - token.payload.iat,
         token_type: dpopProofJWT ? ("DPoP" as const) : ("Bearer" as const),
+      };
+    },
+
+    async issueKnodeApiToken(
+      {
+        clientAssertionJWS,
+        knodeApiKeychainId,
+      }: {
+        clientAssertionJWS: string;
+        knodeApiKeychainId: KnodeApiKeychainId;
+      },
+      logger: FastifyBaseLogger,
+    ) {
+      const { keychainKnodeId, ownerId } =
+        await verifyKnodeApiClientAssertionSignature(
+          { clientAssertionJWS, knodeApiKeychainId },
+          config,
+          getK2K2GatewayApiClient,
+          readmodelService,
+          logger,
+        );
+
+      const token = await tokenGenerator.generateKnodeApiAccessToken({
+        audience: [config.generatedKnodeApiTokenAudience],
+        issuer: config.generatedKnodeApiTokenIssuer,
+        keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
+        kid: config.knodeApiTokenJwtKid,
+        organization: { id: ownerId, knodeId: keychainKnodeId },
+        secondsDuration: config.knodeApiTokenDurationSeconds,
+      });
+
+      return {
+        access_token: token.serialized,
+        expires_in: token.payload.exp - token.payload.iat,
+        token_type: "Bearer" as const,
       };
     },
   };

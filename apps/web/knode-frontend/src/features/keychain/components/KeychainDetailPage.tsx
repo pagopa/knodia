@@ -1,4 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 
 import {
   getConsumerKeychainKeysOptions,
@@ -37,37 +41,30 @@ import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPubli
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
-
-interface KeychainDetailPageProps<TTab extends string> {
+type KeychainDetailPageProps<TTab extends string> = {
   activeTab: TTab;
   keychain: bffApi.KeychainDetails;
-  keychainId: string;
   offset: number;
   onOffsetChange: (offset: number) => void;
   onTabChange: (tab: TTab) => void;
-  type: SupportedKeychainType;
-}
+} & (
+  | { keychainId: ConsumerKeychainId; type: "consumption" }
+  | { keychainId: KnodeApiKeychainId; type: "api" }
+);
 
 interface KeychainTabProps {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   offset: number;
   onOffsetChange: (offset: number) => void;
-  type: SupportedKeychainType;
+  type: "api" | "consumption";
 }
 
-type SupportedKeychainType = Extract<KeychainType, "api" | "consumption">;
+export function KeychainDetailPage<TTab extends string>(
+  props: KeychainDetailPageProps<TTab>,
+) {
+  const { activeTab, keychain, offset, onOffsetChange, onTabChange } = props;
 
-export function KeychainDetailPage<TTab extends string>({
-  activeTab,
-  keychain,
-  keychainId,
-  offset,
-  onOffsetChange,
-  onTabChange,
-  type,
-}: KeychainDetailPageProps<TTab>) {
-  const chipLabel = match(type)
+  const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
     .with("api", () => "API")
     .exhaustive();
@@ -75,7 +72,9 @@ export function KeychainDetailPage<TTab extends string>({
   return (
     <>
       <Breadcrumbs className="mb-10">
-        <Breadcrumb href={{ search: { offset: 0, type }, to: "/keychains" }}>
+        <Breadcrumb
+          href={{ search: { offset: 0, type: props.type }, to: "/keychains" }}
+        >
           Keychains
         </Breadcrumb>
         <Breadcrumb>{keychain.name.en}</Breadcrumb>
@@ -84,8 +83,11 @@ export function KeychainDetailPage<TTab extends string>({
       <PageHeader
         actions={
           <>
-            <KeychainDeleteAction keychainId={keychain.id} type={type} />
-            <KeychainEditAction keychain={keychain} type={type} />
+            <KeychainDeleteAction
+              keychainId={props.keychainId}
+              type={props.type}
+            />
+            <KeychainEditAction keychain={keychain} type={props.type} />
           </>
         }
         copyableId={keychain.id}
@@ -105,7 +107,7 @@ export function KeychainDetailPage<TTab extends string>({
           <Tab id="public-keys" key="public-keys">
             Public Keys
           </Tab>
-          {type === "consumption" && (
+          {props.type === "consumption" && (
             <Tab id="purposes" key="purposes">
               Purposes
             </Tab>
@@ -117,16 +119,16 @@ export function KeychainDetailPage<TTab extends string>({
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
             <PublicKeysTab
-              keychainId={keychainId}
+              keychainId={props.keychainId}
               offset={offset}
               onOffsetChange={onOffsetChange}
-              type={type}
+              type={props.type}
             />
           </TabPanel>
-          {type === "consumption" && (
+          {props.type === "consumption" && (
             <TabPanel id="purposes" key="purposes">
               <ConsumerPurposesTab
-                keychainId={keychainId}
+                keychainId={props.keychainId}
                 offset={offset}
                 onOffsetChange={onOffsetChange}
               />
@@ -134,10 +136,10 @@ export function KeychainDetailPage<TTab extends string>({
           )}
           <TabPanel id="members" key="members">
             <MembersTab
-              keychainId={keychainId}
+              keychainId={props.keychainId}
               offset={offset}
               onOffsetChange={onOffsetChange}
-              type={type}
+              type={props.type}
             />
           </TabPanel>
         </TabPanels>
@@ -151,7 +153,7 @@ function ConsumerPurposesTab({
   offset,
   onOffsetChange,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId;
   offset: number;
   onOffsetChange: (offset: number) => void;
 }) {

@@ -1,7 +1,9 @@
-import {
-  deleteConsumerKeychainMutation,
-  deleteKnodeApiKeychainMutation,
-} from "@knodia/bff-client/tanstack-query";
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
+import { bffApi } from "@knodia/bff-client";
 import { Button, Modal } from "@knodia/ui-kit/ui";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -16,45 +18,44 @@ export function KeychainDeleteAction({
   keychainId,
   type,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   type: KeychainType;
 }) {
   const navigate = useNavigate();
   const {
-    isError: isConsumerError,
-    isPending: isConsumerDeleting,
-    mutate: deleteConsumerKeychain,
+    isError,
+    isPending: isDeleting,
+    mutate,
   } = useMutation({
-    ...deleteConsumerKeychainMutation({ client }),
-    onSuccess: () => navigate({ to: "/keychains" }),
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiDeleting,
-    mutate: deleteKnodeApiKeychain,
-  } = useMutation({
-    ...deleteKnodeApiKeychainMutation({ client }),
+    mutationFn: () =>
+      match(type)
+        .with("consumption", () =>
+          bffApi.deleteConsumerKeychain({
+            client,
+            path: { consumerKeychainId: keychainId },
+          }),
+        )
+        .with("api", () =>
+          bffApi.deleteKnodeApiKeychain({
+            client,
+            path: { knodeApiKeychainId: keychainId },
+          }),
+        )
+        .with("production", () => {
+          throw new Error("Producer keychains are not supported yet.");
+        })
+        .exhaustive(),
     onSuccess: () =>
-      navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
+      match(type)
+        .with("consumption", () => navigate({ to: "/keychains" }))
+        .with("api", () =>
+          navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
+        )
+        .with("production", () => {
+          throw new Error("Producer keychains are not supported yet.");
+        })
+        .exhaustive(),
   });
-
-  const isError = isConsumerError || isApiError;
-  const isDeleting = isConsumerDeleting || isApiDeleting;
-
-  function handleDelete() {
-    match(type)
-      .with("consumption", () =>
-        deleteConsumerKeychain({ path: { consumerKeychainId: keychainId } }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () =>
-        deleteKnodeApiKeychain({ path: { knodeApiKeychainId: keychainId } }),
-      )
-      .exhaustive();
-  }
 
   return (
     <DialogTrigger>
@@ -68,7 +69,7 @@ export function KeychainDeleteAction({
         description="Are you sure you want to delete this Keychain? All its public keys will be deleted. This action cannot be undone."
         isDismissable
         kind="destructive"
-        onConfirm={handleDelete}
+        onConfirm={() => mutate()}
         showErrorBanner={isError}
         title="Delete Keychain"
       />
