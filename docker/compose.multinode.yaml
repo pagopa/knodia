@@ -992,6 +992,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
 
   # ============================================================
   # Lynx Node
@@ -1644,6 +1646,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
 
   # ============================================================
   # Frontends
