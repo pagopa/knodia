@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   bigint,
+  check,
   integer,
   jsonb,
   pgSchema,
@@ -40,6 +42,8 @@ export const readmodelPurpose = purposeSchema.table(
       mode: "date",
       withTimezone: true,
     }),
+    templateId: uuid("template_id"),
+    templateKnodeId: text("template_knode_id"),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
@@ -47,6 +51,12 @@ export const readmodelPurpose = purposeSchema.table(
   },
   (table) => [
     unique("purpose_id_metadata_v_unique").on(table.id, table.metadataVersion),
+    check(
+      "purpose_template_fields_check",
+      sql`(
+        (${table.templateId} IS NULL) = (${table.templateKnodeId} IS NULL)
+      )`,
+    ),
   ],
 );
 

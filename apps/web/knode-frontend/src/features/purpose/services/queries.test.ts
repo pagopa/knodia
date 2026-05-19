@@ -6,6 +6,8 @@ import {
   consumerArchivedPurposesQuery,
   consumerPurposesByEserviceQuery,
   consumerPurposesQuery,
+  producerArchivedPurposesQuery,
+  producerPurposesQuery,
 } from "./queries";
 
 describe("consumer purposes queries", () => {
@@ -29,6 +31,24 @@ describe("consumer purposes queries", () => {
 
   it("filters the archive list to the Archived state only", () => {
     const opts = consumerArchivedPurposesQuery(0);
+
+    expect(opts.queryKey[0]).toMatchObject({
+      query: { state: ["Archived"] },
+    });
+  });
+});
+
+describe("producer purposes queries", () => {
+  it("filters the active list to Active and Suspended states", () => {
+    const opts = producerPurposesQuery(0);
+
+    expect(opts.queryKey[0]).toMatchObject({
+      query: { state: ["Active", "Suspended"] },
+    });
+  });
+
+  it("filters the archive list to the Archived state only", () => {
+    const opts = producerArchivedPurposesQuery(0);
 
     expect(opts.queryKey[0]).toMatchObject({
       query: { state: ["Archived"] },

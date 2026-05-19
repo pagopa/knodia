@@ -8,6 +8,7 @@ import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   KnodeId,
   OrganizationId,
   UserId,
@@ -19,6 +20,7 @@ import { match } from "ts-pattern";
 export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
+  | KnodeApiAuthData
   | UISessionAuthData;
 
 export interface ExternalUISessionAuthData {
@@ -45,6 +47,18 @@ export interface ExternalUISessionAuthData {
 
 export interface InternalAuthData {
   tokenType: "internal";
+}
+
+export interface KnodeApiAuthData {
+  keychain: {
+    id: KnodeApiKeychainId;
+    knodeId: KnodeId;
+  };
+  organization: {
+    id: OrganizationId;
+    knodeId: KnodeId;
+  };
+  tokenType: "knode-api";
 }
 
 export interface UISessionAuthData {
@@ -95,6 +109,20 @@ export function extractAuthDataFromToken(
         },
         scope: c.scope,
         tokenType: "external-ui-session",
+      }),
+    )
+    .with(
+      { type: "knode-api" },
+      (c): KnodeApiAuthData => ({
+        keychain: {
+          id: c.keychain.id,
+          knodeId: c.keychain.knode_id,
+        },
+        organization: {
+          id: c.organization.id,
+          knodeId: c.organization.knode_id,
+        },
+        tokenType: "knode-api",
       }),
     )
     .exhaustive();

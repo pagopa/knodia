@@ -5,6 +5,7 @@ import type {
   ExternalUISessionMagicLinkTokenClaims,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
+  KnodeApiAccessTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 import type { PublicKeyJwk } from "@knodia/common-models/crypto";
@@ -14,7 +15,7 @@ import { type SignCommand } from "@aws-sdk/client-kms";
 import {
   type ExternalResource,
   generateExternalId,
-  unsafeBrandExternalId,
+  toExternalResource,
 } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
@@ -22,6 +23,7 @@ import {
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  type KnodeApiKeychainId,
   KnodeId,
   type OrganizationId,
   type PurposeId,
@@ -46,6 +48,7 @@ const generator = tokenGeneratorBuilder(testKmsClient);
 
 // E-service access token data
 const consumerKeychainId = generateId<ConsumerKeychainId>();
+const knodeApiKeychainId = generateId<KnodeApiKeychainId>();
 const consumer: ExternalResource<OrganizationId> = {
   id: generateExternalId(),
   knodeId: "Lynx",
@@ -66,12 +69,10 @@ const externalUISessionResourceInput = {
     id: unsafeBrandId<AgreementId>("770e8400-e29b-41d4-a716-446655440000"),
     knodeId: KnodeId.enum.Orion,
   },
-  consumer: {
-    id: unsafeBrandExternalId<OrganizationId>(
-      "880e8400-e29b-41d4-a716-446655440000",
-    ),
-    knodeId: KnodeId.enum.Lynx,
-  },
+  consumer: toExternalResource<OrganizationId>(
+    "880e8400-e29b-41d4-a716-446655440000",
+    KnodeId.enum.Lynx,
+  ),
   eservice: {
     id: unsafeBrandId<EserviceId>("990e8400-e29b-41d4-a716-446655440000"),
     knodeId: KnodeId.enum.Orion,
@@ -234,6 +235,32 @@ const testCases = [
       }),
     name: "generateDpopEserviceAccessToken",
     tokenDuration: eserviceVersion.accessTokenDuration,
+  },
+  {
+    expectedPayload: {
+      aud: ["my-audience"],
+      client_id: knodeApiKeychainId,
+      exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
+      iat: MOCK_NOW_SECONDS,
+      iss: "my-issuer",
+      jti: expect.any(String),
+      keychain: { id: knodeApiKeychainId, knode_id: "Orion" as const },
+      nbf: MOCK_NOW_SECONDS,
+      organization: { id: producer.id, knode_id: "Orion" as const },
+      sub: knodeApiKeychainId,
+      type: "knode-api",
+    } satisfies KnodeApiAccessTokenClaims,
+    generate: () =>
+      generator.generateKnodeApiAccessToken({
+        audience: ["my-audience"],
+        issuer: "my-issuer",
+        keychain: { id: knodeApiKeychainId, knodeId: "Orion" },
+        kid: KID,
+        organization: { id: producer.id, knodeId: "Orion" },
+        secondsDuration: SECONDS_DURATION,
+      }),
+    name: "generateKnodeApiAccessToken",
+    tokenDuration: SECONDS_DURATION,
   },
   {
     expectedPayload: {

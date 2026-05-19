@@ -31,13 +31,15 @@ jobs:
     steps:
       - id: env
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "environment=ecr-test" >> "$GITHUB_OUTPUT"
-            echo "env_name=test" >> "$GITHUB_OUTPUT"
-          else
-            echo "environment=ecr-dev" >> "$GITHUB_OUTPUT"
-            echo "env_name=dev" >> "$GITHUB_OUTPUT"
-          fi
+          # if [[ "${{ github.ref_type }}" == "tag" ]]; then
+          #   echo "environment=ecr-test" >> "$GITHUB_OUTPUT"
+          #   echo "env_name=test" >> "$GITHUB_OUTPUT"
+          # else
+          #   echo "environment=ecr-dev" >> "$GITHUB_OUTPUT"
+          #   echo "env_name=dev" >> "$GITHUB_OUTPUT"
+          # fi
+          echo "environment=ecr-dev" >> "$GITHUB_OUTPUT"
+          echo "env_name=dev" >> "$GITHUB_OUTPUT"
 
   terraform:
     name: Terraform Apply

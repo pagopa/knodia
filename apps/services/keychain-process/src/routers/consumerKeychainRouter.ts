@@ -2,8 +2,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import {
+  type PurposeId,
   unsafeBrandId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
@@ -488,7 +489,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
-        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -572,7 +572,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain or Member not found",
+        }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -591,10 +593,10 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         {
           consumerKeychainPurpose: {
             consumerKeychainId: req.params.consumerKeychainId,
-            purpose: {
-              id: unsafeBrandExternalId(req.body.purposeId),
-              knodeId: req.body.knodeId,
-            },
+            purpose: toExternalResource<PurposeId>(
+              req.body.purposeId,
+              req.body.knodeId,
+            ),
           },
           headers: getKnodiaServiceHeaders(req, ctx.correlationId),
         },

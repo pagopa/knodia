@@ -28,7 +28,9 @@ import { eserviceTemplateRouter } from "./routers/eservice-template/eserviceTemp
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
-import { userRouter } from "./routers/keychain/userRouter.ts";
+import { knodeApiKeychainRouter } from "./routers/keychain/knodeApiKeychainRouter.ts";
+import { operatorRouter } from "./routers/operatorRouter.ts";
+import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
@@ -81,16 +83,24 @@ export function buildAppFromConfig(
             name: apiTags.consumerKeychain,
           },
           {
+            description: "Knode API Keychains routes",
+            name: apiTags.knodeApiKeychain,
+          },
+          {
             description: "Purpose routes",
             name: apiTags.purpose,
           },
           {
-            description: "User routes",
-            name: apiTags.user,
+            description: "Operator routes",
+            name: apiTags.operator,
           },
           {
             description: "E-service Templates routes",
             name: apiTags.eserviceTemplate,
+          },
+          {
+            description: "Purpose Templates routes",
+            name: apiTags.purposeTemplate,
           },
         ],
       },
@@ -120,13 +130,20 @@ export function buildAppFromConfig(
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService, cookieConfig: config.cookie });
+  app.register(authRouter, {
+    authCookieAllowedOrigins: config.authCookieAllowedOrigins,
+    authService,
+    cookieConfig: config.cookie,
+  });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceTemplateRouter);
+    protectedApp.register(purposeTemplateRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
     protectedApp.register(eserviceProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       config,
@@ -137,11 +154,16 @@ export function buildAppFromConfig(
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
-    protectedApp.register(userRouter, {
+    protectedApp.register(knodeApiKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      pollingService,
+    });
+    protectedApp.register(operatorRouter, {
+      organizationProcessClient: clients.organizationProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,
@@ -182,7 +204,11 @@ export function buildAppFromConfig(
     });
     protectedApp.register(agreementExternalRouter, {
       agreementProcessClient: clients.agreementProcessClient,
+      config,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
       pollingService,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
 

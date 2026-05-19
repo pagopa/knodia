@@ -16,6 +16,7 @@ import {
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
   API_KeyFormat,
+  API_KnodeApiKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -82,6 +83,14 @@ export const API_ConsumerKeychainSeed = z
   .meta({ id: "ConsumerKeychainSeed" });
 export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
 
+export const API_KnodeApiKeychainSeed = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.optional(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "KnodeApiKeychainSeed" });
+export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+
 export const API_ConsumerKeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
@@ -90,6 +99,16 @@ export const API_ConsumerKeychainPatch = z
   .meta({ id: "ConsumerKeychainPatch" });
 export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
+>;
+
+export const API_KnodeApiKeychainPatch = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.nullable().optional(),
+    name: API_KeychainLocalizedName.optional(),
+  })
+  .meta({ id: "KnodeApiKeychainPatch" });
+export type API_KnodeApiKeychainPatch = z.infer<
+  typeof API_KnodeApiKeychainPatch
 >;
 
 export const API_KeychainKeySeed = z
@@ -129,19 +148,6 @@ export const API_User = z
   })
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;
-
-export const API_OrganizationUser = API_User.extend({
-  isTechnical: z.boolean().meta({
-    description:
-      "Whether the User has the technical role within the Organization",
-  }),
-}).meta({ id: "OrganizationUser" });
-export type API_OrganizationUser = z.infer<typeof API_OrganizationUser>;
-
-export const API_OrganizationUsers = z
-  .array(API_OrganizationUser)
-  .meta({ id: "OrganizationUsers" });
-export type API_OrganizationUsers = z.infer<typeof API_OrganizationUsers>;
 
 export const API_KeychainMemberSeed = z
   .strictObject({
@@ -198,7 +204,6 @@ export const API_ConsumerKeychainKeyPathParams = z
     keyId: z.string(),
   })
   .extend(API_ConsumerKeychainIdPathParam.shape);
-
 export type API_ConsumerKeychainKeyPathParams = z.infer<
   typeof API_ConsumerKeychainKeyPathParams
 >;
@@ -231,3 +236,43 @@ export const API_KeychainMembers = z
   })
   .meta({ id: "KeychainMembers" });
 export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;
+
+export const API_KnodeApiKeychainKeyPathParams =
+  API_KnodeApiKeychainIdPathParam.extend({
+    keyId: z.string(),
+  });
+export type API_KnodeApiKeychainKeyPathParams = z.infer<
+  typeof API_KnodeApiKeychainKeyPathParams
+>;
+
+export const API_KnodeApiKeychainMemberPathParams =
+  API_KnodeApiKeychainIdPathParam.extend({
+    userId: API_UserId,
+  });
+export type API_KnodeApiKeychainMemberPathParams = z.infer<
+  typeof API_KnodeApiKeychainMemberPathParams
+>;
+
+export const API_GetKnodeApiKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainMembersQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainMembersQueryParams
+>;
+
+export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainKeysQueryParams
+>;
+
+export const API_GetKnodeApiKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    name: z.string().optional().meta({
+      description: "Filter by Knode API Keychain name",
+    }),
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
+  });
+export type API_GetKnodeApiKeychainsQueryParams = z.infer<
+  typeof API_GetKnodeApiKeychainsQueryParams
+>;

@@ -1,6 +1,8 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { InjectOptions } from "fastify";
+
 import {
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
@@ -30,7 +32,7 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-import { app } from "./setup.ts";
+import { app, TEST_ALLOWED_ORIGIN } from "./setup.ts";
 
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
@@ -59,6 +61,16 @@ function getSetCookie(
     }
   }
   return result;
+}
+
+function injectWithAllowedOrigin(options: InjectOptions) {
+  return app.inject({
+    ...options,
+    headers: {
+      origin: TEST_ALLOWED_ORIGIN,
+      ...options.headers,
+    },
+  });
 }
 
 function makeCognitoPayload(
@@ -125,17 +137,63 @@ describe("auth integration", () => {
     vi.clearAllMocks();
   });
 
+  describe("auth cookie Origin guard", () => {
+    it("returns 403 when the Origin header is missing", async () => {
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/uiSession",
+      });
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it("returns 403 when the Origin header is not allowed", async () => {
+      const response = await injectWithAllowedOrigin({
+        headers: { origin: "https://evil.knodia.org" },
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/uiSession",
+      });
+
+      expect(response.statusCode).toBe(403);
+    });
+
+    it("returns 403 on /auth/uiSession/refresh without touching the refresh cookie", async () => {
+      const response = await app.inject({
+        cookies: { refresh: "refresh-jwt" },
+        method: "POST",
+        url: "/auth/uiSession/refresh",
+      });
+
+      expect(response.statusCode).toBe(403);
+      expect(mockDecodeJwt).not.toHaveBeenCalled();
+      expect(mockJwtVerify).not.toHaveBeenCalled();
+    });
+
+    it("returns 403 on /auth/logout without revoking the refresh cookie", async () => {
+      const response = await app.inject({
+        cookies: { refresh: "refresh-jwt" },
+        method: "POST",
+        url: "/auth/logout",
+      });
+
+      expect(response.statusCode).toBe(403);
+      expect(mockDecodeJwt).not.toHaveBeenCalled();
+    });
+  });
+
   // --- Login ---
 
-  describe("POST /auth/ui-session", () => {
+  describe("POST /auth/uiSession", () => {
     it("generates valid session and refresh tokens on successful login", async () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -160,10 +218,10 @@ describe("auth integration", () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const refreshCookie = getSetCookie(response, "refresh");
@@ -172,6 +230,7 @@ describe("auth integration", () => {
       expect(refreshCookie!["httponly"]).toBe("true");
       expect(refreshCookie!["samesite"]).toBe("Strict");
       expect(refreshCookie!["path"]).toBe("/auth");
+      expect(refreshCookie!["domain"]).toBeUndefined();
 
       const refreshPayload = UISessionRefreshTokenClaims.parse(
         parseJwtPayload(refreshCookie!["value"]!),
@@ -185,10 +244,10 @@ describe("auth integration", () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      await app.inject({
+      await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(mockKmsSend).toHaveBeenCalledTimes(2);
@@ -202,10 +261,10 @@ describe("auth integration", () => {
     it("returns 401 when Cognito JWT verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "bad-token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -217,10 +276,10 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -229,10 +288,10 @@ describe("auth integration", () => {
     it("returns 401 when groups is empty", async () => {
       setupValidCognitoToken({ "cognito:groups": [] });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -243,10 +302,10 @@ describe("auth integration", () => {
         "cognito:groups": ["test-group", "test-group-2"],
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -257,10 +316,10 @@ describe("auth integration", () => {
         "custom:roles": "",
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -271,10 +330,10 @@ describe("auth integration", () => {
         "custom:roles": "invalidrole1,invalidrole2",
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -285,10 +344,10 @@ describe("auth integration", () => {
         "custom:roles": "administrative,invalidrole",
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -300,10 +359,10 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -317,10 +376,10 @@ describe("auth integration", () => {
     it("returns 401 when token_use is access", async () => {
       setupValidCognitoToken({ token_use: "access" });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -329,10 +388,10 @@ describe("auth integration", () => {
     it("returns 401 when token_use is missing", async () => {
       setupValidCognitoToken({ token_use: undefined });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -342,10 +401,10 @@ describe("auth integration", () => {
       setupValidCognitoToken({ "custom:roles": "administrative, technical" });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(200);
@@ -367,10 +426,10 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(401);
@@ -380,10 +439,10 @@ describe("auth integration", () => {
       setupValidCognitoToken();
       mockKmsSend.mockResolvedValue({ Signature: undefined });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       expect(response.statusCode).toBe(500);
@@ -397,10 +456,10 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const body = response.json<{ uiSessionToken: string }>();
@@ -421,10 +480,10 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         payload: { oidcToken: "token" },
-        url: "/auth/ui-session",
+        url: "/auth/uiSession",
       });
 
       const body = response.json<{ uiSessionToken: string }>();
@@ -438,15 +497,15 @@ describe("auth integration", () => {
 
   // --- Refresh ---
 
-  describe("POST /auth/ui-session/refresh", () => {
+  describe("POST /auth/uiSession/refresh", () => {
     it("reads refresh token from cookie and returns new session", async () => {
       setupValidRefreshToken();
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "valid-refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(200);
@@ -480,9 +539,9 @@ describe("auth integration", () => {
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -491,10 +550,10 @@ describe("auth integration", () => {
     it("returns 401 when refresh token verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -506,10 +565,10 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -518,10 +577,10 @@ describe("auth integration", () => {
     it("returns 401 when refresh token has wrong type", async () => {
       setupValidRefreshToken({ type: "ui-session" });
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -533,19 +592,19 @@ describe("auth integration", () => {
       setupKmsSignature();
 
       // First use succeeds
-      const first = await app.inject({
+      const first = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(first.statusCode).toBe(200);
 
       // Same JTI again — replay detected
       setupValidRefreshToken({ jti: fixedJti });
-      const second = await app.inject({
+      const second = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(second.statusCode).toBe(401);
     });
@@ -554,18 +613,18 @@ describe("auth integration", () => {
       setupKmsSignature();
 
       setupValidRefreshToken({ jti: "jti-1" });
-      const first = await app.inject({
+      const first = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt-1" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(first.statusCode).toBe(200);
 
       setupValidRefreshToken({ jti: "jti-2" });
-      const second = await app.inject({
+      const second = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt-2" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(second.statusCode).toBe(200);
     });
@@ -579,10 +638,10 @@ describe("auth integration", () => {
         });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(200);
@@ -593,10 +652,10 @@ describe("auth integration", () => {
         .mockRejectedValueOnce(new Error("key not found"))
         .mockRejectedValueOnce(new Error("invalid signature"));
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       expect(response.statusCode).toBe(401);
@@ -606,10 +665,10 @@ describe("auth integration", () => {
       setupValidRefreshToken();
       setupKmsSignature();
 
-      await app.inject({
+      await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       // With 2 wellKnownUrls, jwtVerify should be called for both JWKS sets
@@ -624,10 +683,10 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
 
       const { uiSessionToken } = response.json<{ uiSessionToken: string }>();
@@ -645,7 +704,7 @@ describe("auth integration", () => {
     it("clears the refresh cookie", async () => {
       mockDecodeJwt.mockReturnValue(makeRefreshPayload());
 
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         cookies: { refresh: "some-refresh-jwt" },
         method: "POST",
         url: "/auth/logout",
@@ -660,13 +719,14 @@ describe("auth integration", () => {
       expect(refreshCookie!["max-age"]).toBe("0");
       expect(refreshCookie!["httponly"]).toBe("true");
       expect(refreshCookie!["path"]).toBe("/auth");
+      expect(refreshCookie!["domain"]).toBeUndefined();
     });
 
     it("revokes the refresh token JTI in the token store", async () => {
       const jti = `revoke-test-${crypto.randomUUID()}`;
       mockDecodeJwt.mockReturnValue(makeRefreshPayload({ jti }));
 
-      await app.inject({
+      await injectWithAllowedOrigin({
         cookies: { refresh: "jwt-with-jti" },
         method: "POST",
         url: "/auth/logout",
@@ -675,16 +735,16 @@ describe("auth integration", () => {
       // After logout, trying to refresh with the same JTI should fail
       setupValidRefreshToken({ jti });
       setupKmsSignature();
-      const refreshResponse = await app.inject({
+      const refreshResponse = await injectWithAllowedOrigin({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
-        url: "/auth/ui-session/refresh",
+        url: "/auth/uiSession/refresh",
       });
       expect(refreshResponse.statusCode).toBe(401);
     });
 
     it("succeeds even without a refresh cookie", async () => {
-      const response = await app.inject({
+      const response = await injectWithAllowedOrigin({
         method: "POST",
         url: "/auth/logout",
       });

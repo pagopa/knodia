@@ -30,9 +30,14 @@ import {
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
+import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { API_PurposeState } from "@knodia/purpose-models/api";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -76,6 +81,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  organizationProcessClient: OrganizationProcessClient;
   pollingService: PollingService;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -84,7 +90,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
 > = async (
   fastify,
-  { keychainProcessClient, pollingService, remoteResourcesManagerClient },
+  {
+    keychainProcessClient,
+    organizationProcessClient,
+    pollingService,
+    remoteResourcesManagerClient,
+  },
 ) => {
   const retrieveConsumerKeychainById = async (
     consumerKeychainId: string,
@@ -154,22 +165,22 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
       );
 
-      const [{ data: keys }, { data: users }] = await Promise.all([
+      const [{ data: keys }, { data: operator }] = await Promise.all([
         keychainProcessApi.getConsumerKeychainKeys({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { consumerKeychainId: req.params.consumerKeychainId },
           query: { limit, offset },
         }),
-        keychainProcessApi.getOrganizationUsers({
-          client: keychainProcessClient,
+        organizationProcessApi.getOperators({
+          client: organizationProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
         }),
       ]);
 
       res.send({
         pagination: keys.pagination,
-        results: keys.results.map((key) => toAPI_KeychainKey(key, users)),
+        results: keys.results.map((key) => toAPI_KeychainKey(key, operator)),
       });
     },
     method: "GET",
@@ -442,7 +453,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
-        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -711,20 +721,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: ownerId } = getUISessionAuthData(authData);
+      const { eserviceId, limit, offset, purpose } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       logger.info(
         { ownerId, requestQuery: req.query },
         `Getting Consumer Keychains with query parameters for owner ${ownerId}`,
       );
-
-      const { limit, offset, purpose } = req.query;
-      const headers = getKnodiaServiceHeaders(req, correlationId);
-
-      const { data } = await keychainProcessApi.getConsumerKeychains({
-        client: keychainProcessClient,
-        headers,
-        query: { limit, offset, ownerId, purpose },
-      });
 
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
@@ -749,6 +752,70 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           membersCount: members.pagination.total,
         });
       }
+
+      if (eserviceId !== undefined) {
+        // TODO(KN-473): paginate to fetch all purposes if >50 exist,
+        // otherwise the linked Consumer Keychains list will be undercounted
+        const { data: purposes } = await remoteResourcesManagerApi.getPurposes({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: {
+            eserviceId,
+            limit: 50,
+            offset: 0,
+            state: [
+              API_PurposeState.enum.Active,
+              API_PurposeState.enum.Suspended,
+            ],
+          },
+        });
+
+        // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
+        // otherwise the linked Consumer Keychains list will be undercounted
+        const keychainResponses = await Promise.all(
+          purposes.results.map((p) =>
+            keychainProcessApi.getConsumerKeychains({
+              client: keychainProcessClient,
+              headers,
+              query: {
+                limit: 50,
+                offset: 0,
+                ownerId,
+                purpose: `${p.knodeId}:${p.id}`,
+              },
+            }),
+          ),
+        );
+
+        const dedupedKeychains = new Map<string, keychainProcessApi.Keychain>();
+        for (const { data } of keychainResponses) {
+          for (const keychain of data.results) {
+            dedupedKeychains.set(keychain.id, keychain);
+          }
+        }
+
+        const sortedKeychains = Array.from(dedupedKeychains.values()).sort(
+          (a, b) =>
+            b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id),
+        );
+
+        const pageSlice = sortedKeychains.slice(offset, offset + limit);
+
+        res.send({
+          // TODO(KN-473): `total` is capped at the fan-out limit and may
+          // under-count when an e-service has more linked purposes/keychains
+          // than the upstream calls fetch.
+          pagination: { limit, offset, total: sortedKeychains.length },
+          results: await Promise.all(pageSlice.map(enhanceKeychainWithCounts)),
+        });
+        return;
+      }
+
+      const { data } = await keychainProcessApi.getConsumerKeychains({
+        client: keychainProcessClient,
+        headers,
+        query: { limit, offset, ownerId, purpose },
+      });
 
       res.send({
         pagination: data.pagination,

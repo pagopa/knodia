@@ -12,6 +12,7 @@ import type {
   AuthData,
   ExternalUISessionAuthData,
   InternalAuthData,
+  KnodeApiAuthData,
   UISessionAuthData,
 } from "./authData.ts";
 
@@ -26,6 +27,10 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   | (Extract<Rules[number], { tokenType: "internal" }> extends never
       ? never
       : InternalAuthData)
+  // If there's a rule with tokenType "knode-api", add KnodeApiAuthData
+  | (Extract<Rules[number], { tokenType: "knode-api" }> extends never
+      ? never
+      : KnodeApiAuthData)
   // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
@@ -34,6 +39,7 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
 type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
+  | { tokenType: "knode-api" }
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 /**
@@ -100,6 +106,9 @@ function assertAuthDataAdmitted<
     .with({ tokenType: "external-ui-session" }, (data) =>
       assertExternalUISessionTokenAdmitted(data, admittedRules),
     )
+    .with({ tokenType: "knode-api" }, () =>
+      assertKnodeApiTokenAdmitted(admittedRules),
+    )
     .exhaustive();
 }
 
@@ -134,6 +143,14 @@ function assertInternalTokenAdmitted(
 ): void {
   if (!admittedRules.some((rule) => rule.tokenType === "internal")) {
     throw forbiddenError(`Invalid token type "internal" for this operation`);
+  }
+}
+
+function assertKnodeApiTokenAdmitted(
+  admittedRules: NonEmptyArray<AuthorizationRule>,
+): void {
+  if (!admittedRules.some((rule) => rule.tokenType === "knode-api")) {
+    throw forbiddenError(`Invalid token type "knode-api" for this operation`);
   }
 }
 

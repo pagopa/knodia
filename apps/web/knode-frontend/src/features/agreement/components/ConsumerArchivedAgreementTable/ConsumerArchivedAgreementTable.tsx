@@ -11,7 +11,7 @@ import {
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArchiveIcon } from "@phosphor-icons/react";
+import { ArchiveIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 
 import { RouterLink } from "@/components/routerLinks";
 import { formatNumericDate } from "@/utils/formatters";
@@ -31,7 +31,7 @@ export function ConsumerArchivedAgreementTable({
     return (
       <Empty
         description="Archived Agreements will be displayed here."
-        icon={<ArchiveIcon />}
+        icon={<SelectionPlusIcon />}
         kind="brand-soft"
         title="You haven't archived any Agreement yet."
       />

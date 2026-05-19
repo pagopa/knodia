@@ -536,6 +536,13 @@ export type CompactAgreement = {
     state: AgreementState;
 };
 
+export type AgreementActivationDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    producer: CompactOrganization;
+};
+
 /**
  * Seed data to create a new Agreement
  */
@@ -554,6 +561,7 @@ export type ProducerAgreement = {
     hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
+    updatedAt: string;
 };
 
 export type ProducerAgreementDetails = {
@@ -561,11 +569,11 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+    updatedAt: string;
     latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
-    updatedAt: string;
 };
 
 export type ProducerAgreements = {
@@ -679,6 +687,14 @@ export type EserviceTemplates = Array<EserviceTemplate>;
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
+ * Reference to a Purpose statement template
+ */
+export type PurposeTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Name of the Purpose
  */
 export type LocalizedPurposeName = {
@@ -753,6 +769,11 @@ export type ConsumerKeychainPurposeLinkSeed = {
 };
 
 export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
+};
+
+export type KnodeApiKeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
 };
@@ -845,18 +866,6 @@ export type User = {
     username: string;
 };
 
-export type OrganizationUser = {
-    email: string;
-    id: UserId;
-    username: string;
-    /**
-     * Whether the User has the technical role within the Organization
-     */
-    isTechnical: boolean;
-};
-
-export type OrganizationUsers = Array<OrganizationUser>;
-
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
@@ -868,6 +877,47 @@ export type KeychainMembers = {
 export type CreatedKeyResource = {
     kid: KeyId;
 };
+
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
+export type Operator = {
+    email: string;
+    id: UserId;
+    roles: Array<'administrative' | 'technical'>;
+    username: string;
+};
+
+export type Operators = Array<Operator>;
+
+export type PurposeTemplate = {
+    description: LocalizedPurposeDescription;
+    eserviceId?: string;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplateDetails = {
+    createdAt: string;
+    description: LocalizedPurposeDescription;
+    eserviceId?: string;
+    formAnswersJson: PurposeFormAnswers;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: LocalizedPurposeName;
+};
+
+export type PurposeTemplates = Array<PurposeTemplate>;
 
 /**
  * Seed data to create a new Purpose
@@ -883,6 +933,7 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+    template?: PurposeTemplateReference;
 };
 
 export type ConsumerPurpose = {
@@ -920,6 +971,7 @@ export type ProducerPurpose = {
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
+    updatedAt: string;
 };
 
 export type ProducerPurposes = {
@@ -949,16 +1001,6 @@ export type PurposeDetails = {
     updatedAt: string;
 };
 
-/**
- * Organization details for the current session, including attributes
- */
-export type SessionOrganization = {
-    attributes: Array<Attribute>;
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
-
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -979,7 +1021,7 @@ export type CreateSessionData = {
     body: SessionRequest;
     path?: never;
     query?: never;
-    url: '/auth/ui-session';
+    url: '/auth/uiSession';
 };
 
 export type CreateSessionErrors = {
@@ -991,6 +1033,10 @@ export type CreateSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1008,7 +1054,7 @@ export type RefreshSessionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/ui-session/refresh';
+    url: '/auth/uiSession/refresh';
 };
 
 export type RefreshSessionErrors = {
@@ -1016,6 +1062,10 @@ export type RefreshSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1035,6 +1085,15 @@ export type LogoutData = {
     query?: never;
     url: '/auth/logout';
 };
+
+export type LogoutErrors = {
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
     /**
@@ -1190,6 +1249,83 @@ export type DownloadEserviceTemplateInterfaceResponses = {
 };
 
 export type DownloadEserviceTemplateInterfaceResponse = DownloadEserviceTemplateInterfaceResponses[keyof DownloadEserviceTemplateInterfaceResponses];
+
+export type GetPurposeTemplatesData = {
+    body?: never;
+    path?: never;
+    query: {
+        eserviceId?: string;
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates';
+};
+
+export type GetPurposeTemplatesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposeTemplatesError = GetPurposeTemplatesErrors[keyof GetPurposeTemplatesErrors];
+
+export type GetPurposeTemplatesResponses = {
+    /**
+     * Purpose Templates retrieved successfully
+     */
+    200: PurposeTemplates;
+};
+
+export type GetPurposeTemplatesResponse = GetPurposeTemplatesResponses[keyof GetPurposeTemplatesResponses];
+
+export type GetPurposeTemplateData = {
+    body?: never;
+    path: {
+        purposeTemplateId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposeTemplates/{purposeTemplateId}';
+};
+
+export type GetPurposeTemplateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose Template not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeTemplateError = GetPurposeTemplateErrors[keyof GetPurposeTemplateErrors];
+
+export type GetPurposeTemplateResponses = {
+    /**
+     * Purpose Template retrieved successfully
+     */
+    200: PurposeTemplateDetails;
+};
+
+export type GetPurposeTemplateResponse = GetPurposeTemplateResponses[keyof GetPurposeTemplateResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -1691,10 +1827,6 @@ export type RemoveConsumerKeychainKeyErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
@@ -1761,7 +1893,11 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.
          */
         purpose?: string;
     };
@@ -2336,14 +2472,23 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
 
-export type GetOrganizationUsersData = {
+export type GetKnodeApiKeychainsData = {
     body?: never;
     path?: never;
-    query?: never;
-    url: '/users';
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodeApiKeychains';
 };
 
-export type GetOrganizationUsersErrors = {
+export type GetKnodeApiKeychainsErrors = {
     /**
      * Bad Request
      */
@@ -2358,16 +2503,82 @@ export type GetOrganizationUsersErrors = {
     403: Problem;
 };
 
-export type GetOrganizationUsersError = GetOrganizationUsersErrors[keyof GetOrganizationUsersErrors];
+export type GetKnodeApiKeychainsError = GetKnodeApiKeychainsErrors[keyof GetKnodeApiKeychainsErrors];
 
-export type GetOrganizationUsersResponses = {
+export type GetKnodeApiKeychainsResponses = {
     /**
-     * Organization Users retrieved successfully
+     * Knode API Keychains retrieved successfully
      */
-    200: OrganizationUsers;
+    200: Keychains;
 };
 
-export type GetOrganizationUsersResponse = GetOrganizationUsersResponses[keyof GetOrganizationUsersResponses];
+export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
+
+export type CreateKnodeApiKeychainData = {
+    body: KnodeApiKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/knodeApiKeychains';
+};
+
+export type CreateKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
+
+export type CreateKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
+
+export type GetOperatorsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/operators';
+};
+
+export type GetOperatorsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
+
+export type GetOperatorsResponses = {
+    /**
+     * Operators retrieved successfully
+     */
+    200: Operators;
+};
+
+export type GetOperatorsResponse = GetOperatorsResponses[keyof GetOperatorsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -3233,6 +3444,10 @@ export type GetProducerAgreementsData = {
          * Filter to only Agreements updated within the recent update window
          */
         recentlyUpdated?: 'true' | 'false';
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/producer/agreements';
 };
@@ -3573,11 +3788,9 @@ export type SuspendPurposeByProducerResponse = SuspendPurposeByProducerResponses
 
 export type ActivateAgreementData = {
     body?: never;
-    path: {
-        agreementId: string;
-    };
+    path?: never;
     query?: never;
-    url: '/external/agreements/{agreementId}/activate';
+    url: '/external/agreementActivation/activate';
 };
 
 export type ActivateAgreementErrors = {
@@ -3613,3 +3826,40 @@ export type ActivateAgreementResponses = {
 };
 
 export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
+
+export type GetAgreementActivationDetailsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/external/agreementActivation/details';
+};
+
+export type GetAgreementActivationDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementActivationDetailsError = GetAgreementActivationDetailsErrors[keyof GetAgreementActivationDetailsErrors];
+
+export type GetAgreementActivationDetailsResponses = {
+    /**
+     * Agreement activation details retrieved successfully
+     */
+    200: AgreementActivationDetails;
+};
+
+export type GetAgreementActivationDetailsResponse = GetAgreementActivationDetailsResponses[keyof GetAgreementActivationDetailsResponses];

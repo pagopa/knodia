@@ -19,19 +19,12 @@ import type {
 } from "@knodia/keychain-models";
 
 import {
-  genericInternalError,
-  InternalError,
-} from "@knodia/common-models/errors";
-import {
   type ConsumerKeychainId,
   generateId,
   type KeyId,
   type PurposeId,
-  unsafeBrandKeyId,
-  unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
-import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
 import {
   remoteResourcesManagerApi,
@@ -52,13 +45,6 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
-  consumerKeychainNotFound,
-  jwkDecodingError,
-  keyNotFoundInKeychain,
-  userAlreadyMember,
-  userNotFound,
-} from "../models/errors.ts";
-import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainKeyAddedV1Event,
@@ -68,23 +54,24 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
-} from "../models/keychainEventFactory.ts";
+} from "../models/consumerKeychainEventFactory.ts";
 import {
   retrieveConsumerKeychain,
-  retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
+  retrieveFlatConsumerKeychain,
+  retrieveKeychainKey,
+  retrieveKeychainUser,
 } from "../utils/retrievalUtils.ts";
 import {
-  assertKeychainKeysCountIsBelowThreshold,
-  assertKeyIsUnique,
-  assertNotX509Certificate,
+  addKeyToKeychain,
+  addMemberToKeychain,
+  removeKeyFromKeychain,
+  removeMemberFromKeychain,
+} from "../utils/utils.ts";
+import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserBelongsToOrganization,
-  assertUserHasTechnicalRole,
-  assertUserIsAllowedToPerformKeychainOperation,
-  assertUserIsAllowedToRemoveKey,
   assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
@@ -99,24 +86,6 @@ export function consumerKeychainServiceBuilder(
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
-  async function retrieveUser(
-    userId: UserId,
-    consumerKeychainId: ConsumerKeychainId,
-  ): Promise<IdmUser> {
-    const user = await cognitoIdmClient.getUserById(userId);
-    if (!user) {
-      /**
-       * This should not happen as users are validated when added as members.
-       * If it does happen, it means there's a data inconsistency that should be investigated.
-       * Hence, we throw a generic internal error.
-       */
-      throw genericInternalError(
-        `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
-      );
-    }
-    return user;
-  }
-
   return {
     async addConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
@@ -132,44 +101,18 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      const userId = unsafeBrandUserId(member.userId);
-
-      if (consumerKeychain.data.users.some((user) => user.userId === userId)) {
-        throw userAlreadyMember(consumerKeychainId, userId);
-      }
-
-      const user = await cognitoIdmClient.getUserById(userId);
-
-      if (!user) {
-        throw userNotFound(userId);
-      }
-
-      await assertUserBelongsToOrganization(
-        user,
-        authData.organizationId,
-        cognitoIdmClient,
-      );
-      assertUserHasTechnicalRole(user);
-
-      const now = new Date();
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        updatedAt: now,
-        users: [
-          ...consumerKeychain.data.users,
-          { addedAt: now, userId: user.id },
-        ],
-      };
+      const { addedUserId, updatedKeychain: updatedConsumerKeychain } =
+        await addMemberToKeychain(
+          consumerKeychain.data,
+          member,
+          authData,
+          cognitoIdmClient,
+        );
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberAddedV1Event(
           updatedConsumerKeychain,
-          user.id,
+          addedUserId,
           correlationId,
           consumerKeychain.metadata.version,
         ),
@@ -189,7 +132,7 @@ export function consumerKeychainServiceBuilder(
       const { organizationId: ownerId } = authData;
 
       logger.info(
-        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId} `,
+        `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId}`,
       );
 
       const now = new Date();
@@ -242,10 +185,10 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychain>> {
+    ): Promise<WithMetadata<FlatConsumerKeychain>> {
       logger.info(`Getting Consumer Keychain with ID ${consumerKeychainId}`);
 
-      return await retrieveConsumerKeychain(
+      return await retrieveFlatConsumerKeychain(
         consumerKeychainId,
         readmodelService,
       );
@@ -265,7 +208,7 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      return retrieveConsumerKeychainKey(consumerKeychain.data, kid);
+      return retrieveKeychainKey(consumerKeychain.data, kid);
     },
 
     async getConsumerKeychainKeys(
@@ -278,12 +221,10 @@ export function consumerKeychainServiceBuilder(
         `Getting keys of Consumer Keychain with ID ${consumerKeychainId}`,
       );
 
-      const consumerKeychain =
-        await readmodelService.getFlatConsumerKeychainById(consumerKeychainId);
-
-      if (!consumerKeychain) {
-        throw consumerKeychainNotFound(consumerKeychainId);
-      }
+      const consumerKeychain = await retrieveFlatConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
@@ -321,7 +262,12 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      return await retrieveUser(userId, consumerKeychainId);
+      return await retrieveKeychainUser(
+        userId,
+        consumerKeychainId,
+        "Consumer Keychain",
+        cognitoIdmClient,
+      );
     },
 
     async getConsumerKeychainMembers(
@@ -351,7 +297,12 @@ export function consumerKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveUser(userId, consumerKeychainId),
+            retrieveKeychainUser(
+              userId,
+              consumerKeychainId,
+              "Consumer Keychain",
+              cognitoIdmClient,
+            ),
           ),
         ),
         totalCount: consumerKeychain.users.length,
@@ -475,30 +426,11 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedConsumerKeychain = removeKeyFromKeychain(
         consumerKeychain.data,
-      );
-
-      assertUserIsAllowedToRemoveKey(
         authData,
-        consumerKeychainId,
-        consumerKeychain.data.users,
+        kid,
       );
-
-      const keyToRemove = consumerKeychain.data.keys.find(
-        (key) => key.kid === kid,
-      );
-
-      if (!keyToRemove) {
-        throw keyNotFoundInKeychain(kid, consumerKeychainId);
-      }
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        keys: consumerKeychain.data.keys.filter((key) => key.kid !== kid),
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainKeyRemovedV1Event(
@@ -529,24 +461,8 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        updatedAt: new Date(),
-        users: consumerKeychain.data.users.filter(
-          (member) => member.userId !== userId,
-        ),
-      };
+      const { updatedKeychain: updatedConsumerKeychain } =
+        removeMemberFromKeychain(consumerKeychain.data, userId, authData);
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberRemovedV1Event(
@@ -654,65 +570,19 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsAllowedToPerformKeychainOperation(
-        authData.userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      assertKeychainKeysCountIsBelowThreshold(
-        consumerKeychainId,
-        config.maxKeysPerKeychain,
-        consumerKeychain.data.keys.length + 1,
-      );
-
-      const pemKey = decodeBase64Pem(keySeed.encodedPem);
-
-      assertNotX509Certificate(pemKey);
-
-      let jwk: JsonWebKey;
-      try {
-        jwk = createJWK({ pemKey });
-      } catch (error) {
-        if (error instanceof InternalError) {
-          throw jwkDecodingError(error.message);
-        }
-        throw error;
-      }
-
-      const kid = unsafeBrandKeyId(calculateKid(jwk));
-
-      await assertKeyIsUnique(
-        kid,
-        consumerKeychain.data.keys,
-        readmodelService,
-      );
-
-      const newKey: KeychainKey = {
-        algorithm: "RS256",
-        createdAt: new Date(),
-        encodedPem: keySeed.encodedPem,
-        format: "PublicKey",
-        kid,
-        name: keySeed.name,
-        userId: authData.userId,
-      };
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        keys: [...consumerKeychain.data.keys, newKey],
-        updatedAt: new Date(),
-      };
+      const { newKey, updatedKeychain: updatedConsumerKeychain } =
+        await addKeyToKeychain(
+          consumerKeychain.data,
+          authData,
+          keySeed,
+          readmodelService,
+          config.maxKeysPerKeychain,
+        );
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainKeyAddedV1Event(
           updatedConsumerKeychain,
-          kid,
+          newKey.kid,
           correlationId,
           consumerKeychain.metadata.version,
         ),

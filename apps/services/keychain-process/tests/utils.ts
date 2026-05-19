@@ -2,28 +2,74 @@ import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
   ConsumerKeychainV1,
+  KnodeApiKeychain,
 } from "@knodia/keychain-models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { generateId, type KnodeId } from "@knodia/common-models/ids";
+import { decodeBase64Pem } from "@knodia/crypto";
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
-import { toExpectIsoOrNull } from "@knodia/test-commons/utils";
+import {
+  createEcKeyPair,
+  createRsaKeyPair,
+  rsaX509CertificatePem,
+  toBase64,
+  toExpectIsoOrNull,
+} from "@knodia/test-commons/utils";
 import { expect } from "vitest";
 
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
-} from "../src/models/keychainEventFactory.ts";
-import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
+} from "../src/models/consumerKeychainEventFactory.ts";
+import { createKnodeApiKeychainCreatedV1Event } from "../src/models/knodeApiKeychainEventFactory.ts";
+import {
+  app,
+  consumerKeychainWriterService,
+  eventStoreDb,
+  knodeApiKeychainWriterService,
+} from "./setup.ts";
 
 export async function getAllKeychainEvents() {
-  return await eventStoreDb.select().from(eventStoreKeychainEvents);
+  return await eventStoreDb
+    .select()
+    .from(eventStoreKeychainEvents)
+    .orderBy(eventStoreKeychainEvents.sequenceNum);
 }
 
 export const injectAppRequest = createInjectAppRequest(() => app);
+
+export function createEcPublicKeyBase64() {
+  return toBase64(createEcKeyPair().publicKey);
+}
+
+export function createMultiplePublicKeysBase64() {
+  return toBase64(
+    [
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
+    ].join("\n"),
+  );
+}
+
+export function createRsaPrivateKeyBase64() {
+  return toBase64(createRsaKeyPair(2048).privateKey);
+}
+
+export function createRsaPublicKeyBase64() {
+  return toBase64(createRsaKeyPair(2048).publicKey);
+}
+
+export function createShortRsaPublicKeyBase64() {
+  return toBase64(createRsaKeyPair(1024).publicKey);
+}
+
+export function createX509CertificateBase64() {
+  return toBase64(rsaX509CertificatePem);
+}
 
 export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
@@ -51,6 +97,16 @@ export async function seedConsumerKeychainPurpose(
   await consumerKeychainWriterService.upsertConsumerKeychainPurpose(
     consumerKeychainPurpose,
     1,
+  );
+}
+
+export async function seedKnodeApiKeychain(knodeApiKeychain: KnodeApiKeychain) {
+  await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createKnodeApiKeychainCreatedV1Event(knodeApiKeychain, generateId()),
+  );
+  await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+    knodeApiKeychain,
+    0,
   );
 }
 

@@ -1,10 +1,14 @@
-import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-keychain/services";
+import type {
+  ConsumerKeychainWriterService,
+  KnodeApiKeychainWriterService,
+} from "@knodia/db-readmodel-keychain/services";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { fromExternalResource } from "@knodia/common-models/externalResource";
+import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
+  fromKnodeApiKeychainV1,
   type KeychainEventEnvelopeV1,
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
@@ -13,8 +17,10 @@ export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
     consumerKeychainWriterService,
+    knodeApiKeychainWriterService,
   }: {
     consumerKeychainWriterService: ConsumerKeychainWriterService;
+    knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -53,10 +59,7 @@ export async function handleKeychainEvent(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           linkedAt: new Date(msg.data.linkedAt),
-          purpose: {
-            id: unsafeBrandExternalId(purpose.id),
-            knodeId: KnodeId.parse(purpose.knodeId),
-          },
+          purpose: fromExternalResource<PurposeId>(purpose),
         },
         message.version,
       );
@@ -69,11 +72,34 @@ export async function handleKeychainEvent(
       await consumerKeychainWriterService.deleteConsumerKeychainPurpose(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
-          purpose: {
-            id: unsafeBrandExternalId(purpose.id),
-            knodeId: KnodeId.parse(purpose.knodeId),
-          },
+          purpose: fromExternalResource<PurposeId>(purpose),
         },
+        message.version,
+      );
+    })
+    .with(
+      {
+        type: P.union(
+          "KnodeApiKeychainCreatedV1",
+          "KnodeApiKeychainUpdatedV1",
+          "KnodeApiKeychainKeyAddedV1",
+          "KnodeApiKeychainMemberAddedV1",
+          "KnodeApiKeychainMemberRemovedV1",
+          "KnodeApiKeychainKeyRemovedV1",
+        ),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "knodeApiKeychain");
+        await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+          fromKnodeApiKeychainV1(msg.data.knodeApiKeychain),
+          message.version,
+        );
+      },
+    )
+    .with({ type: "KnodeApiKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "knodeApiKeychain");
+      await knodeApiKeychainWriterService.deleteKnodeApiKeychain(
+        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain).id,
         message.version,
       );
     })

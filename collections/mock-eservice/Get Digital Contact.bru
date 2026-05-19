@@ -1,0 +1,23 @@
+meta {
+  name: Get Digital Contact
+  type: http
+}
+
+get {
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z/digital-contact
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: DPoP {{access_token}}
+  DPoP: {{process.env.DPOP_PROOF_JWT}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}
