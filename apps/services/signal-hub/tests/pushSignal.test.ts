@@ -83,7 +83,7 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 403 when signal hub is not enabled for the e-service", async () => {
+  it("should return 409 when signal hub is not enabled for the e-service", async () => {
     const eserviceWithoutSignalHubEnabled: Eservice = {
       ...eservice,
       isSignalHubEnabled: false,
@@ -96,7 +96,7 @@ describe("POST /signals (pushSignal)", () => {
       eserviceWithoutSignalHubEnabled.id,
     );
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(409);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 

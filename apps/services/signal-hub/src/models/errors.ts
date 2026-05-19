@@ -4,12 +4,8 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const {
-  HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_CONFLICT,
-  HTTP_STATUS_FORBIDDEN,
-  HTTP_STATUS_NOT_FOUND,
-} = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -52,7 +48,7 @@ export function eserviceSignalHubNotEnabled(eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_SIGNAL_HUB_NOT_ENABLED",
     detail: `E-service with id ${eserviceId} does not have signal hub enabled`,
-    status: HTTP_STATUS_FORBIDDEN,
+    status: HTTP_STATUS_CONFLICT,
     title: "E-service Signal Hub Not Enabled",
   });
 }
