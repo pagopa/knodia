@@ -3,6 +3,7 @@ import type {
   ExternalUISessionMagicLinkTokenClaims,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
+  KnodeApiAccessTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
@@ -24,6 +25,11 @@ export interface ExternalUISessionToken extends BaseToken {
 export interface InternalToken extends BaseToken {
   payload: InternalTokenClaims;
   type: "internal";
+}
+
+export interface KnodeApiAccessToken extends BaseToken {
+  payload: KnodeApiAccessTokenClaims;
+  type: "knode-api";
 }
 
 export interface UISessionRefreshToken extends BaseToken {

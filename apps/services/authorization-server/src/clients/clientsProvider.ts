@@ -1,14 +1,32 @@
+import type { KnodeId } from "@knodia/common-models/ids";
+import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
+
 import {
   createK2K2GatewayApiClient,
   type K2K2GatewayApiClient,
 } from "@knodia/k2k-gateway-client";
 
-export function getK2K2GatewayApiClient({
-  consumerKnodeUrl,
-}: {
-  consumerKnodeUrl: string;
-}): K2K2GatewayApiClient {
-  return createK2K2GatewayApiClient({
-    baseURL: consumerKnodeUrl,
-  });
+import { targetKnodeUrlNotConfigured } from "../models/errors.ts";
+
+export type K2K2GatewayApiClientFactory = ReturnType<
+  typeof makeK2K2GatewayApiClientFactory
+>;
+
+export function makeK2K2GatewayApiClientFactory(
+  targetKnodeUrls: TargetKnodeUrls,
+) {
+  const cache = new Map<KnodeId, K2K2GatewayApiClient>();
+  return function getK2K2GatewayApiClient(
+    targetKnodeId: KnodeId,
+  ): K2K2GatewayApiClient {
+    const cached = cache.get(targetKnodeId);
+    if (cached) return cached;
+    const baseURL = targetKnodeUrls[targetKnodeId];
+    if (!baseURL) {
+      throw targetKnodeUrlNotConfigured(targetKnodeId);
+    }
+    const client = createK2K2GatewayApiClient({ baseURL });
+    cache.set(targetKnodeId, client);
+    return client;
+  };
 }

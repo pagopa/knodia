@@ -34,7 +34,10 @@ import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { unknown } from "zod";
 
-import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
+import type {
+  API_EserviceAccessTokenRequest,
+  API_EserviceAccessTokenResponse,
+} from "../src/models/api.ts";
 
 import {
   accessTokenTypeMismatch,
@@ -157,7 +160,7 @@ describe("POST /token", async () => {
     publicKeyEncodedPem,
   } = await getMockClientAssertion({
     standardClaimsOverride: {
-      aud: ["test-audience-1"],
+      aud: ["test-eservice-audience-1"],
       iss: consumerKeychainId,
       purpose_id: purpose.id,
       sub: consumerKeychainId,
@@ -189,18 +192,18 @@ describe("POST /token", async () => {
       },
     };
 
-  const defaultBody: API_TokenRequest = {
+  const defaultBody: API_EserviceAccessTokenRequest = {
     client_assertion: clientAssertionJWS,
     client_assertion_type: VALID_CLIENT_ASSERTION_TYPE,
     client_id: consumerKeychainId,
     grant_type: VALID_GRANT_TYPE,
   };
 
-  async function createToken({
+  async function createEserviceAccessToken({
     body = defaultBody,
     requestDpopProofJWS,
   }: {
-    body?: API_TokenRequest;
+    body?: API_EserviceAccessTokenRequest;
     requestDpopProofJWS?: string;
   } = {}) {
     return app.inject({
@@ -258,11 +261,11 @@ describe("POST /token", async () => {
     async (tokenType) => {
       await seedTestData(tokenType);
 
-      const response = await createToken({
+      const response = await createEserviceAccessToken({
         requestDpopProofJWS: tokenType === "DPoP" ? dpopProofJWS : undefined,
       });
 
-      const responseBody = response.json<API_TokenResponse>();
+      const responseBody = response.json<API_EserviceAccessTokenResponse>();
 
       expect(response.statusCode).toBe(200);
       expect(responseBody).toEqual({
@@ -295,7 +298,7 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await createToken({ body: body as never });
+      const response = await createEserviceAccessToken({ body: body as never });
       expect(response.statusCode).toBe(400);
     },
   );
@@ -484,6 +487,7 @@ describe("POST /token", async () => {
   ])(
     "should return 401 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
+      await purposeWriterService.upsertPurpose(purpose, 0);
       getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
         data: mockK2KResponse,
       });
@@ -493,7 +497,7 @@ describe("POST /token", async () => {
         keySet: clientAssertionKeySet,
       });
 
-      const response = await createToken({
+      const response = await createEserviceAccessToken({
         body: {
           ...defaultBody,
           client_assertion: clientAssertionJWS,
@@ -610,7 +614,7 @@ describe("POST /token", async () => {
         keySet: dpopProofKeySet,
       });
 
-      const response = await createToken({
+      const response = await createEserviceAccessToken({
         requestDpopProofJWS: dpopProofJWS,
       });
 
@@ -624,13 +628,14 @@ describe("POST /token", async () => {
   it.each([404, 400, 500])(
     "should return 401 or 500 when the k2k gateway call fails",
     async (status) => {
+      await purposeWriterService.upsertPurpose(purpose, 0);
       const axiosError = new AxiosError("K2K Gateway Error");
       axiosError.status = status;
       getConsumerClientAssertionVerificationDataMock.mockRejectedValue(
         axiosError,
       );
 
-      const response = await createToken();
+      const response = await createEserviceAccessToken();
 
       expect(response.statusCode).toBe(status === 404 ? 401 : 500);
     },
@@ -656,7 +661,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
-    const response = await createToken();
+    const response = await createEserviceAccessToken();
 
     const error = invalidClientAssertionSignature();
 
@@ -674,7 +679,7 @@ describe("POST /token", async () => {
       keySet: wrongKeySet,
     });
 
-    const response = await createToken({
+    const response = await createEserviceAccessToken({
       requestDpopProofJWS: wrongDpopProofJWS,
     });
 
@@ -685,6 +690,7 @@ describe("POST /token", async () => {
   });
 
   it("should return 401 if the public key algorithm does not match the client assertion algorithm", async () => {
+    await purposeWriterService.upsertPurpose(purpose, 0);
     const wrongAlg = "ES256";
     getConsumerClientAssertionVerificationDataMock.mockResolvedValue({
       data: {
@@ -693,7 +699,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
-    const response = await createToken();
+    const response = await createEserviceAccessToken();
 
     const error = publicKeyAlgNotMatchingClientAssertionAlg(
       wrongAlg,
@@ -768,7 +774,7 @@ describe("POST /token", async () => {
         data: mockK2KResponse,
       });
 
-      const response = await createToken();
+      const response = await createEserviceAccessToken();
 
       const error = platformStatesNotActive([]);
 
@@ -823,7 +829,7 @@ describe("POST /token", async () => {
         data: mockK2KResponse,
       });
 
-      const response = await createToken();
+      const response = await createEserviceAccessToken();
 
       expect(response.statusCode).toBe(400);
     },
@@ -848,7 +854,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ConsumerClientAssertionVerificationResponse,
     });
 
-    const response = await createToken();
+    const response = await createEserviceAccessToken();
 
     const error = consumerMissingRequiredAttributes(
       purpose.consumer,
@@ -890,7 +896,7 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await createToken({
+    const response = await createEserviceAccessToken({
       requestDpopProofJWS: tokenType === "Bearer" ? dpopProofJWS : undefined,
     });
 
@@ -913,7 +919,7 @@ describe("POST /token", async () => {
       tableName: dynamoDbDpopProofsTable,
     });
 
-    const response = await createToken({
+    const response = await createEserviceAccessToken({
       requestDpopProofJWS: dpopProofJWS,
     });
 
