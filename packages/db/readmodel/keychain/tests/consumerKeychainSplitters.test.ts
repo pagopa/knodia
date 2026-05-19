@@ -22,7 +22,7 @@ describe("Consumer keychain splitters", () => {
 
     const expectedConsumerKeychainSQL: ConsumerKeychainSQL = {
       createdAt: consumerKeychain.createdAt,
-      description: consumerKeychain.description,
+      description: consumerKeychain.description ?? null,
       id: consumerKeychain.id,
       metadataVersion,
       name: consumerKeychain.name,
@@ -58,5 +58,14 @@ describe("Consumer keychain splitters", () => {
     expect(consumerKeychainUsersSQL).toEqual(
       expect.arrayContaining(expectedConsumerKeychainUsersSQL),
     );
+  });
+
+  it("should map an undefined description to null so onConflictDoUpdate clears the column", () => {
+    const { consumerKeychainSQL } = splitConsumerKeychainIntoObjectsSQL(
+      { ...getMockConsumerKeychain(), description: undefined },
+      1,
+    );
+
+    expect(consumerKeychainSQL.description).toBeNull();
   });
 });
