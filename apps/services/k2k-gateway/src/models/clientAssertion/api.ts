@@ -1,4 +1,4 @@
-import { API_KeyId } from "@knodia/common-models/api";
+import { API_KeyId, API_OrganizationId } from "@knodia/common-models/api";
 import z from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
@@ -59,6 +59,9 @@ export type API_ConsumerClientAssertionVerificationResponse = z.infer<
 
 export const API_KnodeApiClientAssertionVerificationResponse = z
   .strictObject({
+    ownerId: API_OrganizationId.meta({
+      description: "Organization that owns the Knode API Keychain",
+    }),
     publicKey: API_PublicKeyForVerification,
   })
   .meta({ id: "KnodeApiClientAssertionVerificationResponse" });

@@ -5,26 +5,29 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import type { AuthorizationServerConfig } from "../config/config.ts";
-
-import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
+import {
+  API_EserviceAccessTokenRequest,
+  API_EserviceAccessTokenResponse,
+  API_KnodeApiTokenRequest,
+  API_KnodeApiTokenResponse,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { AuthServerHeaders } from "../models/headers.ts";
 import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
-  config: AuthorizationServerConfig;
   tokenService: TokenService;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  { config, tokenService },
+  { tokenService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
-      const { client_assertion_type, client_id, grant_type } = req.body;
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
 
       logger.info(
         {
@@ -34,13 +37,12 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         "Issuing an E-service access token",
       );
 
-      const token = await tokenService.issueToken(
+      const token = await tokenService.issueEserviceAccessToken(
         {
-          clientAssertionJWS: req.body.client_assertion,
-          consumerKeychainId: unsafeBrandId(req.body.client_id),
+          clientAssertionJWS: client_assertion,
+          consumerKeychainId: unsafeBrandId(client_id),
           dpopProofJWS: req.headers.dpop,
         },
-        config,
         logger,
       );
 
@@ -48,22 +50,66 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
     },
     method: "POST",
     schema: {
-      body: API_TokenRequest,
+      body: API_EserviceAccessTokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
       description: "Issue an E-service access token",
       headers: AuthServerHeaders,
-      operationId: "createToken",
+      operationId: "createEserviceAccessToken",
       response: {
-        200: API_TokenResponse.meta({
+        200: API_EserviceAccessTokenResponse.meta({
           description: "Token issued successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
       security: [],
-      summary: "Create Token",
-      tags: [apiTags.token],
+      summary: "Create E-service Access Token",
+      tags: [apiTags.eserviceAccessToken],
     },
     url: "/token",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { client_assertion, client_assertion_type, client_id, grant_type } =
+        req.body;
+
+      logger.info(
+        {
+          correlationId,
+          requestBody: { client_assertion_type, client_id, grant_type },
+        },
+        "Issuing a Knode API access token",
+      );
+
+      const token = await tokenService.issueKnodeApiToken(
+        {
+          clientAssertionJWS: client_assertion,
+          knodeApiKeychainId: unsafeBrandId(client_id),
+        },
+        logger,
+      );
+
+      res.send(token);
+    },
+    method: "POST",
+    schema: {
+      body: API_KnodeApiTokenRequest,
+      consumes: ["application/x-www-form-urlencoded"],
+      description: "Issue a Knode API access token",
+      operationId: "createKnodeApiToken",
+      response: {
+        200: API_KnodeApiTokenResponse.meta({
+          description: "Token issued successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      security: [],
+      summary: "Create Knode API Token",
+      tags: [apiTags.knodeApiToken],
+    },
+    url: "/knodeApiToken",
   });
 };

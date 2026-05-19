@@ -5,6 +5,8 @@ import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
+  KnodeId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -58,6 +60,11 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   INVALID_DPOP_PROOF_SIGNATURE: "0021",
   DPOP_PROOF_EXPIRED: "0022",
   DPOP_PROOF_ALREADY_USED: "0023",
+  KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND: "0024",
+  UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR: "0025",
+  KNODE_API_KEYCHAIN_NOT_FOUND: "0026",
+  KNODE_API_KEYCHAIN_KEY_NOT_FOUND: "0027",
+  TARGET_KNODE_URL_NOT_CONFIGURED: "0028",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -187,6 +194,39 @@ export function invalidClientAssertionSignature() {
   });
 }
 
+export function knodeApiKeychainKeyNotFound(
+  knodeApiKeychainId: KnodeApiKeychainId,
+  kid: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_KEY_NOT_FOUND",
+    detail: `Key with KID ${kid} was not found in Knode API Keychain ${knodeApiKeychainId}`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function knodeApiKeychainKnodeVerificationDataNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_NOT_FOUND",
+    detail:
+      "Verification data for the Knode API Keychain's Knode was not found",
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
+export function knodeApiKeychainNotFound(
+  knodeApiKeychainId: KnodeApiKeychainId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KNODE_API_KEYCHAIN_NOT_FOUND",
+    detail: `Knode API Keychain with ID ${knodeApiKeychainId} was not found`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "invalid_client",
+  });
+}
+
 export function platformStatesNotActive(
   errors: (ApiError<ErrorCodes> | undefined)[],
 ) {
@@ -233,6 +273,15 @@ export function purposeNotFound(id: PurposeId) {
   });
 }
 
+export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
+  return createApiError<ErrorCodes>({
+    code: "TARGET_KNODE_URL_NOT_CONFIGURED",
+    detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "server_error",
+  });
+}
+
 export function unexpectedClientAssertionSignatureVerificationError(
   error: unknown,
 ) {
@@ -252,6 +301,17 @@ export function unexpectedConsumerKnodeVerificationDataRetrievalError(
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_CONSUMER_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
     detail: `An unexpected error occurred during retrieval of the Consumer's Knode verification data: ${error.message}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "invalid_client",
+  });
+}
+
+export function unexpectedKnodeApiKeychainKnodeVerificationDataRetrievalError(
+  error: AxiosError,
+) {
+  return createApiError<ErrorCodes>({
+    code: "UNEXPECTED_KNODE_API_KEYCHAIN_KNODE_VERIFICATION_DATA_RETRIEVAL_ERROR",
+    detail: `An unexpected error occurred during retrieval of the Knode API Keychain's Knode verification data: ${error.message}`,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "invalid_client",
   });

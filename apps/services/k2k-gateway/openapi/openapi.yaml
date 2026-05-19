@@ -677,9 +677,14 @@ components:
     KnodeApiClientAssertionVerificationResponse:
       type: object
       properties:
+        ownerId:
+          description: Organization that owns the Knode API Keychain
+          allOf:
+            - $ref: "#/components/schemas/OrganizationId"
         publicKey:
           $ref: "#/components/schemas/PublicKeyForVerification"
       required:
+        - ownerId
         - publicKey
       additionalProperties: false
     Organization:
