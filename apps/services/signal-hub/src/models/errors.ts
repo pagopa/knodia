@@ -14,6 +14,7 @@ const errorCodes = {
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
   NEWER_SIGNALS_EXIST: "0005",
+  NON_CONSECUTIVE_SIGNAL_ID: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -59,6 +60,19 @@ export function newerSignalsExist(signalId: number, eserviceId: EserviceId) {
     detail: `Signals with id greater than ${signalId} have already been pushed for E-service ${eserviceId}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Newer Signals Exist",
+  });
+}
+
+export function nonConsecutiveSignalId(
+  signalId: number,
+  maxSignalId: number,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "NON_CONSECUTIVE_SIGNAL_ID",
+    detail: `Signal id ${signalId} is not consecutive to the last pushed signal id ${maxSignalId} for E-service ${eserviceId}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Non Consecutive Signal Id",
   });
 }
 

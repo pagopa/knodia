@@ -19,6 +19,7 @@ import {
   eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
   newerSignalsExist,
+  nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
@@ -147,6 +148,7 @@ describe("POST /signals (pushSignal)", () => {
   it("should return 400 when signals with a higher signalId already exist", async () => {
     await seedEservice();
 
+    await pushSignal();
     await pushSignal({
       ...defaultBody,
       signalId: defaultBody.signalId + 1,
@@ -155,6 +157,27 @@ describe("POST /signals (pushSignal)", () => {
     const response = await pushSignal();
 
     const error = newerSignalsExist(defaultBody.signalId, eservice.id);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 400 when the request signalId is not consecutive", async () => {
+    await seedEservice();
+
+    await pushSignal();
+
+    const wrongSignalId = defaultBody.signalId + 10;
+    const response = await pushSignal({
+      ...defaultBody,
+      signalId: wrongSignalId,
+    });
+
+    const error = nonConsecutiveSignalId(
+      wrongSignalId,
+      defaultBody.signalId,
+      eservice.id,
+    );
 
     expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
