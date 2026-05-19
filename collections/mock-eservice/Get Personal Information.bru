@@ -1,17 +1,16 @@
 meta {
-  name: Call Test With DPoP Token
+  name: Get Personal Information
   type: http
 }
 
 get {
-  url: {{host-mock-eservice}}/testDpop
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z
   body: none
   auth: none
 }
 
 headers {
-  Authorization: DPoP {{access_token}}
-  DPoP: {{process.env.DPOP_PROOF_JWT}}
+  Authorization: Bearer {{access_token}}
 }
 
 script:pre-request {

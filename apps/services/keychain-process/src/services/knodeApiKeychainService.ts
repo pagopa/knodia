@@ -175,6 +175,7 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
     },
+
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
@@ -298,7 +299,6 @@ export function knodeApiKeychainServiceBuilder(
 
       return await readmodelService.getKnodeApiKeychains(params);
     },
-
     async removeKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,

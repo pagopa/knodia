@@ -91,22 +91,6 @@ export const createKnodeApiKeychainMemberRemovedV1Event = (
   streamId: keychain.id,
 });
 
-export const createKnodeApiKeychainDeletedV1Event = (
-  keychain: KnodeApiKeychain,
-  correlationId: CorrelationId,
-  currentMetadataVersion: number,
-): NewEventStoreKeychainEvent => ({
-  correlationId,
-  currentMetadataVersion,
-  event: {
-    data: {
-      knodeApiKeychain: toKnodeApiKeychainV1(keychain),
-    },
-    type: "KnodeApiKeychainDeletedV1",
-  },
-  streamId: keychain.id,
-});
-
 export const createKnodeApiKeychainKeyRemovedV1Event = (
   keychain: KnodeApiKeychain,
   kid: KeyId,
@@ -121,6 +105,22 @@ export const createKnodeApiKeychainKeyRemovedV1Event = (
       knodeApiKeychain: toKnodeApiKeychainV1(keychain),
     },
     type: "KnodeApiKeychainKeyRemovedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createKnodeApiKeychainDeletedV1Event = (
+  keychain: KnodeApiKeychain,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      knodeApiKeychain: toKnodeApiKeychainV1(keychain),
+    },
+    type: "KnodeApiKeychainDeletedV1",
   },
   streamId: keychain.id,
 });

@@ -2231,7 +2231,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session:
+  /auth/uiSession:
     post:
       operationId: createSession
       tags:
@@ -2270,7 +2270,15 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/ui-session/refresh:
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /auth/uiSession/refresh:
     post:
       operationId: refreshSession
       tags:
@@ -2302,6 +2310,14 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /auth/logout:
     post:
       operationId: logout
@@ -2320,6 +2336,14 @@ paths:
       responses:
         "204":
           description: Logged out successfully
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /auth/externalUiSession:
     post:
       operationId: createExternalSession

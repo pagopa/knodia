@@ -130,7 +130,11 @@ export function buildAppFromConfig(
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService, cookieConfig: config.cookie });
+  app.register(authRouter, {
+    authCookieAllowedOrigins: config.authCookieAllowedOrigins,
+    authService,
+    cookieConfig: config.cookie,
+  });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/

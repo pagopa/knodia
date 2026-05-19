@@ -45,8 +45,8 @@ const USER_ID = "10000000-1000-1000-8000-000000000001";
 const ORION_GENERIC_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000001";
 const ORION_ESERVICE_01_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000002";
 const ORION_ESERVICE_02_TEMPLATE_ID = "a1b2c3d4-0002-4000-8000-000000000003";
-const PLACEHOLDER_ORION_ESERVICE_01 = "11111111-1111-4111-8111-000000000001";
-const PLACEHOLDER_ORION_ESERVICE_02 = "11111111-1111-4111-8111-000000000002";
+const ORION_BEARER_ESERVICE_ID = "e7f5837e-75f4-431d-9465-73366d27bef2";
+const ORION_DPOP_ESERVICE_ID = "905c4569-95db-4670-a146-8239fcb3f41a";
 
 const CURRENT_MAJOR = 1;
 const CURRENT_FORM_SCHEMA_VERSION = `${CURRENT_MAJOR}.0`;
@@ -114,10 +114,10 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     const byId = Object.fromEntries(body.map((t) => [t.id, t]));
     expect(byId[ORION_GENERIC_TEMPLATE_ID]?.eserviceId).toBeUndefined();
     expect(byId[ORION_ESERVICE_01_TEMPLATE_ID]?.eserviceId).toBe(
-      PLACEHOLDER_ORION_ESERVICE_01,
+      ORION_BEARER_ESERVICE_ID,
     );
     expect(byId[ORION_ESERVICE_02_TEMPLATE_ID]?.eserviceId).toBe(
-      PLACEHOLDER_ORION_ESERVICE_02,
+      ORION_DPOP_ESERVICE_ID,
     );
   });
 
@@ -125,7 +125,7 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     const response = await app.inject({
       headers: { authorization: "Bearer valid.ui.session" },
       method: "GET",
-      url: `/purposeTemplates?knodeId=Orion&eserviceId=${PLACEHOLDER_ORION_ESERVICE_01}`,
+      url: `/purposeTemplates?knodeId=Orion&eserviceId=${ORION_BEARER_ESERVICE_ID}`,
     });
 
     expect(response.statusCode).toBe(200);
@@ -136,7 +136,7 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     const byId = Object.fromEntries(body.map((t) => [t.id, t]));
     expect(byId[ORION_GENERIC_TEMPLATE_ID]?.eserviceId).toBeUndefined();
     expect(byId[ORION_ESERVICE_01_TEMPLATE_ID]?.eserviceId).toBe(
-      PLACEHOLDER_ORION_ESERVICE_01,
+      ORION_BEARER_ESERVICE_ID,
     );
   });
 

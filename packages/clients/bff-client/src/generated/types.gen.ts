@@ -1030,7 +1030,7 @@ export type CreateSessionData = {
     body: SessionRequest;
     path?: never;
     query?: never;
-    url: '/auth/ui-session';
+    url: '/auth/uiSession';
 };
 
 export type CreateSessionErrors = {
@@ -1042,6 +1042,10 @@ export type CreateSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1059,7 +1063,7 @@ export type RefreshSessionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/ui-session/refresh';
+    url: '/auth/uiSession/refresh';
 };
 
 export type RefreshSessionErrors = {
@@ -1067,6 +1071,10 @@ export type RefreshSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1086,6 +1094,15 @@ export type LogoutData = {
     query?: never;
     url: '/auth/logout';
 };
+
+export type LogoutErrors = {
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
     /**
