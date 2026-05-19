@@ -12,7 +12,6 @@ import { signalHubDbConfig } from "./config/config.ts";
 
 const signalHubSchema = pgSchema(signalHubDbConfig.signalHubDbSchema);
 
-/** @knipignore */
 export const signalHubSignal = signalHubSchema.table(
   "signal",
   {

@@ -999,6 +999,33 @@ services:
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
 
+  mock-eservice-signal-hub-cronjob-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-mock-eservice-signal-hub-cronjob-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/mock-eservice-signal-hub-cronjob/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      SEED_START_DATE_MS: "1767225600000"
+      SEED_EXPIRE_SECONDS: "30"
+      SEED_SALT_LENGTH: "16"
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: orion_signal_hub
+      SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
+      SIGNAL_HUB_DB_USER: local_orion_signal_hub_cron_user
+      SIGNAL_HUB_DB_PASSWORD: local_orion_signal_hub_cron_user
+      SIGNAL_HUB_DB_USE_SSL: "false"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+
   # ============================================================
   # Lynx Node
   # ============================================================
@@ -1655,6 +1682,33 @@ services:
       PORT: "3000"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+
+  mock-eservice-signal-hub-cronjob-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-mock-eservice-signal-hub-cronjob-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/mock-eservice-signal-hub-cronjob/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      SEED_START_DATE_MS: "1767225600000"
+      SEED_EXPIRE_SECONDS: "30"
+      SEED_SALT_LENGTH: "16"
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: lynx_signal_hub
+      SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
+      SIGNAL_HUB_DB_USER: local_lynx_signal_hub_cron_user
+      SIGNAL_HUB_DB_PASSWORD: local_lynx_signal_hub_cron_user
+      SIGNAL_HUB_DB_USE_SSL: "false"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
 
   # ============================================================
   # Frontends
