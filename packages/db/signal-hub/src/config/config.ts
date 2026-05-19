@@ -1,7 +1,7 @@
 import { env } from "node:process";
 import { z } from "zod";
 
-const SignalHubDbConfig = z
+export const SignalHubDbConfig = z
   .object({
     SIGNAL_HUB_DB_HOST: z.string(),
     SIGNAL_HUB_DB_NAME: z.string(),
