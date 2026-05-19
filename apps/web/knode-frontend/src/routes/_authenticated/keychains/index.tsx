@@ -9,6 +9,7 @@ import {
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -18,17 +19,26 @@ import { KeychainTable } from "@/features/keychain/components/KeychainTable";
 import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
+  supportedKeychainTab,
 } from "@/features/keychain/models/search-params";
-import { consumerKeychainsQuery } from "@/features/keychain/services/queries";
+import {
+  consumerKeychainsQuery,
+  knodeApiKeychainsQuery,
+} from "@/features/keychain/services/queries";
 
 export const Route = createFileRoute("/_authenticated/keychains/")({
   component: RouteComponent,
-  loaderDeps: ({ search: { offset } }) => ({
+  loaderDeps: ({ search: { offset, type } }) => ({
     offset,
+    type,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.prefetchQuery(consumerKeychainsQuery(offset));
+  loader: ({ context: { queryClient }, deps: { offset, type } }) => {
+    const query = match(type)
+      .with("api", () => knodeApiKeychainsQuery(offset))
+      .with("consumption", () => consumerKeychainsQuery(offset))
+      .exhaustive();
+    queryClient.prefetchQuery(query);
   },
   search: {
     middlewares: [stripSearchParams(keychainSearchDefaultValues)],
@@ -42,12 +52,24 @@ function RouteComponent() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
-  const { offset } = search;
+  const { offset, type: selectedTab } = search;
 
-  const { data, isLoading } = useQuery({
+  const { data: consumerData, isLoading: isConsumerLoading } = useQuery({
     ...consumerKeychainsQuery(offset),
+    enabled: selectedTab === "consumption",
     placeholderData: keepPreviousData,
   });
+
+  const { data: apiData, isLoading: isApiLoading } = useQuery({
+    ...knodeApiKeychainsQuery(offset),
+    enabled: selectedTab === "api",
+    placeholderData: keepPreviousData,
+  });
+
+  const activeData = match(selectedTab)
+    .with("api", () => apiData)
+    .with("consumption", () => consumerData)
+    .exhaustive();
 
   function handleSearchChange(values: Partial<typeof search>) {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
@@ -56,10 +78,10 @@ function RouteComponent() {
   return (
     <ListPageLayout
       pagination={{
-        limit: data?.pagination.limit ?? 0,
+        limit: activeData?.pagination.limit ?? 0,
         offset,
         onOffsetChange: (offset) => handleSearchChange({ offset }),
-        totalItems: data?.pagination.total ?? 0,
+        totalItems: activeData?.pagination.total ?? 0,
       }}
     >
       <PageHeader
@@ -79,9 +101,14 @@ function RouteComponent() {
       />
 
       <Tabs
-        defaultSelectedKey="consumption"
         kind="hug"
-        onSelectionChange={() => handleSearchChange({ offset: 0 })}
+        onSelectionChange={(key) => {
+          const parsed = supportedKeychainTab.safeParse(key);
+          if (parsed.success) {
+            handleSearchChange({ offset: 0, type: parsed.data });
+          }
+        }}
+        selectedKey={selectedTab}
       >
         <TabList aria-label="Tabs">
           <Tab id="production" isDisabled key="production">
@@ -90,7 +117,7 @@ function RouteComponent() {
           <Tab id="consumption" key="consumption">
             Consumption
           </Tab>
-          <Tab id="api" isDisabled key="api">
+          <Tab id="api" key="api">
             API
           </Tab>
         </TabList>
@@ -98,12 +125,18 @@ function RouteComponent() {
           <TabPanel id="production" key="production"></TabPanel>
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
-              isLoading={isLoading}
-              keychains={data?.results ?? []}
+              isLoading={isConsumerLoading}
+              keychains={consumerData?.results ?? []}
               type="consumption"
             />
           </TabPanel>
-          <TabPanel id="api" key="api"></TabPanel>
+          <TabPanel id="api" key="api">
+            <KeychainTable
+              isLoading={isApiLoading}
+              keychains={apiData?.results ?? []}
+              type="api"
+            />
+          </TabPanel>
         </TabPanels>
       </Tabs>
 

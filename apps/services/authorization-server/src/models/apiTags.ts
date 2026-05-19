@@ -1,3 +1,4 @@
 export const apiTags = {
-  token: "token",
+  eserviceAccessToken: "eservice-access-token",
+  knodeApiToken: "knode-api-token",
 } as const;

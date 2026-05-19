@@ -1,0 +1,14 @@
+meta {
+  name: Push Signal
+  type: http
+}
+
+post {
+  url: {{host-signal-hub}}/signals
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{knode-api-jwt}}
+}

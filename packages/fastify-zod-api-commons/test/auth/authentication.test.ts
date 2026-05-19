@@ -5,6 +5,7 @@ import { requestContext } from "@fastify/request-context";
 import {
   getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
+  getTestKnodeApiTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -56,6 +57,7 @@ describe("parseAuthHeaderToken", () => {
 const validUISessionPayload = getTestUISessionTokenClaims();
 const validInternalPayload = getTestInternalTokenClaims();
 const validExternalUISessionPayload = getTestExternalUISessionTokenClaims();
+const validKnodeApiPayload = getTestKnodeApiTokenClaims();
 
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
@@ -235,6 +237,31 @@ describe("authenticationPlugin", () => {
       expect(response.json()).toMatchObject({
         authData: {
           tokenType: validInternalPayload.type,
+        },
+      });
+    });
+
+    it("sets authData in context when knode-api token is valid", async () => {
+      jwtVerify.mockResolvedValueOnce({ payload: validKnodeApiPayload });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer knode-api-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          keychain: {
+            id: validKnodeApiPayload.keychain.id,
+            knodeId: validKnodeApiPayload.keychain.knode_id,
+          },
+          organization: {
+            id: validKnodeApiPayload.organization.id,
+            knodeId: validKnodeApiPayload.organization.knode_id,
+          },
+          tokenType: validKnodeApiPayload.type,
         },
       });
     });
