@@ -1,13 +1,5 @@
 import { bffApi } from "@knodia/bff-client";
-import {
-  addConsumerKeychainMemberMutation,
-  addKnodeApiKeychainMemberMutation,
-  getConsumerKeychainMembershipQueryKey,
-  getConsumerKeychainMembersQueryKey,
-  getKnodeApiKeychainMembershipQueryKey,
-  getKnodeApiKeychainMembersQueryKey,
-  getOperatorsOptions,
-} from "@knodia/bff-client/tanstack-query";
+import { getOperatorsOptions } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
 import {
   type ConsumerKeychainId,
@@ -17,16 +9,18 @@ import {
 } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { match } from "ts-pattern";
 import z from "zod";
 
-import { useAuth, useHasRole } from "@/contexts/auth";
+import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import type { SupportedKeychainType } from "../models/commons";
+
+import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
 interface AddKeychainMemberActionProps {
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
@@ -62,7 +56,6 @@ export function AddKeychainMemberAction({
   );
 }
 
-// eslint-disable-next-line max-lines-per-function
 function AddKeychainMemberModal({
   isOpen,
   keychainId,
@@ -74,65 +67,7 @@ function AddKeychainMemberModal({
   onClose: () => void;
   type: SupportedKeychainType;
 }) {
-  const { userId } = useAuth();
-
-  const queryClient = useQueryClient();
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: addConsumerKeychainMember,
-  } = useMutation({
-    ...addConsumerKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembersQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-      if (userId) {
-        queryClient.invalidateQueries({
-          queryKey: getConsumerKeychainMembershipQueryKey({
-            client,
-            path: { consumerKeychainId: keychainId, userId },
-          }),
-        });
-      }
-      onClose();
-    },
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: addKnodeApiKeychainMember,
-  } = useMutation({
-    ...addKnodeApiKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainMembersQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-      if (userId) {
-        queryClient.invalidateQueries({
-          queryKey: getKnodeApiKeychainMembershipQueryKey({
-            client,
-            path: { knodeApiKeychainId: keychainId, userId },
-          }),
-        });
-      }
-      onClose();
-    },
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+  const { isError, isPending, mutate } = useAddKeychainMember(keychainId, type);
 
   const { data: operators = [] } = useQuery(getOperatorsOptions({ client }));
 
@@ -149,20 +84,7 @@ function AddKeychainMemberModal({
   );
 
   const handleAddKeychainMember = (userId: UserId) => {
-    match(type)
-      .with("consumption", () =>
-        addConsumerKeychainMember({
-          body: { userId },
-          path: { consumerKeychainId: keychainId },
-        }),
-      )
-      .with("api", () =>
-        addKnodeApiKeychainMember({
-          body: { userId },
-          path: { knodeApiKeychainId: keychainId },
-        }),
-      )
-      .exhaustive();
+    mutate(userId, { onSuccess: onClose });
   };
 
   const checkUserKeychainMembership = async (userId: UserId) => {

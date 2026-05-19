@@ -1,14 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  getConsumerKeychainMembershipQueryKey,
-  getConsumerKeychainMembersQueryKey,
-  getKnodeApiKeychainMembershipQueryKey,
-  getKnodeApiKeychainMembersQueryKey,
-  removeConsumerKeychainMemberMutation,
-  removeKnodeApiKeychainMemberMutation,
-} from "@knodia/bff-client/tanstack-query";
-import {
   type ConsumerKeychainId,
   type KnodeApiKeychainId,
   unsafeBrandUserId,
@@ -27,14 +19,13 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { MinusSquareIcon, SelectionPlusIcon } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger } from "react-aria-components";
-import { match } from "ts-pattern";
 
 import { useHasRole } from "@/contexts/auth";
-import { client } from "@/libs/axios";
 
 import type { SupportedKeychainType } from "../models/commons";
+
+import { useRemoveKeychainMember } from "../hooks/useKeychainMutations";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
@@ -110,77 +101,13 @@ function RemoveFromKeychainAction({
   type: SupportedKeychainType;
   userId: UserId;
 }) {
-  const queryClient = useQueryClient();
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: deleteConsumerKeychainMember,
-  } = useMutation({
-    ...removeConsumerKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembersQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembershipQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId, userId },
-        }),
-      });
-    },
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: deleteKnodeApiKeychainMember,
-  } = useMutation({
-    ...removeKnodeApiKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainMembersQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainMembershipQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId, userId },
-        }),
-      });
-    },
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+  const { isError, isPending, mutate } = useRemoveKeychainMember(
+    keychainId,
+    type,
+  );
 
   function handleDelete() {
-    match(type)
-      .with("consumption", () => {
-        deleteConsumerKeychainMember({
-          path: {
-            consumerKeychainId: keychainId,
-            userId,
-          },
-        });
-      })
-      .with("api", () => {
-        deleteKnodeApiKeychainMember({
-          path: {
-            knodeApiKeychainId: keychainId,
-            userId,
-          },
-        });
-      })
-      .exhaustive();
+    mutate(userId);
   }
 
   return (

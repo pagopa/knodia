@@ -1,25 +1,16 @@
-import type { bffApi } from "@knodia/bff-client";
 import type {
   ConsumerKeychainId,
   KnodeApiKeychainId,
 } from "@knodia/common-models/ids";
 
-import {
-  getConsumerKeychainKeysQueryKey,
-  getKnodeApiKeychainKeysQueryKey,
-  uploadConsumerKeychainKeyMutation,
-  uploadKnodeApiKeychainKeyMutation,
-} from "@knodia/bff-client/tanstack-query";
 import { Banner, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import type { SupportedKeychainType } from "../models/commons";
 
+import { useUploadKeychainKey } from "../hooks/useKeychainMutations";
 import {
   publicKeyUploadFormDefaultValues,
   publicKeyUploadFormSchema,
@@ -35,7 +26,6 @@ interface Props {
   type: SupportedKeychainType;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
   isKeychainMember,
@@ -44,86 +34,18 @@ export function UploadPublicKeyModal({
   onClose,
   type,
 }: Props) {
-  const queryClient = useQueryClient();
-
   function handleClose() {
     form.reset();
     onClose();
   }
 
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: uploadConsumerKeychainKey,
-  } = useMutation({
-    ...uploadConsumerKeychainKeyMutation({
-      client,
-    }),
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: uploadKnodeApiKeychainKey,
-  } = useMutation({
-    ...uploadKnodeApiKeychainKeyMutation({
-      client,
-    }),
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+  const { isError, isPending, mutate } = useUploadKeychainKey(keychainId, type);
 
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
-    const body = {
-      encodedPem: btoa(seed.pem),
-      name: { en: seed.name },
-    };
-
-    match(type)
-      .with("consumption", () =>
-        uploadConsumerKeychainKey(
-          {
-            body: body satisfies bffApi.UploadConsumerKeychainKeyData["body"],
-            path: { consumerKeychainId: keychainId },
-          },
-          {
-            onSuccess() {
-              queryClient.invalidateQueries({
-                queryKey: getConsumerKeychainKeysQueryKey({
-                  client,
-                  path: { consumerKeychainId: keychainId },
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  query: undefined!,
-                }),
-              });
-              handleClose();
-            },
-          },
-        ),
-      )
-      .with("api", () =>
-        uploadKnodeApiKeychainKey(
-          {
-            body: body satisfies bffApi.UploadKnodeApiKeychainKeyData["body"],
-            path: { knodeApiKeychainId: keychainId },
-          },
-          {
-            onSuccess() {
-              queryClient.invalidateQueries({
-                queryKey: getKnodeApiKeychainKeysQueryKey({
-                  client,
-                  path: { knodeApiKeychainId: keychainId },
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  query: undefined!,
-                }),
-              });
-              handleClose();
-            },
-          },
-        ),
-      )
-      .exhaustive();
+    mutate(
+      { encodedPem: btoa(seed.pem), name: { en: seed.name } },
+      { onSuccess: handleClose },
+    );
   }
 
   const form = useForm({

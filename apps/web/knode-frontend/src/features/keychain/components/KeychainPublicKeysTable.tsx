@@ -5,12 +5,6 @@ import type {
 
 import { bffApi } from "@knodia/bff-client";
 import {
-  getConsumerKeychainKeysQueryKey,
-  getKnodeApiKeychainKeysQueryKey,
-  removeConsumerKeychainKeyMutation,
-  removeKnodeApiKeychainKeyMutation,
-} from "@knodia/bff-client/tanstack-query";
-import {
   Banner,
   Button,
   type ButtonProps,
@@ -31,7 +25,6 @@ import {
   SelectionPlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
@@ -40,6 +33,8 @@ import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
 import type { SupportedKeychainType } from "../models/commons";
+
+import { useRemoveKeychainKey } from "../hooks/useKeychainMutations";
 
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
@@ -225,65 +220,10 @@ function RemoveFromKeychainAction({
   keyId: string;
   type: SupportedKeychainType;
 }) {
-  const queryClient = useQueryClient();
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: deleteConsumerKeychainKey,
-  } = useMutation({
-    ...removeConsumerKeychainKeyMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainKeysQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-    },
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: deleteKnodeApiKeychainKey,
-  } = useMutation({
-    ...removeKnodeApiKeychainKeyMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainKeysQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-    },
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+  const { isError, isPending, mutate } = useRemoveKeychainKey(keychainId, type);
 
   function handleDelete() {
-    match(type)
-      .with("consumption", () => {
-        deleteConsumerKeychainKey({
-          path: {
-            consumerKeychainId: keychainId,
-            keyId,
-          },
-        });
-      })
-      .with("api", () => {
-        deleteKnodeApiKeychainKey({
-          path: {
-            keyId,
-            knodeApiKeychainId: keychainId,
-          },
-        });
-      })
-      .exhaustive();
+    mutate(keyId);
   }
 
   return (
