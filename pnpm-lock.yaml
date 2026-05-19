@@ -1716,21 +1716,12 @@ importers:
 
   apps/services/signup-manager:
     dependencies:
-      '@fastify/request-context':
-        specifier: 'catalog:'
-        version: 6.2.1
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.5
