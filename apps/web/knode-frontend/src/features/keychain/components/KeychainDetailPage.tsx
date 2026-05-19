@@ -41,22 +41,24 @@ import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPubli
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import { client } from "@/libs/axios";
 
-type KeychainDetailPageProps<TTab extends string> = {
+import type {
+  SupportedKeychainContext,
+  SupportedKeychainType,
+} from "../models/commons";
+
+type KeychainDetailPageProps<TTab extends string> = SupportedKeychainContext & {
   activeTab: TTab;
   keychain: bffApi.KeychainDetails;
   offset: number;
   onOffsetChange: (offset: number) => void;
   onTabChange: (tab: TTab) => void;
-} & (
-  | { keychainId: ConsumerKeychainId; type: "consumption" }
-  | { keychainId: KnodeApiKeychainId; type: "api" }
-);
+};
 
 interface KeychainTabProps {
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   offset: number;
   onOffsetChange: (offset: number) => void;
-  type: "api" | "consumption";
+  type: SupportedKeychainType;
 }
 
 export function KeychainDetailPage<TTab extends string>(
@@ -216,9 +218,7 @@ function MembersTab({
 
   return (
     <Section
-      actions={
-        <AddKeychainMemberAction keychainId={keychainId} keychainType={type} />
-      }
+      actions={<AddKeychainMemberAction keychainId={keychainId} type={type} />}
       description="Only the Keychain members can upload public keys."
       title="Members"
     >

@@ -26,16 +26,16 @@ import { useAuth, useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychainType } from "../models/commons";
 
 interface AddKeychainMemberActionProps {
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  keychainType: KeychainType;
+  type: SupportedKeychainType;
 }
 
 export function AddKeychainMemberAction({
   keychainId,
-  keychainType,
+  type,
 }: AddKeychainMemberActionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isAdmin = useHasRole("administrative");
@@ -55,8 +55,8 @@ export function AddKeychainMemberAction({
       <AddKeychainMemberModal
         isOpen={isOpen}
         keychainId={keychainId}
-        keychainType={keychainType}
         onClose={() => setIsOpen(false)}
+        type={type}
       />
     </>
   );
@@ -66,13 +66,13 @@ export function AddKeychainMemberAction({
 function AddKeychainMemberModal({
   isOpen,
   keychainId,
-  keychainType,
   onClose,
+  type,
 }: {
   isOpen: boolean;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  keychainType: KeychainType;
   onClose: () => void;
+  type: SupportedKeychainType;
 }) {
   const { userId } = useAuth();
 
@@ -149,16 +149,13 @@ function AddKeychainMemberModal({
   );
 
   const handleAddKeychainMember = (userId: UserId) => {
-    match(keychainType)
+    match(type)
       .with("consumption", () =>
         addConsumerKeychainMember({
           body: { userId },
           path: { consumerKeychainId: keychainId },
         }),
       )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
       .with("api", () =>
         addKnodeApiKeychainMember({
           body: { userId },
@@ -171,16 +168,13 @@ function AddKeychainMemberModal({
   const checkUserKeychainMembership = async (userId: UserId) => {
     const {
       data: { isMember },
-    } = await match(keychainType)
+    } = await match(type)
       .with("consumption", () =>
         bffApi.getConsumerKeychainMembership({
           client,
           path: { consumerKeychainId: keychainId, userId },
         }),
       )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
       .with("api", () =>
         bffApi.getKnodeApiKeychainMembership({
           client,

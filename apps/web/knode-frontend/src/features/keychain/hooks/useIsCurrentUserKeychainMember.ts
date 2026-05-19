@@ -13,11 +13,11 @@ import { match } from "ts-pattern";
 import { useAuth } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychainType } from "../models/commons";
 
 export function useIsCurrentUserKeychainMember(
   keychainId: ConsumerKeychainId | KnodeApiKeychainId,
-  type: Extract<KeychainType, "api" | "consumption">,
+  type: SupportedKeychainType,
 ) {
   const { userId } = useAuth();
 

@@ -18,7 +18,7 @@ import { match } from "ts-pattern";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychainType } from "../models/commons";
 
 import {
   publicKeyUploadFormDefaultValues,
@@ -32,7 +32,7 @@ interface Props {
   isOpen: boolean;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   onClose: () => void;
-  type: KeychainType;
+  type: SupportedKeychainType;
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -102,9 +102,6 @@ export function UploadPublicKeyModal({
           },
         ),
       )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
       .with("api", () =>
         uploadKnodeApiKeychainKey(
           {

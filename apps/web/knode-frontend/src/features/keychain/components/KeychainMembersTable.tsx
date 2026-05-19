@@ -32,13 +32,13 @@ import { match } from "ts-pattern";
 import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychainType } from "../models/commons";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   members: bffApi.User[];
-  type: KeychainType;
+  type: SupportedKeychainType;
 }
 
 export function KeychainMembersTable({
@@ -105,7 +105,7 @@ function RemoveFromKeychainAction({
   userId,
 }: {
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  type: KeychainType;
+  type: SupportedKeychainType;
   userId: UserId;
 }) {
   const queryClient = useQueryClient();
@@ -157,9 +157,6 @@ function RemoveFromKeychainAction({
             userId,
           },
         });
-      })
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
       })
       .with("api", () => {
         deleteKnodeApiKeychainMember({

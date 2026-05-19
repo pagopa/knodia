@@ -39,14 +39,14 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychainType } from "../models/commons";
 
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keys: bffApi.KeychainKey[];
-  type: KeychainType;
+  type: SupportedKeychainType;
 }
 
 export function KeychainPublicKeysTable({
@@ -146,7 +146,7 @@ function DownloadPublicKeyAction({
   canDownloadKey: boolean;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
-  type: KeychainType;
+  type: SupportedKeychainType;
 }) {
   async function handleDownloadPublicKey() {
     try {
@@ -160,9 +160,6 @@ function DownloadPublicKeyAction({
             },
           }),
         )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
         .with("api", () =>
           bffApi.downloadKnodeApiKeychainKey({
             client,
@@ -226,7 +223,7 @@ function RemoveFromKeychainAction({
 }: {
   keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
-  type: KeychainType;
+  type: SupportedKeychainType;
 }) {
   const queryClient = useQueryClient();
   const {
@@ -277,9 +274,6 @@ function RemoveFromKeychainAction({
             keyId,
           },
         });
-      })
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
       })
       .with("api", () => {
         deleteKnodeApiKeychainKey({
