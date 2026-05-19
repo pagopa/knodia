@@ -17,6 +17,7 @@
     "./externalResource": "./src/externalResource.ts",
     "./ids": "./src/ids/index.ts",
     "./localization": "./src/localization.ts",
+    "./pgErrorCodes": "./src/pgErrorCodes.ts",
     "./protobuf": "./src/protobuf.ts",
     "./types": "./src/types.ts",
     "./services": "./src/services.ts",
