@@ -4,6 +4,7 @@ import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import {
   getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
+  getTestKnodeApiTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
 import { createTestLogger } from "@knodia/test-commons/utils";
@@ -13,6 +14,7 @@ import {
   type ExternalUISessionAuthData,
   extractAuthDataFromToken,
   type InternalAuthData,
+  type KnodeApiAuthData,
   type UISessionAuthData,
 } from "../../src/auth/authData.ts";
 import { validateAuthorization } from "../../src/auth/authorization.ts";
@@ -31,6 +33,7 @@ const technicalUISessionAuthData = extractAuthDataFromToken(
 const externalUISessionAuthData = extractAuthDataFromToken(
   getTestExternalUISessionTokenClaims(),
 );
+const knodeApiAuthData = extractAuthDataFromToken(getTestKnodeApiTokenClaims());
 
 const { logger } = createTestLogger();
 
@@ -153,6 +156,28 @@ describe("validateAuthorization", () => {
         forbiddenError(
           `Invalid token type "external-ui-session" for this operation`,
         ),
+      );
+    });
+  });
+
+  describe("knode-api token", () => {
+    it("succeeds when knode-api is admitted", () => {
+      const ctx = buildCtx(knodeApiAuthData);
+
+      const result = validateAuthorization(ctx, [{ tokenType: "knode-api" }]);
+      const resultAuthData: KnodeApiAuthData = result.authData;
+      // ^ Type narrowing check: result.authData is KnodeApiAuthData
+      expect(resultAuthData).toEqual(knodeApiAuthData);
+      expect(result.authData.tokenType).toBe("knode-api");
+    });
+
+    it("throws forbidden (403) when knode-api is not admitted", () => {
+      const ctx = buildCtx(knodeApiAuthData);
+
+      expect(() =>
+        validateAuthorization(ctx, [{ tokenType: "internal" }]),
+      ).toThrow(
+        forbiddenError(`Invalid token type "knode-api" for this operation`),
       );
     });
   });
