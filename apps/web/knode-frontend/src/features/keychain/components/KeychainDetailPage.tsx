@@ -149,6 +149,8 @@ export function KeychainDetailPage<TTab extends string>({
   );
 }
 
+// Placeholder until KN-619 wires the GET/add/remove members endpoints
+// for API keychains. The table renders its native empty banner in the meantime.
 function ApiMembersTab({ keychainId }: { keychainId: string }) {
   return (
     <Section title="Members">
@@ -162,9 +164,8 @@ function ApiMembersTab({ keychainId }: { keychainId: string }) {
   );
 }
 
-// TODO KN-619: wire up Public Keys and Members tabs for API keychains
-// (upload/download/delete keys, add/remove members). The tables below render
-// their native empty banner while the API endpoints are not yet wired.
+// Placeholder until KN-619 wires the GET/upload/download/delete keys endpoints
+// for API keychains. The table renders its native empty banner in the meantime.
 function ApiPublicKeysTab({ keychainId }: { keychainId: string }) {
   return (
     <Section title="Public Keys">
