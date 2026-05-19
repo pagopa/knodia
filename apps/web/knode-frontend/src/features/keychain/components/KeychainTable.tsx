@@ -73,15 +73,17 @@ export function KeychainTable({
             <Cell>{keychain.membersCount}</Cell>
             <Cell>
               <div className="flex justify-end">
-                <ButtonLinkWithPreload
-                  hierarchy="neutral"
-                  kind="outlined"
-                  params={{ id: keychain.id }}
-                  size="icon-sm"
-                  to={getKeychainDetailsHref(type)}
-                >
-                  <ArrowRightIcon />
-                </ButtonLinkWithPreload>
+                {type === "consumption" && (
+                  <ButtonLinkWithPreload
+                    hierarchy="neutral"
+                    kind="outlined"
+                    params={{ id: keychain.id }}
+                    size="icon-sm"
+                    to={getKeychainDetailsHref(type)}
+                  >
+                    <ArrowRightIcon />
+                  </ButtonLinkWithPreload>
+                )}
               </div>
             </Cell>
           </Row>
@@ -98,7 +100,7 @@ function getKeychainDetailsHref(type: KeychainType) {
       throw new Error("Producer keychains are not supported yet.");
     })
     .with("api", () => {
-      throw new Error("API keychains are not supported yet.");
+      throw new Error("API keychain details page is not available yet.");
     })
     .exhaustive();
 }

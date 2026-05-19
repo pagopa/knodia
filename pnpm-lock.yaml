@@ -1667,48 +1667,21 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
-      '@knodia/db-readmodel-commons':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/commons
-      '@knodia/db-readmodel-eservice':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/eservice
-      '@knodia/db-signal-hub':
-        specifier: workspace:*
-        version: link:../../../packages/db/signal-hub
-      '@knodia/eservice-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/eservice-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
-      '@knodia/signal-hub-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/signal-hub-models
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.5
       fastify-type-provider-zod:
         specifier: 'catalog:'
         version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.8.5)(openapi-types@12.1.3)(zod@4.2.0)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
-      ts-pattern:
-        specifier: 'catalog:'
-        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1722,9 +1695,6 @@ importers:
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -1734,9 +1704,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.16.0
       concurrently:
         specifier: 'catalog:'
         version: 9.2.1
@@ -2797,9 +2764,6 @@ importers:
 
   packages/db/signal-hub:
     dependencies:
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../models/common-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
@@ -3394,28 +3358,6 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../purpose-models
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
-    devDependencies:
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../../typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 25.0.0
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/models/signal-hub-models:
-    dependencies:
       zod:
         specifier: 'catalog:'
         version: 4.2.0

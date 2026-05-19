@@ -22,6 +22,7 @@ import {
   type KnodeApiKeychainId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { match, P } from "ts-pattern";
 
 import type {
   API_GetKnodeApiKeychainKeysQueryParams,
@@ -29,6 +30,7 @@ import type {
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KnodeApiKeychainPatch,
   API_KnodeApiKeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -39,6 +41,8 @@ import {
   createKnodeApiKeychainKeyAddedV1Event,
   createKnodeApiKeychainKeyRemovedV1Event,
   createKnodeApiKeychainMemberAddedV1Event,
+  createKnodeApiKeychainMemberRemovedV1Event,
+  createKnodeApiKeychainUpdatedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
   retrieveFlatKnodeApiKeychain,
@@ -50,6 +54,7 @@ import {
   addKeyToKeychain,
   addMemberToKeychain,
   removeKeyFromKeychain,
+  removeMemberFromKeychain,
 } from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
@@ -170,6 +175,7 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
     },
+
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
@@ -293,7 +299,6 @@ export function knodeApiKeychainServiceBuilder(
 
       return await readmodelService.getKnodeApiKeychains(params);
     },
-
     async removeKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
@@ -328,6 +333,81 @@ export function knodeApiKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+
+    async removeKnodeApiKeychainMember(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      userId: UserId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(
+        `Removing member ${userId} from Knode API Keychain ${knodeApiKeychainId}`,
+      );
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      const { updatedKeychain: updatedKnodeApiKeychain } =
+        removeMemberFromKeychain(knodeApiKeychain.data, userId, authData);
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainMemberRemovedV1Event(
+          updatedKnodeApiKeychain,
+          userId,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+
+    async updateKnodeApiKeychain(
+      knodeApiKeychainId: KnodeApiKeychainId,
+      update: API_KnodeApiKeychainPatch,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KnodeApiKeychain>> {
+      logger.info(`Updating Knode API Keychain ${knodeApiKeychainId}`);
+
+      const knodeApiKeychain = await retrieveKnodeApiKeychain(
+        knodeApiKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        knodeApiKeychain.data,
+      );
+
+      const updatedKnodeApiKeychain: KnodeApiKeychain = {
+        ...knodeApiKeychain.data,
+        description: match(update.description)
+          .with(null, () => undefined)
+          .with(undefined, () => knodeApiKeychain.data.description)
+          .with(P.nonNullable, (desc) => desc)
+          .exhaustive(),
+        name: update.name ?? knodeApiKeychain.data.name,
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createKnodeApiKeychainUpdatedV1Event(
+          updatedKnodeApiKeychain,
+          correlationId,
+          knodeApiKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedKnodeApiKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       keySeed: API_KeychainKeySeed,
