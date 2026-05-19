@@ -49,6 +49,10 @@
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
+    "apps/services/*-manager": {
+      "entry": ["tests/**/*.ts"],
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
     "apps/web/signup-frontend": {
       "entry": [],
       "ignore": ["**/*"]
