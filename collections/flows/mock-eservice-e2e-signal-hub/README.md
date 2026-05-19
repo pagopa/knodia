@@ -5,7 +5,9 @@ e-service.
 
 ## Rotation
 
-Fiscal code `RMNLNR03H12H501Z` has a rotating response, cycling across three different values, one per period. The response to `GET /residence` and the seed for pseudonymization are rotated in sync, as per the table below:
+Fiscal codes `RMNLNR03H12H501Z`, `CNTLCC89E26L378K`, `RSSGRG65D48G702L`
+have a rotating response. The response to `GET /residence` and the seed
+exposed by `/pseudonymization` rotate in sync, and a cronjob pushes the matching `CREATE` / `UPDATE` / `DELETE` signals each period.
 
 | periodId % 3 | `/residence`    | `/pseudonymization` | SignalHub signal |
 | ------------ | --------------- | ------------------- | ---------------- |
@@ -13,22 +15,26 @@ Fiscal code `RMNLNR03H12H501Z` has a rotating response, cycling across three dif
 | 1            | address B (200) | seed B              | UPDATE           |
 | 2            | 404             | seed C              | DELETE           |
 
-The matching `CREATE` / `UPDATE` / `DELETE` signals are pushed by a cron job.
+Set `SEED_EXPIRE_SECONDS=30` (or a similar short value) on mock-eservice
+and on the mock-eservice-signal-hub-cronjob to observe the full cycle in a reasonable time frame.
 
-Set `SEED_EXPIRE_SECONDS=30` (or similar short value) on mock-eservice and on the cron job to observe the full cycle in a reasonable time frame.
-
-## Run
+## Token setup
 
 1. **1 - Get Mock Eservice (Signal Hub Bearer)** — captures the seeded
    `eserviceId` as a Bruno var.
-2. Run `bearer-token-flow` from **step 2** to **step 11** (skip
-   step 1 — the eserviceId is already set). Between step 10 and
-   step 11, run the signing script as described in the
-   `bearer-token-flow/README.md`.
-3. **Step 2 – Get Residence (Signal Hub Bearer)** — calls
-   `GET /natural-persons/RMNLNR03H12H501Z/residence` with the `access_token`
-   captured by step 11.
-4. **3 - Get Pseudonymization (Signal Hub Bearer)** — calls
-   `GET /pseudonymization` with the same `access_token`.
-5. Re-run both 3 times across period boundaries to observe the full cycle:
-   expect `A → B → 404` for residence and three distinct seeds.
+2. Run `bearer-token-flow` from **step 2** to **step 11** (skip step 1 —
+   the eserviceId is already set). Between step 10 and step 11, run the
+   signing script as described in the `bearer-token-flow/README.md`.
+
+Steps 2 and 3 below use the `{{access_token}}` Bruno var stashed by
+step 11.
+
+## Fetch data and observe rotation
+
+3. **2 - Get Residence (Signal Hub Bearer)** — `GET /natural-persons/RMNLNR03H12H501Z/residence`.
+4. **3 - Get Pseudonymization (Signal Hub Bearer)** — `GET /pseudonymization`.
+5. Poll the Signal Hub for signals related to the `eserviceId` captured in step 1, wait for new signals.
+6. Compute `sha256(<fiscalCode> + <seed from step 4>)` and observe it matches the `object_id` of a `CREATE`/`UPDATE`/`DELETE` signal from step 5. Repeat from step 3 for the next period.
+
+Re-run this in a loop to observe the full cycle: expect
+`A → B → 404` on residence and three distinct seeds on pseudonymization.
