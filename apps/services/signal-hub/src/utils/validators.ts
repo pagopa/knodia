@@ -7,23 +7,23 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   eserviceNotActive,
-  eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
   newerSignalsExist,
   signalAlreadyExists,
 } from "../models/errors.ts";
+import { retrieveEserviceByIdAndProducerId } from "./readmodelUtils.ts";
 
 export async function assertEserviceIsActiveWithSignalHubEnabled(
   eserviceId: EserviceId,
   producerId: OrganizationId,
   readmodelService: ReadmodelService,
 ) {
-  const eservice = await readmodelService.getEserviceByIdAndProducerId(
+  const eservice = await retrieveEserviceByIdAndProducerId(
     eserviceId,
     producerId,
+    readmodelService,
   );
 
-  assertEserviceBelongsToProducer(eservice?.data, eserviceId, producerId);
   assertEserviceIsActive(eservice.data);
   assertEserviceHasSignalHubEnabled(eservice.data);
 }
@@ -44,16 +44,6 @@ export async function assertSignalCanBePushed(
   );
   if (newerSignals.length > 0) {
     throw newerSignalsExist(signalId, eserviceId);
-  }
-}
-
-function assertEserviceBelongsToProducer(
-  eservice: Eservice | undefined,
-  eserviceId: EserviceId,
-  producerId: OrganizationId,
-): asserts eservice is Eservice {
-  if (!eservice) {
-    throw eserviceNotFoundForProducer(eserviceId, producerId);
   }
 }
 
