@@ -27,7 +27,12 @@ vars:post-response {
 }
 
 script:post-response {
-  if (res.status === 200) return
+  if (res.status === 200) {
+    // Also expose under the same name the script-derived env uses, so downstream
+    // requests can `Authorization: {{knode-api-jwt}}` regardless of token source.
+    bru.setVar("knode-api-jwt", `Bearer ${res.body.access_token}`)
+    return
+  }
 
   const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-key>"
   const keychainId = bru.getVar("knodeApiKeychainId") || bru.getEnvVar("knodeApiKeychainId") || "<knodeApiKeychainId>"
