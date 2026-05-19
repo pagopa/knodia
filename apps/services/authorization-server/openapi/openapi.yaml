@@ -174,7 +174,7 @@ paths:
       operationId: createEserviceAccessToken
       summary: Create E-service Access Token
       tags:
-        - e-service-access-token
+        - eservice-access-token
       description: Issue an E-service access token
       requestBody:
         required: true
@@ -261,6 +261,6 @@ tags:
   - description: Health check routes
     name: health
   - description: E-service access token issuance
-    name: e-service-access-token
+    name: eservice-access-token
   - description: Knode API access token issuance
     name: knode-api-token
