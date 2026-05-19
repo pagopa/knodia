@@ -160,7 +160,7 @@ describe("POST /token", async () => {
     publicKeyEncodedPem,
   } = await getMockClientAssertion({
     standardClaimsOverride: {
-      aud: ["test-audience-1"],
+      aud: ["test-eservice-audience-1"],
       iss: consumerKeychainId,
       purpose_id: purpose.id,
       sub: consumerKeychainId,

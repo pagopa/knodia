@@ -29,6 +29,7 @@ import {
   API_Keychains,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
+  API_KnodeApiKeychainPatch,
   API_KnodeApiKeychainSeed,
   API_User,
 } from "../models/api.ts";
@@ -111,6 +112,49 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
           headers: MetadataVersionHeader,
           properties: API_Keychain.meta({
             description: "Knode API Keychain retrieved successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: knodeApiKeychain,
+        metadata: { version },
+      } = await knodeApiKeychainService.updateKnodeApiKeychain(
+        req.params.knodeApiKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(knodeApiKeychain));
+    },
+    method: "PATCH",
+    schema: {
+      body: API_KnodeApiKeychainPatch,
+      consumes: ["application/merge-patch+json"],
+      description: "Update a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "updateKnodeApiKeychain",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Knode API Keychain updated successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -402,6 +446,49 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.knodeApiKeychain],
     },
     url: "/knodeApiKeychains/:knodeApiKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: knodeApiKeychain,
+        metadata: { version },
+      } = await knodeApiKeychainService.removeKnodeApiKeychainMember(
+        req.params.knodeApiKeychainId,
+        unsafeBrandUserId(req.params.userId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(knodeApiKeychain));
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a member from a Knode API Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeKnodeApiKeychainMember",
+      params: API_KnodeApiKeychainMemberPathParams,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Knode API Keychain member removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Knode API Keychain or Member not found",
+        }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId/members/:userId",
   });
 
   fastify.route({

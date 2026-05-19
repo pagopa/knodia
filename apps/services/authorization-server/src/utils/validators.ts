@@ -143,6 +143,7 @@ export async function verifyClientAssertionSignature(
     });
 
     await verifyClientAssertionJwtSignature({
+      acceptedAudiences: config.eserviceClientAssertionAcceptedAudiences,
       clientAssertionAlg,
       clientAssertionJWS,
       config,
@@ -200,6 +201,7 @@ export async function verifyKnodeApiClientAssertionSignature(
           );
 
     await verifyClientAssertionJwtSignature({
+      acceptedAudiences: config.knodeApiClientAssertionAcceptedAudiences,
       clientAssertionAlg,
       clientAssertionJWS,
       config,
@@ -373,16 +375,14 @@ function translateClientAssertionVerificationError(
 }
 
 async function verifyClientAssertionJwtSignature({
+  acceptedAudiences,
   clientAssertionAlg,
   clientAssertionJWS,
-  config: {
-    clientAssertionAcceptedAudiences,
-    clientAssertionMaxTokenAgeSeconds,
-    jwtClockToleranceSeconds,
-  },
+  config: { clientAssertionMaxTokenAgeSeconds, jwtClockToleranceSeconds },
   publicKey,
   subject,
 }: {
+  acceptedAudiences: string[];
   clientAssertionAlg: Algorithm;
   clientAssertionJWS: string;
   config: AuthorizationServerConfig;
@@ -400,7 +400,7 @@ async function verifyClientAssertionJwtSignature({
 
   await jwtVerify(clientAssertionJWS, verificationKey, {
     algorithms: [publicKey.algorithm],
-    audience: clientAssertionAcceptedAudiences,
+    audience: acceptedAudiences,
     clockTolerance: jwtClockToleranceSeconds,
     issuer: subject,
     maxTokenAge: clientAssertionMaxTokenAgeSeconds,
