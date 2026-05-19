@@ -994,6 +994,20 @@ services:
       PORT: "3000"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      READMODEL_DB_USER: local_orion_signal_hub_user
+      READMODEL_DB_PASSWORD: local_orion_signal_hub_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      SIGNAL_HUB_DB_USER: local_orion_signal_hub_user
+      SIGNAL_HUB_DB_PASSWORD: local_orion_signal_hub_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: orion_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
 
   # ============================================================
   # Lynx Node
@@ -1648,6 +1662,20 @@ services:
       PORT: "3000"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      READMODEL_DB_USER: local_lynx_signal_hub_user
+      READMODEL_DB_PASSWORD: local_lynx_signal_hub_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      SIGNAL_HUB_DB_USER: local_lynx_signal_hub_user
+      SIGNAL_HUB_DB_PASSWORD: local_lynx_signal_hub_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: lynx_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
 
   # ============================================================
   # Frontends
