@@ -70,8 +70,10 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         )
         .with(
           { tokenType: "external-ui-session" },
-          (): HTTPServiceLoggerMetadata => ({
+          (a): HTTPServiceLoggerMetadata => ({
             correlationId,
+            organizationId: a.consumer.id,
+            organizationKnodeId: a.consumer.knodeId,
           }),
         )
         .with(

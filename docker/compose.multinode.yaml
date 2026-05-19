@@ -551,6 +551,7 @@ services:
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-orion:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5001"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
@@ -908,7 +909,8 @@ services:
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
-      CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
@@ -990,6 +992,22 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      READMODEL_DB_USER: local_orion_signal_hub_user
+      READMODEL_DB_PASSWORD: local_orion_signal_hub_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      SIGNAL_HUB_DB_USER: local_orion_signal_hub_user
+      SIGNAL_HUB_DB_PASSWORD: local_orion_signal_hub_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: orion_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
 
   # ============================================================
   # Lynx Node
@@ -1201,6 +1219,7 @@ services:
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-lynx:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/external-ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5002"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
@@ -1558,7 +1577,8 @@ services:
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
-      CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
+      KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
@@ -1640,6 +1660,22 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      READMODEL_DB_USER: local_lynx_signal_hub_user
+      READMODEL_DB_PASSWORD: local_lynx_signal_hub_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      SIGNAL_HUB_DB_USER: local_lynx_signal_hub_user
+      SIGNAL_HUB_DB_PASSWORD: local_lynx_signal_hub_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: lynx_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
 
   # ============================================================
   # Frontends

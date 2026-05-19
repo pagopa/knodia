@@ -6,6 +6,7 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { SignalType } from "@knodia/signal-hub-models";
 
 import { ExternalResource } from "@knodia/common-models/externalResource";
+import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
 
@@ -101,7 +102,7 @@ export function signalHubServiceBuilder(
         if (
           error instanceof DrizzleQueryError &&
           error.cause instanceof DatabaseError &&
-          error.cause?.code === "23505" // unique_violation
+          error.cause?.code === PG_UNIQUE_VIOLATION
         ) {
           throw signalAlreadyExists(signalId, eserviceId);
         }

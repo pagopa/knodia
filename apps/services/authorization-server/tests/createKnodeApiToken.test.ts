@@ -101,7 +101,7 @@ describe("POST /knodeApiToken", async () => {
     publicKeyEncodedPem,
   } = await getMockKnodeApiClientAssertion({
     standardClaimsOverride: {
-      aud: ["test-audience-1"],
+      aud: ["test-knode-api-accepted-audience-1"],
       iss: knodeApiKeychainId,
       knode_id: remoteKnodeId,
       sub: knodeApiKeychainId,

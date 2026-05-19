@@ -5,8 +5,12 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -15,7 +19,8 @@ const errorCodes = {
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
   NEWER_SIGNALS_EXIST: "0005",
-  CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0006",
+  NON_CONSECUTIVE_SIGNAL_ID: "0006",
+  CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -62,7 +67,7 @@ export function eserviceSignalHubNotEnabled(eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_SIGNAL_HUB_NOT_ENABLED",
     detail: `E-service with id ${eserviceId} does not have signal hub enabled`,
-    status: HTTP_STATUS_FORBIDDEN,
+    status: HTTP_STATUS_CONFLICT,
     title: "E-service Signal Hub Not Enabled",
   });
 }
@@ -71,8 +76,21 @@ export function newerSignalsExist(signalId: number, eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "NEWER_SIGNALS_EXIST",
     detail: `Signals with id greater than ${signalId} have already been pushed for E-service ${eserviceId}`,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_BAD_REQUEST,
     title: "Newer Signals Exist",
+  });
+}
+
+export function nonConsecutiveSignalId(
+  signalId: number,
+  maxSignalId: number,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "NON_CONSECUTIVE_SIGNAL_ID",
+    detail: `Signal id ${signalId} is not consecutive to the last pushed signal id ${maxSignalId} for E-service ${eserviceId}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Non Consecutive Signal Id",
   });
 }
 
@@ -80,7 +98,7 @@ export function signalAlreadyExists(signalId: number, eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "SIGNAL_ALREADY_EXISTS",
     detail: `Signal with id ${signalId} already exists for E-service ${eserviceId}`,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_BAD_REQUEST,
     title: "Signal Already Exists",
   });
 }

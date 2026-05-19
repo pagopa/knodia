@@ -1,7 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { type EserviceId } from "@knodia/common-models/ids";
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, max } from "drizzle-orm";
 
 import { toSignal } from "../converters/converters.ts";
 import { type NewSignalHubSignal, signalHubSignal } from "../signalHub.ts";
@@ -10,16 +10,12 @@ export type SignalHubDbService = ReturnType<typeof signalHubDbServiceBuilder>;
 
 export function signalHubDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getNewerSignals(signalId: number, eserviceId: EserviceId) {
-      return await db
-        .select({ signalId: signalHubSignal.signalId })
+    async getMaxSignalId(eserviceId: EserviceId): Promise<number> {
+      const [row] = await db
+        .select({ max: max(signalHubSignal.signalId) })
         .from(signalHubSignal)
-        .where(
-          and(
-            eq(signalHubSignal.eserviceId, eserviceId),
-            gt(signalHubSignal.signalId, signalId),
-          ),
-        );
+        .where(eq(signalHubSignal.eserviceId, eserviceId));
+      return row?.max ?? 0;
     },
     async getSignals(signalId: number, eserviceId: EserviceId, size: number) {
       const signals = await db

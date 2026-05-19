@@ -81,8 +81,10 @@ export async function handleKeychainEvent(
       {
         type: P.union(
           "KnodeApiKeychainCreatedV1",
+          "KnodeApiKeychainUpdatedV1",
           "KnodeApiKeychainKeyAddedV1",
           "KnodeApiKeychainMemberAddedV1",
+          "KnodeApiKeychainMemberRemovedV1",
           "KnodeApiKeychainKeyRemovedV1",
         ),
       },

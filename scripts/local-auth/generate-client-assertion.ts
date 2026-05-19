@@ -23,7 +23,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const COLLECTIONS_ENV_PATH = resolve(__dirname, "../../collections/.env");
 
 // Defaults target the local authorization-server. Override with --aud / --duration
-// for envs whose CLIENT_ASSERTION_ACCEPTED_AUDIENCES /
+// for envs whose ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES /
+// KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES /
 // CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS differ.
 const DEFAULT_AUD = "test.knodia.org";
 const DEFAULT_DURATION_SECONDS = 300;

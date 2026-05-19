@@ -92,7 +92,7 @@ components:
         objectType:
           type: string
         signalId:
-          format: int32
+          format: int64
           type: integer
           exclusiveMinimum: true
           maximum: 9007199254740991
@@ -112,7 +112,7 @@ components:
       type: object
       properties:
         signalId:
-          format: int32
+          format: int64
           type: integer
           exclusiveMinimum: true
           maximum: 9007199254740991

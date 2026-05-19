@@ -9,11 +9,12 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   consumerNotAuthorizedToPullSignals,
   eserviceNotActive,
-  eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
   newerSignalsExist,
+  nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../models/errors.ts";
+import { retrieveEserviceByIdAndProducerId } from "./readmodelUtils.ts";
 
 export async function assertConsumerAuthorizedToPullSignals(
   organization: ExternalResource<OrganizationId>,
@@ -36,12 +37,12 @@ export async function assertEserviceIsActiveWithSignalHubEnabled(
   producerId: OrganizationId,
   readmodelService: ReadmodelService,
 ) {
-  const eservice = await readmodelService.getEserviceByIdAndProducerId(
+  const eservice = await retrieveEserviceByIdAndProducerId(
     eserviceId,
     producerId,
+    readmodelService,
   );
 
-  assertEserviceBelongsToProducer(eservice?.data, eserviceId, producerId);
   assertEserviceIsActive(eservice.data);
   assertEserviceHasSignalHubEnabled(eservice.data);
 }
@@ -51,31 +52,12 @@ export async function assertSignalCanBePushed(
   eserviceId: EserviceId,
   signalHubDbService: SignalHubDbService,
 ) {
-  const { signals } = await signalHubDbService.getSignals(
-    signalId,
-    eserviceId,
-    1,
-  );
-  if (signals.length > 0) {
-    throw signalAlreadyExists(signalId, eserviceId);
-  }
-
-  const newerSignals = await signalHubDbService.getNewerSignals(
-    signalId,
-    eserviceId,
-  );
-  if (newerSignals.length > 0) {
+  const maxSignalId = await signalHubDbService.getMaxSignalId(eserviceId);
+  if (signalId === maxSignalId) throw signalAlreadyExists(signalId, eserviceId);
+  else if (signalId < maxSignalId)
     throw newerSignalsExist(signalId, eserviceId);
-  }
-}
-
-function assertEserviceBelongsToProducer(
-  eservice: Eservice | undefined,
-  eserviceId: EserviceId,
-  producerId: OrganizationId,
-): asserts eservice is Eservice {
-  if (!eservice) {
-    throw eserviceNotFoundForProducer(eserviceId, producerId);
+  else if (signalId !== maxSignalId + 1) {
+    throw nonConsecutiveSignalId(signalId, maxSignalId, eserviceId);
   }
 }
 

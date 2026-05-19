@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
@@ -12,15 +13,17 @@ import { describe, expect, it } from "vitest";
 
 import type { API_PushSeed } from "../src/models/api.ts";
 
+import { toSignalType } from "../src/models/apiConverter.ts";
 import {
   eserviceNotActive,
   eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
   newerSignalsExist,
+  nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { getAllSignals, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
 
@@ -54,6 +57,20 @@ describe("POST /signals (pushSignal)", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({ signalId: defaultBody.signalId });
+
+    const expectedSignal: SignalHubSignalSQL = {
+      correlationId: expect.any(String),
+      createdAt: expect.any(Date),
+      eserviceId: defaultBody.eserviceId,
+      id: 1,
+      objectId: defaultBody.objectId,
+      objectType: defaultBody.objectType,
+      signalId: defaultBody.signalId,
+      signalType: toSignalType(defaultBody.signalType),
+    };
+    const retrievedSignals = await getAllSignals();
+    expect(retrievedSignals).toHaveLength(1);
+    expect(retrievedSignals[0]).toEqual(expectedSignal);
   });
 
   it("should return 404 when the e-service does not exist", async () => {
@@ -83,7 +100,7 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 403 when signal hub is not enabled for the e-service", async () => {
+  it("should return 409 when signal hub is not enabled for the e-service", async () => {
     const eserviceWithoutSignalHubEnabled: Eservice = {
       ...eservice,
       isSignalHubEnabled: false,
@@ -96,7 +113,7 @@ describe("POST /signals (pushSignal)", () => {
       eserviceWithoutSignalHubEnabled.id,
     );
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(409);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
@@ -116,7 +133,7 @@ describe("POST /signals (pushSignal)", () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 409 when a signal with the same signalId already exists", async () => {
+  it("should return 400 when a signal with the same signalId already exists", async () => {
     await seedEservice();
     await pushSignal();
 
@@ -124,13 +141,14 @@ describe("POST /signals (pushSignal)", () => {
 
     const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 409 when signals with a higher signalId already exist", async () => {
+  it("should return 400 when signals with a higher signalId already exist", async () => {
     await seedEservice();
 
+    await pushSignal();
     await pushSignal({
       ...defaultBody,
       signalId: defaultBody.signalId + 1,
@@ -140,7 +158,28 @@ describe("POST /signals (pushSignal)", () => {
 
     const error = newerSignalsExist(defaultBody.signalId, eservice.id);
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 400 when the request signalId is not consecutive", async () => {
+    await seedEservice();
+
+    await pushSignal();
+
+    const wrongSignalId = defaultBody.signalId + 10;
+    const response = await pushSignal({
+      ...defaultBody,
+      signalId: wrongSignalId,
+    });
+
+    const error = nonConsecutiveSignalId(
+      wrongSignalId,
+      defaultBody.signalId,
+      eservice.id,
+    );
+
+    expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 

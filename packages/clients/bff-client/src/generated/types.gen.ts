@@ -773,6 +773,11 @@ export type ConsumerKeychainSeed = {
     name: KeychainLocalizedName;
 };
 
+export type KnodeApiKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
+};
+
 export type Keychain = {
     id: string;
     keysCount: number;
@@ -1028,6 +1033,10 @@ export type CreateSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1053,6 +1062,10 @@ export type RefreshSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1072,6 +1085,15 @@ export type LogoutData = {
     query?: never;
     url: '/auth/logout';
 };
+
+export type LogoutErrors = {
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
     /**
@@ -2449,6 +2471,81 @@ export type GetConsumerKeychainPurposeLinkResponses = {
 };
 
 export type GetConsumerKeychainPurposeLinkResponse = GetConsumerKeychainPurposeLinkResponses[keyof GetConsumerKeychainPurposeLinkResponses];
+
+export type GetKnodeApiKeychainsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/knodeApiKeychains';
+};
+
+export type GetKnodeApiKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetKnodeApiKeychainsError = GetKnodeApiKeychainsErrors[keyof GetKnodeApiKeychainsErrors];
+
+export type GetKnodeApiKeychainsResponses = {
+    /**
+     * Knode API Keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
+
+export type CreateKnodeApiKeychainData = {
+    body: KnodeApiKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/knodeApiKeychains';
+};
+
+export type CreateKnodeApiKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
+
+export type CreateKnodeApiKeychainResponses = {
+    /**
+     * Knode API Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateKnodeApiKeychainResponse = CreateKnodeApiKeychainResponses[keyof CreateKnodeApiKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;

@@ -9,7 +9,6 @@ import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
-import { config } from "@/config/config";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
@@ -256,12 +255,6 @@ function TechnicalDetailsSection({
         <GenericInfoCard label="Available on Signal Hub">
           {data.isSignalHubEnabled ? "Yes" : "No"}
         </GenericInfoCard>
-        {data.isSignalHubEnabled && (
-          <DocumentRecap
-            name={`Appoint ${config.knodeId} Knode as the data processor`}
-            showDownloadButton
-          />
-        )}
       </FieldGroup>
     </>
   );
