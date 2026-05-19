@@ -4,8 +4,12 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -57,7 +61,7 @@ export function newerSignalsExist(signalId: number, eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "NEWER_SIGNALS_EXIST",
     detail: `Signals with id greater than ${signalId} have already been pushed for E-service ${eserviceId}`,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_BAD_REQUEST,
     title: "Newer Signals Exist",
   });
 }
