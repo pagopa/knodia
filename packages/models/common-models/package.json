@@ -20,6 +20,7 @@
     "./protobuf": "./src/protobuf.ts",
     "./types": "./src/types.ts",
     "./services": "./src/services.ts",
+    "./targetKnodeUrls": "./src/targetKnodeUrls.ts",
     "./utils": "./src/utils.ts"
   },
   "dependencies": {

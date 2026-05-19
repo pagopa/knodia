@@ -23,8 +23,10 @@ export function toAPI_ConsumerClientAssertionVerificationResponse(
 
 export function toAPI_KnodeApiClientAssertionVerificationResponse(
   key: keychainProcessApi.KeychainKey,
+  keychain: keychainProcessApi.Keychain,
 ): API_KnodeApiClientAssertionVerificationResponse {
   return {
+    ownerId: keychain.ownerId,
     publicKey: {
       algorithm: key.algorithm,
       encodedPem: key.encodedPem,

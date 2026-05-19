@@ -57,6 +57,10 @@ export interface KnodeApiKeychainCreatedV1 {
   knodeApiKeychain: KnodeApiKeychainV1 | undefined;
 }
 
+export interface KnodeApiKeychainUpdatedV1 {
+  knodeApiKeychain: KnodeApiKeychainV1 | undefined;
+}
+
 export interface KnodeApiKeychainKeyAddedV1 {
   knodeApiKeychain: KnodeApiKeychainV1 | undefined;
   kid: string;
@@ -840,6 +844,70 @@ export const KnodeApiKeychainCreatedV1: MessageFns<KnodeApiKeychainCreatedV1> = 
   },
   fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainCreatedV1>, I>>(object: I): KnodeApiKeychainCreatedV1 {
     const message = createBaseKnodeApiKeychainCreatedV1();
+    message.knodeApiKeychain = (object.knodeApiKeychain !== undefined && object.knodeApiKeychain !== null)
+      ? KnodeApiKeychainV1.fromPartial(object.knodeApiKeychain)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseKnodeApiKeychainUpdatedV1(): KnodeApiKeychainUpdatedV1 {
+  return { knodeApiKeychain: undefined };
+}
+
+export const KnodeApiKeychainUpdatedV1: MessageFns<KnodeApiKeychainUpdatedV1> = {
+  encode(message: KnodeApiKeychainUpdatedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.knodeApiKeychain !== undefined) {
+      KnodeApiKeychainV1.encode(message.knodeApiKeychain, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): KnodeApiKeychainUpdatedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseKnodeApiKeychainUpdatedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.knodeApiKeychain = KnodeApiKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): KnodeApiKeychainUpdatedV1 {
+    return {
+      knodeApiKeychain: isSet(object.knodeApiKeychain)
+        ? KnodeApiKeychainV1.fromJSON(object.knodeApiKeychain)
+        : undefined,
+    };
+  },
+
+  toJSON(message: KnodeApiKeychainUpdatedV1): unknown {
+    const obj: any = {};
+    if (message.knodeApiKeychain !== undefined) {
+      obj.knodeApiKeychain = KnodeApiKeychainV1.toJSON(message.knodeApiKeychain);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<KnodeApiKeychainUpdatedV1>, I>>(base?: I): KnodeApiKeychainUpdatedV1 {
+    return KnodeApiKeychainUpdatedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainUpdatedV1>, I>>(object: I): KnodeApiKeychainUpdatedV1 {
+    const message = createBaseKnodeApiKeychainUpdatedV1();
     message.knodeApiKeychain = (object.knodeApiKeychain !== undefined && object.knodeApiKeychain !== null)
       ? KnodeApiKeychainV1.fromPartial(object.knodeApiKeychain)
       : undefined;
