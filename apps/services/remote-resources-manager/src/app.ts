@@ -22,6 +22,7 @@ import {
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
+import { makeK2K2GatewayApiClientFactory } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
@@ -48,6 +49,8 @@ export function buildApp({
   const remoteResourceDbService =
     remoteResourceDbServiceBuilder(remoteResourceDb);
   const readmodelService = readmodelServiceBuilder(readmodelDb);
+  const getK2K2GatewayApiClient =
+    makeK2K2GatewayApiClientFactory(targetKnodeUrls);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -96,26 +99,26 @@ export function buildApp({
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(eserviceRouter, {
       eserviceService: eserviceServiceBuilder(
-        targetKnodeUrls,
+        getK2K2GatewayApiClient,
         remoteResourceDbService,
       ),
     });
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(
-        targetKnodeUrls,
+        getK2K2GatewayApiClient,
         remoteResourceDbService,
         readmodelService,
       ),
     });
     protectedApp.register(purposeRouter, {
       purposeService: purposeServiceBuilder(
-        targetKnodeUrls,
+        getK2K2GatewayApiClient,
         remoteResourceDbService,
         readmodelService,
       ),
     });
     protectedApp.register(organizationRouter, {
-      organizationService: organizationServiceBuilder(targetKnodeUrls),
+      organizationService: organizationServiceBuilder(getK2K2GatewayApiClient),
     });
   });
 

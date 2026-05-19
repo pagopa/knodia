@@ -5,13 +5,13 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type {
   API_CreatedPurposeResource,
   API_GetPurposesQueryParams,
@@ -21,7 +21,6 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import { toK2KAPI_KnodeId } from "../models/knode/apiConverter.ts";
 import {
   toAPI_Purpose,
@@ -36,7 +35,7 @@ import {
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
 export function purposeServiceBuilder(
-  targetKnodeUrls: TargetKnodeUrls,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
 ) {
@@ -57,10 +56,7 @@ export function purposeServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.archivePurpose({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
@@ -103,10 +99,7 @@ export function purposeServiceBuilder(
             ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
             : undefined,
         },
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
       });
 
       await remoteResourceDbService.insertPurpose({
@@ -132,10 +125,7 @@ export function purposeServiceBuilder(
         `Getting current Purpose form schemas from Knode ${targetKnodeId}`,
       );
       const { data } = await k2kGatewayApi.getCurrentPurposeFormSchemas({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
       });
       return data;
     },
@@ -159,10 +149,7 @@ export function purposeServiceBuilder(
       assertPurposeExists(remotePurpose, purposeId);
 
       const { data } = await k2kGatewayApi.getPurpose({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
@@ -194,10 +181,7 @@ export function purposeServiceBuilder(
         );
 
         const { data } = await k2kGatewayApi.getPurposes({
-          client: getK2K2GatewayApiClientForTarget(
-            targetKnodeUrls,
-            targetKnodeId,
-          ),
+          client: getK2K2GatewayApiClient(targetKnodeId),
           query: {
             consumerId,
             eserviceId,
@@ -248,10 +232,7 @@ export function purposeServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.reactivatePurpose({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
@@ -274,10 +255,7 @@ export function purposeServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.suspendPurpose({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 

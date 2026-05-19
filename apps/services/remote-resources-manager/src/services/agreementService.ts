@@ -6,13 +6,13 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type {
   API_Agreement,
   API_Agreements,
@@ -22,7 +22,6 @@ import type {
 } from "../models/agreement/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import {
   toAPI_Agreement,
   toK2KAPI_AgreementState,
@@ -36,7 +35,7 @@ import {
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
-  targetKnodeUrls: TargetKnodeUrls,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
 ) {
@@ -59,10 +58,7 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.archiveAgreement({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { agreementId },
       });
 
@@ -87,10 +83,7 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.createAgreementActivationMagicLink({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { agreementId },
       });
 
@@ -121,10 +114,7 @@ export function agreementServiceBuilder(
           eserviceId,
           eserviceVersionId,
         },
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
       });
 
       await remoteResourceDbService.insertAgreement({
@@ -156,10 +146,7 @@ export function agreementServiceBuilder(
       assertAgreementExists(remoteAgreement, agreementId);
 
       const { data } = await k2kGatewayApi.getAgreement({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { agreementId },
       });
 
@@ -187,10 +174,7 @@ export function agreementServiceBuilder(
         );
 
         const { data } = await k2kGatewayApi.getAgreements({
-          client: getK2K2GatewayApiClientForTarget(
-            targetKnodeUrls,
-            targetKnodeId,
-          ),
+          client: getK2K2GatewayApiClient(targetKnodeId),
           query: {
             consumerId: authData.organizationId,
             limit: dynamicLimit,
@@ -241,10 +225,7 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.reactivateAgreement({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { agreementId },
       });
 
@@ -269,10 +250,7 @@ export function agreementServiceBuilder(
       );
 
       const { data } = await k2kGatewayApi.suspendAgreement({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { agreementId },
       });
 

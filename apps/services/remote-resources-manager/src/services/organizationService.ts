@@ -1,6 +1,5 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { KnodeId, OrganizationId } from "@knodia/common-models/ids";
-import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type {
   ExternalUISessionAuthData,
   UISessionAuthData,
@@ -9,19 +8,21 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type {
   API_GetOrganizationsQueryParams,
   API_Organization,
   API_Organizations,
 } from "../models/organization/api.ts";
 
-import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import { toAPI_Organization } from "../models/organization/apiConverter.ts";
 import { assertTokenRemoteOrganizationClaimsMatchRequest } from "../utils/validators.ts";
 
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
-export function organizationServiceBuilder(targetKnodeUrls: TargetKnodeUrls) {
+export function organizationServiceBuilder(
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
+) {
   return {
     async getOrganization(
       organizationId: ExternalId<OrganizationId>,
@@ -44,10 +45,7 @@ export function organizationServiceBuilder(targetKnodeUrls: TargetKnodeUrls) {
       }
 
       const { data } = await k2kGatewayApi.getOrganization({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { organizationId },
       });
 
@@ -64,10 +62,7 @@ export function organizationServiceBuilder(targetKnodeUrls: TargetKnodeUrls) {
       });
 
       const { data } = await k2kGatewayApi.getOrganizations({
-        client: getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        ),
+        client: getK2K2GatewayApiClient(targetKnodeId),
         query: queryWithoutKnodeId,
       });
 

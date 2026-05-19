@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -16,6 +15,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/utils";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
+import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type {
   API_CatalogEserviceSearchResults,
   API_Eservice,
@@ -26,7 +26,6 @@ import type {
   API_GetEservicesQueryParams,
 } from "../models/eservice/api.ts";
 
-import { getK2K2GatewayApiClientForTarget } from "../clients/clientsProvider.ts";
 import { toK2KAPI_AgreementState } from "../models/agreement/apiConverter.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
@@ -37,7 +36,7 @@ import {
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
-  targetKnodeUrls: TargetKnodeUrls,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   remoteResourceDbService: RemoteResourceDbService,
 ) {
   return {
@@ -52,10 +51,7 @@ export function eserviceServiceBuilder(
 
       const { data: blob, headers } =
         await k2kGatewayApi.downloadEserviceLatestVersionInterface({
-          client: getK2K2GatewayApiClientForTarget(
-            targetKnodeUrls,
-            eserviceId.knodeId,
-          ),
+          client: getK2K2GatewayApiClient(eserviceId.knodeId),
           path: { eserviceId: eserviceId.id },
           responseType: "arraybuffer",
         });
@@ -88,10 +84,7 @@ export function eserviceServiceBuilder(
         `Getting E-services owned by Knode ${targetKnodeId} with query parameters and body data`,
       );
 
-      const k2kGatewayClient = getK2K2GatewayApiClientForTarget(
-        targetKnodeUrls,
-        targetKnodeId,
-      );
+      const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
 
       const { data } = await k2kGatewayApi.getCatalogEservices({
         body: bodyWithoutKnodeId,
@@ -139,10 +132,7 @@ export function eserviceServiceBuilder(
         `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
-      const k2kGatewayClient = getK2K2GatewayApiClientForTarget(
-        targetKnodeUrls,
-        eserviceId.knodeId,
-      );
+      const k2kGatewayClient = getK2K2GatewayApiClient(eserviceId.knodeId);
 
       const eserviceIdPath = { eserviceId: eserviceId.id };
 
@@ -212,10 +202,7 @@ export function eserviceServiceBuilder(
           `Getting E-services from Knode ${targetKnodeId} for Consumer Organization ${authData.organizationId}`,
         );
 
-        const k2kGatewayClient = getK2K2GatewayApiClientForTarget(
-          targetKnodeUrls,
-          targetKnodeId,
-        );
+        const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
 
         const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
           client: k2kGatewayClient,
