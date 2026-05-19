@@ -1,7 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
+  getConsumerKeychainMembershipQueryKey,
   getConsumerKeychainMembersQueryKey,
+  getKnodeApiKeychainMembershipQueryKey,
   getKnodeApiKeychainMembersQueryKey,
   removeConsumerKeychainMemberMutation,
   removeKnodeApiKeychainMemberMutation,
@@ -124,6 +126,12 @@ function RemoveFromKeychainAction({
           query: undefined!,
         }),
       });
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainMembershipQueryKey({
+          client,
+          path: { consumerKeychainId: keychainId, userId },
+        }),
+      });
     },
   });
 
@@ -140,6 +148,12 @@ function RemoveFromKeychainAction({
           path: { knodeApiKeychainId: keychainId },
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           query: undefined!,
+        }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: getKnodeApiKeychainMembershipQueryKey({
+          client,
+          path: { knodeApiKeychainId: keychainId, userId },
         }),
       });
     },
