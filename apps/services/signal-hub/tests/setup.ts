@@ -79,4 +79,5 @@ export {
   app,
   eserviceWriterService,
   purposeWriterService,
+  signalHubDb,
 };

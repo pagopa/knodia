@@ -165,7 +165,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 403 when signal hub is not enabled for the e-service", async () => {
+  it("should return 409 when signal hub is not enabled for the e-service", async () => {
     const eserviceWithoutSignalHub: Eservice = {
       ...eservice,
       isSignalHubEnabled: false,
@@ -175,7 +175,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     const response = await pullSignal();
 
     const error = eserviceSignalHubNotEnabled(eservice.id);
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(409);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
