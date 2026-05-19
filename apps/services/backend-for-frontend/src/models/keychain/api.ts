@@ -28,6 +28,19 @@ export const API_ConsumerKeychainSeed = z
   .meta({ id: "ConsumerKeychainSeed" });
 export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
 
+export const API_KnodeApiKeychainSeed = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.optional(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "KnodeApiKeychainSeed" });
+export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+
+export const API_KnodeApiKeychainsQueryParams = API_PaginationQueryParams;
+export type API_KnodeApiKeychainsQueryParams = z.infer<
+  typeof API_KnodeApiKeychainsQueryParams
+>;
+
 export const API_Keychain = z
   .strictObject({
     id: z.uuid(),

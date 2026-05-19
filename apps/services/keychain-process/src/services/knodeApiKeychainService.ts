@@ -407,6 +407,7 @@ export function knodeApiKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+
     async uploadKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       keySeed: API_KeychainKeySeed,
