@@ -36,9 +36,8 @@ export async function assertSignalCanBePushed(
 ) {
   const maxSignalId = await signalHubDbService.getMaxSignalId(eserviceId);
   if (signalId === maxSignalId) throw signalAlreadyExists(signalId, eserviceId);
-  else if (signalId < maxSignalId)
-    throw newerSignalsExist(signalId, eserviceId);
-  else if (signalId !== maxSignalId + 1) {
+  if (signalId < maxSignalId) throw newerSignalsExist(signalId, eserviceId);
+  if (signalId !== maxSignalId + 1) {
     throw nonConsecutiveSignalId(signalId, maxSignalId, eserviceId);
   }
 }
