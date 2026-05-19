@@ -195,7 +195,7 @@ components:
       additionalProperties: false
     Pseudonymization:
       description: Pseudonymization parameters used by the Producer to publish Signal
-        Hub signals for this e-service
+        Hub signals for the residence addresses managed by this e-service
       type: object
       properties:
         cryptoHashFunction:
@@ -217,8 +217,7 @@ paths:
       tags:
         - residence
       description: Returns the residence of a natural person identified by Codice
-        Fiscale (Cross-Border E-Service 03, Bearer-protected). The response for
-        the rotating subset of fiscal codes cycles per periodId.
+        Fiscale (Cross-Border E-Service 03, Bearer-protected).
       parameters:
         - schema:
             $ref: "#/components/schemas/Notation"
@@ -251,13 +250,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: No natural person found, or the resource is in its DELETE phase for
-            the current periodId
+          description: No natural person found for the given Codice Fiscale
           content:
             application/problem+json:
               schema:
-                description: No natural person found, or the resource is in its DELETE phase for
-                  the current periodId
+                description: No natural person found for the given Codice Fiscale
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /pseudonymization:
@@ -266,16 +263,16 @@ paths:
       summary: Get pseudonymization
       tags:
         - residence
-      description: Returns the pseudonymization parameters (seed + crypto hash
-        function) used by this producer to publish Signal Hub signals. The seed
-        rotates per periodId.
+      description: Returns the pseudonymization parameters used by the Producer to
+        publish Signal Hub signals for the residence addresses managed by this
+        e-service.
       responses:
         "200":
-          description: Pseudonymization parameters for the current rotation period
+          description: Pseudonymization parameters for this e-service
           content:
             application/json:
               schema:
-                description: Pseudonymization parameters for the current rotation period
+                description: Pseudonymization parameters for this e-service
                 allOf:
                   - $ref: "#/components/schemas/Pseudonymization"
         "401":

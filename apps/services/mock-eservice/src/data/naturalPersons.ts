@@ -12,6 +12,10 @@ import {
   type API_PersonalInformation,
   type API_Residence,
 } from "../models/api.ts";
+import {
+  computePeriodId,
+  type SignalHubSeedConfig,
+} from "../utils/rotation.ts";
 
 const CODICE_FISCALE_SCHEME = {
   schemeName: "Codice Fiscale",
@@ -25,7 +29,7 @@ const ContactPointsFile = z.record(API_Notation, API_ContactPoint);
 const AddressesFile = z.record(API_Notation, API_Address);
 const RotatingAddressesFile = z.record(
   API_Notation,
-  z.tuple([API_Address, API_Address, z.null()]),
+  z.array(API_Address.nullable()).min(1),
 );
 
 const dataDir = dirname(fileURLToPath(import.meta.url));
@@ -43,18 +47,12 @@ const ROTATING_ADDRESSES = readJson(
 export function findDigitalContact(
   notation: API_Notation,
 ): API_DigitalContact | undefined {
-  const person = NATURAL_PERSONS[notation];
-  const contact = CONTACT_POINTS[notation];
-  if (!person || !contact) {
+  const naturalPerson = findNaturalPersonWithIdentifier(notation);
+  const contactPoint = CONTACT_POINTS[notation];
+  if (!naturalPerson || !contactPoint) {
     return undefined;
   }
-  return {
-    contactPoint: contact,
-    naturalPerson: {
-      ...person,
-      identifier: { ...CODICE_FISCALE_SCHEME, notation },
-    },
-  };
+  return { contactPoint, naturalPerson };
 }
 
 export function findPersonalInformation(
@@ -67,33 +65,29 @@ export function findPersonalInformation(
   return { dateOfBirth: person.dateOfBirth };
 }
 
-// Returns the residence of a natural person.
-// For codici fiscali in the rotating subset, the response cycles per
-// `periodId % 3`: index 0 = address A (CREATE phase), 1 = address B (UPDATE),
-// 2 = null (DELETE → undefined → 404). The mock-eservice-signal-hub-cronjob
-// will publish matching CREATE/UPDATE/DELETE signals each period.
+// Returns the residence of a natural person. For codici fiscali in the
+// rotating subset, the cycle index = `periodId % cycle.length`: index 0 =
+// address A (CREATE phase), 1 = address B (UPDATE phase), 2 = null
+// (DELETE phase → undefined → 404). The mock-eservice-signal-hub-cronjob
+// will publish the matching CREATE/UPDATE/DELETE signals each period.
 export function findResidence(
   notation: API_Notation,
-  periodId: number,
+  now: number,
+  config: SignalHubSeedConfig,
 ): API_Residence | undefined {
-  const person = NATURAL_PERSONS[notation];
-  if (!person) {
+  const naturalPerson = findNaturalPersonWithIdentifier(notation);
+  if (!naturalPerson) {
     return undefined;
   }
-  const naturalPerson = {
-    ...person,
-    identifier: { ...CODICE_FISCALE_SCHEME, notation },
-  };
 
   const cycle = ROTATING_ADDRESSES[notation];
   if (cycle) {
-    const cycleIndex =
-      ((periodId % cycle.length) + cycle.length) % cycle.length;
-    const rotatedAddress = cycle.at(cycleIndex);
-    if (!rotatedAddress) {
+    const periodId = computePeriodId(now, config);
+    const address = cycle.at(periodId % cycle.length);
+    if (!address) {
       return undefined;
     }
-    return { address: rotatedAddress, naturalPerson };
+    return { address, naturalPerson };
   }
 
   const address = ADDRESSES[notation];
@@ -101,4 +95,14 @@ export function findResidence(
     return undefined;
   }
   return { address, naturalPerson };
+}
+
+function findNaturalPersonWithIdentifier(
+  notation: API_Notation,
+): API_NaturalPerson | undefined {
+  const person = NATURAL_PERSONS[notation];
+  if (!person) {
+    return undefined;
+  }
+  return { ...person, identifier: { ...CODICE_FISCALE_SCHEME, notation } };
 }

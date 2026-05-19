@@ -969,7 +969,6 @@ services:
       SEED_START_DATE_MS: "1767225600000"
       SEED_EXPIRE_SECONDS: "30"
       SEED_SALT_LENGTH: "16"
-      SEED_ALGORITHM: "sha256"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1627,7 +1626,6 @@ services:
       SEED_START_DATE_MS: "1767225600000"
       SEED_EXPIRE_SECONDS: "30"
       SEED_SALT_LENGTH: "16"
-      SEED_ALGORITHM: "sha256"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret

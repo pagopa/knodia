@@ -59,11 +59,16 @@ export function buildApp({
     expectedIssuer,
     jwtClockToleranceSeconds,
     knodeId,
-    seedAlgorithm,
     seedExpireSeconds,
     seedSaltLength,
     seedStartDateMs,
   } = config;
+
+  const seedConfig = {
+    expireSeconds: seedExpireSeconds,
+    saltLength: seedSaltLength,
+    startDateMs: seedStartDateMs,
+  };
 
   const dpopProofStore = createJtiReplayStore(
     dynamoDbDpopProofsTable,
@@ -93,13 +98,7 @@ export function buildApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
-    protectedApp.register(mockSignalHubRouter, {
-      knodeId,
-      seedAlgorithm,
-      seedExpireSeconds,
-      seedSaltLength,
-      seedStartDateMs,
-    });
+    protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -192,11 +191,16 @@ function buildBearerSignalHubApp({
     acceptedAudiences,
     expectedIssuer,
     knodeId,
-    seedAlgorithm,
     seedExpireSeconds,
     seedSaltLength,
     seedStartDateMs,
   } = config;
+
+  const seedConfig = {
+    expireSeconds: seedExpireSeconds,
+    saltLength: seedSaltLength,
+    startDateMs: seedStartDateMs,
+  };
 
   const app = createMockFastifyApp(
     config,
@@ -218,13 +222,7 @@ function buildBearerSignalHubApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockSignalHubRouter, {
-      knodeId,
-      seedAlgorithm,
-      seedExpireSeconds,
-      seedSaltLength,
-      seedStartDateMs,
-    });
+    protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
   });
 
   return app;

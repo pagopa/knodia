@@ -66,7 +66,6 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
-      seedAlgorithm: "sha256",
       seedExpireSeconds: 30,
       seedSaltLength: 16,
       seedStartDateMs: 0,

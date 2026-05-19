@@ -1,26 +1,13 @@
-import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
-import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
-  type ConsumerKeychainId,
   type EserviceId,
   type EserviceVersionId,
-  generateId,
-  KnodeId,
   type OrganizationId,
-  type PurposeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { SignJWT } from "jose";
-import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  ACCEPTED_AUDIENCES,
-  EXPECTED_ISSUER,
-  getCtx,
-  TEST_KID,
-  TEST_KNODE_ID,
-} from "./setup.ts";
+import { getCtx, TEST_KNODE_ID } from "./setup.ts";
+import { signEserviceAccessToken } from "./utils.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockSignalHubRouter.ts
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
@@ -44,7 +31,6 @@ const OTHER_MOCK_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
 
 const ROTATING_NOTATION = "RMNLNR03H12H501Z";
 const UNKNOWN_NOTATION = "AAAAAA00A00A000A";
-const OTHER_KNODE_ID = KnodeId.enum.Lynx;
 
 // setup.ts pins seedStartDateMs=0, seedExpireSeconds=30 so wall-clock ms maps
 // straight to periodId: T = 15_000 ⇒ periodId 0, T = 45_000 ⇒ periodId 1, ...
@@ -56,36 +42,14 @@ async function signToken(
     eserviceVersionId?: EserviceVersionId;
   } = {},
 ) {
-  const {
-    tokenKeys: { tokenPrivateKey },
-  } = getCtx();
-
-  const now = Math.floor(Date.now() / 1000);
-  const payload: Partial<EserviceAccessTokenClaims> = {
-    client_id: generateId<ConsumerKeychainId>(),
-    consumer: {
-      id: generateExternalId<OrganizationId>(),
-      knode_id: OTHER_KNODE_ID,
-    },
-    eservice: {
-      id: overrides.eserviceId ?? EXPECTED_ESERVICE_ID,
-      knode_id: TEST_KNODE_ID,
-      version: overrides.eserviceVersionId ?? EXPECTED_ESERVICE_VERSION_ID,
-    },
-    nbf: now,
-    producer: { id: EXPECTED_PRODUCER_ID, knode_id: TEST_KNODE_ID },
-    purpose: { id: generateId<PurposeId>(), knode_id: OTHER_KNODE_ID },
-  };
-
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ: "at+jwt" })
-    .setSubject(randomUUID())
-    .setIssuer(EXPECTED_ISSUER)
-    .setAudience(ACCEPTED_AUDIENCES)
-    .setJti(randomUUID())
-    .setIssuedAt(now)
-    .setExpirationTime("5m")
-    .sign(tokenPrivateKey);
+  return signEserviceAccessToken({
+    eserviceId: overrides.eserviceId ?? EXPECTED_ESERVICE_ID,
+    eserviceVersionId:
+      overrides.eserviceVersionId ?? EXPECTED_ESERVICE_VERSION_ID,
+    knodeId: TEST_KNODE_ID,
+    producerId: EXPECTED_PRODUCER_ID,
+    tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
+  });
 }
 
 describe("mock-eservice Signal Hub router", () => {

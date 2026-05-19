@@ -20,7 +20,7 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { naturalPersonNotFound } from "../models/errors.ts";
-import { computePeriodId, getRotatedSeed } from "../utils/rotation.ts";
+import { getRotatedSeed, type SignalHubSeedConfig } from "../utils/rotation.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 // Identity of this mock e-service. Hardcoded on purpose.
@@ -37,24 +37,12 @@ const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
 
 interface MockSignalHubRouterOptions {
   knodeId: KnodeId;
-  seedAlgorithm: string;
-  seedExpireSeconds: number;
-  seedSaltLength: number;
-  seedStartDateMs: number;
+  seedConfig: SignalHubSeedConfig;
 }
 
 export const mockSignalHubRouter: FastifyPluginAsyncZod<
   MockSignalHubRouterOptions
-> = async (
-  fastify,
-  {
-    knodeId,
-    seedAlgorithm,
-    seedExpireSeconds,
-    seedSaltLength,
-    seedStartDateMs,
-  },
-) => {
+> = async (fastify, { knodeId, seedConfig }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
@@ -67,25 +55,20 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
       );
 
       const { identifierNotation } = req.params;
-      const periodId = computePeriodId(
-        Date.now(),
-        seedStartDateMs,
-        seedExpireSeconds,
-      );
-      const result = findResidence(identifierNotation, periodId);
+      const result = findResidence(identifierNotation, Date.now(), seedConfig);
       if (!result) {
         throw naturalPersonNotFound(identifierNotation);
       }
 
       logger.info(
-        `Mock e-service /natural-persons/${identifierNotation}/residence returned residence (periodId=${periodId})`,
+        `Mock e-service /natural-persons/${identifierNotation}/residence returned residence`,
       );
       res.status(200).send(result);
     },
     method: "GET",
     schema: {
       description:
-        "Returns the residence of a natural person identified by Codice Fiscale (Cross-Border E-Service 03, Bearer-protected). The response for the rotating subset of fiscal codes cycles per periodId.",
+        "Returns the residence of a natural person identified by Codice Fiscale (Cross-Border E-Service 03, Bearer-protected).",
       operationId: "getResidence",
       params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
@@ -95,8 +78,7 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Invalid Codice Fiscale" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         404: API_Problem.meta({
-          description:
-            "No natural person found, or the resource is in its DELETE phase for the current periodId",
+          description: "No natural person found for the given Codice Fiscale",
         }),
       },
       summary: "Get residence",
@@ -116,30 +98,19 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      const periodId = computePeriodId(
-        Date.now(),
-        seedStartDateMs,
-        seedExpireSeconds,
-      );
-      const seed = getRotatedSeed(EXPECTED_ESERVICE_ID, periodId, {
-        algorithm: seedAlgorithm,
-        saltLength: seedSaltLength,
-      });
+      const seed = getRotatedSeed(EXPECTED_ESERVICE_ID, Date.now(), seedConfig);
 
-      logger.info(
-        `Mock e-service /pseudonymization returned seed for periodId=${periodId}`,
-      );
+      logger.info("Mock e-service /pseudonymization returned current seed");
       res.status(200).send({ cryptoHashFunction: "sha256", seed });
     },
     method: "GET",
     schema: {
       description:
-        "Returns the pseudonymization parameters (seed + crypto hash function) used by this producer to publish Signal Hub signals. The seed rotates per periodId.",
+        "Returns the pseudonymization parameters used by the Producer to publish Signal Hub signals for the residence addresses managed by this e-service.",
       operationId: "getPseudonymization",
       response: {
         200: API_Pseudonymization.meta({
-          description:
-            "Pseudonymization parameters for the current rotation period",
+          description: "Pseudonymization parameters for this e-service",
         }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },

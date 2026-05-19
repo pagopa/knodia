@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'e5540a33-703e-4527-9880-05e7d347f93e',
   '634ac97e-47cb-4aed-bb0a-b3936ee6f6c7',
   'fa2a800a-5058-4859-b68a-bfbd3ee863c0',
-  'bf833368a618dae2082fd99d8d7cbb10d455e8aea3ceffcdc2d564cea995ec8b',
+  '1522e511d90c87e5d764146dd79f962b87d4f01c649f628d91d20c1646bf2bd7',
   'application/yaml',
   'mock-bearer-signal-hub-eservice.yaml',
   'e5540a33-703e-4527-9880-05e7d347f93e/mock-bearer-signal-hub-eservice.yaml',
