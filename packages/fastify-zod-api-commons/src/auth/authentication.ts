@@ -65,6 +65,11 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         .with({ tokenType: "external-ui-session" }, () => ({
           correlationId,
         }))
+        .with({ tokenType: "knode-api" }, (a) => ({
+          correlationId,
+          organizationId: a.organization.id,
+          organizationKnodeId: a.organization.knodeId,
+        }))
         .exhaustive();
       const logger = request.log.child(loggerMetadata);
       request.log = logger;
