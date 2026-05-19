@@ -1,3 +1,7 @@
+import {
+  type KnodeApiKeychainId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -11,7 +15,9 @@ import { knodeApiKeychainDetailsQuery } from "@/features/keychain/services/queri
 export const Route = createFileRoute("/_authenticated/keychains/api/$id")({
   component: RouteComponent,
   loader: ({ context: { queryClient }, params: { id } }) =>
-    queryClient.ensureQueryData(knodeApiKeychainDetailsQuery(id)),
+    queryClient.ensureQueryData(
+      knodeApiKeychainDetailsQuery(unsafeBrandId<KnodeApiKeychainId>(id)),
+    ),
   search: {
     middlewares: [
       stripSearchParams(knodeApiKeychainDetailsSearchDefaultValues),
@@ -22,18 +28,19 @@ export const Route = createFileRoute("/_authenticated/keychains/api/$id")({
 
 function RouteComponent() {
   const { id } = Route.useParams();
+  const keychainId = unsafeBrandId<KnodeApiKeychainId>(id);
   const { offset, tab } = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const { data: knodeApiKeychain } = useSuspenseQuery(
-    knodeApiKeychainDetailsQuery(id),
+    knodeApiKeychainDetailsQuery(keychainId),
   );
 
   return (
     <KeychainDetailPage
       activeTab={tab}
       keychain={knodeApiKeychain}
-      keychainId={id}
+      keychainId={keychainId}
       offset={offset}
       onOffsetChange={(offset) =>
         navigate({ replace: true, search: (s) => ({ ...s, offset }) })

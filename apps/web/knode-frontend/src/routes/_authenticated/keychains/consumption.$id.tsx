@@ -1,3 +1,7 @@
+import {
+  type ConsumerKeychainId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -13,7 +17,9 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ context: { queryClient }, params: { id } }) =>
-    queryClient.ensureQueryData(consumerKeychainDetailsQuery(id)),
+    queryClient.ensureQueryData(
+      consumerKeychainDetailsQuery(unsafeBrandId<ConsumerKeychainId>(id)),
+    ),
   search: {
     middlewares: [
       stripSearchParams(consumerKeychainDetailsSearchDefaultValues),
@@ -24,18 +30,19 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { id } = Route.useParams();
+  const keychainId = unsafeBrandId<ConsumerKeychainId>(id);
   const { offset, tab } = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const { data: consumerKeychain } = useSuspenseQuery(
-    consumerKeychainDetailsQuery(id),
+    consumerKeychainDetailsQuery(keychainId),
   );
 
   return (
     <KeychainDetailPage
       activeTab={tab}
       keychain={consumerKeychain}
-      keychainId={id}
+      keychainId={keychainId}
       offset={offset}
       onOffsetChange={(offset) =>
         navigate({ replace: true, search: (s) => ({ ...s, offset }) })

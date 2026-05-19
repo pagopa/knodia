@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainKeysQueryKey,
@@ -37,7 +42,7 @@ import type { KeychainType } from "../models/commons";
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keys: bffApi.KeychainKey[];
   type: KeychainType;
 }
@@ -137,7 +142,7 @@ function DownloadPublicKeyAction({
   type,
 }: {
   canDownloadKey: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
   type: KeychainType;
 }) {
@@ -211,7 +216,7 @@ function RemoveFromKeychainAction({
   keyId,
   type,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
   type: KeychainType;
 }) {

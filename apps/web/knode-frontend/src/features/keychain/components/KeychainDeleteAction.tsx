@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import {
   deleteConsumerKeychainMutation,
   deleteKnodeApiKeychainMutation,
@@ -16,7 +21,7 @@ export function KeychainDeleteAction({
   keychainId,
   type,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   type: KeychainType;
 }) {
   const navigate = useNavigate();

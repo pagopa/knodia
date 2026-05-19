@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import {
   getConsumerKeychainDetailsOptions,
   getConsumerKeychainsOptions,
@@ -21,13 +26,17 @@ export const knodeApiKeychainsQuery = (offset: number) =>
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
   });
 
-export const consumerKeychainDetailsQuery = (consumerKeychainId: string) =>
+export const consumerKeychainDetailsQuery = (
+  consumerKeychainId: ConsumerKeychainId,
+) =>
   getConsumerKeychainDetailsOptions({
     client,
     path: { consumerKeychainId },
   });
 
-export const knodeApiKeychainDetailsQuery = (knodeApiKeychainId: string) =>
+export const knodeApiKeychainDetailsQuery = (
+  knodeApiKeychainId: KnodeApiKeychainId,
+) =>
   getKnodeApiKeychainDetailsOptions({
     client,
     path: { knodeApiKeychainId },

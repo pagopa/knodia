@@ -1,4 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 
 import {
   getConsumerKeychainKeysOptions,
@@ -35,34 +39,29 @@ import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPubli
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
-
 interface ConsumerTabProps {
-  keychainId: string;
+  keychainId: ConsumerKeychainId;
   offset: number;
   onOffsetChange: (offset: number) => void;
 }
 
-interface KeychainDetailPageProps<TTab extends string> {
+type KeychainDetailPageProps<TTab extends string> = {
   activeTab: TTab;
   keychain: bffApi.KeychainDetails;
-  keychainId: string;
   offset: number;
   onOffsetChange: (offset: number) => void;
   onTabChange: (tab: TTab) => void;
-  type: Extract<KeychainType, "api" | "consumption">;
-}
+} & (
+  | { keychainId: ConsumerKeychainId; type: "consumption" }
+  | { keychainId: KnodeApiKeychainId; type: "api" }
+);
 
-export function KeychainDetailPage<TTab extends string>({
-  activeTab,
-  keychain,
-  keychainId,
-  offset,
-  onOffsetChange,
-  onTabChange,
-  type,
-}: KeychainDetailPageProps<TTab>) {
-  const chipLabel = match(type)
+export function KeychainDetailPage<TTab extends string>(
+  props: KeychainDetailPageProps<TTab>,
+) {
+  const { activeTab, keychain, offset, onOffsetChange, onTabChange } = props;
+
+  const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
     .with("api", () => "API")
     .exhaustive();
@@ -70,7 +69,9 @@ export function KeychainDetailPage<TTab extends string>({
   return (
     <>
       <Breadcrumbs className="mb-10">
-        <Breadcrumb href={{ search: { offset: 0, type }, to: "/keychains" }}>
+        <Breadcrumb
+          href={{ search: { offset: 0, type: props.type }, to: "/keychains" }}
+        >
           Keychains
         </Breadcrumb>
         <Breadcrumb>{keychain.name.en}</Breadcrumb>
@@ -79,8 +80,11 @@ export function KeychainDetailPage<TTab extends string>({
       <PageHeader
         actions={
           <>
-            <KeychainDeleteAction keychainId={keychain.id} type={type} />
-            <KeychainEditAction keychain={keychain} type={type} />
+            <KeychainDeleteAction
+              keychainId={props.keychainId}
+              type={props.type}
+            />
+            <KeychainEditAction keychain={keychain} type={props.type} />
           </>
         }
         copyableId={keychain.id}
@@ -100,7 +104,7 @@ export function KeychainDetailPage<TTab extends string>({
           <Tab id="public-keys" key="public-keys">
             Public Keys
           </Tab>
-          {type === "consumption" && (
+          {props.type === "consumption" && (
             <Tab id="purposes" key="purposes">
               Purposes
             </Tab>
@@ -111,36 +115,40 @@ export function KeychainDetailPage<TTab extends string>({
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
-            {match(type)
-              .with("consumption", () => (
+            {match(props)
+              .with({ type: "consumption" }, ({ keychainId }) => (
                 <ConsumerPublicKeysTab
                   keychainId={keychainId}
                   offset={offset}
                   onOffsetChange={onOffsetChange}
                 />
               ))
-              .with("api", () => <ApiPublicKeysTab keychainId={keychainId} />)
+              .with({ type: "api" }, ({ keychainId }) => (
+                <ApiPublicKeysTab keychainId={keychainId} />
+              ))
               .exhaustive()}
           </TabPanel>
-          {type === "consumption" && (
+          {props.type === "consumption" && (
             <TabPanel id="purposes" key="purposes">
               <ConsumerPurposesTab
-                keychainId={keychainId}
+                keychainId={props.keychainId}
                 offset={offset}
                 onOffsetChange={onOffsetChange}
               />
             </TabPanel>
           )}
           <TabPanel id="members" key="members">
-            {match(type)
-              .with("consumption", () => (
+            {match(props)
+              .with({ type: "consumption" }, ({ keychainId }) => (
                 <ConsumerMembersTab
                   keychainId={keychainId}
                   offset={offset}
                   onOffsetChange={onOffsetChange}
                 />
               ))
-              .with("api", () => <ApiMembersTab keychainId={keychainId} />)
+              .with({ type: "api" }, ({ keychainId }) => (
+                <ApiMembersTab keychainId={keychainId} />
+              ))
               .exhaustive()}
           </TabPanel>
         </TabPanels>
@@ -151,7 +159,7 @@ export function KeychainDetailPage<TTab extends string>({
 
 // Placeholder until KN-619 wires the GET/add/remove members endpoints
 // for API keychains. The table renders its native empty banner in the meantime.
-function ApiMembersTab({ keychainId }: { keychainId: string }) {
+function ApiMembersTab({ keychainId }: { keychainId: KnodeApiKeychainId }) {
   return (
     <Section title="Members">
       <KeychainMembersTable
@@ -166,7 +174,7 @@ function ApiMembersTab({ keychainId }: { keychainId: string }) {
 
 // Placeholder until KN-619 wires the GET/upload/download/delete keys endpoints
 // for API keychains. The table renders its native empty banner in the meantime.
-function ApiPublicKeysTab({ keychainId }: { keychainId: string }) {
+function ApiPublicKeysTab({ keychainId }: { keychainId: KnodeApiKeychainId }) {
   return (
     <Section title="Public Keys">
       <KeychainPublicKeysTable

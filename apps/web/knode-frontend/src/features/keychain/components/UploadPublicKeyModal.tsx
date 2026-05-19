@@ -1,4 +1,5 @@
 import type { bffApi } from "@knodia/bff-client";
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 
 import {
   getConsumerKeychainKeysQueryKey,
@@ -24,7 +25,7 @@ interface Props {
   hasReachedMaxKeys: boolean;
   isKeychainMember: boolean;
   isOpen: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId;
   onClose: () => void;
   type: KeychainType;
 }
