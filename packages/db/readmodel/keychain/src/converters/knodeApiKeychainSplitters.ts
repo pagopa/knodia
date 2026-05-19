@@ -69,7 +69,10 @@ const toKnodeApiKeychainSQL = (
   metadataVersion: number,
 ): KnodeApiKeychainSQL => ({
   createdAt: knodeApiKeychain.createdAt,
-  description: knodeApiKeychain.description,
+  // Coerce to null so onConflictDoUpdate emits an explicit SET for the column;
+  // a plain `undefined` would be omitted from Drizzle's UPDATE, leaving a stale
+  // description in place when the PATCH clears it.
+  description: knodeApiKeychain.description ?? null,
   id: knodeApiKeychain.id,
   metadataVersion,
   name: knodeApiKeychain.name,

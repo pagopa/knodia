@@ -22,7 +22,7 @@ describe("Knode API keychain splitters", () => {
 
     const expectedKnodeApiKeychainSQL: KnodeApiKeychainSQL = {
       createdAt: knodeApiKeychain.createdAt,
-      description: knodeApiKeychain.description,
+      description: knodeApiKeychain.description ?? null,
       id: knodeApiKeychain.id,
       metadataVersion,
       name: knodeApiKeychain.name,
@@ -58,5 +58,14 @@ describe("Knode API keychain splitters", () => {
     expect(knodeApiKeychainUsersSQL).toEqual(
       expect.arrayContaining(expectedKnodeApiKeychainUsersSQL),
     );
+  });
+
+  it("should map an undefined description to null so onConflictDoUpdate clears the column", () => {
+    const { knodeApiKeychainSQL } = splitKnodeApiKeychainIntoObjectsSQL(
+      { ...getMockKnodeApiKeychain(), description: undefined },
+      1,
+    );
+
+    expect(knodeApiKeychainSQL.description).toBeNull();
   });
 });
