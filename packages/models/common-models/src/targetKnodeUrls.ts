@@ -2,6 +2,9 @@ import { z } from "zod";
 
 import { KnodeId } from "./ids/ids.ts";
 
+// Partial: each service maps only the knodes it needs (typically just the
+// *other* knode in multinode, so accidentally calling oneself surfaces as
+// an explicit missing-key error rather than silently looping through HTTP).
 export const TargetKnodeUrls = z
   .string()
   .transform((raw, ctx) => {
@@ -15,5 +18,5 @@ export const TargetKnodeUrls = z
       return z.NEVER;
     }
   })
-  .pipe(z.record(KnodeId, z.url()));
+  .pipe(z.partialRecord(KnodeId, z.url()));
 export type TargetKnodeUrls = z.infer<typeof TargetKnodeUrls>;

@@ -81,8 +81,11 @@ export async function handleKeychainEvent(
       {
         type: P.union(
           "KnodeApiKeychainCreatedV1",
+          "KnodeApiKeychainUpdatedV1",
           "KnodeApiKeychainKeyAddedV1",
           "KnodeApiKeychainMemberAddedV1",
+          "KnodeApiKeychainMemberRemovedV1",
+          "KnodeApiKeychainKeyRemovedV1",
         ),
       },
       async (msg) => {
@@ -93,5 +96,12 @@ export async function handleKeychainEvent(
         );
       },
     )
+    .with({ type: "KnodeApiKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "knodeApiKeychain");
+      await knodeApiKeychainWriterService.deleteKnodeApiKeychain(
+        fromKnodeApiKeychainV1(msg.data.knodeApiKeychain).id,
+        message.version,
+      );
+    })
     .exhaustive();
 }

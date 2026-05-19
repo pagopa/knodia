@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { PurposeId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
@@ -58,6 +59,49 @@ describe("Keychain read model writer tests", async () => {
     expect(retrievedKeychains.length).toBe(1);
     expect(retrievedKeychains[0]).toEqual({
       data: toExpectConsumerKeychain(consumerKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ConsumerKeychain>);
+  });
+
+  it("ConsumerKeychainUpdatedV1 clears description when set to undefined", async () => {
+    const consumerKeychain: ConsumerKeychain = {
+      ...getMockConsumerKeychain(),
+      description: { en: "Original description" },
+    };
+
+    await consumerKeychainWriterService.upsertConsumerKeychain(
+      consumerKeychain,
+      0,
+    );
+
+    const updatedConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
+      description: undefined,
+      updatedAt: new Date(),
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ConsumerKeychainUpdatedV1,
+    ).encode({
+      consumerKeychain: toConsumerKeychainV1(updatedConsumerKeychain),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ConsumerKeychainUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: consumerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllConsumerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectConsumerKeychain(updatedConsumerKeychain),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ConsumerKeychain>);
   });

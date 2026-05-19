@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { generateId, type PurposeId } from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import {
+  generateId,
+  KnodeId,
+  type PurposeId,
+  type PurposeTemplateId,
+} from "@knodia/common-models/ids";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { splitPurposeIntoObjectsSQL } from "@knodia/db-readmodel-purpose/converters";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
+import { type Purpose } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import { getMockPurpose } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { API_Purpose } from "../src/models/api.ts";
@@ -68,5 +76,25 @@ describe("GET /purposes/:purposeId (getPurpose)", () => {
   it("should return 400 for invalid purpose id format", async () => {
     const response = await getPurpose("not-a-uuid");
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return the template reference when the purpose was created from a template", async () => {
+    const purposeWithTemplate: Purpose = {
+      ...getMockPurpose(99),
+      template: {
+        id: generateExternalId<PurposeTemplateId>(),
+        knodeId: KnodeId.parse("Orion"),
+      },
+    };
+    await readmodelDb
+      .insert(readmodelPurpose)
+      .values(splitPurposeIntoObjectsSQL(purposeWithTemplate, 0).purposeSQL);
+
+    const response = await getPurpose(purposeWithTemplate.id);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json<API_Purpose>().template).toEqual(
+      purposeWithTemplate.template,
+    );
   });
 });

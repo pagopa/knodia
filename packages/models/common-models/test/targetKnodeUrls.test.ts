@@ -14,13 +14,15 @@ describe("TargetKnodeUrls schema", () => {
     });
   });
 
-  it("rejects a JSON map missing a KnodeId", () => {
+  it("parses a partial JSON map with only some KnodeId keys", () => {
     const raw = JSON.stringify({ Orion: "https://orion.knodia.dev" });
-    expect(() => TargetKnodeUrls.parse(raw)).toThrow();
+    expect(TargetKnodeUrls.parse(raw)).toEqual({
+      Orion: "https://orion.knodia.dev",
+    });
   });
 
-  it("rejects an empty JSON object", () => {
-    expect(() => TargetKnodeUrls.parse("{}")).toThrow();
+  it("parses an empty JSON object", () => {
+    expect(TargetKnodeUrls.parse("{}")).toEqual({});
   });
 
   it("rejects a non-JSON string", () => {

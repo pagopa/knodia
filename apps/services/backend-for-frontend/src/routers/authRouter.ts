@@ -6,6 +6,7 @@ import { AgreementId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
+  forbiddenError,
   unauthorizedError,
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
@@ -14,9 +15,9 @@ import { apiTags } from "../models/apiTags.ts";
 import { type authServiceBuilder } from "../services/authService.ts";
 
 interface AuthRouterOptions {
+  authCookieAllowedOrigins: string[];
   authService: ReturnType<typeof authServiceBuilder>;
   cookieConfig: {
-    domain?: string;
     pathPrefix: string;
     secure: boolean;
   };
@@ -59,13 +60,12 @@ const API_RefreshCookie = z.object({
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
-  { authService, cookieConfig },
+  { authCookieAllowedOrigins, authService, cookieConfig },
 ) => {
   const refreshCookiePath = `${cookieConfig.pathPrefix}${REFRESH_COOKIE_PATH}`;
 
   function setRefreshCookie(res: FastifyReply, refreshToken: string): void {
     void res.setCookie(REFRESH_COOKIE_NAME, refreshToken, {
-      domain: cookieConfig.domain,
       httpOnly: true,
       path: refreshCookiePath,
       sameSite: "strict",
@@ -79,7 +79,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   function clearRefreshCookie(res: FastifyReply): void {
     void res.clearCookie(REFRESH_COOKIE_NAME, {
-      domain: cookieConfig.domain,
       httpOnly: true,
       path: refreshCookiePath,
       sameSite: "strict",
@@ -87,8 +86,20 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     });
   }
 
+  function assertAllowedOrigin(req: FastifyRequest): void {
+    const origin = req.headers.origin;
+    if (
+      typeof origin !== "string" ||
+      !authCookieAllowedOrigins.includes(origin)
+    ) {
+      throw forbiddenError("Invalid request origin");
+    }
+  }
+
   fastify.route({
     handler: async (req, res) => {
+      assertAllowedOrigin(req);
+
       const { refreshToken, uiSessionToken } =
         await authService.generateUISessionTokenPair(req.body.oidcToken);
       setRefreshCookie(res, refreshToken);
@@ -107,15 +118,18 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       security: [],
       tags: [apiTags.auth],
     },
-    url: "/auth/ui-session",
+    url: "/auth/uiSession",
   });
 
   fastify.route({
     handler: async (req, res) => {
+      assertAllowedOrigin(req);
+
       const refreshTokenCookie = getRefreshCookie(req);
       if (!refreshTokenCookie) {
         throw unauthorizedError("Missing refresh token cookie");
@@ -138,15 +152,18 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
           description: "Session refreshed successfully",
         }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       security: [],
       tags: [apiTags.auth],
     },
-    url: "/auth/ui-session/refresh",
+    url: "/auth/uiSession/refresh",
   });
 
   fastify.route({
     handler: async (req, res) => {
+      assertAllowedOrigin(req);
+
       const refreshTokenCookie = getRefreshCookie(req);
       if (refreshTokenCookie) {
         await authService.revokeRefreshToken(refreshTokenCookie);
@@ -162,6 +179,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       operationId: "logout",
       response: {
         204: z.undefined().meta({ description: "Logged out successfully" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       security: [],
       tags: [apiTags.auth],

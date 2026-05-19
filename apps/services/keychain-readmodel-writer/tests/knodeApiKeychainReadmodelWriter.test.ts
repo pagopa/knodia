@@ -1,9 +1,11 @@
+/* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { generateUserId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   keychainEvents,
+  type KeychainKey,
   type KnodeApiKeychain,
   toKnodeApiKeychainV1,
 } from "@knodia/keychain-models";
@@ -54,6 +56,90 @@ describe("Knode API keychain read model writer tests", async () => {
     } satisfies WithMetadata<KnodeApiKeychain>);
   });
 
+  it("KnodeApiKeychainUpdatedV1", async () => {
+    const knodeApiKeychain = getMockKnodeApiKeychain();
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const updatedKnodeApiKeychain: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      description: { en: "Updated description" },
+      name: { en: "Updated name" },
+      updatedAt: new Date(),
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainUpdatedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(updatedKnodeApiKeychain),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(updatedKnodeApiKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainUpdatedV1 clears description when set to undefined", async () => {
+    const knodeApiKeychain: KnodeApiKeychain = {
+      ...getMockKnodeApiKeychain(),
+      description: { en: "Original description" },
+    };
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const updatedKnodeApiKeychain: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      description: undefined,
+      updatedAt: new Date(),
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainUpdatedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(updatedKnodeApiKeychain),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(updatedKnodeApiKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
   it("KnodeApiKeychainKeyAddedV1", async () => {
     const knodeApiKeychain = getMockKnodeApiKeychain();
 
@@ -92,6 +178,50 @@ describe("Knode API keychain read model writer tests", async () => {
     expect(retrievedKeychains.length).toBe(1);
     expect(retrievedKeychains[0]).toEqual({
       data: toExpectKnodeApiKeychain(keychainWithKeyAdded),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainMemberRemovedV1", async () => {
+    const userId = generateUserId();
+    const knodeApiKeychain: KnodeApiKeychain = {
+      ...getMockKnodeApiKeychain(),
+      users: [{ addedAt: new Date(), userId }],
+    };
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const keychainWithMemberRemoved: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      users: [],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainMemberRemovedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(keychainWithMemberRemoved),
+      userId,
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainMemberRemovedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(keychainWithMemberRemoved),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<KnodeApiKeychain>);
   });
@@ -136,5 +266,80 @@ describe("Knode API keychain read model writer tests", async () => {
       data: toExpectKnodeApiKeychain(keychainWithMemberAdded),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainKeyRemovedV1", async () => {
+    const keyToKeep = getMockKeychainKey(0);
+    const keyToRemove = getMockKeychainKey(1);
+    const existingKeys: KeychainKey[] = [keyToKeep, keyToRemove];
+    const knodeApiKeychain: KnodeApiKeychain = {
+      ...getMockKnodeApiKeychain(),
+      keys: existingKeys,
+    };
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const keychainWithKeyRemoved: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      keys: [keyToKeep],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainKeyRemovedV1,
+    ).encode({
+      kid: keyToRemove.kid,
+      knodeApiKeychain: toKnodeApiKeychainV1(keychainWithKeyRemoved),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainKeyRemovedV1",
+      metadataVersion,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectKnodeApiKeychain(keychainWithKeyRemoved),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<KnodeApiKeychain>);
+  });
+
+  it("KnodeApiKeychainDeletedV1", async () => {
+    const knodeApiKeychain = getMockKnodeApiKeychain();
+
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      knodeApiKeychain,
+      0,
+    );
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.KnodeApiKeychainDeletedV1,
+    ).encode({
+      knodeApiKeychain: toKnodeApiKeychainV1(knodeApiKeychain),
+    });
+
+    await sendTestEvent({
+      data: eventData,
+      eventType: "KnodeApiKeychainDeletedV1",
+      metadataVersion: 1,
+      producer,
+      streamId: knodeApiKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllKnodeApiKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(0);
   });
 });

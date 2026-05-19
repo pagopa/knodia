@@ -134,6 +134,12 @@ export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
   state: toK2KPurposeState(purpose.state),
   suspendedByConsumerAt: toExpectIsoOrNull(purpose.suspendedByConsumerAt),
   suspendedByProducerAt: toExpectIsoOrNull(purpose.suspendedByProducerAt),
+  template: purpose.template
+    ? {
+        id: purpose.template.id,
+        knodeId: toK2KKnodeId(purpose.template.knodeId),
+      }
+    : undefined,
   updatedAt: purpose.updatedAt.toISOString(),
 });
 

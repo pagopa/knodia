@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, AddKnodeApiKeychainMemberData, AddKnodeApiKeychainMemberErrors, AddKnodeApiKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateKnodeApiKeychainData, CreateKnodeApiKeychainErrors, CreateKnodeApiKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainKeyData, GetConsumerKeychainKeyErrors, GetConsumerKeychainKeyResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMemberData, GetConsumerKeychainMemberErrors, GetConsumerKeychainMemberResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposeData, GetConsumerKeychainPurposeErrors, GetConsumerKeychainPurposeResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetKnodeApiKeychainData, GetKnodeApiKeychainErrors, GetKnodeApiKeychainKeyData, GetKnodeApiKeychainKeyErrors, GetKnodeApiKeychainKeyResponses, GetKnodeApiKeychainKeysData, GetKnodeApiKeychainKeysErrors, GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainResponses, GetKnodeApiKeychainsData, GetKnodeApiKeychainsErrors, GetKnodeApiKeychainsResponses, GetStatusData, GetStatusResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses, UploadKnodeApiKeychainKeyData, UploadKnodeApiKeychainKeyErrors, UploadKnodeApiKeychainKeyResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, AddKnodeApiKeychainMemberData, AddKnodeApiKeychainMemberErrors, AddKnodeApiKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateKnodeApiKeychainData, CreateKnodeApiKeychainErrors, CreateKnodeApiKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, DeleteKnodeApiKeychainData, DeleteKnodeApiKeychainErrors, DeleteKnodeApiKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainKeyData, GetConsumerKeychainKeyErrors, GetConsumerKeychainKeyResponses, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMemberData, GetConsumerKeychainMemberErrors, GetConsumerKeychainMemberResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposeData, GetConsumerKeychainPurposeErrors, GetConsumerKeychainPurposeResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetKnodeApiKeychainData, GetKnodeApiKeychainErrors, GetKnodeApiKeychainKeyData, GetKnodeApiKeychainKeyErrors, GetKnodeApiKeychainKeyResponses, GetKnodeApiKeychainKeysData, GetKnodeApiKeychainKeysErrors, GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainMemberData, GetKnodeApiKeychainMemberErrors, GetKnodeApiKeychainMemberResponses, GetKnodeApiKeychainMembersData, GetKnodeApiKeychainMembersErrors, GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainResponses, GetKnodeApiKeychainsData, GetKnodeApiKeychainsErrors, GetKnodeApiKeychainsResponses, GetStatusData, GetStatusResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, RemoveKnodeApiKeychainKeyData, RemoveKnodeApiKeychainKeyErrors, RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainMemberData, RemoveKnodeApiKeychainMemberErrors, RemoveKnodeApiKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UpdateKnodeApiKeychainData, UpdateKnodeApiKeychainErrors, UpdateKnodeApiKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses, UploadKnodeApiKeychainKeyData, UploadKnodeApiKeychainKeyErrors, UploadKnodeApiKeychainKeyResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -238,12 +238,44 @@ export const createKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Delete a Knode API Keychain
+ */
+export const deleteKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteKnodeApiKeychainResponses, DeleteKnodeApiKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}',
+    ...options
+});
+
+/**
  * Retrieve a Knode API Keychain by its ID
  */
 export const getKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainResponses, GetKnodeApiKeychainErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/knodeApiKeychains/{knodeApiKeychainId}',
+    ...options
+});
+
+/**
+ * Update a Knode API Keychain
+ */
+export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateKnodeApiKeychainResponses, UpdateKnodeApiKeychainErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/merge-patch+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove a key from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainKeyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}',
     ...options
 });
 
@@ -282,6 +314,16 @@ export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Retrieve members of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainMembersErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members',
+    ...options
+});
+
+/**
  * Add a member to a Knode API Keychain
  */
 export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddKnodeApiKeychainMemberResponses, AddKnodeApiKeychainMemberErrors, ThrowOnError>({
@@ -293,4 +335,24 @@ export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(o
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Remove a member from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainMemberResponses, RemoveKnodeApiKeychainMemberErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members/{userId}',
+    ...options
+});
+
+/**
+ * Retrieve a Knode API Keychain Member by user ID
+ */
+export const getKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMemberResponses, GetKnodeApiKeychainMemberErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/knodeApiKeychains/{knodeApiKeychainId}/members/{userId}',
+    ...options
 });

@@ -402,6 +402,10 @@ export type ConsumerClientAssertionVerificationResponse = {
 };
 
 export type KnodeApiClientAssertionVerificationResponse = {
+    /**
+     * Organization that owns the Knode API Keychain
+     */
+    ownerId: OrganizationId;
     publicKey: PublicKeyForVerification;
 };
 
@@ -454,6 +458,14 @@ export type PurposeFormAnswers = {
 };
 
 /**
+ * Reference to a Purpose statement template
+ */
+export type PurposeTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+/**
  * Seed data to create a new Purpose
  */
 export type PurposeSeed = {
@@ -473,6 +485,7 @@ export type PurposeSeed = {
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
     name: LocalizedPurposeName;
+    template?: PurposeTemplateReference;
 };
 
 /**
@@ -515,6 +528,7 @@ export type Purpose = {
      * Timestamp when the Purpose was suspended by the Producer
      */
     suspendedByProducerAt: string | null;
+    template?: PurposeTemplateReference;
     updatedAt: string;
 };
 

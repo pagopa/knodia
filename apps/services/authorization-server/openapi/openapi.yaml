@@ -3,7 +3,8 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for issuing access tokens to consume E-services exposed by a Knode
+  description: "API for issuing access tokens: E-service access tokens and Knode
+    API access tokens"
   title: Knodia Authorization Server API
   version: 1.0.0
 components:
@@ -66,7 +67,7 @@ components:
         - status
         - title
       additionalProperties: false
-    TokenRequest:
+    EserviceAccessTokenRequest:
       type: object
       properties:
         client_assertion:
@@ -76,22 +77,22 @@ components:
           type: string
           enum:
             - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
         client_id:
           description: Unique identifier of the Consumer Keychain
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        grant_type:
-          type: string
-          enum:
-            - client_credentials
       required:
         - client_assertion
         - client_assertion_type
-        - client_id
         - grant_type
+        - client_id
       additionalProperties: false
-    TokenResponse:
+    EserviceAccessTokenResponse:
       type: object
       properties:
         access_token:
@@ -104,6 +105,48 @@ components:
           enum:
             - Bearer
             - DPoP
+      required:
+        - access_token
+        - expires_in
+        - token_type
+      additionalProperties: false
+    KnodeApiTokenRequest:
+      type: object
+      properties:
+        client_assertion:
+          type: string
+          format: jwt
+        client_assertion_type:
+          type: string
+          enum:
+            - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
+        client_id:
+          description: Unique identifier of the Knode API Keychain
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - client_assertion
+        - client_assertion_type
+        - grant_type
+        - client_id
+      additionalProperties: false
+    KnodeApiTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          format: int32
+          type: number
+        token_type:
+          type: string
+          enum:
+            - Bearer
       required:
         - access_token
         - expires_in
@@ -128,17 +171,17 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /token:
     post:
-      operationId: createToken
-      summary: Create Token
+      operationId: createEserviceAccessToken
+      summary: Create E-service Access Token
       tags:
-        - token
+        - eservice-access-token
       description: Issue an E-service access token
       requestBody:
         required: true
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/TokenRequest"
+              $ref: "#/components/schemas/EserviceAccessTokenRequest"
       parameters:
         - schema:
             type: string
@@ -155,7 +198,46 @@ paths:
               schema:
                 description: Token issued successfully
                 allOf:
-                  - $ref: "#/components/schemas/TokenResponse"
+                  - $ref: "#/components/schemas/EserviceAccessTokenResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /knodeApiToken:
+    post:
+      operationId: createKnodeApiToken
+      summary: Create Knode API Token
+      tags:
+        - knode-api-token
+      description: Issue a Knode API access token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/KnodeApiTokenRequest"
+      security: []
+      responses:
+        "200":
+          description: Token issued successfully
+          content:
+            application/json:
+              schema:
+                description: Token issued successfully
+                allOf:
+                  - $ref: "#/components/schemas/KnodeApiTokenResponse"
         "400":
           description: Bad Request
           content:
@@ -178,5 +260,7 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: Token routes
-    name: token
+  - description: E-service access token issuance
+    name: eservice-access-token
+  - description: Knode API access token issuance
+    name: knode-api-token

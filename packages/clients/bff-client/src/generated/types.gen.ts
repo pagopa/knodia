@@ -561,6 +561,7 @@ export type ProducerAgreement = {
     hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
+    updatedAt: string;
 };
 
 export type ProducerAgreementDetails = {
@@ -568,11 +569,11 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+    updatedAt: string;
     latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
-    updatedAt: string;
 };
 
 export type ProducerAgreements = {
@@ -684,6 +685,14 @@ export type EserviceTemplate = {
 export type EserviceTemplates = Array<EserviceTemplate>;
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Reference to a Purpose statement template
+ */
+export type PurposeTemplateReference = {
+    id: string;
+    knodeId: KnodeId;
+};
 
 /**
  * Name of the Purpose
@@ -919,6 +928,7 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+    template?: PurposeTemplateReference;
 };
 
 export type ConsumerPurpose = {
@@ -956,6 +966,7 @@ export type ProducerPurpose = {
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
+    updatedAt: string;
 };
 
 export type ProducerPurposes = {
@@ -1005,7 +1016,7 @@ export type CreateSessionData = {
     body: SessionRequest;
     path?: never;
     query?: never;
-    url: '/auth/ui-session';
+    url: '/auth/uiSession';
 };
 
 export type CreateSessionErrors = {
@@ -1017,6 +1028,10 @@ export type CreateSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1034,7 +1049,7 @@ export type RefreshSessionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/ui-session/refresh';
+    url: '/auth/uiSession/refresh';
 };
 
 export type RefreshSessionErrors = {
@@ -1042,6 +1057,10 @@ export type RefreshSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1061,6 +1080,15 @@ export type LogoutData = {
     query?: never;
     url: '/auth/logout';
 };
+
+export type LogoutErrors = {
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
     /**
@@ -1794,10 +1822,6 @@ export type RemoveConsumerKeychainKeyErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
 };
 
 export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
@@ -3340,6 +3364,10 @@ export type GetProducerAgreementsData = {
          * Filter to only Agreements updated within the recent update window
          */
         recentlyUpdated?: 'true' | 'false';
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/producer/agreements';
 };

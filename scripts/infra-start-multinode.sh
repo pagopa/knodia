@@ -1,9 +1,21 @@
 #!/bin/bash
 
+# Build images separately from `up` so that build failures cause the script
+# to exit immediately. Set SEQUENTIAL_BUILD=1 to build images one at a time
+# instead of in parallel — needed on hosts that OOM under the multinode build.
+# Services with `image:` only (no `build:`) are skipped by compose.
+if [ "${SEQUENTIAL_BUILD:-0}" = "1" ]; then
+  for svc in $(docker compose -f docker/compose.multinode.yaml config --services); do
+    docker compose -f docker/compose.multinode.yaml build "$svc" || exit 1
+  done
+else
+  docker compose -f docker/compose.multinode.yaml build || exit 1
+fi
+
 # --wait exits 1 when init containers (flyway, debezium-setup, etc.) exit,
 # even with exit code 0. This is expected, so we suppress it.
 # See: https://github.com/docker/compose/issues/10596.
-docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
+docker compose -f docker/compose.multinode.yaml up -d --wait || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
 # are in a running state. Init containers (flyway, debezium-setup, minio-setup,

@@ -45,6 +45,16 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
         description: null,
       } satisfies API_ConsumerKeychainPatch,
     },
+    {
+      body: {
+        name: { en: "Updated Consumer keychain name" },
+      } satisfies API_ConsumerKeychainPatch,
+    },
+    {
+      body: {
+        description: { en: "Updated Consumer keychain description" },
+      } satisfies API_ConsumerKeychainPatch,
+    },
   ])(
     "should correctly create consumer keychain update event with body %S",
     async ({ body }) => {

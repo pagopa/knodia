@@ -8,6 +8,7 @@ import type {
 
 import { InternalError } from "@knodia/common-models/errors";
 import {
+  type KeyId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
   type UserId,
@@ -25,6 +26,7 @@ import {
   userAlreadyMember,
   userNotFound,
 } from "../models/errors.ts";
+import { retrieveKeychainKey } from "./retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,
@@ -33,6 +35,8 @@ import {
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
+  assertUserIsAllowedToRemoveKey,
+  assertUserIsMemberOfKeychain,
 } from "./validators.ts";
 
 export async function addKeyToKeychain<
@@ -138,6 +142,40 @@ export async function addMemberToKeychain<
       ...keychain,
       updatedAt: now,
       users: [...keychain.users, { addedAt: now, userId: user.id }],
+    },
+  };
+}
+
+export function removeKeyFromKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+  assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);
+  retrieveKeychainKey(keychain, kid);
+
+  return {
+    ...keychain,
+    keys: keychain.keys.filter((key) => key.kid !== kid),
+    updatedAt: new Date(),
+  };
+}
+
+export function removeMemberFromKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain,
+>(
+  keychain: K,
+  userId: UserId,
+  authData: UISessionAuthData,
+): { updatedKeychain: K } {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+
+  assertUserIsMemberOfKeychain(userId, keychain.id, keychain.users);
+
+  return {
+    updatedKeychain: {
+      ...keychain,
+      updatedAt: new Date(),
+      users: keychain.users.filter((member) => member.userId !== userId),
     },
   };
 }
