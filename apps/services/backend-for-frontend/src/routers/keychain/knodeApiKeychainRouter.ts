@@ -29,7 +29,7 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
-import { type AxiosResponse, isAxiosError } from "axios";
+import { type AxiosResponse } from "axios";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -58,6 +58,7 @@ import {
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { resourceExists } from "../../utils/resourceExists.ts";
 
 interface KnodeApiKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -100,20 +101,6 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveKnodeApiKeychainById(knodeApiKeychainId, headers),
     )();
-
-  const resourceExists = async (
-    check: () => Promise<unknown>,
-  ): Promise<boolean> => {
-    try {
-      await check();
-      return true;
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 404) {
-        return false;
-      }
-      throw error;
-    }
-  };
 
   fastify.route({
     handler: async (req, res) => {

@@ -46,7 +46,7 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
-import { type AxiosResponse, isAxiosError } from "axios";
+import { type AxiosResponse } from "axios";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -82,6 +82,7 @@ import {
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { resourceExists } from "../../utils/resourceExists.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -140,24 +141,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
-
-  /**
-   * Checks if a resource exists by calling the provided function.
-   * @returns true if the resource exists, false if not found (404), throws for other errors
-   */
-  const resourceExists = async (
-    check: () => Promise<unknown>,
-  ): Promise<boolean> => {
-    try {
-      await check();
-      return true;
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 404) {
-        return false;
-      }
-      throw error;
-    }
-  };
 
   fastify.route({
     handler: async (req, res) => {
