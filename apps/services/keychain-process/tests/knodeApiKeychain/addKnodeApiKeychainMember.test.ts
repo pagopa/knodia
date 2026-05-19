@@ -254,4 +254,12 @@ describe("POST /knodeApiKeychains/:knodeApiKeychainId/members (addKnodeApiKeycha
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid Knode API keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/knodeApiKeychains/not-a-uuid/members`)
+      .body({ userId: "10000000-1000-1000-8000-000000000011" });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
