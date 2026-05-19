@@ -26,6 +26,7 @@
     "@fastify/request-context": "catalog:",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
