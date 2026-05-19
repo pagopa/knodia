@@ -51,7 +51,10 @@ const toConsumerKeychainSQL = (
   metadataVersion: number,
 ): ConsumerKeychainSQL => ({
   createdAt: consumerKeychain.createdAt,
-  description: consumerKeychain.description,
+  // Coerce to null so onConflictDoUpdate emits an explicit SET for the column;
+  // a plain `undefined` would be omitted from Drizzle's UPDATE, leaving a stale
+  // description in place when the PATCH clears it.
+  description: consumerKeychain.description ?? null,
   id: consumerKeychain.id,
   metadataVersion,
   name: consumerKeychain.name,
