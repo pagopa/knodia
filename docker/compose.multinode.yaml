@@ -908,7 +908,7 @@ services:
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.orion.local.knodia.com"
-      GENERATED_KNODE_API_TOKEN_AUDIENCE: "knode-api.test.knodia.org"
+      GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
@@ -997,6 +997,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
 
   # ============================================================
   # Lynx Node
@@ -1564,7 +1566,7 @@ services:
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
-      GENERATED_KNODE_API_TOKEN_AUDIENCE: "knode-api.test.knodia.org"
+      GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
@@ -1653,6 +1655,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
 
   # ============================================================
   # Frontends

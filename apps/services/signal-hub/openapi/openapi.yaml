@@ -7,6 +7,13 @@ info:
   title: Knodia Signal Hub API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -83,9 +90,36 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /signals:
+    post:
+      operationId: pushSignal
+      tags:
+        - signalHub
+      description: Push a signal for an E-service
+      responses:
+        "200":
+          description: Signal accepted
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Signal Hub API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

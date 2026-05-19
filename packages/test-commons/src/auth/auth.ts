@@ -2,6 +2,7 @@ import type {
   ExternalUISessionScope,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
+  KnodeApiAccessTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -15,6 +16,7 @@ import {
   type AgreementId,
   type EserviceId,
   type EserviceVersionId,
+  type KnodeApiKeychainId,
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
@@ -45,6 +47,9 @@ const TEST_PRODUCER_ID = unsafeBrandId<OrganizationId>(
 const TEST_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
   "70000000-7000-1000-8000-000000000007",
 );
+const TEST_KNODE_API_KEYCHAIN_ID = unsafeBrandId<KnodeApiKeychainId>(
+  "80000000-8000-1000-8000-000000000008",
+);
 
 export type TestToken =
   | {
@@ -59,6 +64,13 @@ export type TestToken =
       producerKnodeId?: KnodeId;
       scope?: ExternalUISessionScope;
       type: "external-ui-session";
+    }
+  | {
+      keychainId?: KnodeApiKeychainId;
+      keychainKnodeId?: KnodeId;
+      organizationId?: OrganizationId;
+      organizationKnodeId?: KnodeId;
+      type: "knode-api";
     }
   | {
       organizationId?: OrganizationId;
@@ -89,6 +101,7 @@ export function createTestTokenPayload(spec: TestToken): string {
     .with({ type: "external-ui-session" }, (props) =>
       getTestExternalUISessionTokenClaims(props),
     )
+    .with({ type: "knode-api" }, (props) => getTestKnodeApiTokenClaims(props))
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
 }
@@ -145,6 +158,36 @@ export function getTestInternalTokenClaims(): InternalTokenClaims {
     jti: "test-jti",
     sub: "test-internal-service",
     type: "internal",
+  };
+}
+
+export function getTestKnodeApiTokenClaims(
+  props: {
+    keychainId?: KnodeApiKeychainId;
+    keychainKnodeId?: KnodeId;
+    organizationId?: OrganizationId;
+    organizationKnodeId?: KnodeId;
+  } = {},
+): KnodeApiAccessTokenClaims {
+  const keychainId = props.keychainId ?? TEST_KNODE_API_KEYCHAIN_ID;
+  return {
+    aud: "test-audience",
+    client_id: keychainId,
+    exp: 9999999999,
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    keychain: {
+      id: keychainId,
+      knode_id: props.keychainKnodeId ?? KnodeId.enum.Orion,
+    },
+    nbf: 0,
+    organization: {
+      id: props.organizationId ?? TEST_ORGANIZATION_ID,
+      knode_id: props.organizationKnodeId ?? KnodeId.enum.Orion,
+    },
+    sub: keychainId,
+    type: "knode-api",
   };
 }
 
