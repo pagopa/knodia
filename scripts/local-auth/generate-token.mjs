@@ -24,6 +24,11 @@ const EXTERNAL_PRODUCER_ID = "00000000-0000-4000-8000-000000000013";
 const EXTERNAL_PRODUCER_KNODE_ID = "Orion";
 const EXTERNAL_ESERVICE_VERSION_ID = "00000000-0000-4000-8000-000000000014";
 
+// Placeholder IDs for knode-api tokens (replace with real values for testing)
+const KNODE_API_KEYCHAIN_ID = "00000000-0000-4000-8000-000000000020";
+const KNODE_API_KEYCHAIN_KNODE_ID = "Orion";
+const KNODE_API_ORG_KNODE_ID = "Orion";
+
 import { TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
@@ -36,10 +41,19 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
   process.exit(1);
 }
 
-function getClaims(targetEnv, type) {
-  const aud = targetEnv === "local"
+function getAudience(targetEnv, type) {
+  if (type === "knode-api") {
+    return targetEnv === "local"
+      ? "signalhub.test.knodia.org"
+      : `signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`;
+  }
+  return targetEnv === "local"
     ? `local.knodia.test/${type}`
     : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
+}
+
+function getClaims(targetEnv, type) {
+  const aud = getAudience(targetEnv, type);
 
   switch (type) {
     case "ui-session":
@@ -70,12 +84,25 @@ function getClaims(targetEnv, type) {
           knode_id: EXTERNAL_PRODUCER_KNODE_ID,
         },
       };
+    case "knode-api":
+      return {
+        sub: KNODE_API_KEYCHAIN_ID,
+        type,
+        aud,
+        client_id: KNODE_API_KEYCHAIN_ID,
+        keychain: {
+          id: KNODE_API_KEYCHAIN_ID,
+          knode_id: KNODE_API_KEYCHAIN_KNODE_ID,
+        },
+        organization: { id: ORG_ID, knode_id: KNODE_API_ORG_KNODE_ID },
+      };
   }
 }
 
 function getEnvVarName(targetEnv, type) {
   const base = type === "ui-session" ? "UI_SESSION_JWT"
     : type === "internal" ? "INTERNAL_JWT"
+    : type === "knode-api" ? "KNODE_API_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
@@ -83,9 +110,13 @@ function getEnvVarName(targetEnv, type) {
 
 async function resolveKeyId(kmsClient, targetEnv, type) {
   if (targetEnv === "local") {
-    return "alias/local-knodia-key";
+    return type === "knode-api"
+      ? "alias/local-knodia-auth-server-key"
+      : "alias/local-knodia-key";
   }
-  const keyName = type === "internal" ? "internal" : "bff-session";
+  const keyName = type === "internal" ? "internal"
+    : type === "knode-api" ? "auth-server"
+    : "bff-session";
   const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
   const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
   return KeyMetadata.KeyId;
@@ -114,6 +145,7 @@ const payload = b64url(
     iat: now,
     iss: "local-knodia",
     jti: randomUUID(),
+    ...(type === "knode-api" ? { nbf: now } : {}),
   })
 );
 

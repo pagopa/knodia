@@ -2,6 +2,7 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   EserviceVersionId,
+  KnodeApiKeychainId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -9,6 +10,7 @@ import type {
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import { agreementReadmodelServiceBuilder } from "@knodia/db-readmodel-agreement/services";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import { knodeApiKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
 import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
 import { and, eq } from "drizzle-orm";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -19,6 +21,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const agreementReadmodelService =
     agreementReadmodelServiceBuilder(readmodelDb);
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
+  const knodeApiKeychainReadmodelService =
+    knodeApiKeychainReadmodelServiceBuilder(readmodelDb);
   const purposeReadmodelService = purposeReadmodelServiceBuilder(readmodelDb);
   return {
     async getAgreement(
@@ -40,6 +44,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await eserviceReadmodelService.getEserviceVersionById(
         eserviceId,
         eserviceVersionId,
+      );
+    },
+    async getKnodeApiKeychain(knodeApiKeychainId: KnodeApiKeychainId) {
+      return await knodeApiKeychainReadmodelService.getKnodeApiKeychainById(
+        knodeApiKeychainId,
       );
     },
     async getPurpose(purposeId: PurposeId) {

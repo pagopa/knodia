@@ -9,7 +9,8 @@
   },
   "exports": {
     "./dpop": "./src/dpop/index.ts",
-    "./clientAssertion": "./src/clientAssertion/clientAssertion.ts"
+    "./clientAssertion": "./src/clientAssertion/clientAssertion.ts",
+    "./clientAssertion/knodeApi": "./src/clientAssertion/knodeApiClientAssertion.ts"
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
