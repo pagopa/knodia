@@ -1,0 +1,30 @@
+meta {
+  name: 3 - Add Keychain Member
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host-keychain-process}}/knodeApiKeychains/:knodeApiKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}"
+  }
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 2000))
+}
