@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { phaseAt } from "../src/utils/phase.ts";
+import { phaseAt } from "../src/phase.ts";
 
 describe("phaseAt", () => {
   it.each([

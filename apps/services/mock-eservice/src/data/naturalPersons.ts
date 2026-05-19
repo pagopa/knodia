@@ -1,3 +1,8 @@
+import { rotatingFiscalCodes } from "@knodia/mock-eservice-signal-hub-commons/mockup";
+import {
+  computePeriodId,
+  type SignalHubSeedConfig,
+} from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,10 +17,6 @@ import {
   type API_PersonalInformation,
   type API_Residence,
 } from "../models/api.ts";
-import {
-  computePeriodId,
-  type SignalHubSeedConfig,
-} from "../utils/rotation.ts";
 
 const CODICE_FISCALE_SCHEME = {
   schemeName: "Codice Fiscale",
@@ -43,6 +44,24 @@ const ROTATING_ADDRESSES = readJson(
   "rotatingAddresses.json",
   RotatingAddressesFile,
 );
+
+// Drift guard: the cron emits signals for the fiscal codes in
+// `rotatingFiscalCodes`; mock-eservice rotates `/residence` for the keys of
+// `rotatingAddresses.json`. If these diverge, a consumer can't correlate
+// signals back to producer data — fail loud at boot.
+{
+  const expected = [...rotatingFiscalCodes].sort();
+  const actual = Object.keys(ROTATING_ADDRESSES).sort();
+  if (
+    expected.length !== actual.length ||
+    expected.some((fc, i) => fc !== actual[i])
+  ) {
+    throw new Error(
+      `rotatingAddresses.json keys diverge from @knodia/mock-eservice-signal-hub-commons rotatingFiscalCodes. ` +
+        `expected: [${expected.join(", ")}]; actual: [${actual.join(", ")}]`,
+    );
+  }
+}
 
 export function findDigitalContact(
   notation: API_Notation,

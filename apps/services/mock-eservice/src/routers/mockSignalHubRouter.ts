@@ -1,15 +1,18 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import {
-  type EserviceId,
-  type EserviceVersionId,
-  type KnodeId,
-  type OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { type KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  SIGNAL_HUB_MOCK_ESERVICE_ID,
+  SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
+  SIGNAL_HUB_MOCK_PRODUCER_ID,
+} from "@knodia/mock-eservice-signal-hub-commons/mockup";
+import {
+  getRotatedSeed,
+  type SignalHubSeedConfig,
+} from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import z from "zod";
 
 import { findResidence } from "../data/naturalPersons.ts";
@@ -20,20 +23,7 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { naturalPersonNotFound } from "../models/errors.ts";
-import { getRotatedSeed, type SignalHubSeedConfig } from "../utils/rotation.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
-
-// Identity of this mock e-service. Hardcoded on purpose.
-// (kept in sync with scripts/seed/sql/<tenant>/mock-signal-hub-eservice.sql).
-const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
-);
-const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
-  "fa2a800a-5058-4859-b68a-bfbd3ee863c0",
-);
-const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
-  "00000000-0000-4000-8000-000000000004",
-);
 
 interface MockSignalHubRouterOptions {
   knodeId: KnodeId;
@@ -48,9 +38,9 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
-        EXPECTED_ESERVICE_ID,
-        EXPECTED_ESERVICE_VERSION_ID,
-        EXPECTED_PRODUCER_ID,
+        SIGNAL_HUB_MOCK_ESERVICE_ID,
+        SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
+        SIGNAL_HUB_MOCK_PRODUCER_ID,
         knodeId,
       );
 
@@ -92,13 +82,17 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
-        EXPECTED_ESERVICE_ID,
-        EXPECTED_ESERVICE_VERSION_ID,
-        EXPECTED_PRODUCER_ID,
+        SIGNAL_HUB_MOCK_ESERVICE_ID,
+        SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
+        SIGNAL_HUB_MOCK_PRODUCER_ID,
         knodeId,
       );
 
-      const seed = getRotatedSeed(EXPECTED_ESERVICE_ID, Date.now(), seedConfig);
+      const seed = getRotatedSeed(
+        SIGNAL_HUB_MOCK_ESERVICE_ID,
+        Date.now(),
+        seedConfig,
+      );
 
       logger.info("Mock e-service /pseudonymization returned current seed");
       res.status(200).send({ cryptoHashFunction: "sha256", seed });

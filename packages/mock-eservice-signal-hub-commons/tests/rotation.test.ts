@@ -6,7 +6,7 @@ import {
   getRotatedSeed,
   nextBoundaryMs,
   type SignalHubSeedConfig,
-} from "../src/utils/rotation.ts";
+} from "../src/rotation.ts";
 
 const config: SignalHubSeedConfig = {
   expireSeconds: 30,

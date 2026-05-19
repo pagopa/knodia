@@ -1,12 +1,15 @@
 import { type EserviceId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { rotatingFiscalCodes } from "@knodia/mock-eservice-signal-hub-commons/mockup";
+import { phaseAt } from "@knodia/mock-eservice-signal-hub-commons/phase";
+import { pseudonymize } from "@knodia/mock-eservice-signal-hub-commons/pseudonymize";
+import {
+  getRotatedSeed,
+  type SignalHubSeedConfig,
+} from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { randomUUID } from "node:crypto";
 
-import { rotatingFiscalCodes } from "../data/rotatingFiscalCodes.ts";
-import { phaseAt } from "../utils/phase.ts";
-import { pseudonymize } from "../utils/pseudonymize.ts";
-import { getRotatedSeed, type SignalHubSeedConfig } from "../utils/rotation.ts";
 import { type SignalIdAllocator } from "./counter.ts";
 
 interface EmittedBatch {

@@ -25,10 +25,10 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/db-signal-hub": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/mock-eservice-signal-hub-commons": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "pino": "catalog:",
-    "pino-pretty": "catalog:",
-    "zod": "catalog:"
+    "pino-pretty": "catalog:"
   }
 }

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import { pseudonymize } from "../src/utils/pseudonymize.ts";
+import { pseudonymize } from "../src/pseudonymize.ts";
 
 describe("pseudonymize", () => {
   it("returns the same hex sha256 a consumer would compute from `fiscalCode + seed`", () => {

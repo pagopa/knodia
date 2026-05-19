@@ -1,7 +1,6 @@
-// The Signal Hub mock cron emits one phase signal per rotating fiscal code at
-// every period transition. The phase cycles `CREATE → UPDATE → DELETE`,
-// matching the rotation observable on the mock e-service's `/residence`
-// (address A → address B → 404).
+// At every period transition the mock cron emits one phase signal per
+// rotating fiscal code. The phase cycles `CREATE → UPDATE → DELETE`,
+// matching the mock e-service's `/residence` rotation (address A → B → 404).
 
 const PHASE_CYCLE_LENGTH = 3;
 type Phase = "CREATE" | "DELETE" | "UPDATE";

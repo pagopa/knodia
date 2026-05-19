@@ -1,12 +1,12 @@
 import { type EserviceId } from "@knodia/common-models/ids";
-import { type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { type Logger } from "pino";
-
 import {
   computePeriodId,
   nextBoundaryMs,
   type SignalHubSeedConfig,
-} from "../utils/rotation.ts";
+} from "@knodia/mock-eservice-signal-hub-commons/rotation";
+import { type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { type Logger } from "pino";
+
 import { type SignalIdAllocator } from "./counter.ts";
 import { emitTransition } from "./emit.ts";
 

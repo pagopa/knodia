@@ -32,6 +32,7 @@
     "@knodia/db-jti-replay-store": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/mock-eservice-signal-hub-commons": "workspace:*",
     "@knodia/dpop-validator": "workspace:*",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",

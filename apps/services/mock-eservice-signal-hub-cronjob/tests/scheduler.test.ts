@@ -1,11 +1,11 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { type SignalHubSeedConfig } from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
 import { makeSignalIdAllocator } from "../src/cron/counter.ts";
 import { startScheduler } from "../src/cron/scheduler.ts";
-import { type SignalHubSeedConfig } from "../src/utils/rotation.ts";
 import { signalHubDb } from "./setup.ts";
 
 const ESERVICE_ID = unsafeBrandId<EserviceId>(

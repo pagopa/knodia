@@ -1,8 +1,3 @@
-// Duplicated PDND-style from `apps/services/mock-eservice/src/utils/rotation.ts`.
-// Any change to the formula or the SignalHubSeedConfig shape MUST be mirrored
-// in both places — otherwise cron and producer drift and a consumer can no
-// longer decode `objectId` against the seed it reads from /pseudonymization.
-
 import { type EserviceId } from "@knodia/common-models/ids";
 import { createHmac } from "node:crypto";
 

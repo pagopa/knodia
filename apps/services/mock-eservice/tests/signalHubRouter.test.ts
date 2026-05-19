@@ -1,24 +1,17 @@
 import {
   type EserviceId,
   type EserviceVersionId,
-  type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import {
+  SIGNAL_HUB_MOCK_ESERVICE_ID,
+  SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
+  SIGNAL_HUB_MOCK_PRODUCER_ID,
+} from "@knodia/mock-eservice-signal-hub-commons/mockup";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
-
-// Same hardcoded identity as apps/services/mock-eservice/src/routers/mockSignalHubRouter.ts
-const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
-);
-const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
-  "fa2a800a-5058-4859-b68a-bfbd3ee863c0",
-);
-const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
-  "00000000-0000-4000-8000-000000000004",
-);
 
 // E-service IDs of the other mock e-services (mockup 01 bearer). A token issued
 // for those must NOT be accepted by /residence or /pseudonymization.
@@ -43,11 +36,11 @@ async function signToken(
   } = {},
 ) {
   return signEserviceAccessToken({
-    eserviceId: overrides.eserviceId ?? EXPECTED_ESERVICE_ID,
+    eserviceId: overrides.eserviceId ?? SIGNAL_HUB_MOCK_ESERVICE_ID,
     eserviceVersionId:
-      overrides.eserviceVersionId ?? EXPECTED_ESERVICE_VERSION_ID,
+      overrides.eserviceVersionId ?? SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
     knodeId: TEST_KNODE_ID,
-    producerId: EXPECTED_PRODUCER_ID,
+    producerId: SIGNAL_HUB_MOCK_PRODUCER_ID,
     tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
   });
 }
