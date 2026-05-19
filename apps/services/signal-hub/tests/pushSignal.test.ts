@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
@@ -12,6 +13,7 @@ import { describe, expect, it } from "vitest";
 
 import type { API_PushSeed } from "../src/models/api.ts";
 
+import { toSignalType } from "../src/models/apiConverter.ts";
 import {
   eserviceNotActive,
   eserviceNotFoundForProducer,
@@ -20,7 +22,7 @@ import {
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { getAllSignals, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
 
@@ -54,6 +56,20 @@ describe("POST /signals (pushSignal)", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({ signalId: defaultBody.signalId });
+
+    const expectedSignal: SignalHubSignalSQL = {
+      correlationId: expect.any(String),
+      createdAt: expect.any(Date),
+      eserviceId: defaultBody.eserviceId,
+      id: 1,
+      objectId: defaultBody.objectId,
+      objectType: defaultBody.objectType,
+      signalId: defaultBody.signalId,
+      signalType: toSignalType(defaultBody.signalType),
+    };
+    const retrievedSignals = await getAllSignals();
+    expect(retrievedSignals).toHaveLength(1);
+    expect(retrievedSignals[0]).toEqual(expectedSignal);
   });
 
   it("should return 404 when the e-service does not exist", async () => {

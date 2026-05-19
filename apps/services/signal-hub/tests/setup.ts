@@ -55,4 +55,4 @@ afterAll(async () => {
   await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService };
+export { app, eserviceWriterService, signalHubDb };
