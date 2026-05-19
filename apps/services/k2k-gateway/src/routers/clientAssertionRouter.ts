@@ -129,17 +129,27 @@ export const clientAssertionRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const keyResponse = await keychainProcessApi.getKnodeApiKeychainKey({
-        client: keychainProcessClient,
-        headers,
-        path: {
-          keyId: req.body.kid,
-          knodeApiKeychainId: req.body.keychainId,
-        },
-      });
+      const [keyResponse, keychainResponse] = await Promise.all([
+        keychainProcessApi.getKnodeApiKeychainKey({
+          client: keychainProcessClient,
+          headers,
+          path: {
+            keyId: req.body.kid,
+            knodeApiKeychainId: req.body.keychainId,
+          },
+        }),
+        keychainProcessApi.getKnodeApiKeychain({
+          client: keychainProcessClient,
+          headers,
+          path: { knodeApiKeychainId: req.body.keychainId },
+        }),
+      ]);
 
       res.send(
-        toAPI_KnodeApiClientAssertionVerificationResponse(keyResponse.data),
+        toAPI_KnodeApiClientAssertionVerificationResponse(
+          keyResponse.data,
+          keychainResponse.data,
+        ),
       );
     },
     method: "POST",
