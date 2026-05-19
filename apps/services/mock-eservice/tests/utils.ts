@@ -14,7 +14,7 @@ import { randomUUID } from "node:crypto";
 
 import { ACCEPTED_AUDIENCES, EXPECTED_ISSUER, TEST_KID } from "./setup.ts";
 
-export interface SignAccessTokenInput {
+interface SignAccessTokenInput {
   audience?: string | string[];
   eserviceId: EserviceId;
   eserviceVersionId: EserviceVersionId;
