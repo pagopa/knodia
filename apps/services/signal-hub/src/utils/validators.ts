@@ -33,18 +33,9 @@ export async function assertSignalCanBePushed(
   eserviceId: EserviceId,
   signalHubDbService: SignalHubDbService,
 ) {
-  const signal = await signalHubDbService.getSignal(signalId, eserviceId);
-  if (signal) {
-    throw signalAlreadyExists(signalId, eserviceId);
-  }
-
-  const newerSignals = await signalHubDbService.getNewerSignals(
-    signalId,
-    eserviceId,
-  );
-  if (newerSignals.length > 0) {
-    throw newerSignalsExist(signalId, eserviceId);
-  }
+  const maxSignalId = await signalHubDbService.getMaxSignalId(eserviceId);
+  if (signalId === maxSignalId) throw signalAlreadyExists(signalId, eserviceId);
+  if (signalId < maxSignalId) throw newerSignalsExist(signalId, eserviceId);
 }
 
 function assertEserviceHasSignalHubEnabled(eservice: Eservice) {
