@@ -2,12 +2,13 @@ import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
 import { createLogger } from "@knodia/logger";
 
 import { config } from "./config/config.ts";
-import { startCleaner } from "./services/cleaner.ts";
+import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 
 const logger = createLogger({ config });
 
 const { db: signalHubDb, pool: signalHubPool } =
   makeSignalHubDrizzleConnection(config);
+const signalHubService = signalHubServiceBuilder(signalHubDb, logger);
 
 const shutdown = async (reason: string, exitCode = 0) => {
   logger.info(`Shutting down (${reason})`);
@@ -16,12 +17,7 @@ const shutdown = async (reason: string, exitCode = 0) => {
 };
 
 try {
-  await startCleaner({
-    logger,
-    signalHubDb,
-    signalsRetentionHours: config.signalsRetentionHours,
-  });
-
+  await signalHubService.cleanup(config.signalsRetentionHours);
   await shutdown("Signals cleanup finished", 0);
 } catch (error) {
   if (error instanceof Error) {

@@ -2,8 +2,8 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { startCleaner } from "../src/services/cleaner.ts";
-import { logger, signalHubDb } from "./setup.ts";
+import { signalHubServiceBuilder } from "../src/services/signalHubService.ts";
+import { logger, signalHubService } from "./setup.ts";
 import { getAllSignals, seedSignals } from "./utils.ts";
 
 const SIGNALS_RETENTION_HOURS = 24;
@@ -21,11 +21,7 @@ describe("Signal Hub Cleaner", () => {
       { createdAt: hoursAgo(2), objectId: "recent-2" },
     ]);
 
-    await startCleaner({
-      logger,
-      signalHubDb,
-      signalsRetentionHours: SIGNALS_RETENTION_HOURS,
-    });
+    await signalHubService.cleanup(SIGNALS_RETENTION_HOURS);
 
     const remainingSignals = await getAllSignals();
     expect(remainingSignals).toHaveLength(2);
@@ -40,11 +36,7 @@ describe("Signal Hub Cleaner", () => {
       { createdAt: hoursAgo(2), objectId: "recent-2" },
     ]);
 
-    await startCleaner({
-      logger,
-      signalHubDb,
-      signalsRetentionHours: SIGNALS_RETENTION_HOURS,
-    });
+    await signalHubService.cleanup(SIGNALS_RETENTION_HOURS);
 
     const remainingSignals = await getAllSignals();
     expect(remainingSignals).toHaveLength(2);
@@ -56,22 +48,14 @@ describe("Signal Hub Cleaner", () => {
       { createdAt: hoursAgo(72), objectId: "old-2" },
     ]);
 
-    await startCleaner({
-      logger,
-      signalHubDb,
-      signalsRetentionHours: SIGNALS_RETENTION_HOURS,
-    });
+    await signalHubService.cleanup(SIGNALS_RETENTION_HOURS);
 
     const remainingSignals = await getAllSignals();
     expect(remainingSignals).toHaveLength(0);
   });
 
   it("does nothing when the table is empty", async () => {
-    await startCleaner({
-      logger,
-      signalHubDb,
-      signalsRetentionHours: SIGNALS_RETENTION_HOURS,
-    });
+    await signalHubService.cleanup(SIGNALS_RETENTION_HOURS);
 
     const remainingSignals = await getAllSignals();
     expect(remainingSignals).toHaveLength(0);
@@ -83,13 +67,10 @@ describe("Signal Hub Cleaner", () => {
         where: vi.fn().mockRejectedValue(new Error("DB connection error")),
       }),
     } as unknown as NodePgDatabase;
+    const brokenSignalHubService = signalHubServiceBuilder(brokenDb, logger);
 
     await expect(
-      startCleaner({
-        logger,
-        signalHubDb: brokenDb,
-        signalsRetentionHours: SIGNALS_RETENTION_HOURS,
-      }),
+      brokenSignalHubService.cleanup(SIGNALS_RETENTION_HOURS),
     ).rejects.toThrow("DB connection error");
   });
 });

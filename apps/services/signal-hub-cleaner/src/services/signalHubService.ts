@@ -2,6 +2,8 @@ import { signalHubDbServiceBuilder } from "@knodia/db-signal-hub/services";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type Logger } from "pino";
 
+export type SignalHubService = ReturnType<typeof signalHubServiceBuilder>;
+
 export function signalHubServiceBuilder(
   signalHubDb: NodePgDatabase,
   logger: Logger,
