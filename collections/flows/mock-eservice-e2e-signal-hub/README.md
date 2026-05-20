@@ -16,7 +16,7 @@ exposed by `/pseudonymization` rotate in sync, and a cronjob pushes the matching
 | 2            | 404             | seed C              | DELETE           |
 
 
-Set `SEED_EXPIRE_SECONDS=30` (or similar short value) on mock-eservice and on the cron job to observe the full cycle in a reasonable time frame.
+Set `SIGNAL_HUB_SEED_EXPIRE_SECONDS=30` (or similar short value) on mock-eservice and on the cron job to observe the full cycle in a reasonable time frame.
 
 ## Run
 

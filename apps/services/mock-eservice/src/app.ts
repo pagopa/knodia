@@ -59,15 +59,15 @@ export function buildApp({
     expectedIssuer,
     jwtClockToleranceSeconds,
     knodeId,
-    seedExpireSeconds,
-    seedSaltLength,
-    seedStartDateMs,
+    signalHubSeedExpireSeconds,
+    signalHubSeedSaltLength,
+    signalHubSeedStartDateMs,
   } = config;
 
   const seedConfig = {
-    expireSeconds: seedExpireSeconds,
-    saltLength: seedSaltLength,
-    startDateMs: seedStartDateMs,
+    expireSeconds: signalHubSeedExpireSeconds,
+    saltLength: signalHubSeedSaltLength,
+    startDateMs: signalHubSeedStartDateMs,
   };
 
   const dpopProofStore = createJtiReplayStore(
@@ -191,15 +191,15 @@ function buildBearerSignalHubApp({
     acceptedAudiences,
     expectedIssuer,
     knodeId,
-    seedExpireSeconds,
-    seedSaltLength,
-    seedStartDateMs,
+    signalHubSeedExpireSeconds,
+    signalHubSeedSaltLength,
+    signalHubSeedStartDateMs,
   } = config;
 
   const seedConfig = {
-    expireSeconds: seedExpireSeconds,
-    saltLength: seedSaltLength,
-    startDateMs: seedStartDateMs,
+    expireSeconds: signalHubSeedExpireSeconds,
+    saltLength: signalHubSeedSaltLength,
+    startDateMs: signalHubSeedStartDateMs,
   };
 
   const app = createMockFastifyApp(
