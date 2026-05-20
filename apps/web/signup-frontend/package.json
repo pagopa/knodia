@@ -10,9 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@knodia/ui-kit": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
-    "@phosphor-icons/react": "catalog:",
+    "@knodia/ui-kit": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
@@ -21,12 +20,9 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "axios": "catalog:",
-    "jose": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
-    "tailwind-merge": "catalog:",
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -41,7 +37,6 @@
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
-    "jsdom": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

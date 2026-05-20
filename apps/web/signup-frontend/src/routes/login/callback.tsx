@@ -3,7 +3,7 @@ import { Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { config } from "@/config/config";
+import { client } from "@/libs/axios";
 
 export const Route = createFileRoute("/login/callback")({
   loaderDeps: ({ search }) => ({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/login/callback")({
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ deps }) => {
     await signupManagerApi.exchangeOidcCode({
-      baseURL: config.signupManagerUrl,
+      client,
       query: {
         code: deps.code,
         state: deps.state,
