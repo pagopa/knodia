@@ -73,17 +73,20 @@ export function KeychainTable({
             <Cell>{keychain.membersCount}</Cell>
             <Cell>
               <div className="flex justify-end">
-                {type !== "production" && (
-                  <ButtonLinkWithPreload
-                    hierarchy="neutral"
-                    kind="outlined"
-                    params={{ id: keychain.id }}
-                    size="icon-sm"
-                    to={getKeychainDetailsHref(type)}
-                  >
-                    <ArrowRightIcon />
-                  </ButtonLinkWithPreload>
-                )}
+                {match(type)
+                  .with("consumption", "api", (supportedType) => (
+                    <ButtonLinkWithPreload
+                      hierarchy="neutral"
+                      kind="outlined"
+                      params={{ id: keychain.id }}
+                      size="icon-sm"
+                      to={getKeychainDetailsHref(supportedType)}
+                    >
+                      <ArrowRightIcon />
+                    </ButtonLinkWithPreload>
+                  ))
+                  .with("production", () => null)
+                  .exhaustive()}
               </div>
             </Cell>
           </Row>
