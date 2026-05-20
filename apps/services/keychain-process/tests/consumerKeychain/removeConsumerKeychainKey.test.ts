@@ -174,4 +174,11 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid consumer keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!).delete(
+      `/consumerKeychains/not-a-uuid/keys/${keyId}`,
+    );
+    expect(response.statusCode).toBe(400);
+  });
 });
