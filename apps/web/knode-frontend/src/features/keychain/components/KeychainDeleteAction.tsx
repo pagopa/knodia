@@ -47,7 +47,12 @@ export function KeychainDeleteAction({
         .exhaustive(),
     onSuccess: () =>
       match(type)
-        .with("consumption", () => navigate({ to: "/keychains" }))
+        .with("consumption", () =>
+          navigate({
+            search: { offset: 0, type: "consumption" },
+            to: "/keychains",
+          }),
+        )
         .with("api", () =>
           navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
         )
