@@ -1,6 +1,5 @@
 import { type EserviceId } from "@knodia/common-models/ids";
 import {
-  computePeriodId,
   nextBoundaryMs,
   type SignalHubSeedConfig,
 } from "@knodia/mock-eservice-signal-hub-commons/rotation";
@@ -27,6 +26,12 @@ interface SchedulerHandle {
 // current periodId from the wall clock (don't trust the timer fired exactly
 // at the boundary — debugger pauses / OS suspends can drift us past one or
 // more periods; we emit once for the latest period and reschedule).
+//
+// On a runtime emit failure we exit the process so the orchestrator restarts
+// us. Boot then re-emits the missed period from a fresh `max(signal_id)`. We
+// don't try to retry in-process: the in-memory `signal_id` allocator has
+// already incremented before the failed insert, so an in-process retry would
+// leave a permanent gap and silently drop the period.
 export async function startScheduler(
   deps: SchedulerDeps,
 ): Promise<SchedulerHandle> {
@@ -36,13 +41,11 @@ export async function startScheduler(
   const emitNow = async () => {
     if (stopped) return;
     const now = Date.now();
-    const periodId = computePeriodId(now, deps.seedConfig);
     const batch = await emitTransition({
       allocator: deps.allocator,
       db: deps.db,
       eserviceId: deps.eserviceId,
       now,
-      periodId,
       seedConfig: deps.seedConfig,
     });
     deps.logger.info(
@@ -67,9 +70,12 @@ export async function startScheduler(
     try {
       await emitNow();
     } catch (err) {
-      deps.logger.error(
-        `Emit failed: ${err instanceof Error ? err.message : String(err)}`,
+      deps.logger.fatal(
+        `Emit failed; exiting to let the orchestrator restart: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
       );
+      process.exit(1);
     }
     scheduleNext();
   };
