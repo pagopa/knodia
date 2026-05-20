@@ -6,14 +6,21 @@ import type {
 
 import {
   getConsumerKeychainDetailsOptions,
+  getConsumerKeychainKeysOptions,
   getConsumerKeychainKeysQueryKey,
+  getConsumerKeychainMembershipOptions,
   getConsumerKeychainMembershipQueryKey,
+  getConsumerKeychainMembersOptions,
   getConsumerKeychainMembersQueryKey,
+  getConsumerKeychainPurposesOptions,
   getConsumerKeychainsOptions,
   getConsumerKeychainsQueryKey,
   getKnodeApiKeychainDetailsOptions,
+  getKnodeApiKeychainKeysOptions,
   getKnodeApiKeychainKeysQueryKey,
+  getKnodeApiKeychainMembershipOptions,
   getKnodeApiKeychainMembershipQueryKey,
+  getKnodeApiKeychainMembersOptions,
   getKnodeApiKeychainMembersQueryKey,
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
@@ -22,6 +29,9 @@ import {
 import { client } from "@/libs/axios";
 
 const KEYCHAINS_PAGE_LIMIT = 10;
+const KEYS_PAGE_LIMIT = 50;
+const MEMBERS_PAGE_LIMIT = 50;
+const PURPOSES_PAGE_LIMIT = 10;
 
 export const consumerKeychainsQuery = (offset: number) =>
   getConsumerKeychainsOptions({
@@ -49,6 +59,74 @@ export const knodeApiKeychainDetailsQuery = (
   getKnodeApiKeychainDetailsOptions({
     client,
     path: { knodeApiKeychainId },
+  });
+
+export const consumerKeychainKeysQuery = (
+  consumerKeychainId: ConsumerKeychainId,
+  offset: number,
+) =>
+  getConsumerKeychainKeysOptions({
+    client,
+    path: { consumerKeychainId },
+    query: { limit: KEYS_PAGE_LIMIT, offset },
+  });
+
+export const knodeApiKeychainKeysQuery = (
+  knodeApiKeychainId: KnodeApiKeychainId,
+  offset: number,
+) =>
+  getKnodeApiKeychainKeysOptions({
+    client,
+    path: { knodeApiKeychainId },
+    query: { limit: KEYS_PAGE_LIMIT, offset },
+  });
+
+export const consumerKeychainMembersQuery = (
+  consumerKeychainId: ConsumerKeychainId,
+  offset: number,
+) =>
+  getConsumerKeychainMembersOptions({
+    client,
+    path: { consumerKeychainId },
+    query: { limit: MEMBERS_PAGE_LIMIT, offset },
+  });
+
+export const knodeApiKeychainMembersQuery = (
+  knodeApiKeychainId: KnodeApiKeychainId,
+  offset: number,
+) =>
+  getKnodeApiKeychainMembersOptions({
+    client,
+    path: { knodeApiKeychainId },
+    query: { limit: MEMBERS_PAGE_LIMIT, offset },
+  });
+
+export const consumerKeychainMembershipQuery = (
+  consumerKeychainId: ConsumerKeychainId,
+  userId: UserId,
+) =>
+  getConsumerKeychainMembershipOptions({
+    client,
+    path: { consumerKeychainId, userId },
+  });
+
+export const knodeApiKeychainMembershipQuery = (
+  knodeApiKeychainId: KnodeApiKeychainId,
+  userId: UserId,
+) =>
+  getKnodeApiKeychainMembershipOptions({
+    client,
+    path: { knodeApiKeychainId, userId },
+  });
+
+export const consumerKeychainPurposesQuery = (
+  consumerKeychainId: ConsumerKeychainId,
+  offset: number,
+) =>
+  getConsumerKeychainPurposesOptions({
+    client,
+    path: { consumerKeychainId },
+    query: { limit: PURPOSES_PAGE_LIMIT, offset },
   });
 
 export const consumerKeychainsQueryKey = () =>

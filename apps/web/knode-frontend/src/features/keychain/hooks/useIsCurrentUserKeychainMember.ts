@@ -1,34 +1,46 @@
 import {
-  getConsumerKeychainMembershipOptions,
-  getKnodeApiKeychainMembershipOptions,
-} from "@knodia/bff-client/tanstack-query";
+  type ConsumerKeychainId,
+  type KnodeApiKeychainId,
+  unsafeBrandUserId,
+} from "@knodia/common-models/ids";
 import { useQuery } from "@tanstack/react-query";
 import { match } from "ts-pattern";
 
 import { useAuth } from "@/contexts/auth";
-import { client } from "@/libs/axios";
 
 import type { SupportedKeychain } from "../models/commons";
 
+import {
+  consumerKeychainMembershipQuery,
+  knodeApiKeychainMembershipQuery,
+} from "../services/queries";
+
 export function useIsCurrentUserKeychainMember(keychain: SupportedKeychain) {
   const { userId } = useAuth();
+  const safeUserId = userId ?? unsafeBrandUserId("");
 
-  const options = match(keychain)
-    .with({ type: "consumption" }, ({ keychainId }) =>
-      getConsumerKeychainMembershipOptions({
-        client,
-        path: { consumerKeychainId: keychainId, userId: userId ?? "" },
-      }),
-    )
-    .with({ type: "api" }, ({ keychainId }) =>
-      getKnodeApiKeychainMembershipOptions({
-        client,
-        path: { knodeApiKeychainId: keychainId, userId: userId ?? "" },
-      }),
-    )
+  const consumerQuery = useQuery({
+    ...consumerKeychainMembershipQuery(
+      keychain.keychainId as ConsumerKeychainId,
+      safeUserId,
+    ),
+    enabled: keychain.type === "consumption" && Boolean(userId),
+    initialData: { isMember: false },
+  });
+
+  const apiQuery = useQuery({
+    ...knodeApiKeychainMembershipQuery(
+      keychain.keychainId as KnodeApiKeychainId,
+      safeUserId,
+    ),
+    enabled: keychain.type === "api" && Boolean(userId),
+    initialData: { isMember: false },
+  });
+
+  if (!userId) return false;
+
+  return match(keychain.type)
+    .with("consumption", () => consumerQuery.data.isMember)
+    .with("api", () => apiQuery.data.isMember)
     .exhaustive();
-
-  const { data } = useQuery({ ...options, enabled: Boolean(userId) });
-
-  return Boolean(data?.isMember);
 }

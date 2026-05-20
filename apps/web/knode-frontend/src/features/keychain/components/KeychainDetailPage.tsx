@@ -1,13 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
 
-import {
-  getConsumerKeychainKeysOptions,
-  getConsumerKeychainMembersOptions,
-  getConsumerKeychainPurposesOptions,
-  getKnodeApiKeychainKeysOptions,
-  getKnodeApiKeychainMembersOptions,
-} from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -36,9 +32,16 @@ import { KeychainPublicKeysTable } from "@/features/keychain/components/Keychain
 import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurposesTable";
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
-import { client } from "@/libs/axios";
 
 import type { SupportedKeychain } from "../models/commons";
+
+import {
+  consumerKeychainKeysQuery,
+  consumerKeychainMembersQuery,
+  consumerKeychainPurposesQuery,
+  knodeApiKeychainKeysQuery,
+  knodeApiKeychainMembersQuery,
+} from "../services/queries";
 
 type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
   activeTab: TTab;
@@ -145,11 +148,7 @@ function ConsumerPurposesTab({
   onOffsetChange: (offset: number) => void;
 }) {
   const { data, isLoading } = useQuery(
-    getConsumerKeychainPurposesOptions({
-      client,
-      path: { consumerKeychainId: keychainId },
-      query: { limit: 10, offset },
-    }),
+    consumerKeychainPurposesQuery(keychainId, offset),
   );
 
   return (
@@ -175,24 +174,26 @@ function ConsumerPurposesTab({
 function MembersTab(props: KeychainTabProps) {
   const { offset, onOffsetChange } = props;
 
-  const options = match(props)
-    .with({ type: "consumption" }, ({ keychainId }) =>
-      getConsumerKeychainMembersOptions({
-        client,
-        path: { consumerKeychainId: keychainId },
-        query: { limit: 50, offset },
-      }),
-    )
-    .with({ type: "api" }, ({ keychainId }) =>
-      getKnodeApiKeychainMembersOptions({
-        client,
-        path: { knodeApiKeychainId: keychainId },
-        query: { limit: 50, offset },
-      }),
-    )
-    .exhaustive();
+  const consumerQuery = useQuery({
+    ...consumerKeychainMembersQuery(
+      props.keychainId as ConsumerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "consumption",
+  });
 
-  const { data, isLoading } = useQuery(options);
+  const apiQuery = useQuery({
+    ...knodeApiKeychainMembersQuery(
+      props.keychainId as KnodeApiKeychainId,
+      offset,
+    ),
+    enabled: props.type === "api",
+  });
+
+  const { data, isLoading } = match(props.type)
+    .with("consumption", () => consumerQuery)
+    .with("api", () => apiQuery)
+    .exhaustive();
 
   return (
     <Section
@@ -220,24 +221,26 @@ function PublicKeysTab(props: KeychainTabProps) {
   const { offset, onOffsetChange } = props;
   const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
 
-  const options = match(props)
-    .with({ type: "consumption" }, ({ keychainId }) =>
-      getConsumerKeychainKeysOptions({
-        client,
-        path: { consumerKeychainId: keychainId },
-        query: { limit: 50, offset },
-      }),
-    )
-    .with({ type: "api" }, ({ keychainId }) =>
-      getKnodeApiKeychainKeysOptions({
-        client,
-        path: { knodeApiKeychainId: keychainId },
-        query: { limit: 50, offset },
-      }),
-    )
-    .exhaustive();
+  const consumerQuery = useQuery({
+    ...consumerKeychainKeysQuery(
+      props.keychainId as ConsumerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "consumption",
+  });
 
-  const { data, isLoading } = useQuery(options);
+  const apiQuery = useQuery({
+    ...knodeApiKeychainKeysQuery(
+      props.keychainId as KnodeApiKeychainId,
+      offset,
+    ),
+    enabled: props.type === "api",
+  });
+
+  const { data, isLoading } = match(props.type)
+    .with("consumption", () => consumerQuery)
+    .with("api", () => apiQuery)
+    .exhaustive();
 
   const hasReachedMaxKeys = data
     ? data.pagination.total >= config.maxKeysPerKeychain
