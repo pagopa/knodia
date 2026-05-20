@@ -67,7 +67,9 @@ function EditKeychainModal({
   const queryClient = useQueryClient();
 
   const { isError, isPending, mutate } = useMutation({
-    mutationFn: (body: bffApi.ConsumerKeychainPatch) =>
+    mutationFn: (
+      body: bffApi.ConsumerKeychainPatch | bffApi.KnodeApiKeychainPatch,
+    ) =>
       match(type)
         .with("consumption", () =>
           bffApi.updateConsumerKeychain({
