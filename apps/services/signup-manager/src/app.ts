@@ -1,3 +1,4 @@
+import cookie from "@fastify/cookie";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -41,6 +42,8 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
     loggerConfig: config,
     makeApiProblem,
   });
+
+  app.register(cookie);
 
   // Public routes (no auth required)
   app.register(healthRouter);

@@ -23,10 +23,13 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/cookie": "catalog:",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "jose": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }
