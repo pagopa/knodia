@@ -1,0 +1,32 @@
+{
+  "name": "@knodia/signal-hub-cleaner",
+  "type": "module",
+  "scripts": {
+    "cleanup": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run cleanup'",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@knodia/db-signal-hub": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
+    "zod": "catalog:"
+  }
+}
