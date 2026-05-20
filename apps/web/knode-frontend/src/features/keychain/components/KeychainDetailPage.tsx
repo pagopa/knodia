@@ -104,11 +104,14 @@ export function KeychainDetailPage<TTab extends string>(
           <Tab id="public-keys" key="public-keys">
             Public Keys
           </Tab>
-          {props.type === "consumption" && (
-            <Tab id="purposes" key="purposes">
-              Purposes
-            </Tab>
-          )}
+          {match(props.type)
+            .with("consumption", () => (
+              <Tab id="purposes" key="purposes">
+                Purposes
+              </Tab>
+            ))
+            .with("api", () => null)
+            .exhaustive()}
           <Tab id="members" key="members">
             Members
           </Tab>
@@ -128,15 +131,18 @@ export function KeychainDetailPage<TTab extends string>(
               ))
               .exhaustive()}
           </TabPanel>
-          {props.type === "consumption" && (
-            <TabPanel id="purposes" key="purposes">
-              <ConsumerPurposesTab
-                keychainId={props.keychainId}
-                offset={offset}
-                onOffsetChange={onOffsetChange}
-              />
-            </TabPanel>
-          )}
+          {match(props)
+            .with({ type: "consumption" }, ({ keychainId }) => (
+              <TabPanel id="purposes" key="purposes">
+                <ConsumerPurposesTab
+                  keychainId={keychainId}
+                  offset={offset}
+                  onOffsetChange={onOffsetChange}
+                />
+              </TabPanel>
+            ))
+            .with({ type: "api" }, () => null)
+            .exhaustive()}
           <TabPanel id="members" key="members">
             {match(props)
               .with({ type: "consumption" }, ({ keychainId }) => (
