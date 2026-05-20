@@ -318,4 +318,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid consumer keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/consumerKeychains/not-a-uuid/keys`)
+      .body(mockSeed);
+
+    expect(response.statusCode).toBe(400);
+  });
 });

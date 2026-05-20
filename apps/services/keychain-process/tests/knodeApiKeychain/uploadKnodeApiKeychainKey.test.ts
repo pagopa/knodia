@@ -318,4 +318,12 @@ describe("POST /knodeApiKeychains/:knodeApiKeychainId/keys (uploadKnodeApiKeycha
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid Knode API keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/knodeApiKeychains/not-a-uuid/keys`)
+      .body(mockSeed);
+
+    expect(response.statusCode).toBe(400);
+  });
 });

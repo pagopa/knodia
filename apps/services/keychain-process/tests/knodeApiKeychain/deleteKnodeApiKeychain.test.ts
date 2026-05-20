@@ -82,4 +82,11 @@ describe("DELETE /knodeApiKeychains/:KnodeApiKeychainId (deleteKnodeApiKeychain)
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid Knode API keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!).delete(
+      `/knodeApiKeychains/not-a-uuid`,
+    );
+    expect(response.statusCode).toBe(400);
+  });
 });
