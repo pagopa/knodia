@@ -17,8 +17,8 @@ each period from an in-process emitter.
 | 1            | address B (200) | seed B              | UPDATE           |
 | 2            | 404             | seed C              | DELETE           |
 
-Set `SEED_EXPIRE_SECONDS=30` (or a similar short value) on mock-eservice
-to observe the full cycle in a reasonable time frame.
+Set `SIGNAL_HUB_SEED_EXPIRE_SECONDS=30` (or a similar short value) on
+mock-eservice to observe the full cycle in a reasonable time frame.
 
 ## Token setup
 

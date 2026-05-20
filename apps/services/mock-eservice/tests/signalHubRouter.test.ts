@@ -25,7 +25,7 @@ const OTHER_MOCK_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
 const ROTATING_NOTATION = "RMNLNR03H12H501Z";
 const UNKNOWN_NOTATION = "AAAAAA00A00A000A";
 
-// setup.ts pins seedStartDateMs=0, seedExpireSeconds=30 so wall-clock ms maps
+// setup.ts pins signalHubSeedStartDateMs=0, signalHubSeedExpireSeconds=30 so wall-clock ms maps
 // straight to periodId: T = 15_000 ⇒ periodId 0, T = 45_000 ⇒ periodId 1, ...
 const PERIOD_MS = 30_000;
 

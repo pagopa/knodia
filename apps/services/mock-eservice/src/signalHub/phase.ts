@@ -7,8 +7,8 @@ import { SignalPhase } from "./signal.ts";
 const PHASE_CYCLE_LENGTH = 3;
 
 export function phaseAt(periodId: number): SignalPhase {
-  // `periodId` is structurally non-negative — `SEED_START_DATE_MS` is
-  // validated `<= Date.now()` at config parse time, so no defensive
+  // `periodId` is structurally non-negative — `SIGNAL_HUB_SEED_START_DATE_MS`
+  // is validated `<= Date.now()` at config parse time, so no defensive
   // (((x % N) + N) % N) wrap needed.
   switch (periodId % PHASE_CYCLE_LENGTH) {
     case 0:

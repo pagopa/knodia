@@ -27,9 +27,9 @@ const emitter = await startSignalHubEmitter({
   },
   logger,
   seedConfig: {
-    expireSeconds: config.seedExpireSeconds,
-    saltLength: config.seedSaltLength,
-    startDateMs: config.seedStartDateMs,
+    expireSeconds: config.signalHubSeedExpireSeconds,
+    saltLength: config.signalHubSeedSaltLength,
+    startDateMs: config.signalHubSeedStartDateMs,
   },
 });
 
