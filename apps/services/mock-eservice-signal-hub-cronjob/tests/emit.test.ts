@@ -1,13 +1,16 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
-import { rotatingFiscalCodes } from "@knodia/mock-eservice-signal-hub-commons/mockup";
+import {
+  rotatingFiscalCodes,
+  SIGNAL_HUB_MOCK_ESERVICE_ID,
+} from "@knodia/mock-eservice-signal-hub-commons/mockup";
 import { phaseAt } from "@knodia/mock-eservice-signal-hub-commons/phase";
 import { pseudonymize } from "@knodia/mock-eservice-signal-hub-commons/pseudonymize";
 import {
-  computePeriodId,
   getRotatedSeed,
   type SignalHubSeedConfig,
 } from "@knodia/mock-eservice-signal-hub-commons/rotation";
+import { SignalType } from "@knodia/mock-eservice-signal-hub-commons/signal";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
@@ -15,9 +18,6 @@ import { makeSignalIdAllocator } from "../src/cron/counter.ts";
 import { emitTransition } from "../src/cron/emit.ts";
 import { signalHubDb } from "./setup.ts";
 
-const ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
-);
 const OTHER_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "11111111-1111-4111-8111-111111111111",
 );
@@ -46,13 +46,12 @@ describe("emitTransition", () => {
     const batch = await emitTransition({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       now,
-      periodId: computePeriodId(now, seedConfig),
       seedConfig,
     });
 
-    const rows = await readSignals(ESERVICE_ID);
+    const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
     expect(rows).toHaveLength(1 + rotatingFiscalCodes.length);
 
     const correlationIds = new Set(rows.map((r) => r.correlationId));
@@ -62,15 +61,19 @@ describe("emitTransition", () => {
     const signalIds = rows.map((r) => r.signalId);
     expect(signalIds).toEqual([1, 2, 3, 4]);
 
-    const seedUpdates = rows.filter((r) => r.signalType === "SEEDUPDATE");
+    const seedUpdates = rows.filter(
+      (r) => r.signalType === SignalType.enum.SEEDUPDATE,
+    );
     expect(seedUpdates).toHaveLength(1);
     expect(seedUpdates[0]?.objectId).toBe("");
     expect(seedUpdates[0]?.objectType).toBe("");
 
-    const phaseRows = rows.filter((r) => r.signalType !== "SEEDUPDATE");
+    const phaseRows = rows.filter(
+      (r) => r.signalType !== SignalType.enum.SEEDUPDATE,
+    );
     expect(phaseRows).toHaveLength(rotatingFiscalCodes.length);
     for (const r of phaseRows) {
-      expect(r.signalType).toBe("CREATE");
+      expect(r.signalType).toBe(SignalType.enum.CREATE);
       expect(r.objectType).toBe("residence");
     }
 
@@ -89,25 +92,26 @@ describe("emitTransition", () => {
       await emitTransition({
         allocator,
         db: signalHubDb,
-        eserviceId: ESERVICE_ID,
+        eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
         now: inPeriod(periodId),
-        periodId,
         seedConfig,
       });
     }
 
-    const rows = await readSignals(ESERVICE_ID);
-    const phaseRows = rows.filter((r) => r.signalType !== "SEEDUPDATE");
+    const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
+    const phaseRows = rows.filter(
+      (r) => r.signalType !== SignalType.enum.SEEDUPDATE,
+    );
 
-    expect(phaseRows.filter((r) => r.signalType === "CREATE")).toHaveLength(
-      rotatingFiscalCodes.length,
-    );
-    expect(phaseRows.filter((r) => r.signalType === "UPDATE")).toHaveLength(
-      rotatingFiscalCodes.length,
-    );
-    expect(phaseRows.filter((r) => r.signalType === "DELETE")).toHaveLength(
-      rotatingFiscalCodes.length,
-    );
+    expect(
+      phaseRows.filter((r) => r.signalType === SignalType.enum.CREATE),
+    ).toHaveLength(rotatingFiscalCodes.length);
+    expect(
+      phaseRows.filter((r) => r.signalType === SignalType.enum.UPDATE),
+    ).toHaveLength(rotatingFiscalCodes.length);
+    expect(
+      phaseRows.filter((r) => r.signalType === SignalType.enum.DELETE),
+    ).toHaveLength(rotatingFiscalCodes.length);
 
     const correlationIds = new Set(rows.map((r) => r.correlationId));
     expect(correlationIds.size).toBe(3);
@@ -124,18 +128,17 @@ describe("emitTransition", () => {
     await emitTransition({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       now,
-      periodId,
       seedConfig,
     });
 
-    const seed = getRotatedSeed(ESERVICE_ID, now, seedConfig);
+    const seed = getRotatedSeed(SIGNAL_HUB_MOCK_ESERVICE_ID, now, seedConfig);
     const expected = new Set(
       rotatingFiscalCodes.map((fc) => pseudonymize(fc, seed)),
     );
 
-    const rows = await readSignals(ESERVICE_ID);
+    const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
     const phaseObjectIds = new Set(
       rows
         .filter((r) => r.signalType === phaseAt(periodId))
@@ -149,17 +152,15 @@ describe("emitTransition", () => {
     await emitTransition({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       now: inPeriod(0),
-      periodId: 0,
       seedConfig,
     });
     await emitTransition({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       now: inPeriod(1),
-      periodId: 1,
       seedConfig,
     });
 
@@ -170,11 +171,10 @@ describe("emitTransition", () => {
       db: signalHubDb,
       eserviceId: OTHER_ESERVICE_ID,
       now: inPeriod(0),
-      periodId: 0,
       seedConfig,
     });
 
-    const ourRows = await readSignals(ESERVICE_ID);
+    const ourRows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
     expect(ourRows.map((r) => r.signalId)).toEqual([
       101, 102, 103, 104, 105, 106, 107, 108,
     ]);

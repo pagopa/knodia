@@ -20,6 +20,7 @@ import type { MockEserviceConfig } from "./config/config.ts";
 
 import { bearerAccessTokenAuthPlugin } from "./auth/bearerAccessTokenAuthPlugin.ts";
 import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
+import { assertRotatingFiscalCodesAreInSync } from "./data/naturalPersons.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
@@ -51,6 +52,8 @@ export function buildApp({
   dynamoClient?: DynamoDBClient;
   jwksResolvers: JWTVerifyGetKey[];
 }) {
+  assertRotatingFiscalCodesAreInSync();
+
   const {
     acceptedAudiences,
     dpopProofHtuBaseUrl,

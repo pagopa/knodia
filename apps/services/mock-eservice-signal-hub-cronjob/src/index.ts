@@ -1,14 +1,14 @@
+import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
 import { createLogger } from "@knodia/logger";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "@knodia/mock-eservice-signal-hub-commons/mockup";
 
 import { config } from "./config/config.ts";
 import { loadMaxSignalId, makeSignalIdAllocator } from "./cron/counter.ts";
 import { startScheduler } from "./cron/scheduler.ts";
-import { createSignalHubDbConnection } from "./db/client.ts";
 
 const logger = createLogger({ config });
 
-const { db, pool } = createSignalHubDbConnection();
+const { db, pool } = makeSignalHubDrizzleConnection(config);
 
 const maxSignalId = await loadMaxSignalId(db, SIGNAL_HUB_MOCK_ESERVICE_ID);
 logger.info(

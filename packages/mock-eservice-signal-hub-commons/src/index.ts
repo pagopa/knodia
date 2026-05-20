@@ -3,3 +3,4 @@ export * from "./mockup.ts";
 export * from "./phase.ts";
 export * from "./pseudonymize.ts";
 export * from "./rotation.ts";
+export * from "./signal.ts";

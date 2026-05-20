@@ -25,6 +25,7 @@
     "./mockup": "./src/mockup.ts",
     "./phase": "./src/phase.ts",
     "./pseudonymize": "./src/pseudonymize.ts",
-    "./rotation": "./src/rotation.ts"
+    "./rotation": "./src/rotation.ts",
+    "./signal": "./src/signal.ts"
   }
 }

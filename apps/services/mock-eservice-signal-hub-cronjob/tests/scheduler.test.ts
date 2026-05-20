@@ -1,16 +1,13 @@
-import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "@knodia/mock-eservice-signal-hub-commons/mockup";
 import { type SignalHubSeedConfig } from "@knodia/mock-eservice-signal-hub-commons/rotation";
+import { createTestLogger } from "@knodia/test-commons/utils";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
 import { makeSignalIdAllocator } from "../src/cron/counter.ts";
 import { startScheduler } from "../src/cron/scheduler.ts";
 import { signalHubDb } from "./setup.ts";
-
-const ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
-);
 
 // Real timers with a short period — using fake timers would also freeze
 // the pg testcontainer's internal scheduling and hang.
@@ -21,21 +18,13 @@ const seedConfig: SignalHubSeedConfig = {
   startDateMs: Date.now() - 10_000,
 };
 
-const silentLogger = {
-  debug: () => {},
-  error: () => {},
-  fatal: () => {},
-  info: () => {},
-  trace: () => {},
-  warn: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any;
+const { logger } = createTestLogger();
 
 async function readSignals() {
   return signalHubDb
     .select()
     .from(signalHubSignal)
-    .where(eq(signalHubSignal.eserviceId, ESERVICE_ID))
+    .where(eq(signalHubSignal.eserviceId, SIGNAL_HUB_MOCK_ESERVICE_ID))
     .orderBy(asc(signalHubSignal.signalId));
 }
 
@@ -49,8 +38,8 @@ describe("startScheduler", () => {
     const handle = await startScheduler({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
-      logger: silentLogger,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+      logger,
       seedConfig,
     });
 
@@ -67,8 +56,8 @@ describe("startScheduler", () => {
     const handle = await startScheduler({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
-      logger: silentLogger,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+      logger,
       seedConfig,
     });
 
@@ -88,8 +77,8 @@ describe("startScheduler", () => {
     const handle = await startScheduler({
       allocator,
       db: signalHubDb,
-      eserviceId: ESERVICE_ID,
-      logger: silentLogger,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+      logger,
       seedConfig,
     });
 

@@ -48,8 +48,9 @@ const ROTATING_ADDRESSES = readJson(
 // Drift guard: the cron emits signals for the fiscal codes in
 // `rotatingFiscalCodes`; mock-eservice rotates `/residence` for the keys of
 // `rotatingAddresses.json`. If these diverge, a consumer can't correlate
-// signals back to producer data — fail loud at boot.
-{
+// signals back to producer data. Called from `buildApp` so it fails loud at
+// boot but doesn't fire on every import (e.g. unrelated test files).
+export function assertRotatingFiscalCodesAreInSync(): void {
   const expected = [...rotatingFiscalCodes].sort();
   const actual = Object.keys(ROTATING_ADDRESSES).sort();
   if (

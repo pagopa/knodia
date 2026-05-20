@@ -4,9 +4,11 @@ import { rotatingFiscalCodes } from "@knodia/mock-eservice-signal-hub-commons/mo
 import { phaseAt } from "@knodia/mock-eservice-signal-hub-commons/phase";
 import { pseudonymize } from "@knodia/mock-eservice-signal-hub-commons/pseudonymize";
 import {
+  computePeriodId,
   getRotatedSeed,
   type SignalHubSeedConfig,
 } from "@knodia/mock-eservice-signal-hub-commons/rotation";
+import { SignalType } from "@knodia/mock-eservice-signal-hub-commons/signal";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { randomUUID } from "node:crypto";
 
@@ -24,7 +26,6 @@ interface EmitTransitionParams {
   db: NodePgDatabase;
   eserviceId: EserviceId;
   now: number;
-  periodId: number;
   seedConfig: SignalHubSeedConfig;
 }
 
@@ -37,9 +38,9 @@ export async function emitTransition({
   db,
   eserviceId,
   now,
-  periodId,
   seedConfig,
 }: EmitTransitionParams): Promise<EmittedBatch> {
+  const periodId = computePeriodId(now, seedConfig);
   const seed = getRotatedSeed(eserviceId, now, seedConfig);
   const phase = phaseAt(periodId);
   const correlationId = randomUUID();
@@ -62,7 +63,7 @@ export async function emitTransition({
         objectId: "",
         objectType: "",
         signalId: seedUpdateId,
-        signalType: "SEEDUPDATE",
+        signalType: SignalType.enum.SEEDUPDATE,
       },
       ...phaseRows,
     ]);
