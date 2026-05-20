@@ -1,25 +1,5 @@
-import {
-  addConsumerKeychainMemberMutation,
-  addKnodeApiKeychainMemberMutation,
-  getConsumerKeychainKeysQueryKey,
-  getConsumerKeychainMembershipQueryKey,
-  getConsumerKeychainMembersQueryKey,
-  getKnodeApiKeychainKeysQueryKey,
-  getKnodeApiKeychainMembershipQueryKey,
-  getKnodeApiKeychainMembersQueryKey,
-  removeConsumerKeychainKeyMutation,
-  removeConsumerKeychainMemberMutation,
-  removeKnodeApiKeychainKeyMutation,
-  removeKnodeApiKeychainMemberMutation,
-  uploadConsumerKeychainKeyMutation,
-  uploadKnodeApiKeychainKeyMutation,
-} from "@knodia/bff-client/tanstack-query";
-import {
-  type ConsumerKeychainId,
-  type KnodeApiKeychainId,
-  unsafeBrandUserId,
-  type UserId,
-} from "@knodia/common-models/ids";
+import { bffApi } from "@knodia/bff-client";
+import { type UserId } from "@knodia/common-models/ids";
 import {
   type QueryClient,
   useMutation,
@@ -29,300 +9,187 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { SupportedKeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
-type KeychainId = ConsumerKeychainId | KnodeApiKeychainId;
-
-interface MutateOptions {
-  onError?: (error: Error) => void;
-  onSuccess?: () => void;
-}
+import {
+  consumerKeychainKeysQueryKey,
+  consumerKeychainMembershipQueryKey,
+  consumerKeychainMembersQueryKey,
+  consumerKeychainsQueryKey,
+  knodeApiKeychainKeysQueryKey,
+  knodeApiKeychainMembershipQueryKey,
+  knodeApiKeychainMembersQueryKey,
+  knodeApiKeychainsQueryKey,
+} from "../services/queries";
 
 interface UploadKeyBody {
   encodedPem: string;
   name: { en: string };
 }
 
-export function useAddKeychainMember(
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
-) {
+export function useAddKeychainMember(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
-
-  const consumer = useMutation({
-    ...addConsumerKeychainMemberMutation({ client }),
-    onSuccess: (_data, vars) => {
-      invalidateMembersList(queryClient, keychainId, "consumption");
-      invalidateMembership(
-        queryClient,
-        keychainId,
-        "consumption",
-        unsafeBrandUserId(vars.body.userId),
-      );
-    },
-  });
-
-  const api = useMutation({
-    ...addKnodeApiKeychainMemberMutation({ client }),
-    onSuccess: (_data, vars) => {
-      invalidateMembersList(queryClient, keychainId, "api");
-      invalidateMembership(
-        queryClient,
-        keychainId,
-        "api",
-        unsafeBrandUserId(vars.body.userId),
-      );
-    },
-  });
-
-  const active = match(type)
-    .with("consumption", () => consumer)
-    .with("api", () => api)
-    .exhaustive();
-
-  return {
-    isError: active.isError,
-    isPending: active.isPending,
-    mutate: (userId: UserId, options?: MutateOptions) =>
-      match(type)
-        .with("consumption", () =>
-          consumer.mutate(
-            { body: { userId }, path: { consumerKeychainId: keychainId } },
-            options,
-          ),
+  return useMutation({
+    mutationFn: (userId: UserId) =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
+          bffApi.addConsumerKeychainMember({
+            body: { userId },
+            client,
+            path: { consumerKeychainId: keychainId },
+          }),
         )
-        .with("api", () =>
-          api.mutate(
-            { body: { userId }, path: { knodeApiKeychainId: keychainId } },
-            options,
-          ),
+        .with({ type: "api" }, ({ keychainId }) =>
+          bffApi.addKnodeApiKeychainMember({
+            body: { userId },
+            client,
+            path: { knodeApiKeychainId: keychainId },
+          }),
         )
         .exhaustive(),
-  };
+    onSuccess: (_data, userId) => {
+      invalidateMembersList(queryClient, keychain);
+      invalidateMembership(queryClient, keychain, userId);
+      invalidateKeychainsList(queryClient, keychain);
+    },
+  });
 }
 
-export function useRemoveKeychainKey(
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
-) {
+export function useRemoveKeychainKey(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
-
-  const consumer = useMutation({
-    ...removeConsumerKeychainKeyMutation({ client }),
-    onSuccess: () => invalidateKeysList(queryClient, keychainId, "consumption"),
-  });
-
-  const api = useMutation({
-    ...removeKnodeApiKeychainKeyMutation({ client }),
-    onSuccess: () => invalidateKeysList(queryClient, keychainId, "api"),
-  });
-
-  const active = match(type)
-    .with("consumption", () => consumer)
-    .with("api", () => api)
-    .exhaustive();
-
-  return {
-    isError: active.isError,
-    isPending: active.isPending,
-    mutate: (keyId: string, options?: MutateOptions) =>
-      match(type)
-        .with("consumption", () =>
-          consumer.mutate(
-            { path: { consumerKeychainId: keychainId, keyId } },
-            options,
-          ),
+  return useMutation({
+    mutationFn: (keyId: string) =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
+          bffApi.removeConsumerKeychainKey({
+            client,
+            path: { consumerKeychainId: keychainId, keyId },
+          }),
         )
-        .with("api", () =>
-          api.mutate(
-            { path: { keyId, knodeApiKeychainId: keychainId } },
-            options,
-          ),
+        .with({ type: "api" }, ({ keychainId }) =>
+          bffApi.removeKnodeApiKeychainKey({
+            client,
+            path: { keyId, knodeApiKeychainId: keychainId },
+          }),
         )
         .exhaustive(),
-  };
-}
-
-export function useRemoveKeychainMember(
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
-) {
-  const queryClient = useQueryClient();
-
-  const consumer = useMutation({
-    ...removeConsumerKeychainMemberMutation({ client }),
-    onSuccess: (_data, vars) => {
-      invalidateMembersList(queryClient, keychainId, "consumption");
-      invalidateMembership(
-        queryClient,
-        keychainId,
-        "consumption",
-        unsafeBrandUserId(vars.path.userId),
-      );
+    onSuccess: () => {
+      invalidateKeysList(queryClient, keychain);
+      invalidateKeychainsList(queryClient, keychain);
     },
   });
-
-  const api = useMutation({
-    ...removeKnodeApiKeychainMemberMutation({ client }),
-    onSuccess: (_data, vars) => {
-      invalidateMembersList(queryClient, keychainId, "api");
-      invalidateMembership(
-        queryClient,
-        keychainId,
-        "api",
-        unsafeBrandUserId(vars.path.userId),
-      );
-    },
-  });
-
-  const active = match(type)
-    .with("consumption", () => consumer)
-    .with("api", () => api)
-    .exhaustive();
-
-  return {
-    isError: active.isError,
-    isPending: active.isPending,
-    mutate: (userId: UserId, options?: MutateOptions) =>
-      match(type)
-        .with("consumption", () =>
-          consumer.mutate(
-            { path: { consumerKeychainId: keychainId, userId } },
-            options,
-          ),
-        )
-        .with("api", () =>
-          api.mutate(
-            { path: { knodeApiKeychainId: keychainId, userId } },
-            options,
-          ),
-        )
-        .exhaustive(),
-  };
 }
 
-export function useUploadKeychainKey(
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
-) {
+export function useRemoveKeychainMember(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
-
-  const consumer = useMutation({
-    ...uploadConsumerKeychainKeyMutation({ client }),
-    onSuccess: () => invalidateKeysList(queryClient, keychainId, "consumption"),
-  });
-
-  const api = useMutation({
-    ...uploadKnodeApiKeychainKeyMutation({ client }),
-    onSuccess: () => invalidateKeysList(queryClient, keychainId, "api"),
-  });
-
-  const active = match(type)
-    .with("consumption", () => consumer)
-    .with("api", () => api)
-    .exhaustive();
-
-  return {
-    isError: active.isError,
-    isPending: active.isPending,
-    mutate: (body: UploadKeyBody, options?: MutateOptions) =>
-      match(type)
-        .with("consumption", () =>
-          consumer.mutate(
-            { body, path: { consumerKeychainId: keychainId } },
-            options,
-          ),
+  return useMutation({
+    mutationFn: (userId: UserId) =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
+          bffApi.removeConsumerKeychainMember({
+            client,
+            path: { consumerKeychainId: keychainId, userId },
+          }),
         )
-        .with("api", () =>
-          api.mutate(
-            { body, path: { knodeApiKeychainId: keychainId } },
-            options,
-          ),
+        .with({ type: "api" }, ({ keychainId }) =>
+          bffApi.removeKnodeApiKeychainMember({
+            client,
+            path: { knodeApiKeychainId: keychainId, userId },
+          }),
         )
         .exhaustive(),
-  };
+    onSuccess: (_data, userId) => {
+      invalidateMembersList(queryClient, keychain);
+      invalidateMembership(queryClient, keychain, userId);
+      invalidateKeychainsList(queryClient, keychain);
+    },
+  });
+}
+
+export function useUploadKeychainKey(keychain: SupportedKeychain) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: UploadKeyBody) =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
+          bffApi.uploadConsumerKeychainKey({
+            body,
+            client,
+            path: { consumerKeychainId: keychainId },
+          }),
+        )
+        .with({ type: "api" }, ({ keychainId }) =>
+          bffApi.uploadKnodeApiKeychainKey({
+            body,
+            client,
+            path: { knodeApiKeychainId: keychainId },
+          }),
+        )
+        .exhaustive(),
+    onSuccess: () => {
+      invalidateKeysList(queryClient, keychain);
+      invalidateKeychainsList(queryClient, keychain);
+    },
+  });
+}
+
+function invalidateKeychainsList(
+  queryClient: QueryClient,
+  keychain: SupportedKeychain,
+) {
+  queryClient.invalidateQueries({
+    queryKey: match(keychain)
+      .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
+      .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+      .exhaustive(),
+  });
 }
 
 function invalidateKeysList(
   queryClient: QueryClient,
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
+  keychain: SupportedKeychain,
 ) {
-  match(type)
-    .with("consumption", () =>
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainKeysQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      }),
-    )
-    .with("api", () =>
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainKeysQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      }),
-    )
-    .exhaustive();
+  queryClient.invalidateQueries({
+    queryKey: match(keychain)
+      .with({ type: "consumption" }, ({ keychainId }) =>
+        consumerKeychainKeysQueryKey(keychainId),
+      )
+      .with({ type: "api" }, ({ keychainId }) =>
+        knodeApiKeychainKeysQueryKey(keychainId),
+      )
+      .exhaustive(),
+  });
 }
 
 function invalidateMembership(
   queryClient: QueryClient,
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
+  keychain: SupportedKeychain,
   userId: UserId,
 ) {
-  match(type)
-    .with("consumption", () =>
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembershipQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId, userId },
-        }),
-      }),
-    )
-    .with("api", () =>
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainMembershipQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId, userId },
-        }),
-      }),
-    )
-    .exhaustive();
+  queryClient.invalidateQueries({
+    queryKey: match(keychain)
+      .with({ type: "consumption" }, ({ keychainId }) =>
+        consumerKeychainMembershipQueryKey(keychainId, userId),
+      )
+      .with({ type: "api" }, ({ keychainId }) =>
+        knodeApiKeychainMembershipQueryKey(keychainId, userId),
+      )
+      .exhaustive(),
+  });
 }
 
 function invalidateMembersList(
   queryClient: QueryClient,
-  keychainId: KeychainId,
-  type: SupportedKeychainType,
+  keychain: SupportedKeychain,
 ) {
-  match(type)
-    .with("consumption", () =>
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembersQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      }),
-    )
-    .with("api", () =>
-      queryClient.invalidateQueries({
-        queryKey: getKnodeApiKeychainMembersQueryKey({
-          client,
-          path: { knodeApiKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      }),
-    )
-    .exhaustive();
+  queryClient.invalidateQueries({
+    queryKey: match(keychain)
+      .with({ type: "consumption" }, ({ keychainId }) =>
+        consumerKeychainMembersQueryKey(keychainId),
+      )
+      .with({ type: "api" }, ({ keychainId }) =>
+        knodeApiKeychainMembersQueryKey(keychainId),
+      )
+      .exhaustive(),
+  });
 }

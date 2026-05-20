@@ -1,11 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import {
-  type ConsumerKeychainId,
-  type KnodeApiKeychainId,
-  unsafeBrandUserId,
-  type UserId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import {
   Banner,
   Button,
@@ -23,22 +18,20 @@ import { DialogTrigger } from "react-aria-components";
 
 import { useHasRole } from "@/contexts/auth";
 
-import type { SupportedKeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useRemoveKeychainMember } from "../hooks/useKeychainMutations";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   members: bffApi.User[];
-  type: SupportedKeychainType;
 }
 
 export function KeychainMembersTable({
   isLoading,
-  keychainId,
+  keychain,
   members,
-  type,
 }: KeychainMembersTableProps) {
   const isAdmin = useHasRole("administrative");
 
@@ -78,8 +71,7 @@ export function KeychainMembersTable({
               <Cell>
                 <div className="flex justify-end">
                   <RemoveFromKeychainAction
-                    keychainId={keychainId}
-                    type={type}
+                    keychain={keychain}
                     userId={unsafeBrandUserId(member.id)}
                   />
                 </div>
@@ -93,18 +85,13 @@ export function KeychainMembersTable({
 }
 
 function RemoveFromKeychainAction({
-  keychainId,
-  type,
+  keychain,
   userId,
 }: {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  type: SupportedKeychainType;
+  keychain: SupportedKeychain;
   userId: UserId;
 }) {
-  const { isError, isPending, mutate } = useRemoveKeychainMember(
-    keychainId,
-    type,
-  );
+  const { isError, isPending, mutate } = useRemoveKeychainMember(keychain);
 
   function handleDelete() {
     mutate(userId);

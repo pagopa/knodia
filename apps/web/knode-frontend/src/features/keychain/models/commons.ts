@@ -8,11 +8,9 @@ import z from "zod";
 export const keychainType = z.enum(["production", "consumption", "api"]);
 export type KeychainType = z.infer<typeof keychainType>;
 
-export type SupportedKeychainContext =
+export type SupportedKeychain =
   | { keychainId: ConsumerKeychainId; type: "consumption" }
   | { keychainId: KnodeApiKeychainId; type: "api" };
-
-export type SupportedKeychainType = Exclude<KeychainType, "production">;
 
 export const consumerKeychainDetailsTab = z.enum([
   "members",

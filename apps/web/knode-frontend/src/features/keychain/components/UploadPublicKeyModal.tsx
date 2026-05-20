@@ -1,14 +1,9 @@
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-} from "@knodia/common-models/ids";
-
 import { Banner, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { SupportedKeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useUploadKeychainKey } from "../hooks/useKeychainMutations";
 import {
@@ -21,25 +16,23 @@ interface Props {
   hasReachedMaxKeys: boolean;
   isKeychainMember: boolean;
   isOpen: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   onClose: () => void;
-  type: SupportedKeychainType;
 }
 
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
   isKeychainMember,
   isOpen,
-  keychainId,
+  keychain,
   onClose,
-  type,
 }: Props) {
   function handleClose() {
     form.reset();
     onClose();
   }
 
-  const { isError, isPending, mutate } = useUploadKeychainKey(keychainId, type);
+  const { isError, isPending, mutate } = useUploadKeychainKey(keychain);
 
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
     mutate(

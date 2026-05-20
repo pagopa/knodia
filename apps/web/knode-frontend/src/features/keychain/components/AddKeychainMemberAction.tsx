@@ -1,12 +1,7 @@
 import { bffApi } from "@knodia/bff-client";
 import { getOperatorsOptions } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
-import {
-  type ConsumerKeychainId,
-  type KnodeApiKeychainId,
-  unsafeBrandUserId,
-  type UserId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
@@ -18,19 +13,15 @@ import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { SupportedKeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
-interface AddKeychainMemberActionProps {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  type: SupportedKeychainType;
-}
+type AddKeychainMemberActionProps = SupportedKeychain;
 
-export function AddKeychainMemberAction({
-  keychainId,
-  type,
-}: AddKeychainMemberActionProps) {
+export function AddKeychainMemberAction(
+  keychain: AddKeychainMemberActionProps,
+) {
   const [isOpen, setIsOpen] = useState(false);
   const isAdmin = useHasRole("administrative");
 
@@ -48,9 +39,8 @@ export function AddKeychainMemberAction({
       </Button>
       <AddKeychainMemberModal
         isOpen={isOpen}
-        keychainId={keychainId}
+        keychain={keychain}
         onClose={() => setIsOpen(false)}
-        type={type}
       />
     </>
   );
@@ -58,16 +48,14 @@ export function AddKeychainMemberAction({
 
 function AddKeychainMemberModal({
   isOpen,
-  keychainId,
+  keychain,
   onClose,
-  type,
 }: {
   isOpen: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   onClose: () => void;
-  type: SupportedKeychainType;
 }) {
-  const { isError, isPending, mutate } = useAddKeychainMember(keychainId, type);
+  const { isError, isPending, mutate } = useAddKeychainMember(keychain);
 
   const { data: operators = [] } = useQuery(getOperatorsOptions({ client }));
 
@@ -90,14 +78,14 @@ function AddKeychainMemberModal({
   const checkUserKeychainMembership = async (userId: UserId) => {
     const {
       data: { isMember },
-    } = await match(type)
-      .with("consumption", () =>
+    } = await match(keychain)
+      .with({ type: "consumption" }, ({ keychainId }) =>
         bffApi.getConsumerKeychainMembership({
           client,
           path: { consumerKeychainId: keychainId, userId },
         }),
       )
-      .with("api", () =>
+      .with({ type: "api" }, ({ keychainId }) =>
         bffApi.getKnodeApiKeychainMembership({
           client,
           path: { knodeApiKeychainId: keychainId, userId },

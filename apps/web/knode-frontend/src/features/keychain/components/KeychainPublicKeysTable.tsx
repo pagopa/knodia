@@ -1,8 +1,3 @@
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-} from "@knodia/common-models/ids";
-
 import { bffApi } from "@knodia/bff-client";
 import {
   Banner,
@@ -32,24 +27,22 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
-import type { SupportedKeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useRemoveKeychainKey } from "../hooks/useKeychainMutations";
 
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keys: bffApi.KeychainKey[];
-  type: SupportedKeychainType;
 }
 
 export function KeychainPublicKeysTable({
   canDownloadKey,
   isLoading,
-  keychainId,
+  keychain,
   keys,
-  type,
 }: KeychainPublicKeysTableProps) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
@@ -95,15 +88,10 @@ export function KeychainPublicKeysTable({
               <div className="flex justify-end gap-2">
                 <DownloadPublicKeyAction
                   canDownloadKey={canDownloadKey}
-                  keychainId={keychainId}
+                  keychain={keychain}
                   keyId={key.kid}
-                  type={type}
                 />
-                <RemoveFromKeychainAction
-                  keychainId={keychainId}
-                  keyId={key.kid}
-                  type={type}
-                />
+                <RemoveFromKeychainAction keychain={keychain} keyId={key.kid} />
               </div>
             </Cell>
           </Row>
@@ -134,19 +122,17 @@ function DisabledTooltipButton({
 
 function DownloadPublicKeyAction({
   canDownloadKey,
-  keychainId,
+  keychain,
   keyId,
-  type,
 }: {
   canDownloadKey: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keyId: string;
-  type: SupportedKeychainType;
 }) {
   async function handleDownloadPublicKey() {
     try {
-      const response = await match(type)
-        .with("consumption", () =>
+      const response = await match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.downloadConsumerKeychainKey({
             client,
             path: {
@@ -155,7 +141,7 @@ function DownloadPublicKeyAction({
             },
           }),
         )
-        .with("api", () =>
+        .with({ type: "api" }, ({ keychainId }) =>
           bffApi.downloadKnodeApiKeychainKey({
             client,
             path: {
@@ -212,15 +198,13 @@ function DownloadPublicKeyAction({
 }
 
 function RemoveFromKeychainAction({
-  keychainId,
+  keychain,
   keyId,
-  type,
 }: {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keyId: string;
-  type: SupportedKeychainType;
 }) {
-  const { isError, isPending, mutate } = useRemoveKeychainKey(keychainId, type);
+  const { isError, isPending, mutate } = useRemoveKeychainKey(keychain);
 
   function handleDelete() {
     mutate(keyId);
