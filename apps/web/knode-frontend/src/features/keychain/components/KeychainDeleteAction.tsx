@@ -5,7 +5,7 @@ import type {
 
 import { bffApi } from "@knodia/bff-client";
 import { Button, Modal } from "@knodia/ui-kit/ui";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
@@ -13,6 +13,11 @@ import { match } from "ts-pattern";
 import { client } from "@/libs/axios";
 
 import type { KeychainType } from "../models/commons";
+
+import {
+  consumerKeychainsQueryKey,
+  knodeApiKeychainsQueryKey,
+} from "../services/queries";
 
 export function KeychainDeleteAction({
   keychainId,
@@ -22,6 +27,7 @@ export function KeychainDeleteAction({
   type: KeychainType;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     isError,
     isPending: isDeleting,
@@ -45,16 +51,31 @@ export function KeychainDeleteAction({
           throw new Error("Producer keychains are not supported yet.");
         })
         .exhaustive(),
-    onSuccess: () =>
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: match(type)
+          .with("consumption", () => consumerKeychainsQueryKey())
+          .with("api", () => knodeApiKeychainsQueryKey())
+          .with("production", () => {
+            throw new Error("Producer keychains are not supported yet.");
+          })
+          .exhaustive(),
+      });
       match(type)
-        .with("consumption", () => navigate({ to: "/keychains" }))
+        .with("consumption", () =>
+          navigate({
+            search: { offset: 0, type: "consumption" },
+            to: "/keychains",
+          }),
+        )
         .with("api", () =>
           navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
         )
         .with("production", () => {
           throw new Error("Producer keychains are not supported yet.");
         })
-        .exhaustive(),
+        .exhaustive();
+    },
   });
 
   return (

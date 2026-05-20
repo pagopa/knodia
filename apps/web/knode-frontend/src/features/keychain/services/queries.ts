@@ -6,8 +6,10 @@ import type {
 import {
   getConsumerKeychainDetailsOptions,
   getConsumerKeychainsOptions,
+  getConsumerKeychainsQueryKey,
   getKnodeApiKeychainDetailsOptions,
   getKnodeApiKeychainsOptions,
+  getKnodeApiKeychainsQueryKey,
 } from "@knodia/bff-client/tanstack-query";
 
 import { client } from "@/libs/axios";
@@ -40,4 +42,18 @@ export const knodeApiKeychainDetailsQuery = (
   getKnodeApiKeychainDetailsOptions({
     client,
     path: { knodeApiKeychainId },
+  });
+
+export const consumerKeychainsQueryKey = () =>
+  getConsumerKeychainsQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
+  });
+
+export const knodeApiKeychainsQueryKey = () =>
+  getKnodeApiKeychainsQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
   });
