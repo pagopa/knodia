@@ -9,14 +9,12 @@ const OneIdentityConfig = z
   .object({
     OI_CLIENT_ID: z.string(),
     OI_CLIENT_SECRET: z.string(),
-    OI_COOKIE_SECRET: z.string(),
     OI_DOMAIN: z.string(),
     OI_REDIRECT_URL: z.string(),
   })
   .transform((c) => ({
     oneIdentityClientId: c.OI_CLIENT_ID,
     oneIdentityClientSecret: c.OI_CLIENT_SECRET,
-    oneIdentityCookieSecret: c.OI_COOKIE_SECRET,
     oneIdentityDomain: c.OI_DOMAIN,
     oneIdentityRedirectUrl: c.OI_REDIRECT_URL,
   }));
