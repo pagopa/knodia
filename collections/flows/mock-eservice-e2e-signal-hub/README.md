@@ -5,7 +5,9 @@ e-service.
 
 ## Rotation
 
-Fiscal code `RMNLNR03H12H501Z` has a rotating response, cycling across three different values, one per period. The response to `GET /residence` and the seed for pseudonymization are rotated in sync, as per the table below:
+Fiscal codes `RMNLNR03H12H501Z`, `CNTLCC89E26L378K`, `RSSGRG65D48G702L`
+have a rotating response. The response to `GET /residence` and the seed
+exposed by `/pseudonymization` rotate in sync, and a cronjob pushes the matching `CREATE` / `UPDATE` / `DELETE` signals each period.
 
 | periodId % 3 | `/residence`    | `/pseudonymization` | SignalHub signal |
 | ------------ | --------------- | ------------------- | ---------------- |
@@ -13,7 +15,6 @@ Fiscal code `RMNLNR03H12H501Z` has a rotating response, cycling across three dif
 | 1            | address B (200) | seed B              | UPDATE           |
 | 2            | 404             | seed C              | DELETE           |
 
-The matching `CREATE` / `UPDATE` / `DELETE` signals are pushed by a cron job.
 
 Set `SEED_EXPIRE_SECONDS=30` (or similar short value) on mock-eservice and on the cron job to observe the full cycle in a reasonable time frame.
 
