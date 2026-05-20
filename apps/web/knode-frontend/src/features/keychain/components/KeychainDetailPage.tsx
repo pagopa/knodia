@@ -77,10 +77,7 @@ export function KeychainDetailPage<TTab extends string>(
       <PageHeader
         actions={
           <>
-            <KeychainDeleteAction
-              keychainId={props.keychainId}
-              type={props.type}
-            />
+            <KeychainDeleteAction {...props} />
             <KeychainEditAction keychain={keychain} type={props.type} />
           </>
         }

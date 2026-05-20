@@ -1,8 +1,3 @@
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-} from "@knodia/common-models/ids";
-
 import { bffApi } from "@knodia/bff-client";
 import { Button, Modal } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,20 +7,14 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainsQueryKey,
   knodeApiKeychainsQueryKey,
 } from "../services/queries";
 
-export function KeychainDeleteAction({
-  keychainId,
-  type,
-}: {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  type: KeychainType;
-}) {
+export function KeychainDeleteAction(keychain: SupportedKeychain) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const {
@@ -34,47 +23,31 @@ export function KeychainDeleteAction({
     mutate,
   } = useMutation({
     mutationFn: () =>
-      match(type)
-        .with("consumption", () =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.deleteConsumerKeychain({
             client,
             path: { consumerKeychainId: keychainId },
           }),
         )
-        .with("api", () =>
+        .with({ type: "api" }, ({ keychainId }) =>
           bffApi.deleteKnodeApiKeychain({
             client,
             path: { knodeApiKeychainId: keychainId },
           }),
         )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
         .exhaustive(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: match(type)
-          .with("consumption", () => consumerKeychainsQueryKey())
-          .with("api", () => knodeApiKeychainsQueryKey())
-          .with("production", () => {
-            throw new Error("Producer keychains are not supported yet.");
-          })
+        queryKey: match(keychain)
+          .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
+          .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
           .exhaustive(),
       });
-      match(type)
-        .with("consumption", () =>
-          navigate({
-            search: { offset: 0, type: "consumption" },
-            to: "/keychains",
-          }),
-        )
-        .with("api", () =>
-          navigate({ search: { offset: 0, type: "api" }, to: "/keychains" }),
-        )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
-        .exhaustive();
+      navigate({
+        search: { offset: 0, type: keychain.type },
+        to: "/keychains",
+      });
     },
   });
 
