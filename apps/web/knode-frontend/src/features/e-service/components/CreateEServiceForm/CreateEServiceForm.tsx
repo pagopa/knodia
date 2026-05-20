@@ -1,12 +1,13 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Steps } from "@knodia/ui-kit/ui";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import {
   type StepConfig,
   StepsProvider,
   useCurrentStep,
+  useScrollToTopOnStepChange,
   useStepsContext,
 } from "@/contexts/steps";
 import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
@@ -51,9 +52,7 @@ function EserviceFormCurrentStep() {
   const { content } = useCurrentStep();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    containerRef.current?.parentElement?.scrollTo?.(0, 0);
-  }, [currentStepIndex]);
+  useScrollToTopOnStepChange(containerRef);
 
   return (
     <div
