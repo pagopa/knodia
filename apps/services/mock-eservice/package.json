@@ -30,14 +30,16 @@
     "@knodia/authorization-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-jti-replay-store": "workspace:*",
+    "@knodia/db-signal-hub": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
-    "@knodia/mock-eservice-signal-hub-commons": "workspace:*",
     "@knodia/dpop-validator": "workspace:*",
+    "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
+    "pino": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }

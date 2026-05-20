@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-// Shared SEED_* env-var schema for the producer (mock-eservice) and the
-// cron job. Both compute the periodId / seed from these inputs and MUST
-// agree on the values — otherwise a consumer can't decode the cron's
-// `object_id` against the producer's `/pseudonymization` seed.
+// SEED_* env vars drive the periodId / seed rotation that both the HTTP
+// handlers (`/residence`, `/pseudonymization`) and the in-process Signal
+// Hub emitter read from. Co-located so they can't drift.
 export const SignalHubSeedEnvConfig = z
   .object({
     SEED_EXPIRE_SECONDS: z.coerce.number().int().positive(),

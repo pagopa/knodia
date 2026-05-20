@@ -1,6 +1,6 @@
 import { SignalPhase } from "./signal.ts";
 
-// At every period transition the mock cron emits one phase signal per
+// At every period transition the emitter writes one phase signal per
 // rotating fiscal code. The phase cycles `CREATE → UPDATE → DELETE`,
 // matching the mock e-service's `/residence` rotation (address A → B → 404).
 

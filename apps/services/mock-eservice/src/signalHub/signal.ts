@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Every Signal Hub signal carries a `signalType`. The cron writes
+// Every Signal Hub signal carries a `signalType`. The emitter writes
 // `SEEDUPDATE` markers + one phase signal per period transition; future
 // push/pull consumers will read the same set.
 export const SignalType = z.enum(["CREATE", "DELETE", "SEEDUPDATE", "UPDATE"]);

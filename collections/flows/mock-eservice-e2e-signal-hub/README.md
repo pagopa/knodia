@@ -7,7 +7,9 @@ e-service.
 
 Fiscal codes `RMNLNR03H12H501Z`, `CNTLCC89E26L378K`, `RSSGRG65D48G702L`
 have a rotating response. The response to `GET /residence` and the seed
-exposed by `/pseudonymization` rotate in sync, and a cronjob pushes the matching `CREATE` / `UPDATE` / `DELETE` signals each period.
+exposed by `/pseudonymization` rotate in sync, and `mock-eservice` writes
+the matching `CREATE` / `UPDATE` / `DELETE` signals to the Signal Hub DB
+each period from an in-process emitter.
 
 | periodId % 3 | `/residence`    | `/pseudonymization` | SignalHub signal |
 | ------------ | --------------- | ------------------- | ---------------- |
@@ -16,7 +18,7 @@ exposed by `/pseudonymization` rotate in sync, and a cronjob pushes the matching
 | 2            | 404             | seed C              | DELETE           |
 
 Set `SEED_EXPIRE_SECONDS=30` (or a similar short value) on mock-eservice
-and on the mock-eservice-signal-hub-cronjob to observe the full cycle in a reasonable time frame.
+to observe the full cycle in a reasonable time frame.
 
 ## Token setup
 

@@ -3,13 +3,13 @@ import {
   type EserviceVersionId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   SIGNAL_HUB_MOCK_ESERVICE_ID,
   SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
   SIGNAL_HUB_MOCK_PRODUCER_ID,
-} from "@knodia/mock-eservice-signal-hub-commons/mockup";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
+} from "../src/signalHub/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 

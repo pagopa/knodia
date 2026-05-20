@@ -4,15 +4,6 @@ import { requestContext } from "@fastify/request-context";
 import { type KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import {
-  SIGNAL_HUB_MOCK_ESERVICE_ID,
-  SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
-  SIGNAL_HUB_MOCK_PRODUCER_ID,
-} from "@knodia/mock-eservice-signal-hub-commons/mockup";
-import {
-  getRotatedSeed,
-  type SignalHubSeedConfig,
-} from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import z from "zod";
 
 import { findResidence } from "../data/naturalPersons.ts";
@@ -23,6 +14,15 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { naturalPersonNotFound } from "../models/errors.ts";
+import {
+  SIGNAL_HUB_MOCK_ESERVICE_ID,
+  SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
+  SIGNAL_HUB_MOCK_PRODUCER_ID,
+} from "../signalHub/mockup.ts";
+import {
+  getRotatedSeed,
+  type SignalHubSeedConfig,
+} from "../signalHub/rotation.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockSignalHubRouterOptions {

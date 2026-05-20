@@ -1,12 +1,12 @@
 import { signalHubSignal } from "@knodia/db-signal-hub";
-import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "@knodia/mock-eservice-signal-hub-commons/mockup";
-import { type SignalHubSeedConfig } from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { createTestLogger } from "@knodia/test-commons/utils";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
-import { makeSignalIdAllocator } from "../src/cron/counter.ts";
-import { startScheduler } from "../src/cron/scheduler.ts";
+import { makeSignalIdAllocator } from "../../src/signalHub/emitter/counter.ts";
+import { startScheduler } from "../../src/signalHub/emitter/scheduler.ts";
+import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
+import { type SignalHubSeedConfig } from "../../src/signalHub/rotation.ts";
 import { signalHubDb } from "./setup.ts";
 
 // Real timers with a short period — using fake timers would also freeze

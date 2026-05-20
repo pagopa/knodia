@@ -1,8 +1,8 @@
-import { type SignalHubSeedConfig } from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { describe, expect, it } from "vitest";
 
 import { findResidence } from "../src/data/naturalPersons.ts";
 import { API_Notation } from "../src/models/api.ts";
+import { type SignalHubSeedConfig } from "../src/signalHub/rotation.ts";
 
 const ROTATING_NOTATION = API_Notation.parse("RMNLNR03H12H501Z");
 // Belongs to the static dataset (covered by addresses.json).

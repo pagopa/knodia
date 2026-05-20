@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { phaseAt } from "../src/phase.ts";
+import { phaseAt } from "../../src/signalHub/phase.ts";
 
 describe("phaseAt", () => {
   it.each([

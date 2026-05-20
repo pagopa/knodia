@@ -1,8 +1,3 @@
-import { rotatingFiscalCodes } from "@knodia/mock-eservice-signal-hub-commons/mockup";
-import {
-  computePeriodId,
-  type SignalHubSeedConfig,
-} from "@knodia/mock-eservice-signal-hub-commons/rotation";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,6 +12,11 @@ import {
   type API_PersonalInformation,
   type API_Residence,
 } from "../models/api.ts";
+import { rotatingFiscalCodes } from "../signalHub/mockup.ts";
+import {
+  computePeriodId,
+  type SignalHubSeedConfig,
+} from "../signalHub/rotation.ts";
 
 const CODICE_FISCALE_SCHEME = {
   schemeName: "Codice Fiscale",
@@ -45,7 +45,7 @@ const ROTATING_ADDRESSES = readJson(
   RotatingAddressesFile,
 );
 
-// Drift guard: the cron emits signals for the fiscal codes in
+// Drift guard: the in-process emitter writes signals for the fiscal codes in
 // `rotatingFiscalCodes`; mock-eservice rotates `/residence` for the keys of
 // `rotatingAddresses.json`. If these diverge, a consumer can't correlate
 // signals back to producer data. Called from `buildApp` so it fails loud at
@@ -58,7 +58,7 @@ export function assertRotatingFiscalCodesAreInSync(): void {
     expected.some((fc, i) => fc !== actual[i])
   ) {
     throw new Error(
-      `rotatingAddresses.json keys diverge from @knodia/mock-eservice-signal-hub-commons rotatingFiscalCodes. ` +
+      `rotatingAddresses.json keys diverge from signalHub/mockup rotatingFiscalCodes. ` +
         `expected: [${expected.join(", ")}]; actual: [${actual.join(", ")}]`,
     );
   }
@@ -88,8 +88,8 @@ export function findPersonalInformation(
 // Returns the residence of a natural person. For codici fiscali in the
 // rotating subset, the cycle index = `periodId % cycle.length`: index 0 =
 // address A (CREATE phase), 1 = address B (UPDATE phase), 2 = null
-// (DELETE phase → undefined → 404). The mock-eservice-signal-hub-cronjob
-// will publish the matching CREATE/UPDATE/DELETE signals each period.
+// (DELETE phase → undefined → 404). The in-process Signal Hub emitter
+// publishes the matching CREATE/UPDATE/DELETE signals each period.
 export function findResidence(
   notation: API_Notation,
   now: number,
