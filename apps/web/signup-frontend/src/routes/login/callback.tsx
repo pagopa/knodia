@@ -3,6 +3,8 @@ import { Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { config } from "@/config/config";
+
 const callbackSearchSchema = z.object({
   code: z.string(),
   state: z.string(),
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/login/callback")({
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ deps }) => {
     const data = await signupManagerApi.exchangeOidcCode({
+      baseURL: config.signupManagerUrl,
       query: {
         code: deps.code,
         state: deps.state,

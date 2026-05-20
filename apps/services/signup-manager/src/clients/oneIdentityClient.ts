@@ -1,10 +1,37 @@
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import axios from "axios";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import z from "zod";
 
 import type { OneIdentityConfig } from "../config/config.ts";
 
 export type OneIdentityClient = ReturnType<typeof oneIdentityClientBuilder>;
+
+const OneIdentityTokenResponse = z.object({
+  access_token: z.string(),
+  expires_in: z.number(),
+  id_token: z.string(),
+  scope: z.string(),
+  token_type: z.string(),
+});
+
+type OneIdentityTokenResponse = z.infer<typeof OneIdentityTokenResponse>;
+
+const OneIdentityIdTokenClaims = z.object({
+  aud: z.string(),
+  dateOfBirth: z.string(),
+  exp: z.number().int(),
+  familyName: z.string(),
+  fiscalNumber: z.string(),
+  iat: z.number().int(),
+  iss: z.url(),
+  name: z.string(),
+  nonce: z.string(),
+  spidCode: z.string(),
+  sub: z.string(),
+});
+
+type OneIdentityIdTokenClaims = z.infer<typeof OneIdentityIdTokenClaims>;
 
 export function oneIdentityClientBuilder(config: OneIdentityConfig) {
   return {
@@ -18,7 +45,7 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
       const parameters = new URLSearchParams({
         client_id: config.oneIdentityClientId,
         nonce,
-        redirect_uri: config.oneIdentityRedirectUri,
+        redirect_uri: config.oneIdentityRedirectUrl,
         response_type: "code",
         scope: "openid",
         state,
@@ -28,33 +55,28 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
     },
 
     async exchangeAuthorizationCode(code: string) {
-      const response = await axios.post<{
-        access_token: string;
-        expires_in: number;
-        id_token: string;
-        scope: string;
-        token_type: string;
-      }>(`${config.oneIdentityDomain}/oidc/token`, {
-        body: new URLSearchParams({
+      const response = await axios.post<OneIdentityTokenResponse>(
+        `${config.oneIdentityDomain}/oidc/token`,
+        new URLSearchParams({
           code,
           grant_type: "authorization_code",
-          redirect_uri: config.oneIdentityRedirectUri,
-        }),
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            `${config.oneIdentityClientId}:${config.oneIdentityClientSecret}`,
-          ).toString("base64")}`,
-          "Content-Type": "application/x-www-form-urlencoded",
+          redirect_uri: config.oneIdentityRedirectUrl,
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${Buffer.from(
+              `${config.oneIdentityClientId}:${config.oneIdentityClientSecret}`,
+            ).toString("base64")}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         },
-      });
+      );
 
-      return response.data;
+      return OneIdentityTokenResponse.parse(response.data);
     },
 
     async validateIdToken(idToken: string, nonce: string) {
-      const jwks = createRemoteJWKSet(
-        new URL(`${config.oneIdentityDomain}/oidc/keys`),
-      );
+      const jwks = createRemoteJWKSet(new URL(config.oneIdentityJWKSUri));
 
       const { payload, protectedHeader } = await jwtVerify<{ nonce: string }>(
         idToken,
@@ -67,12 +89,17 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
         throw forbiddenError("Invalid Token");
       });
 
-      if (payload.nonce !== nonce) {
+      const parsedClaimsResult = OneIdentityIdTokenClaims.safeParse(payload);
+
+      if (
+        !parsedClaimsResult.success ||
+        parsedClaimsResult.data.nonce !== nonce
+      ) {
         throw forbiddenError("Invalid Token");
       }
 
       return {
-        claims: payload,
+        claims: parsedClaimsResult.data,
         header: protectedHeader,
       };
     },
