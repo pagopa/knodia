@@ -217,4 +217,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .body(body);
     expect(response.statusCode).toBe(403);
   });
+
+  it("should return 400 for invalid consumer keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/consumerKeychains/not-a-uuid/purposes`)
+      .body(body);
+
+    expect(response.statusCode).toBe(400);
+  });
 });

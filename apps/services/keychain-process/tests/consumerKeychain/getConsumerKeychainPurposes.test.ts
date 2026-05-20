@@ -140,4 +140,12 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes (getConsumerKeycha
 
     expect(response.statusCode).toBe(404);
   });
+
+  it("should return 400 for invalid consumer keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/consumerKeychains/not-a-uuid/purposes`)
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(400);
+  });
 });
