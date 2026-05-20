@@ -300,7 +300,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       await pollConsumerKeychain(
         response,
         headers,
-        unsafeBrandId<ConsumerKeychainId>(response.data.id),
+        req.params.consumerKeychainId,
       );
 
       res.status(204).send();
@@ -347,7 +347,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       await pollConsumerKeychain(
         response,
         headers,
-        unsafeBrandId<ConsumerKeychainId>(response.data.id),
+        req.params.consumerKeychainId,
       );
 
       res.status(204).send();
@@ -481,7 +481,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       await pollConsumerKeychain(
         response,
         headers,
-        unsafeBrandId<ConsumerKeychainId>(response.data.id),
+        req.params.consumerKeychainId,
       );
 
       res.status(204).send();
