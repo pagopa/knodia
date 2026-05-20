@@ -1,40 +1,33 @@
 import { signupManagerApi } from "@knodia/signup-manager-client";
 import { Loader } from "@knodia/ui-kit/ui";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { config } from "@/config/config";
 
-const callbackSearchSchema = z.object({
-  code: z.string(),
-  state: z.string(),
-});
-
 export const Route = createFileRoute("/login/callback")({
-  component: CallbackPage,
   loaderDeps: ({ search }) => ({
     code: search.code,
     state: search.state,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ deps }) => {
-    const data = await signupManagerApi.exchangeOidcCode({
+    await signupManagerApi.exchangeOidcCode({
       baseURL: config.signupManagerUrl,
       query: {
         code: deps.code,
         state: deps.state,
       },
     });
-
-    console.log(data);
+    return redirect({ to: "/success" });
   },
-  validateSearch: callbackSearchSchema,
-});
-
-function CallbackPage() {
-  return (
+  pendingComponent: () => (
     <div className="flex min-h-screen items-center justify-center">
       <Loader label="Signing in..." />
     </div>
-  );
-}
+  ),
+  validateSearch: z.object({
+    code: z.string(),
+    state: z.string(),
+  }),
+});
