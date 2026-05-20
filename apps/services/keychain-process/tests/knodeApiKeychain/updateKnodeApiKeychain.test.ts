@@ -157,4 +157,12 @@ describe("PATCH /knodeApiKeychains/:knodeApiKeychainId (KnodeApiKeychainPatch)",
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid Knode API keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .patch(`/knodeApiKeychains/not-a-uuid`)
+      .body({ name: { en: "Updated Knode API keychain name" } });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
