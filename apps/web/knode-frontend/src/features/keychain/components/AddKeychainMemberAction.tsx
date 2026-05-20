@@ -71,8 +71,13 @@ function AddKeychainMemberModal({
     ]),
   );
 
+  function handleClose() {
+    form.reset();
+    onClose();
+  }
+
   const handleAddKeychainMember = (userId: UserId) => {
-    mutate(userId, { onSuccess: onClose });
+    mutate(userId, { onSuccess: handleClose });
   };
 
   const checkUserKeychainMembership = async (userId: UserId) => {
@@ -144,10 +149,7 @@ function AddKeychainMemberModal({
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
-        if (!open) {
-          form.reset();
-          onClose();
-        }
+        if (!open) handleClose();
       }}
       showErrorBanner={isError}
       title="Add Member"
