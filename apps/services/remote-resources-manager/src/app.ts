@@ -19,12 +19,15 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
-import { makeK2K2GatewayApiClientFactory } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
-import { makeApiProblem } from "./models/errors.ts";
+import {
+  makeApiProblem,
+  targetKnodeUrlNotConfigured,
+} from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
@@ -49,8 +52,10 @@ export function buildApp({
   const remoteResourceDbService =
     remoteResourceDbServiceBuilder(remoteResourceDb);
   const readmodelService = readmodelServiceBuilder(readmodelDb);
-  const getK2K2GatewayApiClient =
-    makeK2K2GatewayApiClientFactory(targetKnodeUrls);
+  const getK2K2GatewayApiClient = makeK2K2GatewayApiClientFactory(
+    targetKnodeUrls,
+    targetKnodeUrlNotConfigured,
+  );
 
   const app = createFastifyApp({
     fastifyOptions: {

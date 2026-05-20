@@ -8,10 +8,10 @@ import type {
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type {
   API_CreatedPurposeResource,
   API_GetPurposesQueryParams,
