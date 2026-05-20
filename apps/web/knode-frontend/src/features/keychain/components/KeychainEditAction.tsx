@@ -19,6 +19,10 @@ import {
   editKeychainFormSchema,
   type EditKeychainFormValues,
 } from "../models/keychain-forms";
+import {
+  consumerKeychainsQueryKey,
+  knodeApiKeychainsQueryKey,
+} from "../services/queries";
 
 interface EditKeychainModalProps {
   isOpen: boolean;
@@ -104,6 +108,15 @@ function EditKeychainModal({
               path: { knodeApiKeychainId: keychain.id },
             }),
           )
+          .with("production", () => {
+            throw new Error("Producer keychains are not supported yet.");
+          })
+          .exhaustive(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: match(type)
+          .with("consumption", () => consumerKeychainsQueryKey())
+          .with("api", () => knodeApiKeychainsQueryKey())
           .with("production", () => {
             throw new Error("Producer keychains are not supported yet.");
           })
