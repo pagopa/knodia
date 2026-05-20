@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+import { is404AxiosError } from "@knodia/polling";
 
 /**
  * Checks if a resource exists by calling the provided function.
@@ -11,7 +11,7 @@ export const resourceExists = async (
     await check();
     return true;
   } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 404) {
+    if (is404AxiosError(error)) {
       return false;
     }
     throw error;

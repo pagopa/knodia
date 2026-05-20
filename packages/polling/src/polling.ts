@@ -82,6 +82,10 @@ export function getMetadataVersionFromHeaders(
   return version.data;
 }
 
+export function is404AxiosError(error: unknown): boolean {
+  return isAxiosError(error) && error.response?.status === 404;
+}
+
 /**
  Default polling check function that checks if the polled resource's version is greater than
  the version of the resource of a given response.
@@ -145,8 +149,4 @@ export function pollingServiceBuilder(config: PollingConfig) {
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function is404AxiosError(error: unknown): boolean {
-  return isAxiosError(error) && error.response?.status === 404;
 }
