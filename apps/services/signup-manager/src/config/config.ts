@@ -10,13 +10,13 @@ const OneIdentityConfig = z
     OI_CLIENT_ID: z.string(),
     OI_CLIENT_SECRET: z.string(),
     OI_DOMAIN: z.string(),
-    OI_REDIRECT_URL: z.string(),
+    OI_REDIRECT_URI: z.string(),
   })
   .transform((c) => ({
     oneIdentityClientId: c.OI_CLIENT_ID,
     oneIdentityClientSecret: c.OI_CLIENT_SECRET,
     oneIdentityDomain: c.OI_DOMAIN,
-    oneIdentityRedirectUrl: c.OI_REDIRECT_URL,
+    oneIdentityRedirectUri: c.OI_REDIRECT_URI,
   }));
 export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;
 

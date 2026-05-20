@@ -18,7 +18,7 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
       const parameters = new URLSearchParams({
         client_id: config.oneIdentityClientId,
         nonce,
-        redirect_uri: config.oneIdentityRedirectUrl,
+        redirect_uri: config.oneIdentityRedirectUri,
         response_type: "code",
         scope: "openid",
         state,
@@ -38,7 +38,7 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
         body: new URLSearchParams({
           code,
           grant_type: "authorization_code",
-          redirect_uri: config.oneIdentityRedirectUrl,
+          redirect_uri: config.oneIdentityRedirectUri,
         }),
         headers: {
           Authorization: `Basic ${Buffer.from(

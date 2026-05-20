@@ -1844,6 +1844,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
@@ -2019,6 +2022,9 @@ importers:
 
   apps/web/signup-frontend:
     dependencies:
+      '@knodia/signup-manager-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/signup-manager-client
       '@knodia/ui-kit':
         specifier: workspace:*
         version: link:../../../packages/ui-kit
@@ -2273,6 +2279,31 @@ importers:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
         version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.15.2
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/signup-manager-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.90.16(react@19.2.0)
       axios:
         specifier: 'catalog:'
         version: 1.15.2
