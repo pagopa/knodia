@@ -10,9 +10,6 @@
  *
  * Note: `public/env.js` is removed from the final build in the Dockerfile, so it
  * is not included in the production image.
- *
- * Auth: Uses OIDC (OpenID Connect) with Cognito in production and local-cognito in development.
- * Requires COGNITO_AUTHORITY, COGNITO_CLIENT_ID, COGNITO_REDIRECT_URI.
  */
 
 import { z } from "zod";

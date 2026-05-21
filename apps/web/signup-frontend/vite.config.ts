@@ -4,7 +4,6 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig, loadEnv, type ProxyOptions } from "vite";
-import mkcert from "vite-plugin-mkcert";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -13,7 +12,6 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       devtools(),
-      mkcert(),
       tanstackRouter({
         autoCodeSplitting: true,
         routeFileIgnorePattern: "\\.test\\.(ts|tsx)$",
@@ -32,7 +30,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: env["APP_PORT"] ? Number(env["APP_PORT"]) : 5673,
+      port: env["APP_PORT"] ? Number(env["APP_PORT"]) : 5676,
       proxy: getDevProxy(env),
     },
   };
