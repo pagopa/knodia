@@ -14,11 +14,6 @@ interface SchedulerHandle {
   stop: () => void;
 }
 
-// Boot emit is awaited by the caller — a boot-time failure exits the process
-// so the orchestrator restarts the service. Runtime emit failures (inside
-// `onWake`) are logged and the next tick is rescheduled: this emitter shares
-// its host with the HTTP server, so a transient DB blip must not take the
-// consumer-visible API down with it.
 export async function startScheduler(
   deps: SchedulerDeps,
 ): Promise<SchedulerHandle> {
