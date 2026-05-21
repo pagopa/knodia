@@ -12,6 +12,7 @@ import {
 
 import type { SignupManagerConfig } from "./config/config.ts";
 
+import { oneIdentityClientBuilder } from "./clients/oneIdentityClient.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { signupRouter } from "./routers/signupRouter.ts";
@@ -48,7 +49,7 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
   // Public routes (no auth required)
   app.register(healthRouter);
   app.register(signupRouter, {
-    signupService: signupServiceBuilder(),
+    signupService: signupServiceBuilder(oneIdentityClientBuilder(config)),
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
