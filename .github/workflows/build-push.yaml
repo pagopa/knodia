@@ -11,6 +11,7 @@ on:
       - "collections/**"
       - "migrations/**"
       - "packages/**"
+      - "terraform/**"
       - ".github/workflows/build-push.yaml"
 
 concurrency:

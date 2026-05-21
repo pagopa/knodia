@@ -26,7 +26,10 @@ import { useDebounceValue } from "@/hooks/useDebounceValue";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import { purposeLinkedConsumerKeychainsQueryKey } from "../../services/queries";
+import {
+  consumerPurposesQueryKey,
+  purposeLinkedConsumerKeychainsQueryKey,
+} from "../../services/queries";
 
 export function LinkConsumerKeychainAction({
   knodeId,
@@ -86,6 +89,9 @@ function LinkConsumerKeychainModal({
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: purposeLinkedConsumerKeychainsQueryKey(),
+          });
+          queryClient.invalidateQueries({
+            queryKey: consumerPurposesQueryKey(),
           });
           form.reset();
           onClose();
