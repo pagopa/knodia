@@ -60,7 +60,7 @@ describe("mock-eservice Signal Hub router", () => {
   });
 
   describe("GET /natural-persons/:notation/residence", () => {
-    it("returns 200 with address A in the CREATE phase (periodId 0)", async () => {
+    it("returns 200 with address A in the Create phase (periodId 0)", async () => {
       vi.setSystemTime(PERIOD_MS * 0 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
@@ -74,7 +74,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(body.address.fullAddress).toMatch(/Via del Corso/);
     });
 
-    it("returns 200 with address B in the UPDATE phase (periodId 1)", async () => {
+    it("returns 200 with address B in the Update phase (periodId 1)", async () => {
       vi.setSystemTime(PERIOD_MS * 1 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
@@ -86,7 +86,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(res.json().address.fullAddress).toMatch(/Via Veneto/);
     });
 
-    it("returns 404 in the DELETE phase (periodId 2)", async () => {
+    it("returns 404 in the Delete phase (periodId 2)", async () => {
       vi.setSystemTime(PERIOD_MS * 2 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
@@ -97,7 +97,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(res.statusCode).toBe(404);
     });
 
-    it("wraps back to the CREATE phase at periodId 3", async () => {
+    it("wraps back to the Create phase at periodId 3", async () => {
       vi.setSystemTime(PERIOD_MS * 3 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({

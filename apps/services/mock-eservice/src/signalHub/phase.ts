@@ -5,10 +5,10 @@ const PHASE_CYCLE_LENGTH = 3;
 export function phaseAt(periodId: number): SignalType {
   switch (periodId % PHASE_CYCLE_LENGTH) {
     case 0:
-      return SignalType.enum.CREATE;
+      return SignalType.enum.Create;
     case 1:
-      return SignalType.enum.UPDATE;
+      return SignalType.enum.Update;
     default:
-      return SignalType.enum.DELETE;
+      return SignalType.enum.Delete;
   }
 }

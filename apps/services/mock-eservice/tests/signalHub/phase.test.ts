@@ -4,15 +4,15 @@ import { phaseAt } from "../../src/signalHub/phase.ts";
 
 describe("phaseAt", () => {
   it.each([
-    [0, "CREATE"],
-    [1, "UPDATE"],
-    [2, "DELETE"],
-    [3, "CREATE"],
-    [4, "UPDATE"],
-    [5, "DELETE"],
-    [99, "CREATE"],
-    [100, "UPDATE"],
-    [101, "DELETE"],
+    [0, "Create"],
+    [1, "Update"],
+    [2, "Delete"],
+    [3, "Create"],
+    [4, "Update"],
+    [5, "Delete"],
+    [99, "Create"],
+    [100, "Update"],
+    [101, "Delete"],
   ])("phaseAt(%i) === %s", (periodId, expected) => {
     expect(phaseAt(periodId)).toBe(expected);
   });

@@ -42,7 +42,7 @@ async function readSignals(eserviceId: EserviceId) {
 }
 
 describe("emitTransition", () => {
-  it("inserts 1 SEEDUPDATE + N phase rows in a single batch with a shared correlation_id", async () => {
+  it("inserts 1 SeedUpdate + N phase rows in a single batch with a shared correlation_id", async () => {
     const batch = await emitTransition({
       db: signalHubDb,
       now: inPeriod(0),
@@ -60,18 +60,18 @@ describe("emitTransition", () => {
     expect(signalIds).toEqual([1, 2, 3, 4]);
 
     const seedUpdates = rows.filter(
-      (r) => r.signalType === SignalType.enum.SEEDUPDATE,
+      (r) => r.signalType === SignalType.enum.SeedUpdate,
     );
     expect(seedUpdates).toHaveLength(1);
     expect(seedUpdates[0]?.objectId).toBe("");
     expect(seedUpdates[0]?.objectType).toBe("");
 
     const phaseRows = rows.filter(
-      (r) => r.signalType !== SignalType.enum.SEEDUPDATE,
+      (r) => r.signalType !== SignalType.enum.SeedUpdate,
     );
     expect(phaseRows).toHaveLength(rotatingFiscalCodes.length);
     for (const r of phaseRows) {
-      expect(r.signalType).toBe(SignalType.enum.CREATE);
+      expect(r.signalType).toBe(SignalType.enum.Create);
       expect(r.objectType).toBe("residence");
     }
 
@@ -83,7 +83,7 @@ describe("emitTransition", () => {
     );
   });
 
-  it("rotates the phase across consecutive periods (CREATE → UPDATE → DELETE)", async () => {
+  it("rotates the phase across consecutive periods (Create → Update → Delete)", async () => {
     for (const periodId of [0, 1, 2]) {
       await emitTransition({
         db: signalHubDb,
@@ -94,17 +94,17 @@ describe("emitTransition", () => {
 
     const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
     const phaseRows = rows.filter(
-      (r) => r.signalType !== SignalType.enum.SEEDUPDATE,
+      (r) => r.signalType !== SignalType.enum.SeedUpdate,
     );
 
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.CREATE),
+      phaseRows.filter((r) => r.signalType === SignalType.enum.Create),
     ).toHaveLength(rotatingFiscalCodes.length);
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.UPDATE),
+      phaseRows.filter((r) => r.signalType === SignalType.enum.Update),
     ).toHaveLength(rotatingFiscalCodes.length);
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.DELETE),
+      phaseRows.filter((r) => r.signalType === SignalType.enum.Delete),
     ).toHaveLength(rotatingFiscalCodes.length);
 
     const correlationIds = new Set(rows.map((r) => r.correlationId));
@@ -146,7 +146,7 @@ describe("emitTransition", () => {
         objectId: "",
         objectType: "",
         signalId: 100,
-        signalType: SignalType.enum.SEEDUPDATE,
+        signalType: SignalType.enum.SeedUpdate,
       },
       {
         correlationId: generateId<CorrelationId>(),
@@ -154,7 +154,7 @@ describe("emitTransition", () => {
         objectId: "",
         objectType: "",
         signalId: 999,
-        signalType: SignalType.enum.SEEDUPDATE,
+        signalType: SignalType.enum.SeedUpdate,
       },
     ]);
 

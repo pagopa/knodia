@@ -51,7 +51,7 @@ describe("findResidence", () => {
     expect(responses[0]?.address).toEqual(responses[3]?.address);
     expect(responses[1]?.address).toEqual(responses[4]?.address);
 
-    // CREATE and UPDATE addresses differ.
+    // Create and Update addresses differ.
     expect(responses[0]?.address).not.toEqual(responses[1]?.address);
   });
 });

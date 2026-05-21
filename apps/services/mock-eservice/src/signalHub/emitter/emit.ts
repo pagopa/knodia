@@ -50,7 +50,7 @@ export async function emitTransition({
       objectId: "",
       objectType: "",
       signalId: startId,
-      signalType: SignalType.enum.SEEDUPDATE,
+      signalType: SignalType.enum.SeedUpdate,
     };
     const phaseRows = rotatingFiscalCodes.map((fc, i) => ({
       correlationId,

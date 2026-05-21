@@ -8,14 +8,14 @@ e-service.
 Fiscal codes `RMNLNR03H12H501Z`, `CNTLCC89E26L378K`, `RSSGRG65D48G702L`
 have a rotating response. The response to `GET /residence` and the seed
 exposed by `/pseudonymization` rotate in sync, and `mock-eservice` writes
-the matching `CREATE` / `UPDATE` / `DELETE` signals to the Signal Hub DB
+the matching `Create` / `Update` / `Delete` signals to the Signal Hub DB
 each period from an in-process emitter.
 
 | periodId % 3 | `/residence`    | `/pseudonymization` | SignalHub signal |
 | ------------ | --------------- | ------------------- | ---------------- |
-| 0            | address A (200) | seed A              | CREATE           |
-| 1            | address B (200) | seed B              | UPDATE           |
-| 2            | 404             | seed C              | DELETE           |
+| 0            | address A (200) | seed A              | Create           |
+| 1            | address B (200) | seed B              | Update           |
+| 2            | 404             | seed C              | Delete           |
 
 Set `SIGNAL_HUB_SEED_EXPIRE_SECONDS=30` (or a similar short value) on
 mock-eservice to observe the full cycle in a reasonable time frame.
@@ -36,7 +36,7 @@ step 11.
 3. **2 - Get Residence (Signal Hub Bearer)** — `GET /natural-persons/RMNLNR03H12H501Z/residence`.
 4. **3 - Get Pseudonymization (Signal Hub Bearer)** — `GET /pseudonymization`.
 5. Poll the Signal Hub for signals related to the `eserviceId` captured in step 1, wait for new signals.
-6. Compute `sha256(<fiscalCode> + <seed from step 4>)` and observe it matches the `object_id` of a `CREATE`/`UPDATE`/`DELETE` signal from step 5. Repeat from step 3 for the next period.
+6. Compute `sha256(<fiscalCode> + <seed from step 4>)` and observe it matches the `object_id` of a `Create`/`Update`/`Delete` signal from step 5. Repeat from step 3 for the next period.
 
 Re-run this in a loop to observe the full cycle: expect
 `A → B → 404` on residence and three distinct seeds on pseudonymization.

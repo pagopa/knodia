@@ -31,6 +31,5 @@ const shutdown = async (reason: string) => {
   process.exit(0);
 };
 
-for (const sig of ["SIGTERM", "SIGINT"] as const) {
-  process.on(sig, () => void shutdown(sig));
-}
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
