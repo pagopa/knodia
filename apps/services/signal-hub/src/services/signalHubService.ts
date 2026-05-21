@@ -73,6 +73,7 @@ export function signalHubServiceBuilder(
           error.cause instanceof DatabaseError &&
           error.cause?.code === PG_UNIQUE_VIOLATION
         ) {
+          // Race condition: in case two concurrent signals pass the checks above, we get a PG unique constraint violation error, and we rethrow a meaningful error
           throw signalAlreadyExists(signalId, eserviceId);
         }
         throw error;
