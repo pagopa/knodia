@@ -2,9 +2,6 @@ import { z } from "zod";
 
 import { type SignalHubSeedConfig } from "./rotation.ts";
 
-// SIGNAL_HUB_SEED_* env vars drive the periodId / seed rotation that both the
-// HTTP handlers (`/residence`, `/pseudonymization`) and the in-process Signal
-// Hub emitter read from. Co-located so they can't drift.
 export const SignalHubSeedEnvConfig = z
   .object({
     SIGNAL_HUB_SEED_EXPIRE_SECONDS: z.coerce.number().int().positive(),
