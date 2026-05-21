@@ -27,10 +27,6 @@ interface EmitTransitionParams {
   seedConfig: SignalHubSeedConfig;
 }
 
-// `max(signal_id)` is read inside the same transaction as the INSERT so any
-// concurrent writer's rows are observed before we allocate. The
-// `UNIQUE(eservice_id, signal_id)` constraint is the final safety net if two
-// writers race past the read.
 export async function emitTransition({
   db,
   now,
