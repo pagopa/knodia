@@ -3,8 +3,8 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for managing Knodia Signup process
-  title: Knodia Signup Process API
+  description: API for managing Knodia Signup Manager
+  title: Knodia Signup Manager API
   version: 1.0.0
 components:
   securitySchemes:
@@ -102,7 +102,7 @@ paths:
     get:
       operationId: startOIDCSession
       tags:
-        - authentication
+        - signup
       description: Initiate OIDC session
       responses:
         "302":
@@ -111,7 +111,7 @@ paths:
     get:
       operationId: exchangeOIDCCode
       tags:
-        - authentication
+        - signup
       description: Handle OIDC callback and exchange authorization code for session token
       parameters:
         - schema:
@@ -158,12 +158,12 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
-  - description: Signup Process API
+  - description: Signup Manager API
     url: /
 security:
   - bearerAuth: []
 tags:
   - description: Health check routes
     name: health
-  - description: Authentication routes
-    name: authentication
+  - description: Signup routes
+    name: signup
