@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const avatar = tv({
-  base: "bg-brand-100 text-primary-light-high-contrast inline-flex items-center justify-center overflow-hidden rounded-full select-none",
+  base: "bg-brand-100 text-primary-light-high-contrast inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full select-none",
   variants: {
     size: {
       sm: "label-sm size-6",
