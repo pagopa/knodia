@@ -28,6 +28,12 @@ vi.stubGlobal(
   },
 );
 
+// Polyfill Element.scrollIntoView for jsdom (not implemented)
+if (typeof Element.prototype.scrollIntoView !== "function") {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  Element.prototype.scrollIntoView = function () {};
+}
+
 // Polyfill File.arrayBuffer() for jsdom (not natively supported)
 if (typeof File.prototype.arrayBuffer !== "function") {
   File.prototype.arrayBuffer = function () {
