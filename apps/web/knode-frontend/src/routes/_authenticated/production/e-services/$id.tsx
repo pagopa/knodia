@@ -121,7 +121,6 @@ function RouteComponent() {
             code={category.code}
             key={category.code}
             scheme={category.scheme}
-            showIcon={false}
           />
         ))}
       </div>

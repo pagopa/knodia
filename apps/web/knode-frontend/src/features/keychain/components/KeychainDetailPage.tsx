@@ -81,7 +81,7 @@ export function KeychainDetailPage<TTab extends string>(
         actions={
           <>
             <KeychainDeleteAction {...props} />
-            <KeychainEditAction keychain={keychain} type={props.type} />
+            <KeychainEditAction {...props} />
           </>
         }
         copyableId={keychain.id}

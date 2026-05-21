@@ -1,45 +1,29 @@
-import { bffApi } from "@knodia/bff-client";
-import {
-  getConsumerKeychainDetailsQueryKey,
-  getKnodeApiKeychainDetailsQueryKey,
-} from "@knodia/bff-client/tanstack-query";
+import { type bffApi } from "@knodia/bff-client";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
+import { useEditKeychain } from "../hooks/useEditKeychain";
 import {
   editKeychainFormSchema,
   type EditKeychainFormValues,
 } from "../models/keychain-forms";
-import {
-  consumerKeychainsQueryKey,
-  knodeApiKeychainsQueryKey,
-} from "../services/queries";
 
-interface EditKeychainModalProps {
+type EditKeychainModalProps = KeychainEditActionProps & {
   isOpen: boolean;
-  keychain: bffApi.KeychainDetails;
   onClose: () => void;
-  type: KeychainType;
-}
+};
 
-interface KeychainEditActionProps {
+type KeychainEditActionProps = SupportedKeychain & {
   keychain: bffApi.KeychainDetails;
-  type: KeychainType;
-}
+};
 
-export function KeychainEditAction({
-  keychain,
-  type,
-}: KeychainEditActionProps) {
+export function KeychainEditAction(props: KeychainEditActionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -53,84 +37,26 @@ export function KeychainEditAction({
         Edit
       </Button>
       <EditKeychainModal
+        {...props}
         isOpen={isOpen}
-        keychain={keychain}
         onClose={() => setIsOpen(false)}
-        type={type}
       />
     </DialogTrigger>
   );
 }
 
-function EditKeychainModal({
-  isOpen,
-  keychain,
-  onClose,
-  type,
-}: EditKeychainModalProps) {
-  const queryClient = useQueryClient();
-
-  const { isError, isPending, mutate } = useMutation({
-    mutationFn: (
-      body: bffApi.ConsumerKeychainPatch | bffApi.KnodeApiKeychainPatch,
-    ) =>
-      match(type)
-        .with("consumption", () =>
-          bffApi.updateConsumerKeychain({
-            body,
-            client,
-            path: { consumerKeychainId: keychain.id },
-          }),
-        )
-        .with("api", () =>
-          bffApi.updateKnodeApiKeychain({
-            body,
-            client,
-            path: { knodeApiKeychainId: keychain.id },
-          }),
-        )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
-        .exhaustive(),
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: match(type)
-          .with("consumption", () =>
-            getConsumerKeychainDetailsQueryKey({
-              client,
-              path: { consumerKeychainId: keychain.id },
-            }),
-          )
-          .with("api", () =>
-            getKnodeApiKeychainDetailsQueryKey({
-              client,
-              path: { knodeApiKeychainId: keychain.id },
-            }),
-          )
-          .with("production", () => {
-            throw new Error("Producer keychains are not supported yet.");
-          })
-          .exhaustive(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: match(type)
-          .with("consumption", () => consumerKeychainsQueryKey())
-          .with("api", () => knodeApiKeychainsQueryKey())
-          .with("production", () => {
-            throw new Error("Producer keychains are not supported yet.");
-          })
-          .exhaustive(),
-      });
-      onClose();
-    },
-  });
+function EditKeychainModal(props: EditKeychainModalProps) {
+  const { isOpen, keychain, onClose } = props;
+  const { isError, isPending, mutate } = useEditKeychain(props);
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
-    mutate({
-      description: seed.description ? { en: seed.description } : null,
-      name: { en: seed.name },
-    });
+    mutate(
+      {
+        description: seed.description ? { en: seed.description } : null,
+        name: { en: seed.name },
+      },
+      { onSuccess: onClose },
+    );
   }
 
   const form = useForm({
