@@ -1,9 +1,10 @@
-import { type EserviceId } from "@knodia/common-models/ids";
+import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { eq, max } from "drizzle-orm";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { randomUUID } from "node:crypto";
 
 import { rotatingFiscalCodes } from "../../data/rotatingAddresses.ts";
+import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../mockup.ts";
 import { phaseAt } from "../phase.ts";
 import { pseudonymize } from "../pseudonymize.ts";
 import {
@@ -12,67 +13,65 @@ import {
   type SignalHubSeedConfig,
 } from "../rotation.ts";
 import { SignalType } from "../signal.ts";
-import { type SignalIdAllocator } from "./counter.ts";
 
 interface EmittedBatch {
-  correlationId: string;
+  correlationId: CorrelationId;
   periodId: number;
   seed: string;
   signalIds: number[];
 }
 
 interface EmitTransitionParams {
-  allocator: SignalIdAllocator;
   db: NodePgDatabase;
-  eserviceId: EserviceId;
   now: number;
   seedConfig: SignalHubSeedConfig;
 }
 
-// One DB transaction: 1 SEEDUPDATE marker + N phase signals, one per rotating
-// fiscal code. All rows share a `correlation_id` so a consumer can group them.
-// `signal_id`s are contiguous from the allocator; the UNIQUE constraint on
-// `(eservice_id, signal_id)` is the safety net.
+// `max(signal_id)` is read inside the same transaction as the INSERT so any
+// concurrent writer's rows are observed before we allocate. The
+// `UNIQUE(eservice_id, signal_id)` constraint is the final safety net if two
+// writers race past the read.
 export async function emitTransition({
-  allocator,
   db,
-  eserviceId,
   now,
   seedConfig,
 }: EmitTransitionParams): Promise<EmittedBatch> {
   const periodId = computePeriodId(now, seedConfig);
-  const seed = getRotatedSeed(eserviceId, now, seedConfig);
+  const seed = getRotatedSeed(SIGNAL_HUB_MOCK_ESERVICE_ID, now, seedConfig);
   const phase = phaseAt(periodId);
-  const correlationId = randomUUID();
+  const correlationId = generateId<CorrelationId>();
 
-  const seedUpdateId = allocator.next();
-  const phaseRows = rotatingFiscalCodes.map((fc) => ({
-    correlationId,
-    eserviceId,
-    objectId: pseudonymize(fc, seed),
-    objectType: "residence",
-    signalId: allocator.next(),
-    signalType: phase,
-  }));
+  return db.transaction(async (tx) => {
+    const [row] = await tx
+      .select({ max: max(signalHubSignal.signalId) })
+      .from(signalHubSignal)
+      .where(eq(signalHubSignal.eserviceId, SIGNAL_HUB_MOCK_ESERVICE_ID));
+    const startId = (row?.max ?? 0) + 1;
 
-  await db.transaction(async (tx) => {
-    await tx.insert(signalHubSignal).values([
-      {
-        correlationId,
-        eserviceId,
-        objectId: "",
-        objectType: "",
-        signalId: seedUpdateId,
-        signalType: SignalType.enum.SEEDUPDATE,
-      },
-      ...phaseRows,
-    ]);
+    const seedUpdateRow = {
+      correlationId,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+      objectId: "",
+      objectType: "",
+      signalId: startId,
+      signalType: SignalType.enum.SEEDUPDATE,
+    };
+    const phaseRows = rotatingFiscalCodes.map((fc, i) => ({
+      correlationId,
+      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+      objectId: pseudonymize(fc, seed),
+      objectType: "residence",
+      signalId: startId + 1 + i,
+      signalType: phase,
+    }));
+
+    await tx.insert(signalHubSignal).values([seedUpdateRow, ...phaseRows]);
+
+    return {
+      correlationId,
+      periodId,
+      seed,
+      signalIds: [startId, ...phaseRows.map((r) => r.signalId)],
+    };
   });
-
-  return {
-    correlationId,
-    periodId,
-    seed,
-    signalIds: [seedUpdateId, ...phaseRows.map((r) => r.signalId)],
-  };
 }

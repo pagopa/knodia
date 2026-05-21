@@ -1,10 +1,14 @@
-import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type CorrelationId,
+  type EserviceId,
+  generateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
 import { rotatingFiscalCodes } from "../../src/data/rotatingAddresses.ts";
-import { makeSignalIdAllocator } from "../../src/signalHub/emitter/counter.ts";
 import { emitTransition } from "../../src/signalHub/emitter/emit.ts";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
 import { phaseAt } from "../../src/signalHub/phase.ts";
@@ -39,13 +43,9 @@ async function readSignals(eserviceId: EserviceId) {
 
 describe("emitTransition", () => {
   it("inserts 1 SEEDUPDATE + N phase rows in a single batch with a shared correlation_id", async () => {
-    const allocator = makeSignalIdAllocator(0);
-    const now = inPeriod(0);
     const batch = await emitTransition({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      now,
+      now: inPeriod(0),
       seedConfig,
     });
 
@@ -84,13 +84,9 @@ describe("emitTransition", () => {
   });
 
   it("rotates the phase across consecutive periods (CREATE → UPDATE → DELETE)", async () => {
-    const allocator = makeSignalIdAllocator(0);
-
     for (const periodId of [0, 1, 2]) {
       await emitTransition({
-        allocator,
         db: signalHubDb,
-        eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
         now: inPeriod(periodId),
         seedConfig,
       });
@@ -120,16 +116,9 @@ describe("emitTransition", () => {
   });
 
   it("derives objectId from the period's seed for each rotating fiscal code", async () => {
-    const allocator = makeSignalIdAllocator(0);
     const periodId = 1;
     const now = inPeriod(periodId);
-    await emitTransition({
-      allocator,
-      db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      now,
-      seedConfig,
-    });
+    await emitTransition({ db: signalHubDb, now, seedConfig });
 
     const seed = getRotatedSeed(SIGNAL_HUB_MOCK_ESERVICE_ID, now, seedConfig);
     const expected = new Set(
@@ -145,39 +134,47 @@ describe("emitTransition", () => {
     expect(phaseObjectIds).toEqual(expected);
   });
 
-  it("continues monotonic signal_id allocation across batches and isolates per eservice", async () => {
-    const allocator = makeSignalIdAllocator(100);
-    await emitTransition({
-      allocator,
-      db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      now: inPeriod(0),
-      seedConfig,
-    });
-    await emitTransition({
-      allocator,
-      db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      now: inPeriod(1),
-      seedConfig,
-    });
+  it("reads max(signal_id) per eservice on each emit (concurrent writers don't desync)", async () => {
+    // Pre-seed: a row at signal_id=100 for the mock eservice (simulating a
+    // concurrent writer) and a row at signal_id=999 for an unrelated
+    // eservice. The next emit must pick up from 101 (mock's max + 1) and
+    // ignore the other eservice's max.
+    await signalHubDb.insert(signalHubSignal).values([
+      {
+        correlationId: generateId<CorrelationId>(),
+        eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+        objectId: "",
+        objectType: "",
+        signalId: 100,
+        signalType: SignalType.enum.SEEDUPDATE,
+      },
+      {
+        correlationId: generateId<CorrelationId>(),
+        eserviceId: OTHER_ESERVICE_ID,
+        objectId: "",
+        objectType: "",
+        signalId: 999,
+        signalType: SignalType.enum.SEEDUPDATE,
+      },
+    ]);
 
-    // A different e-service uses its own allocator and writes independently.
-    const otherAllocator = makeSignalIdAllocator(0);
     await emitTransition({
-      allocator: otherAllocator,
       db: signalHubDb,
-      eserviceId: OTHER_ESERVICE_ID,
       now: inPeriod(0),
+      seedConfig,
+    });
+    await emitTransition({
+      db: signalHubDb,
+      now: inPeriod(1),
       seedConfig,
     });
 
     const ourRows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
     expect(ourRows.map((r) => r.signalId)).toEqual([
-      101, 102, 103, 104, 105, 106, 107, 108,
+      100, 101, 102, 103, 104, 105, 106, 107, 108,
     ]);
 
     const otherRows = await readSignals(OTHER_ESERVICE_ID);
-    expect(otherRows.map((r) => r.signalId)).toEqual([1, 2, 3, 4]);
+    expect(otherRows.map((r) => r.signalId)).toEqual([999]);
   });
 });

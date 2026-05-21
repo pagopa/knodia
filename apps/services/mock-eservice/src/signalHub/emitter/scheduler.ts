@@ -1,15 +1,11 @@
-import { type EserviceId } from "@knodia/common-models/ids";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type Logger } from "pino";
 
 import { nextBoundaryMs, type SignalHubSeedConfig } from "../rotation.ts";
-import { type SignalIdAllocator } from "./counter.ts";
 import { emitTransition } from "./emit.ts";
 
 interface SchedulerDeps {
-  allocator: SignalIdAllocator;
   db: NodePgDatabase;
-  eserviceId: EserviceId;
   logger: Logger;
   seedConfig: SignalHubSeedConfig;
 }
@@ -18,23 +14,11 @@ interface SchedulerHandle {
   stop: () => void;
 }
 
-// Boot = transition: emit immediately for the current periodId, then schedule
-// the next emission at the next period boundary. On wake we recompute the
-// current periodId from the wall clock (don't trust the timer fired exactly
-// at the boundary — debugger pauses / OS suspends can drift us past one or
-// more periods; we emit once for the latest period and reschedule).
-//
-// The boot emit is awaited by the caller — a boot failure (DB unreachable,
-// max(signal_id) read, first insert) propagates and is expected to take the
-// host process down so the orchestrator restarts it cleanly.
-//
-// Runtime emit failures inside `onWake` are logged and the next tick is
-// rescheduled. We do NOT exit the process: the emitter shares its host with
-// `mock-eservice`'s HTTP server, so a transient DB blip during emit must not
-// take the consumer-visible API down with it. A failed emit may leave a gap
-// in `signal_id`s for that period — that's acceptable for a mock service
-// (the DB schema requires uniqueness, not contiguity, and consumers correlate
-// by `correlation_id`).
+// Boot emit is awaited by the caller — a boot-time failure exits the process
+// so the orchestrator restarts the service. Runtime emit failures (inside
+// `onWake`) are logged and the next tick is rescheduled: this emitter shares
+// its host with the HTTP server, so a transient DB blip must not take the
+// consumer-visible API down with it.
 export async function startScheduler(
   deps: SchedulerDeps,
 ): Promise<SchedulerHandle> {
@@ -43,12 +27,9 @@ export async function startScheduler(
 
   const emitNow = async () => {
     if (stopped) return;
-    const now = Date.now();
     const batch = await emitTransition({
-      allocator: deps.allocator,
       db: deps.db,
-      eserviceId: deps.eserviceId,
-      now,
+      now: Date.now(),
       seedConfig: deps.seedConfig,
     });
     deps.logger.info(
@@ -74,10 +55,9 @@ export async function startScheduler(
       await emitNow();
     } catch (err) {
       deps.logger.error(
-        `Emit failed; logging and continuing to keep the HTTP server up. ` +
-          `A gap may remain in this period's signal_ids: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
+        `Emit failed; logging and continuing to keep the HTTP server up: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
       );
     }
     scheduleNext();

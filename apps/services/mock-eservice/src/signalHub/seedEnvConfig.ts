@@ -26,9 +26,6 @@ export const SignalHubSeedEnvConfig = z
 
 export type SignalHubSeedEnvConfig = z.infer<typeof SignalHubSeedEnvConfig>;
 
-// Adapt the env-config shape (signalHubSeed* keys, used by the Zod-parsed
-// service config) to the runtime shape consumed by the rotation helpers,
-// the HTTP routers, and the emitter. One place owns the mapping.
 export function toSignalHubSeedConfig(
   envConfig: SignalHubSeedEnvConfig,
 ): SignalHubSeedConfig {

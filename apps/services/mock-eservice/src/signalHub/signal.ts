@@ -1,11 +1,8 @@
 import { z } from "zod";
 
-// Every Signal Hub signal carries a `signalType`. The emitter writes
-// `SEEDUPDATE` markers + one phase signal per period transition; future
-// push/pull consumers will read the same set.
+// TODO: switch to `@knodia/signal-hub-models` once PR #472 lands. That
+// package defines `SignalType` with PascalCase values
+// (`"Create" | "Update" | "Delete" | "SeedUpdate"`); the migration needs
+// to reconcile the casing across producer + consumer.
 export const SignalType = z.enum(["CREATE", "DELETE", "SEEDUPDATE", "UPDATE"]);
 export type SignalType = z.infer<typeof SignalType>;
-
-// Phase signals are the rotation-driven subset (no SEEDUPDATE).
-export const SignalPhase = SignalType.exclude(["SEEDUPDATE"]);
-export type SignalPhase = z.infer<typeof SignalPhase>;

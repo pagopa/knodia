@@ -13,9 +13,8 @@ void startServer(buildAppFromConfig(config), {
   port: config.port,
 });
 
-// In-process Signal Hub emitter — boot-time failures (DB unreachable,
-// max-signal-id read failure, boot emit failure) reject the top-level await
-// and exit the process so the orchestrator restarts the service.
+// Top-level await — a boot-time failure exits the process so the
+// orchestrator restarts the service.
 const emitter = await startSignalHubEmitter({
   dbConfig: config,
   logger,
@@ -32,5 +31,6 @@ const shutdown = async (reason: string) => {
   process.exit(0);
 };
 
-process.on("SIGTERM", () => void shutdown("SIGTERM"));
-process.on("SIGINT", () => void shutdown("SIGINT"));
+for (const sig of ["SIGTERM", "SIGINT"] as const) {
+  process.on(sig, () => void shutdown(sig));
+}

@@ -3,7 +3,6 @@ import { createTestLogger } from "@knodia/test-commons/utils";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 
-import { makeSignalIdAllocator } from "../../src/signalHub/emitter/counter.ts";
 import { startScheduler } from "../../src/signalHub/emitter/scheduler.ts";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
 import { type SignalHubSeedConfig } from "../../src/signalHub/rotation.ts";
@@ -34,11 +33,8 @@ function sleep(ms: number) {
 
 describe("startScheduler", () => {
   it("emits a transition at boot", async () => {
-    const allocator = makeSignalIdAllocator(0);
     const handle = await startScheduler({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       logger,
       seedConfig,
     });
@@ -52,11 +48,8 @@ describe("startScheduler", () => {
   });
 
   it("emits the next transition at the period boundary, with a fresh correlation_id", async () => {
-    const allocator = makeSignalIdAllocator(0);
     const handle = await startScheduler({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       logger,
       seedConfig,
     });
@@ -73,11 +66,8 @@ describe("startScheduler", () => {
   });
 
   it("stop() halts further emissions", async () => {
-    const allocator = makeSignalIdAllocator(0);
     const handle = await startScheduler({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       logger,
       seedConfig,
     });
@@ -97,11 +87,8 @@ describe("startScheduler", () => {
       throw new Error(`process.exit unexpectedly called with code ${code}`);
     }) as never);
 
-    const allocator = makeSignalIdAllocator(0);
     const handle = await startScheduler({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       logger,
       seedConfig,
     });
@@ -123,11 +110,8 @@ describe("startScheduler", () => {
   });
 
   it("does not catch up on missed boundaries (one emit per actual wake)", async () => {
-    const allocator = makeSignalIdAllocator(0);
     const handle = await startScheduler({
-      allocator,
       db: signalHubDb,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       logger,
       seedConfig,
     });
@@ -145,10 +129,10 @@ describe("startScheduler", () => {
 
     const rows = await readSignals();
     const correlationIds = new Set(rows.map((r) => r.correlationId));
-    // Crucial property: skipped boundaries are NOT replayed individually.
-    // Boot + a couple of catch-up wakes during the post-block yield are
-    // expected; what matters is that we don't emit one batch per skipped
-    // boundary (which would produce 1 + 5 = 6 batches here).
+    // Skipped boundaries are NOT replayed individually. Boot + a couple of
+    // catch-up wakes during the post-block yield are expected; what matters
+    // is that we don't emit one batch per skipped boundary (which would
+    // produce 1 + 5 = 6 batches here).
     expect(correlationIds.size).toBeLessThan(5);
   });
 });

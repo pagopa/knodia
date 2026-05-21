@@ -5,11 +5,9 @@ import { z } from "zod";
 
 import { API_Address, API_Notation } from "../models/api.ts";
 
-// The rotating addresses dataset is the single source of truth for which
-// fiscal codes participate in the periodId rotation and what `/residence`
-// returns for each one across the CREATE / UPDATE / DELETE phases. The
-// in-process Signal Hub emitter derives `rotatingFiscalCodes` from these
-// keys — no separate const, no drift.
+// Single source of truth for which fiscal codes rotate. The Signal Hub
+// emitter derives `rotatingFiscalCodes` from these keys, so the producer
+// HTTP side and the signal emitter can't drift.
 
 const RotatingAddressesFile = z.record(
   API_Notation,
