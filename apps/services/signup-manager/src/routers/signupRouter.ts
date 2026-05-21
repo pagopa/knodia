@@ -81,7 +81,6 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
           description: "OIDC login successful, session token returned",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.signup],
