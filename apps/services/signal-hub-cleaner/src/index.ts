@@ -16,6 +16,9 @@ const shutdown = async (reason: string, exitCode = 0) => {
   process.exit(exitCode);
 };
 
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
+
 try {
   await signalHubService.cleanup(config.signalsRetentionHours);
   await shutdown("Signals cleanup finished", 0);
@@ -28,6 +31,3 @@ try {
 
   await shutdown("Signals cleanup failed", 1);
 }
-
-process.on("SIGTERM", () => void shutdown("SIGTERM"));
-process.on("SIGINT", () => void shutdown("SIGINT"));
