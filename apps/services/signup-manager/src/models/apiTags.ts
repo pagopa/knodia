@@ -1,3 +1,3 @@
 export const apiTags = {
-  authentication: "authentication",
+  signup: "signup",
 } as const;

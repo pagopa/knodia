@@ -1,6 +1,3 @@
-import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
-import type { LoggerConfig } from "@knodia/logger/config";
-
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -19,27 +16,27 @@ import type { SignupManagerConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { authenticationRouter } from "./routers/authenticationRouter.ts";
-import { authenticationServiceBuilder } from "./services/authenticationService.ts";
+import { signupRouter } from "./routers/signupRouter.ts";
+import { signupServiceBuilder } from "./services/signupService.ts";
 
 /** @knipignore */
-export function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
+export function buildApp({ config }: { config: SignupManagerConfig }) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
         components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
-          description: "API for managing Knodia Signup process",
-          title: "Knodia Signup Process API",
+          description: "API for managing Knodia Signup Manager",
+          title: "Knodia Signup Manager API",
           version: "1.0.0",
         },
         security: bearerAuthSecurity,
-        servers: [{ description: "Signup Process API", url: "/" }],
+        servers: [{ description: "Signup Manager API", url: "/" }],
         tags: [
           healthRouterTag,
           {
-            description: "Authentication routes",
-            name: apiTags.authentication,
+            description: "Signup routes",
+            name: apiTags.signup,
           },
         ],
       },
@@ -50,8 +47,8 @@ export function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
 
   // Public routes (no auth required)
   app.register(healthRouter);
-  app.register(authenticationRouter, {
-    authenticationService: authenticationServiceBuilder(),
+  app.register(signupRouter, {
+    signupService: signupServiceBuilder(),
   });
 
   // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
@@ -66,9 +63,7 @@ export function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
 }
 
 export function buildAppFromConfig(config: SignupManagerConfig) {
-  const app = buildApp({
-    config,
-  });
+  const app = buildApp({ config });
 
   return app;
 }
