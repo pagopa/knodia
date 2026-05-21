@@ -66,7 +66,7 @@ const purpose: Purpose = {
 };
 
 const defaultQuery = {
-  signalId: "0",
+  lastSignalId: "0",
   size: "10",
 };
 
@@ -141,7 +141,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     }
 
     const response = await pullSignal({
-      signalId: "0",
+      lastSignalId: "0",
       size: String(size),
     });
 
