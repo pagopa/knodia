@@ -26,14 +26,8 @@ export function signalHubServiceBuilder(
         `Signals cleanup date limit:  ISO [${cutoffDate.toISOString()}], UTC: [${cutoffDate.toUTCString()}], LOCAL: [${cutoffDate.toLocaleString()}]`,
       );
 
-      let deletedSignalsCount = 0;
-      try {
-        deletedSignalsCount =
-          await signalHubDbService.deleteSignals(cutoffDate);
-      } catch (error) {
-        console.log("Error during signals cleanup:", error);
-        throw error;
-      }
+      const deletedSignalsCount =
+        await signalHubDbService.deleteSignals(cutoffDate);
 
       logger.info(`Signals cleanup deleted ${deletedSignalsCount} signals`);
     },
