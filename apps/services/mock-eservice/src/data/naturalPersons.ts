@@ -58,11 +58,6 @@ export function findPersonalInformation(
   return { dateOfBirth: person.dateOfBirth };
 }
 
-// Returns the residence of a natural person. For codici fiscali in the
-// rotating subset, the cycle index = `periodId % cycle.length`: index 0 =
-// address A (CREATE phase), 1 = address B (UPDATE phase), 2 = null
-// (DELETE phase → undefined → 404). The in-process Signal Hub emitter
-// publishes the matching CREATE/UPDATE/DELETE signals each period.
 export function findResidence(
   notation: API_Notation,
   now: number,
