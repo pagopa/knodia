@@ -1,6 +1,6 @@
 import { SignalType } from "./signal.ts";
 
-const PHASE_CYCLE_LENGTH = 3;
+export const PHASE_CYCLE_LENGTH = 3;
 
 export function phaseAt(periodId: number): SignalType {
   switch (periodId % PHASE_CYCLE_LENGTH) {
