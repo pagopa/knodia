@@ -7,9 +7,6 @@ export interface SignalHubSeedConfig {
   startDateMs: number;
 }
 
-// Exported for tests; treat as an internal helper of this module — callers
-// outside (router, future cron) should go through `getRotatedSeed` /
-// `findResidence`, which take `(now, config)` and compute the period themselves.
 export function computePeriodId(
   now: number,
   {
