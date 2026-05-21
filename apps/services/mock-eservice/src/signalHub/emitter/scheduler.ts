@@ -24,11 +24,17 @@ interface SchedulerHandle {
 // at the boundary — debugger pauses / OS suspends can drift us past one or
 // more periods; we emit once for the latest period and reschedule).
 //
-// On a runtime emit failure we exit the process so the orchestrator restarts
-// us. Boot then re-emits the missed period from a fresh `max(signal_id)`. We
-// don't try to retry in-process: the in-memory `signal_id` allocator has
-// already incremented before the failed insert, so an in-process retry would
-// leave a permanent gap and silently drop the period.
+// The boot emit is awaited by the caller — a boot failure (DB unreachable,
+// max(signal_id) read, first insert) propagates and is expected to take the
+// host process down so the orchestrator restarts it cleanly.
+//
+// Runtime emit failures inside `onWake` are logged and the next tick is
+// rescheduled. We do NOT exit the process: the emitter shares its host with
+// `mock-eservice`'s HTTP server, so a transient DB blip during emit must not
+// take the consumer-visible API down with it. A failed emit may leave a gap
+// in `signal_id`s for that period — that's acceptable for a mock service
+// (the DB schema requires uniqueness, not contiguity, and consumers correlate
+// by `correlation_id`).
 export async function startScheduler(
   deps: SchedulerDeps,
 ): Promise<SchedulerHandle> {
@@ -67,12 +73,12 @@ export async function startScheduler(
     try {
       await emitNow();
     } catch (err) {
-      deps.logger.fatal(
-        `Emit failed; exiting to let the orchestrator restart: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
+      deps.logger.error(
+        `Emit failed; logging and continuing to keep the HTTP server up. ` +
+          `A gap may remain in this period's signal_ids: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
       );
-      process.exit(1);
     }
     scheduleNext();
   };

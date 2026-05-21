@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { type SignalHubSeedConfig } from "./rotation.ts";
+
 // SIGNAL_HUB_SEED_* env vars drive the periodId / seed rotation that both the
 // HTTP handlers (`/residence`, `/pseudonymization`) and the in-process Signal
 // Hub emitter read from. Co-located so they can't drift.
@@ -23,3 +25,16 @@ export const SignalHubSeedEnvConfig = z
   }));
 
 export type SignalHubSeedEnvConfig = z.infer<typeof SignalHubSeedEnvConfig>;
+
+// Adapt the env-config shape (signalHubSeed* keys, used by the Zod-parsed
+// service config) to the runtime shape consumed by the rotation helpers,
+// the HTTP routers, and the emitter. One place owns the mapping.
+export function toSignalHubSeedConfig(
+  envConfig: SignalHubSeedEnvConfig,
+): SignalHubSeedConfig {
+  return {
+    expireSeconds: envConfig.signalHubSeedExpireSeconds,
+    saltLength: envConfig.signalHubSeedSaltLength,
+    startDateMs: envConfig.signalHubSeedStartDateMs,
+  };
+}

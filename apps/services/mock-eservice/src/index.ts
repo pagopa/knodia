@@ -4,6 +4,7 @@ import { createLogger } from "@knodia/logger";
 import { buildAppFromConfig } from "./app.ts";
 import { config } from "./config/config.ts";
 import { startSignalHubEmitter } from "./signalHub/emitter/index.ts";
+import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
 const logger = createLogger({ config });
 
@@ -16,21 +17,9 @@ void startServer(buildAppFromConfig(config), {
 // max-signal-id read failure, boot emit failure) reject the top-level await
 // and exit the process so the orchestrator restarts the service.
 const emitter = await startSignalHubEmitter({
-  dbConfig: {
-    signalHubDbHost: config.signalHubDbHost,
-    signalHubDbName: config.signalHubDbName,
-    signalHubDbPassword: config.signalHubDbPassword,
-    signalHubDbPort: config.signalHubDbPort,
-    signalHubDbSchema: config.signalHubDbSchema,
-    signalHubDbUser: config.signalHubDbUser,
-    signalHubDbUseSsl: config.signalHubDbUseSsl,
-  },
+  dbConfig: config,
   logger,
-  seedConfig: {
-    expireSeconds: config.signalHubSeedExpireSeconds,
-    saltLength: config.signalHubSeedSaltLength,
-    startDateMs: config.signalHubSeedStartDateMs,
-  },
+  seedConfig: toSignalHubSeedConfig(config),
 });
 
 let shuttingDown = false;
