@@ -18,7 +18,6 @@ import {
   eserviceNotActive,
   eserviceNotFoundForProducer,
   eserviceSignalHubNotEnabled,
-  newerSignalsExist,
   nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
@@ -53,7 +52,7 @@ describe("POST /signals (pushSignal)", () => {
   it("should return 200 and the signalId when the signal is pushed successfully", async () => {
     await seedEservice();
 
-    const response = await pushSignal(defaultBody);
+    const response = await pushSignal();
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({ signalId: defaultBody.signalId });
@@ -137,7 +136,7 @@ describe("POST /signals (pushSignal)", () => {
     await seedEservice();
     await pushSignal();
 
-    const response = await pushSignal(defaultBody);
+    const response = await pushSignal();
 
     const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
@@ -156,7 +155,7 @@ describe("POST /signals (pushSignal)", () => {
 
     const response = await pushSignal();
 
-    const error = newerSignalsExist(defaultBody.signalId, eservice.id);
+    const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
     expect(response.statusCode).toBe(400);
     expect(response.json<API_Problem>().title).toEqual(error.title);

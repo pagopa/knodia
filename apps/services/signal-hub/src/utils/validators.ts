@@ -8,7 +8,6 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   eserviceNotActive,
   eserviceSignalHubNotEnabled,
-  newerSignalsExist,
   nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../models/errors.ts";
@@ -35,8 +34,9 @@ export async function assertSignalCanBePushed(
   signalHubDbService: SignalHubDbService,
 ) {
   const maxSignalId = await signalHubDbService.getMaxSignalId(eserviceId);
-  if (signalId === maxSignalId) throw signalAlreadyExists(signalId, eserviceId);
-  if (signalId < maxSignalId) throw newerSignalsExist(signalId, eserviceId);
+  if (signalId <= maxSignalId) {
+    throw signalAlreadyExists(signalId, eserviceId);
+  }
   if (signalId !== maxSignalId + 1) {
     throw nonConsecutiveSignalId(signalId, maxSignalId, eserviceId);
   }
