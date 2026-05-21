@@ -18,9 +18,11 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      host: "localhost",
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
+      port: 0,
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
       ...oneIdentityMockConfig,
     },
