@@ -42,6 +42,11 @@ const allowedTestTokens: TestToken[] = [
   { organizationId: consumerId, type: "knode-api" },
 ];
 
+const producerToken: TestToken = {
+  organizationId: producerId,
+  type: "knode-api",
+};
+
 const consumer = {
   id: consumerId,
   knodeId: KnodeId.enum.Orion,
@@ -92,7 +97,7 @@ const seedData = async ({
 };
 
 const pushSignal = (body: API_Signal) =>
-  injectAppRequest(allowedTestTokens[0]!).post("/signals").body(body);
+  injectAppRequest(producerToken).post("/signals").body(body);
 
 describe("GET /signals/:eserviceId (pullSignal)", () => {
   it("should return 200 with an empty signals list when no signals have been pushed", async () => {
