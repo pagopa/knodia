@@ -3,7 +3,7 @@ import { createTestLogger } from "@knodia/test-commons/utils";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 
-import { startScheduler } from "../../src/signalHub/emitter/scheduler.ts";
+import { startSignalHubMockScheduler } from "../../src/signalHub/emitter/scheduler.ts";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
 import { type SignalHubSeedConfig } from "../../src/signalHub/rotation.ts";
 import { signalHubDb } from "./setup.ts";
@@ -31,9 +31,9 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-describe("startScheduler", () => {
+describe("startSignalHubMockScheduler", () => {
   it("emits a transition at boot", async () => {
-    const handle = await startScheduler({
+    const handle = await startSignalHubMockScheduler({
       db: signalHubDb,
       logger,
       seedConfig,
@@ -48,7 +48,7 @@ describe("startScheduler", () => {
   });
 
   it("emits the next transition at the period boundary, with a fresh correlation_id", async () => {
-    const handle = await startScheduler({
+    const handle = await startSignalHubMockScheduler({
       db: signalHubDb,
       logger,
       seedConfig,
@@ -66,7 +66,7 @@ describe("startScheduler", () => {
   });
 
   it("stop() halts further emissions", async () => {
-    const handle = await startScheduler({
+    const handle = await startSignalHubMockScheduler({
       db: signalHubDb,
       logger,
       seedConfig,
@@ -87,7 +87,7 @@ describe("startScheduler", () => {
       throw new Error(`process.exit unexpectedly called with code ${code}`);
     }) as never);
 
-    const handle = await startScheduler({
+    const handle = await startSignalHubMockScheduler({
       db: signalHubDb,
       logger,
       seedConfig,
@@ -110,7 +110,7 @@ describe("startScheduler", () => {
   });
 
   it("does not catch up on missed boundaries (one emit per actual wake)", async () => {
-    const handle = await startScheduler({
+    const handle = await startSignalHubMockScheduler({
       db: signalHubDb,
       logger,
       seedConfig,

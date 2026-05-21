@@ -3,7 +3,7 @@ import { createLogger } from "@knodia/logger";
 
 import { buildAppFromConfig } from "./app.ts";
 import { config } from "./config/config.ts";
-import { startSignalHubEmitter } from "./signalHub/emitter/index.ts";
+import { startSignalHubMockEmitter } from "./signalHub/emitter/index.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
 const logger = createLogger({ config });
@@ -15,7 +15,7 @@ void startServer(buildAppFromConfig(config), {
 
 // Top-level await — a boot-time failure exits the process so the
 // orchestrator restarts the service.
-const emitter = await startSignalHubEmitter({
+const emitter = await startSignalHubMockEmitter({
   dbConfig: config,
   logger,
   seedConfig: toSignalHubSeedConfig(config),

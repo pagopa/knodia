@@ -2,7 +2,7 @@ import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type Logger } from "pino";
 
 import { nextBoundaryMs, type SignalHubSeedConfig } from "../rotation.ts";
-import { emitTransition } from "./emit.ts";
+import { emitMockSignals } from "./emit.ts";
 
 interface SchedulerDeps {
   db: NodePgDatabase;
@@ -14,7 +14,7 @@ interface SchedulerHandle {
   stop: () => void;
 }
 
-export async function startScheduler(
+export async function startSignalHubMockScheduler(
   deps: SchedulerDeps,
 ): Promise<SchedulerHandle> {
   let pendingTimer: ReturnType<typeof setTimeout> | undefined;
@@ -22,7 +22,7 @@ export async function startScheduler(
 
   const emitNow = async () => {
     if (stopped) return;
-    const batch = await emitTransition({
+    const batch = await emitMockSignals({
       db: deps.db,
       now: Date.now(),
       seedConfig: deps.seedConfig,

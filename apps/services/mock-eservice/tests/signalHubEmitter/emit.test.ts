@@ -9,9 +9,9 @@ import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
 import { rotatingFiscalCodes } from "../../src/data/rotatingAddresses.ts";
-import { emitTransition } from "../../src/signalHub/emitter/emit.ts";
+import { emitMockSignals } from "../../src/signalHub/emitter/emit.ts";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
-import { phaseAt } from "../../src/signalHub/phase.ts";
+import { signalHubMockPhaseAt } from "../../src/signalHub/phase.ts";
 import { pseudonymize } from "../../src/signalHub/pseudonymize.ts";
 import {
   getRotatedSeed,
@@ -41,9 +41,9 @@ async function readSignals(eserviceId: EserviceId) {
     .orderBy(asc(signalHubSignal.signalId));
 }
 
-describe("emitTransition", () => {
+describe("emitMockSignals", () => {
   it("inserts 1 SeedUpdate + N phase rows in a single batch with a shared correlation_id", async () => {
-    const batch = await emitTransition({
+    const batch = await emitMockSignals({
       db: signalHubDb,
       now: inPeriod(0),
       seedConfig,
@@ -66,11 +66,11 @@ describe("emitTransition", () => {
     expect(seedUpdates[0]?.objectId).toBe("");
     expect(seedUpdates[0]?.objectType).toBe("");
 
-    const phaseRows = rows.filter(
+    const mockSignalRows = rows.filter(
       (r) => r.signalType !== SignalType.enum.SeedUpdate,
     );
-    expect(phaseRows).toHaveLength(rotatingFiscalCodes.length);
-    for (const r of phaseRows) {
+    expect(mockSignalRows).toHaveLength(rotatingFiscalCodes.length);
+    for (const r of mockSignalRows) {
       expect(r.signalType).toBe(SignalType.enum.Create);
       expect(r.objectType).toBe("residence");
     }
@@ -78,14 +78,14 @@ describe("emitTransition", () => {
     const expectedObjectIds = new Set(
       rotatingFiscalCodes.map((fc) => pseudonymize(fc, batch.seed)),
     );
-    expect(new Set(phaseRows.map((r) => r.objectId))).toEqual(
+    expect(new Set(mockSignalRows.map((r) => r.objectId))).toEqual(
       expectedObjectIds,
     );
   });
 
   it("rotates the phase across consecutive periods (Create → Update → Delete)", async () => {
     for (const periodId of [0, 1, 2]) {
-      await emitTransition({
+      await emitMockSignals({
         db: signalHubDb,
         now: inPeriod(periodId),
         seedConfig,
@@ -93,18 +93,18 @@ describe("emitTransition", () => {
     }
 
     const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
-    const phaseRows = rows.filter(
+    const mockSignalRows = rows.filter(
       (r) => r.signalType !== SignalType.enum.SeedUpdate,
     );
 
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.Create),
+      mockSignalRows.filter((r) => r.signalType === SignalType.enum.Create),
     ).toHaveLength(rotatingFiscalCodes.length);
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.Update),
+      mockSignalRows.filter((r) => r.signalType === SignalType.enum.Update),
     ).toHaveLength(rotatingFiscalCodes.length);
     expect(
-      phaseRows.filter((r) => r.signalType === SignalType.enum.Delete),
+      mockSignalRows.filter((r) => r.signalType === SignalType.enum.Delete),
     ).toHaveLength(rotatingFiscalCodes.length);
 
     const correlationIds = new Set(rows.map((r) => r.correlationId));
@@ -118,7 +118,7 @@ describe("emitTransition", () => {
   it("derives objectId from the period's seed for each rotating fiscal code", async () => {
     const periodId = 1;
     const now = inPeriod(periodId);
-    await emitTransition({ db: signalHubDb, now, seedConfig });
+    await emitMockSignals({ db: signalHubDb, now, seedConfig });
 
     const seed = getRotatedSeed(SIGNAL_HUB_MOCK_ESERVICE_ID, now, seedConfig);
     const expected = new Set(
@@ -126,12 +126,12 @@ describe("emitTransition", () => {
     );
 
     const rows = await readSignals(SIGNAL_HUB_MOCK_ESERVICE_ID);
-    const phaseObjectIds = new Set(
+    const signalHubMockPhaseObjectIds = new Set(
       rows
-        .filter((r) => r.signalType === phaseAt(periodId))
+        .filter((r) => r.signalType === signalHubMockPhaseAt(periodId))
         .map((r) => r.objectId),
     );
-    expect(phaseObjectIds).toEqual(expected);
+    expect(signalHubMockPhaseObjectIds).toEqual(expected);
   });
 
   it("reads max(signal_id) per eservice on each emit (concurrent writers don't desync)", async () => {
@@ -158,12 +158,12 @@ describe("emitTransition", () => {
       },
     ]);
 
-    await emitTransition({
+    await emitMockSignals({
       db: signalHubDb,
       now: inPeriod(0),
       seedConfig,
     });
-    await emitTransition({
+    await emitMockSignals({
       db: signalHubDb,
       now: inPeriod(1),
       seedConfig,

@@ -5,7 +5,7 @@ import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { rotatingFiscalCodes } from "../../data/rotatingAddresses.ts";
 import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../mockup.ts";
-import { phaseAt } from "../phase.ts";
+import { signalHubMockPhaseAt } from "../phase.ts";
 import { pseudonymize } from "../pseudonymize.ts";
 import {
   computePeriodId,
@@ -14,6 +14,12 @@ import {
 } from "../rotation.ts";
 import { SignalType } from "../signal.ts";
 
+interface EmitMockSignalsParams {
+  db: NodePgDatabase;
+  now: number;
+  seedConfig: SignalHubSeedConfig;
+}
+
 interface EmittedBatch {
   correlationId: CorrelationId;
   periodId: number;
@@ -21,20 +27,14 @@ interface EmittedBatch {
   signalIds: number[];
 }
 
-interface EmitTransitionParams {
-  db: NodePgDatabase;
-  now: number;
-  seedConfig: SignalHubSeedConfig;
-}
-
-export async function emitTransition({
+export async function emitMockSignals({
   db,
   now,
   seedConfig,
-}: EmitTransitionParams): Promise<EmittedBatch> {
+}: EmitMockSignalsParams): Promise<EmittedBatch> {
   const periodId = computePeriodId(now, seedConfig);
   const seed = getRotatedSeed(SIGNAL_HUB_MOCK_ESERVICE_ID, now, seedConfig);
-  const phase = phaseAt(periodId);
+  const mockPhase = signalHubMockPhaseAt(periodId);
   const correlationId = generateId<CorrelationId>();
 
   return db.transaction(async (tx) => {
@@ -52,22 +52,22 @@ export async function emitTransition({
       signalId: startId,
       signalType: SignalType.enum.SeedUpdate,
     };
-    const phaseRows = rotatingFiscalCodes.map((fc, i) => ({
+    const mockSignalRows = rotatingFiscalCodes.map((fc, i) => ({
       correlationId,
       eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       objectId: pseudonymize(fc, seed),
       objectType: "residence",
       signalId: startId + 1 + i,
-      signalType: phase,
+      signalType: mockPhase,
     }));
 
-    await tx.insert(signalHubSignal).values([seedUpdateRow, ...phaseRows]);
+    await tx.insert(signalHubSignal).values([seedUpdateRow, ...mockSignalRows]);
 
     return {
       correlationId,
       periodId,
       seed,
-      signalIds: [startId, ...phaseRows.map((r) => r.signalId)],
+      signalIds: [startId, ...mockSignalRows.map((r) => r.signalId)],
     };
   });
 }

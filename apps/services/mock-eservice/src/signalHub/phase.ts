@@ -1,11 +1,11 @@
 import { SignalType } from "./signal.ts";
 
-export const PHASE_CYCLE_LENGTH = 3;
+export const SIGNAL_HUB_MOCK_PHASES = 3;
 
-export function phaseAt(
+export function signalHubMockPhaseAt(
   periodId: number,
 ): Exclude<SignalType, typeof SignalType.enum.SeedUpdate> {
-  switch (periodId % PHASE_CYCLE_LENGTH) {
+  switch (periodId % SIGNAL_HUB_MOCK_PHASES) {
     case 0:
       return SignalType.enum.Create;
     case 1:

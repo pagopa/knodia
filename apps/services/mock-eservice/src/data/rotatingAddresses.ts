@@ -4,11 +4,11 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
 import { API_Address, API_Notation } from "../models/api.ts";
-import { PHASE_CYCLE_LENGTH } from "../signalHub/phase.ts";
+import { SIGNAL_HUB_MOCK_PHASES } from "../signalHub/phase.ts";
 
 const RotatingAddressesFile = z.record(
   API_Notation,
-  z.array(API_Address.nullable()).length(PHASE_CYCLE_LENGTH),
+  z.array(API_Address.nullable()).length(SIGNAL_HUB_MOCK_PHASES),
 );
 
 const dataDir = dirname(fileURLToPath(import.meta.url));

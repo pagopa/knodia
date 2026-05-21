@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { phaseAt } from "../../src/signalHub/phase.ts";
+import { signalHubMockPhaseAt } from "../../src/signalHub/phase.ts";
 
-describe("phaseAt", () => {
+describe("signalHubMockPhaseAt", () => {
   it.each([
     [0, "Create"],
     [1, "Update"],
@@ -13,7 +13,7 @@ describe("phaseAt", () => {
     [99, "Create"],
     [100, "Update"],
     [101, "Delete"],
-  ])("phaseAt(%i) === %s", (periodId, expected) => {
-    expect(phaseAt(periodId)).toBe(expected);
+  ])("signalHubMockPhaseAt(%i) === %s", (periodId, expected) => {
+    expect(signalHubMockPhaseAt(periodId)).toBe(expected);
   });
 });
