@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: env["APP_PORT"] ? Number(env["APP_PORT"]) : 5676,
+      port: env["APP_PORT"] ? Number(env["APP_PORT"]) : 5176,
       proxy: getDevProxy(env),
     },
   };
