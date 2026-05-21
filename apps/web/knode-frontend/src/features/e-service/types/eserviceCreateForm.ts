@@ -64,7 +64,20 @@ const eserviceFieldSchemas = {
     .min(1, "At least one group is required."),
   serverUrls: z
     .array(z.url("Server URL must be a valid URL."))
-    .min(1, "At least one server URL is required."),
+    .min(1, "At least one server URL is required.")
+    .superRefine((urls, ctx) => {
+      const seen = new Set<string>();
+      urls.forEach((url, index) => {
+        if (seen.has(url)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "This server URL is already used.",
+            path: [index],
+          });
+        }
+        seen.add(url);
+      });
+    }),
   termsOfServiceUrl: z
     .union([z.literal(""), z.url("Terms of Service URL must be a valid URL.")])
     .optional(),
