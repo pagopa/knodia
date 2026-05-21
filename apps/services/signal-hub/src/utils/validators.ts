@@ -11,9 +11,9 @@ import {
   eserviceNotActive,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
+  producerNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../models/errors.ts";
-import { retrieveEserviceById } from "./readmodelUtils.ts";
 
 export async function assertConsumerAuthorizedToPullSignals(
   organization: ExternalResource<OrganizationId>,
@@ -31,14 +31,18 @@ export async function assertConsumerAuthorizedToPullSignals(
   }
 }
 
-export async function assertEserviceIsActiveWithSignalHubEnabled(
-  eserviceId: EserviceId,
-  readmodelService: ReadmodelService,
-) {
-  const eservice = await retrieveEserviceById(eserviceId, readmodelService);
+export function assertEserviceIsActiveWithSignalHubEnabled(eservice: Eservice) {
+  assertEserviceIsActive(eservice);
+  assertEserviceHasSignalHubEnabled(eservice);
+}
 
-  assertEserviceIsActive(eservice.data);
-  assertEserviceHasSignalHubEnabled(eservice.data);
+export function assertProducerAuthorizedToPushSignals(
+  eservice: Eservice,
+  producerId: OrganizationId,
+) {
+  if (eservice.producerId !== producerId) {
+    throw producerNotAuthorizedToPushSignals(eservice.id, producerId);
+  }
 }
 
 export async function assertSignalCanBePushed(

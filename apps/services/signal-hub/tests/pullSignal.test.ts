@@ -25,6 +25,7 @@ import { type API_PullResponse, type API_Signal } from "../src/models/api.ts";
 import {
   consumerNotAuthorizedToPullSignals,
   eserviceNotActive,
+  eserviceNotFound,
   eserviceSignalHubNotEnabled,
 } from "../src/models/errors.ts";
 import {
@@ -161,7 +162,10 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
       .get(`/signals/${generateId()}`)
       .query(defaultQuery);
 
+    const error = eserviceNotFound(eservice.id);
+
     expect(response.statusCode).toBe(404);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
   it("should return 409 when signal hub is not enabled for the e-service", async () => {

@@ -19,6 +19,7 @@ import {
   eserviceNotFound,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
+  producerNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
@@ -78,10 +79,13 @@ describe("POST /signals (pushSignal)", () => {
       eserviceId: generateId(),
     });
 
+    const error = eserviceNotFound(eservice.id);
+
     expect(response.statusCode).toBe(404);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
-  it("should return 404 when the e-service does not belong to the caller", async () => {
+  it("should return 403 when the e-service does not belong to the caller", async () => {
     const otherProducerEservice: Eservice = {
       ...eservice,
       producerId: generateId(),
@@ -90,9 +94,12 @@ describe("POST /signals (pushSignal)", () => {
 
     const response = await pushSignal();
 
-    const error = eserviceNotFound(otherProducerEservice.id);
+    const error = producerNotAuthorizedToPushSignals(
+      otherProducerEservice.id,
+      producerId,
+    );
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(403);
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 

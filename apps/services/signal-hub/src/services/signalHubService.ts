@@ -12,9 +12,11 @@ import { DatabaseError } from "pg";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { signalAlreadyExists } from "../models/errors.ts";
+import { retrieveEserviceById } from "../utils/readmodelUtils.ts";
 import {
   assertConsumerAuthorizedToPullSignals,
   assertEserviceIsActiveWithSignalHubEnabled,
+  assertProducerAuthorizedToPushSignals,
   assertSignalCanBePushed,
 } from "../utils/validators.ts";
 
@@ -41,10 +43,11 @@ export function signalHubServiceBuilder(
 
       const { organization } = authData;
 
-      await assertEserviceIsActiveWithSignalHubEnabled(
+      const { data: eservice } = await retrieveEserviceById(
         eserviceId,
         readmodelService,
       );
+      await assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertConsumerAuthorizedToPullSignals(
         { id: organization.id, knodeId: organization.knodeId },
         eserviceId,
@@ -68,16 +71,20 @@ export function signalHubServiceBuilder(
         signalType: SignalType;
       },
       {
+        authData,
         correlationId,
         logger,
       }: AuthorizedContext<KnodeApiAuthData<"producer">>,
     ) {
       logger.info(`Pushing signal ${signalId} for E-service ${eserviceId}`);
 
-      await assertEserviceIsActiveWithSignalHubEnabled(
+      const { data: eservice } = await retrieveEserviceById(
         eserviceId,
         readmodelService,
       );
+
+      assertProducerAuthorizedToPushSignals(eservice, authData.organization.id);
+      assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertSignalCanBePushed(signalId, eserviceId, signalHubDbService);
 
       const signal: Omit<SignalHubSignalSQL, "id"> = {

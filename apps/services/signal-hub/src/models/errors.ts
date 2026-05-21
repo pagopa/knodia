@@ -20,6 +20,7 @@ const errorCodes = {
   SIGNAL_ALREADY_EXISTS: "0004",
   NON_CONSECUTIVE_SIGNAL_ID: "0005",
   CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0006",
+  PRODUCER_NOT_AUTHORIZED_TO_PUSH_SIGNALS: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -81,6 +82,18 @@ export function nonConsecutiveSignalId(
         : `Signal id ${signalId} is not consecutive to the last pushed signal id ${maxSignalId} for E-service ${eserviceId}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Non Consecutive Signal Id",
+  });
+}
+
+export function producerNotAuthorizedToPushSignals(
+  eserviceId: EserviceId,
+  producerId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PRODUCER_NOT_AUTHORIZED_TO_PUSH_SIGNALS",
+    detail: `Producer with id ${producerId} is not authorized to push signals for E-service ${eserviceId}`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Producer Not Authorized To Push Signals",
   });
 }
 
