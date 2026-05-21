@@ -14,7 +14,7 @@ const {
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
-  ESERVICE_NOT_FOUND_FOR_PRODUCER: "0001",
+  ESERVICE_NOT_FOUND: "0001",
   ESERVICE_NOT_ACTIVE: "0002",
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
@@ -50,15 +50,12 @@ export function eserviceNotActive(eserviceId: EserviceId) {
   });
 }
 
-export function eserviceNotFoundForProducer(
-  eserviceId: EserviceId,
-  producerId: OrganizationId,
-) {
+export function eserviceNotFound(eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_NOT_FOUND_FOR_PRODUCER",
-    detail: `E-service with id ${eserviceId} not found for producer ${producerId}`,
+    code: "ESERVICE_NOT_FOUND",
+    detail: `E-service with id ${eserviceId} not found`,
     status: HTTP_STATUS_NOT_FOUND,
-    title: "E-service Not Found For Producer",
+    title: "E-service Not Found",
   });
 }
 

@@ -13,7 +13,7 @@ import {
   nonConsecutiveSignalId,
   signalAlreadyExists,
 } from "../models/errors.ts";
-import { retrieveEserviceByIdAndProducerId } from "./readmodelUtils.ts";
+import { retrieveEserviceById } from "./readmodelUtils.ts";
 
 export async function assertConsumerAuthorizedToPullSignals(
   organization: ExternalResource<OrganizationId>,
@@ -33,14 +33,9 @@ export async function assertConsumerAuthorizedToPullSignals(
 
 export async function assertEserviceIsActiveWithSignalHubEnabled(
   eserviceId: EserviceId,
-  producerId: OrganizationId,
   readmodelService: ReadmodelService,
 ) {
-  const eservice = await retrieveEserviceByIdAndProducerId(
-    eserviceId,
-    producerId,
-    readmodelService,
-  );
+  const eservice = await retrieveEserviceById(eserviceId, readmodelService);
 
   assertEserviceIsActive(eservice.data);
   assertEserviceHasSignalHubEnabled(eservice.data);

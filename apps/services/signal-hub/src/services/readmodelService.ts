@@ -3,7 +3,6 @@ import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
 
 import { AgreementState } from "@knodia/agreement-models";
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { PurposeState } from "@knodia/purpose-models";
@@ -46,16 +45,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return queryRes.length > 0;
     },
-    async getEserviceByIdAndProducerId(
-      eserviceId: EserviceId,
-      producerId: OrganizationId,
-    ) {
-      return await eserviceReadmodelService.getEserviceByFilter(
-        and(
-          eq(readmodelEservice.id, eserviceId),
-          eq(readmodelEservice.producerId, producerId),
-        ),
-      );
+    async getEserviceById(eserviceId: EserviceId) {
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
     },
   };
 }
