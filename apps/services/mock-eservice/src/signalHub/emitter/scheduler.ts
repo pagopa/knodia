@@ -50,7 +50,7 @@ export async function startScheduler(
       await emitNow();
     } catch (err) {
       deps.logger.error(
-        `Signal Hub emit failed: ${err instanceof Error ? err.message : String(err)}`,
+        `Signal Hub emit failed, scheduling next: ${err instanceof Error ? err.message : String(err)}`,
       );
     }
     scheduleNext();
