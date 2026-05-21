@@ -15,15 +15,17 @@ export function OrganizationCard({
 }) {
   return (
     <SettingsCard label={label}>
-      <span className="flex items-center gap-2">
+      <span className="inline-block max-w-full text-right">
         <KnodeAvatar
-          className="bg-brand-dark text-white"
+          className="bg-brand-dark text-white align-middle mr-2"
           knodeId={organization.knodeId}
           size="sm"
         />
         {organization.name}
         {showContact && (
-          <OrganizationContactPopover organization={organization} />
+          <span className="ml-1 align-middle">
+            <OrganizationContactPopover organization={organization} />
+          </span>
         )}
       </span>
     </SettingsCard>

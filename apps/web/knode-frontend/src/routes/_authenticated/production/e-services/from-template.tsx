@@ -2,8 +2,14 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { categories } from "@knodia/category-models";
 import { KnodeId } from "@knodia/common-models/ids";
-import { Button, ComboBox, ComboBoxItem, Loader } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import {
+  Button,
+  ComboBox,
+  ComboBoxItem,
+  Empty,
+  Loader,
+} from "@knodia/ui-kit/ui";
+import { ArrowRightIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -71,7 +77,7 @@ function EserviceTemplateCard({
   title: string;
 }) {
   return (
-    <article className="p-4 flex flex-col gap-4 rounded-2xl elevation-1 border border-slate-100">
+    <article className="p-4 flex flex-col gap-4 rounded-eservice-card elevation-1 border border-eservice-card-border">
       <header className="flex gap-10 items-start">
         <div className="flex min-w-0 flex-1 flex-col">
           <h3 className="min-w-0 title-md-em truncate">{title}</h3>
@@ -139,6 +145,46 @@ function RouteComponent() {
   );
 }
 
+function TemplatesListContent({
+  isLoading,
+  onSelectTemplate,
+  templates,
+}: {
+  isLoading: boolean;
+  onSelectTemplate: (templateId: string) => void;
+  templates: bffApi.EserviceTemplate[];
+}) {
+  if (isLoading) {
+    return <Loader className="mx-auto mb-10" label="Loading templates..." />;
+  }
+  if (templates.length === 0) {
+    return (
+      <Empty
+        className="mt-4"
+        description="Try with different filters."
+        icon={<MagnifyingGlassIcon />}
+        kind="brand-soft"
+        title="No results found for your search."
+      />
+    );
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {templates.map((template) => (
+        <EserviceTemplateCard
+          categories={template.categories}
+          description={template.description.en}
+          id={template.id}
+          key={template.id}
+          mode={template.mode}
+          onSelect={() => onSelectTemplate(template.id)}
+          title={template.name.en}
+        />
+      ))}
+    </div>
+  );
+}
+
 function TemplatesListSelector() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
@@ -173,7 +219,7 @@ function TemplatesListSelector() {
   );
 
   return (
-    <div>
+    <div className="mx-auto max-w-160 p-10 pb-16">
       <h2 className="headline-lg-em text-primary-light-high-contrast mb-10">
         Choose template
       </h2>
@@ -211,23 +257,11 @@ function TemplatesListSelector() {
         </ComboBox>
       </div>
 
-      {isLoadingTemplates && (
-        <Loader className="mx-auto mb-10" label="Loading templates..." />
-      )}
-
-      <div className="flex flex-col gap-4">
-        {templates?.map((template) => (
-          <EserviceTemplateCard
-            categories={template.categories}
-            description={template.description.en}
-            id={template.id}
-            key={template.id}
-            mode={template.mode}
-            onSelect={() => handleSelectTemplate(template.id)}
-            title={template.name.en}
-          />
-        ))}
-      </div>
+      <TemplatesListContent
+        isLoading={isLoadingTemplates}
+        onSelectTemplate={handleSelectTemplate}
+        templates={templates}
+      />
     </div>
   );
 }

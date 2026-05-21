@@ -151,7 +151,7 @@ function ReadOnlyCategoriesList({ categories }: { categories: SchemeRef[] }) {
     >
       {categories.map((category, i) => (
         <li key={i}>
-          <CategoryChip showIcon={false} {...category} />
+          <CategoryChip {...category} />
         </li>
       ))}
     </ul>
