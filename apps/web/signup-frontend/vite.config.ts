@@ -4,6 +4,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig, loadEnv, type ProxyOptions } from "vite";
+import mkcert from "vite-plugin-mkcert";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -12,6 +13,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       devtools(),
+      mkcert(),
       tanstackRouter({
         autoCodeSplitting: true,
         routeFileIgnorePattern: "\\.test\\.(ts|tsx)$",
@@ -39,19 +41,18 @@ export default defineConfig(({ mode }) => {
 function getDevProxy(
   env: Record<string, string>,
 ): Record<string, ProxyOptions> | undefined {
-  const resourceManagerUrl =
-    env["BFF_VITE_DEV_PROXY_TARGET_URLURL"] ?? "/signup-manager";
+  const signupManagerUrl = env["SIGNUP_MANAGER_URL"] ?? "/signup-manager";
   const devProxyTarget = env["VITE_DEV_PROXY_TARGET_URL"];
 
-  const resourceManagerPath = new URL(resourceManagerUrl, "http://localhost")
+  const signupManagerPath = new URL(signupManagerUrl, "http://localhost")
     .pathname;
 
-  return devProxyTarget && resourceManagerPath.startsWith("/")
+  return devProxyTarget && signupManagerPath.startsWith("/")
     ? {
-        [resourceManagerPath]: {
+        [signupManagerPath]: {
           changeOrigin: true,
           rewrite: (path) =>
-            path.replace(new RegExp(`^${resourceManagerPath}`), ""),
+            path.replace(new RegExp(`^${signupManagerPath}`), ""),
           target: devProxyTarget,
         } satisfies ProxyOptions,
       }

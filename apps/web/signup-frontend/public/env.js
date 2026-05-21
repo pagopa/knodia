@@ -1,3 +1,3 @@
 window.env = {
-  SIGNUP_MANAGER_URL: "http://localhost:5175/bff",
+  SIGNUP_MANAGER_URL: "http://localhost:5176/signup-manager",
 };
