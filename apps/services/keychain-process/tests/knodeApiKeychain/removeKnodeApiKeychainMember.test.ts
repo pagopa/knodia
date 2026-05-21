@@ -132,4 +132,18 @@ describe("DELETE /knodeApiKeychains/:knodeApiKeychainId/members/:userId (removeK
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid Knode API keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!).delete(
+      `/knodeApiKeychains/not-a-uuid/members/${memberId}`,
+    );
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 for invalid user id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!).delete(
+      `/knodeApiKeychains/${mockKnodeApiKeychain.id}/members/not-a-uuid`,
+    );
+    expect(response.statusCode).toBe(400);
+  });
 });

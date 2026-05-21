@@ -254,4 +254,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
       expect(response.statusCode).toBe(403);
     },
   );
+
+  it("should return 400 for invalid consumer keychain id format", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/consumerKeychains/not-a-uuid/members`)
+      .body({ userId: "10000000-1000-1000-8000-000000000011" });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
