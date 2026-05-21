@@ -3,12 +3,10 @@ import { signalHubSignal } from "@knodia/db-signal-hub";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
+import { rotatingFiscalCodes } from "../../src/data/rotatingAddresses.ts";
 import { makeSignalIdAllocator } from "../../src/signalHub/emitter/counter.ts";
 import { emitTransition } from "../../src/signalHub/emitter/emit.ts";
-import {
-  rotatingFiscalCodes,
-  SIGNAL_HUB_MOCK_ESERVICE_ID,
-} from "../../src/signalHub/mockup.ts";
+import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
 import { phaseAt } from "../../src/signalHub/phase.ts";
 import { pseudonymize } from "../../src/signalHub/pseudonymize.ts";
 import {

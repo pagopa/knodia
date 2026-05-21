@@ -3,7 +3,7 @@ import { signalHubSignal } from "@knodia/db-signal-hub";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { randomUUID } from "node:crypto";
 
-import { rotatingFiscalCodes } from "../mockup.ts";
+import { rotatingFiscalCodes } from "../../data/rotatingAddresses.ts";
 import { phaseAt } from "../phase.ts";
 import { pseudonymize } from "../pseudonymize.ts";
 import {

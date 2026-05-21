@@ -12,11 +12,11 @@ import {
   type API_PersonalInformation,
   type API_Residence,
 } from "../models/api.ts";
-import { rotatingFiscalCodes } from "../signalHub/mockup.ts";
 import {
   computePeriodId,
   type SignalHubSeedConfig,
 } from "../signalHub/rotation.ts";
+import { rotatingAddresses } from "./rotatingAddresses.ts";
 
 const CODICE_FISCALE_SCHEME = {
   schemeName: "Codice Fiscale",
@@ -28,10 +28,6 @@ const NaturalPersonRow = API_NaturalPerson.omit({ identifier: true });
 const NaturalPersonsFile = z.record(API_Notation, NaturalPersonRow);
 const ContactPointsFile = z.record(API_Notation, API_ContactPoint);
 const AddressesFile = z.record(API_Notation, API_Address);
-const RotatingAddressesFile = z.record(
-  API_Notation,
-  z.array(API_Address.nullable()).min(1),
-);
 
 const dataDir = dirname(fileURLToPath(import.meta.url));
 const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
@@ -40,29 +36,6 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 const NATURAL_PERSONS = readJson("naturalPersons.json", NaturalPersonsFile);
 const CONTACT_POINTS = readJson("contactPoints.json", ContactPointsFile);
 const ADDRESSES = readJson("addresses.json", AddressesFile);
-const ROTATING_ADDRESSES = readJson(
-  "rotatingAddresses.json",
-  RotatingAddressesFile,
-);
-
-// Drift guard: the in-process emitter writes signals for the fiscal codes in
-// `rotatingFiscalCodes`; mock-eservice rotates `/residence` for the keys of
-// `rotatingAddresses.json`. If these diverge, a consumer can't correlate
-// signals back to producer data. Called from `buildApp` so it fails loud at
-// boot but doesn't fire on every import (e.g. unrelated test files).
-export function assertRotatingFiscalCodesAreInSync(): void {
-  const expected = [...rotatingFiscalCodes].sort();
-  const actual = Object.keys(ROTATING_ADDRESSES).sort();
-  if (
-    expected.length !== actual.length ||
-    expected.some((fc, i) => fc !== actual[i])
-  ) {
-    throw new Error(
-      `rotatingAddresses.json keys diverge from signalHub/mockup rotatingFiscalCodes. ` +
-        `expected: [${expected.join(", ")}]; actual: [${actual.join(", ")}]`,
-    );
-  }
-}
 
 export function findDigitalContact(
   notation: API_Notation,
@@ -100,7 +73,7 @@ export function findResidence(
     return undefined;
   }
 
-  const cycle = ROTATING_ADDRESSES[notation];
+  const cycle = rotatingAddresses[notation];
   if (cycle) {
     const periodId = computePeriodId(now, config);
     const address = cycle.at(periodId % cycle.length);

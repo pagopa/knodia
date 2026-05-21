@@ -15,12 +15,3 @@ export const SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID =
 export const SIGNAL_HUB_MOCK_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000004",
 );
-
-// Fiscal codes whose data rotates per period on the Mockup 03 e-service.
-// `rotatingAddresses.json` keys MUST match this list; the producer asserts
-// this at boot so any drift fails loud.
-export const rotatingFiscalCodes = [
-  "RMNLNR03H12H501Z",
-  "CNTLCC89E26L378K",
-  "RSSGRG65D48G702L",
-] as const;
