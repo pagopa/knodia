@@ -10,7 +10,10 @@ import { DialogTrigger } from "react-aria-components";
 import { ConsumerKeychainsTable } from "@/features/keychain/components/ConsumerKeychainsTable";
 import { client } from "@/libs/axios";
 
-import { purposeLinkedConsumerKeychainsQueryKey } from "../../services/queries";
+import {
+  consumerPurposesQueryKey,
+  purposeLinkedConsumerKeychainsQueryKey,
+} from "../../services/queries";
 
 interface LinkedConsumerKeychainsTableProps {
   canManagePurpose: boolean;
@@ -78,6 +81,9 @@ function UnlinkConsumerKeychainAction({
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: purposeLinkedConsumerKeychainsQueryKey(),
+          });
+          queryClient.invalidateQueries({
+            queryKey: consumerPurposesQueryKey(),
           });
         },
       },
