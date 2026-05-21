@@ -1,8 +1,5 @@
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
-import {
-  createFastifyApp,
-  requireCorrelationIdHeaderPlugin,
-} from "@knodia/fastify-zod-api-commons/fastify";
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -51,12 +48,10 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
     signupService: signupServiceBuilder(),
   });
 
-  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
-  // hooks are scoped to this context only.
+  // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
-    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
   });
 
   return app;
