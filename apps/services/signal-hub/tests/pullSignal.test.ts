@@ -3,7 +3,7 @@ import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { type Agreement, AgreementState } from "@knodia/agreement-models";
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   generateId,
   KnodeId,
@@ -34,12 +34,15 @@ import {
 } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
-
 const producerId = TEST_ORGANIZATION_ID;
+const consumerId = generateExternalId<OrganizationId>();
+
+const allowedTestTokens: TestToken[] = [
+  { organizationId: consumerId, type: "knode-api" },
+];
 
 const consumer = {
-  id: unsafeBrandExternalId<OrganizationId>(TEST_ORGANIZATION_ID),
+  id: consumerId,
   knodeId: KnodeId.enum.Orion,
 };
 

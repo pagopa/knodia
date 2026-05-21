@@ -16,7 +16,7 @@ import type { API_Signal } from "../src/models/api.ts";
 import { toSignalType } from "../src/models/apiConverter.ts";
 import {
   eserviceNotActive,
-  eserviceNotFoundForProducer,
+  eserviceNotFound,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
   signalAlreadyExists,
@@ -90,10 +90,7 @@ describe("POST /signals (pushSignal)", () => {
 
     const response = await pushSignal();
 
-    const error = eserviceNotFoundForProducer(
-      otherProducerEservice.id,
-      otherProducerEservice.producerId,
-    );
+    const error = eserviceNotFound(otherProducerEservice.id);
 
     expect(response.statusCode).toBe(404);
     expect(response.json<API_Problem>().title).toEqual(error.title);

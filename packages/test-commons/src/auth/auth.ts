@@ -68,7 +68,7 @@ export type TestToken =
   | {
       keychainId?: KnodeApiKeychainId;
       keychainKnodeId?: KnodeId;
-      organizationId?: OrganizationId;
+      organizationId?: ExternalId<OrganizationId> | OrganizationId;
       organizationKnodeId?: KnodeId;
       type: "knode-api";
     }
@@ -165,7 +165,7 @@ export function getTestKnodeApiTokenClaims(
   props: {
     keychainId?: KnodeApiKeychainId;
     keychainKnodeId?: KnodeId;
-    organizationId?: OrganizationId;
+    organizationId?: ExternalId<OrganizationId> | OrganizationId;
     organizationKnodeId?: KnodeId;
   } = {},
 ): KnodeApiAccessTokenClaims {

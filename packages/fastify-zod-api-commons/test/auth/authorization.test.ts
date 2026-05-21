@@ -161,12 +161,28 @@ describe("validateAuthorization", () => {
   });
 
   describe("knode-api token", () => {
-    it("succeeds when knode-api is admitted", () => {
+    it("succeeds when knode-api is admitted with consumer scope", () => {
       const ctx = buildCtx(knodeApiAuthData);
 
-      const result = validateAuthorization(ctx, [{ tokenType: "knode-api" }]);
-      const resultAuthData: KnodeApiAuthData = result.authData;
-      // ^ Type narrowing check: result.authData is KnodeApiAuthData
+      const result = validateAuthorization(ctx, [
+        { scope: "consumer", tokenType: "knode-api" },
+      ]);
+      const resultAuthData: KnodeApiAuthData<"consumer"> = result.authData;
+      // ^ Type narrowing check: result.authData is KnodeApiAuthData<"consumer">,
+      //   which means organization.id is ExternalId<OrganizationId> (not OrganizationId)
+      expect(resultAuthData).toEqual(knodeApiAuthData);
+      expect(result.authData.tokenType).toBe("knode-api");
+    });
+
+    it("succeeds when knode-api is admitted with producer scope", () => {
+      const ctx = buildCtx(knodeApiAuthData);
+
+      const result = validateAuthorization(ctx, [
+        { scope: "producer", tokenType: "knode-api" },
+      ]);
+      const resultAuthData: KnodeApiAuthData<"producer"> = result.authData;
+      // ^ Type narrowing check: result.authData is KnodeApiAuthData<"producer">,
+      //   which means organization.id is OrganizationId (not ExternalId<OrganizationId>)
       expect(resultAuthData).toEqual(knodeApiAuthData);
       expect(result.authData.tokenType).toBe("knode-api");
     });

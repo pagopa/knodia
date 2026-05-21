@@ -1,5 +1,6 @@
 import type {
   ExternalUISessionScope,
+  KnodeApiScope,
   KnodiaAuthTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -49,13 +50,13 @@ export interface InternalAuthData {
   tokenType: "internal";
 }
 
-export interface KnodeApiAuthData {
+export interface KnodeApiAuthData<Scope extends KnodeApiScope = KnodeApiScope> {
   keychain: {
     id: KnodeApiKeychainId;
     knodeId: KnodeId;
   };
   organization: {
-    id: OrganizationId;
+    id: KnodeApiOrganizationIdByScope[Scope];
     knodeId: KnodeId;
   };
   tokenType: "knode-api";
@@ -66,6 +67,11 @@ export interface UISessionAuthData {
   tokenType: "ui-session";
   userId: UserId;
   userRoles: NonEmptyArray<UserRole>;
+}
+
+interface KnodeApiOrganizationIdByScope {
+  consumer: ExternalId<OrganizationId>;
+  producer: OrganizationId;
 }
 
 export function extractAuthDataFromToken(
