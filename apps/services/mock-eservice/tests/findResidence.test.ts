@@ -5,7 +5,6 @@ import { API_Notation } from "../src/models/api.ts";
 import { type SignalHubSeedConfig } from "../src/utils/rotation.ts";
 
 const ROTATING_NOTATION = API_Notation.parse("RMNLNR03H12H501Z");
-// Belongs to the static dataset (covered by addresses.json).
 const STATIC_NOTATION = API_Notation.parse("BNCFNC67D61H703B");
 const UNKNOWN_NOTATION = API_Notation.parse("AAAAAA00A00A000A");
 
@@ -15,7 +14,6 @@ const CONFIG: SignalHubSeedConfig = {
   startDateMs: 0,
 };
 
-// At startDateMs=0 and expireSeconds=30, periodId = floor(now / 30000).
 const nowAtPeriod = (periodId: number) =>
   periodId * CONFIG.expireSeconds * 1000;
 
@@ -47,11 +45,9 @@ describe("findResidence", () => {
     expect(responses[4]).toBeDefined();
     expect(responses[5]).toBeUndefined();
 
-    // Cycle repeats every 3 periods.
     expect(responses[0]?.address).toEqual(responses[3]?.address);
     expect(responses[1]?.address).toEqual(responses[4]?.address);
 
-    // CREATE and UPDATE addresses differ.
     expect(responses[0]?.address).not.toEqual(responses[1]?.address);
   });
 });
