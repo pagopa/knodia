@@ -1,11 +1,11 @@
-import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
+import type { EserviceId } from "@knodia/common-models/ids";
 import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { SignalType } from "@knodia/signal-hub-models";
 
-import { ExternalResource } from "@knodia/common-models/externalResource";
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
@@ -48,7 +48,7 @@ export function signalHubServiceBuilder(
         readmodelService,
       );
       await assertConsumerAuthorizedToPullSignals(
-        ExternalResource<OrganizationId>().parse(organization),
+        toExternalResource(organization.id, organization.knodeId),
         eserviceId,
         readmodelService,
       );

@@ -13,7 +13,7 @@ import {
   API_PullResponse,
   API_PullSignalsQueryParams,
   API_PushResponse,
-  API_PushSeed,
+  API_Signal,
 } from "../models/api.ts";
 import { toAPI_PullResponse, toSignalType } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -57,7 +57,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_PushSeed,
+      body: API_Signal,
       description: "Push a signal for an E-service",
       operationId: "pushSignal",
       response: {
@@ -87,13 +87,16 @@ export const signalHubRouter: FastifyPluginAsyncZod<
       } = ctx;
 
       const { eserviceId } = req.params;
-      const { signalId, size } = req.query;
+      const { lastSignalId: signalId, size } = req.query;
 
       logger.info(
+        {
+          request: { query: req.query },
+        },
         `Pull signals request received for E-service ${eserviceId} from organization ${organization.id} (Knode ${organization.knodeId})`,
       );
 
-      const { lastSignalId, nextSignalId, signals } =
+      const { hasMoreSignals, lastSignalId, signals } =
         await signalHubService.pullSignals(
           {
             eserviceId,
@@ -105,11 +108,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
 
       const response = toAPI_PullResponse(lastSignalId, signals);
 
-      if (nextSignalId) {
-        res.status(206).send(response);
-      }
-
-      res.status(200).send(response);
+      res.status(hasMoreSignals ? 206 : 200).send(response);
     },
     method: "GET",
     schema: {

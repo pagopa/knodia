@@ -21,11 +21,7 @@ import {
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import {
-  type API_PullResponse,
-  type API_PushSeed,
-  type API_Signal,
-} from "../src/models/api.ts";
+import { type API_PullResponse, type API_Signal } from "../src/models/api.ts";
 import {
   consumerNotAuthorizedToPullSignals,
   eserviceNotActive,
@@ -91,7 +87,7 @@ const seedData = async ({
   ]);
 };
 
-const pushSignal = (body: API_PushSeed) =>
+const pushSignal = (body: API_Signal) =>
   injectAppRequest(allowedTestTokens[0]!).post("/signals").body(body);
 
 describe("GET /signals/:eserviceId (pullSignal)", () => {
@@ -107,7 +103,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
   it("should return 200 with signals when signals have been pushed", async () => {
     await seedData();
 
-    const signal: API_PushSeed = {
+    const signal: API_Signal = {
       eserviceId: eservice.id,
       objectId: "test-object-id",
       objectType: "test-object-type",

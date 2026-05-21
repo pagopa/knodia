@@ -9,7 +9,7 @@ export const Signal = z.strictObject({
   eserviceId: EserviceId,
   objectId: z.string(),
   objectType: z.string(),
-  signalId: z.number(),
+  signalId: z.int().positive(),
   signalType: SignalType,
 });
 export type Signal = z.infer<typeof Signal>;

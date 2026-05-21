@@ -41,7 +41,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             eq(readmodelAgreement.state, AgreementState.enum.Active),
             eq(readmodelPurpose.state, PurposeState.enum.Active),
           ),
-        );
+        )
+        .limit(1);
 
       return queryRes.length > 0;
     },

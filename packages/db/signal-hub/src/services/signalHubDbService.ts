@@ -30,11 +30,13 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
         .orderBy(signalHubSignal.signalId)
         .limit(size + 1);
 
-      const nextSignalId =
-        signals.length > size ? signals.pop()?.signalId : undefined;
-      const lastSignalId = signals.at(-1)?.signalId;
-
-      return { lastSignalId, nextSignalId, signals: signals.map(toSignal) };
+      const hasMoreSignals = signals.length > size;
+      const page = hasMoreSignals ? signals.slice(0, size) : signals;
+      return {
+        hasMoreSignals,
+        lastSignalId: page.at(-1)?.signalId,
+        signals: page.map(toSignal),
+      };
     },
     async insertSignal(signal: NewSignalHubSignal): Promise<void> {
       await db.insert(signalHubSignal).values(signal);

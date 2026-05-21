@@ -11,7 +11,7 @@ import {
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_PushSeed } from "../src/models/api.ts";
+import type { API_Signal } from "../src/models/api.ts";
 
 import { toSignalType } from "../src/models/apiConverter.ts";
 import {
@@ -34,7 +34,7 @@ const eservice = {
   producerId,
 };
 
-const defaultBody: API_PushSeed = {
+const defaultBody: API_Signal = {
   eserviceId: eservice.id,
   objectId: "test-object-id",
   objectType: "test-object-type",
@@ -42,7 +42,7 @@ const defaultBody: API_PushSeed = {
   signalType: "CREATE",
 };
 
-const pushSignal = (body: API_PushSeed = defaultBody) =>
+const pushSignal = (body: API_Signal = defaultBody) =>
   injectAppRequest(allowedTestTokens[0]!).post("/signals").body(body);
 
 const seedEservice = (inputEservice = eservice) =>
