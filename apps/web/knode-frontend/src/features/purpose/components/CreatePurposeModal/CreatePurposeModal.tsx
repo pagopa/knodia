@@ -4,7 +4,7 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
 import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
-import { Fragment, useEffect, useMemo, useRef } from "react";
+import { Fragment, useMemo, useRef } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -12,6 +12,7 @@ import {
   type StepConfig,
   StepsProvider,
   useCurrentStep,
+  useScrollToTopOnStepChange,
   useStepsContext,
 } from "@/contexts/steps";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
@@ -146,9 +147,7 @@ function ModalContent() {
   const { content } = useCurrentStep();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    containerRef.current?.parentElement?.scrollTo?.(0, 0);
-  }, [currentStepIndex]);
+  useScrollToTopOnStepChange(containerRef);
 
   return (
     <div
