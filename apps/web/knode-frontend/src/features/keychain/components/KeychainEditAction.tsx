@@ -6,7 +6,7 @@ import { DialogTrigger } from "react-aria-components";
 
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useEditKeychain } from "../hooks/useEditKeychain";
 import {
@@ -14,22 +14,16 @@ import {
   type EditKeychainFormValues,
 } from "../models/keychain-forms";
 
-interface EditKeychainModalProps {
+type EditKeychainModalProps = KeychainEditActionProps & {
   isOpen: boolean;
-  keychain: bffApi.KeychainDetails;
   onClose: () => void;
-  type: KeychainType;
-}
+};
 
-interface KeychainEditActionProps {
+type KeychainEditActionProps = SupportedKeychain & {
   keychain: bffApi.KeychainDetails;
-  type: KeychainType;
-}
+};
 
-export function KeychainEditAction({
-  keychain,
-  type,
-}: KeychainEditActionProps) {
+export function KeychainEditAction(props: KeychainEditActionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,32 +37,26 @@ export function KeychainEditAction({
         Edit
       </Button>
       <EditKeychainModal
+        {...props}
         isOpen={isOpen}
-        keychain={keychain}
         onClose={() => setIsOpen(false)}
-        type={type}
       />
     </DialogTrigger>
   );
 }
 
-function EditKeychainModal({
-  isOpen,
-  keychain,
-  onClose,
-  type,
-}: EditKeychainModalProps) {
-  const { isError, isPending, mutate } = useEditKeychain({
-    keychainId: keychain.id,
-    onSuccess: onClose,
-    type,
-  });
+function EditKeychainModal(props: EditKeychainModalProps) {
+  const { isOpen, keychain, onClose } = props;
+  const { isError, isPending, mutate } = useEditKeychain(props);
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
-    mutate({
-      description: seed.description ? { en: seed.description } : null,
-      name: { en: seed.name },
-    });
+    mutate(
+      {
+        description: seed.description ? { en: seed.description } : null,
+        name: { en: seed.name },
+      },
+      { onSuccess: onClose },
+    );
   }
 
   const form = useForm({

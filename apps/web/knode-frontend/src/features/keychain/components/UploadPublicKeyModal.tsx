@@ -1,20 +1,11 @@
-import type { bffApi } from "@knodia/bff-client";
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
-
-import {
-  getConsumerKeychainKeysQueryKey,
-  uploadConsumerKeychainKeyMutation,
-} from "@knodia/bff-client/tanstack-query";
 import { Banner, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
+import { useUploadKeychainKey } from "../hooks/useKeychainMutations";
 import {
   publicKeyUploadFormDefaultValues,
   publicKeyUploadFormSchema,
@@ -25,71 +16,29 @@ interface Props {
   hasReachedMaxKeys: boolean;
   isKeychainMember: boolean;
   isOpen: boolean;
-  keychainId: ConsumerKeychainId;
+  keychain: SupportedKeychain;
   onClose: () => void;
-  type: KeychainType;
 }
 
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
   isKeychainMember,
   isOpen,
-  keychainId,
+  keychain,
   onClose,
-  type,
 }: Props) {
-  const queryClient = useQueryClient();
-
   function handleClose() {
     form.reset();
     onClose();
   }
 
-  const {
-    isError,
-    isPending,
-    mutate: uploadConsumerKeychainKey,
-  } = useMutation({
-    ...uploadConsumerKeychainKeyMutation({
-      client,
-    }),
-  });
+  const { isError, isPending, mutate } = useUploadKeychainKey(keychain);
 
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
-    const body: bffApi.UploadConsumerKeychainKeyData["body"] = {
-      encodedPem: btoa(seed.pem),
-      name: { en: seed.name },
-    };
-
-    match(type)
-      .with("consumption", () =>
-        uploadConsumerKeychainKey(
-          {
-            body,
-            path: { consumerKeychainId: keychainId },
-          },
-          {
-            onSuccess() {
-              queryClient.invalidateQueries({
-                queryKey: getConsumerKeychainKeysQueryKey({
-                  client,
-                  path: { consumerKeychainId: keychainId },
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  query: undefined!,
-                }),
-              });
-              handleClose();
-            },
-          },
-        ),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
+    mutate(
+      { encodedPem: btoa(seed.pem), name: { en: seed.name } },
+      { onSuccess: handleClose },
+    );
   }
 
   const form = useForm({

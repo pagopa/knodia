@@ -5,65 +5,44 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainsQueryKey,
   knodeApiKeychainsQueryKey,
 } from "../services/queries";
 
-interface UseDeleteKeychainParams {
-  keychainId: string;
-  type: KeychainType;
-}
-
-export function useDeleteKeychain({
-  keychainId,
-  type,
-}: UseDeleteKeychainParams) {
+export function useDeleteKeychain(keychain: SupportedKeychain) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () =>
-      match(type)
-        .with("consumption", () =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.deleteConsumerKeychain({
             client,
             path: { consumerKeychainId: keychainId },
           }),
         )
-        .with("api", () =>
+        .with({ type: "api" }, ({ keychainId }) =>
           bffApi.deleteKnodeApiKeychain({
             client,
             path: { knodeApiKeychainId: keychainId },
           }),
         )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
         .exhaustive(),
     onSuccess: () => {
-      match(type)
-        .with("consumption", () => {
-          queryClient.invalidateQueries({
-            queryKey: consumerKeychainsQueryKey(),
-          });
-          navigate({
-            search: { offset: 0, type: "consumption" },
-            to: "/keychains",
-          });
-        })
-        .with("api", () => {
-          queryClient.invalidateQueries({
-            queryKey: knodeApiKeychainsQueryKey(),
-          });
-          navigate({ search: { offset: 0, type: "api" }, to: "/keychains" });
-        })
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
-        .exhaustive();
+      queryClient.invalidateQueries({
+        queryKey: match(keychain)
+          .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
+          .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+          .exhaustive(),
+      });
+      navigate({
+        search: { offset: 0, type: keychain.type },
+        to: "/keychains",
+      });
     },
   });
 }

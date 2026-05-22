@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { activateAgreement, addConsumerKeychainMember, archiveAgreementByConsumer, archiveProducerEservice, archivePurposeByConsumer, createAgreementConsumerActivationMagicLink, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createEserviceFromTemplate, createExternalSession, createKnodeApiKeychain, createSession, deleteConsumerKeychain, deleteKnodeApiKeychain, downloadConsumerKeychainKey, downloadEserviceTemplateInterface, getAgreementActivationDetails, getConsumerAgreementCounters, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychainOptions, getConsumerKeychainPurposeLink, getConsumerKeychainPurposes, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getEserviceTemplate, getEserviceTemplates, getKnodeApiKeychainDetails, getKnodeApiKeychains, getOperators, getPendingConsumerAgreements, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getPurposeTemplate, getPurposeTemplates, getSessionOrganization, getStatus, linkPurposeToConsumerKeychain, logout, type Options, reactivateAgreementByConsumer, reactivateAgreementByProducer, reactivateEservice, reactivatePurposeByConsumer, reactivatePurposeByProducer, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, suspendAgreementByConsumer, suspendAgreementByProducer, suspendEservice, suspendPurposeByConsumer, suspendPurposeByProducer, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, updateKnodeApiKeychain, updateProducerEservice, uploadConsumerKeychainKey } from '../sdk.gen.ts';
-import type { ActivateAgreementData, ActivateAgreementError, ActivateAgreementResponse, AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, ArchiveAgreementByConsumerData, ArchiveAgreementByConsumerError, ArchiveAgreementByConsumerResponse, ArchiveProducerEserviceData, ArchiveProducerEserviceError, ArchiveProducerEserviceResponse, ArchivePurposeByConsumerData, ArchivePurposeByConsumerError, ArchivePurposeByConsumerResponse, CreateAgreementConsumerActivationMagicLinkData, CreateAgreementConsumerActivationMagicLinkError, CreateAgreementConsumerActivationMagicLinkResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceFromTemplateData, CreateEserviceFromTemplateError, CreateEserviceFromTemplateResponse, CreateEserviceResponse, CreateExternalSessionData, CreateExternalSessionError, CreateExternalSessionResponse, CreateKnodeApiKeychainData, CreateKnodeApiKeychainError, CreateKnodeApiKeychainResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DeleteKnodeApiKeychainData, DeleteKnodeApiKeychainError, DeleteKnodeApiKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, DownloadEserviceTemplateInterfaceData, DownloadEserviceTemplateInterfaceError, DownloadEserviceTemplateInterfaceResponse, GetAgreementActivationDetailsData, GetAgreementActivationDetailsError, GetAgreementActivationDetailsResponse, GetConsumerAgreementCountersData, GetConsumerAgreementCountersError, GetConsumerAgreementCountersResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsError, GetConsumerKeychainOptionsResponse, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkError, GetConsumerKeychainPurposeLinkResponse, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesError, GetConsumerKeychainPurposesResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetEserviceTemplateData, GetEserviceTemplateError, GetEserviceTemplateResponse, GetEserviceTemplatesData, GetEserviceTemplatesError, GetEserviceTemplatesResponse, GetKnodeApiKeychainDetailsData, GetKnodeApiKeychainDetailsError, GetKnodeApiKeychainDetailsResponse, GetKnodeApiKeychainsData, GetKnodeApiKeychainsError, GetKnodeApiKeychainsResponse, GetOperatorsData, GetOperatorsError, GetOperatorsResponse, GetPendingConsumerAgreementsData, GetPendingConsumerAgreementsError, GetPendingConsumerAgreementsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetPurposeTemplateData, GetPurposeTemplateError, GetPurposeTemplateResponse, GetPurposeTemplatesData, GetPurposeTemplatesError, GetPurposeTemplatesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutError, LogoutResponse, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerError, ReactivateAgreementByConsumerResponse, ReactivateAgreementByProducerData, ReactivateAgreementByProducerError, ReactivateAgreementByProducerResponse, ReactivateEserviceData, ReactivateEserviceError, ReactivateEserviceResponse, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerError, ReactivatePurposeByConsumerResponse, ReactivatePurposeByProducerData, ReactivatePurposeByProducerError, ReactivatePurposeByProducerResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, SuspendAgreementByConsumerData, SuspendAgreementByConsumerError, SuspendAgreementByConsumerResponse, SuspendAgreementByProducerData, SuspendAgreementByProducerError, SuspendAgreementByProducerResponse, SuspendEserviceData, SuspendEserviceError, SuspendEserviceResponse, SuspendPurposeByConsumerData, SuspendPurposeByConsumerError, SuspendPurposeByConsumerResponse, SuspendPurposeByProducerData, SuspendPurposeByProducerError, SuspendPurposeByProducerResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UpdateKnodeApiKeychainData, UpdateKnodeApiKeychainError, UpdateKnodeApiKeychainResponse, UpdateProducerEserviceData, UpdateProducerEserviceError, UpdateProducerEserviceResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse } from '../types.gen.ts';
+import { activateAgreement, addConsumerKeychainMember, addKnodeApiKeychainMember, archiveAgreementByConsumer, archiveProducerEservice, archivePurposeByConsumer, createAgreementConsumerActivationMagicLink, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createEserviceFromTemplate, createExternalSession, createKnodeApiKeychain, createSession, deleteConsumerKeychain, deleteKnodeApiKeychain, downloadConsumerKeychainKey, downloadEserviceTemplateInterface, downloadKnodeApiKeychainKey, getAgreementActivationDetails, getConsumerAgreementCounters, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychainOptions, getConsumerKeychainPurposeLink, getConsumerKeychainPurposes, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getEserviceTemplate, getEserviceTemplates, getKnodeApiKeychainDetails, getKnodeApiKeychainKeys, getKnodeApiKeychainMembers, getKnodeApiKeychainMembership, getKnodeApiKeychains, getOperators, getPendingConsumerAgreements, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getPurposeTemplate, getPurposeTemplates, getSessionOrganization, getStatus, linkPurposeToConsumerKeychain, logout, type Options, reactivateAgreementByConsumer, reactivateAgreementByProducer, reactivateEservice, reactivatePurposeByConsumer, reactivatePurposeByProducer, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, removeKnodeApiKeychainKey, removeKnodeApiKeychainMember, suspendAgreementByConsumer, suspendAgreementByProducer, suspendEservice, suspendPurposeByConsumer, suspendPurposeByProducer, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, updateKnodeApiKeychain, updateProducerEservice, uploadConsumerKeychainKey, uploadKnodeApiKeychainKey } from '../sdk.gen.ts';
+import type { ActivateAgreementData, ActivateAgreementError, ActivateAgreementResponse, AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, AddKnodeApiKeychainMemberData, AddKnodeApiKeychainMemberError, AddKnodeApiKeychainMemberResponse, ArchiveAgreementByConsumerData, ArchiveAgreementByConsumerError, ArchiveAgreementByConsumerResponse, ArchiveProducerEserviceData, ArchiveProducerEserviceError, ArchiveProducerEserviceResponse, ArchivePurposeByConsumerData, ArchivePurposeByConsumerError, ArchivePurposeByConsumerResponse, CreateAgreementConsumerActivationMagicLinkData, CreateAgreementConsumerActivationMagicLinkError, CreateAgreementConsumerActivationMagicLinkResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceFromTemplateData, CreateEserviceFromTemplateError, CreateEserviceFromTemplateResponse, CreateEserviceResponse, CreateExternalSessionData, CreateExternalSessionError, CreateExternalSessionResponse, CreateKnodeApiKeychainData, CreateKnodeApiKeychainError, CreateKnodeApiKeychainResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DeleteKnodeApiKeychainData, DeleteKnodeApiKeychainError, DeleteKnodeApiKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, DownloadEserviceTemplateInterfaceData, DownloadEserviceTemplateInterfaceError, DownloadEserviceTemplateInterfaceResponse, DownloadKnodeApiKeychainKeyData, DownloadKnodeApiKeychainKeyError, DownloadKnodeApiKeychainKeyResponse, GetAgreementActivationDetailsData, GetAgreementActivationDetailsError, GetAgreementActivationDetailsResponse, GetConsumerAgreementCountersData, GetConsumerAgreementCountersError, GetConsumerAgreementCountersResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsError, GetConsumerKeychainOptionsResponse, GetConsumerKeychainPurposeLinkData, GetConsumerKeychainPurposeLinkError, GetConsumerKeychainPurposeLinkResponse, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesError, GetConsumerKeychainPurposesResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetEserviceTemplateData, GetEserviceTemplateError, GetEserviceTemplateResponse, GetEserviceTemplatesData, GetEserviceTemplatesError, GetEserviceTemplatesResponse, GetKnodeApiKeychainDetailsData, GetKnodeApiKeychainDetailsError, GetKnodeApiKeychainDetailsResponse, GetKnodeApiKeychainKeysData, GetKnodeApiKeychainKeysError, GetKnodeApiKeychainKeysResponse, GetKnodeApiKeychainMembersData, GetKnodeApiKeychainMembersError, GetKnodeApiKeychainMembershipData, GetKnodeApiKeychainMembershipError, GetKnodeApiKeychainMembershipResponse, GetKnodeApiKeychainMembersResponse, GetKnodeApiKeychainsData, GetKnodeApiKeychainsError, GetKnodeApiKeychainsResponse, GetOperatorsData, GetOperatorsError, GetOperatorsResponse, GetPendingConsumerAgreementsData, GetPendingConsumerAgreementsError, GetPendingConsumerAgreementsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetPurposeTemplateData, GetPurposeTemplateError, GetPurposeTemplateResponse, GetPurposeTemplatesData, GetPurposeTemplatesError, GetPurposeTemplatesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutError, LogoutResponse, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerError, ReactivateAgreementByConsumerResponse, ReactivateAgreementByProducerData, ReactivateAgreementByProducerError, ReactivateAgreementByProducerResponse, ReactivateEserviceData, ReactivateEserviceError, ReactivateEserviceResponse, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerError, ReactivatePurposeByConsumerResponse, ReactivatePurposeByProducerData, ReactivatePurposeByProducerError, ReactivatePurposeByProducerResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, RemoveKnodeApiKeychainKeyData, RemoveKnodeApiKeychainKeyError, RemoveKnodeApiKeychainKeyResponse, RemoveKnodeApiKeychainMemberData, RemoveKnodeApiKeychainMemberError, RemoveKnodeApiKeychainMemberResponse, SuspendAgreementByConsumerData, SuspendAgreementByConsumerError, SuspendAgreementByConsumerResponse, SuspendAgreementByProducerData, SuspendAgreementByProducerError, SuspendAgreementByProducerResponse, SuspendEserviceData, SuspendEserviceError, SuspendEserviceResponse, SuspendPurposeByConsumerData, SuspendPurposeByConsumerError, SuspendPurposeByConsumerResponse, SuspendPurposeByProducerData, SuspendPurposeByProducerError, SuspendPurposeByProducerResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UpdateKnodeApiKeychainData, UpdateKnodeApiKeychainError, UpdateKnodeApiKeychainResponse, UpdateProducerEserviceData, UpdateProducerEserviceError, UpdateProducerEserviceResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse, UploadKnodeApiKeychainKeyData, UploadKnodeApiKeychainKeyError, UploadKnodeApiKeychainKeyResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -995,6 +995,200 @@ export const updateKnodeApiKeychainMutation = (options?: Partial<Options<UpdateK
     };
     return mutationOptions;
 };
+
+export const getKnodeApiKeychainKeysQueryKey = (options: Options<GetKnodeApiKeychainKeysData>) => createQueryKey('getKnodeApiKeychainKeys', options);
+
+/**
+ * Retrieve keys of a Knode API Keychain
+ */
+export const getKnodeApiKeychainKeysOptions = (options: Options<GetKnodeApiKeychainKeysData>) => queryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, GetKnodeApiKeychainKeysResponse, ReturnType<typeof getKnodeApiKeychainKeysQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getKnodeApiKeychainKeys({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getKnodeApiKeychainKeysQueryKey(options)
+});
+
+export const getKnodeApiKeychainKeysInfiniteQueryKey = (options: Options<GetKnodeApiKeychainKeysData>): QueryKey<Options<GetKnodeApiKeychainKeysData>> => createQueryKey('getKnodeApiKeychainKeys', options, true);
+
+/**
+ * Retrieve keys of a Knode API Keychain
+ */
+export const getKnodeApiKeychainKeysInfiniteOptions = (options: Options<GetKnodeApiKeychainKeysData>) => infiniteQueryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, InfiniteData<GetKnodeApiKeychainKeysResponse>, QueryKey<Options<GetKnodeApiKeychainKeysData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getKnodeApiKeychainKeys({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getKnodeApiKeychainKeysInfiniteQueryKey(options)
+});
+
+/**
+ * Upload a key to a Knode API Keychain
+ */
+export const uploadKnodeApiKeychainKeyMutation = (options?: Partial<Options<UploadKnodeApiKeychainKeyData>>): UseMutationOptions<UploadKnodeApiKeychainKeyResponse, AxiosError<UploadKnodeApiKeychainKeyError>, Options<UploadKnodeApiKeychainKeyData>> => {
+    const mutationOptions: UseMutationOptions<UploadKnodeApiKeychainKeyResponse, AxiosError<UploadKnodeApiKeychainKeyError>, Options<UploadKnodeApiKeychainKeyData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await uploadKnodeApiKeychainKey({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Remove a key from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainKeyMutation = (options?: Partial<Options<RemoveKnodeApiKeychainKeyData>>): UseMutationOptions<RemoveKnodeApiKeychainKeyResponse, AxiosError<RemoveKnodeApiKeychainKeyError>, Options<RemoveKnodeApiKeychainKeyData>> => {
+    const mutationOptions: UseMutationOptions<RemoveKnodeApiKeychainKeyResponse, AxiosError<RemoveKnodeApiKeychainKeyError>, Options<RemoveKnodeApiKeychainKeyData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await removeKnodeApiKeychainKey({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const downloadKnodeApiKeychainKeyQueryKey = (options: Options<DownloadKnodeApiKeychainKeyData>) => createQueryKey('downloadKnodeApiKeychainKey', options);
+
+/**
+ * Download a Knode API Keychain Key
+ */
+export const downloadKnodeApiKeychainKeyOptions = (options: Options<DownloadKnodeApiKeychainKeyData>) => queryOptions<DownloadKnodeApiKeychainKeyResponse, AxiosError<DownloadKnodeApiKeychainKeyError>, DownloadKnodeApiKeychainKeyResponse, ReturnType<typeof downloadKnodeApiKeychainKeyQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await downloadKnodeApiKeychainKey({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: downloadKnodeApiKeychainKeyQueryKey(options)
+});
+
+export const getKnodeApiKeychainMembersQueryKey = (options: Options<GetKnodeApiKeychainMembersData>) => createQueryKey('getKnodeApiKeychainMembers', options);
+
+/**
+ * Retrieve members of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembersOptions = (options: Options<GetKnodeApiKeychainMembersData>) => queryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, GetKnodeApiKeychainMembersResponse, ReturnType<typeof getKnodeApiKeychainMembersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getKnodeApiKeychainMembers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getKnodeApiKeychainMembersQueryKey(options)
+});
+
+export const getKnodeApiKeychainMembersInfiniteQueryKey = (options: Options<GetKnodeApiKeychainMembersData>): QueryKey<Options<GetKnodeApiKeychainMembersData>> => createQueryKey('getKnodeApiKeychainMembers', options, true);
+
+/**
+ * Retrieve members of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembersInfiniteOptions = (options: Options<GetKnodeApiKeychainMembersData>) => infiniteQueryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, InfiniteData<GetKnodeApiKeychainMembersResponse>, QueryKey<Options<GetKnodeApiKeychainMembersData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getKnodeApiKeychainMembers({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getKnodeApiKeychainMembersInfiniteQueryKey(options)
+});
+
+/**
+ * Add a member to a Knode API Keychain
+ */
+export const addKnodeApiKeychainMemberMutation = (options?: Partial<Options<AddKnodeApiKeychainMemberData>>): UseMutationOptions<AddKnodeApiKeychainMemberResponse, AxiosError<AddKnodeApiKeychainMemberError>, Options<AddKnodeApiKeychainMemberData>> => {
+    const mutationOptions: UseMutationOptions<AddKnodeApiKeychainMemberResponse, AxiosError<AddKnodeApiKeychainMemberError>, Options<AddKnodeApiKeychainMemberData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await addKnodeApiKeychainMember({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Remove a Member from a Knode API Keychain
+ */
+export const removeKnodeApiKeychainMemberMutation = (options?: Partial<Options<RemoveKnodeApiKeychainMemberData>>): UseMutationOptions<RemoveKnodeApiKeychainMemberResponse, AxiosError<RemoveKnodeApiKeychainMemberError>, Options<RemoveKnodeApiKeychainMemberData>> => {
+    const mutationOptions: UseMutationOptions<RemoveKnodeApiKeychainMemberResponse, AxiosError<RemoveKnodeApiKeychainMemberError>, Options<RemoveKnodeApiKeychainMemberData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await removeKnodeApiKeychainMember({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getKnodeApiKeychainMembershipQueryKey = (options: Options<GetKnodeApiKeychainMembershipData>) => createQueryKey('getKnodeApiKeychainMembership', options);
+
+/**
+ * Check whether the given User is a Member of a Knode API Keychain
+ */
+export const getKnodeApiKeychainMembershipOptions = (options: Options<GetKnodeApiKeychainMembershipData>) => queryOptions<GetKnodeApiKeychainMembershipResponse, AxiosError<GetKnodeApiKeychainMembershipError>, GetKnodeApiKeychainMembershipResponse, ReturnType<typeof getKnodeApiKeychainMembershipQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getKnodeApiKeychainMembership({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getKnodeApiKeychainMembershipQueryKey(options)
+});
 
 export const getOperatorsQueryKey = (options?: Options<GetOperatorsData>) => createQueryKey('getOperators', options);
 

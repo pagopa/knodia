@@ -1,7 +1,16 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import z from "zod";
 
 export const keychainType = z.enum(["production", "consumption", "api"]);
 export type KeychainType = z.infer<typeof keychainType>;
+
+export type SupportedKeychain =
+  | { keychainId: ConsumerKeychainId; type: "consumption" }
+  | { keychainId: KnodeApiKeychainId; type: "api" };
 
 export const consumerKeychainDetailsTab = z.enum([
   "members",

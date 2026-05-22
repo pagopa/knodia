@@ -1,13 +1,4 @@
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-} from "@knodia/common-models/ids";
-
 import { bffApi } from "@knodia/bff-client";
-import {
-  getConsumerKeychainKeysQueryKey,
-  removeConsumerKeychainKeyMutation,
-} from "@knodia/bff-client/tanstack-query";
 import {
   Banner,
   Button,
@@ -29,7 +20,6 @@ import {
   SelectionPlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
@@ -37,22 +27,22 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
+
+import { useRemoveKeychainKey } from "../hooks/useKeychainMutations";
 
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keys: bffApi.KeychainKey[];
-  type: KeychainType;
 }
 
 export function KeychainPublicKeysTable({
   canDownloadKey,
   isLoading,
-  keychainId,
+  keychain,
   keys,
-  type,
 }: KeychainPublicKeysTableProps) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
@@ -98,15 +88,10 @@ export function KeychainPublicKeysTable({
               <div className="flex justify-end gap-2">
                 <DownloadPublicKeyAction
                   canDownloadKey={canDownloadKey}
-                  keychainId={keychainId}
+                  keychain={keychain}
                   keyId={key.kid}
-                  type={type}
                 />
-                <RemoveFromKeychainAction
-                  keychainId={keychainId}
-                  keyId={key.kid}
-                  type={type}
-                />
+                <RemoveFromKeychainAction keychain={keychain} keyId={key.kid} />
               </div>
             </Cell>
           </Row>
@@ -137,19 +122,17 @@ function DisabledTooltipButton({
 
 function DownloadPublicKeyAction({
   canDownloadKey,
-  keychainId,
+  keychain,
   keyId,
-  type,
 }: {
   canDownloadKey: boolean;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keyId: string;
-  type: KeychainType;
 }) {
   async function handleDownloadPublicKey() {
     try {
-      const response = await match(type)
-        .with("consumption", () =>
+      const response = await match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.downloadConsumerKeychainKey({
             client,
             path: {
@@ -158,12 +141,15 @@ function DownloadPublicKeyAction({
             },
           }),
         )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
-        .with("api", () => {
-          throw new Error("API keychains are not supported yet.");
-        })
+        .with({ type: "api" }, ({ keychainId }) =>
+          bffApi.downloadKnodeApiKeychainKey({
+            client,
+            path: {
+              keyId,
+              knodeApiKeychainId: keychainId,
+            },
+          }),
+        )
         .exhaustive();
 
       downloadResponseAsFile(
@@ -212,50 +198,16 @@ function DownloadPublicKeyAction({
 }
 
 function RemoveFromKeychainAction({
-  keychainId,
+  keychain,
   keyId,
-  type,
 }: {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
+  keychain: SupportedKeychain;
   keyId: string;
-  type: KeychainType;
 }) {
-  const queryClient = useQueryClient();
-  const {
-    isError,
-    isPending,
-    mutate: deleteConsumerKeychainKey,
-  } = useMutation({
-    ...removeConsumerKeychainKeyMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainKeysQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-    },
-  });
+  const { isError, isPending, mutate } = useRemoveKeychainKey(keychain);
 
   function handleDelete() {
-    match(type)
-      .with("consumption", () => {
-        deleteConsumerKeychainKey({
-          path: {
-            consumerKeychainId: keychainId,
-            keyId,
-          },
-        });
-      })
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
+    mutate(keyId);
   }
 
   return (

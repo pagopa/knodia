@@ -1,27 +1,16 @@
-import type {
-  ConsumerKeychainId,
-  KnodeApiKeychainId,
-} from "@knodia/common-models/ids";
-
 import { Button, Modal } from "@knodia/ui-kit/ui";
 import { DialogTrigger } from "react-aria-components";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useDeleteKeychain } from "../hooks/useDeleteKeychain";
 
-export function KeychainDeleteAction({
-  keychainId,
-  type,
-}: {
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
-  type: KeychainType;
-}) {
+export function KeychainDeleteAction(keychain: SupportedKeychain) {
   const {
     isError,
     isPending: isDeleting,
     mutate,
-  } = useDeleteKeychain({ keychainId, type });
+  } = useDeleteKeychain(keychain);
 
   return (
     <DialogTrigger>

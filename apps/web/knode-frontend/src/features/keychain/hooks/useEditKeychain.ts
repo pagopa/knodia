@@ -8,78 +8,59 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainsQueryKey,
   knodeApiKeychainsQueryKey,
 } from "../services/queries";
 
-interface UseEditKeychainParams {
-  keychainId: string;
-  onSuccess?: () => void;
-  type: KeychainType;
-}
-
-export function useEditKeychain({
-  keychainId,
-  onSuccess: onSuccessCallback,
-  type,
-}: UseEditKeychainParams) {
+export function useEditKeychain(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (
       body: bffApi.ConsumerKeychainPatch | bffApi.KnodeApiKeychainPatch,
     ) =>
-      match(type)
-        .with("consumption", () =>
+      match(keychain)
+        .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.updateConsumerKeychain({
             body,
             client,
             path: { consumerKeychainId: keychainId },
           }),
         )
-        .with("api", () =>
+        .with({ type: "api" }, ({ keychainId }) =>
           bffApi.updateKnodeApiKeychain({
             body,
             client,
             path: { knodeApiKeychainId: keychainId },
           }),
         )
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
         .exhaustive(),
     onSuccess: () => {
-      match(type)
-        .with("consumption", () => {
-          queryClient.invalidateQueries({
-            queryKey: getConsumerKeychainDetailsQueryKey({
+      queryClient.invalidateQueries({
+        queryKey: match(keychain)
+          .with({ type: "consumption" }, ({ keychainId }) =>
+            getConsumerKeychainDetailsQueryKey({
               client,
               path: { consumerKeychainId: keychainId },
             }),
-          });
-          queryClient.invalidateQueries({
-            queryKey: consumerKeychainsQueryKey(),
-          });
-        })
-        .with("api", () => {
-          queryClient.invalidateQueries({
-            queryKey: getKnodeApiKeychainDetailsQueryKey({
+          )
+          .with({ type: "api" }, ({ keychainId }) =>
+            getKnodeApiKeychainDetailsQueryKey({
               client,
               path: { knodeApiKeychainId: keychainId },
             }),
-          });
-          queryClient.invalidateQueries({
-            queryKey: knodeApiKeychainsQueryKey(),
-          });
-        })
-        .with("production", () => {
-          throw new Error("Producer keychains are not supported yet.");
-        })
-        .exhaustive();
-      onSuccessCallback?.();
+          )
+          .exhaustive(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: match(keychain)
+          .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
+          .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+          .exhaustive(),
+      });
     },
   });
 }
