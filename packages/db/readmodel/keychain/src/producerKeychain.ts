@@ -32,8 +32,8 @@ export const readmodelProducerKeychain = keychainSchema.table(
   },
   (table) => [
     unique("producer_keychain_id_metadata_v_unique").on(
-      table.id,
       table.metadataVersion,
+      table.id,
     ),
   ],
 );
@@ -80,6 +80,19 @@ export const readmodelProducerKeychainEservice = keychainSchema.table(
     producerKeychainId: uuid("producer_keychain_id").notNull(),
   },
   (table) => [
+    foreignKey({
+      columns: [table.producerKeychainId],
+      foreignColumns: [readmodelProducerKeychain.id],
+      name: "producer_keychain_eservice_producer_keychain_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.metadataVersion, table.producerKeychainId],
+      foreignColumns: [
+        readmodelProducerKeychain.id,
+        readmodelProducerKeychain.metadataVersion,
+      ],
+      name: "producer_keychain_eservice_producer_keychain_id_metadata_v_fkey",
+    }),
     primaryKey({
       columns: [
         table.eserviceId,

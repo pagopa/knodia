@@ -50,6 +50,12 @@ ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_user" ADD CONSTRAINT "produ
 ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_user" DROP CONSTRAINT IF EXISTS "producer_keychain_user_producer_keychain_id_metadata_v_fkey";
 ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_user" ADD CONSTRAINT "producer_keychain_user_producer_keychain_id_metadata_v_fkey" FOREIGN KEY ("producer_keychain_id","metadata_version") REFERENCES ${NAMESPACE}_keychain."producer_keychain"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_eservice" DROP CONSTRAINT IF EXISTS "producer_keychain_eservice_producer_keychain_id_fkey";
+ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_eservice" ADD CONSTRAINT "producer_keychain_eservice_producer_keychain_id_fkey" FOREIGN KEY ("producer_keychain_id") REFERENCES ${NAMESPACE}_keychain."producer_keychain"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_eservice" DROP CONSTRAINT IF EXISTS "producer_keychain_eservice_producer_keychain_id_metadata_v_fkey";
+ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_eservice" ADD CONSTRAINT "producer_keychain_eservice_producer_keychain_id_metadata_v_fkey" FOREIGN KEY ("producer_keychain_id","metadata_version") REFERENCES ${NAMESPACE}_keychain."producer_keychain"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_key" DROP CONSTRAINT IF EXISTS "producer_keychain_key_producer_keychain_id_fkey";
 ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_key" ADD CONSTRAINT "producer_keychain_key_producer_keychain_id_fkey" FOREIGN KEY ("producer_keychain_id") REFERENCES ${NAMESPACE}_keychain."producer_keychain"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
