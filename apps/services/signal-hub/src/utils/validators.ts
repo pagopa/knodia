@@ -7,11 +7,11 @@ import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
-  consumerNotAuthorizedToPullSignals,
   eserviceNotActive,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
-  producerNotAuthorizedToPushSignals,
+  organizationNotAuthorizedToPullSignals,
+  organizationNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../models/errors.ts";
 
@@ -32,7 +32,7 @@ export async function assertOrganizationAuthorizedToPullSignals(
     );
 
   if (!isAuthorized) {
-    throw consumerNotAuthorizedToPullSignals(eserviceId, organization);
+    throw organizationNotAuthorizedToPullSignals(eserviceId, organization);
   }
 }
 
@@ -41,7 +41,7 @@ export function assertOrganizationAuthorizedToPushSignals(
   organizationId: OrganizationId,
 ) {
   if (eservice.producerId !== organizationId) {
-    throw producerNotAuthorizedToPushSignals(eservice.id, organizationId);
+    throw organizationNotAuthorizedToPushSignals(eservice.id, organizationId);
   }
 }
 

@@ -19,7 +19,7 @@ import {
   eserviceNotFound,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
-  producerNotAuthorizedToPushSignals,
+  organizationNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
@@ -94,7 +94,7 @@ describe("POST /signals (pushSignal)", () => {
 
     const response = await pushSignal();
 
-    const error = producerNotAuthorizedToPushSignals(
+    const error = organizationNotAuthorizedToPushSignals(
       otherProducerEservice.id,
       producerId,
     );

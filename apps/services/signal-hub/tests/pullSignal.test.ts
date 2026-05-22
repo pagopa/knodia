@@ -24,10 +24,10 @@ import { describe, expect, it } from "vitest";
 
 import { type API_PullResponse, type API_Signal } from "../src/models/api.ts";
 import {
-  consumerNotAuthorizedToPullSignals,
   eserviceNotActive,
   eserviceNotFound,
   eserviceSignalHubNotEnabled,
+  organizationNotAuthorizedToPullSignals,
 } from "../src/models/errors.ts";
 import {
   agreementWriterService,
@@ -226,7 +226,10 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
 
       const response = await pullSignal();
 
-      const error = consumerNotAuthorizedToPullSignals(eservice.id, consumer);
+      const error = organizationNotAuthorizedToPullSignals(
+        eservice.id,
+        consumer,
+      );
       expect(response.statusCode).toBe(403);
       expect(response.json<API_Problem>().title).toEqual(error.title);
     },

@@ -19,8 +19,8 @@ const errorCodes = {
   ESERVICE_SIGNAL_HUB_NOT_ENABLED: "0003",
   SIGNAL_ALREADY_EXISTS: "0004",
   NON_CONSECUTIVE_SIGNAL_ID: "0005",
-  CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0006",
-  PRODUCER_NOT_AUTHORIZED_TO_PUSH_SIGNALS: "0007",
+  ORGANIZATION_NOT_AUTHORIZED_TO_PULL_SIGNALS: "0006",
+  ORGANIZATION_NOT_AUTHORIZED_TO_PUSH_SIGNALS: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -29,18 +29,6 @@ type ErrorCodes = keyof typeof errorCodes;
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "signal-hub",
 });
-
-export function consumerNotAuthorizedToPullSignals(
-  eserviceId: EserviceId,
-  { id: organizationId, knodeId }: ExternalResource<OrganizationId>,
-) {
-  return createApiError<ErrorCodes>({
-    code: "CONSUMER_NOT_AUTHORIZED_TO_PULL_SIGNALS",
-    detail: `No active Agreement and Purpose found for E-service ${eserviceId} and Consumer ${organizationId} (Knode ${knodeId})`,
-    status: HTTP_STATUS_FORBIDDEN,
-    title: "Consumer Not Authorized To Pull Signals",
-  });
-}
 
 export function eserviceNotActive(eserviceId: EserviceId) {
   return createApiError<ErrorCodes>({
@@ -85,15 +73,27 @@ export function nonConsecutiveSignalId(
   });
 }
 
-export function producerNotAuthorizedToPushSignals(
+export function organizationNotAuthorizedToPullSignals(
   eserviceId: EserviceId,
-  producerId: OrganizationId,
+  { id: organizationId, knodeId }: ExternalResource<OrganizationId>,
 ) {
   return createApiError<ErrorCodes>({
-    code: "PRODUCER_NOT_AUTHORIZED_TO_PUSH_SIGNALS",
-    detail: `Producer with id ${producerId} is not authorized to push signals for E-service ${eserviceId}`,
+    code: "ORGANIZATION_NOT_AUTHORIZED_TO_PULL_SIGNALS",
+    detail: `No active Agreement and Purpose found for E-service ${eserviceId} and Organization ${organizationId} (Knode ${knodeId})`,
     status: HTTP_STATUS_FORBIDDEN,
-    title: "Producer Not Authorized To Push Signals",
+    title: "Organization Not Authorized To Pull Signals",
+  });
+}
+
+export function organizationNotAuthorizedToPushSignals(
+  eserviceId: EserviceId,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_AUTHORIZED_TO_PUSH_SIGNALS",
+    detail: `Organization with id ${organizationId} is not authorized to push signals for E-service ${eserviceId}`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization Not Authorized To Push Signals",
   });
 }
 
