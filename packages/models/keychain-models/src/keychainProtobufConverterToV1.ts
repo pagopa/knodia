@@ -7,6 +7,7 @@ import type {
   KeychainUser,
   KeyFormat,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "./keychain.ts";
 
 import {
@@ -16,6 +17,7 @@ import {
   type KeychainUserV1,
   KeyFormatV1,
   type KnodeApiKeychainV1,
+  type ProducerKeychainV1,
 } from "./generated/v1/keychain.ts";
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
@@ -59,4 +61,14 @@ export const toKnodeApiKeychainV1 = (
   keys: knodeApiKeychain.keys.map(toKeychainKeyV1),
   updatedAt: knodeApiKeychain.updatedAt.getTime(),
   users: knodeApiKeychain.users.map(toKeychainUserV1),
+});
+
+export const toProducerKeychainV1 = (
+  producerKeychain: ProducerKeychain,
+): ProducerKeychainV1 => ({
+  ...producerKeychain,
+  createdAt: producerKeychain.createdAt.getTime(),
+  keys: producerKeychain.keys.map(toKeychainKeyV1),
+  updatedAt: producerKeychain.updatedAt.getTime(),
+  users: producerKeychain.users.map(toKeychainUserV1),
 });
