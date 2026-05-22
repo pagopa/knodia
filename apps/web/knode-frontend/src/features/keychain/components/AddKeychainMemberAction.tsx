@@ -6,7 +6,11 @@ import {
   getOperatorsOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
-import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  unsafeBrandUserId,
+  type UserId,
+} from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +25,7 @@ import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 import type { KeychainType } from "../models/commons";
 
 interface AddKeychainMemberActionProps {
-  keychainId: string;
+  keychainId: ConsumerKeychainId;
   keychainType: KeychainType;
 }
 
@@ -61,7 +65,7 @@ function AddKeychainMemberModal({
   onClose,
 }: {
   isOpen: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId;
   keychainType: KeychainType;
   onClose: () => void;
 }) {

@@ -12,6 +12,7 @@ import {
   getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import { API_KnodeApiKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
@@ -21,15 +22,21 @@ import {
   type PollingService,
 } from "@knodia/polling";
 import { type AxiosResponse } from "axios";
+import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
   type API_Keychain,
+  API_KeychainDetails,
   API_Keychains,
+  API_KnodeApiKeychainPatch,
   API_KnodeApiKeychainSeed,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
-import { toAPI_Keychain } from "../../models/keychain/apiConverter.ts";
+import {
+  toAPI_Keychain,
+  toAPI_KeychainDetails,
+} from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface KnodeApiKeychainRouterOptions {
@@ -39,6 +46,7 @@ interface KnodeApiKeychainRouterOptions {
 
 export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
   KnodeApiKeychainRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { keychainProcessClient, pollingService }) => {
   const retrieveKnodeApiKeychainById = async (
     knodeApiKeychainId: KnodeApiKeychainId,
@@ -60,6 +68,14 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
+
+  const pollKnodeApiKeychainUntilDeletion = (
+    knodeApiKeychainId: KnodeApiKeychainId,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceUntilDeletion(() =>
+      retrieveKnodeApiKeychainById(knodeApiKeychainId, headers),
+    )();
 
   fastify.route({
     handler: async (req, res) => {
@@ -171,5 +187,132 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.knodeApiKeychain],
     },
     url: "/knodeApiKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Getting Knode API Keychain details with ID ${req.params.knodeApiKeychainId}`,
+      );
+
+      const { data: knodeApiKeychain } =
+        await keychainProcessApi.getKnodeApiKeychain({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { knodeApiKeychainId: req.params.knodeApiKeychainId },
+        });
+
+      res.send(toAPI_KeychainDetails(knodeApiKeychain));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Knode API Keychain with all its details",
+      operationId: "getKnodeApiKeychainDetails",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        200: API_KeychainDetails.meta({
+          description: "Knode API Keychain details retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Updating Knode API Keychain with ID ${req.params.knodeApiKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.updateKnodeApiKeychain({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { knodeApiKeychainId: req.params.knodeApiKeychainId },
+      });
+
+      await pollKnodeApiKeychain(
+        response,
+        headers,
+        req.params.knodeApiKeychainId,
+      );
+
+      res.status(204).send();
+    },
+    method: "PATCH",
+    schema: {
+      body: API_KnodeApiKeychainPatch,
+      consumes: ["application/merge-patch+json"],
+      description: "Update a Knode API Keychain",
+      operationId: "updateKnodeApiKeychain",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Knode API Keychain updated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Deleting Knode API Keychain with ID ${req.params.knodeApiKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      await keychainProcessApi.deleteKnodeApiKeychain({
+        client: keychainProcessClient,
+        headers,
+        path: { knodeApiKeychainId: req.params.knodeApiKeychainId },
+      });
+
+      await pollKnodeApiKeychainUntilDeletion(
+        req.params.knodeApiKeychainId,
+        headers,
+      );
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Delete a Knode API Keychain",
+      operationId: "deleteKnodeApiKeychain",
+      params: API_KnodeApiKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Knode API Keychain deleted successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+      },
+      tags: [apiTags.knodeApiKeychain],
+    },
+    url: "/knodeApiKeychains/:knodeApiKeychainId",
   });
 };

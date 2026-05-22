@@ -1,21 +1,14 @@
-import type { bffApi } from "@knodia/bff-client";
-
-import {
-  getConsumerKeychainDetailsQueryKey,
-  updateConsumerKeychainMutation,
-} from "@knodia/bff-client/tanstack-query";
+import { type bffApi } from "@knodia/bff-client";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import type { KeychainType } from "../models/commons";
 
+import { useEditKeychain } from "../hooks/useEditKeychain";
 import {
   editKeychainFormSchema,
   type EditKeychainFormValues,
@@ -65,47 +58,17 @@ function EditKeychainModal({
   onClose,
   type,
 }: EditKeychainModalProps) {
-  const queryClient = useQueryClient();
-
-  const {
-    isError,
-    isPending,
-    mutate: editConsumerKeychain,
-  } = useMutation({
-    ...updateConsumerKeychainMutation({
-      client,
-    }),
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainDetailsQueryKey({
-          client,
-          path: { consumerKeychainId: keychain.id },
-        }),
-      });
-      onClose();
-    },
+  const { isError, isPending, mutate } = useEditKeychain({
+    keychainId: keychain.id,
+    onSuccess: onClose,
+    type,
   });
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
-    const body: bffApi.ConsumerKeychainPatch = {
+    mutate({
       description: seed.description ? { en: seed.description } : null,
       name: { en: seed.name },
-    };
-
-    match(type)
-      .with("consumption", () =>
-        editConsumerKeychain({
-          body,
-          path: { consumerKeychainId: keychain.id },
-        }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
+    });
   }
 
   const form = useForm({

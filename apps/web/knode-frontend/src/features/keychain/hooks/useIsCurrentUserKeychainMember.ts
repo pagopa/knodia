@@ -1,10 +1,12 @@
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+
 import { getConsumerKeychainMembershipOptions } from "@knodia/bff-client/tanstack-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 
-export function useIsCurrentUserKeychainMember(keychainId: string) {
+export function useIsCurrentUserKeychainMember(keychainId: ConsumerKeychainId) {
   const { userId } = useAuth();
 
   const { data: isMember } = useSuspenseQuery({

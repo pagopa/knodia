@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychainId,
+  KnodeApiKeychainId,
+} from "@knodia/common-models/ids";
+
 import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainKeysQueryKey,
@@ -37,7 +42,7 @@ import type { KeychainType } from "../models/commons";
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keys: bffApi.KeychainKey[];
   type: KeychainType;
 }
@@ -80,9 +85,11 @@ export function KeychainPublicKeysTable({
             <Cell>
               <span className="body-md-em">{key.name.en}</span>
             </Cell>
-            <Cell>{key?.uploaderUsername ?? "Removed User"}</Cell>
-            <Cell>{formatShortDate(key.createdAt)}</Cell>
-            <Cell>
+            <Cell className="body-md">
+              {key?.uploaderUsername ?? "Removed User"}
+            </Cell>
+            <Cell className="body-md">{formatShortDate(key.createdAt)}</Cell>
+            <Cell className="body-sm text-primary-light-high-contrast">
               <div className="flex items-center">
                 {key.kid} <CopyButton className="ml-2" textToCopy={key.kid} />
               </div>
@@ -135,7 +142,7 @@ function DownloadPublicKeyAction({
   type,
 }: {
   canDownloadKey: boolean;
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
   type: KeychainType;
 }) {
@@ -209,7 +216,7 @@ function RemoveFromKeychainAction({
   keyId,
   type,
 }: {
-  keychainId: string;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId;
   keyId: string;
   type: KeychainType;
 }) {
