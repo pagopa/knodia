@@ -1,0 +1,33 @@
+meta {
+  name: Update Knode Api Keychain
+  type: http
+}
+
+patch {
+  url: {{host-backend-for-frontend}}/knodeApiKeychains/:knodeApiKeychainId
+  body: json
+  auth: none
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+}
+
+headers {
+  Content-Type: application/merge-patch+json
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{updatedKnodeApiKeychainName}}"
+    },
+    "description": null
+  }
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("updatedKnodeApiKeychainName", `Updated Knode API Keychain ${random}`)
+}

@@ -55,10 +55,8 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
     ...createKnodeApiKeychainMutation({
       client,
     }),
-    onSuccess: () => {
-      // TODO KN-618: navigate to the API keychain details page once it exists.
-      navigate({ search: { offset: 0, type: "api" }, to: "/keychains" });
-      onClose();
+    onSuccess: ({ id }) => {
+      navigate({ params: { id }, to: "/keychains/api/$id" });
     },
   });
 

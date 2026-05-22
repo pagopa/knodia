@@ -1,34 +1,27 @@
 import { bffApi } from "@knodia/bff-client";
-import {
-  addConsumerKeychainMemberMutation,
-  getConsumerKeychainMembershipQueryKey,
-  getConsumerKeychainMembersQueryKey,
-  getOperatorsOptions,
-} from "@knodia/bff-client/tanstack-query";
+import { getOperatorsOptions } from "@knodia/bff-client/tanstack-query";
 import { UserRole } from "@knodia/common-models/auth";
 import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { match } from "ts-pattern";
 import z from "zod";
 
-import { useAuth, useHasRole } from "@/contexts/auth";
+import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
-interface AddKeychainMemberActionProps {
-  keychainId: string;
-  keychainType: KeychainType;
-}
+import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
-export function AddKeychainMemberAction({
-  keychainId,
-  keychainType,
-}: AddKeychainMemberActionProps) {
+type AddKeychainMemberActionProps = SupportedKeychain;
+
+export function AddKeychainMemberAction(
+  keychain: AddKeychainMemberActionProps,
+) {
   const [isOpen, setIsOpen] = useState(false);
   const isAdmin = useHasRole("administrative");
 
@@ -46,8 +39,7 @@ export function AddKeychainMemberAction({
       </Button>
       <AddKeychainMemberModal
         isOpen={isOpen}
-        keychainId={keychainId}
-        keychainType={keychainType}
+        keychain={keychain}
         onClose={() => setIsOpen(false)}
       />
     </>
@@ -56,44 +48,14 @@ export function AddKeychainMemberAction({
 
 function AddKeychainMemberModal({
   isOpen,
-  keychainId,
-  keychainType,
+  keychain,
   onClose,
 }: {
   isOpen: boolean;
-  keychainId: string;
-  keychainType: KeychainType;
+  keychain: SupportedKeychain;
   onClose: () => void;
 }) {
-  const { userId } = useAuth();
-
-  const queryClient = useQueryClient();
-  const {
-    isError,
-    isPending,
-    mutate: addConsumerKeychainMember,
-  } = useMutation({
-    ...addConsumerKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembersQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-      if (userId) {
-        queryClient.invalidateQueries({
-          queryKey: getConsumerKeychainMembershipQueryKey({
-            client,
-            path: { consumerKeychainId: keychainId, userId },
-          }),
-        });
-      }
-      onClose();
-    },
-  });
+  const { isError, isPending, mutate } = useAddKeychainMember(keychain);
 
   const { data: operators = [] } = useQuery(getOperatorsOptions({ client }));
 
@@ -109,39 +71,31 @@ function AddKeychainMemberModal({
     ]),
   );
 
+  function handleClose() {
+    form.reset();
+    onClose();
+  }
+
   const handleAddKeychainMember = (userId: UserId) => {
-    match(keychainType)
-      .with("consumption", () =>
-        addConsumerKeychainMember({
-          body: { userId },
-          path: { consumerKeychainId: keychainId },
-        }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
+    mutate(userId, { onSuccess: handleClose });
   };
 
   const checkUserKeychainMembership = async (userId: UserId) => {
     const {
       data: { isMember },
-    } = await match(keychainType)
-      .with("consumption", () =>
+    } = await match(keychain)
+      .with({ type: "consumption" }, ({ keychainId }) =>
         bffApi.getConsumerKeychainMembership({
           client,
           path: { consumerKeychainId: keychainId, userId },
         }),
       )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
+      .with({ type: "api" }, ({ keychainId }) =>
+        bffApi.getKnodeApiKeychainMembership({
+          client,
+          path: { knodeApiKeychainId: keychainId, userId },
+        }),
+      )
       .exhaustive();
 
     return isMember;
@@ -195,10 +149,7 @@ function AddKeychainMemberModal({
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
-        if (!open) {
-          form.reset();
-          onClose();
-        }
+        if (!open) handleClose();
       }}
       showErrorBanner={isError}
       title="Add Member"
