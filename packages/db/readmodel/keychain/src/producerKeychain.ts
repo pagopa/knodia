@@ -86,7 +86,7 @@ export const readmodelProducerKeychainEservice = keychainSchema.table(
       name: "producer_keychain_eservice_producer_keychain_id_fkey",
     }).onDelete("cascade"),
     foreignKey({
-      columns: [table.metadataVersion, table.producerKeychainId],
+      columns: [table.producerKeychainId, table.metadataVersion],
       foreignColumns: [
         readmodelProducerKeychain.id,
         readmodelProducerKeychain.metadataVersion,
