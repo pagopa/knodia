@@ -49,7 +49,11 @@
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
-    "apps/web/**/*": {
+    "apps/web/signup-frontend": {
+      "entry": [],
+      "ignore": ["**/*"]
+    },
+    "apps/web/knode-frontend": {
       "ignore": ["src/routeTree.gen.ts", "public/**/*"],
       "ignoreDependencies": ["babel-plugin-react-compiler", "@theme.css"]
     },

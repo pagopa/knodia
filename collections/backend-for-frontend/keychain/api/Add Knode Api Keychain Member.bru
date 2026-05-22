@@ -1,0 +1,24 @@
+meta {
+  name: Add Knode Api Keychain Member
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/knodeApiKeychains/:knodeApiKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}"
+  }
+}

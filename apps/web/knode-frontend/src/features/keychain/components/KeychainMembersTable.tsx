@@ -1,9 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import {
-  getConsumerKeychainMembersQueryKey,
-  removeConsumerKeychainMemberMutation,
-} from "@knodia/bff-client/tanstack-query";
+import { unsafeBrandUserId, type UserId } from "@knodia/common-models/ids";
 import {
   Banner,
   Button,
@@ -17,27 +14,24 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { MinusSquareIcon, SelectionPlusIcon } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger } from "react-aria-components";
-import { match } from "ts-pattern";
 
 import { useHasRole } from "@/contexts/auth";
-import { client } from "@/libs/axios";
 
-import type { KeychainType } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
+
+import { useRemoveKeychainMember } from "../hooks/useKeychainMutations";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
-  keychainId: string;
+  keychain: SupportedKeychain;
   members: bffApi.User[];
-  type: KeychainType;
 }
 
 export function KeychainMembersTable({
   isLoading,
-  keychainId,
+  keychain,
   members,
-  type,
 }: KeychainMembersTableProps) {
   const isAdmin = useHasRole("administrative");
 
@@ -72,14 +66,13 @@ export function KeychainMembersTable({
             <Cell>
               <span className="body-md-em">{member.username}</span>
             </Cell>
-            <Cell>{member.email}</Cell>
+            <Cell className="body-md-em">{member.email}</Cell>
             {isAdmin && (
               <Cell>
                 <div className="flex justify-end">
                   <RemoveFromKeychainAction
-                    keychainId={keychainId}
-                    type={type}
-                    userId={member.id}
+                    keychain={keychain}
+                    userId={unsafeBrandUserId(member.id)}
                   />
                 </div>
               </Cell>
@@ -92,50 +85,16 @@ export function KeychainMembersTable({
 }
 
 function RemoveFromKeychainAction({
-  keychainId,
-  type,
+  keychain,
   userId,
 }: {
-  keychainId: string;
-  type: KeychainType;
-  userId: string;
+  keychain: SupportedKeychain;
+  userId: UserId;
 }) {
-  const queryClient = useQueryClient();
-  const {
-    isError,
-    isPending,
-    mutate: deleteConsumerKeychainMember,
-  } = useMutation({
-    ...removeConsumerKeychainMemberMutation({ client }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainMembersQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-    },
-  });
+  const { isError, isPending, mutate } = useRemoveKeychainMember(keychain);
 
   function handleDelete() {
-    match(type)
-      .with("consumption", () => {
-        deleteConsumerKeychainMember({
-          path: {
-            consumerKeychainId: keychainId,
-            userId,
-          },
-        });
-      })
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
+    mutate(userId);
   }
 
   return (

@@ -7,7 +7,11 @@ import {
   API_FileDownload,
 } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { type ConsumerKeychainId, KnodeId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
@@ -42,7 +46,7 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
-import { type AxiosResponse, isAxiosError } from "axios";
+import { type AxiosResponse } from "axios";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -78,6 +82,7 @@ import {
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { resourceExists } from "../../utils/resourceExists.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -98,7 +103,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   },
 ) => {
   const retrieveConsumerKeychainById = async (
-    consumerKeychainId: string,
+    consumerKeychainId: ConsumerKeychainId,
     headers: KnodiaServiceHeaders,
   ) =>
     await keychainProcessApi.getConsumerKeychain({
@@ -110,7 +115,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   const pollConsumerKeychain = (
     response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
-    consumerKeychainId: string,
+    consumerKeychainId: ConsumerKeychainId,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
@@ -136,24 +141,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
-
-  /**
-   * Checks if a resource exists by calling the provided function.
-   * @returns true if the resource exists, false if not found (404), throws for other errors
-   */
-  const resourceExists = async (
-    check: () => Promise<unknown>,
-  ): Promise<boolean> => {
-    try {
-      await check();
-      return true;
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 404) {
-        return false;
-      }
-      throw error;
-    }
-  };
 
   fastify.route({
     handler: async (req, res) => {
@@ -224,7 +211,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       sendFileDownload(
         res,
         content,
-        `public_key_${keyId}.pub`,
+        `public_key_${keyId}.pem`,
         "text/plain; charset=utf-8",
       );
     },
@@ -266,7 +253,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollConsumerKeychain(response, headers, response.data.id);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        unsafeBrandId<ConsumerKeychainId>(response.data.id),
+      );
 
       res.status(201).send({ id: response.data.id });
     },
@@ -306,7 +297,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers, response.data.id);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
 
       res.status(204).send();
     },
@@ -349,7 +344,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers, response.data.id);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
 
       res.status(204).send();
     },
@@ -479,7 +478,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         },
       });
 
-      await pollConsumerKeychain(response, headers, response.data.id);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
 
       res.status(204).send();
     },
