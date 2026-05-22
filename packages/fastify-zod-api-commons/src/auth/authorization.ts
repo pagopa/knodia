@@ -1,7 +1,6 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type {
   ExternalUISessionScope,
-  KnodeApiScope,
   UserRole,
 } from "@knodia/common-models/auth";
 import type { NonEmptyArray } from "@knodia/common-models/types";
@@ -28,12 +27,10 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   | (Extract<Rules[number], { tokenType: "internal" }> extends never
       ? never
       : InternalAuthData)
-  // If there's a rule with tokenType "knode-api", add KnodeApiAuthData narrowed by scope
+  // If there's a rule with tokenType "knode-api", add KnodeApiAuthData
   | (Extract<Rules[number], { tokenType: "knode-api" }> extends never
       ? never
-      : KnodeApiAuthData<
-          Extract<Rules[number], { tokenType: "knode-api" }>["scope"]
-        >)
+      : KnodeApiAuthData)
   // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
@@ -41,8 +38,8 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
 
 type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
-  | { scope: KnodeApiScope; tokenType: "knode-api" }
   | { tokenType: "internal" }
+  | { tokenType: "knode-api" }
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 /**

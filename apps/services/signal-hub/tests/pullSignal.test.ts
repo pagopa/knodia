@@ -8,6 +8,7 @@ import {
   generateId,
   KnodeId,
   type OrganizationId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { type Purpose, PurposeState } from "@knodia/purpose-models";
 import {
@@ -39,7 +40,10 @@ const producerId = TEST_ORGANIZATION_ID;
 const consumerId = generateExternalId<OrganizationId>();
 
 const allowedTestTokens: TestToken[] = [
-  { organizationId: consumerId, type: "knode-api" },
+  {
+    organizationId: unsafeBrandId<OrganizationId>(consumerId),
+    type: "knode-api",
+  },
 ];
 
 const producerToken: TestToken = {

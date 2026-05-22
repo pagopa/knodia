@@ -59,10 +59,7 @@ export const KnodeApiAccessTokenClaims = BaseJwtClaims.extend({
   client_id: KnodeApiKeychainId,
   keychain: z.strictObject({ id: KnodeApiKeychainId, knode_id: KnodeId }),
   nbf: z.int(),
-  organization: z.strictObject({
-    id: OrganizationId.or(ExternalId<OrganizationId>()),
-    knode_id: KnodeId,
-  }),
+  organization: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
   sub: KnodeApiKeychainId,
   type: z.literal("knode-api"),
 });
@@ -132,6 +129,3 @@ export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   KnodeApiAccessTokenClaims,
 ]);
 export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;
-
-export const KnodeApiScope = z.enum(["producer", "consumer"]);
-export type KnodeApiScope = z.infer<typeof KnodeApiScope>;

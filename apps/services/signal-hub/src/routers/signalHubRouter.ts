@@ -28,7 +28,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { scope: "producer", tokenType: "knode-api" },
+        { tokenType: "knode-api" },
       ]);
       const {
         authData: { organization },
@@ -79,7 +79,7 @@ export const signalHubRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { scope: "consumer", tokenType: "knode-api" },
+        { tokenType: "knode-api" },
       ]);
       const {
         authData: { organization },
