@@ -4,6 +4,8 @@ import {
   consumerKeychainDetailsTab,
   type ConsumerKeychainDetailsTab,
   keychainType,
+  knodeApiKeychainDetailsTab,
+  type KnodeApiKeychainDetailsTab,
 } from "./commons";
 
 export const supportedKeychainTab = keychainType.exclude(["production"]);
@@ -39,4 +41,20 @@ export const consumerKeychainDetailsSearchSchema = z.object({
   tab: consumerKeychainDetailsTab
     .default(consumerKeychainDetailsSearchDefaultValues.tab)
     .catch(consumerKeychainDetailsSearchDefaultValues.tab),
+});
+
+export const knodeApiKeychainDetailsSearchDefaultValues = {
+  offset: 0,
+  tab: "public-keys" satisfies KnodeApiKeychainDetailsTab,
+} as const;
+
+export const knodeApiKeychainDetailsSearchSchema = z.object({
+  offset: z
+    .number()
+    .min(0)
+    .default(knodeApiKeychainDetailsSearchDefaultValues.offset)
+    .catch(knodeApiKeychainDetailsSearchDefaultValues.offset),
+  tab: knodeApiKeychainDetailsTab
+    .default(knodeApiKeychainDetailsSearchDefaultValues.tab)
+    .catch(knodeApiKeychainDetailsSearchDefaultValues.tab),
 });
