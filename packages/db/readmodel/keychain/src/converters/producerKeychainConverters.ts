@@ -63,6 +63,7 @@ export const buildFlatProducerKeychain = ({
   };
 };
 
+/** @knipignore */
 export function toProducerKeychainEservice(
   producerKeychainEserviceSQL: ProducerKeychainEserviceSQL,
 ): WithMetadata<ProducerKeychainEservice> {
