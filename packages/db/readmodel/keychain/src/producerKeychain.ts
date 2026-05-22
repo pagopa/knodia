@@ -63,7 +63,7 @@ export const readmodelProducerKeychainUser = keychainSchema.table(
       name: "producer_keychain_user_producer_keychain_id_metadata_v_fkey",
     }),
     primaryKey({
-      columns: [table.producerKeychainId, table.metadataVersion, table.userId],
+      columns: [table.userId, table.metadataVersion, table.producerKeychainId],
       name: "producer_keychain_user_pk",
     }),
   ],
