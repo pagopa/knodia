@@ -15,7 +15,12 @@ import {
   signalAlreadyExists,
 } from "../models/errors.ts";
 
-export async function assertConsumerAuthorizedToPullSignals(
+export function assertEserviceIsActiveWithSignalHubEnabled(eservice: Eservice) {
+  assertEserviceIsActive(eservice);
+  assertEserviceHasSignalHubEnabled(eservice);
+}
+
+export async function assertOrganizationAuthorizedToPullSignals(
   organization: ExternalResource<OrganizationId>,
   eserviceId: EserviceId,
   readmodelService: ReadmodelService,
@@ -31,17 +36,12 @@ export async function assertConsumerAuthorizedToPullSignals(
   }
 }
 
-export function assertEserviceIsActiveWithSignalHubEnabled(eservice: Eservice) {
-  assertEserviceIsActive(eservice);
-  assertEserviceHasSignalHubEnabled(eservice);
-}
-
-export function assertProducerAuthorizedToPushSignals(
+export function assertOrganizationAuthorizedToPushSignals(
   eservice: Eservice,
-  producerId: OrganizationId,
+  organizationId: OrganizationId,
 ) {
-  if (eservice.producerId !== producerId) {
-    throw producerNotAuthorizedToPushSignals(eservice.id, producerId);
+  if (eservice.producerId !== organizationId) {
+    throw producerNotAuthorizedToPushSignals(eservice.id, organizationId);
   }
 }
 

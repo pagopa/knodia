@@ -14,9 +14,9 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import { signalAlreadyExists } from "../models/errors.ts";
 import { retrieveEserviceById } from "../utils/readmodelUtils.ts";
 import {
-  assertConsumerAuthorizedToPullSignals,
   assertEserviceIsActiveWithSignalHubEnabled,
-  assertProducerAuthorizedToPushSignals,
+  assertOrganizationAuthorizedToPullSignals,
+  assertOrganizationAuthorizedToPushSignals,
   assertSignalCanBePushed,
 } from "../utils/validators.ts";
 
@@ -48,7 +48,7 @@ export function signalHubServiceBuilder(
         readmodelService,
       );
       await assertEserviceIsActiveWithSignalHubEnabled(eservice);
-      await assertConsumerAuthorizedToPullSignals(
+      await assertOrganizationAuthorizedToPullSignals(
         { id: organization.id, knodeId: organization.knodeId },
         eserviceId,
         readmodelService,
@@ -83,7 +83,10 @@ export function signalHubServiceBuilder(
         readmodelService,
       );
 
-      assertProducerAuthorizedToPushSignals(eservice, authData.organization.id);
+      assertOrganizationAuthorizedToPushSignals(
+        eservice,
+        authData.organization.id,
+      );
       assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertSignalCanBePushed(signalId, eserviceId, signalHubDbService);
 
