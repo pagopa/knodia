@@ -66,8 +66,10 @@ ALTER TABLE ${NAMESPACE}_keychain."producer_keychain_key" ADD CONSTRAINT "produc
 GRANT SELECT, INSERT, UPDATE, DELETE ON ${NAMESPACE}_keychain."producer_keychain" TO ${NAMESPACE}_keychain_rmw_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ${NAMESPACE}_keychain."producer_keychain_user" TO ${NAMESPACE}_keychain_rmw_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ${NAMESPACE}_keychain."producer_keychain_key" TO ${NAMESPACE}_keychain_rmw_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ${NAMESPACE}_keychain."producer_keychain_eservice" TO ${NAMESPACE}_keychain_rmw_user;
 
 -- Grant privileges to ${NAMESPACE}_keychain_process_user (reader)
 GRANT SELECT ON ${NAMESPACE}_keychain."producer_keychain" TO ${NAMESPACE}_keychain_process_user;
 GRANT SELECT ON ${NAMESPACE}_keychain."producer_keychain_user" TO ${NAMESPACE}_keychain_process_user;
 GRANT SELECT ON ${NAMESPACE}_keychain."producer_keychain_key" TO ${NAMESPACE}_keychain_process_user;
+GRANT SELECT ON ${NAMESPACE}_keychain."producer_keychain_eservice" TO ${NAMESPACE}_keychain_process_user;
