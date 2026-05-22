@@ -3,7 +3,7 @@ import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { generateId } from "@knodia/common-models/ids";
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import {
   TEST_ORGANIZATION_ID,
   type TestToken,
@@ -23,7 +23,7 @@ import {
   signalAlreadyExists,
 } from "../src/models/errors.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { getAllSignals, injectAppRequest } from "./utils.ts";
+import { checkErrorDetail, getAllSignals, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
 
@@ -74,15 +74,16 @@ describe("POST /signals (pushSignal)", () => {
   });
 
   it("should return 404 when the e-service does not exist", async () => {
+    const nonExistingEserviceId = generateId<EserviceId>();
     const response = await pushSignal({
       ...defaultBody,
-      eserviceId: generateId(),
+      eserviceId: nonExistingEserviceId,
     });
 
-    const error = eserviceNotFound(eservice.id);
+    const error = eserviceNotFound(nonExistingEserviceId);
 
     expect(response.statusCode).toBe(404);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 403 when the e-service does not belong to the caller", async () => {
@@ -100,7 +101,7 @@ describe("POST /signals (pushSignal)", () => {
     );
 
     expect(response.statusCode).toBe(403);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 409 when signal hub is not enabled for the e-service", async () => {
@@ -117,7 +118,7 @@ describe("POST /signals (pushSignal)", () => {
     );
 
     expect(response.statusCode).toBe(409);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 409 when the e-service has no active version", async () => {
@@ -133,7 +134,7 @@ describe("POST /signals (pushSignal)", () => {
     const error = eserviceNotActive(inactiveEservice.id);
 
     expect(response.statusCode).toBe(409);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 400 when a signal with the same signalId already exists", async () => {
@@ -145,7 +146,7 @@ describe("POST /signals (pushSignal)", () => {
     const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
     expect(response.statusCode).toBe(400);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 400 when signals with a higher signalId already exist", async () => {
@@ -162,7 +163,7 @@ describe("POST /signals (pushSignal)", () => {
     const error = signalAlreadyExists(defaultBody.signalId, eservice.id);
 
     expect(response.statusCode).toBe(400);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 400 when the request signalId is not consecutive", async () => {
@@ -183,7 +184,7 @@ describe("POST /signals (pushSignal)", () => {
     );
 
     expect(response.statusCode).toBe(400);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it.each([

@@ -5,6 +5,7 @@ import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import { type Agreement, AgreementState } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
+  type EserviceId,
   generateId,
   KnodeId,
   type OrganizationId,
@@ -34,7 +35,7 @@ import {
   eserviceWriterService,
   purposeWriterService,
 } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { checkErrorDetail, injectAppRequest } from "./utils.ts";
 
 const producerId = TEST_ORGANIZATION_ID;
 const consumerId = generateExternalId<OrganizationId>();
@@ -167,14 +168,15 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
   });
 
   it("should return 404 when the e-service does not exist", async () => {
+    const nonExistingEserviceId = generateId<EserviceId>();
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get(`/signals/${generateId()}`)
+      .get(`/signals/${nonExistingEserviceId}`)
       .query(defaultQuery);
 
-    const error = eserviceNotFound(eservice.id);
+    const error = eserviceNotFound(nonExistingEserviceId);
 
     expect(response.statusCode).toBe(404);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 409 when signal hub is not enabled for the e-service", async () => {
@@ -188,7 +190,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
 
     const error = eserviceSignalHubNotEnabled(eservice.id);
     expect(response.statusCode).toBe(409);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it("should return 409 when the e-service has no active version", async () => {
@@ -205,7 +207,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
 
     const error = eserviceNotActive(inactiveEservice.id);
     expect(response.statusCode).toBe(409);
-    expect(response.json<API_Problem>().title).toEqual(error.title);
+    checkErrorDetail(response.json<API_Problem>(), error);
   });
 
   it.each([
@@ -231,7 +233,7 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
         consumer,
       );
       expect(response.statusCode).toBe(403);
-      expect(response.json<API_Problem>().title).toEqual(error.title);
+      checkErrorDetail(response.json<API_Problem>(), error);
     },
   );
 
