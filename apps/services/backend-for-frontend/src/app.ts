@@ -8,6 +8,12 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
+  initRedisRateLimiter,
+  rateLimitMiddleware,
+  rateLimitOpenapiDocs,
+  rateLimitResponseHeadersHook,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
+import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
@@ -123,28 +129,43 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
-  const authService = authServiceBuilder(
+  const rateLimiter = initRedisRateLimiter({
     config,
-    tokenGenerator,
-    refreshTokenStore,
+    knodeId: config.knodeId,
+    logger: app.log,
+    serviceName: "backend-for-frontend",
+  });
+  const authService = authServiceBuilder({
+    config,
     magicLinkTokenStore,
-  );
+    rateLimiter,
+    refreshTokenStore,
+    tokenGenerator,
+  });
 
-  // Register cookie parser
   app.register(cookie);
+  app.register(rateLimitResponseHeadersHook);
 
-  // Public routes (no JWT required)
+  // /auth/* is rate-limited inline inside authService, post-credential check.
+  // /auth/logout intentionally bypasses both runtime + openapi docs.
   app.register(healthRouter);
-  app.register(authRouter, {
-    authCookieAllowedOrigins: config.authCookieAllowedOrigins,
-    authService,
-    cookieConfig: config.cookie,
+  app.register(async (authScope) => {
+    authScope.register(rateLimitOpenapiDocs, {
+      skip: (url) => url.endsWith("/auth/logout"),
+    });
+    authScope.register(authRouter, {
+      authCookieAllowedOrigins: config.authCookieAllowedOrigins,
+      authService,
+      cookieConfig: config.cookie,
+    });
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(rateLimitMiddleware, { rateLimiter });
+    protectedApp.register(rateLimitOpenapiDocs);
     protectedApp.register(eserviceTemplateRouter);
     protectedApp.register(purposeTemplateRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
@@ -224,7 +245,10 @@ export function buildAppFromConfig(
     });
   });
 
-  app.addHook("onClose", () => sharedDynamoClient.destroy());
+  app.addHook("onClose", async () => {
+    sharedDynamoClient.destroy();
+    rateLimiter.disconnect();
+  });
 
   return app;
 }

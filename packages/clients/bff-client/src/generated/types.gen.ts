@@ -1149,6 +1149,10 @@ export type CreateSessionErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateSessionError = CreateSessionErrors[keyof CreateSessionErrors];
@@ -1178,6 +1182,10 @@ export type RefreshSessionErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RefreshSessionError = RefreshSessionErrors[keyof RefreshSessionErrors];
@@ -1232,6 +1240,10 @@ export type CreateExternalSessionErrors = {
      * Unauthorized
      */
     401: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateExternalSessionError = CreateExternalSessionErrors[keyof CreateExternalSessionErrors];
@@ -1267,6 +1279,10 @@ export type GetEserviceTemplatesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetEserviceTemplatesError = GetEserviceTemplatesErrors[keyof GetEserviceTemplatesErrors];
@@ -1308,6 +1324,10 @@ export type GetEserviceTemplateErrors = {
      * E-service template not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetEserviceTemplateError = GetEserviceTemplateErrors[keyof GetEserviceTemplateErrors];
@@ -1349,6 +1369,10 @@ export type DownloadEserviceTemplateInterfaceErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DownloadEserviceTemplateInterfaceError = DownloadEserviceTemplateInterfaceErrors[keyof DownloadEserviceTemplateInterfaceErrors];
@@ -1385,6 +1409,10 @@ export type GetPurposeTemplatesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetPurposeTemplatesError = GetPurposeTemplatesErrors[keyof GetPurposeTemplatesErrors];
@@ -1426,6 +1454,10 @@ export type GetPurposeTemplateErrors = {
      * Purpose Template not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetPurposeTemplateError = GetPurposeTemplateErrors[keyof GetPurposeTemplateErrors];
@@ -1488,6 +1520,10 @@ export type GetProducerEservicesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerEservicesError = GetProducerEservicesErrors[keyof GetProducerEservicesErrors];
@@ -1521,6 +1557,10 @@ export type CreateEserviceErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateEserviceError = CreateEserviceErrors[keyof CreateEserviceErrors];
@@ -1558,6 +1598,10 @@ export type CreateEserviceFromTemplateErrors = {
      * E-service template not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateEserviceFromTemplateError = CreateEserviceFromTemplateErrors[keyof CreateEserviceFromTemplateErrors];
@@ -1597,6 +1641,10 @@ export type GetProducerEserviceDetailsErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[keyof GetProducerEserviceDetailsErrors];
@@ -1640,6 +1688,10 @@ export type UpdateProducerEserviceErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
@@ -1679,6 +1731,10 @@ export type GetProducerEserviceLatestVersionInterfaceErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEserviceLatestVersionInterfaceErrors[keyof GetProducerEserviceLatestVersionInterfaceErrors];
@@ -1722,6 +1778,10 @@ export type SuspendEserviceErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
@@ -1765,6 +1825,10 @@ export type ReactivateEserviceErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
@@ -1808,6 +1872,10 @@ export type ArchiveProducerEserviceErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ArchiveProducerEserviceError = ArchiveProducerEserviceErrors[keyof ArchiveProducerEserviceErrors];
@@ -1856,6 +1924,10 @@ export type GetConsumerKeychainKeysErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainKeysError = GetConsumerKeychainKeysErrors[keyof GetConsumerKeychainKeysErrors];
@@ -1899,6 +1971,10 @@ export type UploadConsumerKeychainKeyErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[keyof UploadConsumerKeychainKeyErrors];
@@ -1939,6 +2015,10 @@ export type RemoveConsumerKeychainKeyErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
@@ -1979,6 +2059,10 @@ export type DownloadConsumerKeychainKeyErrors = {
      * Consumer Keychain Key not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DownloadConsumerKeychainKeyError = DownloadConsumerKeychainKeyErrors[keyof DownloadConsumerKeychainKeyErrors];
@@ -2033,6 +2117,10 @@ export type GetConsumerKeychainsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainsError = GetConsumerKeychainsErrors[keyof GetConsumerKeychainsErrors];
@@ -2066,6 +2154,10 @@ export type CreateConsumerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
@@ -2105,6 +2197,10 @@ export type DeleteConsumerKeychainErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DeleteConsumerKeychainError = DeleteConsumerKeychainErrors[keyof DeleteConsumerKeychainErrors];
@@ -2144,6 +2240,10 @@ export type GetConsumerKeychainDetailsErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainDetailsError = GetConsumerKeychainDetailsErrors[keyof GetConsumerKeychainDetailsErrors];
@@ -2183,6 +2283,10 @@ export type UpdateConsumerKeychainErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
@@ -2231,6 +2335,10 @@ export type GetConsumerKeychainMembersErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainMembersError = GetConsumerKeychainMembersErrors[keyof GetConsumerKeychainMembersErrors];
@@ -2274,6 +2382,10 @@ export type AddConsumerKeychainMemberErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[keyof AddConsumerKeychainMemberErrors];
@@ -2314,6 +2426,10 @@ export type RemoveConsumerKeychainMemberErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErrors[keyof RemoveConsumerKeychainMemberErrors];
@@ -2350,6 +2466,10 @@ export type GetConsumerKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainMembershipError = GetConsumerKeychainMembershipErrors[keyof GetConsumerKeychainMembershipErrors];
@@ -2396,6 +2516,10 @@ export type GetConsumerKeychainOptionsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainOptionsError = GetConsumerKeychainOptionsErrors[keyof GetConsumerKeychainOptionsErrors];
@@ -2445,6 +2569,10 @@ export type GetConsumerKeychainPurposesErrors = {
      */
     404: Problem;
     /**
+     * Too Many Requests
+     */
+    429: Problem;
+    /**
      * Multi-knode listing not supported
      */
     501: Problem;
@@ -2491,6 +2619,10 @@ export type LinkPurposeToConsumerKeychainErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type LinkPurposeToConsumerKeychainError = LinkPurposeToConsumerKeychainErrors[keyof LinkPurposeToConsumerKeychainErrors];
@@ -2533,6 +2665,10 @@ export type UnlinkPurposeFromConsumerKeychainErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UnlinkPurposeFromConsumerKeychainError = UnlinkPurposeFromConsumerKeychainErrors[keyof UnlinkPurposeFromConsumerKeychainErrors];
@@ -2575,6 +2711,10 @@ export type GetConsumerKeychainPurposeLinkErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerKeychainPurposeLinkError = GetConsumerKeychainPurposeLinkErrors[keyof GetConsumerKeychainPurposeLinkErrors];
@@ -2617,6 +2757,10 @@ export type GetKnodeApiKeychainsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetKnodeApiKeychainsError = GetKnodeApiKeychainsErrors[keyof GetKnodeApiKeychainsErrors];
@@ -2650,6 +2794,10 @@ export type CreateKnodeApiKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
@@ -2689,6 +2837,10 @@ export type DeleteKnodeApiKeychainErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DeleteKnodeApiKeychainError = DeleteKnodeApiKeychainErrors[keyof DeleteKnodeApiKeychainErrors];
@@ -2728,6 +2880,10 @@ export type GetKnodeApiKeychainDetailsErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetKnodeApiKeychainDetailsError = GetKnodeApiKeychainDetailsErrors[keyof GetKnodeApiKeychainDetailsErrors];
@@ -2767,6 +2923,10 @@ export type UpdateKnodeApiKeychainErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UpdateKnodeApiKeychainError = UpdateKnodeApiKeychainErrors[keyof UpdateKnodeApiKeychainErrors];
@@ -2815,6 +2975,10 @@ export type GetKnodeApiKeychainKeysErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetKnodeApiKeychainKeysError = GetKnodeApiKeychainKeysErrors[keyof GetKnodeApiKeychainKeysErrors];
@@ -2858,6 +3022,10 @@ export type UploadKnodeApiKeychainKeyErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UploadKnodeApiKeychainKeyError = UploadKnodeApiKeychainKeyErrors[keyof UploadKnodeApiKeychainKeyErrors];
@@ -2898,6 +3066,10 @@ export type RemoveKnodeApiKeychainKeyErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveKnodeApiKeychainKeyError = RemoveKnodeApiKeychainKeyErrors[keyof RemoveKnodeApiKeychainKeyErrors];
@@ -2938,6 +3110,10 @@ export type DownloadKnodeApiKeychainKeyErrors = {
      * Knode API Keychain Key not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DownloadKnodeApiKeychainKeyError = DownloadKnodeApiKeychainKeyErrors[keyof DownloadKnodeApiKeychainKeyErrors];
@@ -2986,6 +3162,10 @@ export type GetKnodeApiKeychainMembersErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetKnodeApiKeychainMembersError = GetKnodeApiKeychainMembersErrors[keyof GetKnodeApiKeychainMembersErrors];
@@ -3029,6 +3209,10 @@ export type AddKnodeApiKeychainMemberErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type AddKnodeApiKeychainMemberError = AddKnodeApiKeychainMemberErrors[keyof AddKnodeApiKeychainMemberErrors];
@@ -3069,6 +3253,10 @@ export type RemoveKnodeApiKeychainMemberErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveKnodeApiKeychainMemberError = RemoveKnodeApiKeychainMemberErrors[keyof RemoveKnodeApiKeychainMemberErrors];
@@ -3105,6 +3293,10 @@ export type GetKnodeApiKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetKnodeApiKeychainMembershipError = GetKnodeApiKeychainMembershipErrors[keyof GetKnodeApiKeychainMembershipErrors];
@@ -3151,6 +3343,10 @@ export type GetProducerKeychainsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainsError = GetProducerKeychainsErrors[keyof GetProducerKeychainsErrors];
@@ -3184,6 +3380,10 @@ export type CreateProducerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];
@@ -3223,6 +3423,10 @@ export type DeleteProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DeleteProducerKeychainError = DeleteProducerKeychainErrors[keyof DeleteProducerKeychainErrors];
@@ -3262,6 +3466,10 @@ export type GetProducerKeychainDetailsErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainDetailsError = GetProducerKeychainDetailsErrors[keyof GetProducerKeychainDetailsErrors];
@@ -3301,6 +3509,10 @@ export type UpdateProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];
@@ -3349,6 +3561,10 @@ export type GetProducerKeychainMembersErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainMembersError = GetProducerKeychainMembersErrors[keyof GetProducerKeychainMembersErrors];
@@ -3392,6 +3608,10 @@ export type AddProducerKeychainMemberErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type AddProducerKeychainMemberError = AddProducerKeychainMemberErrors[keyof AddProducerKeychainMemberErrors];
@@ -3432,6 +3652,10 @@ export type RemoveProducerKeychainMemberErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveProducerKeychainMemberError = RemoveProducerKeychainMemberErrors[keyof RemoveProducerKeychainMemberErrors];
@@ -3468,6 +3692,10 @@ export type GetProducerKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainMembershipError = GetProducerKeychainMembershipErrors[keyof GetProducerKeychainMembershipErrors];
@@ -3516,6 +3744,10 @@ export type GetProducerKeychainKeysErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainKeysError = GetProducerKeychainKeysErrors[keyof GetProducerKeychainKeysErrors];
@@ -3559,6 +3791,10 @@ export type UploadProducerKeychainKeyErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UploadProducerKeychainKeyError = UploadProducerKeychainKeyErrors[keyof UploadProducerKeychainKeyErrors];
@@ -3599,6 +3835,10 @@ export type RemoveProducerKeychainKeyErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveProducerKeychainKeyError = RemoveProducerKeychainKeyErrors[keyof RemoveProducerKeychainKeyErrors];
@@ -3639,6 +3879,10 @@ export type DownloadProducerKeychainKeyErrors = {
      * Producer Keychain Key not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DownloadProducerKeychainKeyError = DownloadProducerKeychainKeyErrors[keyof DownloadProducerKeychainKeyErrors];
@@ -3687,6 +3931,10 @@ export type GetProducerKeychainEservicesErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainEservicesError = GetProducerKeychainEservicesErrors[keyof GetProducerKeychainEservicesErrors];
@@ -3730,6 +3978,10 @@ export type LinkEserviceToProducerKeychainErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type LinkEserviceToProducerKeychainError = LinkEserviceToProducerKeychainErrors[keyof LinkEserviceToProducerKeychainErrors];
@@ -3770,6 +4022,10 @@ export type UnlinkEserviceFromProducerKeychainErrors = {
      * Producer Keychain or E-service link not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UnlinkEserviceFromProducerKeychainError = UnlinkEserviceFromProducerKeychainErrors[keyof UnlinkEserviceFromProducerKeychainErrors];
@@ -3803,6 +4059,10 @@ export type GetOperatorsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetOperatorsError = GetOperatorsErrors[keyof GetOperatorsErrors];
@@ -3845,6 +4105,10 @@ export type GetConsumerCatalogEservicesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerCatalogEservicesError = GetConsumerCatalogEservicesErrors[keyof GetConsumerCatalogEservicesErrors];
@@ -3886,6 +4150,10 @@ export type GetConsumerEserviceDetailsErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerEserviceDetailsError = GetConsumerEserviceDetailsErrors[keyof GetConsumerEserviceDetailsErrors];
@@ -3931,6 +4199,10 @@ export type GetConsumerEservicePurposeFormOptionsErrors = {
      * E-service mode is not ReceiveData
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerEservicePurposeFormOptionsError = GetConsumerEservicePurposeFormOptionsErrors[keyof GetConsumerEservicePurposeFormOptionsErrors];
@@ -3972,6 +4244,10 @@ export type GetConsumerEserviceLatestVersionInterfaceErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
@@ -4019,6 +4295,10 @@ export type GetConsumerEservicesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
     /**
      * Multi-knode listing not supported
      */
@@ -4070,6 +4350,10 @@ export type GetConsumerAgreementsErrors = {
      */
     403: Problem;
     /**
+     * Too Many Requests
+     */
+    429: Problem;
+    /**
      * Multi-knode listing not supported
      */
     501: Problem;
@@ -4106,6 +4390,10 @@ export type CreateConsumerAgreementErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateConsumerAgreementError = CreateConsumerAgreementErrors[keyof CreateConsumerAgreementErrors];
@@ -4139,6 +4427,10 @@ export type GetConsumerAgreementCountersErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
     /**
      * Multi-knode listing not supported
      */
@@ -4185,6 +4477,10 @@ export type GetPendingConsumerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
     /**
      * Multi-knode listing not supported
      */
@@ -4234,6 +4530,10 @@ export type CreateAgreementConsumerActivationMagicLinkErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateAgreementConsumerActivationMagicLinkError = CreateAgreementConsumerActivationMagicLinkErrors[keyof CreateAgreementConsumerActivationMagicLinkErrors];
@@ -4279,6 +4579,10 @@ export type ReactivateAgreementByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ReactivateAgreementByConsumerError = ReactivateAgreementByConsumerErrors[keyof ReactivateAgreementByConsumerErrors];
@@ -4324,6 +4628,10 @@ export type SuspendAgreementByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendAgreementByConsumerError = SuspendAgreementByConsumerErrors[keyof SuspendAgreementByConsumerErrors];
@@ -4369,6 +4677,10 @@ export type ArchiveAgreementByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ArchiveAgreementByConsumerError = ArchiveAgreementByConsumerErrors[keyof ArchiveAgreementByConsumerErrors];
@@ -4428,6 +4740,10 @@ export type GetConsumerPurposesErrors = {
      */
     404: Problem;
     /**
+     * Too Many Requests
+     */
+    429: Problem;
+    /**
      * Multi-knode listing not supported
      */
     501: Problem;
@@ -4472,6 +4788,10 @@ export type CreateConsumerPurposeErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateConsumerPurposeError = CreateConsumerPurposeErrors[keyof CreateConsumerPurposeErrors];
@@ -4507,6 +4827,10 @@ export type GetConsumerCurrentPurposeFormSchemasErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerCurrentPurposeFormSchemasError = GetConsumerCurrentPurposeFormSchemasErrors[keyof GetConsumerCurrentPurposeFormSchemasErrors];
@@ -4548,6 +4872,10 @@ export type GetConsumerPurposeDetailsErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerPurposeDetailsError = GetConsumerPurposeDetailsErrors[keyof GetConsumerPurposeDetailsErrors];
@@ -4593,6 +4921,10 @@ export type ReactivatePurposeByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ReactivatePurposeByConsumerError = ReactivatePurposeByConsumerErrors[keyof ReactivatePurposeByConsumerErrors];
@@ -4638,6 +4970,10 @@ export type SuspendPurposeByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendPurposeByConsumerError = SuspendPurposeByConsumerErrors[keyof SuspendPurposeByConsumerErrors];
@@ -4683,6 +5019,10 @@ export type ArchivePurposeByConsumerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ArchivePurposeByConsumerError = ArchivePurposeByConsumerErrors[keyof ArchivePurposeByConsumerErrors];
@@ -4716,6 +5056,10 @@ export type GetSessionOrganizationErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetSessionOrganizationError = GetSessionOrganizationErrors[keyof GetSessionOrganizationErrors];
@@ -4770,6 +5114,10 @@ export type GetProducerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
@@ -4809,6 +5157,10 @@ export type GetProducerAgreementDetailsErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerAgreementDetailsError = GetProducerAgreementDetailsErrors[keyof GetProducerAgreementDetailsErrors];
@@ -4852,6 +5204,10 @@ export type ReactivateAgreementByProducerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ReactivateAgreementByProducerError = ReactivateAgreementByProducerErrors[keyof ReactivateAgreementByProducerErrors];
@@ -4895,6 +5251,10 @@ export type SuspendAgreementByProducerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendAgreementByProducerError = SuspendAgreementByProducerErrors[keyof SuspendAgreementByProducerErrors];
@@ -4953,6 +5313,10 @@ export type GetProducerPurposesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];
@@ -4992,6 +5356,10 @@ export type GetProducerPurposeDetailsErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerPurposeDetailsError = GetProducerPurposeDetailsErrors[keyof GetProducerPurposeDetailsErrors];
@@ -5035,6 +5403,10 @@ export type ReactivatePurposeByProducerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ReactivatePurposeByProducerError = ReactivatePurposeByProducerErrors[keyof ReactivatePurposeByProducerErrors];
@@ -5078,6 +5450,10 @@ export type SuspendPurposeByProducerErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendPurposeByProducerError = SuspendPurposeByProducerErrors[keyof SuspendPurposeByProducerErrors];
@@ -5119,6 +5495,10 @@ export type ActivateAgreementErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ActivateAgreementError = ActivateAgreementErrors[keyof ActivateAgreementErrors];
@@ -5156,6 +5536,10 @@ export type GetAgreementActivationDetailsErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetAgreementActivationDetailsError = GetAgreementActivationDetailsErrors[keyof GetAgreementActivationDetailsErrors];

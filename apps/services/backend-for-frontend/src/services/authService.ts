@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 
+import { requestContext } from "@fastify/request-context";
 import {
   ExternalUISessionMagicLinkTokenClaims,
   UISessionRefreshTokenClaims,
@@ -13,9 +14,14 @@ import {
 } from "@knodia/common-models/ids";
 import { CommaSeparatedList, NonEmptyArray } from "@knodia/common-models/types";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  enforceRateLimit,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import { type TokenGenerator } from "@knodia/token-generator";
-import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import z from "zod";
 
 import type { BffProcessConfig } from "../config/config.ts";
@@ -36,14 +42,42 @@ const ClaimsFromCognito = z.object({
   username: z.string(),
 });
 
+interface AuthServiceBuilderOptions {
+  config: BffProcessConfig;
+  magicLinkTokenStore: JtiReplayStore;
+  rateLimiter: RateLimiter;
+  refreshTokenStore: JtiReplayStore;
+  tokenGenerator: TokenGenerator;
+}
+
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
-export function authServiceBuilder(
-  config: BffProcessConfig,
-  tokenGenerator: TokenGenerator,
-  refreshTokenStore: JtiReplayStore,
-  magicLinkTokenStore: JtiReplayStore,
-) {
+export function authServiceBuilder({
+  config,
+  magicLinkTokenStore,
+  rateLimiter,
+  refreshTokenStore,
+  tokenGenerator,
+}: AuthServiceBuilderOptions) {
+  // Always invoked after credential verification — buckets key on the
+  // resolved tenant, not on IP / a shared fallback.
+  function rateLimit(rateLimitKey: string): Promise<void> {
+    const { logger } = getContextValues(requestContext);
+    return enforceRateLimit(rateLimiter, rateLimitKey, logger);
+  }
+
+  async function consumeSingleUseJti(
+    store: JtiReplayStore,
+    jti: string,
+    exp: number,
+    label: string,
+  ): Promise<void> {
+    const firstUse = await store.consume(jti, exp);
+    if (!firstUse) {
+      throw unauthorizedError(`${label} already used`);
+    }
+  }
+
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
     createRemoteJWKSet(new URL(url)),
@@ -138,7 +172,9 @@ export function authServiceBuilder(
     }
   }
 
-  async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
+  async function verifyRefreshTokenClaims(
+    token: string,
+  ): Promise<{ claims: ClaimsFromCognito; exp: number; jti: string }> {
     const rawPayload = await verifyAgainstJwksSets({
       algorithms: ["RS256"],
       audience: config.acceptedAudiences,
@@ -153,25 +189,23 @@ export function authServiceBuilder(
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    const firstUse = await refreshTokenStore.consume(
-      parsed.data.jti,
-      parsed.data.exp,
-    );
-    if (!firstUse) {
-      throw unauthorizedError("Refresh token already used");
-    }
-
-    return ClaimsFromCognito.parse({
-      organizationId: parsed.data.organizationId,
-      roles: parsed.data.roles,
-      sub: parsed.data.sub,
-      username: parsed.data.username,
-    });
+    return {
+      claims: ClaimsFromCognito.parse({
+        organizationId: parsed.data.organizationId,
+        roles: parsed.data.roles,
+        sub: parsed.data.sub,
+        username: parsed.data.username,
+      }),
+      exp: parsed.data.exp,
+      jti: parsed.data.jti,
+    };
   }
 
-  async function verifyMagicLinkToken(
-    token: string,
-  ): Promise<ExternalUISessionMagicLinkTokenClaims> {
+  async function verifyMagicLinkTokenClaims(token: string): Promise<{
+    claims: ExternalUISessionMagicLinkTokenClaims;
+    exp: number;
+    jti: string;
+  }> {
     const rawPayload = await verifyAgainstJwksSets({
       algorithms: ["RS256"],
       audience: config.externalUiSessionMagicLinkAccepted.audience,
@@ -186,15 +220,7 @@ export function authServiceBuilder(
       throw unauthorizedError("Invalid magic-link token claims");
     }
 
-    const firstUse = await magicLinkTokenStore.consume(
-      parsed.data.jti,
-      parsed.data.exp,
-    );
-    if (!firstUse) {
-      throw unauthorizedError("Magic-link token already used");
-    }
-
-    return parsed.data;
+    return { claims: parsed.data, exp: parsed.data.exp, jti: parsed.data.jti };
   }
 
   return {
@@ -202,7 +228,17 @@ export function authServiceBuilder(
       agreementId: AgreementId;
       externalUiSessionToken: string;
     }> {
-      const claims = await verifyMagicLinkToken(magicLinkToken);
+      const { claims, exp, jti } =
+        await verifyMagicLinkTokenClaims(magicLinkToken);
+      // Consume before rate-limit so replays 401 at the store without draining
+      // the per-tenant bucket. See authService.unit.test.ts for the invariant.
+      await consumeSingleUseJti(
+        magicLinkTokenStore,
+        jti,
+        exp,
+        "Magic-link token",
+      );
+      await rateLimit(claims.consumer.id);
       const { serialized } =
         await tokenGenerator.generateExternalUISessionToken({
           agreement: {
@@ -240,6 +276,7 @@ export function authServiceBuilder(
       uiSessionToken: string;
     }> {
       const claims = await validateCognitoToken(cognitoToken);
+      await rateLimit(claims.organizationId);
       return generateTokenPairFromClaims(claims);
     },
 
@@ -247,19 +284,23 @@ export function authServiceBuilder(
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      const claims = await verifyRefreshToken(refreshToken);
+      const { claims, exp, jti } = await verifyRefreshTokenClaims(refreshToken);
+      // See exchangeMagicLinkToken for why the store runs before rate-limit.
+      await consumeSingleUseJti(refreshTokenStore, jti, exp, "Refresh token");
+      await rateLimit(claims.organizationId);
       return generateTokenPairFromClaims(claims);
     },
 
     async revokeRefreshToken(refreshToken: string): Promise<void> {
+      // Signature is verified (not just decoded) so an allowed origin can't
+      // spam DynamoDB writes with fabricated tokens. No rate-limit here:
+      // a 429 would leave a valid JTI live for its full TTL (default 24h).
       try {
-        const payload = decodeJwt(refreshToken);
-        const parsed = UISessionRefreshTokenClaims.safeParse(payload);
-        if (parsed.success) {
-          await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
-        }
+        const verified = await verifyRefreshTokenClaims(refreshToken);
+        await refreshTokenStore.revoke(verified.jti, verified.exp);
       } catch {
         // Best-effort: if the token is malformed, there is nothing to revoke
+        return;
       }
     },
   };
