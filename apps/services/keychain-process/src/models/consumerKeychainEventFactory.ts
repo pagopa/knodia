@@ -9,7 +9,9 @@ import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/k
 
 import {
   type ConsumerKeychain,
+  type ProducerKeychain,
   toConsumerKeychainV1,
+  toProducerKeychainV1,
 } from "@knodia/keychain-models";
 
 export const createConsumerKeychainCreatedV1Event = (
@@ -178,4 +180,19 @@ export const createConsumerKeychainPurposeUnlinkedV1Event = ({
     type: "ConsumerKeychainPurposeUnlinkedV1",
   },
   streamId: consumerKeychain.id,
+});
+
+export const createProducerKeychainCreatedV1Event = (
+  keychain: ProducerKeychain,
+  correlationId: CorrelationId,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion: undefined,
+  event: {
+    data: {
+      producerKeychain: toProducerKeychainV1(keychain),
+    },
+    type: "ProducerKeychainCreatedV1",
+  },
+  streamId: keychain.id,
 });

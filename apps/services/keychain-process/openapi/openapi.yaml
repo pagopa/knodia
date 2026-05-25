@@ -215,18 +215,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerKeychainSeed:
-      type: object
-      properties:
-        description:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
-      required:
-        - name
-      additionalProperties: false
-    KnodeApiKeychainSeed:
+    KeychainSeed:
       type: object
       properties:
         description:
@@ -499,7 +488,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       parameters:
         - schema:
             allOf:
@@ -1647,7 +1636,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/KnodeApiKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       parameters:
         - schema:
             allOf:

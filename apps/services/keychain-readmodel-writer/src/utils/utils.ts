@@ -7,6 +7,7 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   consumerKeychainWriterServiceBuilder,
   knodeApiKeychainWriterServiceBuilder,
+  producerKeychainWriterServiceBuilder,
 } from "@knodia/db-readmodel-keychain/services";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
@@ -21,6 +22,8 @@ export const createProcessMessage = (
     consumerKeychainWriterServiceBuilder(readmodelDb);
   const knodeApiKeychainWriterService =
     knodeApiKeychainWriterServiceBuilder(readmodelDb);
+  const producerKeychainWriterService =
+    producerKeychainWriterServiceBuilder(readmodelDb);
 
   return async function processMessage({
     message,
@@ -40,6 +43,7 @@ export const createProcessMessage = (
     await handleKeychainEvent(event, {
       consumerKeychainWriterService,
       knodeApiKeychainWriterService,
+      producerKeychainWriterService,
     });
 
     messageLogger.info(
