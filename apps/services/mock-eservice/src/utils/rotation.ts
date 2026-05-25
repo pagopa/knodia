@@ -7,6 +7,9 @@ export interface SignalHubSeedConfig {
   startDateMs: number;
 }
 
+// periodId stays non-negative: config validates
+// `SIGNAL_HUB_SEED_START_DATE_MS <= now` at parse time, so `now >= startDateMs`
+// always holds and findResidence never indexes the rotation cycle negatively.
 export function computePeriodId(
   now: number,
   {

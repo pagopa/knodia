@@ -60,7 +60,8 @@ export async function signEserviceAccessToken({
     },
     nbf: now,
     producer: { id: producerId, knode_id: knodeId },
-    purpose: { id: generateId<PurposeId>(), knode_id: otherKnodeId },
+    // A purpose lives on the producer's knode, same as the e-service.
+    purpose: { id: generateId<PurposeId>(), knode_id: knodeId },
   };
 
   return new SignJWT({ ...defaultPayload, ...payload })
