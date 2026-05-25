@@ -11,7 +11,8 @@ import type {
 } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { and, eq } from "drizzle-orm";
+import { assertSQLFiltersAreDefined } from "@knodia/db-readmodel-commons/utils";
+import { and, eq, type SQL } from "drizzle-orm";
 
 import {
   aggregateEservice,
@@ -28,9 +29,11 @@ import {
 
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
-    async getEserviceById(
-      eserviceId: EserviceId,
+    async getEserviceByFilter(
+      filters: SQL | undefined,
     ): Promise<undefined | WithMetadata<Eservice>> {
+      assertSQLFiltersAreDefined(filters);
+
       const queryRes = await readmodelDb
         .select({
           category: readmodelEserviceCategory,
@@ -68,9 +71,14 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             ),
           ),
         )
-        .where(eq(readmodelEservice.id, eserviceId));
+        .where(filters);
 
       return aggregateEservice(queryRes);
+    },
+    async getEserviceById(
+      eserviceId: EserviceId,
+    ): Promise<undefined | WithMetadata<Eservice>> {
+      return this.getEserviceByFilter(eq(readmodelEservice.id, eserviceId));
     },
     async getEserviceVersionById(
       eserviceId: EserviceId,

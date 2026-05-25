@@ -46,6 +46,7 @@
     "./network": "./src/testcontainers/network.ts",
     "./readmodel": "./src/readmodel.ts",
     "./remoteResourceDb": "./src/remoteResourceDb.ts",
+    "./signalHubDb": "./src/signalHubDb.ts",
     "./types": "./src/models/types.ts",
     "./utils": "./src/utils/index.ts"
   }
