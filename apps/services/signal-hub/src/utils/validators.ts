@@ -1,0 +1,59 @@
+import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
+import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
+
+import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
+
+import type { ReadmodelService } from "../services/readmodelService.ts";
+
+import {
+  eserviceNotActive,
+  eserviceSignalHubNotEnabled,
+  nonConsecutiveSignalId,
+  signalAlreadyExists,
+} from "../models/errors.ts";
+import { retrieveEserviceByIdAndProducerId } from "./readmodelUtils.ts";
+
+export async function assertEserviceIsActiveWithSignalHubEnabled(
+  eserviceId: EserviceId,
+  producerId: OrganizationId,
+  readmodelService: ReadmodelService,
+) {
+  const eservice = await retrieveEserviceByIdAndProducerId(
+    eserviceId,
+    producerId,
+    readmodelService,
+  );
+
+  assertEserviceIsActive(eservice.data);
+  assertEserviceHasSignalHubEnabled(eservice.data);
+}
+
+export async function assertSignalCanBePushed(
+  signalId: number,
+  eserviceId: EserviceId,
+  signalHubDbService: SignalHubDbService,
+) {
+  const maxSignalId = await signalHubDbService.getMaxSignalId(eserviceId);
+  if (signalId <= maxSignalId) {
+    throw signalAlreadyExists(signalId, eserviceId);
+  }
+  if (signalId !== maxSignalId + 1) {
+    throw nonConsecutiveSignalId(signalId, maxSignalId, eserviceId);
+  }
+}
+
+function assertEserviceHasSignalHubEnabled(eservice: Eservice) {
+  if (!eservice.isSignalHubEnabled) {
+    throw eserviceSignalHubNotEnabled(eservice.id);
+  }
+}
+
+function assertEserviceIsActive(eservice: Eservice) {
+  const isActive = eservice.versions.some(
+    (version) => version.state === EserviceVersionState.enum.Active,
+  );
+
+  if (!isActive) {
+    throw eserviceNotActive(eservice.id);
+  }
+}
