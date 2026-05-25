@@ -2619,3 +2619,5 @@ tags:
     name: consumerKeychain
   - description: Knode API keychain routes
     name: knodeApiKeychain
+  - description: Producer keychain routes
+    name: producerKeychain

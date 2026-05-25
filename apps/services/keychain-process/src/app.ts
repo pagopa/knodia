@@ -71,6 +71,10 @@ export function buildApp({
             description: "Knode API keychain routes",
             name: apiTags.knodeApiKeychain,
           },
+          {
+            description: "Producer keychain routes",
+            name: apiTags.producerKeychain,
+          },
         ],
       },
     },
