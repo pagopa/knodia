@@ -1,142 +1,660 @@
 {
   "BNCFNC67D61H703B": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Campania",
-    "fullAddress": "Via Roma 12, 84121 Salerno SA",
-    "postCode": "84121",
-    "postName": "Salerno"
+    "adminUnitL2": "Piemonte",
+    "fullAddress": "Via Po 12, 10123 Torino TO",
+    "postCode": "10123",
+    "postName": "Torino"
   },
   "BNCLRN83L04H118T": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Sardegna",
-    "fullAddress": "Via Cagliari 3, 09045 Quartu Sant'Elena CA",
-    "postCode": "09045",
-    "postName": "Quartu Sant'Elena"
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Roma 22, 80121 Napoli NA",
+    "postCode": "80121",
+    "postName": "Napoli"
+  },
+  "BNCMRA03P60L833V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Piemonte",
+    "fullAddress": "Via Roma 12, 13100 Vercelli VC",
+    "postCode": "13100",
+    "postName": "Vercelli"
   },
   "BRNFNC87H46E506V": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Puglia",
-    "fullAddress": "Via Salento 8, 73100 Lecce LE",
-    "postCode": "73100",
-    "postName": "Lecce"
+    "adminUnitL2": "Lombardia",
+    "fullAddress": "Via San Vittore 12, 20123 Milano MI",
+    "postCode": "20123",
+    "postName": "Milano"
+  },
+  "BRNLCA03M54F839V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Etnea 324, 95129 Catania CT",
+    "postCode": "95129",
+    "postName": "Catania"
+  },
+  "BRNLNR90C12L407T": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Tiburtina 1234, 00131 Roma RM",
+    "postCode": "00131",
+    "postName": "Roma"
   },
   "BRNNDR83T01F205C": {
     "adminUnitL1": "Italia",
     "adminUnitL2": "Lombardia",
-    "fullAddress": "Via Manzoni 21, 20121 Milano MI",
-    "postCode": "20121",
+    "fullAddress": "Via Monte Rosa 91, 20149 Milano MI",
+    "postCode": "20149",
     "postName": "Milano"
   },
   "CLMRLN82L65B832B": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Toscana",
-    "fullAddress": "Via Marmi 5, 54033 Carrara MS",
-    "postCode": "54033",
-    "postName": "Carrara"
+    "adminUnitL2": "Calabria",
+    "fullAddress": "Via Nazionale 55, 87064 Corigliano‑Rossano CS",
+    "postCode": "87064",
+    "postName": "Corigliano‑Rossano"
   },
   "CNTLNR65T08A064Y": {
     "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Appia 55, 04100 Latina LT",
+    "postCode": "04100",
+    "postName": "Latina"
+  },
+  "CNTLRN88E03G999M": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Marche",
+    "fullAddress": "Via XX Settembre 12, 60121 Ancona AN",
+    "postCode": "60121",
+    "postName": "Ancona"
+  },
+  "CNTLSN01P18E289Y": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Roma 88, 57121 Livorno LI",
+    "postCode": "57121",
+    "postName": "Livorno"
+  },
+  "CNTMRA73T25I690S": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Piemonte",
+    "fullAddress": "Via Torino 88, 28100 Novara NO",
+    "postCode": "28100",
+    "postName": "Novara"
+  },
+  "CNTMRA79M63A662O": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Piemonte",
+    "fullAddress": "Corso Francia 101, 10138 Torino TO",
+    "postCode": "10138",
+    "postName": "Torino"
+  },
+  "CNTMRA82C14A794X": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Piave 22, 31100 Treviso TV",
+    "postCode": "31100",
+    "postName": "Treviso"
+  },
+  "CNTMRA93H01D548C": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Emilia‑Romagna",
+    "fullAddress": "Via Emilia 72, 29121 Piacenza PC",
+    "postCode": "29121",
+    "postName": "Piacenza"
+  },
+  "CNTNNA87H58B963N": {
+    "adminUnitL1": "Italia",
     "adminUnitL2": "Campania",
-    "fullAddress": "Via Roma 9, 80021 Afragola NA",
-    "postCode": "80021",
-    "postName": "Afragola"
+    "fullAddress": "Via Nazionale 55, 84014 Nocera Inferiore SA",
+    "postCode": "84014",
+    "postName": "Nocera Inferiore"
+  },
+  "CNTSFO71S48E715B": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Vittorio Emanuele 88, 95131 Catania CT",
+    "postCode": "95131",
+    "postName": "Catania"
+  },
+  "CNTSFO82A41H163W": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Libertà 12, 97015 Modica RG",
+    "postCode": "97015",
+    "postName": "Modica"
+  },
+  "CSTFNC85D51D150B": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Roma 55, 50123 Firenze FI",
+    "postCode": "50123",
+    "postName": "Firenze"
   },
   "CSTGLI84P56D960K": {
     "adminUnitL1": "Italia",
+    "adminUnitL2": "Liguria",
+    "fullAddress": "Via Roma 44, 18012 Bordighera IM",
+    "postCode": "18012",
+    "postName": "Bordighera"
+  },
+  "CSTGLI89T58L483O": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Liguria",
+    "fullAddress": "Via XX Settembre 12, 16121 Genova GE",
+    "postCode": "16121",
+    "postName": "Genova"
+  },
+  "CSTGRG86S65E463Q": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Calabria",
+    "fullAddress": "Via Marina 77, 89900 Vibo Valentia VV",
+    "postCode": "89900",
+    "postName": "Vibo Valentia"
+  },
+  "CSTLCA90E67A225Z": {
+    "adminUnitL1": "Italia",
     "adminUnitL2": "Sicilia",
-    "fullAddress": "Via Sicilia 17, 93012 Gela CL",
-    "postCode": "93012",
-    "postName": "Gela"
+    "fullAddress": "Via Atenea 12, 92100 Agrigento AG",
+    "postCode": "92100",
+    "postName": "Agrigento"
+  },
+  "CSTLCU86D08D086A": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Umbria",
+    "fullAddress": "Via Garibaldi 77, 06034 Foligno PG",
+    "postCode": "06034",
+    "postName": "Foligno"
+  },
+  "CSTLRN66L15H199F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Toledo 256, 80132 Napoli NA",
+    "postCode": "80132",
+    "postName": "Napoli"
+  },
+  "CSTLRN99C29D704L": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Bari 77, 70122 Bari BA",
+    "postCode": "70122",
+    "postName": "Bari"
+  },
+  "CSTSFO96S68I480S": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Vittorio Veneto 12, 95024 Acireale CT",
+    "postCode": "95024",
+    "postName": "Acireale"
+  },
+  "DLCLCA93P56A952U": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Benedetto Croce 12, 80134 Napoli NA",
+    "postCode": "80134",
+    "postName": "Napoli"
   },
   "DLCMRA90C52A783M": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Campania",
-    "fullAddress": "Via Sannio 4, 82100 Benevento BN",
-    "postCode": "82100",
-    "postName": "Benevento"
+    "adminUnitL2": "Marche",
+    "fullAddress": "Via Roma 77, 63074 San Benedetto del Tronto AP",
+    "postCode": "63074",
+    "postName": "San Benedetto del Tronto"
   },
-  "FRRGRG71R48L872B": {
+  "DLCMRA93H50C502E": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Marche",
+    "fullAddress": "Via Roma 33, 62100 Macerata MC",
+    "postCode": "62100",
+    "postName": "Macerata"
+  },
+  "DLCMTT99S03G535X": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Marche",
+    "fullAddress": "Via Garibaldi 8, 63100 Ascoli Piceno AP",
+    "postCode": "63100",
+    "postName": "Ascoli Piceno"
+  },
+  "DLCNND91H18F052N": {
     "adminUnitL1": "Italia",
     "adminUnitL2": "Lombardia",
-    "fullAddress": "Via Lomellina 11, 27029 Vigevano PV",
-    "postCode": "27029",
-    "postName": "Vigevano"
+    "fullAddress": "Via Milano 22, 25121 Brescia BS",
+    "postCode": "25121",
+    "postName": "Brescia"
+  },
+  "DLCNND91M10F704V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lombardia",
+    "fullAddress": "Via Dante 9, 22100 Como CO",
+    "postCode": "22100",
+    "postName": "Como"
+  },
+  "FRRGBR72L06M297U": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Normandie",
+    "fullAddress": "10 Rue Jeanne d’Arc, 76000 Rouen",
+    "postCode": "76000",
+    "postName": "Rouen"
+  },
+  "FRRGRG71R48L872B": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Grand Est",
+    "fullAddress": "22 Rue des Dominicains, 54000 Nancy",
+    "postCode": "54000",
+    "postName": "Nancy"
+  },
+  "FRRLCU95L07L736P": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Emilia‑Romagna",
+    "fullAddress": "Via Indipendenza 67, 40121 Bologna BO",
+    "postCode": "40121",
+    "postName": "Bologna"
+  },
+  "FRRLNE82B58G337U": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Umbria",
+    "fullAddress": "Corso Vannucci 45, 06121 Perugia PG",
+    "postCode": "06121",
+    "postName": "Perugia"
+  },
+  "FRRLNR70S09H294Y": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Occitanie",
+    "fullAddress": "5 Rue du Taur, 31000 Toulouse",
+    "postCode": "31000",
+    "postName": "Toulouse"
+  },
+  "FRRLNR94D07E441B": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Bretagne",
+    "fullAddress": "5 Rue Saint‑Michel, 35000 Rennes",
+    "postCode": "35000",
+    "postName": "Rennes"
+  },
+  "FRRLRN80E10A479N": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Auvergne‑Rhône‑Alpes",
+    "fullAddress": "8 Rue de la République, 69002 Lyon",
+    "postCode": "69002",
+    "postName": "Lyon"
+  },
+  "FRRNNA63C52L219S": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Île‑de‑France",
+    "fullAddress": "12 Rue de Rivoli, 75004 Paris",
+    "postCode": "75004",
+    "postName": "Paris"
+  },
+  "FRRSFO04S53L424N": {
+    "adminUnitL1": "Francia",
+    "adminUnitL2": "Provence‑Alpes‑Côte d’Azur",
+    "fullAddress": "18 Avenue Jean Médecin, 06000 Nice",
+    "postCode": "06000",
+    "postName": "Nice"
+  },
+  "GLLGBR78A01B354R": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Prenestina 944, 00155 Roma RM",
+    "postCode": "00155",
+    "postName": "Roma"
   },
   "GLLGPP62T29C352V": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Calabria",
-    "fullAddress": "Via Sila 6, 88100 Catanzaro CZ",
-    "postCode": "88100",
-    "postName": "Catanzaro"
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Roma 14, 07041 Alghero SS",
+    "postCode": "07041",
+    "postName": "Alghero"
   },
-  "GRCCHR80P42I452C": {
+  "GLLLCA98T57A271Y": {
     "adminUnitL1": "Italia",
     "adminUnitL2": "Sardegna",
-    "fullAddress": "Via Mazzini 14, 07100 Sassari SS",
+    "fullAddress": "Via Dante 77, 07100 Sassari SS",
     "postCode": "07100",
     "postName": "Sassari"
   },
+  "GLLLNR84T06L331I": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Sassari 12, 07026 Olbia SS",
+    "postCode": "07026",
+    "postName": "Olbia"
+  },
+  "GLLMRA03D69E472T": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Libertà 88, 90143 Palermo PA",
+    "postCode": "90143",
+    "postName": "Palermo"
+  },
+  "GLLSFO79C41C933T": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Cagliari 22, 09016 Iglesias SU",
+    "postCode": "09016",
+    "postName": "Iglesias"
+  },
+  "GLLSFO92P57F257O": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sardegna",
+    "fullAddress": "Via Roma 25, 09123 Cagliari CA",
+    "postCode": "09123",
+    "postName": "Cagliari"
+  },
+  "GRCCHR80P42I452C": {
+    "adminUnitL1": "Grecia",
+    "adminUnitL2": "Attica",
+    "fullAddress": "Agiou Konstantinou 32, 10431 Athina",
+    "postCode": "10431",
+    "postName": "Athina"
+  },
+  "GRCCHR86M49B157V": {
+    "adminUnitL1": "Grecia",
+    "adminUnitL2": "Creta",
+    "fullAddress": "Odos 25is Avgoustou 14, 71202 Iraklio",
+    "postCode": "71202",
+    "postName": "Iraklio"
+  },
+  "GRCLRN80D09L049W": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Liguria",
+    "fullAddress": "Via Balbi 3, 16126 Genova GE",
+    "postCode": "16126",
+    "postName": "Genova"
+  },
+  "GRCRRA04S42A944D": {
+    "adminUnitL1": "Grecia",
+    "adminUnitL2": "Attica",
+    "fullAddress": "Leoforos Syngrou 85, 11745 Athina",
+    "postCode": "11745",
+    "postName": "Athina"
+  },
   "MRNCHR84L48G224J": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Veneto",
-    "fullAddress": "Via Cavour 7, 35121 Padova PD",
-    "postCode": "35121",
-    "postName": "Padova"
+    "adminUnitL2": "Calabria",
+    "fullAddress": "Via Marina 12, 89121 Reggio Calabria RC",
+    "postCode": "89121",
+    "postName": "Reggio Calabria"
+  },
+  "MRNFNC77T59G478T": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Fillungo 189, 55100 Lucca LU",
+    "postCode": "55100",
+    "postName": "Lucca"
+  },
+  "MRNFNC88S59G713N": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Roma 33, 51100 Pistoia PT",
+    "postCode": "51100",
+    "postName": "Pistoia"
+  },
+  "MRNGBR91M28L781W": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Sparano 22, 70121 Bari BA",
+    "postCode": "70121",
+    "postName": "Bari"
+  },
+  "MRNLCA75B66M088V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Libertà 22, 90143 Palermo PA",
+    "postCode": "90143",
+    "postName": "Palermo"
+  },
+  "MRNLCA85L62C292E": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Sicilia",
+    "fullAddress": "Via Atenea 55, 92100 Agrigento AG",
+    "postCode": "92100",
+    "postName": "Agrigento"
+  },
+  "MRNLCU76T15C129N": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Umbria",
+    "fullAddress": "Via dei Priori 88, 06123 Perugia PG",
+    "postCode": "06123",
+    "postName": "Perugia"
   },
   "RCCFNC68B26D643F": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Puglia",
-    "fullAddress": "Via Tavoliere 19, 71121 Foggia FG",
-    "postCode": "71121",
-    "postName": "Foggia"
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Mazzini 14, 37121 Verona VR",
+    "postCode": "37121",
+    "postName": "Verona"
+  },
+  "RCCLCU82T12B300F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Emilia‑Romagna",
+    "fullAddress": "Via Garibaldi 22, 44121 Ferrara FE",
+    "postCode": "44121",
+    "postName": "Ferrara"
+  },
+  "RCCLNR68T12F952Y": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Trentino‑Alto Adige",
+    "fullAddress": "Via Museo 33, 39100 Bolzano BZ",
+    "postCode": "39100",
+    "postName": "Bolzano"
+  },
+  "RCCLSN00T07G479K": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Roma 88, 57123 Livorno LI",
+    "postCode": "57123",
+    "postName": "Livorno"
+  },
+  "RCCLSN98P24D488N": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Garibaldi 33, 51100 Pistoia PT",
+    "postCode": "51100",
+    "postName": "Pistoia"
   },
   "RMNFNC04D62L117N": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Umbria",
-    "fullAddress": "Via Terni 2, 05100 Terni TR",
-    "postCode": "05100",
-    "postName": "Terni"
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via dei Colli Portuensi 435, 00151 Roma RM",
+    "postCode": "00151",
+    "postName": "Roma"
+  },
+  "RMNFNC78B52F284G": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Ostiense 333, 00146 Roma RM",
+    "postCode": "00146",
+    "postName": "Roma"
+  },
+  "RMNLCU64E04A345G": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via del Tritone 82, 00187 Roma RM",
+    "postCode": "00187",
+    "postName": "Roma"
+  },
+  "RMNLNR74D20F158G": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Tuscolana 890, 00174 Roma RM",
+    "postCode": "00174",
+    "postName": "Roma"
+  },
+  "RMNNDR93E03M208F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Nomentana 888, 00137 Roma RM",
+    "postCode": "00137",
+    "postName": "Roma"
+  },
+  "RMNRRA70S49D969I": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Garibaldi 45, 30122 Venezia VE",
+    "postCode": "30122",
+    "postName": "Venezia"
   },
   "RSSFNC72L48G811U": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Lazio",
-    "fullAddress": "Via Pontina 30, 00071 Pomezia RM",
-    "postCode": "00071",
-    "postName": "Pomezia"
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Garibaldi 55, 55100 Lucca LU",
+    "postCode": "55100",
+    "postName": "Lucca"
   },
   "RSSGBR04D08I754F": {
     "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Cassia 1450, 00123 Roma RM",
+    "postCode": "00123",
+    "postName": "Roma"
+  },
+  "RSSGBR04M12C707K": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via della Pisana 1230, 00163 Roma RM",
+    "postCode": "00163",
+    "postName": "Roma"
+  },
+  "RSSGLI87E64D122X": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Liguria",
+    "fullAddress": "Via Roma 12, 17100 Savona SV",
+    "postCode": "17100",
+    "postName": "Savona"
+  },
+  "RSSGRG69H67F023M": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Bari 44, 70123 Bari BA",
+    "postCode": "70123",
+    "postName": "Bari"
+  },
+  "RSSGRG94P56A089S": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Puglia",
+    "fullAddress": "Via Roma 12, 73100 Lecce LE",
+    "postCode": "73100",
+    "postName": "Lecce"
+  },
+  "RSSLCA96B67L840B": {
+    "adminUnitL1": "Italia",
     "adminUnitL2": "Sicilia",
-    "fullAddress": "Via Arenella 22, 96100 Siracusa SR",
-    "postCode": "96100",
-    "postName": "Siracusa"
+    "fullAddress": "Via Garibaldi 210, 98122 Messina ME",
+    "postCode": "98122",
+    "postName": "Messina"
+  },
+  "RSSLCU05R22A182F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Umbria",
+    "fullAddress": "Via dei Priori 22, 06123 Perugia PG",
+    "postCode": "06123",
+    "postName": "Perugia"
   },
   "RSSLRN03R07G942J": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Basilicata",
-    "fullAddress": "Via Appia 18, 85100 Potenza PZ",
-    "postCode": "85100",
-    "postName": "Potenza"
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Roma 22, 80016 Marano di Napoli NA",
+    "postCode": "80016",
+    "postName": "Marano di Napoli"
+  },
+  "RSSLRN75E21G482P": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Campania",
+    "fullAddress": "Via Circumvallazione 55, 80035 Nola NA",
+    "postCode": "80035",
+    "postName": "Nola"
+  },
+  "RSSLSN89D11M082J": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Toscana",
+    "fullAddress": "Via Roma 44, 57126 Livorno LI",
+    "postCode": "57126",
+    "postName": "Livorno"
+  },
+  "RSSMRA66P55A669A": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Piave 10, 30171 Mestre VE",
+    "postCode": "30171",
+    "postName": "Mestre"
+  },
+  "RSSMRA68L46A285H": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Roma 4, 35122 Padova PD",
+    "postCode": "35122",
+    "postName": "Padova"
   },
   "RSSMRA82P64L682H": {
     "adminUnitL1": "Italia",
-    "adminUnitL2": "Lombardia",
-    "fullAddress": "Via Garibaldi 25, 21100 Varese VA",
-    "postCode": "21100",
-    "postName": "Varese"
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Roma 19, 31044 Montebelluna TV",
+    "postCode": "31044",
+    "postName": "Montebelluna"
   },
-  "SPSCHR95C51C351Y": {
+  "RSSMRA86E14B429A": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Roma 88, 31100 Treviso TV",
+    "postCode": "31100",
+    "postName": "Treviso"
+  },
+  "RSSMRA90M25G388F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Veneto",
+    "fullAddress": "Via Roma 12, 37122 Verona VR",
+    "postCode": "37122",
+    "postName": "Verona"
+  },
+  "RSSMRA93E54A390R": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Emilia‑Romagna",
+    "fullAddress": "Via Farini 45, 43121 Parma PR",
+    "postCode": "43121",
+    "postName": "Parma"
+  },
+  "RSSMTT05S12G273F": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Appia Nuova 682, 00179 Roma RM",
+    "postCode": "00179",
+    "postName": "Roma"
+  },
+  "RSSNDR89R08B819V": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Lazio",
+    "fullAddress": "Via Salaria 1450, 00138 Roma RM",
+    "postCode": "00138",
+    "postName": "Roma"
+  },
+  "RSSSFO71A68E625W": {
     "adminUnitL1": "Italia",
     "adminUnitL2": "Sicilia",
-    "fullAddress": "Via Etnea 88, 95100 Catania CT",
-    "postCode": "95100",
-    "postName": "Catania"
+    "fullAddress": "Via Maqueda 190, 90133 Palermo PA",
+    "postCode": "90133",
+    "postName": "Palermo"
+  },
+  "SPSCHR95C51C351Y": {
+    "adminUnitL1": "Spagna",
+    "adminUnitL2": "Catalunya",
+    "fullAddress": "Carrer de Mallorca 401, 08013 Barcelona",
+    "postCode": "08013",
+    "postName": "Barcelona"
+  },
+  "SPSLNR85A05E202U": {
+    "adminUnitL1": "Italia",
+    "adminUnitL2": "Liguria",
+    "fullAddress": "Via Roma 5, 18038 Sanremo IM",
+    "postCode": "18038",
+    "postName": "Sanremo"
   },
   "SPSMTT85M22D612K": {
     "adminUnitL1": "Italia",
     "adminUnitL2": "Toscana",
-    "fullAddress": "Via dei Calzaiuoli 10, 50123 Firenze FI",
-    "postCode": "50123",
+    "fullAddress": "Via del Corso 18, 50122 Firenze FI",
+    "postCode": "50122",
     "postName": "Firenze"
   }
 }

@@ -78,7 +78,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(res.statusCode).toBe(200);
       const body = res.json();
       expect(body.naturalPerson.identifier.notation).toBe(ROTATING_NOTATION);
-      expect(body.address.fullAddress).toMatch(/Via del Corso/);
+      expect(body.address.fullAddress).toMatch(/Napoli/);
     });
 
     it("returns 200 with address B in the UPDATE phase (periodId 1)", async () => {
@@ -90,7 +90,7 @@ describe("mock-eservice Signal Hub router", () => {
         url: `/natural-persons/${ROTATING_NOTATION}/residence`,
       });
       expect(res.statusCode).toBe(200);
-      expect(res.json().address.fullAddress).toMatch(/Via Veneto/);
+      expect(res.json().address.fullAddress).toMatch(/Mestre/);
     });
 
     it("returns 404 in the DELETE phase (periodId 2)", async () => {
@@ -113,7 +113,7 @@ describe("mock-eservice Signal Hub router", () => {
         url: `/natural-persons/${ROTATING_NOTATION}/residence`,
       });
       expect(res.statusCode).toBe(200);
-      expect(res.json().address.fullAddress).toMatch(/Via del Corso/);
+      expect(res.json().address.fullAddress).toMatch(/Napoli/);
     });
 
     it("returns 404 for an unknown notation", async () => {

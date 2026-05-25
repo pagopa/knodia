@@ -2,51 +2,51 @@
   "RMNLNR03H12H501Z": [
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Lazio",
-      "fullAddress": "Via del Corso 1, 00186 Roma RM",
-      "postCode": "00186",
-      "postName": "Roma"
+      "adminUnitL2": "Campania",
+      "fullAddress": "Via Roma 12, 80133 Napoli NA",
+      "postCode": "80133",
+      "postName": "Napoli"
     },
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Lazio",
-      "fullAddress": "Via Veneto 50, 00187 Roma RM",
-      "postCode": "00187",
-      "postName": "Roma"
+      "adminUnitL2": "Veneto",
+      "fullAddress": "Corso del Popolo, 14, 30172 Mestre VE",
+      "postCode": "30172",
+      "postName": "Mestre"
     },
     null
   ],
   "CNTLCC89E26L378K": [
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Trentino-Alto Adige",
-      "fullAddress": "Via Belenzani 4, 38122 Trento TN",
-      "postCode": "38122",
-      "postName": "Trento"
+      "adminUnitL2": "Calabria",
+      "fullAddress": "Via Nazionale 45, 89015 Palmi RC",
+      "postCode": "89015",
+      "postName": "Palmi"
     },
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Trentino-Alto Adige",
-      "fullAddress": "Via Manci 18, 38122 Trento TN",
-      "postCode": "38122",
-      "postName": "Trento"
+      "adminUnitL2": "Lombardia",
+      "fullAddress": "Via Monte Rosa, 91, 20149 Milano MI",
+      "postCode": "20149",
+      "postName": "Milano"
     },
     null
   ],
   "RSSGRG65D48G702L": [
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Toscana",
-      "fullAddress": "Lungarno Mediceo 7, 56127 Pisa PI",
-      "postCode": "56127",
-      "postName": "Pisa"
+      "adminUnitL2": "Puglia",
+      "fullAddress": "Via Lecce 12, 72100 Brindisi BR",
+      "postCode": "72100",
+      "postName": "Brindisi"
     },
     {
       "adminUnitL1": "Italia",
-      "adminUnitL2": "Toscana",
-      "fullAddress": "Via Santa Maria 33, 56126 Pisa PI",
-      "postCode": "56126",
-      "postName": "Pisa"
+      "adminUnitL2": "Lazio",
+      "fullAddress": "Via Appia Nuova, 250, 00183 Roma RM",
+      "postCode": "00183",
+      "postName": "Roma"
     },
     null
   ]
