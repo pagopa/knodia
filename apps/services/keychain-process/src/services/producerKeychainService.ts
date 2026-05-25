@@ -6,7 +6,7 @@ import type { ProducerKeychain } from "@knodia/keychain-models";
 
 import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 
-import type { API_ProducerKeychainSeed } from "../models/api.ts";
+import type { API_KeychainSeed } from "../models/api.ts";
 
 import { createProducerKeychainCreatedV1Event } from "../models/consumerKeychainEventFactory.ts";
 
@@ -19,7 +19,7 @@ export function producerKeychainServiceBuilder(
 ) {
   return {
     async createProducerKeychain(
-      seed: API_ProducerKeychainSeed,
+      seed: API_KeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ProducerKeychain>> {
       const producerKeychainId = generateId<ProducerKeychainId>();
