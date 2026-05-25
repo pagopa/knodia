@@ -1880,6 +1880,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       axios:
         specifier: 'catalog:'
         version: 1.15.2

@@ -1,10 +1,17 @@
+import type { TokenGenerator } from "@knodia/token-generator";
+
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
+import type { SignupManagerConfig } from "../config/config.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
 
-export function signupServiceBuilder(oneIdentityClient: OneIdentityClient) {
+export function signupServiceBuilder(
+  config: SignupManagerConfig,
+  oneIdentityClient: OneIdentityClient,
+  tokenGenerator: TokenGenerator,
+) {
   return {
     async exchangeOIDCCode({
       code,
@@ -27,12 +34,27 @@ export function signupServiceBuilder(oneIdentityClient: OneIdentityClient) {
         oidcSession.nonce,
       );
 
-      // TODO: Build the ui-signup-session token based on the claims returned by the OI.
-      void claims;
+      /**
+       * In One Identity, there is no handy way to distinguish between SPID and CIE users,
+       * so to identify the user we rely on the presence of the spidCode claim, which is only
+       * present for SPID users and fallback to the fiscalNumber claim for CIE users.
+       */
+      const subject = claims.spidCode ?? claims.fiscalNumber;
 
-      return {
-        uiSignupSessionToken: "",
-      };
+      const sessionToken = await tokenGenerator.generateSignupSessionToken({
+        audience: config.signupSessionJwt.audience,
+        dateOfBirth: claims.dateOfBirth,
+        familyName: claims.familyName,
+        fiscalNumber: claims.fiscalNumber,
+        issuer: config.signupSessionJwt.issuer,
+        kid: config.signupSessionJwt.kid,
+        name: claims.name,
+        secondsDuration: config.signupSessionJwt.secondsDuration,
+        spidCode: claims.spidCode,
+        subject,
+      });
+
+      return { uiSignupSessionToken: sessionToken.serialized };
     },
 
     startOIDCSession({ nonce, state }: { nonce: string; state: string }) {

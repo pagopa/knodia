@@ -40,6 +40,7 @@ type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
   | { tokenType: "knode-api" }
+  | { tokenType: "signup-session" }
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 /**
@@ -109,6 +110,9 @@ function assertAuthDataAdmitted<
     .with({ tokenType: "knode-api" }, () =>
       assertKnodeApiTokenAdmitted(admittedRules),
     )
+    .with({ tokenType: "signup-session" }, () =>
+      assertSignupSessionTokenAdmitted(admittedRules),
+    )
     .exhaustive();
 }
 
@@ -151,6 +155,16 @@ function assertKnodeApiTokenAdmitted(
 ): void {
   if (!admittedRules.some((rule) => rule.tokenType === "knode-api")) {
     throw forbiddenError(`Invalid token type "knode-api" for this operation`);
+  }
+}
+
+function assertSignupSessionTokenAdmitted(
+  admittedRules: NonEmptyArray<AuthorizationRule>,
+): void {
+  if (!admittedRules.some((rule) => rule.tokenType === "signup-session")) {
+    throw forbiddenError(
+      `Invalid token type "signup-session" for this operation`,
+    );
   }
 }
 

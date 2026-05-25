@@ -96,6 +96,8 @@ function getClaims(targetEnv, type) {
         },
         organization: { id: ORG_ID, knode_id: KNODE_API_ORG_KNODE_ID },
       };
+    case "signup-session":
+      return { sub: INTERNAL_SUB, type, aud };
   }
 }
 
@@ -103,6 +105,7 @@ function getEnvVarName(targetEnv, type) {
   const base = type === "ui-session" ? "UI_SESSION_JWT"
     : type === "internal" ? "INTERNAL_JWT"
     : type === "knode-api" ? "KNODE_API_JWT"
+    : type === "signup-session" ? "SIGNUP_SESSION_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
@@ -116,6 +119,7 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
   }
   const keyName = type === "internal" ? "internal"
     : type === "knode-api" ? "auth-server"
+    : type === "signup-session" ? "signup-session"
     : "bff-session";
   const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
   const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));

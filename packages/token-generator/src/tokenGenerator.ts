@@ -5,6 +5,7 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
+  SignupSessionTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
@@ -39,6 +40,7 @@ import type {
   ExternalUISessionToken,
   InternalToken,
   KnodeApiAccessToken,
+  SignupSessionToken,
   UISessionRefreshToken,
   UISessionToken,
 } from "./models.ts";
@@ -49,6 +51,16 @@ const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
   audience: string;
+  subject: string;
+}
+
+export interface SignupSessionTokenInput extends TokenParams {
+  audience: string;
+  dateOfBirth: string;
+  familyName: string;
+  fiscalNumber: string;
+  name: string;
+  spidCode: string;
   subject: string;
 }
 
@@ -145,6 +157,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | ExternalUISessionTokenClaims
       | InternalTokenClaims
       | KnodeApiAccessTokenClaims
+      | SignupSessionTokenClaims
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
@@ -313,6 +326,28 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         serialized,
         type: "knode-api",
       };
+    },
+
+    async generateSignupSessionToken(
+      input: SignupSessionTokenInput,
+    ): Promise<SignupSessionToken> {
+      const now = dateToSeconds(new Date());
+      const claims: SignupSessionTokenClaims = {
+        aud: input.audience,
+        dateOfBirth: input.dateOfBirth,
+        exp: now + input.secondsDuration,
+        familyName: input.familyName,
+        fiscalNumber: input.fiscalNumber,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        name: input.name,
+        spidCode: input.spidCode,
+        sub: input.subject,
+        type: "signup-session",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return { header, payload: claims, serialized, type: "signup-session" };
     },
 
     async generateUIRefreshToken(

@@ -77,6 +77,17 @@ export const InternalTokenClaims = BaseJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
+export const SignupSessionTokenClaims = BaseJwtClaims.extend({
+  dateOfBirth: z.string(),
+  familyName: z.string(),
+  fiscalNumber: z.string(),
+  name: z.string(),
+  spidCode: z.string(),
+  type: z.literal("signup-session"),
+});
+
+export type SignupSessionTokenClaims = z.infer<typeof SignupSessionTokenClaims>;
+
 export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
   type: z.literal("refresh-ui-session"),
 });

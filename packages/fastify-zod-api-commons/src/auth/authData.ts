@@ -21,6 +21,7 @@ export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
   | KnodeApiAuthData
+  | SignupSessionAuthData
   | UISessionAuthData;
 
 export interface ExternalUISessionAuthData {
@@ -59,6 +60,10 @@ export interface KnodeApiAuthData {
     knodeId: KnodeId;
   };
   tokenType: "knode-api";
+}
+
+export interface SignupSessionAuthData {
+  tokenType: "signup-session";
 }
 
 export interface UISessionAuthData {

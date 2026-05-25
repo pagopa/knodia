@@ -23,6 +23,12 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
+      signupSessionJwt: {
+        audience: "test-audience",
+        issuer: "test-issuer",
+        kid: "alias/test-kid",
+        secondsDuration: 3600,
+      },
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
       ...oneIdentityMockConfig,
     },
