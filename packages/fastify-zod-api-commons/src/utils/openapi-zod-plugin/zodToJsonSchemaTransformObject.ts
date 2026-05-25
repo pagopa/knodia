@@ -13,7 +13,10 @@ import { createJsonSchemaTransformObject } from "fastify-type-provider-zod";
 
 import { healthRouterTag } from "../../routers/healthRouter.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
-import { responseHeadersStore } from "./responseHeadersStore.ts";
+import {
+  responseHeadersStore,
+  sharedHeaderComponentsStore,
+} from "./responseHeadersStore.ts";
 
 const baseTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
@@ -153,6 +156,20 @@ const removeUnusedComponents = (
   return openapi;
 };
 
+// Deep-clone so each response holds its own copy — sharing a reference would
+// make js-yaml emit anchor/alias notation in the generated spec.
+const cloneHeaderRecord = (
+  src:
+    | Record<string, OpenAPIV3.HeaderObject | OpenAPIV3.ReferenceObject>
+    | undefined,
+):
+  | Record<string, OpenAPIV3.HeaderObject | OpenAPIV3.ReferenceObject>
+  | undefined =>
+  src &&
+  Object.fromEntries(
+    Object.entries(src).map(([k, v]) => [k, structuredClone(v)]),
+  );
+
 const addResponseHeadersToOpenapi = (
   openapi: Partial<OpenAPIV3.Document>,
 ): Partial<OpenAPIV3.Document> => {
@@ -181,15 +198,34 @@ const addResponseHeadersToOpenapi = (
         if (routeHeaders || perResponseHeaders) {
           response.headers = {
             ...response.headers,
-            ...routeHeaders,
-            ...perResponseHeaders,
+            ...cloneHeaderRecord(routeHeaders),
+            ...cloneHeaderRecord(perResponseHeaders),
           };
         }
       }
     }
   }
 
-  responseHeadersStore.clear();
+  // Don't clear: @fastify/swagger caches JSON and YAML separately, so the
+  // transform runs twice; `extractResponseHeaders` overwrites entries on
+  // every call.
+  return openapi;
+};
+
+const addSharedHeaderComponents = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (sharedHeaderComponentsStore.size === 0) return openapi;
+
+  openapi.components = openapi.components ?? {};
+  openapi.components.headers = {
+    ...openapi.components.headers,
+    ...Object.fromEntries(sharedHeaderComponentsStore.entries()),
+  };
+
+  // Don't clear: store is populated once at plugin-register time, and
+  // @fastify/swagger runs this transform on each format call — clearing
+  // would dangle every `$ref` on the second pass.
   return openapi;
 };
 
@@ -210,6 +246,7 @@ export const zodToJsonSchemaTransformObject: typeof baseTransformObject = (
       removeZodInputSchemasFromOpenapi,
       updateErrorResponseContentsWithProblemJson,
       addResponseHeadersToOpenapi,
+      addSharedHeaderComponents,
       removeUnusedComponents,
     ],
   );

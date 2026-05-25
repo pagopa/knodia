@@ -78,6 +78,9 @@ const enforceOperationId = (input: TransformInput): TransformInput => {
  * Supports two formats:
  * - Route-level `responseHeaders: z.object(...)` → applies to all responses
  * - Per-response `{ properties: ZodSchema, headers: z.object(...) }` → applies to that status only
+ *
+ * Merges with any entry already in `responseHeadersStore` (e.g. populated by
+ * the rate-limit plugin's `onRoute` hook).
  */
 const extractResponseHeaders = (input: TransformInput): TransformInput => {
   const { responseHeaders, ...schemaRest } = input.schema;
@@ -86,11 +89,11 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   if (!operationId) return input;
 
   // Route-level responseHeaders → apply to all responses
-  if (responseHeaders) {
-    responseHeadersStore.set(
-      operationId,
-      zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
-    );
+  if (responseHeaders instanceof z.ZodObject) {
+    responseHeadersStore.set(operationId, {
+      ...responseHeadersStore.get(operationId),
+      ...zodObjectToResponseHeaders(responseHeaders),
+    });
   }
 
   // Per-response headers → extract from { properties, headers } entries
@@ -98,10 +101,10 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   if (response) {
     for (const [statusCode, val] of Object.entries(response)) {
       if (isResponseEntryWithHeaders(val)) {
-        responseHeadersStore.set(
-          `${operationId}:${statusCode}`,
-          zodObjectToResponseHeaders(val.headers),
-        );
+        responseHeadersStore.set(`${operationId}:${statusCode}`, {
+          ...responseHeadersStore.get(`${operationId}:${statusCode}`),
+          ...zodObjectToResponseHeaders(val.headers),
+        });
       }
     }
   }
