@@ -1,10 +1,10 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { type signalHubDbConfig } from "../config/config.ts";
+import type { SignalHubDbConfig } from "../config/config.ts";
 
 export const makeSignalHubDrizzleConnection = (
-  config: typeof signalHubDbConfig,
+  config: SignalHubDbConfig,
 ): { db: NodePgDatabase; pool: Pool } => {
   const pool = new Pool({
     database: config.signalHubDbName,

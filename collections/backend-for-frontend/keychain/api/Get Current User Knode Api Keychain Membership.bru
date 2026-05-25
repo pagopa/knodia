@@ -1,0 +1,19 @@
+meta {
+  name: Get Current User Knode Api Keychain Membership
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/knodeApiKeychains/:knodeApiKeychainId/membership/:userId
+  body: none
+  auth: none
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+  userId: {{userId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

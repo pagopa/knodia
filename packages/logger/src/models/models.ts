@@ -1,3 +1,4 @@
+import { type ExternalId } from "@knodia/common-models/externalResource";
 import {
   type CorrelationId,
   type KnodeId,
@@ -6,7 +7,7 @@ import {
 } from "@knodia/common-models/ids";
 
 export interface HTTPServiceLoggerMetadata extends LoggerMetadataCommon {
-  organizationId?: OrganizationId;
+  organizationId?: ExternalId<OrganizationId> | OrganizationId;
   organizationKnodeId?: KnodeId;
   userId?: UserId;
 }

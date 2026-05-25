@@ -11,6 +11,7 @@
     "db:schema-normalize": "node ../../../scripts/normalize-drizzle-output.ts"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
@@ -27,6 +28,7 @@
   "exports": {
     ".": "./src/signalHub.ts",
     "./config": "./src/config/config.ts",
+    "./services": "./src/services/signalHubDbService.ts",
     "./utils": "./src/utils/utils.ts"
   }
 }

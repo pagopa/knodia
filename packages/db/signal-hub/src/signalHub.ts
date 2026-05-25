@@ -33,3 +33,7 @@ export const signalHubSignal = signalHubSchema.table(
     ),
   ],
 );
+
+export type NewSignalHubSignal = typeof signalHubSignal.$inferInsert;
+
+export type SignalHubSignalSQL = typeof signalHubSignal.$inferSelect;

@@ -20,7 +20,7 @@ export const SignalHubDbConfig = z
     signalHubDbUser: c.SIGNAL_HUB_DB_USER,
     signalHubDbUseSsl: c.SIGNAL_HUB_DB_USE_SSL,
   }));
-type SignalHubDbConfig = z.infer<typeof SignalHubDbConfig>;
+export type SignalHubDbConfig = z.infer<typeof SignalHubDbConfig>;
 
 export const signalHubDbConfig: SignalHubDbConfig =
   SignalHubDbConfig.parse(env);

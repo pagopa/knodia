@@ -1,0 +1,19 @@
+meta {
+  name: Download Knode Api Keychain Key
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/knodeApiKeychains/:knodeApiKeychainId/keys/:keyId
+  body: none
+  auth: none
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+  keyId: {{knodeApiKeychainKeyId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
