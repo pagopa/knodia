@@ -48,6 +48,14 @@ describe("getRotatedSeed", () => {
     );
   });
 
+  it("is stable within a period", () => {
+    const periodStart = nowAtPeriod(7);
+    const lastMsOfPeriod = nowAtPeriod(8) - 1;
+    expect(getRotatedSeed(ESERVICE_ID, periodStart, CONFIG)).toBe(
+      getRotatedSeed(ESERVICE_ID, lastMsOfPeriod, CONFIG),
+    );
+  });
+
   it("yields different seeds across periods", () => {
     const seeds = [0, 1, 2].map((p) =>
       getRotatedSeed(ESERVICE_ID, nowAtPeriod(p), CONFIG),
