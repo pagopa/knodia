@@ -154,3 +154,15 @@ export function extractAuthDataFromToken(
     )
     .exhaustive();
 }
+
+// Primary tenant id carried by the token: organization (UI session,
+// knode-api), consumer (external UI session), or undefined for internal
+// service-to-service tokens, which have no tenant.
+export function tenantIdFromAuthData(authData: AuthData): string | undefined {
+  return match(authData)
+    .with({ tokenType: "ui-session" }, (a) => a.organizationId)
+    .with({ tokenType: "external-ui-session" }, (a) => a.consumer.id)
+    .with({ tokenType: "knode-api" }, (a) => a.organization.id)
+    .with({ tokenType: "internal" }, () => undefined)
+    .exhaustive();
+}
