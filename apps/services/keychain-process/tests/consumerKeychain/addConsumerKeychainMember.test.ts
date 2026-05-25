@@ -40,7 +40,7 @@ const allowedTestTokens: TestToken[] = [
 
 const consumerKeychain = getMockConsumerKeychain();
 
-describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember)", () => {
+describe("POST /consumerKeychains/:consumerKeychainId/members (addConsumerKeychainMember)", () => {
   beforeEach(() => {
     cognitoIdmClientMock.getUserById.mockReset();
     cognitoIdmClientMock.checkUserBelongsToOrganization.mockReset();
