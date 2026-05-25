@@ -105,7 +105,7 @@ function getEnvVarName(targetEnv, type) {
   const base = type === "ui-session" ? "UI_SESSION_JWT"
     : type === "internal" ? "INTERNAL_JWT"
     : type === "knode-api" ? "KNODE_API_JWT"
-    : type === "signup-session" ? "SIGNUP_SESSION_JWT"
+    : type === "signup-session" ? "UI_SIGNUP_SESSION_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;

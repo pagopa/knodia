@@ -41,15 +41,15 @@ export function signupServiceBuilder(
        */
       const subject = claims.spidCode ?? claims.fiscalNumber;
 
-      const sessionToken = await tokenGenerator.generateSignupSessionToken({
-        audience: config.signupSessionJwt.audience,
+      const sessionToken = await tokenGenerator.generateUISignupSessionToken({
+        audience: config.uiSignupSessionJwt.audience,
         dateOfBirth: claims.dateOfBirth,
         familyName: claims.familyName,
         fiscalNumber: claims.fiscalNumber,
-        issuer: config.signupSessionJwt.issuer,
-        kid: config.signupSessionJwt.kid,
+        issuer: config.uiSignupSessionJwt.issuer,
+        kid: config.uiSignupSessionJwt.kid,
         name: claims.name,
-        secondsDuration: config.signupSessionJwt.secondsDuration,
+        secondsDuration: config.uiSignupSessionJwt.secondsDuration,
         spidCode: claims.spidCode,
         subject,
       });

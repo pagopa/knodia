@@ -13,10 +13,10 @@ const OneIdentityConfig = z
     ONE_IDENTITY_JWKS_URI: z.string(),
     ONE_IDENTITY_REDIRECT_URL: z.string(),
 
-    SIGNUP_SESSION_JWT_AUDIENCE: z.string(),
-    SIGNUP_SESSION_JWT_ISSUER: z.string(),
-    SIGNUP_SESSION_JWT_KID: z.string(),
-    SIGNUP_SESSION_JWT_SECONDS_DURATION: z.coerce
+    UI_SIGNUP_SESSION_JWT_AUDIENCE: z.string(),
+    UI_SIGNUP_SESSION_JWT_ISSUER: z.string(),
+    UI_SIGNUP_SESSION_JWT_KID: z.string(),
+    UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: z.coerce
       .number()
       .int()
       .positive()
@@ -29,11 +29,11 @@ const OneIdentityConfig = z
     oneIdentityJWKSUri: c.ONE_IDENTITY_JWKS_URI,
     oneIdentityRedirectUrl: c.ONE_IDENTITY_REDIRECT_URL,
 
-    signupSessionJwt: {
-      audience: c.SIGNUP_SESSION_JWT_AUDIENCE,
-      issuer: c.SIGNUP_SESSION_JWT_ISSUER,
-      kid: c.SIGNUP_SESSION_JWT_KID,
-      secondsDuration: c.SIGNUP_SESSION_JWT_SECONDS_DURATION,
+    uiSignupSessionJwt: {
+      audience: c.UI_SIGNUP_SESSION_JWT_AUDIENCE,
+      issuer: c.UI_SIGNUP_SESSION_JWT_ISSUER,
+      kid: c.UI_SIGNUP_SESSION_JWT_KID,
+      secondsDuration: c.UI_SIGNUP_SESSION_JWT_SECONDS_DURATION,
     },
   }));
 export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;

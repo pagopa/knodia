@@ -6,8 +6,8 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
-  SignupSessionTokenClaims,
   UISessionTokenClaims,
+  UISignupSessionTokenClaims,
 } from "@knodia/common-models/auth";
 import type { PublicKeyJwk } from "@knodia/common-models/crypto";
 import type { NonEmptyArray } from "@knodia/common-models/types";
@@ -277,9 +277,9 @@ const testCases = [
       spidCode: "spid-code-123",
       sub: "subject-123",
       type: "signup-session",
-    } satisfies SignupSessionTokenClaims,
+    } satisfies UISignupSessionTokenClaims,
     generate: () =>
-      generator.generateSignupSessionToken({
+      generator.generateUISignupSessionToken({
         audience: "my-audience",
         dateOfBirth: "2000-01-01",
         familyName: "Rossi",
@@ -291,7 +291,7 @@ const testCases = [
         spidCode: "spid-code-123",
         subject: "subject-123",
       }),
-    name: "generateSignupSessionToken",
+    name: "generateUISignupSessionToken",
     tokenDuration: SECONDS_DURATION,
   },
   {

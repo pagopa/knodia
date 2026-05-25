@@ -23,7 +23,7 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
-      signupSessionJwt: {
+      uiSignupSessionJwt: {
         audience: "test-audience",
         issuer: "test-issuer",
         kid: "alias/test-kid",

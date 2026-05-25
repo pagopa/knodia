@@ -21,8 +21,8 @@ export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
   | KnodeApiAuthData
-  | SignupSessionAuthData
-  | UISessionAuthData;
+  | UISessionAuthData
+  | UISignupSessionAuthData;
 
 export interface ExternalUISessionAuthData {
   agreement: {
@@ -69,7 +69,7 @@ export interface UISessionAuthData {
   userRoles: NonEmptyArray<UserRole>;
 }
 
-interface SignupSessionAuthData {
+interface UISignupSessionAuthData {
   tokenType: "signup-session";
 }
 

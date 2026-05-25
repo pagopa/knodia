@@ -5,9 +5,9 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
-  SignupSessionTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
+  UISignupSessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
 import type {
@@ -40,9 +40,9 @@ import type {
   ExternalUISessionToken,
   InternalToken,
   KnodeApiAccessToken,
-  SignupSessionToken,
   UISessionRefreshToken,
   UISessionToken,
+  UISignupSessionToken,
 } from "./models.ts";
 
 const JWT_HEADER_ALG = "RS256";
@@ -90,16 +90,6 @@ interface KnodeApiAccessTokenInput extends TokenParams {
   organization: { id: OrganizationId; knodeId: KnodeId };
 }
 
-interface SignupSessionTokenInput extends TokenParams {
-  audience: string;
-  dateOfBirth: string;
-  familyName: string;
-  fiscalNumber: string;
-  name: string;
-  spidCode: string;
-  subject: string;
-}
-
 interface TokenParams {
   issuer: string;
   kid: string;
@@ -112,6 +102,16 @@ interface UISessionTokenInput extends TokenParams {
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
   username: string;
+}
+
+interface UISignupSessionTokenInput extends TokenParams {
+  audience: string;
+  dateOfBirth: string;
+  familyName: string;
+  fiscalNumber: string;
+  name: string;
+  spidCode: string;
+  subject: string;
 }
 
 const b64url = (data: string): string =>
@@ -157,9 +157,9 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | ExternalUISessionTokenClaims
       | InternalTokenClaims
       | KnodeApiAccessTokenClaims
-      | SignupSessionTokenClaims
       | UISessionRefreshTokenClaims
-      | UISessionTokenClaims,
+      | UISessionTokenClaims
+      | UISignupSessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
     const typ =
       "type" in claims && claims.type === "refresh-ui-session"
@@ -328,28 +328,6 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       };
     },
 
-    async generateSignupSessionToken(
-      input: SignupSessionTokenInput,
-    ): Promise<SignupSessionToken> {
-      const now = dateToSeconds(new Date());
-      const claims: SignupSessionTokenClaims = {
-        aud: input.audience,
-        dateOfBirth: input.dateOfBirth,
-        exp: now + input.secondsDuration,
-        familyName: input.familyName,
-        fiscalNumber: input.fiscalNumber,
-        iat: now,
-        iss: input.issuer,
-        jti: randomUUID(),
-        name: input.name,
-        spidCode: input.spidCode,
-        sub: input.subject,
-        type: "signup-session",
-      };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
-      return { header, payload: claims, serialized, type: "signup-session" };
-    },
-
     async generateUIRefreshToken(
       input: UISessionTokenInput,
     ): Promise<UISessionRefreshToken> {
@@ -375,6 +353,28 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
       return { header, payload: claims, serialized, type: "ui-session" };
+    },
+
+    async generateUISignupSessionToken(
+      input: UISignupSessionTokenInput,
+    ): Promise<UISignupSessionToken> {
+      const now = dateToSeconds(new Date());
+      const claims: UISignupSessionTokenClaims = {
+        aud: input.audience,
+        dateOfBirth: input.dateOfBirth,
+        exp: now + input.secondsDuration,
+        familyName: input.familyName,
+        fiscalNumber: input.fiscalNumber,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        name: input.name,
+        spidCode: input.spidCode,
+        sub: input.subject,
+        type: "signup-session",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return { header, payload: claims, serialized, type: "signup-session" };
     },
   };
 }

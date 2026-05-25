@@ -111,7 +111,7 @@ function assertAuthDataAdmitted<
       assertKnodeApiTokenAdmitted(admittedRules),
     )
     .with({ tokenType: "signup-session" }, () =>
-      assertSignupSessionTokenAdmitted(admittedRules),
+      assertUISignupSessionTokenAdmitted(admittedRules),
     )
     .exhaustive();
 }
@@ -158,16 +158,6 @@ function assertKnodeApiTokenAdmitted(
   }
 }
 
-function assertSignupSessionTokenAdmitted(
-  admittedRules: NonEmptyArray<AuthorizationRule>,
-): void {
-  if (!admittedRules.some((rule) => rule.tokenType === "signup-session")) {
-    throw forbiddenError(
-      `Invalid token type "signup-session" for this operation`,
-    );
-  }
-}
-
 function assertUISessionTokenAdmitted(
   authData: UISessionAuthData,
   admittedRules: NonEmptyArray<AuthorizationRule>,
@@ -186,6 +176,16 @@ function assertUISessionTokenAdmitted(
   ) {
     throw forbiddenError(
       `Invalid roles ${JSON.stringify(authData.userRoles)} for this operation`,
+    );
+  }
+}
+
+function assertUISignupSessionTokenAdmitted(
+  admittedRules: NonEmptyArray<AuthorizationRule>,
+): void {
+  if (!admittedRules.some((rule) => rule.tokenType === "signup-session")) {
+    throw forbiddenError(
+      `Invalid token type "signup-session" for this operation`,
     );
   }
 }
