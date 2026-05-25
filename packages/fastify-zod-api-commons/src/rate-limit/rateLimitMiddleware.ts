@@ -1,4 +1,5 @@
 import { requestContext } from "@fastify/request-context";
+import { genericInternalError } from "@knodia/common-models/errors";
 import { type FastifyRequest } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 
@@ -11,11 +12,6 @@ interface RateLimitMiddlewareOptions {
   skip?: (req: FastifyRequest) => boolean;
 }
 
-// Fallback bucket for authData shapes that resolve no tenant id. Protected
-// scopes always have one today; the constant exists so a future authData
-// variant doesn't silently skip the limit.
-const UNKEYABLE_BUCKET = "__unkeyable__";
-
 export const rateLimitMiddleware = fastifyPlugin<RateLimitMiddlewareOptions>(
   async (fastify, { rateLimiter, skip }) => {
     fastify.addHook("preHandler", async (req) => {
@@ -25,7 +21,17 @@ export const rateLimitMiddleware = fastifyPlugin<RateLimitMiddlewareOptions>(
       if (!authData || authData.tokenType === "internal") return;
       if (skip?.(req)) return;
 
-      const key = tenantIdFromAuthData(authData) ?? UNKEYABLE_BUCKET;
+      const key = tenantIdFromAuthData(authData);
+      // Authoritative invariant: every non-internal authData must resolve a
+      // tenant. A future authData variant that forgets to extend
+      // tenantIdFromAuthData should fail loudly, not silently bucket every
+      // caller of that type into one shared global cap.
+      if (key === undefined) {
+        throw genericInternalError(
+          `Unkeyable authData for rate-limit (tokenType=${authData.tokenType})`,
+        );
+      }
+
       await enforceRateLimit(rateLimiter, key, req.log);
     });
   },

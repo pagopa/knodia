@@ -102,7 +102,7 @@ export function buildApp({
 
   app.addHook("onClose", async () => {
     await dpopProofStore.close();
-    rateLimiter.disconnect();
+    await rateLimiter.disconnect();
   });
 
   return app;

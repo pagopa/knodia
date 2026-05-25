@@ -12,7 +12,7 @@ export interface RateLimiter {
     rateLimitKey: string,
     logger: FastifyBaseLogger,
   ): Promise<RateLimiterStatus>;
-  disconnect(): void;
+  disconnect(): Promise<void>;
   // Exposed for tests that need to clear shared ioredis-mock state across runs.
   readonly redis: Redis;
 }
@@ -95,10 +95,31 @@ export function initRedisRateLimiter({
           .exec();
 
         const count = extractIntegerReply(results?.[0], "INCR");
+        // PEXPIRE NX is a Redis 7.0 syntax. If the server rejects the NX flag
+        // (or the command otherwise errors at EXEC time), INCR has already
+        // ticked the counter — DEL to avoid pinning the tenant at permanent
+        // 429 with a key that has no TTL.
+        const pexpireReply = results?.[1];
+        if (pexpireReply && pexpireReply[0] !== null) {
+          await redis.del(fullKey).catch(() => undefined);
+          throw new Error(
+            `PEXPIRE failed for ${fullKey}: ${pexpireReply[0].message}`,
+          );
+        }
         const pttl = extractIntegerReply(results?.[2], "PTTL");
 
-        // PTTL -1/-2 shouldn't happen here; fall back to the window upper bound.
-        const resetMs = pttl > 0 ? pttl : rateIntervalMs;
+        // PTTL <= 0 means the key has no TTL. The PEXPIRE-error branch above
+        // covers the known cause; anything reaching here is unexpected, so
+        // surface as degraded (and DEL the key) instead of silently masking
+        // it behind a synthetic reset value.
+        if (pttl <= 0) {
+          logger.warn(
+            `Rate-limit key has no TTL (pttl=${pttl}, key=${rateLimitKey}); failing open and resetting bucket`,
+          );
+          await redis.del(fullKey).catch(() => undefined);
+          return failOpenStatus;
+        }
+        const resetMs = pttl;
 
         if (count > maxRequests) {
           logger.warn(
@@ -128,7 +149,11 @@ export function initRedisRateLimiter({
         return failOpenStatus;
       }
     },
-    disconnect: () => redis.disconnect(),
+    // QUIT lets queued commands drain; DISCONNECT would reject in-flight
+    // multi().exec() calls and silently flip them to fail-open via the catch.
+    disconnect: async () => {
+      await redis.quit().catch(() => undefined);
+    },
     redis,
   };
 }

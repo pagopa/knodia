@@ -247,7 +247,7 @@ export function buildAppFromConfig(
 
   app.addHook("onClose", async () => {
     sharedDynamoClient.destroy();
-    rateLimiter.disconnect();
+    await rateLimiter.disconnect();
   });
 
   return app;

@@ -96,7 +96,7 @@ export function buildApp({
   });
 
   app.addHook("onClose", async () => {
-    rateLimiter.disconnect();
+    await rateLimiter.disconnect();
   });
 
   return app;

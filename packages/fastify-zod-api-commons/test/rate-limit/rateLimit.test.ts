@@ -45,8 +45,8 @@ describe("initRedisRateLimiter", () => {
     await rateLimiter.redis.flushall();
   });
 
-  afterEach(() => {
-    rateLimiter.disconnect();
+  afterEach(async () => {
+    await rateLimiter.disconnect();
   });
 
   it("returns limitReached=false until the configured max is exceeded", async () => {
@@ -97,6 +97,54 @@ describe("initRedisRateLimiter", () => {
   it("marks healthy statuses as degraded=false", async () => {
     const ok = await rateLimiter.consume("org-healthy", testLogger);
     expect(ok.degraded).toBe(false);
+  });
+
+  it("DELs the key and degrades when PEXPIRE NX errors inside the MULTI", async () => {
+    // Reproduces the Redis < 7.0 case where the NX flag is rejected at EXEC:
+    // INCR succeeds, PEXPIRE returns an error, the key has no TTL — we must
+    // DEL it so the bucket doesn't pin the tenant at permanent 429.
+    const fullKey = `knodia-rate-limit:${SCOPE.knodeId}:${SCOPE.serviceName}:org-pex`;
+    await rateLimiter.redis.set(fullKey, "5");
+
+    const multi = rateLimiter.redis.multi.bind(rateLimiter.redis);
+    vi.spyOn(rateLimiter.redis, "multi").mockImplementationOnce(() => {
+      const pipeline = multi();
+      vi.spyOn(pipeline, "exec").mockResolvedValueOnce([
+        [null, 5],
+        [new Error("ERR syntax error"), null],
+        [null, -1],
+      ] as never);
+      return pipeline;
+    });
+
+    const status = await rateLimiter.consume("org-pex", testLogger);
+    expect(status.degraded).toBe(true);
+    expect(status.limitReached).toBe(false);
+    expect(await rateLimiter.redis.get(fullKey)).toBeNull();
+  });
+
+  it("DELs the key and degrades when PTTL reports no TTL after a successful EXEC", async () => {
+    // Defensive path for the post-PEXPIRE state where the key somehow ended up
+    // without a TTL: surface as degraded instead of masking with a synthetic
+    // resetMs that pretends the bucket is healthy.
+    const fullKey = `knodia-rate-limit:${SCOPE.knodeId}:${SCOPE.serviceName}:org-nottl`;
+    await rateLimiter.redis.set(fullKey, "5");
+
+    const multi = rateLimiter.redis.multi.bind(rateLimiter.redis);
+    vi.spyOn(rateLimiter.redis, "multi").mockImplementationOnce(() => {
+      const pipeline = multi();
+      vi.spyOn(pipeline, "exec").mockResolvedValueOnce([
+        [null, 5],
+        [null, 1],
+        [null, -1],
+      ] as never);
+      return pipeline;
+    });
+
+    const status = await rateLimiter.consume("org-nottl", testLogger);
+    expect(status.degraded).toBe(true);
+    expect(status.limitReached).toBe(false);
+    expect(await rateLimiter.redis.get(fullKey)).toBeNull();
   });
 });
 
@@ -183,7 +231,7 @@ describe("rateLimitMiddleware", () => {
 
   afterEach(async () => {
     await app.close();
-    rateLimiter.disconnect();
+    await rateLimiter.disconnect();
   });
 
   it("returns 200 within the limit and 429 once exceeded, with x-ratelimit-* headers", async () => {

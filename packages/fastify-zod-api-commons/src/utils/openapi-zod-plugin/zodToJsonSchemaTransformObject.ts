@@ -207,8 +207,11 @@ const addResponseHeadersToOpenapi = (
   }
 
   // Don't clear: @fastify/swagger caches JSON and YAML separately, so the
-  // transform runs twice; `extractResponseHeaders` overwrites entries on
-  // every call.
+  // transform runs twice. Entries populated via `onRoute` (e.g. by the
+  // rate-limit plugin) are written once at plugin-register time and never
+  // re-emitted, so clearing here would dangle every `$ref` on the second
+  // format call. `extractResponseHeaders` merges into existing entries on
+  // each transform pass, so it is safe to leave them in place.
   return openapi;
 };
 

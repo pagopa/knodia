@@ -298,9 +298,14 @@ export function authServiceBuilder({
       try {
         const verified = await verifyRefreshTokenClaims(refreshToken);
         await refreshTokenStore.revoke(verified.jti, verified.exp);
-      } catch {
-        // Best-effort: if the token is malformed, there is nothing to revoke
-        return;
+      } catch (err) {
+        // Best-effort: malformed / forged tokens are silent by design, but log
+        // at warn so a JWKS-fetch / DynamoDB outage doesn't drop revocations
+        // unobserved — verifyRefreshTokenClaims now hits the network.
+        const { logger } = getContextValues(requestContext);
+        logger.warn(
+          `revokeRefreshToken skipped: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
     },
   };
