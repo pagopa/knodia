@@ -34,7 +34,7 @@ export type Problem = {
 };
 
 export type SessionResponse = {
-    sessionToken: string;
+    signupUiSessionToken: string;
 };
 
 export type GetStatusData = {
@@ -85,7 +85,7 @@ export type ExchangeOidcCodeError = ExchangeOidcCodeErrors[keyof ExchangeOidcCod
 
 export type ExchangeOidcCodeResponses = {
     /**
-     * OIDC login successful, session token returned
+     * OIDC login successful, signup UI session token returned
      */
     200: SessionResponse;
 };

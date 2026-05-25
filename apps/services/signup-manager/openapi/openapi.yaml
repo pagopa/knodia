@@ -76,10 +76,10 @@ components:
     SessionResponse:
       type: object
       properties:
-        sessionToken:
+        signupUiSessionToken:
           type: string
       required:
-        - sessionToken
+        - signupUiSessionToken
       additionalProperties: false
 paths:
   /status:
@@ -126,11 +126,11 @@ paths:
           required: true
       responses:
         "200":
-          description: OIDC login successful, session token returned
+          description: OIDC login successful, signup UI session token returned
           content:
             application/json:
               schema:
-                description: OIDC login successful, session token returned
+                description: OIDC login successful, signup UI session token returned
                 allOf:
                   - $ref: "#/components/schemas/SessionResponse"
         "400":
