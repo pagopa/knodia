@@ -21,7 +21,6 @@ export function signalHubDbServiceBuilder(db: NodePgDatabase) {
         .select({ max: max(signalHubSignal.signalId) })
         .from(signalHubSignal)
         .where(eq(signalHubSignal.eserviceId, eserviceId));
-
       return row?.max ?? 0;
     },
     async insertSignal(signal: NewSignalHubSignal): Promise<void> {

@@ -1,0 +1,18 @@
+meta {
+  name: Delete Knode Api Keychain
+  type: http
+}
+
+delete {
+  url: {{host-backend-for-frontend}}/knodeApiKeychains/:knodeApiKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  knodeApiKeychainId: {{knodeApiKeychainId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

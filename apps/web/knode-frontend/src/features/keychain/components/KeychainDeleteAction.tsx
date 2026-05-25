@@ -1,44 +1,16 @@
-import { deleteConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal } from "@knodia/ui-kit/ui";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
+import type { SupportedKeychain } from "../models/commons";
 
-import type { KeychainType } from "../models/commons";
+import { useDeleteKeychain } from "../hooks/useDeleteKeychain";
 
-export function KeychainDeleteAction({
-  keychainId,
-  type,
-}: {
-  keychainId: string;
-  type: KeychainType;
-}) {
-  const navigate = useNavigate();
+export function KeychainDeleteAction(keychain: SupportedKeychain) {
   const {
     isError,
     isPending: isDeleting,
-    mutate: deleteConsumerKeychain,
-  } = useMutation({
-    ...deleteConsumerKeychainMutation({ client }),
-    onSuccess: () => navigate({ to: "/keychains" }),
-  });
-
-  function handleDelete() {
-    match(type)
-      .with("consumption", () =>
-        deleteConsumerKeychain({ path: { consumerKeychainId: keychainId } }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
-  }
+    mutate,
+  } = useDeleteKeychain(keychain);
 
   return (
     <DialogTrigger>
@@ -52,7 +24,7 @@ export function KeychainDeleteAction({
         description="Are you sure you want to delete this Keychain? All its public keys will be deleted. This action cannot be undone."
         isDismissable
         kind="destructive"
-        onConfirm={handleDelete}
+        onConfirm={() => mutate()}
         showErrorBanner={isError}
         title="Delete Keychain"
       />
