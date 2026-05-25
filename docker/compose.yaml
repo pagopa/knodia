@@ -388,6 +388,19 @@ services:
       REDIRECT_URI: "http://localhost:5176/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
 
+  redis:
+    security_opt:
+      - no-new-privileges:true
+    image: redis:7.4-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
+    container_name: knodia-redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
 volumes:
   postgres-data:
   kafka-data:
