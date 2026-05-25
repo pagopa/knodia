@@ -870,9 +870,9 @@ export type ConsumerKeychainPurposeLinkCheckResult = {
 };
 
 export type User = {
-    email: string;
+    email?: string;
     id: UserId;
-    username: string;
+    username?: string;
 };
 
 export type KeychainMembers = {
