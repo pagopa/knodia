@@ -27,8 +27,10 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
 import { knodeApiKeychainRouter } from "./routers/knodeApiKeychainRouter.ts";
+import { producerKeychainRouter } from "./routers/producerKeychainRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { knodeApiKeychainServiceBuilder } from "./services/knodeApiKeychainService.ts";
+import { producerKeychainServiceBuilder } from "./services/producerKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
@@ -107,6 +109,9 @@ export function buildApp({
         cognitoIdmClient,
         config,
       ),
+    });
+    protectedApp.register(producerKeychainRouter, {
+      producerKeychainService: producerKeychainServiceBuilder(eventStoreWriter),
     });
   });
 
