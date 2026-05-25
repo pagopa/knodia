@@ -117,7 +117,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     mockJwtVerify.mockReset();
   });
 
-  it("returns 200 with sessionToken on successful code exchange", async () => {
+  it("returns 200 with uiSignupSessionToken on successful code exchange", async () => {
     const { cookie, nonce, state } = await startOIDCSession();
 
     setupSuccessfulTokenExchange(nonce);
@@ -131,7 +131,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toHaveProperty("sessionToken");
+    expect(response.json()).toHaveProperty("uiSignupSessionToken");
     expect(mockAxiosPost).toHaveBeenCalledOnce();
     expect(mockJwtVerify).toHaveBeenCalledOnce();
   });
