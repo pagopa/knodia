@@ -76,10 +76,10 @@ components:
     SessionResponse:
       type: object
       properties:
-        signupUiSessionToken:
+        uiSignupSessionToken:
           type: string
       required:
-        - signupUiSessionToken
+        - uiSignupSessionToken
       additionalProperties: false
 paths:
   /status:

@@ -34,7 +34,7 @@ export type Problem = {
 };
 
 export type SessionResponse = {
-    signupUiSessionToken: string;
+    uiSignupSessionToken: string;
 };
 
 export type GetStatusData = {

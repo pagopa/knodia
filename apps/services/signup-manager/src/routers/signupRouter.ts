@@ -22,7 +22,7 @@ const API_OIDCCallbackQuery = z.object({
 
 const API_SessionResponse = z
   .strictObject({
-    signupUiSessionToken: z.string(),
+    uiSignupSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
 
@@ -61,14 +61,14 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     handler: async (req, res) => {
       const oidcSession = getOidcSessionCookie(req);
 
-      const { signupUiSessionToken } = await signupService.exchangeOIDCCode({
+      const { uiSignupSessionToken } = await signupService.exchangeOIDCCode({
         code: req.query.code,
         oidcSession,
         state: req.query.state,
       });
 
       void clearOidcSessionCookie(res);
-      res.status(200).send({ signupUiSessionToken });
+      res.status(200).send({ uiSignupSessionToken });
     },
     method: "GET",
     schema: {
