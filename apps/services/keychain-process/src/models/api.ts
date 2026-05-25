@@ -142,9 +142,9 @@ export type API_KeychainKeys = z.infer<typeof API_KeychainKeys>;
 
 export const API_User = z
   .strictObject({
-    email: z.string(),
+    email: z.string().optional(),
     id: API_UserId,
-    username: z.string(),
+    username: z.string().optional(),
   })
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;

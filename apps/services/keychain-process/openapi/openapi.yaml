@@ -321,9 +321,7 @@ components:
         username:
           type: string
       required:
-        - email
         - id
-        - username
       additionalProperties: false
     KeychainMemberSeed:
       type: object

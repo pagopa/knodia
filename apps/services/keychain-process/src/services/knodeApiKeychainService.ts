@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -45,6 +45,7 @@ import {
   createKnodeApiKeychainUpdatedV1Event,
 } from "../models/knodeApiKeychainEventFactory.ts";
 import {
+  type KeychainMember,
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
   retrieveKeychainUser,
@@ -223,7 +224,7 @@ export function knodeApiKeychainServiceBuilder(
       knodeApiKeychainId: KnodeApiKeychainId,
       userId: UserId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<IdmUser> {
+    ): Promise<KeychainMember> {
       logger.info(
         `Getting member ${userId} of Knode API Keychain with id ${knodeApiKeychainId}`,
       );
@@ -244,19 +245,14 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain.data.users,
       );
 
-      return await retrieveKeychainUser(
-        userId,
-        knodeApiKeychainId,
-        "Knode API Keychain",
-        cognitoIdmClient,
-      );
+      return await retrieveKeychainUser(userId, cognitoIdmClient);
     },
 
     async getKnodeApiKeychainMembers(
       knodeApiKeychainId: KnodeApiKeychainId,
       params: API_GetKnodeApiKeychainMembersQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<IdmUser>> {
+    ): Promise<ListResult<KeychainMember>> {
       logger.info(
         { params },
         `Getting members of Knode API Keychain with id ${knodeApiKeychainId}, with params`,
@@ -279,12 +275,7 @@ export function knodeApiKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              knodeApiKeychainId,
-              "Knode API Keychain",
-              cognitoIdmClient,
-            ),
+            retrieveKeychainUser(userId, cognitoIdmClient),
           ),
         ),
         totalCount: knodeApiKeychain.users.length,

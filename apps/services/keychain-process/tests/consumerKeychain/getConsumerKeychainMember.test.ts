@@ -214,4 +214,18 @@ describe("GET /consumerKeychains/:consumerKeychainId/members/:userId (getConsume
     expect(response.statusCode).toBe(400);
     expect(cognitoIdmClientMock.getUserById).not.toHaveBeenCalled();
   });
+
+  it("should return 200 with only `id` when the user no longer exists in IDM", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    cognitoIdmClientMock.getUserById.mockResolvedValue(undefined);
+
+    const response = await getConsumerKeychainMember(
+      VALID_CONSUMER_KEYCHAIN_ID,
+      VALID_MEMBER_ID,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(API_User.parse(response.json())).toEqual({ id: VALID_MEMBER_ID });
+  });
 });

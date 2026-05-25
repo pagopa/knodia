@@ -1,4 +1,5 @@
-import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
+import type { UserRole } from "@knodia/common-models/auth";
 import type {
   ConsumerKeychainId,
   KeyId,
@@ -11,8 +12,6 @@ import type {
   KnodeApiKeychain,
 } from "@knodia/keychain-models";
 
-import { genericInternalError } from "@knodia/common-models/errors";
-
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
@@ -21,6 +20,13 @@ import {
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
 } from "../models/errors.ts";
+
+export interface KeychainMember {
+  email?: string;
+  id: UserId;
+  roles?: UserRole[];
+  username?: string;
+}
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -107,20 +113,16 @@ export const retrieveKeychainKey = (
 
 export async function retrieveKeychainUser(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
-  keychainKind: "Consumer Keychain" | "Knode API Keychain",
   cognitoIdmClient: CognitoIdmClient,
-): Promise<IdmUser> {
+): Promise<KeychainMember> {
   const user = await cognitoIdmClient.getUserById(userId);
   if (!user) {
-    /**
-     * This should not happen as users are validated when added as members.
-     * If it does happen, it means there's a data inconsistency that should
-     * be investigated. Hence, we throw a generic internal error.
-     */
-    throw genericInternalError(
-      `User ${userId} in ${keychainKind} ${keychainId} not found in IDM`,
-    );
+    return { id: userId };
   }
-  return user;
+  return {
+    email: user.email,
+    id: user.id,
+    roles: user.roles,
+    username: user.username,
+  };
 }

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -56,6 +56,7 @@ import {
   createConsumerKeychainUpdatedV1Event,
 } from "../models/consumerKeychainEventFactory.ts";
 import {
+  type KeychainMember,
   retrieveConsumerKeychain,
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
@@ -241,7 +242,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       userId: UserId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<IdmUser> {
+    ): Promise<KeychainMember> {
       logger.info(
         `Getting member ${userId} of Consumer Keychain with id ${consumerKeychainId}`,
       );
@@ -262,19 +263,14 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      return await retrieveKeychainUser(
-        userId,
-        consumerKeychainId,
-        "Consumer Keychain",
-        cognitoIdmClient,
-      );
+      return await retrieveKeychainUser(userId, cognitoIdmClient);
     },
 
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainMembersQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<IdmUser>> {
+    ): Promise<ListResult<KeychainMember>> {
       logger.info(
         { params },
         `Getting members of Consumer Keychain with id ${consumerKeychainId}, with params`,
@@ -297,12 +293,7 @@ export function consumerKeychainServiceBuilder(
       return {
         results: await Promise.all(
           paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              consumerKeychainId,
-              "Consumer Keychain",
-              cognitoIdmClient,
-            ),
+            retrieveKeychainUser(userId, cognitoIdmClient),
           ),
         ),
         totalCount: consumerKeychain.users.length,

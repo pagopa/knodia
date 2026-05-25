@@ -232,4 +232,34 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId/members (getKnodeApiKeychai
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return members with only `id` for users that no longer exist in IDM", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const deletedUserIds = new Set([
+      existingUsers[1]!.id,
+      existingUsers[2]!.id,
+    ]);
+    cognitoIdmClientMock.getUserById.mockImplementation(
+      async (userId: string) =>
+        deletedUserIds.has(unsafeBrandUserId(userId))
+          ? undefined
+          : existingUsers.find((u) => u.id === userId),
+    );
+
+    const response = await getKnodeApiKeychainMembers({
+      query: { limit: "10", offset: "0" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = API_KeychainMembers.parse(response.json());
+    expect(body.pagination.total).toBe(existingMembers.length);
+    expect(body.results).toEqual(
+      existingMembers.map(({ userId }) =>
+        deletedUserIds.has(userId)
+          ? { id: userId }
+          : toAPI_User(existingUsers.find((u) => u.id === userId)!),
+      ),
+    );
+  });
 });
