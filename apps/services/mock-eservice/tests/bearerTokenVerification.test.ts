@@ -280,4 +280,20 @@ describe("mock-eservice Bearer access-token verification", () => {
     });
     expect(res.statusCode).toBe(401);
   });
+
+  it("returns 401 when purpose.knode_id does not match this knode", async () => {
+    const token = await signToken({
+      payload: {
+        purpose: { id: generateId(), knode_id: OTHER_KNODE_ID },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
 });
