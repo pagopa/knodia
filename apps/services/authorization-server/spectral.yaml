@@ -1,1 +1,3 @@
 "extends": ["@knodia/spectral-config/spectral.yaml"]
+rules:
+  missing-ratelimit: warn

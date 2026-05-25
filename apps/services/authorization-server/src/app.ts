@@ -9,6 +9,11 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  initRedisRateLimiter,
+  rateLimitOpenapiDocs,
+  rateLimitResponseHeadersHook,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
@@ -70,21 +75,34 @@ export function buildApp({
     makeApiProblem,
   });
 
+  const rateLimiter = initRedisRateLimiter({
+    config,
+    knodeId: config.knodeId,
+    logger: app.log,
+    serviceName: "authorization-server",
+  });
+
   app.removeAllContentTypeParsers();
   app.register(formBody);
+  app.register(rateLimitResponseHeadersHook);
   app.register(healthRouter);
-  app.register(tokenRouter, {
-    tokenService: tokenServiceBuilder({
-      config,
-      dpopProofStore,
-      getK2K2GatewayApiClient,
-      readmodelService: readmodelServiceBuilder(readmodelDb),
-      tokenGenerator,
-    }),
+  app.register(async (tokenScope) => {
+    tokenScope.register(rateLimitOpenapiDocs);
+    tokenScope.register(tokenRouter, {
+      tokenService: tokenServiceBuilder({
+        config,
+        dpopProofStore,
+        getK2K2GatewayApiClient,
+        rateLimiter,
+        readmodelService: readmodelServiceBuilder(readmodelDb),
+        tokenGenerator,
+      }),
+    });
   });
 
   app.addHook("onClose", async () => {
     await dpopProofStore.close();
+    rateLimiter.disconnect();
   });
 
   return app;
