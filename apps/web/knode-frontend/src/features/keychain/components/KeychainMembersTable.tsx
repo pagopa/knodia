@@ -64,9 +64,11 @@ export function KeychainMembersTable({
         {(member) => (
           <Row id={member.id}>
             <Cell>
-              <span className="body-md-em">{member.username}</span>
+              <span className="body-md-em">
+                {member.username ?? "Removed User"}
+              </span>
             </Cell>
-            <Cell className="body-md-em">{member.email}</Cell>
+            <Cell className="body-md-em">{member.email ?? "—"}</Cell>
             {isAdmin && (
               <Cell>
                 <div className="flex justify-end">
