@@ -238,9 +238,9 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
   );
 
   it.each([
-    ["size is out of range (too high)", { signalId: "1", size: "101" }],
-    ["size is out of range (zero)", { signalId: "0", size: "0" }],
-    ["signalId is not a number", { signalId: "abc", size: "10" }],
+    ["size is out of range (too high)", { lastSignalId: "1", size: "101" }],
+    ["size is out of range (zero)", { lastSignalId: "0", size: "0" }],
+    ["lastSignalId is not a number", { lastSignalId: "abc", size: "10" }],
   ])(
     "should return 400 if the query is not correctly formatted - %s",
     async (_label, query) => {

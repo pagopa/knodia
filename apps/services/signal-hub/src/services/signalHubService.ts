@@ -48,7 +48,7 @@ export function signalHubServiceBuilder(
         eserviceId,
         readmodelService,
       );
-      await assertEserviceIsActiveWithSignalHubEnabled(eservice);
+      assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertOrganizationAuthorizedToPullSignals(
         toExternalResource(organization.id, organization.knodeId),
         eserviceId,
