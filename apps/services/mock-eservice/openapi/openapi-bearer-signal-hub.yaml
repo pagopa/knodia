@@ -182,7 +182,7 @@ components:
         - fullAddress
       additionalProperties: false
     Residence:
-      description: Residence returned by the Cross-Border E-Service 03
+      description: Residence returned by the Cross-Border E-service 03
       type: object
       properties:
         address:
@@ -217,7 +217,7 @@ paths:
       tags:
         - residence
       description: Returns the residence of a natural person identified by Codice
-        Fiscale (Cross-Border E-Service 03, Bearer-protected).
+        Fiscale (Cross-Border E-service 03, Bearer-protected).
       parameters:
         - schema:
             $ref: "#/components/schemas/Notation"
@@ -290,5 +290,5 @@ security:
   - bearerAuth: []
 tags:
   - description: Residence lookup + pseudonymization for Signal Hub (Cross-Border
-      E-Service 03, Bearer-protected)
+      E-service 03, Bearer-protected)
     name: residence
