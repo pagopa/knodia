@@ -9,6 +9,7 @@ import {
   type OrganizationId,
   type PurposeId,
 } from "@knodia/common-models/ids";
+import { dateToSeconds } from "@knodia/common-models/utils";
 import { type CryptoKey, SignJWT } from "jose";
 import { randomUUID } from "node:crypto";
 
@@ -45,7 +46,7 @@ export async function signEserviceAccessToken({
 }: SignAccessTokenInput): Promise<string> {
   const otherKnodeId =
     knodeId === KnodeId.enum.Orion ? KnodeId.enum.Lynx : KnodeId.enum.Orion;
-  const now = Math.floor(Date.now() / 1000);
+  const now = dateToSeconds(new Date());
   const defaultPayload: Partial<EserviceAccessTokenClaims> = {
     client_id: generateId<ConsumerKeychainId>(),
     consumer: {
