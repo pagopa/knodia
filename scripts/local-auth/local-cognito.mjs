@@ -15,7 +15,7 @@ const USERNAME = "Mario Rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
-const MOCK_USERS = [
+let MOCK_USERS = [
   {
     Attributes: [
       { Name: "sub", Value: USER_ID },
@@ -241,6 +241,33 @@ function handleListUsers(req, res, payload) {
   });
 }
 
+function handleAdminDeleteUser(req, res, payload) {
+  const identifier = payload.Username;
+  const before = MOCK_USERS.length;
+  MOCK_USERS = MOCK_USERS.filter(
+    (user) =>
+      user.Username !== identifier &&
+      !user.Attributes?.some(
+        (attribute) =>
+          attribute.Name === "sub" && attribute.Value === identifier,
+      ),
+  );
+  const removed = before - MOCK_USERS.length;
+
+  console.log(
+    `[admin-delete-user] Removed ${removed} user(s) matching '${identifier}' from pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {},
+    {
+      "x-amz-target": req.headers["x-amz-target"] ?? "",
+    },
+  );
+}
+
 function handleAdminListGroupsForUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   const groups = (user?.Groups ?? []).map((groupName) => ({
@@ -325,6 +352,11 @@ createServer(async (req, res) => {
         target === "AWSCognitoIdentityProviderService.AdminListGroupsForUser"
       ) {
         handleAdminListGroupsForUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
+        handleAdminDeleteUser(req, res, payload);
         return;
       }
     }
