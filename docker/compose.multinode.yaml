@@ -1029,7 +1029,11 @@ services:
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
-    restart: "no"
+    command:
+      - sh
+      - -c
+      - "while true; do node src/index.ts || true; sleep ${SIGNAL_HUB_CLEANUP_INTERVAL_SECONDS:-3600}; done"
+    restart: unless-stopped
 
   # ============================================================
   # Lynx Node
@@ -1719,7 +1723,11 @@ services:
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
-    restart: "no"
+    command:
+      - sh
+      - -c
+      - "while true; do node src/index.ts || true; sleep ${SIGNAL_HUB_CLEANUP_INTERVAL_SECONDS:-3600}; done"
+    restart: unless-stopped
 
   # ============================================================
   # Frontends
