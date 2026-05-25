@@ -5,10 +5,39 @@ meta {
 
 post {
   url: {{host-signal-hub}}/signals
-  body: none
+  body: json
   auth: none
 }
 
 headers {
   Authorization: {{knode-api-jwt}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{eserviceId}}",
+    "objectId": "test-object-id",
+    "objectType": "test-object-type",
+    "signalId": {{signalId}},
+    "signalType": "CREATE"
+  }
+}
+
+script:pre-request {
+  const eserviceId = bru.getVar("eserviceId");
+  const countersRaw = bru.getVar("signalIdCounters") || "{}";
+  const counters = JSON.parse(countersRaw);
+  bru.setVar("signalId", (counters[eserviceId] ?? 0) + 1);
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const eserviceId = bru.getVar("eserviceId");
+    const signalId = Number(bru.getVar("signalId"));
+    const countersRaw = bru.getVar("signalIdCounters") || "{}";
+    const counters = JSON.parse(countersRaw);
+    const latestCounter = Number(counters[eserviceId] ?? 0);
+    counters[eserviceId] = Math.max(latestCounter, signalId);
+    bru.setVar("signalIdCounters", JSON.stringify(counters));
+  }
 }
