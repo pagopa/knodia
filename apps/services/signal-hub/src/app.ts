@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -11,6 +12,13 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  initRedisRateLimiter,
+  type RateLimiterConfig,
+  rateLimitMiddleware,
+  rateLimitOpenapiDocs,
+  rateLimitResponseHeadersHook,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
@@ -29,7 +37,11 @@ export function buildApp({
   readmodelDb,
   signalHubDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig &
+    LoggerConfig &
+    RateLimiterConfig & {
+      knodeId: KnodeId;
+    };
   readmodelDb: NodePgDatabase;
   signalHubDb: NodePgDatabase;
 }) {
@@ -57,6 +69,15 @@ export function buildApp({
     makeApiProblem,
   });
 
+  const rateLimiter = initRedisRateLimiter({
+    config,
+    knodeId: config.knodeId,
+    logger: app.log,
+    serviceName: "signal-hub",
+  });
+
+  app.register(rateLimitResponseHeadersHook);
+
   // Public routes (no auth required)
   app.register(healthRouter);
 
@@ -64,12 +85,18 @@ export function buildApp({
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(rateLimitMiddleware, { rateLimiter });
+    protectedApp.register(rateLimitOpenapiDocs);
     protectedApp.register(signalHubRouter, {
       signalHubService: signalHubServiceBuilder(
         readmodelServiceBuilder(readmodelDb),
         signalHubDbServiceBuilder(signalHubDb),
       ),
     });
+  });
+
+  app.addHook("onClose", async () => {
+    rateLimiter.disconnect();
   });
 
   return app;

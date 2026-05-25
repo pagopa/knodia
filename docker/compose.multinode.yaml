@@ -1014,6 +1014,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_orion_signal_hub_user
@@ -1032,6 +1033,13 @@ services:
       SIGNAL_HUB_DB_NAME: orion_signal_hub
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   signal-hub-cleaner-orion:
     security_opt:
@@ -1729,6 +1737,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_lynx_signal_hub_user
@@ -1747,6 +1756,13 @@ services:
       SIGNAL_HUB_DB_NAME: lynx_signal_hub
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   signal-hub-cleaner-lynx:
     security_opt:

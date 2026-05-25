@@ -53,13 +53,21 @@ beforeAll(async () => {
     config: {
       acceptedAudiences: ["test-audience"],
       isProduction: false,
+      knodeId: "Orion",
       logLevel: "silent",
       nodeEnv: "test",
+      rateLimiterMaxRequests: 200,
+      rateLimiterRedisHost: "localhost",
+      rateLimiterRedisPort: 6379,
+      rateLimiterTimeoutSeconds: 2,
+      rateLimiterTimeWindowSeconds: 60,
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
     readmodelDb,
     signalHubDb,
   });
+
+  await app.ready();
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
@@ -71,7 +79,11 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
+  await Promise.all([
+    app.close(),
+    signalHubDb.$client.end(),
+    readmodelDb.$client.end(),
+  ]);
 });
 
 export {
