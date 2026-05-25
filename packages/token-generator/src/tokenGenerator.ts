@@ -54,16 +54,6 @@ export interface InternalTokenInput extends TokenParams {
   subject: string;
 }
 
-export interface SignupSessionTokenInput extends TokenParams {
-  audience: string;
-  dateOfBirth: string;
-  familyName: string;
-  fiscalNumber: string;
-  name: string;
-  spidCode: string;
-  subject: string;
-}
-
 interface EserviceAccessTokenInput extends TokenParams {
   audience: string[];
   consumer: ExternalResource<OrganizationId>;
@@ -98,6 +88,16 @@ interface KnodeApiAccessTokenInput extends TokenParams {
   audience: string[];
   keychain: { id: KnodeApiKeychainId; knodeId: KnodeId };
   organization: { id: OrganizationId; knodeId: KnodeId };
+}
+
+interface SignupSessionTokenInput extends TokenParams {
+  audience: string;
+  dateOfBirth: string;
+  familyName: string;
+  fiscalNumber: string;
+  name: string;
+  spidCode: string;
+  subject: string;
 }
 
 interface TokenParams {

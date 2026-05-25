@@ -6,6 +6,7 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
+  SignupSessionTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 import type { PublicKeyJwk } from "@knodia/common-models/crypto";
@@ -260,6 +261,37 @@ const testCases = [
         secondsDuration: SECONDS_DURATION,
       }),
     name: "generateKnodeApiAccessToken",
+    tokenDuration: SECONDS_DURATION,
+  },
+  {
+    expectedPayload: {
+      aud: "my-audience",
+      dateOfBirth: "2000-01-01",
+      exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
+      familyName: "Rossi",
+      fiscalNumber: "RSSMRA80A01H501U",
+      iat: MOCK_NOW_SECONDS,
+      iss: "my-issuer",
+      jti: expect.any(String),
+      name: "Mario",
+      spidCode: "spid-code-123",
+      sub: "subject-123",
+      type: "signup-session",
+    } satisfies SignupSessionTokenClaims,
+    generate: () =>
+      generator.generateSignupSessionToken({
+        audience: "my-audience",
+        dateOfBirth: "2000-01-01",
+        familyName: "Rossi",
+        fiscalNumber: "RSSMRA80A01H501U",
+        issuer: "my-issuer",
+        kid: KID,
+        name: "Mario",
+        secondsDuration: SECONDS_DURATION,
+        spidCode: "spid-code-123",
+        subject: "subject-123",
+      }),
+    name: "generateSignupSessionToken",
     tokenDuration: SECONDS_DURATION,
   },
   {

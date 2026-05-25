@@ -62,15 +62,15 @@ export interface KnodeApiAuthData {
   tokenType: "knode-api";
 }
 
-export interface SignupSessionAuthData {
-  tokenType: "signup-session";
-}
-
 export interface UISessionAuthData {
   organizationId: OrganizationId;
   tokenType: "ui-session";
   userId: UserId;
   userRoles: NonEmptyArray<UserRole>;
+}
+
+interface SignupSessionAuthData {
+  tokenType: "signup-session";
 }
 
 export function extractAuthDataFromToken(
