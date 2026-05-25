@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "react-aria-components";
 
+import { config } from "@/config/config";
+
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const handleStartLogin = () => {
-    window.location.href = "https://localhost:4200/auth/oidc/start";
+    window.location.href = config.oidcSessionFlowStartUrl;
   };
 
   return (

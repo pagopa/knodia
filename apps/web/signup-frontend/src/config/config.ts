@@ -15,6 +15,9 @@
 import { z } from "zod";
 
 const KnodiaSignupFrontendConfig = z.object({
+  OIDC_SESSION_FLOW_START_URL: z
+    .string()
+    .min(1, "OIDC_SESSION_FLOW_START_URL is required"),
   SIGNUP_MANAGER_URL: z.string().min(1, "SIGNUP_MANAGER_URL is required"),
 });
 
@@ -29,6 +32,7 @@ if (!parsed.success) {
 }
 
 export const config = {
+  oidcSessionFlowStartUrl: parsed.data.OIDC_SESSION_FLOW_START_URL,
   signupManagerUrl: parsed.data.SIGNUP_MANAGER_URL,
 };
 

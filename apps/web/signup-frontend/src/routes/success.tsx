@@ -5,5 +5,5 @@ export const Route = createFileRoute("/success")({
 });
 
 function RouteComponent() {
-  return <div>Identificazione con One Identity avvenuta con successo!</div>;
+  return <div>Successfully authenticated on One Identity!</div>;
 }

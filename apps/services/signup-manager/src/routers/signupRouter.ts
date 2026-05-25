@@ -22,7 +22,7 @@ const API_OIDCCallbackQuery = z.object({
 
 const API_SessionResponse = z
   .strictObject({
-    sessionToken: z.string(),
+    signupUiSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
 
@@ -61,14 +61,14 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     handler: async (req, res) => {
       const oidcSession = getOidcSessionCookie(req);
 
-      const { sessionToken } = await signupService.exchangeOIDCCode({
+      const { signupUiSessionToken } = await signupService.exchangeOIDCCode({
         code: req.query.code,
         oidcSession,
         state: req.query.state,
       });
 
       void clearOidcSessionCookie(res);
-      res.status(200).send({ sessionToken });
+      res.status(200).send({ signupUiSessionToken });
     },
     method: "GET",
     schema: {
@@ -78,7 +78,8 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       querystring: API_OIDCCallbackQuery,
       response: {
         200: API_SessionResponse.meta({
-          description: "OIDC login successful, session token returned",
+          description:
+            "OIDC login successful, signup UI session token returned",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         403: API_Problem.meta({ description: "Forbidden" }),

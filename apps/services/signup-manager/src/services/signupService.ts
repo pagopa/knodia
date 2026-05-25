@@ -27,11 +27,11 @@ export function signupServiceBuilder(oneIdentityClient: OneIdentityClient) {
         oidcSession.nonce,
       );
 
-      // TODO: Build the session token based on the claims returned by the OI.
+      // TODO: Build the signup-ui-session token based on the claims returned by the OI.
       void claims;
 
       return {
-        sessionToken: "",
+        signupUiSessionToken: "",
       };
     },
 
