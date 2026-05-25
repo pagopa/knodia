@@ -68,7 +68,7 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the residence of a natural person identified by Codice Fiscale (Cross-Border E-Service 03, Bearer-protected).",
+        "Returns the residence of a natural person identified by Codice Fiscale (Cross-Border E-service 03, Bearer-protected).",
       operationId: "getResidence",
       params: z.strictObject({ identifierNotation: API_Notation }),
       response: {

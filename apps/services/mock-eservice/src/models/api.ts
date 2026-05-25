@@ -83,7 +83,7 @@ export const API_PersonalInformation = z
   })
   .meta({
     description:
-      "Personal information returned by the Cross-Border E-Service 01",
+      "Personal information returned by the Cross-Border E-service 01",
     id: "PersonalInformation",
   });
 export type API_PersonalInformation = z.infer<typeof API_PersonalInformation>;
@@ -94,7 +94,7 @@ export const API_DigitalContact = z
     naturalPerson: API_NaturalPerson,
   })
   .meta({
-    description: "Digital contact returned by the Cross-Border E-Service 02",
+    description: "Digital contact returned by the Cross-Border E-service 02",
     id: "DigitalContact",
   });
 export type API_DigitalContact = z.infer<typeof API_DigitalContact>;
@@ -120,7 +120,7 @@ export const API_Residence = z
     naturalPerson: API_NaturalPerson,
   })
   .meta({
-    description: "Residence returned by the Cross-Border E-Service 03",
+    description: "Residence returned by the Cross-Border E-service 03",
     id: "Residence",
   });
 export type API_Residence = z.infer<typeof API_Residence>;

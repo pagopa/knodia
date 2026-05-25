@@ -28,17 +28,17 @@ import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
-    "Personal information lookup by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected)",
+    "Personal information lookup by Codice Fiscale (Cross-Border E-service 01, Bearer-protected)",
   name: apiTags.personalInformation,
 };
 const dpopAppTag: OpenAPIV3.TagObject = {
   description:
-    "Digital contact lookup by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected)",
+    "Digital contact lookup by Codice Fiscale (Cross-Border E-service 02, DPoP-protected)",
   name: apiTags.digitalContact,
 };
 const signalHubAppTag: OpenAPIV3.TagObject = {
   description:
-    "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-Service 03, Bearer-protected)",
+    "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-service 03, Bearer-protected)",
   name: apiTags.residence,
 };
 
