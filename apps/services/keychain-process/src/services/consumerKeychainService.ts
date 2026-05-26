@@ -60,6 +60,7 @@ import {
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
   retrieveKeychainUser,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
@@ -290,21 +291,14 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      const paginatedUserIds = consumerKeychain.users
-        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-        .slice(params.offset, params.offset + params.limit);
-
       return {
-        results: await Promise.all(
-          paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              consumerKeychainId,
-              "Consumer Keychain",
-              cognitoIdmClient,
-            ),
-          ),
-        ),
+        results: await retrievePaginatedKeychainUsers({
+          cognitoIdmClient,
+          keychainId: consumerKeychainId,
+          keychainKind: "Consumer Keychain",
+          params,
+          users: consumerKeychain.users,
+        }),
         totalCount: consumerKeychain.users.length,
       };
     },

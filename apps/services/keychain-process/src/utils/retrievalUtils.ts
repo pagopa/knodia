@@ -9,11 +9,13 @@ import type {
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
+  KeychainUser,
   KnodeApiKeychain,
 } from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 
+import type { API_GetProducerKeychainMembersQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
@@ -23,6 +25,11 @@ import {
   knodeApiKeychainNotFound,
   producerKeychainNotFound,
 } from "../models/errors.ts";
+
+type KeychainKind =
+  | "Consumer Keychain"
+  | "Knode API Keychain"
+  | "Producer Keychain";
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -109,8 +116,8 @@ export const retrieveKeychainKey = (
 
 export async function retrieveKeychainUser(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
-  keychainKind: "Consumer Keychain" | "Knode API Keychain",
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
+  keychainKind: KeychainKind,
   cognitoIdmClient: CognitoIdmClient,
 ): Promise<IdmUser> {
   const user = await cognitoIdmClient.getUserById(userId);
@@ -154,3 +161,27 @@ export const retrieveProducerKeychain = async (
 
   return producerKeychain;
 };
+
+export async function retrievePaginatedKeychainUsers({
+  cognitoIdmClient,
+  keychainId,
+  keychainKind,
+  params,
+  users,
+}: {
+  cognitoIdmClient: CognitoIdmClient;
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId;
+  keychainKind: KeychainKind;
+  params: API_GetProducerKeychainMembersQueryParams;
+  users: KeychainUser[];
+}) {
+  const paginatedUserIds = users
+    .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
+    .slice(params.offset, params.offset + params.limit);
+
+  return await Promise.all(
+    paginatedUserIds.map(({ userId }) =>
+      retrieveKeychainUser(userId, keychainId, keychainKind, cognitoIdmClient),
+    ),
+  );
+}

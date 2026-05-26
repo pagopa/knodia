@@ -48,6 +48,7 @@ import {
   retrieveKeychainKey,
   retrieveKeychainUser,
   retrieveKnodeApiKeychain,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
@@ -272,21 +273,14 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain,
       );
 
-      const paginatedUserIds = knodeApiKeychain.users
-        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-        .slice(params.offset, params.offset + params.limit);
-
       return {
-        results: await Promise.all(
-          paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              knodeApiKeychainId,
-              "Knode API Keychain",
-              cognitoIdmClient,
-            ),
-          ),
-        ),
+        results: await retrievePaginatedKeychainUsers({
+          cognitoIdmClient,
+          keychainId: knodeApiKeychainId,
+          keychainKind: "Knode API Keychain",
+          params,
+          users: knodeApiKeychain.users,
+        }),
         totalCount: knodeApiKeychain.users.length,
       };
     },
