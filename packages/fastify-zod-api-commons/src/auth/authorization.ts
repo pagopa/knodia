@@ -40,8 +40,8 @@ type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
   | { tokenType: "knode-api" }
-  | { tokenType: "signup-session" }
-  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
+  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> }
+  | { tokenType: "ui-signup-session" };
 
 /**
   ---- EXAMPLE USAGE: ----
@@ -110,7 +110,7 @@ function assertAuthDataAdmitted<
     .with({ tokenType: "knode-api" }, () =>
       assertKnodeApiTokenAdmitted(admittedRules),
     )
-    .with({ tokenType: "signup-session" }, () =>
+    .with({ tokenType: "ui-signup-session" }, () =>
       assertUISignupSessionTokenAdmitted(admittedRules),
     )
     .exhaustive();
@@ -183,9 +183,9 @@ function assertUISessionTokenAdmitted(
 function assertUISignupSessionTokenAdmitted(
   admittedRules: NonEmptyArray<AuthorizationRule>,
 ): void {
-  if (!admittedRules.some((rule) => rule.tokenType === "signup-session")) {
+  if (!admittedRules.some((rule) => rule.tokenType === "ui-signup-session")) {
     throw forbiddenError(
-      `Invalid token type "signup-session" for this operation`,
+      `Invalid token type "ui-signup-session" for this operation`,
     );
   }
 }

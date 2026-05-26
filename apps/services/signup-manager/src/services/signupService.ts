@@ -1,5 +1,6 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 
+import { genericInternalError } from "@knodia/common-models/errors";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
@@ -35,11 +36,18 @@ export function signupServiceBuilder(
       );
 
       /**
-       * In One Identity, there is no handy way to distinguish between SPID and CIE users,
-       * so to identify the user we rely on the presence of the spidCode claim, which is only
-       * present for SPID users and fallback to the fiscalNumber claim for CIE users.
+       * - SPID can return `spidCode` and `fiscalNumber`;
+       * - CIE returns `fiscalNumber`;
+       * - eIDAS returns `PersonIdentifier`.
        */
-      const subject = claims.spidCode ?? claims.fiscalNumber;
+      const subject =
+        claims.spidCode ?? claims.fiscalNumber ?? claims.PersonIdentifier;
+
+      if (!subject) {
+        throw genericInternalError(
+          "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
+        );
+      }
 
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,
@@ -49,6 +57,7 @@ export function signupServiceBuilder(
         issuer: config.uiSignupSessionJwt.issuer,
         kid: config.uiSignupSessionJwt.kid,
         name: claims.name,
+        PersonIdentifier: claims.PersonIdentifier,
         secondsDuration: config.uiSignupSessionJwt.secondsDuration,
         spidCode: claims.spidCode,
         subject,

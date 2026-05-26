@@ -84,7 +84,7 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
             organizationKnodeId: a.organization.knodeId,
           }),
         )
-        .with({ tokenType: "signup-session" }, () => ({
+        .with({ tokenType: "ui-signup-session" }, () => ({
           correlationId,
         }))
         .exhaustive();

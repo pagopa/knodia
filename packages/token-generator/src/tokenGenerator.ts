@@ -108,9 +108,10 @@ interface UISignupSessionTokenInput extends TokenParams {
   audience: string;
   dateOfBirth: string;
   familyName: string;
-  fiscalNumber: string;
+  fiscalNumber: string | undefined;
   name: string;
-  spidCode: string;
+  PersonIdentifier: string | undefined;
+  spidCode: string | undefined;
   subject: string;
 }
 
@@ -369,12 +370,13 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         iss: input.issuer,
         jti: randomUUID(),
         name: input.name,
+        PersonIdentifier: input.PersonIdentifier,
         spidCode: input.spidCode,
         sub: input.subject,
-        type: "signup-session",
+        type: "ui-signup-session",
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
-      return { header, payload: claims, serialized, type: "signup-session" };
+      return { header, payload: claims, serialized, type: "ui-signup-session" };
     },
   };
 }

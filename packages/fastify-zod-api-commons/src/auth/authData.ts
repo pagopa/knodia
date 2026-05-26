@@ -70,7 +70,7 @@ export interface UISessionAuthData {
 }
 
 interface UISignupSessionAuthData {
-  tokenType: "signup-session";
+  tokenType: "ui-signup-session";
 }
 
 export function extractAuthDataFromToken(

@@ -29,6 +29,13 @@ const KNODE_API_KEYCHAIN_ID = "00000000-0000-4000-8000-000000000020";
 const KNODE_API_KEYCHAIN_KNODE_ID = "Orion";
 const KNODE_API_ORG_KNODE_ID = "Orion";
 
+// Placeholder values for signup-session tokens (replace with real values for testing)
+const SIGNUP_NAME = "Mario";
+const SIGNUP_FAMILY_NAME = "Rossi";
+const SIGNUP_DATE_OF_BIRTH = "1980-01-01";
+const SIGNUP_FISCAL_NUMBER = "RSSMRA80A01H501U";
+const SIGNUP_SPID_CODE = "SPID-001";
+
 import { TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
@@ -96,8 +103,17 @@ function getClaims(targetEnv, type) {
         },
         organization: { id: ORG_ID, knode_id: KNODE_API_ORG_KNODE_ID },
       };
-    case "signup-session":
-      return { sub: INTERNAL_SUB, type, aud };
+    case "ui-signup-session":
+      return {
+        sub: USER_ID,
+        type,
+        aud,
+        name: SIGNUP_NAME,
+        familyName: SIGNUP_FAMILY_NAME,
+        dateOfBirth: SIGNUP_DATE_OF_BIRTH,
+        fiscalNumber: SIGNUP_FISCAL_NUMBER,
+        spidCode: SIGNUP_SPID_CODE,
+      };
   }
 }
 
@@ -105,7 +121,7 @@ function getEnvVarName(targetEnv, type) {
   const base = type === "ui-session" ? "UI_SESSION_JWT"
     : type === "internal" ? "INTERNAL_JWT"
     : type === "knode-api" ? "KNODE_API_JWT"
-    : type === "signup-session" ? "UI_SIGNUP_SESSION_JWT"
+    : type === "ui-signup-session" ? "UI_SIGNUP_SESSION_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
@@ -119,7 +135,7 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
   }
   const keyName = type === "internal" ? "internal"
     : type === "knode-api" ? "auth-server"
-    : type === "signup-session" ? "signup-session"
+    : type === "ui-signup-session" ? "ui-signup-session"
     : "bff-session";
   const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
   const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));

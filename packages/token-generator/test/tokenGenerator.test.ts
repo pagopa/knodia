@@ -274,9 +274,10 @@ const testCases = [
       iss: "my-issuer",
       jti: expect.any(String),
       name: "Mario",
+      PersonIdentifier: "person-identifier-123",
       spidCode: "spid-code-123",
       sub: "subject-123",
-      type: "signup-session",
+      type: "ui-signup-session",
     } satisfies UISignupSessionTokenClaims,
     generate: () =>
       generator.generateUISignupSessionToken({
@@ -287,6 +288,7 @@ const testCases = [
         issuer: "my-issuer",
         kid: KID,
         name: "Mario",
+        PersonIdentifier: "person-identifier-123",
         secondsDuration: SECONDS_DURATION,
         spidCode: "spid-code-123",
         subject: "subject-123",

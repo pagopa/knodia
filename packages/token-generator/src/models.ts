@@ -45,7 +45,7 @@ export interface UISessionToken extends BaseToken {
 
 export interface UISignupSessionToken extends BaseToken {
   payload: UISignupSessionTokenClaims;
-  type: "signup-session";
+  type: "ui-signup-session";
 }
 
 interface BaseToken {
