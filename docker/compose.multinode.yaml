@@ -1024,6 +1024,32 @@ services:
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
 
+  signal-hub-cleaner-orion:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multinode-signal-hub-cleaner-orion
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub-cleaner/Dockerfile
+    environment:
+      LOG_LEVEL: info
+      SIGNAL_HUB_DB_USER: local_orion_signal_hub_cleaner_user
+      SIGNAL_HUB_DB_PASSWORD: local_orion_signal_hub_cleaner_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: orion_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
+      SIGNALS_RETENTION_HOURS: "1"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+    command:
+      - sh
+      - -c
+      - "while true; do node src/index.ts || true; sleep ${SIGNAL_HUB_CLEANUP_INTERVAL_SECONDS:-3600}; done"
+    restart: unless-stopped
+
   # ============================================================
   # Lynx Node
   # ============================================================
@@ -1705,6 +1731,32 @@ services:
       SIGNAL_HUB_DB_NAME: lynx_signal_hub
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
+
+  signal-hub-cleaner-lynx:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multinode-signal-hub-cleaner-lynx
+    build:
+      context: ..
+      dockerfile: apps/services/signal-hub-cleaner/Dockerfile
+    environment:
+      LOG_LEVEL: info
+      SIGNAL_HUB_DB_USER: local_lynx_signal_hub_cleaner_user
+      SIGNAL_HUB_DB_PASSWORD: local_lynx_signal_hub_cleaner_user
+      SIGNAL_HUB_DB_HOST: postgres
+      SIGNAL_HUB_DB_PORT: "5432"
+      SIGNAL_HUB_DB_NAME: lynx_signal_hub
+      SIGNAL_HUB_DB_USE_SSL: "false"
+      SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
+      SIGNALS_RETENTION_HOURS: "1"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+    command:
+      - sh
+      - -c
+      - "while true; do node src/index.ts || true; sleep ${SIGNAL_HUB_CLEANUP_INTERVAL_SECONDS:-3600}; done"
+    restart: unless-stopped
 
   # ============================================================
   # Frontends
