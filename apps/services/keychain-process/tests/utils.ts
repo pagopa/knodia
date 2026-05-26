@@ -25,9 +25,9 @@ import { expect } from "vitest";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
-  createProducerKeychainCreatedV1Event,
 } from "../src/models/consumerKeychainEventFactory.ts";
 import { createKnodeApiKeychainCreatedV1Event } from "../src/models/knodeApiKeychainEventFactory.ts";
+import { createProducerKeychainCreatedV1Event } from "../src/models/producerKeychainEventFactory.ts";
 import {
   app,
   consumerKeychainWriterService,
