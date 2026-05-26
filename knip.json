@@ -33,10 +33,6 @@
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
-    "apps/services/remote-resources-manager": {
-      "entry": ["tests/**/*.ts"],
-      "ignoreDependencies": ["@knodia/spectral-config"]
-    },
     "apps/services/mock-eservice": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
@@ -46,6 +42,10 @@
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/services/*-process": {
+      "entry": ["tests/**/*.ts"],
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/services/*-manager": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
