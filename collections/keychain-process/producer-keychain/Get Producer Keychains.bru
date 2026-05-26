@@ -1,0 +1,22 @@
+meta {
+  name: Get Producer Keychains
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/producerKeychains?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+  ~name: test
+  ~ownerId: {{organizationId}}
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
