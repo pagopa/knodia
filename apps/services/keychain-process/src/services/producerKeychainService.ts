@@ -18,7 +18,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createProducerKeychainCreatedV1Event } from "../models/consumerKeychainEventFactory.ts";
+import { createProducerKeychainCreatedV1Event } from "../models/producerKeychainEventFactory.ts";
 import { retrieveFlatProducerKeychain } from "../utils/retrievalUtils.ts";
 
 export type ProducerKeychainService = ReturnType<
