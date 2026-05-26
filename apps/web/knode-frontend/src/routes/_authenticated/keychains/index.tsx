@@ -145,6 +145,7 @@ function RouteComponent() {
       </Tabs>
 
       <CreateKeychainModal
+        defaultType={selectedTab}
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />

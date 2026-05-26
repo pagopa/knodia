@@ -15,10 +15,13 @@ import {
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
+
+import type { KeychainType } from "../models/commons";
 
 import {
   createKeychainFormDefaultValues,
@@ -28,11 +31,12 @@ import {
 } from "../models/keychain-forms";
 
 interface Props {
+  defaultType: KeychainType;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function CreateKeychainModal({ isOpen, onClose }: Props) {
+export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
   const navigate = useNavigate();
 
   const {
@@ -91,7 +95,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
   }
 
   const form = useForm({
-    defaultValues: createKeychainFormDefaultValues,
+    defaultValues: { ...createKeychainFormDefaultValues, type: defaultType },
     onSubmit: async ({ value }) => {
       handleCreateKeychain(value);
     },
@@ -100,6 +104,12 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
       onDynamic: createKeychainFormSchema,
     },
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({ ...createKeychainFormDefaultValues, type: defaultType });
+    }
+  }, [isOpen, defaultType, form]);
 
   return (
     <Modal
