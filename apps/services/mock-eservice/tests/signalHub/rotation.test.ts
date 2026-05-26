@@ -44,6 +44,14 @@ describe("getRotatedSeed", () => {
     );
   });
 
+  it("is stable within a period", () => {
+    const periodStart = 1_000_000;
+    const lastMsOfPeriod = 1_000_000 + 30_000 - 1;
+    expect(getRotatedSeed(ESERVICE_ID, periodStart, config)).toBe(
+      getRotatedSeed(ESERVICE_ID, lastMsOfPeriod, config),
+    );
+  });
+
   it("yields different seeds across periods", () => {
     const seed0 = getRotatedSeed(ESERVICE_ID, 1_000_000, config);
     const seed1 = getRotatedSeed(ESERVICE_ID, 1_000_000 + 30_000, config);
