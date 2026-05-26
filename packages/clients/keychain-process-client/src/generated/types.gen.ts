@@ -1871,3 +1871,98 @@ export type UpdateProducerKeychainResponses = {
 };
 
 export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
+
+export type AddProducerKeychainMemberData = {
+    body: KeychainMemberSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members';
+};
+
+export type AddProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddProducerKeychainMemberError = AddProducerKeychainMemberErrors[keyof AddProducerKeychainMemberErrors];
+
+export type AddProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member added successfully
+     */
+    200: Keychain;
+};
+
+export type AddProducerKeychainMemberResponse = AddProducerKeychainMemberResponses[keyof AddProducerKeychainMemberResponses];
+
+export type RemoveProducerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members/{userId}';
+};
+
+export type RemoveProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or Member not found
+     */
+    404: Problem;
+};
+
+export type RemoveProducerKeychainMemberError = RemoveProducerKeychainMemberErrors[keyof RemoveProducerKeychainMemberErrors];
+
+export type RemoveProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member removed successfully
+     */
+    200: Keychain;
+};
+
+export type RemoveProducerKeychainMemberResponse = RemoveProducerKeychainMemberResponses[keyof RemoveProducerKeychainMemberResponses];
