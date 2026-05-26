@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  type OrganizationId,
+  type ProducerKeychainId,
+} from "@knodia/common-models/ids";
 import {
   KeychainEventV1,
   type ProducerKeychain,
@@ -73,7 +77,7 @@ describe("DELETE /producerKeychains/:producerKeychainId (deleteProducerKeychain)
     const deleteResponse = await deleteProducerKeychain({
       token: {
         ...allowedTestTokens[0]!,
-        organizationId: generateId(),
+        organizationId: generateId<OrganizationId>(),
         type: "ui-session",
       },
     });
@@ -83,7 +87,7 @@ describe("DELETE /producerKeychains/:producerKeychainId (deleteProducerKeychain)
 
   it("should return 404 if the producer keychain does not exist", async () => {
     const response = await deleteProducerKeychain({
-      producerKeychainId: generateId(),
+      producerKeychainId: generateId<ProducerKeychainId>(),
     });
 
     expect(response.statusCode).toBe(404);
