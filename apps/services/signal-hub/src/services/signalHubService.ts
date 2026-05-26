@@ -5,6 +5,7 @@ import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { SignalType } from "@knodia/signal-hub-models";
 
+import { toExternalResource } from "@knodia/common-models/externalResource";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
@@ -12,8 +13,11 @@ import { DatabaseError } from "pg";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { signalAlreadyExists } from "../models/errors.ts";
+import { retrieveEserviceById } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceIsActiveWithSignalHubEnabled,
+  assertOrganizationAuthorizedToPullSignals,
+  assertOrganizationAuthorizedToPushSignals,
   assertSignalCanBePushed,
 } from "../utils/validators.ts";
 
@@ -24,6 +28,36 @@ export function signalHubServiceBuilder(
   signalHubDbService: SignalHubDbService,
 ) {
   return {
+    async pullSignals(
+      {
+        eserviceId,
+        signalId,
+        size,
+      }: {
+        eserviceId: EserviceId;
+        signalId: number;
+        size: number;
+      },
+      { authData, logger }: AuthorizedContext<KnodeApiAuthData>,
+    ) {
+      logger.info(`Pulling signals for E-service ${eserviceId}`);
+
+      const { organization } = authData;
+
+      const { data: eservice } = await retrieveEserviceById(
+        eserviceId,
+        readmodelService,
+      );
+
+      await assertOrganizationAuthorizedToPullSignals(
+        toExternalResource(organization.id, organization.knodeId),
+        eserviceId,
+        readmodelService,
+      );
+      assertEserviceIsActiveWithSignalHubEnabled(eservice);
+
+      return await signalHubDbService.getSignals(signalId, eserviceId, size);
+    },
     async pushSignal(
       {
         eserviceId,
@@ -42,13 +76,16 @@ export function signalHubServiceBuilder(
     ) {
       logger.info(`Pushing signal ${signalId} for E-service ${eserviceId}`);
 
-      const { organization } = authData;
-
-      await assertEserviceIsActiveWithSignalHubEnabled(
+      const { data: eservice } = await retrieveEserviceById(
         eserviceId,
-        organization.id,
         readmodelService,
       );
+
+      assertOrganizationAuthorizedToPushSignals(
+        eservice,
+        authData.organization.id,
+      );
+      assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertSignalCanBePushed(signalId, eserviceId, signalHubDbService);
 
       const signal: Omit<SignalHubSignalSQL, "id"> = {
