@@ -2,6 +2,7 @@ import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainDetailsQueryKey,
   getKnodeApiKeychainDetailsQueryKey,
+  getProducerKeychainDetailsQueryKey,
 } from "@knodia/bff-client/tanstack-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { match } from "ts-pattern";
@@ -13,6 +14,7 @@ import type { SupportedKeychain } from "../models/commons";
 import {
   consumerKeychainsQueryKey,
   knodeApiKeychainsQueryKey,
+  producerKeychainsQueryKey,
 } from "../services/queries";
 
 export function useEditKeychain(keychain: SupportedKeychain) {
@@ -35,6 +37,13 @@ export function useEditKeychain(keychain: SupportedKeychain) {
             path: { knodeApiKeychainId: keychainId },
           }),
         )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.updateProducerKeychain({
+            body,
+            client,
+            path: { producerKeychainId: keychainId },
+          }),
+        )
         .exhaustive(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -51,12 +60,19 @@ export function useEditKeychain(keychain: SupportedKeychain) {
               path: { knodeApiKeychainId: keychainId },
             }),
           )
+          .with({ type: "production" }, ({ keychainId }) =>
+            getProducerKeychainDetailsQueryKey({
+              client,
+              path: { producerKeychainId: keychainId },
+            }),
+          )
           .exhaustive(),
       });
       queryClient.invalidateQueries({
         queryKey: match(keychain)
           .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
           .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+          .with({ type: "production" }, () => producerKeychainsQueryKey())
           .exhaustive(),
       });
     },

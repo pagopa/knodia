@@ -7,6 +7,8 @@ import {
   type KeychainType,
   knodeApiKeychainDetailsTab,
   type KnodeApiKeychainDetailsTab,
+  producerKeychainDetailsTab,
+  type ProducerKeychainDetailsTab,
 } from "./commons";
 
 export const keychainSearchDefaultValues = {
@@ -55,4 +57,20 @@ export const knodeApiKeychainDetailsSearchSchema = z.object({
   tab: knodeApiKeychainDetailsTab
     .default(knodeApiKeychainDetailsSearchDefaultValues.tab)
     .catch(knodeApiKeychainDetailsSearchDefaultValues.tab),
+});
+
+export const producerKeychainDetailsSearchDefaultValues = {
+  offset: 0,
+  tab: "public-keys" satisfies ProducerKeychainDetailsTab,
+} as const;
+
+export const producerKeychainDetailsSearchSchema = z.object({
+  offset: z
+    .number()
+    .min(0)
+    .default(producerKeychainDetailsSearchDefaultValues.offset)
+    .catch(producerKeychainDetailsSearchDefaultValues.offset),
+  tab: producerKeychainDetailsTab
+    .default(producerKeychainDetailsSearchDefaultValues.tab)
+    .catch(producerKeychainDetailsSearchDefaultValues.tab),
 });
