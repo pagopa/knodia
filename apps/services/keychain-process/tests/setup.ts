@@ -4,6 +4,7 @@ import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import {
   readmodelConsumerKeychain,
   readmodelKnodeApiKeychain,
+  readmodelProducerKeychain,
 } from "@knodia/db-readmodel-keychain";
 import {
   type ConsumerKeychainWriterService,
@@ -29,8 +30,12 @@ export const mockMaxKeysPerKeychain = 5;
 async function resetTestDatabases() {
   await Promise.all([
     resetTestDatabase(eventStoreDb, eventStoreKeychainEvents),
-    resetTestDatabase(readmodelDb, readmodelConsumerKeychain),
-    resetTestDatabase(readmodelDb, readmodelKnodeApiKeychain),
+    resetTestDatabase(
+      readmodelDb,
+      readmodelConsumerKeychain,
+      readmodelKnodeApiKeychain,
+      readmodelProducerKeychain,
+    ),
   ]);
 }
 
