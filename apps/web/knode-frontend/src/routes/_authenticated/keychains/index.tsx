@@ -24,6 +24,7 @@ import {
 import {
   consumerKeychainsQuery,
   knodeApiKeychainsQuery,
+  producerKeychainsQuery,
 } from "@/features/keychain/services/queries";
 
 export const Route = createFileRoute("/_authenticated/keychains/")({
@@ -37,11 +38,9 @@ export const Route = createFileRoute("/_authenticated/keychains/")({
     const query = match(type)
       .with("api", () => knodeApiKeychainsQuery(offset))
       .with("consumption", () => consumerKeychainsQuery(offset))
-      .with("production", () => undefined)
+      .with("production", () => producerKeychainsQuery(offset))
       .exhaustive();
-    if (query) {
-      queryClient.prefetchQuery(query);
-    }
+    queryClient.prefetchQuery(query);
   },
   search: {
     middlewares: [stripSearchParams(keychainSearchDefaultValues)],
@@ -69,10 +68,16 @@ function RouteComponent() {
     placeholderData: keepPreviousData,
   });
 
+  const { data: producerData, isLoading: isProducerLoading } = useQuery({
+    ...producerKeychainsQuery(offset),
+    enabled: selectedTab === "production",
+    placeholderData: keepPreviousData,
+  });
+
   const activeData = match(selectedTab)
     .with("api", () => apiData)
     .with("consumption", () => consumerData)
-    .with("production", () => undefined)
+    .with("production", () => producerData)
     .exhaustive();
 
   function handleSearchChange(values: Partial<typeof search>) {
@@ -126,7 +131,13 @@ function RouteComponent() {
           </Tab>
         </TabList>
         <TabPanels>
-          <TabPanel id="production" key="production"></TabPanel>
+          <TabPanel id="production" key="production">
+            <KeychainTable
+              isLoading={isProducerLoading}
+              keychains={producerData?.results ?? []}
+              type="production"
+            />
+          </TabPanel>
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isConsumerLoading}
