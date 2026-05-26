@@ -17,5 +17,5 @@ await runConsumer(
   createProcessMessage(readmodelDb, logger),
   config,
   logger,
-  readmodelPool,
+  () => readmodelPool.end(),
 );

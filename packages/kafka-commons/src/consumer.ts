@@ -2,7 +2,6 @@ import type {
   Consumer,
   EachMessagePayload,
 } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
-import type { Pool } from "pg";
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
@@ -25,7 +24,9 @@ import { processExitAndDisconnect } from "./utils/utils.ts";
  * @param consumerHandler - Function invoked for each consumed message.
  * @param config - Kafka consumer configuration.
  * @param logger - Logger used for consumer events and errors.
- * @param readmodelPool - Database pool used for shutdown handling.
+ * @param onShutdown - Optional callback invoked on graceful shutdown. Use it to
+ * close caller-owned resources (e.g. `() => readmodelPool.end()` for readmodel
+ * writers). Consumers without owned resources can omit it.
  * @param onReady - Optional callback invoked once the consumer is connected
  * and subscribed. Receives a `disconnect` function to gracefully stop the consumer.
  */
@@ -34,7 +35,7 @@ export async function runConsumer(
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
   config: KafkaConsumerConfig,
   logger: Logger,
-  readmodelPool: Pool,
+  onShutdown?: () => Promise<void>,
   onReady?: (disconnect: () => Promise<void>) => void,
 ) {
   try {
@@ -48,14 +49,14 @@ export async function runConsumer(
       "retry.backoff.max.ms": 3000,
     });
 
-    errorEventsListener(consumer, logger, readmodelPool);
+    errorEventsListener(consumer, logger, onShutdown);
 
     await consumer.connect();
     logger.debug("Kafka consumer connected");
 
     const topicExists = await checkTopicsExist(kafka, topics, logger);
     if (!topicExists) {
-      await processExitAndDisconnect({ logger, readmodelPool });
+      await processExitAndDisconnect({ logger, onShutdown });
     }
 
     await consumer.subscribe({ topics });
@@ -82,7 +83,7 @@ export async function runConsumer(
     });
   } catch (e) {
     logger.error(`Generic error occurs during consumer initialization: ${e}`);
-    await processExitAndDisconnect({ logger, readmodelPool });
+    await processExitAndDisconnect({ logger, onShutdown });
   }
 }
 
