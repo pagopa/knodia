@@ -1,3 +1,4 @@
+import type { IdmUser } from "@knodia/cognito-idm-client";
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
@@ -5,7 +6,6 @@ import type {
   KeychainKey,
 } from "@knodia/keychain-models";
 
-import type { KeychainMember } from "../utils/retrievalUtils.ts";
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
@@ -34,10 +34,10 @@ export const toAPI_KeychainKey = (key: KeychainKey): API_KeychainKey => ({
   userId: key.userId,
 });
 
-export const toAPI_User = (member: KeychainMember): API_User => ({
-  email: member.email,
-  id: member.id,
-  username: member.username,
+export const toAPI_User = (idmUser: IdmUser): API_User => ({
+  email: idmUser.email,
+  id: idmUser.id,
+  username: idmUser.username,
 });
 
 export const toAPI_ConsumerKeychainPurpose = (

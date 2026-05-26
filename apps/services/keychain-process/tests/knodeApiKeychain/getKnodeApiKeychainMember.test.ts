@@ -215,7 +215,7 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId/members/:userId (getKnodeAp
     expect(cognitoIdmClientMock.getUserById).not.toHaveBeenCalled();
   });
 
-  it("should return 200 with only `id` when the user no longer exists in IDM", async () => {
+  it("should return 404 when the user no longer exists in IDM", async () => {
     await seedKnodeApiKeychain(knodeApiKeychain);
 
     cognitoIdmClientMock.getUserById.mockResolvedValue(undefined);
@@ -225,7 +225,6 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId/members/:userId (getKnodeAp
       VALID_MEMBER_ID,
     );
 
-    expect(response.statusCode).toBe(200);
-    expect(API_User.parse(response.json())).toEqual({ id: VALID_MEMBER_ID });
+    expect(response.statusCode).toBe(404);
   });
 });

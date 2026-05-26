@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
@@ -55,8 +55,8 @@ import {
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/consumerKeychainEventFactory.ts";
+import { keychainMemberNotFound } from "../models/errors.ts";
 import {
-  type KeychainMember,
   retrieveConsumerKeychain,
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
@@ -242,7 +242,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       userId: UserId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<KeychainMember> {
+    ): Promise<IdmUser> {
       logger.info(
         `Getting member ${userId} of Consumer Keychain with id ${consumerKeychainId}`,
       );
@@ -263,14 +263,18 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      return await retrieveKeychainUser(userId, cognitoIdmClient);
+      const member = await retrieveKeychainUser(userId, cognitoIdmClient);
+      if (!member) {
+        throw keychainMemberNotFound(consumerKeychainId, userId);
+      }
+      return member;
     },
 
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainMembersQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<KeychainMember>> {
+    ): Promise<ListResult<IdmUser>> {
       logger.info(
         { params },
         `Getting members of Consumer Keychain with id ${consumerKeychainId}, with params`,
@@ -286,17 +290,24 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      const paginatedUserIds = consumerKeychain.users
-        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-        .slice(params.offset, params.offset + params.limit);
+      const sortedUserIds = consumerKeychain.users.toSorted(
+        (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+      );
 
-      return {
-        results: await Promise.all(
-          paginatedUserIds.map(({ userId }) =>
+      const activeMembers = (
+        await Promise.all(
+          sortedUserIds.map(({ userId }) =>
             retrieveKeychainUser(userId, cognitoIdmClient),
           ),
+        )
+      ).filter((member): member is IdmUser => member !== undefined);
+
+      return {
+        results: activeMembers.slice(
+          params.offset,
+          params.offset + params.limit,
         ),
-        totalCount: consumerKeychain.users.length,
+        totalCount: activeMembers.length,
       };
     },
 

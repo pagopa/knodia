@@ -1859,7 +1859,9 @@ components:
         username:
           type: string
       required:
+        - email
         - id
+        - username
       additionalProperties: false
     KeychainMembers:
       type: object

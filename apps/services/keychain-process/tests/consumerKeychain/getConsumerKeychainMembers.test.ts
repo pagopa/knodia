@@ -233,7 +233,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
     },
   );
 
-  it("should return members with only `id` for users that no longer exist in IDM", async () => {
+  it("should exclude users that no longer exist in IDM and adjust totalCount accordingly", async () => {
     await seedConsumerKeychain(consumerKeychain);
 
     const deletedUserIds = new Set([
@@ -253,13 +253,12 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
 
     expect(response.statusCode).toBe(200);
     const body = API_KeychainMembers.parse(response.json());
-    expect(body.pagination.total).toBe(existingMembers.length);
-    expect(body.results).toEqual(
-      existingMembers.map(({ userId }) =>
-        deletedUserIds.has(userId)
-          ? { id: userId }
-          : toAPI_User(existingUsers.find((u) => u.id === userId)!),
-      ),
-    );
+    const expectedActiveMembers = existingMembers
+      .filter(({ userId }) => !deletedUserIds.has(userId))
+      .map(({ userId }) =>
+        toAPI_User(existingUsers.find((u) => u.id === userId)!),
+      );
+    expect(body.pagination.total).toBe(expectedActiveMembers.length);
+    expect(body.results).toEqual(expectedActiveMembers);
   });
 });

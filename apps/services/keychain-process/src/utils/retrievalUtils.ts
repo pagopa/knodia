@@ -1,5 +1,4 @@
-import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
-import type { UserRole } from "@knodia/common-models/auth";
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type {
   ConsumerKeychainId,
   KeyId,
@@ -20,13 +19,6 @@ import {
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
 } from "../models/errors.ts";
-
-export interface KeychainMember {
-  email?: string;
-  id: UserId;
-  roles?: UserRole[];
-  username?: string;
-}
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -114,15 +106,6 @@ export const retrieveKeychainKey = (
 export async function retrieveKeychainUser(
   userId: UserId,
   cognitoIdmClient: CognitoIdmClient,
-): Promise<KeychainMember> {
-  const user = await cognitoIdmClient.getUserById(userId);
-  if (!user) {
-    return { id: userId };
-  }
-  return {
-    email: user.email,
-    id: user.id,
-    roles: user.roles,
-    username: user.username,
-  };
+): Promise<IdmUser | undefined> {
+  return await cognitoIdmClient.getUserById(userId);
 }

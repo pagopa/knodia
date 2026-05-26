@@ -20,10 +20,6 @@ const activeMember: bffApi.User = {
   username: "Mario Rossi",
 };
 
-const removedMember: bffApi.User = {
-  id: generateId(),
-};
-
 describe("KeychainMembersTable", () => {
   it("renders active members with their username and email", () => {
     renderWithProviders(
@@ -36,18 +32,5 @@ describe("KeychainMembersTable", () => {
 
     expect(screen.getByText("Mario Rossi")).toBeInTheDocument();
     expect(screen.getByText("mario.rossi@example.com")).toBeInTheDocument();
-  });
-
-  it("renders 'Removed User' and '—' when the member has no IDM data", () => {
-    renderWithProviders(
-      <KeychainMembersTable
-        isLoading={false}
-        keychain={keychain}
-        members={[removedMember]}
-      />,
-    );
-
-    expect(screen.getByText("Removed User")).toBeInTheDocument();
-    expect(screen.getByText("—")).toBeInTheDocument();
   });
 });

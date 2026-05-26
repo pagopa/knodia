@@ -310,9 +310,9 @@ export type API_ConsumerKeychainKeyPathParams = z.infer<
 
 export const API_User = z
   .strictObject({
-    email: z.string().optional(),
+    email: z.string(),
     id: API_UserId,
-    username: z.string().optional(),
+    username: z.string(),
   })
   .meta({ id: "User" });
 export type API_User = z.infer<typeof API_User>;
