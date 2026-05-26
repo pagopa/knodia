@@ -1676,15 +1676,24 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-readmodel-agreement':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/agreement
       '@knodia/db-readmodel-commons':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
+      '@knodia/db-readmodel-purpose':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/purpose
       '@knodia/db-signal-hub':
         specifier: workspace:*
         version: link:../../../packages/db/signal-hub
@@ -1697,6 +1706,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
       '@knodia/signal-hub-models':
         specifier: workspace:*
         version: link:../../../packages/models/signal-hub-models
@@ -2903,6 +2915,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../models/common-models
+      '@knodia/signal-hub-models':
+        specifier: workspace:*
+        version: link:../../models/signal-hub-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
@@ -3519,6 +3534,9 @@ importers:
 
   packages/models/signal-hub-models:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../common-models
       zod:
         specifier: 'catalog:'
         version: 4.2.0
