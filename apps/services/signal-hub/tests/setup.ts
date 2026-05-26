@@ -1,11 +1,21 @@
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
+import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
+import {
+  type AgreementWriterService,
+  agreementWriterServiceBuilder,
+} from "@knodia/db-readmodel-agreement/writer";
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
+import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
+import {
+  type PurposeWriterService,
+  purposeWriterServiceBuilder,
+} from "@knodia/db-readmodel-purpose/writer";
 import { signalHubSignal } from "@knodia/db-signal-hub";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { setupSignalHubTestDatabase } from "@knodia/test-commons/signalHubDb";
@@ -18,11 +28,18 @@ let signalHubDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let eserviceWriterService: EserviceWriterService;
+let agreementWriterService: AgreementWriterService;
+let purposeWriterService: PurposeWriterService;
 
 async function resetTestDatabases() {
   await Promise.all([
     resetTestDatabase(signalHubDb, signalHubSignal),
-    resetTestDatabase(readmodelDb, readmodelEservice),
+    resetTestDatabase(
+      readmodelDb,
+      readmodelEservice,
+      readmodelAgreement,
+      readmodelPurpose,
+    ),
   ]);
 }
 
@@ -45,6 +62,8 @@ beforeAll(async () => {
   });
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
+  agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
+  purposeWriterService = purposeWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -55,4 +74,10 @@ afterAll(async () => {
   await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService, signalHubDb };
+export {
+  agreementWriterService,
+  app,
+  eserviceWriterService,
+  purposeWriterService,
+  signalHubDb,
+};

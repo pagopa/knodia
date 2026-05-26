@@ -110,7 +110,7 @@ async function signToken(
     },
     nbf: now,
     producer: { id: EXPECTED_PRODUCER_ID, knode_id: TEST_KNODE_ID },
-    purpose: { id: generateId<PurposeId>(), knode_id: OTHER_KNODE_ID },
+    purpose: { id: generateId<PurposeId>(), knode_id: TEST_KNODE_ID },
   };
 
   const jwt = new SignJWT({ ...defaultPayload, ...payload })

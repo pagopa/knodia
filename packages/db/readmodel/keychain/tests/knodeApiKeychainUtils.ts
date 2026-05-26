@@ -1,3 +1,8 @@
+import type {
+  FlatKnodeApiKeychain,
+  KnodeApiKeychain,
+} from "@knodia/keychain-models";
+
 import type { splitKnodeApiKeychainIntoObjectsSQL } from "../src/converters/knodeApiKeychainSplitters.ts";
 
 export function createKnodeApiKeychainAggregatorInput({
@@ -19,4 +24,17 @@ export function createKnodeApiKeychainAggregatorInput({
       user: userSQL,
     })),
   );
+}
+
+export function toFlatKnodeApiKeychain(
+  knodeApiKeychain: KnodeApiKeychain,
+): FlatKnodeApiKeychain {
+  return {
+    createdAt: knodeApiKeychain.createdAt,
+    description: knodeApiKeychain.description,
+    id: knodeApiKeychain.id,
+    name: knodeApiKeychain.name,
+    ownerId: knodeApiKeychain.ownerId,
+    updatedAt: knodeApiKeychain.updatedAt,
+  };
 }
