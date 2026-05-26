@@ -92,6 +92,7 @@ services:
       - ../scripts/seed:/seed:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
@@ -965,6 +966,9 @@ services:
       DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
+      SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
+      SIGNAL_HUB_SEED_EXPIRE_SECONDS: "30"
+      SIGNAL_HUB_SEED_SALT_LENGTH: "16"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1661,6 +1665,9 @@ services:
       DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
+      SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
+      SIGNAL_HUB_SEED_EXPIRE_SECONDS: "30"
+      SIGNAL_HUB_SEED_SALT_LENGTH: "16"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret

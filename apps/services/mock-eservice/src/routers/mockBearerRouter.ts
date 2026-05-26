@@ -62,7 +62,7 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the date of birth of a natural person identified by Codice Fiscale (Cross-Border E-Service 01, Bearer-protected).",
+        "Returns the date of birth of a natural person identified by Codice Fiscale (Cross-Border E-service 01, Bearer-protected).",
       operationId: "getPersonalInformation",
       params: z.strictObject({ identifierNotation: API_Notation }),
       response: {
