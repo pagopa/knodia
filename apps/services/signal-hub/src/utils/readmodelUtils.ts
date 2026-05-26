@@ -1,21 +1,17 @@
-import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
+import type { EserviceId } from "@knodia/common-models/ids";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { eserviceNotFoundForProducer } from "../models/errors.ts";
+import { eserviceNotFound } from "../models/errors.ts";
 
-export async function retrieveEserviceByIdAndProducerId(
+export async function retrieveEserviceById(
   eserviceId: EserviceId,
-  producerId: OrganizationId,
   readmodelService: ReadmodelService,
 ) {
-  const eservice = await readmodelService.getEserviceByIdAndProducerId(
-    eserviceId,
-    producerId,
-  );
+  const eservice = await readmodelService.getEserviceById(eserviceId);
 
   if (!eservice) {
-    throw eserviceNotFoundForProducer(eserviceId, producerId);
+    throw eserviceNotFound(eserviceId);
   }
 
   return eservice;

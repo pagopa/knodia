@@ -1,0 +1,31 @@
+meta {
+  name: 2 - Get Residence (Signal Hub Bearer)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-mock-eservice}}/natural-persons/RMNLNR03H12H501Z/residence
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200 && res.status !== 404) {
+    throw new Error(`Unexpected status ${res.status}. Expected 200 (active period) or 404 (deleted period).`)
+  }
+  const label = res.status === 200 ? JSON.stringify(res.body.address) : "404 (deleted period)"
+  console.log(`==> residence: ${label}`)
+}

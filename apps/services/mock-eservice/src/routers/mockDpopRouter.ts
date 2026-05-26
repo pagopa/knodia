@@ -63,7 +63,7 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the digital contact of a natural person identified by Codice Fiscale (Cross-Border E-Service 02, DPoP-protected).",
+        "Returns the digital contact of a natural person identified by Codice Fiscale (Cross-Border E-service 02, DPoP-protected).",
       headers: MockEserviceHeaders,
       operationId: "getDigitalContact",
       params: z.strictObject({ identifierNotation: API_Notation }),
