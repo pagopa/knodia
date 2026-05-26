@@ -6,7 +6,6 @@ import {
 } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
 import { SignalType } from "@knodia/signal-hub-models";
-import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
 import { rotatingFiscalCodes } from "../../src/data/rotatingAddresses.ts";
@@ -18,7 +17,7 @@ import {
   getRotatedSeed,
   type SignalHubSeedConfig,
 } from "../../src/signalHub/rotation.ts";
-import { signalHubDb } from "./setup.ts";
+import { readSignals, signalHubDb } from "./setup.ts";
 
 const OTHER_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "11111111-1111-4111-8111-111111111111",
@@ -32,14 +31,6 @@ const seedConfig: SignalHubSeedConfig = {
 
 const inPeriod = (periodId: number) =>
   seedConfig.startDateMs + periodId * seedConfig.expireSeconds * 1000 + 1_000;
-
-async function readSignals(eserviceId: EserviceId) {
-  return signalHubDb
-    .select()
-    .from(signalHubSignal)
-    .where(eq(signalHubSignal.eserviceId, eserviceId))
-    .orderBy(asc(signalHubSignal.signalId));
-}
 
 describe("emitMockSignals", () => {
   it("inserts 1 SeedUpdate + N phase rows in a single batch with a shared correlation_id", async () => {

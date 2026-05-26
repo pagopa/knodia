@@ -1,12 +1,9 @@
-import { signalHubSignal } from "@knodia/db-signal-hub";
 import { createTestLogger } from "@knodia/test-commons/utils";
-import { asc, eq } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 
 import { startSignalHubMockScheduler } from "../../src/signalHub/emitter/scheduler.ts";
-import { SIGNAL_HUB_MOCK_ESERVICE_ID } from "../../src/signalHub/mockup.ts";
 import { type SignalHubSeedConfig } from "../../src/signalHub/rotation.ts";
-import { signalHubDb } from "./setup.ts";
+import { readSignals, signalHubDb } from "./setup.ts";
 
 // Real timers with a short period — using fake timers would also freeze
 // the pg testcontainer's internal scheduling and hang.
@@ -18,14 +15,6 @@ const seedConfig: SignalHubSeedConfig = {
 };
 
 const { logger } = createTestLogger();
-
-async function readSignals() {
-  return signalHubDb
-    .select()
-    .from(signalHubSignal)
-    .where(eq(signalHubSignal.eserviceId, SIGNAL_HUB_MOCK_ESERVICE_ID))
-    .orderBy(asc(signalHubSignal.signalId));
-}
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -129,10 +118,10 @@ describe("startSignalHubMockScheduler", () => {
 
     const rows = await readSignals();
     const correlationIds = new Set(rows.map((r) => r.correlationId));
-    // Skipped boundaries are NOT replayed individually. Boot + a couple of
-    // catch-up wakes during the post-block yield are expected; what matters
-    // is that we don't emit one batch per skipped boundary (which would
-    // produce 1 + 5 = 6 batches here).
+    // Not exactly 2: the count is timing-dependent (boot + however many
+    // catch-up wakes fire during the post-block yield). The point of the
+    // loose bound is that skipped boundaries are NOT replayed one-for-one,
+    // which would produce 1 + 5 = 6 batches.
     expect(correlationIds.size).toBeLessThan(5);
   });
 });
