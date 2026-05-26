@@ -1,27 +1,16 @@
 /* eslint-disable max-lines-per-function */
-import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
-import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
-  type ConsumerKeychainId,
   type EserviceId,
   type EserviceVersionId,
   generateId,
   KnodeId,
   type OrganizationId,
-  type PurposeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { SignJWT } from "jose";
-import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import {
-  ACCEPTED_AUDIENCES,
-  EXPECTED_ISSUER,
-  getCtx,
-  TEST_KID,
-  TEST_KNODE_ID,
-} from "./setup.ts";
+import { getCtx, TEST_KNODE_ID } from "./setup.ts";
+import { signEserviceAccessToken } from "./utils.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockBearerRouter.ts
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
@@ -46,44 +35,14 @@ async function signToken(
     typ?: string;
   } = {},
 ) {
-  const {
-    tokenKeys: { tokenPrivateKey },
-  } = getCtx();
-  const {
-    audience,
-    expiresIn = "5m",
-    issuer,
-    payload,
-    typ = "at+jwt",
-  } = overrides;
-
-  const now = Math.floor(Date.now() / 1000);
-  const defaultPayload: Partial<EserviceAccessTokenClaims> = {
-    client_id: generateId<ConsumerKeychainId>(),
-    consumer: {
-      id: generateExternalId<OrganizationId>(),
-      knode_id: OTHER_KNODE_ID,
-    },
-    eservice: {
-      id: EXPECTED_ESERVICE_ID,
-      knode_id: TEST_KNODE_ID,
-      version: EXPECTED_ESERVICE_VERSION_ID,
-    },
-    nbf: now,
-    producer: { id: EXPECTED_PRODUCER_ID, knode_id: TEST_KNODE_ID },
-    purpose: { id: generateId<PurposeId>(), knode_id: OTHER_KNODE_ID },
-  };
-
-  const jwt = new SignJWT({ ...defaultPayload, ...payload })
-    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ })
-    .setSubject(randomUUID())
-    .setIssuer(issuer ?? EXPECTED_ISSUER)
-    .setAudience(audience ?? ACCEPTED_AUDIENCES)
-    .setJti(randomUUID())
-    .setIssuedAt(now)
-    .setExpirationTime(expiresIn);
-
-  return jwt.sign(tokenPrivateKey);
+  return signEserviceAccessToken({
+    eserviceId: EXPECTED_ESERVICE_ID,
+    eserviceVersionId: EXPECTED_ESERVICE_VERSION_ID,
+    knodeId: TEST_KNODE_ID,
+    producerId: EXPECTED_PRODUCER_ID,
+    tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
+    ...overrides,
+  });
 }
 
 describe("mock-eservice Bearer access-token verification", () => {
@@ -310,6 +269,22 @@ describe("mock-eservice Bearer access-token verification", () => {
     const token = await signToken({
       payload: {
         producer: { id: EXPECTED_PRODUCER_ID, knode_id: OTHER_KNODE_ID },
+      },
+    });
+    const res = await getCtx().app.inject({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      url: ENDPOINT,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when purpose.knode_id does not match this knode", async () => {
+    const token = await signToken({
+      payload: {
+        purpose: { id: generateId(), knode_id: OTHER_KNODE_ID },
       },
     });
     const res = await getCtx().app.inject({
