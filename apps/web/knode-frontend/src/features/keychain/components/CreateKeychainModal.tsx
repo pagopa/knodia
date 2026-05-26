@@ -3,6 +3,7 @@ import type { bffApi } from "@knodia/bff-client";
 import {
   createConsumerKeychainMutation,
   createKnodeApiKeychainMutation,
+  createProducerKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
 import {
   Modal,
@@ -60,29 +61,32 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
     },
   });
 
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+  const {
+    isError: isProducerError,
+    isPending: isProducerPending,
+    mutate: createProducerKeychain,
+  } = useMutation({
+    ...createProducerKeychainMutation({
+      client,
+    }),
+    onSuccess: ({ id }) => {
+      navigate({ params: { id }, to: "/keychains/production/$id" });
+    },
+  });
+
+  const isError = isConsumerError || isApiError || isProducerError;
+  const isPending = isConsumerPending || isApiPending || isProducerPending;
 
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
     const body = {
       description: seed.description ? { en: seed.description } : undefined,
       name: { en: seed.name },
-    };
+    } satisfies bffApi.KeychainSeed;
 
     match(seed.type)
-      .with("consumption", () =>
-        createConsumerKeychain({
-          body: body satisfies bffApi.ConsumerKeychainSeed,
-        }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () =>
-        createKnodeApiKeychain({
-          body: body satisfies bffApi.KnodeApiKeychainSeed,
-        }),
-      )
+      .with("consumption", () => createConsumerKeychain({ body }))
+      .with("production", () => createProducerKeychain({ body }))
+      .with("api", () => createKnodeApiKeychain({ body }))
       .exhaustive();
   }
 
@@ -173,11 +177,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
               value={field.state.value}
             >
               {keychainTypeOptions.map((option) => (
-                <SelectItem
-                  id={option.id}
-                  isDisabled={option.id === "production"}
-                  key={option.id}
-                >
+                <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
               ))}

@@ -16,10 +16,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CreateKeychainModal } from "@/features/keychain/components/CreateKeychainModal";
 import { KeychainTable } from "@/features/keychain/components/KeychainTable";
+import { keychainType } from "@/features/keychain/models/commons";
 import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
-  supportedKeychainTab,
 } from "@/features/keychain/models/search-params";
 import {
   consumerKeychainsQuery,
@@ -37,8 +37,11 @@ export const Route = createFileRoute("/_authenticated/keychains/")({
     const query = match(type)
       .with("api", () => knodeApiKeychainsQuery(offset))
       .with("consumption", () => consumerKeychainsQuery(offset))
+      .with("production", () => undefined)
       .exhaustive();
-    queryClient.prefetchQuery(query);
+    if (query) {
+      queryClient.prefetchQuery(query);
+    }
   },
   search: {
     middlewares: [stripSearchParams(keychainSearchDefaultValues)],
@@ -69,6 +72,7 @@ function RouteComponent() {
   const activeData = match(selectedTab)
     .with("api", () => apiData)
     .with("consumption", () => consumerData)
+    .with("production", () => undefined)
     .exhaustive();
 
   function handleSearchChange(values: Partial<typeof search>) {
@@ -103,7 +107,7 @@ function RouteComponent() {
       <Tabs
         kind="hug"
         onSelectionChange={(key) => {
-          const parsed = supportedKeychainTab.safeParse(key);
+          const parsed = keychainType.safeParse(key);
           if (parsed.success) {
             handleSearchChange({ offset: 0, type: parsed.data });
           }
@@ -111,7 +115,7 @@ function RouteComponent() {
         selectedKey={selectedTab}
       >
         <TabList aria-label="Tabs">
-          <Tab id="production" isDisabled key="production">
+          <Tab id="production" key="production">
             Production
           </Tab>
           <Tab id="consumption" key="consumption">

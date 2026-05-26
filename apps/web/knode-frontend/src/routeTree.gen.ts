@@ -35,6 +35,7 @@ import { Route as AuthenticatedProductionEServicesArchiveRouteImport } from './r
 import { Route as AuthenticatedProductionEServicesIdRouteImport } from './routes/_authenticated/production/e-services/$id'
 import { Route as AuthenticatedProductionAgreementsArchiveRouteImport } from './routes/_authenticated/production/agreements/archive'
 import { Route as AuthenticatedProductionAgreementsIdRouteImport } from './routes/_authenticated/production/agreements/$id'
+import { Route as AuthenticatedKeychainsProductionIdRouteImport } from './routes/_authenticated/keychains/production.$id'
 import { Route as AuthenticatedKeychainsConsumptionIdRouteImport } from './routes/_authenticated/keychains/consumption.$id'
 import { Route as AuthenticatedKeychainsApiIdRouteImport } from './routes/_authenticated/keychains/api.$id'
 import { Route as AuthenticatedConsumptionPurposesArchiveRouteImport } from './routes/_authenticated/consumption/purposes/archive'
@@ -196,6 +197,12 @@ const AuthenticatedProductionAgreementsIdRoute =
     path: '/production/agreements/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKeychainsProductionIdRoute =
+  AuthenticatedKeychainsProductionIdRouteImport.update({
+    id: '/keychains/production/$id',
+    path: '/keychains/production/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedKeychainsConsumptionIdRoute =
   AuthenticatedKeychainsConsumptionIdRouteImport.update({
     id: '/keychains/consumption/$id',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/consumption/purposes/archive': typeof AuthenticatedConsumptionPurposesArchiveRoute
   '/keychains/api/$id': typeof AuthenticatedKeychainsApiIdRoute
   '/keychains/consumption/$id': typeof AuthenticatedKeychainsConsumptionIdRoute
+  '/keychains/production/$id': typeof AuthenticatedKeychainsProductionIdRoute
   '/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/production/agreements/archive': typeof AuthenticatedProductionAgreementsArchiveRoute
   '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/consumption/purposes/archive': typeof AuthenticatedConsumptionPurposesArchiveRoute
   '/keychains/api/$id': typeof AuthenticatedKeychainsApiIdRoute
   '/keychains/consumption/$id': typeof AuthenticatedKeychainsConsumptionIdRoute
+  '/keychains/production/$id': typeof AuthenticatedKeychainsProductionIdRoute
   '/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/production/agreements/archive': typeof AuthenticatedProductionAgreementsArchiveRoute
   '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
@@ -352,6 +361,7 @@ export interface FileRoutesById {
   '/_authenticated/consumption/purposes/archive': typeof AuthenticatedConsumptionPurposesArchiveRoute
   '/_authenticated/keychains/api/$id': typeof AuthenticatedKeychainsApiIdRoute
   '/_authenticated/keychains/consumption/$id': typeof AuthenticatedKeychainsConsumptionIdRoute
+  '/_authenticated/keychains/production/$id': typeof AuthenticatedKeychainsProductionIdRoute
   '/_authenticated/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/_authenticated/production/agreements/archive': typeof AuthenticatedProductionAgreementsArchiveRoute
   '/_authenticated/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/consumption/purposes/archive'
     | '/keychains/api/$id'
     | '/keychains/consumption/$id'
+    | '/keychains/production/$id'
     | '/production/agreements/$id'
     | '/production/agreements/archive'
     | '/production/e-services/$id'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/consumption/purposes/archive'
     | '/keychains/api/$id'
     | '/keychains/consumption/$id'
+    | '/keychains/production/$id'
     | '/production/agreements/$id'
     | '/production/agreements/archive'
     | '/production/e-services/$id'
@@ -465,6 +477,7 @@ export interface FileRouteTypes {
     | '/_authenticated/consumption/purposes/archive'
     | '/_authenticated/keychains/api/$id'
     | '/_authenticated/keychains/consumption/$id'
+    | '/_authenticated/keychains/production/$id'
     | '/_authenticated/production/agreements/$id'
     | '/_authenticated/production/agreements/archive'
     | '/_authenticated/production/e-services/$id'
@@ -674,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductionAgreementsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/keychains/production/$id': {
+      id: '/_authenticated/keychains/production/$id'
+      path: '/keychains/production/$id'
+      fullPath: '/keychains/production/$id'
+      preLoaderRoute: typeof AuthenticatedKeychainsProductionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/keychains/consumption/$id': {
       id: '/_authenticated/keychains/consumption/$id'
       path: '/keychains/consumption/$id'
@@ -762,6 +782,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConsumptionPurposesArchiveRoute: typeof AuthenticatedConsumptionPurposesArchiveRoute
   AuthenticatedKeychainsApiIdRoute: typeof AuthenticatedKeychainsApiIdRoute
   AuthenticatedKeychainsConsumptionIdRoute: typeof AuthenticatedKeychainsConsumptionIdRoute
+  AuthenticatedKeychainsProductionIdRoute: typeof AuthenticatedKeychainsProductionIdRoute
   AuthenticatedProductionAgreementsIdRoute: typeof AuthenticatedProductionAgreementsIdRoute
   AuthenticatedProductionAgreementsArchiveRoute: typeof AuthenticatedProductionAgreementsArchiveRoute
   AuthenticatedProductionEServicesIdRoute: typeof AuthenticatedProductionEServicesIdRoute
@@ -803,6 +824,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKeychainsApiIdRoute: AuthenticatedKeychainsApiIdRoute,
   AuthenticatedKeychainsConsumptionIdRoute:
     AuthenticatedKeychainsConsumptionIdRoute,
+  AuthenticatedKeychainsProductionIdRoute:
+    AuthenticatedKeychainsProductionIdRoute,
   AuthenticatedProductionAgreementsIdRoute:
     AuthenticatedProductionAgreementsIdRoute,
   AuthenticatedProductionAgreementsArchiveRoute:
