@@ -1,5 +1,6 @@
 import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { SignalType } from "@knodia/signal-hub-models";
 import { eq, max } from "drizzle-orm";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -12,7 +13,6 @@ import {
   getRotatedSeed,
   type SignalHubSeedConfig,
 } from "../rotation.ts";
-import { SignalType } from "../signal.ts";
 
 interface EmitMockSignalsParams {
   db: NodePgDatabase;

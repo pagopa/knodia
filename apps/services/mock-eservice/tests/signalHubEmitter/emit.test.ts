@@ -5,6 +5,7 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { SignalType } from "@knodia/signal-hub-models";
 import { asc, eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 
@@ -17,7 +18,6 @@ import {
   getRotatedSeed,
   type SignalHubSeedConfig,
 } from "../../src/signalHub/rotation.ts";
-import { SignalType } from "../../src/signalHub/signal.ts";
 import { signalHubDb } from "./setup.ts";
 
 const OTHER_ESERVICE_ID = unsafeBrandId<EserviceId>(

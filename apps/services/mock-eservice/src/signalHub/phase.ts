@@ -1,4 +1,4 @@
-import { SignalType } from "./signal.ts";
+import { SignalType } from "@knodia/signal-hub-models";
 
 export const SIGNAL_HUB_MOCK_PHASES = 3;
 
