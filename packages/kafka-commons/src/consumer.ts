@@ -24,7 +24,7 @@ import { processExitAndDisconnect } from "./utils/utils.ts";
  * @param consumerHandler - Function invoked for each consumed message.
  * @param config - Kafka consumer configuration.
  * @param logger - Logger used for consumer events and errors.
- * @param onShutdown - Optional callback invoked on graceful shutdown. Use it to
+ * @param onShutdown - Optional callback invoked on shutdown. Use it to
  * close caller-owned resources (e.g. `() => readmodelPool.end()` for readmodel
  * writers). Consumers without owned resources can omit it.
  * @param onReady - Optional callback invoked once the consumer is connected
