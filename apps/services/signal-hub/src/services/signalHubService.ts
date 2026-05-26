@@ -48,12 +48,13 @@ export function signalHubServiceBuilder(
         eserviceId,
         readmodelService,
       );
-      assertEserviceIsActiveWithSignalHubEnabled(eservice);
+
       await assertOrganizationAuthorizedToPullSignals(
         toExternalResource(organization.id, organization.knodeId),
         eserviceId,
         readmodelService,
       );
+      assertEserviceIsActiveWithSignalHubEnabled(eservice);
 
       return await signalHubDbService.getSignals(signalId, eserviceId, size);
     },
