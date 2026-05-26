@@ -23,9 +23,8 @@ const seedConfig: SignalHubSeedConfig = {
 
 const { logger } = createTestLogger();
 
-// The object_ids a batch emits during a given period. object_id =
-// sha256(fiscalCode + seed) and the seed derives from the periodId, so these
-// uniquely identify the period — tests assert on their presence/absence.
+// A period's object_ids uniquely fingerprint it: object_id =
+// sha256(fiscalCode + seed) and the seed derives from the periodId.
 function objectIdsForPeriod(periodId: number): string[] {
   const periodStartMs =
     seedConfig.startDateMs + periodId * seedConfig.expireSeconds * 1000;
@@ -65,12 +64,9 @@ describe("startSignalHubMockScheduler", () => {
       seedConfig,
     });
 
-    // Wait past one boundary so the next period emits.
     await sleep(PERIOD_MS + 100);
     handle.stop();
 
-    // Both the boot period and the next one were emitted, in separate batches
-    // (each period gets a fresh correlation_id).
     const rows = await readSignals();
     const emitted = new Set(rows.map((r) => r.objectId));
     expect(objectIdsForPeriod(bootPeriod).every((id) => emitted.has(id))).toBe(
@@ -95,7 +91,6 @@ describe("startSignalHubMockScheduler", () => {
     await sleep(3 * PERIOD_MS + 100);
 
     const rows = await readSignals();
-    // Only the boot emission — no further transitions after stop().
     expect(rows).toHaveLength(4);
   });
 
@@ -112,12 +107,11 @@ describe("startSignalHubMockScheduler", () => {
       seedConfig,
     });
 
-    // Boot emit already succeeded. Force the next tick's insert to reject.
+    // Boot already emitted; this fails only the next tick's insert.
     const txSpy = vi
       .spyOn(signalHubDb, "transaction")
       .mockRejectedValue(new Error("simulated DB failure"));
 
-    // Wait past at least one boundary so a tick fires.
     await sleep(PERIOD_MS + 100);
     handle.stop();
 
@@ -148,7 +142,6 @@ describe("startSignalHubMockScheduler", () => {
     handle.stop();
 
     const emitted = new Set((await readSignals()).map((r) => r.objectId));
-    // Boot emitted the period current at boot.
     expect(objectIdsForPeriod(bootPeriod).every((id) => emitted.has(id))).toBe(
       true,
     );
