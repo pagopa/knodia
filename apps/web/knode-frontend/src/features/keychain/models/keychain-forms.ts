@@ -3,8 +3,8 @@ import z from "zod";
 import { keychainType, type KeychainType } from "./commons";
 
 export const keychainTypeOptions = [
-  { id: "consumption", label: "Consumer" },
-  { id: "production", label: "Producer" },
+  { id: "consumption", label: "Consumption" },
+  { id: "production", label: "Production" },
   { id: "api", label: "API" },
 ] as const satisfies readonly { id: KeychainType; label: string }[];
 
