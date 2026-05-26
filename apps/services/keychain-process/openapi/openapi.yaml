@@ -215,18 +215,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerKeychainSeed:
-      type: object
-      properties:
-        description:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
-      required:
-        - name
-      additionalProperties: false
-    KnodeApiKeychainSeed:
+    KeychainSeed:
       type: object
       properties:
         description:
@@ -499,7 +488,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       parameters:
         - schema:
             allOf:
@@ -1647,7 +1636,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/KnodeApiKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       parameters:
         - schema:
             allOf:
@@ -2559,6 +2548,65 @@ paths:
                 description: Knode API Keychain or Member not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /producerKeychains:
+    post:
+      operationId: createProducerKeychain
+      tags:
+        - producerKeychain
+      description: Create a new Producer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainSeed"
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Producer Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Keychain Process API
     url: /
@@ -2571,3 +2619,5 @@ tags:
     name: consumerKeychain
   - description: Knode API keychain routes
     name: knodeApiKeychain
+  - description: Producer keychain routes
+    name: producerKeychain

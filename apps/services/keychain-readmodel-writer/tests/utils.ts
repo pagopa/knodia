@@ -11,10 +11,14 @@ import {
   readmodelKnodeApiKeychain,
   readmodelKnodeApiKeychainKey,
   readmodelKnodeApiKeychainUser,
+  readmodelProducerKeychain,
+  readmodelProducerKeychainKey,
+  readmodelProducerKeychainUser,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateConsumerKeychains,
   aggregateKnodeApiKeychains,
+  aggregateProducerKeychains,
   toConsumerKeychainPurpose,
 } from "@knodia/db-readmodel-keychain/converters";
 import { eq } from "drizzle-orm";
@@ -69,6 +73,32 @@ export async function getAllKnodeApiKeychains(readmodelDb: NodePgDatabase) {
     );
 
   return aggregateKnodeApiKeychains(queryRes);
+}
+
+export async function getAllProducerKeychains(readmodelDb: NodePgDatabase) {
+  const queryRes = await readmodelDb
+    .select({
+      key: readmodelProducerKeychainKey,
+      producerKeychain: readmodelProducerKeychain,
+      user: readmodelProducerKeychainUser,
+    })
+    .from(readmodelProducerKeychain)
+    .leftJoin(
+      readmodelProducerKeychainUser,
+      eq(
+        readmodelProducerKeychain.id,
+        readmodelProducerKeychainUser.producerKeychainId,
+      ),
+    )
+    .leftJoin(
+      readmodelProducerKeychainKey,
+      eq(
+        readmodelProducerKeychain.id,
+        readmodelProducerKeychainKey.producerKeychainId,
+      ),
+    );
+
+  return aggregateProducerKeychains(queryRes);
 }
 
 export async function getConsumerKeychainPurposesByKeychainId(

@@ -14,8 +14,8 @@ import {
 import { describe, expect, it } from "vitest";
 
 import {
-  type API_ConsumerKeychainSeed,
   type API_Keychain,
+  type API_KeychainSeed,
 } from "../../src/models/api.ts";
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import { getAllKeychainEvents, injectAppRequest } from "../utils.ts";
@@ -25,7 +25,7 @@ const allowedTestTokens: TestToken[] = [
 ];
 
 describe("POST /consumerKeychains (createConsumerKeychain)", () => {
-  const body: API_ConsumerKeychainSeed = {
+  const body: API_KeychainSeed = {
     description: { en: "Consumer keychain description" },
     name: { en: "Test Consumer keychain" },
   };

@@ -75,21 +75,13 @@ export type API_GetConsumerKeychainKeysQueryParams = z.infer<
   typeof API_GetConsumerKeychainKeysQueryParams
 >;
 
-export const API_ConsumerKeychainSeed = z
+export const API_KeychainSeed = z
   .strictObject({
     description: API_KeychainLocalizedDescription.optional(),
     name: API_KeychainLocalizedName,
   })
-  .meta({ id: "ConsumerKeychainSeed" });
-export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
-
-export const API_KnodeApiKeychainSeed = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.optional(),
-    name: API_KeychainLocalizedName,
-  })
-  .meta({ id: "KnodeApiKeychainSeed" });
-export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+  .meta({ id: "KeychainSeed" });
+export type API_KeychainSeed = z.infer<typeof API_KeychainSeed>;
 
 export const API_ConsumerKeychainPatch = z
   .strictObject({

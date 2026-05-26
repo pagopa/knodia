@@ -1,0 +1,61 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+
+import { requestContext } from "@fastify/request-context";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+  MetadataVersionHeader,
+  setMetadataVersionHeader,
+} from "@knodia/fastify-zod-api-commons/models";
+
+import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
+
+import { API_Keychain, API_KeychainSeed } from "../models/api.ts";
+import { toAPI_Keychain } from "../models/apiConverter.ts";
+import { apiTags } from "../models/apiTags.ts";
+
+interface ProducerKeychainRouterOptions {
+  producerKeychainService: ProducerKeychainService;
+}
+
+export const producerKeychainRouter: FastifyPluginAsyncZod<
+  ProducerKeychainRouterOptions
+> = async (fastify, { producerKeychainService }) => {
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: producerKeychain,
+        metadata: { version },
+      } = await producerKeychainService.createProducerKeychain(req.body, ctx);
+
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_Keychain(producerKeychain));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainSeed,
+      description: "Create a new Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "createProducerKeychain",
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Producer Keychain created successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains",
+  });
+};
