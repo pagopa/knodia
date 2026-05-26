@@ -1,11 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  createConsumerKeychainMutation,
-  createKnodeApiKeychainMutation,
-  createProducerKeychainMutation,
-} from "@knodia/bff-client/tanstack-query";
-import {
   Modal,
   Select,
   SelectItem,
@@ -13,16 +8,13 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import type { KeychainType } from "../models/commons";
 
+import { useCreateKeychain } from "../hooks/useCreateKeychain";
 import {
   createKeychainFormDefaultValues,
   createKeychainFormSchema,
@@ -37,49 +29,7 @@ interface Props {
 }
 
 export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
-  const navigate = useNavigate();
-
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: createConsumerKeychain,
-  } = useMutation({
-    ...createConsumerKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/consumption/$id" });
-    },
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: createKnodeApiKeychain,
-  } = useMutation({
-    ...createKnodeApiKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/api/$id" });
-    },
-  });
-
-  const {
-    isError: isProducerError,
-    isPending: isProducerPending,
-    mutate: createProducerKeychain,
-  } = useMutation({
-    ...createProducerKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/production/$id" });
-    },
-  });
-
-  const isError = isConsumerError || isApiError || isProducerError;
-  const isPending = isConsumerPending || isApiPending || isProducerPending;
+  const { isError, isPending, mutate: createKeychain } = useCreateKeychain();
 
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
     const body = {
@@ -87,11 +37,7 @@ export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
       name: { en: seed.name },
     } satisfies bffApi.KeychainSeed;
 
-    match(seed.type)
-      .with("consumption", () => createConsumerKeychain({ body }))
-      .with("production", () => createProducerKeychain({ body }))
-      .with("api", () => createKnodeApiKeychain({ body }))
-      .exhaustive();
+    createKeychain({ body, type: seed.type });
   }
 
   const form = useForm({
