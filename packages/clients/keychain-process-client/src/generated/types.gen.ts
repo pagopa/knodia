@@ -174,11 +174,6 @@ export type KeychainMembers = {
     results: Array<User>;
 };
 
-export type ProducerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
-};
-
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -1737,51 +1732,6 @@ export type CreateProducerKeychainResponses = {
 
 export type CreateProducerKeychainResponse = CreateProducerKeychainResponses[keyof CreateProducerKeychainResponses];
 
-export type DeleteProducerKeychainData = {
-    body?: never;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        producerKeychainId: string;
-    };
-    query?: never;
-    url: '/producerKeychains/{producerKeychainId}';
-};
-
-export type DeleteProducerKeychainErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Producer Keychain not found
-     */
-    404: Problem;
-};
-
-export type DeleteProducerKeychainError = DeleteProducerKeychainErrors[keyof DeleteProducerKeychainErrors];
-
-export type DeleteProducerKeychainResponses = {
-    /**
-     * Producer Keychain deleted successfully
-     */
-    204: void;
-};
-
-export type DeleteProducerKeychainResponse = DeleteProducerKeychainResponses[keyof DeleteProducerKeychainResponses];
-
 export type GetProducerKeychainData = {
     body?: never;
     headers: {
@@ -1826,48 +1776,3 @@ export type GetProducerKeychainResponses = {
 };
 
 export type GetProducerKeychainResponse = GetProducerKeychainResponses[keyof GetProducerKeychainResponses];
-
-export type UpdateProducerKeychainData = {
-    body: ProducerKeychainPatch;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        producerKeychainId: string;
-    };
-    query?: never;
-    url: '/producerKeychains/{producerKeychainId}';
-};
-
-export type UpdateProducerKeychainErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Producer Keychain not found
-     */
-    404: Problem;
-};
-
-export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];
-
-export type UpdateProducerKeychainResponses = {
-    /**
-     * Producer Keychain updated successfully
-     */
-    200: Keychain;
-};
-
-export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
