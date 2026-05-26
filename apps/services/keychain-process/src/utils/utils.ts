@@ -28,7 +28,7 @@ import {
   userAlreadyMember,
   userNotFound,
 } from "../models/errors.ts";
-import { retrieveKeychainKey, retrieveKeychainUser } from "./retrievalUtils.ts";
+import { retrieveKeychainKey } from "./retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,
@@ -159,9 +159,7 @@ export async function listActiveKeychainMembers(
 
   const activeMembers = (
     await Promise.all(
-      sortedUsers.map(({ userId }) =>
-        retrieveKeychainUser(userId, cognitoIdmClient),
-      ),
+      sortedUsers.map(({ userId }) => cognitoIdmClient.getUserById(userId)),
     )
   ).filter((member): member is IdmUser => member !== undefined);
 

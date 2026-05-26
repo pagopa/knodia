@@ -1,9 +1,7 @@
-import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type {
   ConsumerKeychainId,
   KeyId,
   KnodeApiKeychainId,
-  UserId,
 } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychain,
@@ -102,10 +100,3 @@ export const retrieveKeychainKey = (
 
   return key;
 };
-
-export async function retrieveKeychainUser(
-  userId: UserId,
-  cognitoIdmClient: CognitoIdmClient,
-): Promise<IdmUser | undefined> {
-  return await cognitoIdmClient.getUserById(userId);
-}

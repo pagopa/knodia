@@ -48,7 +48,6 @@ import {
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
   retrieveKnodeApiKeychain,
 } from "../utils/retrievalUtils.ts";
 import {
@@ -246,7 +245,7 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain.data.users,
       );
 
-      const member = await retrieveKeychainUser(userId, cognitoIdmClient);
+      const member = await cognitoIdmClient.getUserById(userId);
       if (!member) {
         throw keychainMemberNotFound(knodeApiKeychainId, userId);
       }

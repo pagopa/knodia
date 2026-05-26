@@ -61,7 +61,6 @@ import {
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
@@ -264,7 +263,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.users,
       );
 
-      const member = await retrieveKeychainUser(userId, cognitoIdmClient);
+      const member = await cognitoIdmClient.getUserById(userId);
       if (!member) {
         throw keychainMemberNotFound(consumerKeychainId, userId);
       }
