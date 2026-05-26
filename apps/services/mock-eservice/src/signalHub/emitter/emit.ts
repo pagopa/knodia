@@ -56,7 +56,7 @@ export async function emitMockSignals({
       correlationId,
       eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       objectId: pseudonymize(fc, seed),
-      objectType: "residence",
+      objectType: "natural-persons/residence",
       signalId: startId + 1 + i,
       signalType: mockPhase,
     }));

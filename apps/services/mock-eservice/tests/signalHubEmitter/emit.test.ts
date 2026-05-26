@@ -72,7 +72,7 @@ describe("emitMockSignals", () => {
     expect(mockSignalRows).toHaveLength(rotatingFiscalCodes.length);
     for (const r of mockSignalRows) {
       expect(r.signalType).toBe(SignalType.enum.Create);
-      expect(r.objectType).toBe("residence");
+      expect(r.objectType).toBe("natural-persons/residence");
     }
 
     const expectedObjectIds = new Set(
