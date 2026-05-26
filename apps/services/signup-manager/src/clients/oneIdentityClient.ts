@@ -22,12 +22,13 @@ const OneIdentityIdTokenClaims = z.object({
   dateOfBirth: z.string(),
   exp: z.number().int(),
   familyName: z.string(),
-  fiscalNumber: z.string(),
+  fiscalNumber: z.string().optional(),
   iat: z.number().int(),
   iss: z.url(),
   name: z.string(),
   nonce: z.string(),
-  spidCode: z.string(),
+  personIdentifier: z.string().optional(),
+  spidCode: z.string().optional(),
   sub: z.string(),
 });
 

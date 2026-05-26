@@ -7,18 +7,18 @@ import { z } from "zod";
 
 const OneIdentityConfig = z
   .object({
-    OI_CLIENT_ID: z.string(),
-    OI_CLIENT_SECRET: z.string(),
-    OI_DOMAIN: z.string(),
-    OI_JWKS_URI: z.string(),
-    OI_REDIRECT_URL: z.string(),
+    ONE_IDENTITY_CLIENT_ID: z.string(),
+    ONE_IDENTITY_CLIENT_SECRET: z.string(),
+    ONE_IDENTITY_DOMAIN: z.string(),
+    ONE_IDENTITY_JWKS_URI: z.string(),
+    ONE_IDENTITY_REDIRECT_URL: z.string(),
   })
   .transform((c) => ({
-    oneIdentityClientId: c.OI_CLIENT_ID,
-    oneIdentityClientSecret: c.OI_CLIENT_SECRET,
-    oneIdentityDomain: c.OI_DOMAIN,
-    oneIdentityJWKSUri: c.OI_JWKS_URI,
-    oneIdentityRedirectUrl: c.OI_REDIRECT_URL,
+    oneIdentityClientId: c.ONE_IDENTITY_CLIENT_ID,
+    oneIdentityClientSecret: c.ONE_IDENTITY_CLIENT_SECRET,
+    oneIdentityDomain: c.ONE_IDENTITY_DOMAIN,
+    oneIdentityJWKSUri: c.ONE_IDENTITY_JWKS_URI,
+    oneIdentityRedirectUrl: c.ONE_IDENTITY_REDIRECT_URL,
   }));
 export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;
 

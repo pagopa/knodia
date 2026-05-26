@@ -26,6 +26,13 @@ const API_SessionResponse = z
   })
   .meta({ id: "SessionResponse" });
 
+const API_OIDCSessionCookie = z.object({
+  [OIDC_SESSION_COOKIE_NAME]: z.string().optional().meta({
+    description:
+      "HttpOnly cookie carrying the OIDC state and nonce (set by /auth/oidc/start)",
+  }),
+});
+
 export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify,
   { signupService },
@@ -52,6 +59,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
           description: "Redirected to One Identity's login page",
         }),
       },
+      security: [],
       tags: [apiTags.signup],
     },
     url: "/auth/oidc/start",
@@ -72,6 +80,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     },
     method: "GET",
     schema: {
+      cookies: API_OIDCSessionCookie,
       description:
         "Handle OIDC callback and exchange authorization code for session token",
       operationId: "exchangeOIDCCode",
@@ -84,6 +93,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         400: API_Problem.meta({ description: "Bad Request" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      security: [],
       tags: [apiTags.signup],
     },
     url: "/auth/oidc/token",
@@ -95,16 +105,20 @@ function clearOidcSessionCookie(res: FastifyReply): void {
     httpOnly: true,
     path: "/",
     sameSite: "strict",
-    secure: "auto",
+    secure: true,
   });
 }
 
 function getOidcSessionCookie(
   req: FastifyRequest,
 ): null | { nonce: string; state: string } {
-  const cookie = req.cookies[OIDC_SESSION_COOKIE_NAME];
-  if (!cookie) return null;
-  return JSON.parse(cookie);
+  try {
+    const cookie = req.cookies[OIDC_SESSION_COOKIE_NAME];
+    if (!cookie) return null;
+    return JSON.parse(cookie);
+  } catch {
+    return null;
+  }
 }
 
 function setOidcSessionCookie(
@@ -119,7 +133,7 @@ function setOidcSessionCookie(
       httpOnly: true,
       path: "/",
       sameSite: "strict",
-      secure: "auto",
+      secure: true,
     },
   );
 }

@@ -18,6 +18,7 @@ export const Route = createFileRoute("/login/callback")({
         code: deps.code,
         state: deps.state,
       },
+      withCredentials: true,
     });
     return redirect({ to: "/success" });
   },
