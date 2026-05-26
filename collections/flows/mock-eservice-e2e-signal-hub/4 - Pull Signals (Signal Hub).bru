@@ -1,0 +1,43 @@
+meta {
+  name: 4 - Pull Signals (Signal Hub)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host-signal-hub}}/signals/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+params:query {
+  ~lastSignalId: 0
+  ~size: 10
+}
+
+headers {
+  Authorization: {{knode-api-jwt}}
+}
+
+script:pre-request {
+  if (!bru.getVar("eserviceId") && !bru.getEnvVar("eserviceId")) {
+    throw new Error(
+      "eserviceId is not set. Run step 1 (Get Mock Eservice) first — it captures the eserviceId."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200 && res.status !== 206) {
+    throw new Error(`Unexpected status ${res.status}. Expected 200, or 206 when there are more signals to pull.`)
+  }
+  const signals = res.body.signals ?? []
+  console.log(`==> pulled ${signals.length} signal(s):`)
+  for (const s of signals) {
+    console.log(`    signalId=${s.signalId} type=${s.signalType} objectType=${s.objectType} objectId=${s.objectId}`)
+  }
+}

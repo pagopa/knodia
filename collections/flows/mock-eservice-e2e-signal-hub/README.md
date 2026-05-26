@@ -35,7 +35,7 @@ step 11.
 
 3. **2 - Get Residence (Signal Hub Bearer)** — `GET /natural-persons/RMNLNR03H12H501Z/residence`.
 4. **3 - Get Pseudonymization (Signal Hub Bearer)** — `GET /pseudonymization`.
-5. Poll the Signal Hub for signals related to the `eserviceId` captured in step 1, wait for new signals.
+5. **4 - Pull Signals (Signal Hub)** — `GET {{host-signal-hub}}/signals/{{eserviceId}}` (authenticated with `knode-api-jwt`). Re-run until the signals for the current period appear.
 6. Compute `sha256(<fiscalCode> + <seed from step 4>)` and observe it matches the `object_id` of a `Create`/`Update`/`Delete` signal from step 5. Repeat from step 3 for the next period.
 
 Re-run this in a loop to observe the full cycle: expect
