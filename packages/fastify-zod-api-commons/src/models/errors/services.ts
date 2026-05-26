@@ -12,6 +12,7 @@ export const HTTPServiceName = z.enum([
   "organization-process",
   "purpose-process",
   "signal-hub",
+  "signup-manager",
 ]);
 export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
@@ -27,6 +28,7 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "purpose-process": "008",
   "authorization-server": "009",
   "signal-hub": "010",
+  "signup-manager": "011",
   // mock e-services
   "mock-eservice": "999",
 };
