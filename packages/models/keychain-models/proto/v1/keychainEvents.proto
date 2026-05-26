@@ -90,3 +90,13 @@ message ProducerKeychainUpdatedV1 {
 message ProducerKeychainDeletedV1 {
   ProducerKeychainV1 producerKeychain = 1;
 }
+
+message ProducerKeychainKeyAddedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string kid = 2;
+}
+
+message ProducerKeychainKeyRemovedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string kid = 2;
+}

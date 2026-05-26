@@ -109,7 +109,12 @@ export async function handleKeychainEvent(
     })
     .with(
       {
-        type: P.union("ProducerKeychainCreatedV1", "ProducerKeychainUpdatedV1"),
+        type: P.union(
+          "ProducerKeychainCreatedV1",
+          "ProducerKeychainUpdatedV1",
+          "ProducerKeychainKeyAddedV1",
+          "ProducerKeychainKeyRemovedV1",
+        ),
       },
       async (msg) => {
         assertDataExistsInEvent(msg, "producerKeychain");
