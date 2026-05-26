@@ -104,6 +104,7 @@ paths:
       tags:
         - signup
       description: Initiate OIDC session
+      security: []
       responses:
         "302":
           description: Redirected to One Identity's login page
@@ -124,6 +125,14 @@ paths:
           in: query
           name: state
           required: true
+        - schema:
+            type: string
+          in: cookie
+          name: oidc-session
+          required: false
+          description: HttpOnly cookie carrying the OIDC state and nonce (set by
+            /auth/oidc/start)
+      security: []
       responses:
         "200":
           description: OIDC login successful, signup UI session token returned

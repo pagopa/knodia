@@ -30,18 +30,13 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 /**
  * Initiate OIDC session
  */
-export const startOidcSession = <ThrowOnError extends boolean = true>(options?: Options<StartOidcSessionData, ThrowOnError>) => (options?.client ?? client).get<unknown, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/auth/oidc/start',
-    ...options
-});
+export const startOidcSession = <ThrowOnError extends boolean = true>(options?: Options<StartOidcSessionData, ThrowOnError>) => (options?.client ?? client).get<unknown, unknown, ThrowOnError>({ url: '/auth/oidc/start', ...options });
 
 /**
  * Handle OIDC callback and exchange authorization code for session token
  */
 export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: Options<ExchangeOidcCodeData, ThrowOnError>) => (options.client ?? client).get<ExchangeOidcCodeResponses, ExchangeOidcCodeErrors, ThrowOnError>({
     responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/oidc/token',
     ...options
 });
