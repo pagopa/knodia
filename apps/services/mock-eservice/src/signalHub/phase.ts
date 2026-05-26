@@ -10,7 +10,8 @@ export function signalHubMockPhaseAt(
       return SignalType.enum.Create;
     case 1:
       return SignalType.enum.Update;
-    default:
+    case 2:
       return SignalType.enum.Delete;
   }
+  throw new Error(`Unexpected phase index for periodId ${periodId}`);
 }
