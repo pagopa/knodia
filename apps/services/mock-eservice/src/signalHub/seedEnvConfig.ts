@@ -5,7 +5,7 @@ import { type SignalHubSeedConfig } from "./rotation.ts";
 export const SignalHubSeedEnvConfig = z
   .object({
     SIGNAL_HUB_SEED_EXPIRE_SECONDS: z.coerce.number().int().positive(),
-    SIGNAL_HUB_SEED_SALT_LENGTH: z.coerce.number().int().positive(),
+    SIGNAL_HUB_SEED_SALT_LENGTH: z.coerce.number().int().min(16),
     SIGNAL_HUB_SEED_START_DATE_MS: z.coerce
       .number()
       .int()
