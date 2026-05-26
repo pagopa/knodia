@@ -1,5 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
+import { generateUserId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   keychainEvents,
@@ -118,6 +119,92 @@ describe("Keychain read model writer tests", async () => {
     expect(retrievedKeychains.length).toBe(1);
     expect(retrievedKeychains[0]).toEqual({
       data: toExpectProducerKeychain(updatedProducerKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+  });
+
+  it("ProducerKeychainMemberAddedV1", async () => {
+    const producerKeychain = getMockProducerKeychain();
+
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      0,
+    );
+
+    const userId = generateUserId();
+
+    const keychainWithMemberAdded: ProducerKeychain = {
+      ...producerKeychain,
+      users: [...producerKeychain.users, { addedAt: new Date(), userId }],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainMemberAddedV1,
+    ).encode({
+      producerKeychain: toProducerKeychainV1(keychainWithMemberAdded),
+      userId,
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainMemberAddedV1",
+      metadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(keychainWithMemberAdded),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+  });
+
+  it("ProducerKeychainMemberRemovedV1", async () => {
+    const userId = generateUserId();
+    const producerKeychain: ProducerKeychain = {
+      ...getMockProducerKeychain(),
+      users: [{ addedAt: new Date(), userId }],
+    };
+
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      0,
+    );
+
+    const keychainWithMemberRemoved: ProducerKeychain = {
+      ...producerKeychain,
+      users: [],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainMemberRemovedV1,
+    ).encode({
+      producerKeychain: toProducerKeychainV1(keychainWithMemberRemoved),
+      userId,
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainMemberRemovedV1",
+      metadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(keychainWithMemberRemoved),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ProducerKeychain>);
   });
