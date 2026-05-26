@@ -8,7 +8,7 @@ import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 
 import type { API_KeychainSeed } from "../models/api.ts";
 
-import { createProducerKeychainCreatedV1Event } from "../models/consumerKeychainEventFactory.ts";
+import { createProducerKeychainCreatedV1Event } from "../models/producerKeychainEventFactory.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
