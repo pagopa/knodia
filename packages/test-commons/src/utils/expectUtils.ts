@@ -8,6 +8,7 @@ import {
 import {
   type ConsumerKeychain,
   type KnodeApiKeychain,
+  type ProducerKeychain,
 } from "@knodia/keychain-models";
 import { type Organization } from "@knodia/organization-models";
 import { expect } from "vitest";
@@ -118,6 +119,14 @@ export function toExpectOrganization(organization: Organization) {
     ...organization,
     attributes: expect.arrayContaining(organization.attributes),
   };
+}
+
+export function toExpectProducerKeychain(producerKeychain: ProducerKeychain) {
+  return expect.objectContaining({
+    ...producerKeychain,
+    keys: expect.arrayContaining(producerKeychain.keys),
+    users: expect.arrayContaining(producerKeychain.users),
+  });
 }
 
 function toExpectEserviceVersion(eserviceVersion: EserviceVersion) {

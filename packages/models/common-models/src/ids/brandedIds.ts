@@ -10,6 +10,7 @@ export type IDS =
   | EserviceVersionId
   | KnodeApiKeychainId
   | OrganizationId
+  | ProducerKeychainId
   | PurposeId
   | PurposeTemplateId;
 
@@ -45,6 +46,9 @@ export type EserviceTemplateId = z.infer<typeof EserviceTemplateId>;
 
 export const PurposeTemplateId = z.uuid().brand<"PurposeTemplateId">();
 export type PurposeTemplateId = z.infer<typeof PurposeTemplateId>;
+
+export const ProducerKeychainId = z.uuid().brand<"ProducerKeychainId">();
+export type ProducerKeychainId = z.infer<typeof ProducerKeychainId>;
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
