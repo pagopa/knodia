@@ -63,6 +63,11 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
+export const API_ProducerKeychainsQueryParams = API_PaginationQueryParams;
+export type API_ProducerKeychainsQueryParams = z.infer<
+  typeof API_ProducerKeychainsQueryParams
+>;
+
 export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({

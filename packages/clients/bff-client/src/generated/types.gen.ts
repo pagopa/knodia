@@ -3010,6 +3010,48 @@ export type GetKnodeApiKeychainMembershipResponses = {
 
 export type GetKnodeApiKeychainMembershipResponse = GetKnodeApiKeychainMembershipResponses[keyof GetKnodeApiKeychainMembershipResponses];
 
+export type GetProducerKeychainsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains';
+};
+
+export type GetProducerKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerKeychainsError = GetProducerKeychainsErrors[keyof GetProducerKeychainsErrors];
+
+export type GetProducerKeychainsResponses = {
+    /**
+     * Producer Keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetProducerKeychainsResponse = GetProducerKeychainsResponses[keyof GetProducerKeychainsResponses];
+
 export type CreateProducerKeychainData = {
     body: KeychainSeed;
     path?: never;
