@@ -4,6 +4,7 @@ import type {
   ConsumerKeychain,
   KeychainKey,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import { InternalError } from "@knodia/common-models/errors";
@@ -14,10 +15,14 @@ import {
   type UserId,
 } from "@knodia/common-models/ids";
 import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
+import { match, P } from "ts-pattern";
 
 import type {
+  API_ConsumerKeychainPatch,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KnodeApiKeychainPatch,
+  API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -177,5 +182,29 @@ export function removeMemberFromKeychain<
       updatedAt: new Date(),
       users: keychain.users.filter((member) => member.userId !== userId),
     },
+  };
+}
+
+export function updateKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
+>(
+  keychain: K,
+  update:
+    | API_ConsumerKeychainPatch
+    | API_KnodeApiKeychainPatch
+    | API_ProducerKeychainPatch,
+  authData: UISessionAuthData,
+): K {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+
+  return {
+    ...keychain,
+    description: match(update.description)
+      .with(null, () => undefined)
+      .with(undefined, () => keychain.description)
+      .with(P.nonNullable, (desc) => desc)
+      .exhaustive(),
+    name: update.name ?? keychain.name,
+    updatedAt: new Date(),
   };
 }

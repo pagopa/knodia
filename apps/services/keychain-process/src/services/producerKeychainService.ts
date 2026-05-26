@@ -15,11 +15,19 @@ import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 import type {
   API_GetProducerKeychainsQueryParams,
   API_KeychainSeed,
+  API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createProducerKeychainCreatedV1Event } from "../models/producerKeychainEventFactory.ts";
-import { retrieveFlatProducerKeychain } from "../utils/retrievalUtils.ts";
+import {
+  createProducerKeychainCreatedV1Event,
+  createProducerKeychainUpdatedV1Event,
+} from "../models/producerKeychainEventFactory.ts";
+import {
+  retrieveFlatProducerKeychain,
+  retrieveProducerKeychain,
+} from "../utils/retrievalUtils.ts";
+import { updateKeychain } from "../utils/utils.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
@@ -84,6 +92,37 @@ export function producerKeychainServiceBuilder(
       logger.info({ params }, "Getting Producer keychains with params");
 
       return await readmodelService.getProducerKeychains(params);
+    },
+    async updateProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      update: API_ProducerKeychainPatch,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(`Updating Producer Keychain ${producerKeychainId}`);
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const updatedProducerKeychain = updateKeychain(
+        producerKeychain.data,
+        update,
+        authData,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainUpdatedV1Event(
+          updatedProducerKeychain,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
     },
   };
 }

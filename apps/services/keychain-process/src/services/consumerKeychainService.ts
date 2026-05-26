@@ -30,7 +30,6 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
-import { match, P } from "ts-pattern";
 
 import type {
   API_ConsumerKeychainPatch,
@@ -67,6 +66,7 @@ import {
   addMemberToKeychain,
   removeKeyFromKeychain,
   removeMemberFromKeychain,
+  updateKeychain,
 } from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
@@ -529,21 +529,11 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedConsumerKeychain = updateKeychain(
         consumerKeychain.data,
+        update,
+        authData,
       );
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        description: match(update.description)
-          .with(null, () => undefined)
-          .with(undefined, () => consumerKeychain.data.description)
-          .with(P.nonNullable, (desc) => desc)
-          .exhaustive(),
-        name: update.name ?? consumerKeychain.data.name,
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainUpdatedV1Event(

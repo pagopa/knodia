@@ -18,6 +18,7 @@ import {
   API_Keychain,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import { toAPI_Keychain } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -130,6 +131,49 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
           headers: MetadataVersionHeader,
           properties: API_Keychain.meta({
             description: "Producer Keychain retrieved successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: producerKeychain,
+        metadata: { version },
+      } = await producerKeychainService.updateProducerKeychain(
+        req.params.producerKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(producerKeychain));
+    },
+    method: "PATCH",
+    schema: {
+      body: API_ProducerKeychainPatch,
+      consumes: ["application/merge-patch+json"],
+      description: "Update a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "updateProducerKeychain",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Producer Keychain updated successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),

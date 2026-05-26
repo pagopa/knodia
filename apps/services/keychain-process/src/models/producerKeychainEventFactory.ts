@@ -20,3 +20,19 @@ export const createProducerKeychainCreatedV1Event = (
   },
   streamId: keychain.id,
 });
+
+export const createProducerKeychainUpdatedV1Event = (
+  keychain: ProducerKeychain,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      producerKeychain: toProducerKeychainV1(keychain),
+    },
+    type: "ProducerKeychainUpdatedV1",
+  },
+  streamId: keychain.id,
+});

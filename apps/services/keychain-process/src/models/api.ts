@@ -284,3 +284,13 @@ export const API_GetProducerKeychainsQueryParams =
 export type API_GetProducerKeychainsQueryParams = z.infer<
   typeof API_GetProducerKeychainsQueryParams
 >;
+
+export const API_ProducerKeychainPatch = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.nullable().optional(),
+    name: API_KeychainLocalizedName.optional(),
+  })
+  .meta({ id: "ProducerKeychainPatch" });
+export type API_ProducerKeychainPatch = z.infer<
+  typeof API_ProducerKeychainPatch
+>;

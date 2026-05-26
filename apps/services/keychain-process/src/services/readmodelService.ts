@@ -392,6 +392,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         };
       });
     },
+    async getProducerKeychainById(producerKeychainId: ProducerKeychainId) {
+      return await producerKeychainReadmodelService.getProducerKeychainById(
+        producerKeychainId,
+      );
+    },
     async getProducerKeychains(
       params: API_GetProducerKeychainsQueryParams,
     ): Promise<ListResult<FlatProducerKeychain>> {
