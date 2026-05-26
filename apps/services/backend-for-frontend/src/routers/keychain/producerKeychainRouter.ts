@@ -2,15 +2,25 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  type ProducerKeychainId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
+import { type AxiosResponse } from "axios";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
@@ -23,11 +33,33 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ProducerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  pollingService: PollingService;
 }
 
 export const producerKeychainRouter: FastifyPluginAsyncZod<
   ProducerKeychainRouterOptions
-> = async (fastify, { keychainProcessClient }) => {
+> = async (fastify, { keychainProcessClient, pollingService }) => {
+  const retrieveProducerKeychainById = async (
+    producerKeychainId: ProducerKeychainId,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await keychainProcessApi.getProducerKeychain({
+      client: keychainProcessClient,
+      headers,
+      path: { producerKeychainId },
+    });
+
+  const pollProducerKeychain = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+    producerKeychainId: ProducerKeychainId,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveProducerKeychainById(producerKeychainId, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -44,6 +76,12 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         client: keychainProcessClient,
         headers,
       });
+
+      await pollProducerKeychain(
+        response,
+        headers,
+        unsafeBrandId<ProducerKeychainId>(response.data.id),
+      );
 
       res.status(201).send({ id: response.data.id });
     },
