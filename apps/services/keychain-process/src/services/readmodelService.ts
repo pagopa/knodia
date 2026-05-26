@@ -9,6 +9,7 @@ import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
   FlatKnodeApiKeychain,
+  FlatProducerKeychain,
   KeychainKey,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -24,10 +25,13 @@ import {
   readmodelConsumerKeychainPurpose,
   readmodelKnodeApiKeychain,
   readmodelKnodeApiKeychainKey,
+  readmodelProducerKeychain,
+  readmodelProducerKeychainEservice,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
   aggregateFlatKnodeApiKeychains,
+  aggregateFlatProducerKeychains,
   toConsumerKeychainPurpose,
   toKeychainKey,
 } from "@knodia/db-readmodel-keychain/converters";
@@ -43,6 +47,7 @@ import type {
   API_GetConsumerKeychainsQueryParams,
   API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
+  API_GetProducerKeychainsQueryParams,
 } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
@@ -371,6 +376,84 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         ]);
 
         const keychains = aggregateFlatKnodeApiKeychains(queryRes);
+
+        return {
+          results: keychains.map((e) => e.data),
+          totalCount,
+        };
+      });
+    },
+    async getProducerKeychains(
+      params: API_GetProducerKeychainsQueryParams,
+    ): Promise<ListResult<FlatProducerKeychain>> {
+      const { eserviceId, limit, name, offset, ownerId } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
+          sortOrder: "desc",
+          table: readmodelProducerKeychain,
+        });
+
+        const createFilterQuery = () =>
+          tx
+            .select({ keychainId: readmodelProducerKeychain.id })
+            .from(readmodelProducerKeychain)
+            .where(
+              and(
+                name
+                  ? ilikeJsonB({
+                      column: readmodelProducerKeychain.name,
+                      value: name,
+                    })
+                  : undefined,
+                ownerId
+                  ? eq(readmodelProducerKeychain.ownerId, ownerId)
+                  : undefined,
+                eserviceId
+                  ? exists(
+                      tx
+                        .select()
+                        .from(readmodelProducerKeychainEservice)
+                        .where(
+                          and(
+                            eq(
+                              readmodelProducerKeychainEservice.producerKeychainId,
+                              readmodelProducerKeychain.id,
+                            ),
+                            eq(
+                              readmodelProducerKeychainEservice.eserviceId,
+                              eserviceId,
+                            ),
+                          ),
+                        ),
+                    )
+                  : undefined,
+              ),
+            )
+            .$dynamic();
+
+        const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("paginatedIds");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select({
+              producerKeychain: readmodelProducerKeychain,
+            })
+            .from(readmodelProducerKeychain)
+            .innerJoin(
+              paginatedIds,
+              eq(readmodelProducerKeychain.id, paginatedIds.keychainId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const keychains = aggregateFlatProducerKeychains(queryRes);
 
         return {
           results: keychains.map((e) => e.data),

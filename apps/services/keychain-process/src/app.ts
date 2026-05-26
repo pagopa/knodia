@@ -115,7 +115,10 @@ export function buildApp({
       ),
     });
     protectedApp.register(producerKeychainRouter, {
-      producerKeychainService: producerKeychainServiceBuilder(eventStoreWriter),
+      producerKeychainService: producerKeychainServiceBuilder(
+        eventStoreWriter,
+        readmodelService,
+      ),
     });
   });
 

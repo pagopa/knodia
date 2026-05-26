@@ -268,3 +268,19 @@ export const API_GetKnodeApiKeychainsQueryParams =
 export type API_GetKnodeApiKeychainsQueryParams = z.infer<
   typeof API_GetKnodeApiKeychainsQueryParams
 >;
+
+export const API_GetProducerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description: "Filter by E-service ID",
+    }),
+    name: z.string().optional().meta({
+      description: "Filter by Producer Keychain name",
+    }),
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
+  });
+export type API_GetProducerKeychainsQueryParams = z.infer<
+  typeof API_GetProducerKeychainsQueryParams
+>;
