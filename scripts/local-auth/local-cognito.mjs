@@ -205,6 +205,19 @@ function filterUsers(payload) {
   return [];
 }
 
+function removeUserByIdentifier(identifier) {
+  const before = MOCK_USERS.length;
+  MOCK_USERS = MOCK_USERS.filter(
+    (user) =>
+      user.Username !== identifier &&
+      !user.Attributes?.some(
+        (attribute) =>
+          attribute.Name === "sub" && attribute.Value === identifier,
+      ),
+  );
+  return before - MOCK_USERS.length;
+}
+
 function handleListUsersInGroup(req, res, payload) {
   const filteredUsers = filterUsersByGroup(payload.GroupName);
   const response = paginateItems(
@@ -242,20 +255,10 @@ function handleListUsers(req, res, payload) {
 }
 
 function handleAdminDeleteUser(req, res, payload) {
-  const identifier = payload.Username;
-  const before = MOCK_USERS.length;
-  MOCK_USERS = MOCK_USERS.filter(
-    (user) =>
-      user.Username !== identifier &&
-      !user.Attributes?.some(
-        (attribute) =>
-          attribute.Name === "sub" && attribute.Value === identifier,
-      ),
-  );
-  const removed = before - MOCK_USERS.length;
+  const removed = removeUserByIdentifier(payload.Username);
 
   console.log(
-    `[admin-delete-user] Removed ${removed} user(s) matching '${identifier}' from pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+    `[admin-delete-user] Removed ${removed} user(s) for user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
   );
 
   writeJson(
