@@ -149,10 +149,14 @@ export function initRedisRateLimiter({
         return failOpenStatus;
       }
     },
-    // QUIT lets queued commands drain; DISCONNECT would reject in-flight
-    // multi().exec() calls and silently flip them to fail-open via the catch.
+    // QUIT first so in-flight multi().exec() calls drain instead of being
+    // rejected mid-flight and silently flipped to fail-open via the catch.
+    // Then DISCONNECT to clear the reconnection timer the retry strategy
+    // keeps scheduling; otherwise a client that never reached Redis (e.g.
+    // OpenAPI generation in CI with no Redis) pins the event loop forever.
     disconnect: async () => {
       await redis.quit().catch(() => undefined);
+      redis.disconnect();
     },
     redis,
   };
