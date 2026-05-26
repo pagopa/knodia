@@ -172,27 +172,14 @@ export type API_ConsumerKeychainPurposes = z.infer<
   typeof API_ConsumerKeychainPurposes
 >;
 
-export const API_ConsumerKeychainPatch = z
+export const API_KeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
     name: API_KeychainLocalizedName.optional(),
   })
-  .meta({ id: "ConsumerKeychainPatch" });
+  .meta({ id: "KeychainPatch" });
 
-export type API_ConsumerKeychainPatch = z.infer<
-  typeof API_ConsumerKeychainPatch
->;
-
-export const API_KnodeApiKeychainPatch = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.nullable().optional(),
-    name: API_KeychainLocalizedName.optional(),
-  })
-  .meta({ id: "KnodeApiKeychainPatch" });
-
-export type API_KnodeApiKeychainPatch = z.infer<
-  typeof API_KnodeApiKeychainPatch
->;
+export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
 
 export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
 export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<

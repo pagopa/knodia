@@ -1742,18 +1742,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerKeychainPatch:
-      type: object
-      properties:
-        description:
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedName"
-      additionalProperties: false
-    KnodeApiKeychainPatch:
+    KeychainPatch:
       type: object
       properties:
         description:
@@ -3581,7 +3570,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainPatch"
+              $ref: "#/components/schemas/KeychainPatch"
       parameters:
         - schema:
             type: string
@@ -4466,7 +4455,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: "#/components/schemas/KnodeApiKeychainPatch"
+              $ref: "#/components/schemas/KeychainPatch"
       parameters:
         - schema:
             type: string
@@ -5160,6 +5149,163 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producerKeychains/{producerKeychainId}:
+    get:
+      operationId: getProducerKeychainDetails
+      tags:
+        - producerKeychain
+      description: Retrieve a Producer Keychain with all its details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: producerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Producer Keychain details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Keychain details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/KeychainDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Producer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Producer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    patch:
+      operationId: updateProducerKeychain
+      tags:
+        - producerKeychain
+      description: Update a Producer Keychain
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/KeychainPatch"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: producerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Producer Keychain updated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Producer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Producer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    delete:
+      operationId: deleteProducerKeychain
+      tags:
+        - producerKeychain
+      description: Delete a Producer Keychain
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: producerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Producer Keychain deleted successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Producer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /operators:
