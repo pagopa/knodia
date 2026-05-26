@@ -16,5 +16,6 @@ function RouteComponent() {
   const { id } = Route.useParams();
   const keychainId = unsafeBrandId<ProducerKeychainId>(id);
 
+  // TODO(KN-672): implement the Producer Keychain detail page.
   return <PageHeader copyableId={keychainId} title="Producer Keychain" />;
 }
