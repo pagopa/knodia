@@ -29,6 +29,7 @@ import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRoute
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { knodeApiKeychainRouter } from "./routers/keychain/knodeApiKeychainRouter.ts";
+import { producerKeychainRouter } from "./routers/keychain/producerKeychainRouter.ts";
 import { operatorRouter } from "./routers/operatorRouter.ts";
 import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
@@ -85,6 +86,10 @@ export function buildAppFromConfig(
           {
             description: "Knode API Keychains routes",
             name: apiTags.knodeApiKeychain,
+          },
+          {
+            description: "Producer Keychains routes",
+            name: apiTags.producerKeychain,
           },
           {
             description: "Purpose routes",
@@ -162,6 +167,9 @@ export function buildAppFromConfig(
       keychainProcessClient: clients.keychainProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
       pollingService,
+    });
+    protectedApp.register(producerKeychainRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(operatorRouter, {
       organizationProcessClient: clients.organizationProcessClient,

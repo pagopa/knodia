@@ -768,12 +768,7 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type ConsumerKeychainSeed = {
-    description?: KeychainLocalizedDescription;
-    name: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainSeed = {
+export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
 };
@@ -1940,7 +1935,7 @@ export type GetConsumerKeychainsResponses = {
 export type GetConsumerKeychainsResponse = GetConsumerKeychainsResponses[keyof GetConsumerKeychainsResponses];
 
 export type CreateConsumerKeychainData = {
-    body: ConsumerKeychainSeed;
+    body: KeychainSeed;
     path?: never;
     query?: never;
     url: '/consumerKeychains';
@@ -2524,7 +2519,7 @@ export type GetKnodeApiKeychainsResponses = {
 export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
 
 export type CreateKnodeApiKeychainData = {
-    body: KnodeApiKeychainSeed;
+    body: KeychainSeed;
     path?: never;
     query?: never;
     url: '/knodeApiKeychains';
@@ -3014,6 +3009,39 @@ export type GetKnodeApiKeychainMembershipResponses = {
 };
 
 export type GetKnodeApiKeychainMembershipResponse = GetKnodeApiKeychainMembershipResponses[keyof GetKnodeApiKeychainMembershipResponses];
+
+export type CreateProducerKeychainData = {
+    body: KeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/producerKeychains';
+};
+
+export type CreateProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];
+
+export type CreateProducerKeychainResponses = {
+    /**
+     * Producer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateProducerKeychainResponse = CreateProducerKeychainResponses[keyof CreateProducerKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;
