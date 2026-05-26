@@ -47,8 +47,8 @@ export async function emitMockSignals({
     const seedUpdateRow = {
       correlationId,
       eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      objectId: "",
-      objectType: "",
+      objectId: null,
+      objectType: null,
       signalId: startId,
       signalType: SignalType.enum.SeedUpdate,
     };

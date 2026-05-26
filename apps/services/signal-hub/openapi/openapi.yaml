@@ -73,38 +73,60 @@ components:
         - status
         - title
       additionalProperties: false
-    SignalType:
-      type: string
-      enum:
-        - CREATE
-        - UPDATE
-        - DELETE
-        - SEEDUPDATE
-    Signal:
+    ObjectSignal:
       type: object
       properties:
         eserviceId:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        signalId:
+          format: int64
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
         objectId:
           type: string
         objectType:
           type: string
+        signalType:
+          type: string
+          enum:
+            - CREATE
+            - UPDATE
+            - DELETE
+      required:
+        - eserviceId
+        - signalId
+        - objectId
+        - objectType
+        - signalType
+      additionalProperties: false
+    SeedUpdateSignal:
+      type: object
+      properties:
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         signalId:
           format: int64
           type: integer
           exclusiveMinimum: true
           maximum: 9007199254740991
         signalType:
-          $ref: "#/components/schemas/SignalType"
+          type: string
+          enum:
+            - SEEDUPDATE
       required:
         - eserviceId
-        - objectId
-        - objectType
         - signalId
         - signalType
       additionalProperties: false
+    Signal:
+      oneOf:
+        - $ref: "#/components/schemas/ObjectSignal"
+        - $ref: "#/components/schemas/SeedUpdateSignal"
     PushResponse:
       type: object
       properties:

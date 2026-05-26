@@ -4,6 +4,7 @@ import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceId, generateId } from "@knodia/common-models/ids";
+import { SignalType } from "@knodia/signal-hub-models";
 import {
   TEST_ORGANIZATION_ID,
   type TestToken,
@@ -13,7 +14,6 @@ import { describe, expect, it } from "vitest";
 
 import type { API_Signal } from "../src/models/api.ts";
 
-import { toSignalType } from "../src/models/apiConverter.ts";
 import {
   eserviceNotActive,
   eserviceNotFound,
@@ -66,7 +66,35 @@ describe("POST /signals (pushSignal)", () => {
       objectId: defaultBody.objectId,
       objectType: defaultBody.objectType,
       signalId: defaultBody.signalId,
-      signalType: toSignalType(defaultBody.signalType),
+      signalType: SignalType.enum.Create,
+    };
+    const retrievedSignals = await getAllSignals();
+    expect(retrievedSignals).toHaveLength(1);
+    expect(retrievedSignals[0]).toEqual(expectedSignal);
+  });
+
+  it("should store null object columns for a SeedUpdate signal (no object)", async () => {
+    await seedEservice();
+
+    const seedUpdateBody: API_Signal = {
+      eserviceId: eservice.id,
+      signalId: 1,
+      signalType: "SEEDUPDATE",
+    };
+    const response = await pushSignal(seedUpdateBody);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ signalId: seedUpdateBody.signalId });
+
+    const expectedSignal: SignalHubSignalSQL = {
+      correlationId: expect.any(String),
+      createdAt: expect.any(Date),
+      eserviceId: seedUpdateBody.eserviceId,
+      id: 1,
+      objectId: null,
+      objectType: null,
+      signalId: seedUpdateBody.signalId,
+      signalType: SignalType.enum.SeedUpdate,
     };
     const retrievedSignals = await getAllSignals();
     expect(retrievedSignals).toHaveLength(1);
@@ -196,6 +224,32 @@ describe("POST /signals (pushSignal)", () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
+      const response = await pushSignal(body as never);
+      expect(response.statusCode).toBe(400);
+    },
+  );
+});
+
+describe("POST /signals (pushSignal) - signal shape per signalType", () => {
+  it.each([
+    [
+      "Create signal without objectId/objectType",
+      { eserviceId: eservice.id, signalId: 1, signalType: "CREATE" },
+    ],
+    [
+      "SeedUpdate signal carrying objectId/objectType",
+      {
+        eserviceId: eservice.id,
+        objectId: "x",
+        objectType: "y",
+        signalId: 1,
+        signalType: "SEEDUPDATE",
+      },
+    ],
+  ])(
+    "should return 400 when the signal shape does not match its signalType - %s",
+    async (_label, body) => {
+      await seedEservice();
       const response = await pushSignal(body as never);
       expect(response.statusCode).toBe(400);
     },

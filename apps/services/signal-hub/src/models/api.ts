@@ -1,18 +1,34 @@
 import z from "zod";
 
-export const API_SignalType = z
-  .enum(["CREATE", "UPDATE", "DELETE", "SEEDUPDATE"])
-  .meta({ id: "SignalType" });
+export const API_SignalType = z.enum([
+  "CREATE",
+  "UPDATE",
+  "DELETE",
+  "SEEDUPDATE",
+]);
 export type API_SignalType = z.infer<typeof API_SignalType>;
 
+export const API_ObjectSignalType = z.enum(["CREATE", "UPDATE", "DELETE"]);
+export type API_ObjectSignalType = z.infer<typeof API_ObjectSignalType>;
+
+const API_SignalBase = z.strictObject({
+  eserviceId: z.uuid(),
+  signalId: z.int().positive().meta({ format: "int64" }),
+});
+
+// Create/Update/Delete carry a pseudonymized object (objectId/objectType); SeedUpdate has none.
+const API_ObjectSignal = API_SignalBase.extend({
+  objectId: z.string(),
+  objectType: z.string(),
+  signalType: API_ObjectSignalType,
+}).meta({ id: "ObjectSignal" });
+
+const API_SeedUpdateSignal = API_SignalBase.extend({
+  signalType: z.literal(API_SignalType.enum.SEEDUPDATE),
+}).meta({ id: "SeedUpdateSignal" });
+
 export const API_Signal = z
-  .strictObject({
-    eserviceId: z.uuid(),
-    objectId: z.string(),
-    objectType: z.string(),
-    signalId: z.int().positive().meta({ format: "int64" }),
-    signalType: API_SignalType,
-  })
+  .discriminatedUnion("signalType", [API_ObjectSignal, API_SeedUpdateSignal])
   .meta({ id: "Signal" });
 export type API_Signal = z.infer<typeof API_Signal>;
 
