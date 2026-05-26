@@ -120,7 +120,7 @@ export const retrieveKeychainKey = (
   return key;
 };
 
-export async function retrieveKeychainUser(
+async function retrieveKeychainUser(
   userId: UserId,
   keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   keychainKind: KeychainKind,
