@@ -82,3 +82,11 @@ message KnodeApiKeychainDeletedV1 {
 message ProducerKeychainCreatedV1 {
   ProducerKeychainV1 producerKeychain = 1;
 }
+
+message ProducerKeychainUpdatedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+}
+
+message ProducerKeychainDeletedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+}

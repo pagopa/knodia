@@ -7,6 +7,8 @@ import {
   consumerKeychainWriterServiceBuilder,
   type KnodeApiKeychainWriterService,
   knodeApiKeychainWriterServiceBuilder,
+  type ProducerKeychainWriterService,
+  producerKeychainWriterServiceBuilder,
 } from "@knodia/db-readmodel-keychain/services";
 import { setupKafkaTestProducerAndConsumer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
@@ -29,6 +31,7 @@ let consumer: TestConsumer;
 let topicName: string;
 let consumerKeychainWriterService: ConsumerKeychainWriterService;
 let knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
+let producerKeychainWriterService: ProducerKeychainWriterService;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
@@ -46,6 +49,8 @@ beforeAll(async () => {
     consumerKeychainWriterServiceBuilder(readmodelDb);
   knodeApiKeychainWriterService =
     knodeApiKeychainWriterServiceBuilder(readmodelDb);
+  producerKeychainWriterService =
+    producerKeychainWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -69,6 +74,7 @@ export {
   consumerKeychainWriterService,
   knodeApiKeychainWriterService,
   producer,
+  producerKeychainWriterService,
   readmodelDb,
   topicName,
 };
