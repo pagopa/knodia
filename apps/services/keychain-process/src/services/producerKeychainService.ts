@@ -7,6 +7,7 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   FlatProducerKeychain,
+  KeychainKey,
   ProducerKeychain,
 } from "@knodia/keychain-models";
 
@@ -14,6 +15,7 @@ import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 
 import type {
   API_GetProducerKeychainsQueryParams,
+  API_KeychainKeySeed,
   API_KeychainSeed,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
@@ -22,13 +24,14 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
+  createProducerKeychainKeyAddedV1Event,
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
-import { updateKeychain } from "../utils/utils.ts";
+import { addKeyToKeychain, updateKeychain } from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -38,6 +41,7 @@ export type ProducerKeychainService = ReturnType<
 export function producerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  config: { maxKeysPerKeychain: number },
 ) {
   return {
     async createProducerKeychain(
@@ -145,6 +149,41 @@ export function producerKeychainServiceBuilder(
 
       return {
         data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+    async uploadProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      keySeed: API_KeychainKeySeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KeychainKey>> {
+      logger.info(`Uploading key to Producer Keychain ${producerKeychainId}`);
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const { newKey, updatedKeychain: updatedProducerKeychain } =
+        await addKeyToKeychain(
+          producerKeychain.data,
+          authData,
+          keySeed,
+          readmodelService,
+          config.maxKeysPerKeychain,
+        );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainKeyAddedV1Event(
+          updatedProducerKeychain,
+          newKey.kid,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: newKey,
         metadata: { version: newVersion },
       };
     },

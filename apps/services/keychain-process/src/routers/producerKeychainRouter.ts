@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -17,11 +18,13 @@ import type { ProducerKeychainService } from "../services/producerKeychainServic
 import {
   API_GetProducerKeychainsQueryParams,
   API_Keychain,
+  API_KeychainKey,
+  API_KeychainKeySeed,
   API_Keychains,
   API_KeychainSeed,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
-import { toAPI_Keychain } from "../models/apiConverter.ts";
+import { toAPI_Keychain, toAPI_KeychainKey } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface ProducerKeychainRouterOptions {
@@ -218,5 +221,48 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: key,
+        metadata: { version },
+      } = await producerKeychainService.uploadProducerKeychainKey(
+        req.params.producerKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_KeychainKey(key));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "uploadProducerKeychainKey",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_KeychainKey.meta({
+            description: "Producer Keychain Key uploaded successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/keys",
   });
 };

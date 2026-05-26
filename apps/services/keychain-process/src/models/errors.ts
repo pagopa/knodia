@@ -158,7 +158,7 @@ export function purposeAlreadyLinkedToConsumerKeychain(
 }
 
 export function tooManyKeysPerKeychain(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   size: number,
 ) {
   return createApiError<ErrorCodes>({
@@ -183,7 +183,7 @@ export function userAlreadyMember(
 
 export function userNotAllowed(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
 ) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",

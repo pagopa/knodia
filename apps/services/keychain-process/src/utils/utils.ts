@@ -45,7 +45,7 @@ import {
 } from "./validators.ts";
 
 export async function addKeyToKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   authData: UISessionAuthData,
