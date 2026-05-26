@@ -2,6 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -21,6 +22,7 @@ import {
   API_KeychainMemberSeed,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainMemberPathParams,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import { toAPI_Keychain } from "../models/apiConverter.ts";
@@ -262,5 +264,48 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: producerKeychain,
+        metadata: { version },
+      } = await producerKeychainService.removeProducerKeychainMember(
+        unsafeBrandId(req.params.producerKeychainId),
+        unsafeBrandUserId(req.params.userId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(producerKeychain));
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a member from a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeProducerKeychainMember",
+      params: API_ProducerKeychainMemberPathParams,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Producer Keychain member removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain or Member not found",
+        }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/members/:userId",
   });
 };

@@ -166,7 +166,7 @@ export function removeKeyFromKeychain<
 }
 
 export function removeMemberFromKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   userId: UserId,

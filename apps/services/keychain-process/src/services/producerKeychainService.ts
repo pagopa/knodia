@@ -11,7 +11,11 @@ import type {
   ProducerKeychain,
 } from "@knodia/keychain-models";
 
-import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  type ProducerKeychainId,
+  type UserId,
+} from "@knodia/common-models/ids";
 
 import type {
   API_GetProducerKeychainsQueryParams,
@@ -25,13 +29,18 @@ import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
   createProducerKeychainMemberAddedV1Event,
+  createProducerKeychainMemberRemovedV1Event,
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addMemberToKeychain, updateKeychain } from "../utils/utils.ts";
+import {
+  addMemberToKeychain,
+  removeMemberFromKeychain,
+  updateKeychain,
+} from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -156,6 +165,37 @@ export function producerKeychainServiceBuilder(
       logger.info({ params }, "Getting Producer keychains with params");
 
       return await readmodelService.getProducerKeychains(params);
+    },
+    async removeProducerKeychainMember(
+      producerKeychainId: ProducerKeychainId,
+      userId: UserId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(
+        `Removing member ${userId} from Producer Keychain ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const { updatedKeychain: updatedProducerKeychain } =
+        removeMemberFromKeychain(producerKeychain.data, userId, authData);
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainMemberRemovedV1Event(
+          updatedProducerKeychain,
+          userId,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
     },
     async updateProducerKeychain(
       producerKeychainId: ProducerKeychainId,

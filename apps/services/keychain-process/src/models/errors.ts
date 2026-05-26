@@ -95,7 +95,7 @@ export function keyAlreadyExists(kid: string) {
 }
 
 export function keychainMemberNotFound(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({
@@ -183,7 +183,7 @@ export function userAlreadyMember(
 
 export function userNotAllowed(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
 ) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",
