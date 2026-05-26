@@ -205,16 +205,9 @@ function filterUsers(payload) {
   return [];
 }
 
-function removeUserByIdentifier(identifier) {
+function removeUserByUsername(username) {
   const before = MOCK_USERS.length;
-  MOCK_USERS = MOCK_USERS.filter(
-    (user) =>
-      user.Username !== identifier &&
-      !user.Attributes?.some(
-        (attribute) =>
-          attribute.Name === "sub" && attribute.Value === identifier,
-      ),
-  );
+  MOCK_USERS = MOCK_USERS.filter((user) => user.Username !== username);
   return before - MOCK_USERS.length;
 }
 
@@ -255,7 +248,7 @@ function handleListUsers(req, res, payload) {
 }
 
 function handleAdminDeleteUser(req, res, payload) {
-  const removed = removeUserByIdentifier(payload.Username);
+  const removed = removeUserByUsername(payload.Username);
 
   console.log(
     `[admin-delete-user] Removed ${removed} user(s) for user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
