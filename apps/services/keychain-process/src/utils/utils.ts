@@ -109,7 +109,7 @@ export async function addKeyToKeychain<
 }
 
 export async function addMemberToKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   member: API_KeychainMemberSeed,

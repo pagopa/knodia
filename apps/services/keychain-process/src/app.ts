@@ -118,6 +118,7 @@ export function buildApp({
       producerKeychainService: producerKeychainServiceBuilder(
         eventStoreWriter,
         readmodelService,
+        cognitoIdmClient,
       ),
     });
   });

@@ -1,3 +1,4 @@
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -14,6 +15,7 @@ import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 
 import type {
   API_GetProducerKeychainsQueryParams,
+  API_KeychainMemberSeed,
   API_KeychainSeed,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
@@ -22,13 +24,14 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
+  createProducerKeychainMemberAddedV1Event,
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
-import { updateKeychain } from "../utils/utils.ts";
+import { addMemberToKeychain, updateKeychain } from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -38,8 +41,45 @@ export type ProducerKeychainService = ReturnType<
 export function producerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  cognitoIdmClient: CognitoIdmClient,
 ) {
   return {
+    async addProducerKeychainMember(
+      producerKeychainId: ProducerKeychainId,
+      member: API_KeychainMemberSeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(
+        `Adding member ${member.userId} to Producer Keychain ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const { addedUserId, updatedKeychain: updatedProducerKeychain } =
+        await addMemberToKeychain(
+          producerKeychain.data,
+          member,
+          authData,
+          cognitoIdmClient,
+        );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainMemberAddedV1Event(
+          updatedProducerKeychain,
+          addedUserId,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
     async createProducerKeychain(
       seed: API_KeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,

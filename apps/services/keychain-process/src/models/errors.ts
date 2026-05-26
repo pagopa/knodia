@@ -170,7 +170,7 @@ export function tooManyKeysPerKeychain(
 }
 
 export function userAlreadyMember(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({
