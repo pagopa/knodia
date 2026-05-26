@@ -80,7 +80,7 @@ components:
       type: string
       pattern: ^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$
     PersonalInformation:
-      description: Personal information returned by the Cross-Border E-Service 01
+      description: Personal information returned by the Cross-Border E-service 01
       type: object
       properties:
         dateOfBirth:
@@ -98,7 +98,7 @@ paths:
       tags:
         - personalInformation
       description: Returns the date of birth of a natural person identified by Codice
-        Fiscale (Cross-Border E-Service 01, Bearer-protected).
+        Fiscale (Cross-Border E-service 01, Bearer-protected).
       parameters:
         - schema:
             $ref: "#/components/schemas/Notation"
@@ -145,5 +145,5 @@ security:
   - bearerAuth: []
 tags:
   - description: Personal information lookup by Codice Fiscale (Cross-Border
-      E-Service 01, Bearer-protected)
+      E-service 01, Bearer-protected)
     name: personalInformation

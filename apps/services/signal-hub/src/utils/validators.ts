@@ -1,3 +1,4 @@
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { EserviceId, OrganizationId } from "@knodia/common-models/ids";
 import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 
@@ -9,23 +10,39 @@ import {
   eserviceNotActive,
   eserviceSignalHubNotEnabled,
   nonConsecutiveSignalId,
+  organizationNotAuthorizedToPullSignals,
+  organizationNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../models/errors.ts";
-import { retrieveEserviceByIdAndProducerId } from "./readmodelUtils.ts";
 
-export async function assertEserviceIsActiveWithSignalHubEnabled(
+export function assertEserviceIsActiveWithSignalHubEnabled(eservice: Eservice) {
+  assertEserviceIsActive(eservice);
+  assertEserviceHasSignalHubEnabled(eservice);
+}
+
+export async function assertOrganizationAuthorizedToPullSignals(
+  organization: ExternalResource<OrganizationId>,
   eserviceId: EserviceId,
-  producerId: OrganizationId,
   readmodelService: ReadmodelService,
 ) {
-  const eservice = await retrieveEserviceByIdAndProducerId(
-    eserviceId,
-    producerId,
-    readmodelService,
-  );
+  const isAuthorized =
+    await readmodelService.checkAgreementAndPurposeExistAndAreActive(
+      organization,
+      eserviceId,
+    );
 
-  assertEserviceIsActive(eservice.data);
-  assertEserviceHasSignalHubEnabled(eservice.data);
+  if (!isAuthorized) {
+    throw organizationNotAuthorizedToPullSignals(eserviceId, organization);
+  }
+}
+
+export function assertOrganizationAuthorizedToPushSignals(
+  eservice: Eservice,
+  organizationId: OrganizationId,
+) {
+  if (eservice.producerId !== organizationId) {
+    throw organizationNotAuthorizedToPushSignals(eservice.id, organizationId);
+  }
 }
 
 export async function assertSignalCanBePushed(
