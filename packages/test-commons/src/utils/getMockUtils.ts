@@ -39,6 +39,7 @@ import {
   ConsumerKeychainPurpose,
   type KeychainKey,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
@@ -306,6 +307,20 @@ export async function getMockKnodeApiClientAssertion(props?: {
     keySet,
     publicKeyEncodedPem,
   };
+}
+
+export function getMockProducerKeychain(seed = 0): ProducerKeychain {
+  // Re-parse through the schema to normalize zocker's mixed-case GUIDs
+  // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
+  return ProducerKeychain.parse({
+    ...zocker(ProducerKeychain)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+    keys: [getMockKeychainKey(seed)],
+  });
 }
 
 export function getMockPurpose(seed = 0): Purpose {

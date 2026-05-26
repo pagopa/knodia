@@ -12,7 +12,6 @@ import {
 } from "@knodia/purpose-models";
 import z from "zod";
 
-/** @knipignore */
 export const PurposeTemplate = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedPurposeDescription,
@@ -188,7 +187,6 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
   ],
 };
 
-/** @knipignore */
 export function getPurposeTemplate(
   id: PurposeTemplateId,
   knodeId: KnodeId,

@@ -1,3 +1,8 @@
+import type {
+  ConsumerKeychain,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
+
 import type { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/consumerKeychainSplitters.ts";
 
 export function createConsumerKeychainAggregatorInput({
@@ -19,4 +24,17 @@ export function createConsumerKeychainAggregatorInput({
       user: userSQL,
     })),
   );
+}
+
+export function toFlatConsumerKeychain(
+  consumerKeychain: ConsumerKeychain,
+): FlatConsumerKeychain {
+  return {
+    createdAt: consumerKeychain.createdAt,
+    description: consumerKeychain.description,
+    id: consumerKeychain.id,
+    name: consumerKeychain.name,
+    ownerId: consumerKeychain.ownerId,
+    updatedAt: consumerKeychain.updatedAt,
+  };
 }

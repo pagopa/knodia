@@ -1,9 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import {
-  type ConsumerKeychain,
-  type FlatConsumerKeychain,
-} from "@knodia/keychain-models";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import {
   getMockConsumerKeychain,
   toExpectConsumerKeychain,
@@ -17,7 +14,10 @@ import {
   aggregateFlatConsumerKeychains,
 } from "../src/converters/consumerKeychainAggregators.ts";
 import { splitConsumerKeychainIntoObjectsSQL } from "../src/converters/consumerKeychainSplitters.ts";
-import { createConsumerKeychainAggregatorInput } from "./consumerKeychainUtils.ts";
+import {
+  createConsumerKeychainAggregatorInput,
+  toFlatConsumerKeychain,
+} from "./consumerKeychainUtils.ts";
 
 describe("Consumer keychain aggregators", () => {
   it("should convert Consumer keychain SQL objects into a Consumer keychain business object", () => {
@@ -150,16 +150,3 @@ describe("Consumer keychain aggregators", () => {
     );
   });
 });
-
-function toFlatConsumerKeychain(
-  consumerKeychain: ConsumerKeychain,
-): FlatConsumerKeychain {
-  return {
-    createdAt: consumerKeychain.createdAt,
-    description: consumerKeychain.description,
-    id: consumerKeychain.id,
-    name: consumerKeychain.name,
-    ownerId: consumerKeychain.ownerId,
-    updatedAt: consumerKeychain.updatedAt,
-  };
-}
