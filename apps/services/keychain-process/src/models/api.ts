@@ -17,6 +17,7 @@ import {
   API_KeychainLocalizedName,
   API_KeyFormat,
   API_KnodeApiKeychainIdPathParam,
+  API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -293,4 +294,13 @@ export const API_ProducerKeychainPatch = z
   .meta({ id: "ProducerKeychainPatch" });
 export type API_ProducerKeychainPatch = z.infer<
   typeof API_ProducerKeychainPatch
+>;
+
+export const API_ProducerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+export type API_ProducerKeychainKeyPathParams = z.infer<
+  typeof API_ProducerKeychainKeyPathParams
 >;

@@ -219,7 +219,7 @@ describe("POST /producerKeychains/:producerKeychainId/keys (uploadProducerKeycha
 
   it("should return 404 if the producer keychain does not exist", async () => {
     const response = await uploadProducerKeychainKey({
-      producerKeychainId: generateId(),
+      producerKeychainId: generateId<ProducerKeychainId>(),
     });
 
     expect(response.statusCode).toBe(404);

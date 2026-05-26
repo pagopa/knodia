@@ -102,7 +102,7 @@ export function assertUserIsAllowedToPerformKeychainOperation(
 
 export function assertUserIsAllowedToRemoveKey(
   authData: UISessionAuthData,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
   const { userId, userRoles } = authData;

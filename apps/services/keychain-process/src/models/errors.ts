@@ -108,7 +108,7 @@ export function keychainMemberNotFound(
 
 export function keyNotFoundInKeychain(
   kid: KeyId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
 ) {
   return createApiError<ErrorCodes>({
     code: "KEY_NOT_FOUND_IN_KEYCHAIN",

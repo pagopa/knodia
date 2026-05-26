@@ -2,6 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandKeyId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -22,6 +23,7 @@ import {
   API_KeychainKeySeed,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import { toAPI_Keychain, toAPI_KeychainKey } from "../models/apiConverter.ts";
@@ -264,5 +266,45 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await producerKeychainService.removeProducerKeychainKey(
+        req.params.producerKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a key from a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeProducerKeychainKey",
+      params: API_ProducerKeychainKeyPathParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Producer Keychain Key removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/keys/:keyId",
   });
 };

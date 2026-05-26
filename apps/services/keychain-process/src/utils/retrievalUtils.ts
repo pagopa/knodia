@@ -10,6 +10,7 @@ import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -95,7 +96,7 @@ export const retrieveConsumerKeychainPurpose = async (
 };
 
 export const retrieveKeychainKey = (
-  keychain: ConsumerKeychain | KnodeApiKeychain,
+  keychain: ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
   kid: KeyId,
 ) => {
   const key = keychain.keys.find((key) => key.kid === kid);

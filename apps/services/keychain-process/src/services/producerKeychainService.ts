@@ -11,7 +11,11 @@ import type {
   ProducerKeychain,
 } from "@knodia/keychain-models";
 
-import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  type KeyId,
+  type ProducerKeychainId,
+} from "@knodia/common-models/ids";
 
 import type {
   API_GetProducerKeychainsQueryParams,
@@ -25,13 +29,18 @@ import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
   createProducerKeychainKeyAddedV1Event,
+  createProducerKeychainKeyRemovedV1Event,
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
-import { addKeyToKeychain, updateKeychain } from "../utils/utils.ts";
+import {
+  addKeyToKeychain,
+  removeKeyFromKeychain,
+  updateKeychain,
+} from "../utils/utils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -120,6 +129,40 @@ export function producerKeychainServiceBuilder(
       logger.info({ params }, "Getting Producer keychains with params");
 
       return await readmodelService.getProducerKeychains(params);
+    },
+    async removeProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      kid: KeyId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(
+        `Removing key ${kid} from Producer Keychain ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const updatedProducerKeychain = removeKeyFromKeychain(
+        producerKeychain.data,
+        authData,
+        kid,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainKeyRemovedV1Event(
+          updatedProducerKeychain,
+          kid,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
     },
     async updateProducerKeychain(
       producerKeychainId: ProducerKeychainId,
