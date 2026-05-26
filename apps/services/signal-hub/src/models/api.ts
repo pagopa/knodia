@@ -29,7 +29,18 @@ const API_SeedUpdateSignal = API_SignalBase.extend({
 
 export const API_Signal = z
   .discriminatedUnion("signalType", [API_ObjectSignal, API_SeedUpdateSignal])
-  .meta({ id: "Signal" });
+  .meta({
+    discriminator: {
+      mapping: {
+        CREATE: "#/components/schemas/ObjectSignal",
+        DELETE: "#/components/schemas/ObjectSignal",
+        SEEDUPDATE: "#/components/schemas/SeedUpdateSignal",
+        UPDATE: "#/components/schemas/ObjectSignal",
+      },
+      propertyName: "signalType",
+    },
+    id: "Signal",
+  });
 export type API_Signal = z.infer<typeof API_Signal>;
 
 export const API_PushResponse = z

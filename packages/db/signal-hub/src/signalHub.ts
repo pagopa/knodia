@@ -1,6 +1,8 @@
+import { sql } from "drizzle-orm";
 import {
   bigint,
   bigserial,
+  check,
   pgSchema,
   text,
   timestamp,
@@ -30,6 +32,10 @@ export const signalHubSignal = signalHubSchema.table(
     unique("signal_eservice_id_signal_id_key").on(
       table.eserviceId,
       table.signalId,
+    ),
+    check(
+      "signal_object_columns_match_signal_type",
+      sql`(${table.signalType} = 'SeedUpdate' AND ${table.objectId} IS NULL AND ${table.objectType} IS NULL) OR (${table.signalType} <> 'SeedUpdate' AND ${table.objectId} IS NOT NULL AND ${table.objectType} IS NOT NULL)`,
     ),
   ],
 );

@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { Eservice } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { type EserviceId, generateId } from "@knodia/common-models/ids";
+import {
+  type CorrelationId,
+  type EserviceId,
+  generateId,
+} from "@knodia/common-models/ids";
+import {
+  signalHubSignal,
+  type SignalHubSignalSQL,
+} from "@knodia/db-signal-hub";
 import { SignalType } from "@knodia/signal-hub-models";
 import {
   TEST_ORGANIZATION_ID,
@@ -22,7 +29,7 @@ import {
   organizationNotAuthorizedToPushSignals,
   signalAlreadyExists,
 } from "../src/models/errors.ts";
-import { eserviceWriterService } from "./setup.ts";
+import { eserviceWriterService, signalHubDb } from "./setup.ts";
 import { checkErrorDetail, getAllSignals, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
@@ -254,4 +261,34 @@ describe("POST /signals (pushSignal) - signal shape per signalType", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+});
+
+describe("signal table object-column CHECK constraint", () => {
+  const checkEserviceId = generateId<EserviceId>();
+
+  it("rejects a SeedUpdate row that carries object columns", async () => {
+    await expect(
+      signalHubDb.insert(signalHubSignal).values({
+        correlationId: generateId<CorrelationId>(),
+        eserviceId: checkEserviceId,
+        objectId: "x",
+        objectType: "y",
+        signalId: 1,
+        signalType: SignalType.enum.SeedUpdate,
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("rejects a non-SeedUpdate row with null object columns", async () => {
+    await expect(
+      signalHubDb.insert(signalHubSignal).values({
+        correlationId: generateId<CorrelationId>(),
+        eserviceId: checkEserviceId,
+        objectId: null,
+        objectType: null,
+        signalId: 2,
+        signalType: SignalType.enum.Create,
+      }),
+    ).rejects.toThrow();
+  });
 });

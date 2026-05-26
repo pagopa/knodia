@@ -124,6 +124,13 @@ components:
         - signalType
       additionalProperties: false
     Signal:
+      discriminator:
+        mapping:
+          CREATE: "#/components/schemas/ObjectSignal"
+          DELETE: "#/components/schemas/ObjectSignal"
+          SEEDUPDATE: "#/components/schemas/SeedUpdateSignal"
+          UPDATE: "#/components/schemas/ObjectSignal"
+        propertyName: signalType
       oneOf:
         - $ref: "#/components/schemas/ObjectSignal"
         - $ref: "#/components/schemas/SeedUpdateSignal"
