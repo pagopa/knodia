@@ -54,6 +54,7 @@ import {
 import {
   addKeyToKeychain,
   addMemberToKeychain,
+  listActiveKeychainMembers,
   removeKeyFromKeychain,
   removeMemberFromKeychain,
 } from "../utils/utils.ts";
@@ -272,25 +273,11 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain,
       );
 
-      const sortedUserIds = knodeApiKeychain.users.toSorted(
-        (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+      return await listActiveKeychainMembers(
+        knodeApiKeychain.users,
+        params,
+        cognitoIdmClient,
       );
-
-      const activeMembers = (
-        await Promise.all(
-          sortedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(userId, cognitoIdmClient),
-          ),
-        )
-      ).filter((member): member is IdmUser => member !== undefined);
-
-      return {
-        results: activeMembers.slice(
-          params.offset,
-          params.offset + params.limit,
-        ),
-        totalCount: activeMembers.length,
-      };
     },
 
     async getKnodeApiKeychains(

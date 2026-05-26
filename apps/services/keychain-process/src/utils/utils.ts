@@ -1,8 +1,10 @@
-import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
   KeychainKey,
+  KeychainUser,
   KnodeApiKeychain,
 } from "@knodia/keychain-models";
 
@@ -26,7 +28,7 @@ import {
   userAlreadyMember,
   userNotFound,
 } from "../models/errors.ts";
-import { retrieveKeychainKey } from "./retrievalUtils.ts";
+import { retrieveKeychainKey, retrieveKeychainUser } from "./retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,
@@ -143,6 +145,29 @@ export async function addMemberToKeychain<
       updatedAt: now,
       users: [...keychain.users, { addedAt: now, userId: user.id }],
     },
+  };
+}
+
+export async function listActiveKeychainMembers(
+  users: KeychainUser[],
+  params: { limit: number; offset: number },
+  cognitoIdmClient: CognitoIdmClient,
+): Promise<ListResult<IdmUser>> {
+  const sortedUsers = users.toSorted(
+    (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+  );
+
+  const activeMembers = (
+    await Promise.all(
+      sortedUsers.map(({ userId }) =>
+        retrieveKeychainUser(userId, cognitoIdmClient),
+      ),
+    )
+  ).filter((member): member is IdmUser => member !== undefined);
+
+  return {
+    results: activeMembers.slice(params.offset, params.offset + params.limit),
+    totalCount: activeMembers.length,
   };
 }
 
