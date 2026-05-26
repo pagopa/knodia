@@ -124,6 +124,17 @@ export interface KnodeApiKeychainV1 {
   updatedAt: number;
 }
 
+export interface ProducerKeychainV1 {
+  id: string;
+  name: LocalizedTextV1 | undefined;
+  description?: LocalizedTextV1 | undefined;
+  ownerId: string;
+  users: KeychainUserV1[];
+  keys: KeychainKeyV1[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 function createBaseConsumerKeychainV1(): ConsumerKeychainV1 {
   return {
     id: "",
@@ -848,6 +859,191 @@ export const KnodeApiKeychainV1: MessageFns<KnodeApiKeychainV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<KnodeApiKeychainV1>, I>>(object: I): KnodeApiKeychainV1 {
     const message = createBaseKnodeApiKeychainV1();
+    message.id = object.id ?? "";
+    message.name = (object.name !== undefined && object.name !== null)
+      ? LocalizedTextV1.fromPartial(object.name)
+      : undefined;
+    message.description = (object.description !== undefined && object.description !== null)
+      ? LocalizedTextV1.fromPartial(object.description)
+      : undefined;
+    message.ownerId = object.ownerId ?? "";
+    message.users = object.users?.map((e) => KeychainUserV1.fromPartial(e)) || [];
+    message.keys = object.keys?.map((e) => KeychainKeyV1.fromPartial(e)) || [];
+    message.createdAt = object.createdAt ?? 0;
+    message.updatedAt = object.updatedAt ?? 0;
+    return message;
+  },
+};
+
+function createBaseProducerKeychainV1(): ProducerKeychainV1 {
+  return {
+    id: "",
+    name: undefined,
+    description: undefined,
+    ownerId: "",
+    users: [],
+    keys: [],
+    createdAt: 0,
+    updatedAt: 0,
+  };
+}
+
+export const ProducerKeychainV1: MessageFns<ProducerKeychainV1> = {
+  encode(message: ProducerKeychainV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== undefined) {
+      LocalizedTextV1.encode(message.name, writer.uint32(18).fork()).join();
+    }
+    if (message.description !== undefined) {
+      LocalizedTextV1.encode(message.description, writer.uint32(26).fork()).join();
+    }
+    if (message.ownerId !== "") {
+      writer.uint32(34).string(message.ownerId);
+    }
+    for (const v of message.users) {
+      KeychainUserV1.encode(v!, writer.uint32(42).fork()).join();
+    }
+    for (const v of message.keys) {
+      KeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
+    }
+    if (message.createdAt !== 0) {
+      writer.uint32(56).int64(message.createdAt);
+    }
+    if (message.updatedAt !== 0) {
+      writer.uint32(64).int64(message.updatedAt);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = LocalizedTextV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = LocalizedTextV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.ownerId = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.users.push(KeychainUserV1.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.keys.push(KeychainKeyV1.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.createdAt = longToNumber(reader.int64());
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.updatedAt = longToNumber(reader.int64());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
+      description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
+      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
+      users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => KeychainUserV1.fromJSON(e)) : [],
+      keys: globalThis.Array.isArray(object?.keys) ? object.keys.map((e: any) => KeychainKeyV1.fromJSON(e)) : [],
+      createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
+      updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+    };
+  },
+
+  toJSON(message: ProducerKeychainV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== undefined) {
+      obj.name = LocalizedTextV1.toJSON(message.name);
+    }
+    if (message.description !== undefined) {
+      obj.description = LocalizedTextV1.toJSON(message.description);
+    }
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
+    }
+    if (message.users?.length) {
+      obj.users = message.users.map((e) => KeychainUserV1.toJSON(e));
+    }
+    if (message.keys?.length) {
+      obj.keys = message.keys.map((e) => KeychainKeyV1.toJSON(e));
+    }
+    if (message.createdAt !== 0) {
+      obj.createdAt = Math.round(message.createdAt);
+    }
+    if (message.updatedAt !== 0) {
+      obj.updatedAt = Math.round(message.updatedAt);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainV1>, I>>(base?: I): ProducerKeychainV1 {
+    return ProducerKeychainV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainV1>, I>>(object: I): ProducerKeychainV1 {
+    const message = createBaseProducerKeychainV1();
     message.id = object.id ?? "";
     message.name = (object.name !== undefined && object.name !== null)
       ? LocalizedTextV1.fromPartial(object.name)

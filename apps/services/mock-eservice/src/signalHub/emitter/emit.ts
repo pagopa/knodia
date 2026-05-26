@@ -1,5 +1,8 @@
 import { type CorrelationId, generateId } from "@knodia/common-models/ids";
-import { signalHubSignal } from "@knodia/db-signal-hub";
+import {
+  type NewSignalHubSignal,
+  signalHubSignal,
+} from "@knodia/db-signal-hub";
 import { SignalType } from "@knodia/signal-hub-models";
 import { eq, max } from "drizzle-orm";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -44,7 +47,7 @@ export async function emitMockSignals({
       .where(eq(signalHubSignal.eserviceId, SIGNAL_HUB_MOCK_ESERVICE_ID));
     const startId = (row?.max ?? 0) + 1;
 
-    const seedUpdateRow = {
+    const seedUpdateRow: NewSignalHubSignal = {
       correlationId,
       eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
       objectId: null,
@@ -52,14 +55,16 @@ export async function emitMockSignals({
       signalId: startId,
       signalType: SignalType.enum.SeedUpdate,
     };
-    const mockSignalRows = rotatingFiscalCodes.map((fc, i) => ({
-      correlationId,
-      eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-      objectId: pseudonymize(fc, seed),
-      objectType: "natural-persons/residence",
-      signalId: startId + 1 + i,
-      signalType: mockPhase,
-    }));
+    const mockSignalRows: NewSignalHubSignal[] = rotatingFiscalCodes.map(
+      (fc, i) => ({
+        correlationId,
+        eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
+        objectId: pseudonymize(fc, seed),
+        objectType: "natural-persons/residence",
+        signalId: startId + 1 + i,
+        signalType: mockPhase,
+      }),
+    );
 
     await tx.insert(signalHubSignal).values([seedUpdateRow, ...mockSignalRows]);
 
