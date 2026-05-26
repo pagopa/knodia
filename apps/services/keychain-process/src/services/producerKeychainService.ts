@@ -36,6 +36,7 @@ import {
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
+  retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
@@ -160,6 +161,28 @@ export function producerKeychainServiceBuilder(
         producerKeychainId,
         readmodelService,
       );
+    },
+    async getProducerKeychainMember(
+      producerKeychainId: ProducerKeychainId,
+      userId: UserId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser> {
+      logger.info(
+        `Getting member ${userId} of Producer Keychain with id ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      return await retrieveKeychainMember({
+        authData,
+        cognitoIdmClient,
+        keychain: producerKeychain.data,
+        keychainKind: "Producer Keychain",
+        userId,
+      });
     },
     async getProducerKeychainMembers(
       producerKeychainId: ProducerKeychainId,

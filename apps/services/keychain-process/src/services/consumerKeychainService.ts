@@ -59,7 +59,7 @@ import {
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
+  retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
@@ -73,7 +73,6 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -252,23 +251,13 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      return await retrieveKeychainUser(
-        userId,
-        consumerKeychainId,
-        "Consumer Keychain",
+      return await retrieveKeychainMember({
+        authData,
         cognitoIdmClient,
-      );
+        keychain: consumerKeychain.data,
+        keychainKind: "Consumer Keychain",
+        userId,
+      });
     },
 
     async getConsumerKeychainMembers(

@@ -46,7 +46,7 @@ import {
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
+  retrieveKeychainMember,
   retrieveKnodeApiKeychain,
   retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
@@ -57,10 +57,7 @@ import {
   removeMemberFromKeychain,
   updateKeychain,
 } from "../utils/utils.ts";
-import {
-  assertOrganizationIsKeychainOwner,
-  assertUserIsMemberOfKeychain,
-} from "../utils/validators.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -234,23 +231,13 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        knodeApiKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        knodeApiKeychainId,
-        knodeApiKeychain.data.users,
-      );
-
-      return await retrieveKeychainUser(
-        userId,
-        knodeApiKeychainId,
-        "Knode API Keychain",
+      return await retrieveKeychainMember({
+        authData,
         cognitoIdmClient,
-      );
+        keychain: knodeApiKeychain.data,
+        keychainKind: "Knode API Keychain",
+        userId,
+      });
     },
 
     async getKnodeApiKeychainMembers(

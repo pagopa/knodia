@@ -6,11 +6,13 @@ import type {
   ProducerKeychainId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
   KeychainUser,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -25,6 +27,10 @@ import {
   knodeApiKeychainNotFound,
   producerKeychainNotFound,
 } from "../models/errors.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserIsMemberOfKeychain,
+} from "./validators.ts";
 
 type KeychainKind =
   | "Consumer Keychain"
@@ -161,6 +167,32 @@ export const retrieveProducerKeychain = async (
 
   return producerKeychain;
 };
+
+export async function retrieveKeychainMember<
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
+>({
+  authData,
+  cognitoIdmClient,
+  keychain,
+  keychainKind,
+  userId,
+}: {
+  authData: UISessionAuthData;
+  cognitoIdmClient: CognitoIdmClient;
+  keychain: K;
+  keychainKind: KeychainKind;
+  userId: UserId;
+}) {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+  assertUserIsMemberOfKeychain(userId, keychain.id, keychain.users);
+
+  return await retrieveKeychainUser(
+    userId,
+    keychain.id,
+    keychainKind,
+    cognitoIdmClient,
+  );
+}
 
 export async function retrievePaginatedKeychainUsers({
   cognitoIdmClient,
