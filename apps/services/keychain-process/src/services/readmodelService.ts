@@ -3,6 +3,7 @@ import type {
   ConsumerKeychainId,
   KeyId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
 } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -38,6 +39,7 @@ import {
 import {
   consumerKeychainReadmodelServiceBuilder,
   knodeApiKeychainReadmodelServiceBuilder,
+  producerKeychainReadmodelServiceBuilder,
 } from "@knodia/db-readmodel-keychain/services";
 import { and, desc, eq, exists } from "drizzle-orm";
 
@@ -57,6 +59,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
   const knodeApiKeychainReadmodelService =
     knodeApiKeychainReadmodelServiceBuilder(readmodelDb);
+  const producerKeychainReadmodelService =
+    producerKeychainReadmodelServiceBuilder(readmodelDb);
 
   return {
     async checkConsumerKeychainKeyExists(kid: KeyId) {
@@ -276,6 +280,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getFlatKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {
       return await knodeApiKeychainReadmodelService.getFlatKnodeApiKeychainById(
         knodeApiKeychainId,
+      );
+    },
+    async getFlatProducerKeychainById(producerKeychainId: ProducerKeychainId) {
+      return await producerKeychainReadmodelService.getFlatProducerKeychainById(
+        producerKeychainId,
       );
     },
     async getKnodeApiKeychainById(knodeApiKeychainId: KnodeApiKeychainId) {

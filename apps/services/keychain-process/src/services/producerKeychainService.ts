@@ -19,6 +19,7 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createProducerKeychainCreatedV1Event } from "../models/consumerKeychainEventFactory.ts";
+import { retrieveFlatProducerKeychain } from "../utils/retrievalUtils.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
@@ -62,6 +63,18 @@ export function producerKeychainServiceBuilder(
         data: producerKeychain,
         metadata: { version: newVersion },
       };
+    },
+
+    async getProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<FlatProducerKeychain>> {
+      logger.info(`Getting Producer Keychain with ID ${producerKeychainId}`);
+
+      return await retrieveFlatProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
     },
 
     async getProducerKeychains(

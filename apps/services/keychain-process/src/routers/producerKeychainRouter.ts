@@ -9,6 +9,7 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
+import { API_ProducerKeychainIdPathParam } from "@knodia/keychain-models/api";
 
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
@@ -99,5 +100,45 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const {
+        data: producerKeychain,
+        metadata: { version },
+      } = await producerKeychainService.getProducerKeychain(
+        req.params.producerKeychainId,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(producerKeychain));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Producer Keychain by its ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychain",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Producer Keychain retrieved successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId",
   });
 };
