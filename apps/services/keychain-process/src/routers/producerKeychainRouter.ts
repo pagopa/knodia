@@ -10,6 +10,7 @@ import {
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ProducerKeychainIdPathParam } from "@knodia/keychain-models/api";
+import z from "zod";
 
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
@@ -176,6 +177,39 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
             description: "Producer Keychain updated successfully",
           }),
         },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      await producerKeychainService.deleteProducerKeychain(
+        req.params.producerKeychainId,
+        ctx,
+      );
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Delete a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "deleteProducerKeychain",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Producer Keychain deleted successfully",
+        }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

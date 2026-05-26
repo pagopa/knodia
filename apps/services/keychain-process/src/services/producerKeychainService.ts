@@ -21,6 +21,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   createProducerKeychainCreatedV1Event,
+  createProducerKeychainDeletedV1Event,
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
@@ -28,6 +29,7 @@ import {
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
 import { updateKeychain } from "../utils/utils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
@@ -72,7 +74,30 @@ export function producerKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+    async deleteProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(`Deleting Producer Keychain ${producerKeychainId}`);
 
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createProducerKeychainDeletedV1Event(
+          producerKeychain.data,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+    },
     async getProducerKeychain(
       producerKeychainId: ProducerKeychainId,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -84,7 +109,6 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
     },
-
     async getProducerKeychains(
       params: API_GetProducerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
