@@ -1000,7 +1000,9 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_orion_agreement
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
       SIGNAL_HUB_DB_USER: local_orion_signal_hub_user
       SIGNAL_HUB_DB_PASSWORD: local_orion_signal_hub_user
       SIGNAL_HUB_DB_HOST: postgres
@@ -1694,7 +1696,9 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_lynx_agreement
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
       SIGNAL_HUB_DB_USER: local_lynx_signal_hub_user
       SIGNAL_HUB_DB_PASSWORD: local_lynx_signal_hub_user
       SIGNAL_HUB_DB_HOST: postgres
