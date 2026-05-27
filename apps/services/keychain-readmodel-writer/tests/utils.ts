@@ -1,6 +1,12 @@
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  ProducerKeychainId,
+} from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
+import type {
+  ConsumerKeychainPurpose,
+  ProducerKeychainEservice,
+} from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -12,6 +18,7 @@ import {
   readmodelKnodeApiKeychainKey,
   readmodelKnodeApiKeychainUser,
   readmodelProducerKeychain,
+  readmodelProducerKeychainEservice,
   readmodelProducerKeychainKey,
   readmodelProducerKeychainUser,
 } from "@knodia/db-readmodel-keychain";
@@ -20,6 +27,7 @@ import {
   aggregateKnodeApiKeychains,
   aggregateProducerKeychains,
   toConsumerKeychainPurpose,
+  toProducerKeychainEservice,
 } from "@knodia/db-readmodel-keychain/converters";
 import { eq } from "drizzle-orm";
 
@@ -116,4 +124,21 @@ export async function getConsumerKeychainPurposesByKeychainId(
     );
 
   return queryRes.map(toConsumerKeychainPurpose);
+}
+
+export async function getProducerKeychainEservicesByKeychainId(
+  producerKeychainId: ProducerKeychainId,
+  readmodelDb: NodePgDatabase,
+): Promise<WithMetadata<ProducerKeychainEservice>[]> {
+  const queryRes = await readmodelDb
+    .select()
+    .from(readmodelProducerKeychainEservice)
+    .where(
+      eq(
+        readmodelProducerKeychainEservice.producerKeychainId,
+        producerKeychainId,
+      ),
+    );
+
+  return queryRes.map(toProducerKeychainEservice);
 }

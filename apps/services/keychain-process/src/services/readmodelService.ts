@@ -12,6 +12,7 @@ import type {
   FlatKnodeApiKeychain,
   FlatProducerKeychain,
   KeychainKey,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -28,6 +29,7 @@ import {
   readmodelKnodeApiKeychainKey,
   readmodelProducerKeychain,
   readmodelProducerKeychainEservice,
+  readmodelProducerKeychainKey,
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
@@ -49,6 +51,7 @@ import type {
   API_GetConsumerKeychainsQueryParams,
   API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
+  API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainsQueryParams,
 } from "../models/api.ts";
 
@@ -396,6 +399,63 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await producerKeychainReadmodelService.getProducerKeychainById(
         producerKeychainId,
       );
+    },
+    async getProducerKeychainEservice(
+      producerKeychainEservice: Omit<ProducerKeychainEservice, "linkedAt">,
+    ) {
+      return await producerKeychainReadmodelService.getProducerKeychainEserviceByFilter(
+        and(
+          eq(
+            readmodelProducerKeychainEservice.producerKeychainId,
+            producerKeychainEservice.producerKeychainId,
+          ),
+          eq(
+            readmodelProducerKeychainEservice.eserviceId,
+            producerKeychainEservice.eserviceId,
+          ),
+        ),
+      );
+    },
+    async getProducerKeychainKeys(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainKeysQueryParams,
+    ): Promise<ListResult<KeychainKey>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const createFilterQuery = () =>
+          tx
+            .select({ kid: readmodelProducerKeychainKey.kid })
+            .from(readmodelProducerKeychainKey)
+            .where(
+              eq(
+                readmodelProducerKeychainKey.producerKeychainId,
+                producerKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select()
+            .from(readmodelProducerKeychainKey)
+            .where(
+              eq(
+                readmodelProducerKeychainKey.producerKeychainId,
+                producerKeychainId,
+              ),
+            )
+            .orderBy(desc(readmodelProducerKeychainKey.createdAt))
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        return {
+          results: queryRes.map(toKeychainKey),
+          totalCount,
+        };
+      });
     },
     async getProducerKeychains(
       params: API_GetProducerKeychainsQueryParams,

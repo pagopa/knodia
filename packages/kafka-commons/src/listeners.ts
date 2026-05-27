@@ -2,7 +2,6 @@ import type {
   Consumer,
   Producer,
 } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
-import type { Pool } from "pg";
 import type { Logger } from "pino";
 
 import { processExitAndDisconnect } from "./utils/utils.ts";
@@ -13,13 +12,13 @@ const signalTraps = ["SIGTERM", "SIGINT", "SIGUSR2"];
 export function errorEventsListener(
   consumerOrProducer: Consumer | Producer,
   logger: Logger,
-  readmodelPool: Pool,
+  onShutdown?: () => Promise<void>,
 ): void {
   errorTypes.forEach((type) => {
     process.on(
       type,
       async (e) =>
-        await handleExit(e, type, consumerOrProducer, logger, readmodelPool),
+        await handleExit(e, type, consumerOrProducer, logger, onShutdown),
     );
   });
 
@@ -27,7 +26,7 @@ export function errorEventsListener(
     process.once(
       type,
       async () =>
-        await handleExit(null, type, consumerOrProducer, logger, readmodelPool),
+        await handleExit(null, type, consumerOrProducer, logger, onShutdown),
     );
   });
 }
@@ -37,7 +36,7 @@ async function handleExit(
   type: string,
   consumerOrProducer: Consumer | Producer,
   logger: Logger,
-  readmodelPool: Pool,
+  onShutdown?: () => Promise<void>,
 ) {
   try {
     if (e) logger.error(`Error ${type} intercepted; Error detail: ${e}`);
@@ -46,6 +45,6 @@ async function handleExit(
   } catch (err) {
     logger.error(`Error during disconnect on ${type}: ${err}`);
   } finally {
-    await processExitAndDisconnect({ logger, readmodelPool });
+    await processExitAndDisconnect({ logger, onShutdown });
   }
 }

@@ -5,7 +5,11 @@ import type {
 } from "@knodia/db-readmodel-keychain/services";
 
 import { fromExternalResource } from "@knodia/common-models/externalResource";
-import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type EserviceId,
+  type PurposeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
@@ -114,6 +118,8 @@ export async function handleKeychainEvent(
           "ProducerKeychainUpdatedV1",
           "ProducerKeychainMemberAddedV1",
           "ProducerKeychainMemberRemovedV1",
+          "ProducerKeychainKeyAddedV1",
+          "ProducerKeychainKeyRemovedV1",
         ),
       },
       async (msg) => {
@@ -128,6 +134,31 @@ export async function handleKeychainEvent(
       assertDataExistsInEvent(msg, "producerKeychain");
       await producerKeychainWriterService.deleteProducerKeychain(
         fromProducerKeychainV1(msg.data.producerKeychain).id,
+        message.version,
+      );
+    })
+    .with({ type: "ProducerKeychainEserviceLinkedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "producerKeychain");
+
+      const { eserviceId, producerKeychain } = msg.data;
+      await producerKeychainWriterService.upsertProducerKeychainEservice(
+        {
+          eserviceId: unsafeBrandId<EserviceId>(eserviceId),
+          linkedAt: new Date(msg.data.linkedAt),
+          producerKeychainId: unsafeBrandId(producerKeychain.id),
+        },
+        message.version,
+      );
+    })
+    .with({ type: "ProducerKeychainEserviceUnlinkedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "producerKeychain");
+
+      const { eserviceId, producerKeychain } = msg.data;
+      await producerKeychainWriterService.deleteProducerKeychainEservice(
+        {
+          eserviceId: unsafeBrandId<EserviceId>(eserviceId),
+          producerKeychainId: unsafeBrandId(producerKeychain.id),
+        },
         message.version,
       );
     })
