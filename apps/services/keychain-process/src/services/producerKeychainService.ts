@@ -42,6 +42,7 @@ import {
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
+  retrieveKeychainKey,
   retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
   retrieveProducerKeychain,
@@ -170,6 +171,22 @@ export function producerKeychainServiceBuilder(
         producerKeychainId,
         readmodelService,
       );
+    },
+    async getProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      kid: KeyId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<KeychainKey> {
+      logger.info(
+        `Getting key with ID ${kid} of Producer Keychain with ID ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      return retrieveKeychainKey(producerKeychain.data, kid);
     },
     async getProducerKeychainKeys(
       producerKeychainId: ProducerKeychainId,

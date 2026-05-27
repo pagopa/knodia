@@ -531,4 +531,40 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     },
     url: "/producerKeychains/:producerKeychainId/keys",
   });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const key = await producerKeychainService.getProducerKeychainKey(
+        req.params.producerKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_KeychainKey(key));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Producer Keychain Key by kid",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainKey",
+      params: API_ProducerKeychainKeyPathParams,
+      response: {
+        200: API_KeychainKey.meta({
+          description: "Producer Keychain Key retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain Key not found",
+        }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/keys/:keyId",
+  });
 };
