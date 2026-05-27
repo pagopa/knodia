@@ -58,7 +58,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollProducerKeychain = (
-    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
+    response: AxiosResponse<keychainProcessApi.Keychain>,
     headers: KnodiaServiceHeaders,
     producerKeychainId: ProducerKeychainId,
   ) =>
