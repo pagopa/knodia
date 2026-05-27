@@ -29,8 +29,8 @@ import type {
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_KeychainSeed,
-  API_KnodeApiKeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -349,7 +349,7 @@ export function knodeApiKeychainServiceBuilder(
 
     async updateKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
-      update: API_KnodeApiKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<KnodeApiKeychain>> {
       logger.info(`Updating Knode API Keychain ${knodeApiKeychainId}`);

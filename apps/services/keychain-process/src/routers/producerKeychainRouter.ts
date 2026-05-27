@@ -25,10 +25,10 @@ import {
   API_Keychain,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
   API_ProducerKeychainMemberPathParams,
-  API_ProducerKeychainPatch,
   API_User,
 } from "../models/api.ts";
 import {
@@ -178,7 +178,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_ProducerKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Producer Keychain",
       headers: KnodiaServiceHeaders,

@@ -22,8 +22,8 @@ import type {
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_KeychainSeed,
-  API_ProducerKeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -256,7 +256,7 @@ export function producerKeychainServiceBuilder(
     },
     async updateProducerKeychain(
       producerKeychainId: ProducerKeychainId,
-      update: API_ProducerKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ProducerKeychain>> {
       logger.info(`Updating Producer Keychain ${producerKeychainId}`);
