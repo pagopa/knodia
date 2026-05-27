@@ -9,9 +9,9 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import {
   initRedisRateLimiter,
-  rateLimitMiddleware,
   rateLimitOpenapiDocs,
-  rateLimitResponseHeadersHook,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 import {
   bearerAuthSecurity,
@@ -144,7 +144,7 @@ export function buildAppFromConfig(
   });
 
   app.register(cookie);
-  app.register(rateLimitResponseHeadersHook);
+  app.register(rateLimitResponseHeadersPlugin);
 
   // /auth/* is rate-limited inline inside authService, post-credential check.
   // /auth/logout intentionally bypasses both runtime + openapi docs.
@@ -164,7 +164,7 @@ export function buildAppFromConfig(
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
-    protectedApp.register(rateLimitMiddleware, { rateLimiter });
+    protectedApp.register(rateLimitPlugin, { rateLimiter });
     protectedApp.register(rateLimitOpenapiDocs);
     protectedApp.register(eserviceTemplateRouter);
     protectedApp.register(purposeTemplateRouter, {

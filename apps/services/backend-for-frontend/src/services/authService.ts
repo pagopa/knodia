@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 
 import { requestContext } from "@fastify/request-context";
@@ -61,7 +62,9 @@ export function authServiceBuilder({
 }: AuthServiceBuilderOptions) {
   // Always invoked after credential verification — buckets key on the
   // resolved tenant, not on IP / a shared fallback.
-  function rateLimit(rateLimitKey: string): Promise<void> {
+  function rateLimit(
+    rateLimitKey: ExternalId<OrganizationId> | OrganizationId,
+  ): Promise<void> {
     const { logger } = getContextValues(requestContext);
     return enforceRateLimit(rateLimiter, rateLimitKey, logger);
   }

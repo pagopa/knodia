@@ -97,8 +97,11 @@ beforeAll(async () => {
       nodeEnv: "test",
       port: 0,
       rateLimiterMaxRequests: 100,
-      rateLimiterRedisHost: "localhost",
-      rateLimiterRedisPort: 6379,
+      rateLimiterRedisHost:
+        process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+      rateLimiterRedisPort: Number(
+        process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+      ),
       rateLimiterTimeoutSeconds: 2,
       rateLimiterTimeWindowSeconds: 60,
       readmodelDbAgreementSchema: "test_agreement_schema",

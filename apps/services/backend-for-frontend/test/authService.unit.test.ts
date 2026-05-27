@@ -78,7 +78,6 @@ function buildService(
         })),
     ),
     disconnect: vi.fn(),
-    redis: {} as RateLimiter["redis"],
   };
   const refreshTokenStore: JtiReplayStore = {
     close: vi.fn(async () => undefined),

@@ -8,7 +8,7 @@ import { RATE_LIMIT_HEADERS } from "./headers.ts";
 // Not part of the public client contract.
 const DEGRADED_HEADER = "x-ratelimit-degraded";
 
-export const rateLimitResponseHeadersHook: FastifyPluginAsync = fastifyPlugin(
+export const rateLimitResponseHeadersPlugin: FastifyPluginAsync = fastifyPlugin(
   async (fastify) => {
     fastify.addHook("onSend", async (_req, reply, payload) => {
       const status = requestContext.get("rateLimitStatus");
@@ -36,5 +36,5 @@ export const rateLimitResponseHeadersHook: FastifyPluginAsync = fastifyPlugin(
       return payload;
     });
   },
-  { name: "rate-limit-response-headers-hook" },
+  { name: "rate-limit-response-headers-plugin" },
 );

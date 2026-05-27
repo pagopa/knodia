@@ -1,10 +1,10 @@
 export { RateLimiterConfig } from "./config.ts";
 export { enforceRateLimit } from "./enforceRateLimit.ts";
-export { rateLimitResponseHeadersHook } from "./onResponseHook.ts";
 export { rateLimitOpenapiDocs } from "./openapi.ts";
 export {
   initRedisRateLimiter,
   type RateLimiter,
   type RateLimiterStatus,
 } from "./rateLimiter.ts";
-export { rateLimitMiddleware } from "./rateLimitMiddleware.ts";
+export { rateLimitPlugin } from "./rateLimitPlugin.ts";
+export { rateLimitResponseHeadersPlugin } from "./rateLimitResponseHeadersPlugin.ts";

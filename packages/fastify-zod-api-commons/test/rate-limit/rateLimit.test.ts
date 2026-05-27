@@ -1,23 +1,24 @@
 import { requestContext } from "@fastify/request-context";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { getTestUISessionTokenClaims } from "@knodia/test-commons/auth";
 import { createTestLogger } from "@knodia/test-commons/utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { extractAuthDataFromToken } from "../../src/auth/authData.ts";
+import {
+  type AuthData,
+  extractAuthDataFromToken,
+  type UISessionAuthData,
+} from "../../src/auth/authData.ts";
+import { type RateLimiterConfig } from "../../src/rate-limit/config.ts";
 import {
   initRedisRateLimiter,
-  rateLimitMiddleware,
-  rateLimitResponseHeadersHook,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
 } from "../../src/rate-limit/index.ts";
+import { type RateLimiter } from "../../src/rate-limit/rateLimiter.ts";
 import { buildTestApp } from "../mock/buildTestApp.ts";
 
-const RATE_LIMITER_CONFIG = {
-  rateLimiterMaxRequests: 3,
-  rateLimiterRedisHost: "localhost",
-  rateLimiterRedisPort: 6379,
-  rateLimiterTimeoutSeconds: 2,
-  rateLimiterTimeWindowSeconds: 60,
-};
+const MAX_REQUESTS = 3;
 
 const SCOPE = {
   knodeId: "Orion" as const,
@@ -26,23 +27,84 @@ const SCOPE = {
 
 const { logger: testLogger } = createTestLogger();
 
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+function getBaseUiSessionAuth(): UISessionAuthData {
+  const authData = extractAuthDataFromToken(getTestUISessionTokenClaims());
+  if (authData.tokenType !== "ui-session") {
+    throw new Error("Expected test UI session claims");
+  }
+  return authData;
+}
+
+const baseUiSessionAuth = getBaseUiSessionAuth();
+
+function buildRateLimiter(
+  config: RateLimiterConfig = buildRateLimiterConfig(),
+): RateLimiter {
+  return initRedisRateLimiter({
+    config,
+    knodeId: SCOPE.knodeId,
+    logger: testLogger,
+    serviceName: SCOPE.serviceName,
+  });
+}
+
+function buildRateLimiterConfig(
+  overrides: Partial<RateLimiterConfig> = {},
+): RateLimiterConfig {
+  return {
+    rateLimiterMaxRequests: MAX_REQUESTS,
+    rateLimiterRedisHost: process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+    rateLimiterRedisPort: Number(
+      process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+    ),
+    rateLimiterTimeoutSeconds: 1,
+    rateLimiterTimeWindowSeconds: 60,
+    ...overrides,
+  };
+}
+
+function freshOrganizationId(): OrganizationId {
+  return generateId<OrganizationId>();
+}
+
+function freshUiSessionAuth(): UISessionAuthData {
+  return {
+    ...baseUiSessionAuth,
+    organizationId: freshOrganizationId(),
+  };
+}
+
+async function waitForHealthyLimiter(rateLimiter: RateLimiter): Promise<void> {
+  let lastStatus: Awaited<ReturnType<RateLimiter["consume"]>> | undefined;
+
+  for (let attempt = 0; attempt < 20; attempt++) {
+    lastStatus = await rateLimiter.consume(freshOrganizationId(), testLogger);
+    if (!lastStatus.degraded) {
+      return;
+    }
+    await delay(50);
+  }
+
+  throw new Error(
+    `Redis rate limiter did not become healthy: ${JSON.stringify(lastStatus)}`,
+  );
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const uiSessionAuth = extractAuthDataFromToken(getTestUISessionTokenClaims());
-
 describe("initRedisRateLimiter", () => {
-  let rateLimiter: ReturnType<typeof initRedisRateLimiter>;
+  let rateLimiter: RateLimiter;
 
   beforeEach(async () => {
-    rateLimiter = initRedisRateLimiter({
-      config: RATE_LIMITER_CONFIG,
-      knodeId: SCOPE.knodeId,
-      logger: testLogger,
-      serviceName: SCOPE.serviceName,
-    });
-    await rateLimiter.redis.flushall();
+    rateLimiter = buildRateLimiter();
+    await waitForHealthyLimiter(rateLimiter);
   });
 
   afterEach(async () => {
@@ -50,105 +112,92 @@ describe("initRedisRateLimiter", () => {
   });
 
   it("returns limitReached=false until the configured max is exceeded", async () => {
+    const organizationId = freshOrganizationId();
     const statuses = [];
-    for (let i = 0; i < 4; i++) {
-      statuses.push(await rateLimiter.consume("org-A", testLogger));
+
+    for (let i = 0; i < MAX_REQUESTS + 1; i++) {
+      statuses.push(await rateLimiter.consume(organizationId, testLogger));
     }
 
-    expect(statuses[0]).toMatchObject({ limitReached: false });
-    expect(statuses[1]).toMatchObject({ limitReached: false });
-    expect(statuses[2]).toMatchObject({ limitReached: false });
-    expect(statuses[3]).toMatchObject({ limitReached: true });
+    for (const status of statuses.slice(0, MAX_REQUESTS)) {
+      expect(status).toMatchObject({
+        degraded: false,
+        limitReached: false,
+        maxRequests: MAX_REQUESTS,
+      });
+    }
+    expect(statuses[MAX_REQUESTS]).toMatchObject({
+      degraded: false,
+      limitReached: true,
+      maxRequests: MAX_REQUESTS,
+      remainingRequests: 0,
+    });
   });
 
   it("keeps separate buckets per organization key", async () => {
-    for (let i = 0; i < 4; i++) {
-      await rateLimiter.consume("org-A", testLogger);
+    const organizationA = freshOrganizationId();
+    const organizationB = freshOrganizationId();
+
+    for (let i = 0; i < MAX_REQUESTS; i++) {
+      await rateLimiter.consume(organizationA, testLogger);
     }
-    const aOver = await rateLimiter.consume("org-A", testLogger);
-    const bFresh = await rateLimiter.consume("org-B", testLogger);
+
+    const aOver = await rateLimiter.consume(organizationA, testLogger);
+    const bFresh = await rateLimiter.consume(organizationB, testLogger);
+
     expect(aOver.limitReached).toBe(true);
     expect(bFresh.limitReached).toBe(false);
   });
 
-  it("reports a real PTTL on resetMs that decreases across the window", async () => {
-    const first = await rateLimiter.consume("org-ttl", testLogger);
-    expect(first.resetMs).toBeGreaterThan(0);
-    expect(first.resetMs).toBeLessThanOrEqual(
-      RATE_LIMITER_CONFIG.rateLimiterTimeWindowSeconds * 1_000,
+  it("reports resetMs within the configured window", async () => {
+    const status = await rateLimiter.consume(freshOrganizationId(), testLogger);
+
+    expect(status.degraded).toBe(false);
+    expect(status.resetMs).toBeGreaterThan(0);
+    expect(status.resetMs).toBeLessThanOrEqual(
+      buildRateLimiterConfig().rateLimiterTimeWindowSeconds * 1_000,
     );
   });
 
-  it("fails open (limitReached=false, degraded=true) when Redis throws", async () => {
-    const multi = rateLimiter.redis.multi.bind(rateLimiter.redis);
-    vi.spyOn(rateLimiter.redis, "multi").mockImplementationOnce(() => {
-      const pipeline = multi();
-      vi.spyOn(pipeline, "exec").mockRejectedValueOnce(new Error("boom"));
-      return pipeline;
-    });
-
+  it("fails open when Redis is unavailable", async () => {
+    const unavailableRateLimiter = buildRateLimiter(
+      buildRateLimiterConfig({
+        rateLimiterRedisHost: "127.0.0.1",
+        rateLimiterRedisPort: 1,
+      }),
+    );
     const warnSpy = vi.spyOn(testLogger, "warn");
-    const status = await rateLimiter.consume("org-fail", testLogger);
-    expect(status.limitReached).toBe(false);
-    expect(status.degraded).toBe(true);
+
+    const status = await unavailableRateLimiter.consume(
+      freshOrganizationId(),
+      testLogger,
+    );
+    await unavailableRateLimiter.disconnect();
+
+    expect(status).toEqual({
+      degraded: true,
+      limitReached: false,
+      maxRequests: MAX_REQUESTS,
+      remainingRequests: MAX_REQUESTS,
+      resetMs: buildRateLimiterConfig().rateLimiterTimeWindowSeconds * 1_000,
+    });
     expect(warnSpy).toHaveBeenCalled();
   });
 
-  it("marks healthy statuses as degraded=false", async () => {
-    const ok = await rateLimiter.consume("org-healthy", testLogger);
-    expect(ok.degraded).toBe(false);
-  });
+  it("degrades after disconnect", async () => {
+    await rateLimiter.disconnect();
 
-  it("DELs the key and degrades when PEXPIRE NX errors inside the MULTI", async () => {
-    // Reproduces the Redis < 7.0 case where the NX flag is rejected at EXEC:
-    // INCR succeeds, PEXPIRE returns an error, the key has no TTL — we must
-    // DEL it so the bucket doesn't pin the tenant at permanent 429.
-    const fullKey = `knodia-rate-limit:${SCOPE.knodeId}:${SCOPE.serviceName}:org-pex`;
-    await rateLimiter.redis.set(fullKey, "5");
+    const status = await rateLimiter.consume(freshOrganizationId(), testLogger);
 
-    const multi = rateLimiter.redis.multi.bind(rateLimiter.redis);
-    vi.spyOn(rateLimiter.redis, "multi").mockImplementationOnce(() => {
-      const pipeline = multi();
-      vi.spyOn(pipeline, "exec").mockResolvedValueOnce([
-        [null, 5],
-        [new Error("ERR syntax error"), null],
-        [null, -1],
-      ] as never);
-      return pipeline;
+    expect(status).toMatchObject({
+      degraded: true,
+      limitReached: false,
+      remainingRequests: MAX_REQUESTS,
     });
-
-    const status = await rateLimiter.consume("org-pex", testLogger);
-    expect(status.degraded).toBe(true);
-    expect(status.limitReached).toBe(false);
-    expect(await rateLimiter.redis.get(fullKey)).toBeNull();
-  });
-
-  it("DELs the key and degrades when PTTL reports no TTL after a successful EXEC", async () => {
-    // Defensive path for the post-PEXPIRE state where the key somehow ended up
-    // without a TTL: surface as degraded instead of masking with a synthetic
-    // resetMs that pretends the bucket is healthy.
-    const fullKey = `knodia-rate-limit:${SCOPE.knodeId}:${SCOPE.serviceName}:org-nottl`;
-    await rateLimiter.redis.set(fullKey, "5");
-
-    const multi = rateLimiter.redis.multi.bind(rateLimiter.redis);
-    vi.spyOn(rateLimiter.redis, "multi").mockImplementationOnce(() => {
-      const pipeline = multi();
-      vi.spyOn(pipeline, "exec").mockResolvedValueOnce([
-        [null, 5],
-        [null, 1],
-        [null, -1],
-      ] as never);
-      return pipeline;
-    });
-
-    const status = await rateLimiter.consume("org-nottl", testLogger);
-    expect(status.degraded).toBe(true);
-    expect(status.limitReached).toBe(false);
-    expect(await rateLimiter.redis.get(fullKey)).toBeNull();
   });
 });
 
-describe("rateLimitResponseHeadersHook", () => {
+describe("rateLimitResponseHeadersPlugin", () => {
   const buildAppWithStatus = async (
     status: unknown,
   ): Promise<ReturnType<typeof buildTestApp>> => {
@@ -156,7 +205,7 @@ describe("rateLimitResponseHeadersHook", () => {
     app.addHook("onRequest", async () => {
       requestContext.set("rateLimitStatus", status as never);
     });
-    await app.register(rateLimitResponseHeadersHook);
+    await app.register(rateLimitResponseHeadersPlugin);
     app.get("/ping", async () => ({ ok: true }));
     await app.ready();
     return app;
@@ -201,50 +250,59 @@ describe("rateLimitResponseHeadersHook", () => {
   });
 });
 
-describe("rateLimitMiddleware", () => {
-  let app: ReturnType<typeof buildTestApp>;
-  let rateLimiter: ReturnType<typeof initRedisRateLimiter>;
+describe("rateLimitPlugin", () => {
+  let app: ReturnType<typeof buildTestApp> | undefined;
+  let rateLimiter: RateLimiter | undefined;
 
-  const buildAppWithAuth = async (authData: unknown): Promise<void> => {
+  const getApp = (): ReturnType<typeof buildTestApp> => {
+    if (!app) {
+      throw new Error("Test app was not initialized");
+    }
+    return app;
+  };
+
+  const getRateLimiter = (): RateLimiter => {
+    if (!rateLimiter) {
+      throw new Error("Rate limiter was not initialized");
+    }
+    return rateLimiter;
+  };
+
+  const buildAppWithAuth = async (authData: AuthData): Promise<void> => {
     app = buildTestApp();
-    await app.register(rateLimitResponseHeadersHook);
+    await app.register(rateLimitResponseHeadersPlugin);
     await app.register(async (scoped) => {
       // Stamp authData manually (no full auth plugin in the test app).
       scoped.addHook("onRequest", async () => {
         requestContext.set("authData", authData as never);
       });
-      await scoped.register(rateLimitMiddleware, { rateLimiter });
+      await scoped.register(rateLimitPlugin, { rateLimiter: getRateLimiter() });
       scoped.get("/ping", async () => ({ ok: true }));
     });
     await app.ready();
   };
 
   beforeEach(async () => {
-    rateLimiter = initRedisRateLimiter({
-      config: RATE_LIMITER_CONFIG,
-      knodeId: SCOPE.knodeId,
-      logger: testLogger,
-      serviceName: SCOPE.serviceName,
-    });
-    await rateLimiter.redis.flushall();
+    rateLimiter = buildRateLimiter();
+    await waitForHealthyLimiter(rateLimiter);
   });
 
   afterEach(async () => {
-    await app.close();
-    await rateLimiter.disconnect();
+    await app?.close();
+    await rateLimiter?.disconnect();
+    app = undefined;
+    rateLimiter = undefined;
   });
 
   it("returns 200 within the limit and 429 once exceeded, with x-ratelimit-* headers", async () => {
-    await buildAppWithAuth(uiSessionAuth);
+    await buildAppWithAuth(freshUiSessionAuth());
 
-    for (let i = 0; i < RATE_LIMITER_CONFIG.rateLimiterMaxRequests; i++) {
-      const res = await app.inject({ method: "GET", url: "/ping" });
+    for (let i = 0; i < MAX_REQUESTS; i++) {
+      const res = await getApp().inject({ method: "GET", url: "/ping" });
       expect(res.statusCode).toBe(200);
-      expect(res.headers["x-ratelimit-limit"]).toBe(
-        String(RATE_LIMITER_CONFIG.rateLimiterMaxRequests),
-      );
+      expect(res.headers["x-ratelimit-limit"]).toBe(String(MAX_REQUESTS));
     }
-    const blocked = await app.inject({ method: "GET", url: "/ping" });
+    const blocked = await getApp().inject({ method: "GET", url: "/ping" });
     expect(blocked.statusCode).toBe(429);
     expect(blocked.headers["retry-after"]).toBeDefined();
     expect(blocked.headers["content-type"]).toContain(
@@ -257,7 +315,6 @@ describe("rateLimitMiddleware", () => {
       ),
       errors: [
         {
-          // <service-code>-<common-error-code>, e.g. "002-9998".
           code: expect.stringMatching(/^\d{3}-\d{4}$/),
           detail: "Rate limit exceeded",
         },
@@ -270,8 +327,8 @@ describe("rateLimitMiddleware", () => {
   it("skips the limiter entirely for internal S2S tokens", async () => {
     await buildAppWithAuth({ tokenType: "internal" });
 
-    for (let i = 0; i < RATE_LIMITER_CONFIG.rateLimiterMaxRequests + 3; i++) {
-      const res = await app.inject({ method: "GET", url: "/ping" });
+    for (let i = 0; i < MAX_REQUESTS + 3; i++) {
+      const res = await getApp().inject({ method: "GET", url: "/ping" });
       expect(res.statusCode).toBe(200);
     }
   });

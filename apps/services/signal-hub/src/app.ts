@@ -15,9 +15,9 @@ import {
 import {
   initRedisRateLimiter,
   type RateLimiterConfig,
-  rateLimitMiddleware,
   rateLimitOpenapiDocs,
-  rateLimitResponseHeadersHook,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 import {
   bearerAuthSecurity,
@@ -76,7 +76,7 @@ export function buildApp({
     serviceName: "signal-hub",
   });
 
-  app.register(rateLimitResponseHeadersHook);
+  app.register(rateLimitResponseHeadersPlugin);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -85,7 +85,7 @@ export function buildApp({
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
-    protectedApp.register(rateLimitMiddleware, { rateLimiter });
+    protectedApp.register(rateLimitPlugin, { rateLimiter });
     protectedApp.register(rateLimitOpenapiDocs);
     protectedApp.register(signalHubRouter, {
       signalHubService: signalHubServiceBuilder(
