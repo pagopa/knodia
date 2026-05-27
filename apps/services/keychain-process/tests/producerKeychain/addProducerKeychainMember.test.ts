@@ -108,7 +108,7 @@ describe("POST /producerKeychains/:producerKeychainId/members (addProducerKeycha
           ...producerKeychainV1.users,
           {
             addedAt: expect.any(Number),
-            userId: unsafeBrandUserId(memberId),
+            userId: memberId,
           },
         ],
       },
