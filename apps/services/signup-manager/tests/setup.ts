@@ -11,7 +11,7 @@ const oneIdentityMockConfig = {
   oneIdentityClientSecret: "test-one-identity-client-secret",
   oneIdentityDomain: "https://test.one-identity.com",
   oneIdentityJWKSUri: "https://test.one-identity.com/.well-known/jwks.json",
-  oneIdentityRedirectUrl: "https://localhost:5176/auth/oidc/callback",
+  oneIdentityRedirectUrl: "https://localhost:5176/login/callback",
 } as const;
 
 beforeAll(async () => {

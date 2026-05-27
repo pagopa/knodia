@@ -1,5 +1,5 @@
+import { Button } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "react-aria-components";
 
 import { config } from "@/config/config";
 

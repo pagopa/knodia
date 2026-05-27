@@ -20,9 +20,8 @@ vi.mock("jose", () => ({
   jwtVerify: mockJwtVerify,
 }));
 
+import { OIDC_SESSION_COOKIE_NAME } from "../src/routers/signupRouter.ts";
 import { app } from "./setup.ts";
-
-const OIDC_SESSION_COOKIE_NAME = "oidc-session";
 
 function expectOIDCSessionCookieCleared(response: {
   headers: { "set-cookie"?: string | string[] };

@@ -13,7 +13,20 @@ interface SignupRouterOptions {
   signupService: SignupService;
 }
 
-const OIDC_SESSION_COOKIE_NAME = "oidc-session";
+export const OIDC_SESSION_COOKIE_NAME = "oidc-session";
+const OIDC_SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  path: "/",
+  sameSite: "strict",
+  secure: true,
+} as const satisfies Parameters<FastifyReply["setCookie"]>[2];
+
+const OidcSessionCookieData = z.object({
+  nonce: z.string(),
+  state: z.string(),
+});
+
+type OidcSessionCookieData = z.infer<typeof OidcSessionCookieData>;
 
 const API_OIDCCallbackQuery = z.object({
   code: z.string(),
@@ -42,11 +55,8 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       const nonce = generateId();
       const state = generateId();
 
-      const { loginUrl } = signupService.startOIDCSession({
-        nonce,
-        state,
-      });
-      setOidcSessionCookie(res, state, nonce);
+      const { loginUrl } = signupService.startOIDCSession({ nonce, state });
+      oidcSessionCookie.set(res, { nonce, state });
 
       res.status(302).redirect(loginUrl);
     },
@@ -67,16 +77,18 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const oidcSession = getOidcSessionCookie(req);
+      const oidcSession = oidcSessionCookie.get(req);
+      try {
+        const { uiSignupSessionToken } = await signupService.exchangeOIDCCode({
+          code: req.query.code,
+          oidcSession,
+          state: req.query.state,
+        });
 
-      const { uiSignupSessionToken } = await signupService.exchangeOIDCCode({
-        code: req.query.code,
-        oidcSession,
-        state: req.query.state,
-      });
-
-      void clearOidcSessionCookie(res);
-      res.status(200).send({ uiSignupSessionToken });
+        res.status(200).send({ uiSignupSessionToken });
+      } finally {
+        oidcSessionCookie.clear(res);
+      }
     },
     method: "GET",
     schema: {
@@ -100,40 +112,24 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   });
 };
 
-function clearOidcSessionCookie(res: FastifyReply): void {
-  void res.clearCookie(OIDC_SESSION_COOKIE_NAME, {
-    httpOnly: true,
-    path: "/",
-    sameSite: "strict",
-    secure: true,
-  });
-}
-
-function getOidcSessionCookie(
-  req: FastifyRequest,
-): null | { nonce: string; state: string } {
-  try {
-    const cookie = req.cookies[OIDC_SESSION_COOKIE_NAME];
-    if (!cookie) return null;
-    return JSON.parse(cookie);
-  } catch {
-    return null;
-  }
-}
-
-function setOidcSessionCookie(
-  res: FastifyReply,
-  state: string,
-  nonce: string,
-): void {
-  void res.setCookie(
-    OIDC_SESSION_COOKIE_NAME,
-    JSON.stringify({ nonce, state }),
-    {
-      httpOnly: true,
-      path: "/",
-      sameSite: "strict",
-      secure: true,
-    },
-  );
-}
+const oidcSessionCookie = {
+  clear: (res: FastifyReply) =>
+    void res.clearCookie(OIDC_SESSION_COOKIE_NAME, OIDC_SESSION_COOKIE_OPTIONS),
+  get: (req: FastifyRequest) => {
+    try {
+      return z
+        .string()
+        .transform((s) => JSON.parse(s))
+        .pipe(OidcSessionCookieData)
+        .parse(req.cookies[OIDC_SESSION_COOKIE_NAME]);
+    } catch {
+      return null;
+    }
+  },
+  set: (res: FastifyReply, data: OidcSessionCookieData) =>
+    void res.setCookie(
+      OIDC_SESSION_COOKIE_NAME,
+      JSON.stringify(data),
+      OIDC_SESSION_COOKIE_OPTIONS,
+    ),
+};
