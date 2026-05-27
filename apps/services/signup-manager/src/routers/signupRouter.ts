@@ -79,17 +79,14 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const oidcSession = oidcSessionCookie.get(req);
-      try {
-        const { uiSignupSessionToken } = await signupService.exchangeOIDCCode({
-          code: req.query.code,
-          oidcSession,
-          state: req.query.state,
-        });
+      const { uiSignupSessionToken } = await signupService.exchangeOIDCCode({
+        code: req.query.code,
+        oidcSession,
+        state: req.query.state,
+      });
 
-        res.status(200).send({ uiSignupSessionToken });
-      } finally {
-        oidcSessionCookie.clear(res);
-      }
+      oidcSessionCookie.clear(res);
+      res.status(200).send({ uiSignupSessionToken });
     },
     method: "GET",
     schema: {
