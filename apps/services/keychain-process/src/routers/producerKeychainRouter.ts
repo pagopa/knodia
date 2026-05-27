@@ -17,6 +17,7 @@ import z from "zod";
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
 import {
+  API_CreatedMemberResource,
   API_GetProducerKeychainsQueryParams,
   API_Keychain,
   API_KeychainMemberSeed,
@@ -25,7 +26,10 @@ import {
   API_ProducerKeychainMemberPathParams,
   API_ProducerKeychainPatch,
 } from "../models/api.ts";
-import { toAPI_Keychain } from "../models/apiConverter.ts";
+import {
+  toAPI_CreatedMemberResource,
+  toAPI_Keychain,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface ProducerKeychainRouterOptions {
@@ -231,7 +235,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: producerKeychain,
+        data: addedUserId,
         metadata: { version },
       } = await producerKeychainService.addProducerKeychainMember(
         req.params.producerKeychainId,
@@ -239,7 +243,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         ctx,
       );
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(producerKeychain));
+      res.status(201).send(toAPI_CreatedMemberResource(addedUserId));
     },
     method: "POST",
     schema: {
@@ -249,9 +253,9 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "addProducerKeychainMember",
       params: API_ProducerKeychainIdPathParam,
       response: {
-        200: {
+        201: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: API_CreatedMemberResource.meta({
             description: "Producer Keychain member added successfully",
           }),
         },
@@ -273,7 +277,6 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: producerKeychain,
         metadata: { version },
       } = await producerKeychainService.removeProducerKeychainMember(
         unsafeBrandId(req.params.producerKeychainId),
@@ -282,7 +285,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(producerKeychain));
+      res.status(204).send();
     },
     method: "DELETE",
     schema: {
@@ -291,9 +294,9 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "removeProducerKeychainMember",
       params: API_ProducerKeychainMemberPathParams,
       response: {
-        200: {
+        204: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: z.undefined().meta({
             description: "Producer Keychain member removed successfully",
           }),
         },

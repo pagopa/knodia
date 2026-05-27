@@ -1,4 +1,5 @@
 import type { IdmUser } from "@knodia/cognito-idm-client";
+import type { UserId } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
@@ -9,6 +10,7 @@ import type {
 
 import type {
   API_ConsumerKeychainPurpose,
+  API_CreatedMemberResource,
   API_Keychain,
   API_KeychainKey,
   API_User,
@@ -46,4 +48,10 @@ export const toAPI_ConsumerKeychainPurpose = (
 ): API_ConsumerKeychainPurpose => ({
   ...consumerKeychainPurpose,
   linkedAt: consumerKeychainPurpose.linkedAt.toISOString(),
+});
+
+export const toAPI_CreatedMemberResource = (
+  userId: UserId,
+): API_CreatedMemberResource => ({
+  userId,
 });
