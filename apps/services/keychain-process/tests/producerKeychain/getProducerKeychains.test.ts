@@ -67,7 +67,11 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
     query = defaultQuery,
     token = allowedTestTokens[0]!,
   }: {
-    query?: typeof defaultQuery;
+    query?: typeof defaultQuery & {
+      eserviceId?: string;
+      name?: string;
+      ownerId?: string;
+    };
     token?: TestToken;
   } = {}) {
     return injectAppRequest(token).get("/producerKeychains").query(query);
@@ -156,7 +160,7 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
     });
 
     const response = await getMockProducerKeychains({
-      query: { ...defaultQuery, eserviceId } as typeof defaultQuery,
+      query: { ...defaultQuery, eserviceId },
     });
 
     expect(response.statusCode).toBe(200);
