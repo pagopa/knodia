@@ -13,11 +13,11 @@ import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { KeychainWithKeyMemberOps } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
-type AddKeychainMemberActionProps = KeychainWithKeyMemberOps;
+type AddKeychainMemberActionProps = SupportedKeychain;
 
 export function AddKeychainMemberAction(
   keychain: AddKeychainMemberActionProps,
@@ -52,7 +52,7 @@ function AddKeychainMemberModal({
   onClose,
 }: {
   isOpen: boolean;
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   onClose: () => void;
 }) {
   const { isError, isPending, mutate } = useAddKeychainMember(keychain);
@@ -94,6 +94,12 @@ function AddKeychainMemberModal({
         bffApi.getKnodeApiKeychainMembership({
           client,
           path: { knodeApiKeychainId: keychainId, userId },
+        }),
+      )
+      .with({ type: "production" }, ({ keychainId }) =>
+        bffApi.getProducerKeychainMembership({
+          client,
+          path: { producerKeychainId: keychainId, userId },
         }),
       )
       .exhaustive();

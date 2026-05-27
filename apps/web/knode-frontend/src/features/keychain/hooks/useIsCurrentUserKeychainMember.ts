@@ -8,16 +8,14 @@ import { match } from "ts-pattern";
 
 import { useAuth } from "@/contexts/auth";
 
-import type { KeychainWithKeyMemberOps } from "../models/commons";
+import type { KeychainWithKeyOps } from "../models/commons";
 
 import {
   consumerKeychainMembershipQuery,
   knodeApiKeychainMembershipQuery,
 } from "../services/queries";
 
-export function useIsCurrentUserKeychainMember(
-  keychain: KeychainWithKeyMemberOps,
-) {
+export function useIsCurrentUserKeychainMember(keychain: KeychainWithKeyOps) {
   const { userId } = useAuth();
   const safeUserId = userId ?? unsafeBrandUserId("");
 
