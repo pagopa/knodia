@@ -2,15 +2,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   generateId,
-  type OrganizationId,
   type ProducerKeychainId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
+  type ConsumerKeychain,
   KeychainEventV1,
   type KeychainKey,
+  type KnodeApiKeychain,
   type ProducerKeychain,
   toProducerKeychainV1,
 } from "@knodia/keychain-models";
@@ -20,7 +21,9 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import {
+  getMockConsumerKeychain,
   getMockKeychainKey,
+  getMockKnodeApiKeychain,
   getMockProducerKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -41,6 +44,8 @@ import {
   createX509CertificateBase64,
   getAllKeychainEvents,
   injectAppRequest,
+  seedConsumerKeychain,
+  seedKnodeApiKeychain,
   seedProducerKeychain,
 } from "../utils.ts";
 
@@ -205,7 +210,7 @@ describe("POST /producerKeychains/:producerKeychainId/keys (uploadProducerKeycha
   it("should return 403 if the organization is not the owner of the producer keychain", async () => {
     const mockProducerKeychain: ProducerKeychain = {
       ...producerKeychain,
-      ownerId: generateId<OrganizationId>(),
+      ownerId: generateId(),
     };
 
     await seedProducerKeychain(mockProducerKeychain);
@@ -239,43 +244,84 @@ describe("POST /producerKeychains/:producerKeychainId/keys (uploadProducerKeycha
     expect(response.statusCode).toBe(403);
   });
 
-  it("should return 409 if the key already exists in the producer keychain", async () => {
-    const encodedPem = createRsaPublicKeyBase64();
-    const kid = unsafeBrandKeyId(
-      calculateKid(
-        createJWK({
-          pemKey: decodeBase64Pem(encodedPem),
-        }),
-      ),
-    );
+  it.each([
+    [
+      "Consumer Keychain",
+      async (existingKey: KeychainKey) => {
+        const mockConsumerKeychain: ConsumerKeychain = {
+          ...getMockConsumerKeychain(),
+          id: generateId(),
+          keys: [existingKey],
+        };
 
-    const existingKey: KeychainKey = {
-      algorithm: "RS256",
-      createdAt: new Date(),
-      encodedPem,
-      format: "PublicKey",
-      kid,
-      name: { en: "Existing key name" },
-      userId: TEST_USER_ID,
-    };
-
-    const mockProducerKeychain: ProducerKeychain = {
-      ...producerKeychain,
-      keys: [existingKey],
-    };
-
-    await seedProducerKeychain(mockProducerKeychain);
-
-    const response = await uploadProducerKeychainKey({
-      producerKeychainId: mockProducerKeychain.id,
-      requestBody: {
-        encodedPem,
-        name: { en: "Valid key name" },
+        await seedConsumerKeychain(mockConsumerKeychain);
       },
-    });
+    ],
+    [
+      "Knode API Keychain",
+      async (existingKey: KeychainKey) => {
+        const mockKnodeApiKeychain: KnodeApiKeychain = {
+          ...getMockKnodeApiKeychain(),
+          id: generateId(),
+          keys: [existingKey],
+        };
 
-    expect(response.statusCode).toBe(409);
-  });
+        await seedKnodeApiKeychain(mockKnodeApiKeychain);
+      },
+    ],
+    [
+      "Producer Keychain",
+      async (existingKey: KeychainKey) => {
+        const mockProducerKeychain: ProducerKeychain = {
+          ...getMockProducerKeychain(),
+          id: generateId(),
+          keys: [existingKey],
+        };
+
+        await seedProducerKeychain(mockProducerKeychain);
+      },
+    ],
+  ])(
+    "should return 409 with keyAlreadyExists if key already exists in %s",
+    async (_keychainKind, seedExistingKeychain) => {
+      const encodedPem = createRsaPublicKeyBase64();
+      const kid = unsafeBrandKeyId(
+        calculateKid(
+          createJWK({
+            pemKey: decodeBase64Pem(encodedPem),
+          }),
+        ),
+      );
+
+      const existingKey: KeychainKey = {
+        algorithm: "RS256",
+        createdAt: new Date(),
+        encodedPem,
+        format: "PublicKey",
+        kid,
+        name: { en: "Existing key name" },
+        userId: TEST_USER_ID,
+      };
+
+      await seedExistingKeychain(existingKey);
+
+      const targetProducerKeychain: ProducerKeychain = {
+        ...producerKeychain,
+        keys: [],
+      };
+      await seedProducerKeychain(targetProducerKeychain);
+
+      const response = await uploadProducerKeychainKey({
+        producerKeychainId: targetProducerKeychain.id,
+        requestBody: {
+          encodedPem,
+          name: { en: "Valid key name" },
+        },
+      });
+
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("should return 400 if the keychain already reached the maximum number of keys", async () => {
     const mockProducerKeychain: ProducerKeychain = {
