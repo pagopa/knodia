@@ -1753,18 +1753,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerKeychainPatch:
-      type: object
-      properties:
-        description:
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedName"
-      additionalProperties: false
-    KnodeApiKeychainPatch:
+    KeychainPatch:
       type: object
       properties:
         description:
@@ -3592,7 +3581,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainPatch"
+              $ref: "#/components/schemas/KeychainPatch"
       parameters:
         - schema:
             type: string
@@ -4477,7 +4466,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: "#/components/schemas/KnodeApiKeychainPatch"
+              $ref: "#/components/schemas/KeychainPatch"
       parameters:
         - schema:
             type: string

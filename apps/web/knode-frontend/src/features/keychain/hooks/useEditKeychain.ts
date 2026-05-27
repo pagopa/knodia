@@ -19,9 +19,7 @@ export function useEditKeychain(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (
-      body: bffApi.ConsumerKeychainPatch | bffApi.KnodeApiKeychainPatch,
-    ) =>
+    mutationFn: (body: bffApi.KeychainPatch) =>
       match(keychain)
         .with({ type: "consumption" }, ({ keychainId }) =>
           bffApi.updateConsumerKeychain({
