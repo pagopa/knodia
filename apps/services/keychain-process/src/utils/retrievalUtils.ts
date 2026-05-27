@@ -14,6 +14,7 @@ import type {
   KeychainUser,
   KnodeApiKeychain,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -25,6 +26,7 @@ import {
   consumerKeychainPurposeNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
+  producerKeychainEserviceNotFound,
   producerKeychainNotFound,
 } from "../models/errors.ts";
 import {
@@ -166,6 +168,25 @@ export const retrieveProducerKeychain = async (
   }
 
   return producerKeychain;
+};
+
+export const retrieveProducerKeychainEservice = async (
+  producerKeychainEservice: Omit<ProducerKeychainEservice, "linkedAt">,
+  readmodelService: ReadmodelService,
+) => {
+  const producerKeychainEserviceResult =
+    await readmodelService.getProducerKeychainEservice(
+      producerKeychainEservice,
+    );
+
+  if (!producerKeychainEserviceResult) {
+    throw producerKeychainEserviceNotFound(
+      producerKeychainEservice.producerKeychainId,
+      producerKeychainEservice.eserviceId,
+    );
+  }
+
+  return producerKeychainEserviceResult;
 };
 
 export async function retrieveKeychainMember<

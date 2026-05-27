@@ -4,6 +4,7 @@ import type {
   ConsumerKeychainV1,
   KnodeApiKeychain,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
@@ -27,7 +28,10 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
 } from "../src/models/consumerKeychainEventFactory.ts";
 import { createKnodeApiKeychainCreatedV1Event } from "../src/models/knodeApiKeychainEventFactory.ts";
-import { createProducerKeychainCreatedV1Event } from "../src/models/producerKeychainEventFactory.ts";
+import {
+  createProducerKeychainCreatedV1Event,
+  createProducerKeychainEserviceLinkedV1Event,
+} from "../src/models/producerKeychainEventFactory.ts";
 import {
   app,
   consumerKeychainWriterService,
@@ -120,6 +124,25 @@ export async function seedProducerKeychain(producerKeychain: ProducerKeychain) {
   await producerKeychainWriterService.upsertProducerKeychain(
     producerKeychain,
     0,
+  );
+}
+
+export async function seedProducerKeychainEservice(
+  producerKeychain: ProducerKeychain,
+  producerKeychainEservice: ProducerKeychainEservice,
+) {
+  await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createProducerKeychainEserviceLinkedV1Event({
+      correlationId: generateId(),
+      currentMetadataVersion: 0,
+      eserviceId: producerKeychainEservice.eserviceId,
+      linkedAt: producerKeychainEservice.linkedAt,
+      producerKeychain,
+    }),
+  );
+  await producerKeychainWriterService.upsertProducerKeychainEservice(
+    producerKeychainEservice,
+    1,
   );
 }
 

@@ -12,6 +12,7 @@ import type {
   FlatKnodeApiKeychain,
   FlatProducerKeychain,
   KeychainKey,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -395,6 +396,22 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getProducerKeychainById(producerKeychainId: ProducerKeychainId) {
       return await producerKeychainReadmodelService.getProducerKeychainById(
         producerKeychainId,
+      );
+    },
+    async getProducerKeychainEservice(
+      producerKeychainEservice: Omit<ProducerKeychainEservice, "linkedAt">,
+    ) {
+      return await producerKeychainReadmodelService.getProducerKeychainEserviceByFilter(
+        and(
+          eq(
+            readmodelProducerKeychainEservice.producerKeychainId,
+            producerKeychainEservice.producerKeychainId,
+          ),
+          eq(
+            readmodelProducerKeychainEservice.eserviceId,
+            producerKeychainEservice.eserviceId,
+          ),
+        ),
       );
     },
     async getProducerKeychains(

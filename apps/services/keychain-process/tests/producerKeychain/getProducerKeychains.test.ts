@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type z from "zod";
 
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import { type ProducerKeychain } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import { getMockProducerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_GetProducerKeychainsQueryParams } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
-import { injectAppRequest, seedProducerKeychain } from "../utils.ts";
+import {
+  injectAppRequest,
+  seedProducerKeychain,
+  seedProducerKeychainEservice,
+} from "../utils.ts";
 import { mockProducerKeychains } from "./mocks/mockProducerKeychains.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -112,7 +118,6 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       testCase: "filter by name, case insensitive",
       totalCount: 2,
     },
-    // TODO: test eserviceId filter once it's implemented and can be seeded in tests
   ] satisfies {
     expectedResult: ProducerKeychain[];
     query: z.input<typeof API_GetProducerKeychainsQueryParams>;
@@ -136,6 +141,34 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       });
     },
   );
+
+  it("should filter producer keychains by linked eserviceId", async () => {
+    const eserviceId = generateId<EserviceId>();
+    const linkedKeychain = getMockProducerKeychain(20);
+    const unlinkedKeychain = getMockProducerKeychain(21);
+
+    await seedProducerKeychain(linkedKeychain);
+    await seedProducerKeychain(unlinkedKeychain);
+    await seedProducerKeychainEservice(linkedKeychain, {
+      eserviceId,
+      linkedAt: new Date(),
+      producerKeychainId: linkedKeychain.id,
+    });
+
+    const response = await getMockProducerKeychains({
+      query: { ...defaultQuery, eserviceId } as typeof defaultQuery,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      pagination: {
+        limit: Number(defaultQuery.limit),
+        offset: Number(defaultQuery.offset),
+        total: 1,
+      },
+      results: [toAPI_Keychain(linkedKeychain)],
+    });
+  });
 
   it.each(allowedTestTokens)(
     "should return 200 for authorized token ($type, $roles)",
