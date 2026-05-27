@@ -115,6 +115,15 @@ export type PurposeSeed = {
     template?: PurposeTemplateReference;
 };
 
+export type ReversePurposeSeed = {
+    consumer: PurposeConsumer;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    name: LocalizedPurposeName;
+    purposeFormAnswerId: string;
+};
+
 export type Purpose = {
     consumer: PurposeConsumer;
     createdAt: string;
@@ -288,6 +297,53 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type CreateReversePurposeData = {
+    body: ReversePurposeSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/purposes/receive-mode';
+};
+
+export type CreateReversePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateReversePurposeError = CreateReversePurposeErrors[keyof CreateReversePurposeErrors];
+
+export type CreateReversePurposeResponses = {
+    /**
+     * Reverse Purpose created successfully
+     */
+    201: Purpose;
+};
+
+export type CreateReversePurposeResponse = CreateReversePurposeResponses[keyof CreateReversePurposeResponses];
 
 export type GetPurposesTotalDailyCallsData = {
     body?: never;

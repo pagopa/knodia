@@ -16,6 +16,7 @@ import {
   type EserviceId,
   generateId,
   type OrganizationId,
+  type PurposeFormAnswerId,
   type PurposeId,
   type PurposeTemplateId,
 } from "@knodia/common-models/ids";
@@ -36,6 +37,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { purposeFormAnswerNotFound } from "../models/errors.ts";
 import {
   CURRENT_FORM_SCHEMA_VERSION,
   type GetFormSchemas,
@@ -181,6 +183,85 @@ export function purposeServiceBuilder(
         suspendedByProducerAt: null,
         // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
         template,
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createPurposeActivatedV1Event(purpose, correlationId),
+      );
+
+      return {
+        data: purpose,
+        metadata: { version: newVersion },
+      };
+    },
+    async createReversePurpose(
+      {
+        consumer,
+        dailyCalls,
+        description,
+        eserviceId,
+        name,
+        purposeFormAnswerId,
+      }: {
+        consumer: ExternalResource<OrganizationId>;
+        dailyCalls: number;
+        description: LocalizedPurposeDescription;
+        eserviceId: EserviceId;
+        name: LocalizedPurposeName;
+        purposeFormAnswerId: PurposeFormAnswerId;
+      },
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Purpose>> {
+      const purposeId = generateId<PurposeId>();
+      logger.info(
+        { requestBody: { consumer, eserviceId, name, purposeFormAnswerId } },
+        `Creating reverse Purpose ${purposeId}`,
+      );
+
+      const eservice = await retrieveEservice(eserviceId, readmodelService);
+      assertEserviceModeIs(eservice, EserviceMode.enum.ReceiveData);
+      assertEserviceAllowsPurposeCreation(eservice);
+
+      const purposeFormAnswer =
+        eservice.receiveDataConfig?.purposeFormAnswers.find(
+          (pfa) => pfa.id === purposeFormAnswerId,
+        );
+      if (purposeFormAnswer === undefined) {
+        throw purposeFormAnswerNotFound(eserviceId, purposeFormAnswerId);
+      }
+
+      const agreements = await retrieveAgreements({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
+      assertAgreementAllowsPurposeCreation({
+        agreements,
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+      });
+
+      // No assertFormAnswersAreValid: the Producer published the snapshot, the
+      // Consumer only selected it. Schema validation belongs to the Producer
+      // at publish-time, not to this service.
+
+      const now = new Date();
+      const purpose: Purpose = {
+        consumer,
+        createdAt: now,
+        dailyCalls,
+        description,
+        eserviceId,
+        formAnswersJson: purposeFormAnswer.formAnswersJson,
+        formSchemaVersion: purposeFormAnswer.formSchemaVersion,
+        id: purposeId,
+        name,
+        state: PurposeState.enum.Active,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: now,
       };
 
