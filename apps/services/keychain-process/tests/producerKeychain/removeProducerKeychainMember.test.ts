@@ -18,9 +18,6 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockProducerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Keychain } from "../../src/models/api.ts";
-
-import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -69,16 +66,7 @@ describe("DELETE /producerKeychains/:producerKeychainId/members/:userId (removeP
     const response = await removeProducerKeychainMember();
 
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-    expect(response.statusCode).toBe(200);
-
-    const responseBody = response.json<API_Keychain>();
-    const expectedProducerKeychain: ProducerKeychain = {
-      ...producerKeychain,
-      updatedAt: new Date(responseBody.updatedAt),
-      users: [],
-    };
-
-    expect(responseBody).toEqual(toAPI_Keychain(expectedProducerKeychain));
+    expect(response.statusCode).toBe(204);
 
     const events = await getAllKeychainEvents();
     const removedEvent = events[1];
@@ -89,9 +77,16 @@ describe("DELETE /producerKeychains/:producerKeychainId/members/:userId (removeP
       version: 1,
     });
 
-    const removedEventData = KeychainEventV1.parse(removedEvent).data;
-    expect(removedEventData).toMatchObject({
-      producerKeychain: toProducerKeychainV1(expectedProducerKeychain),
+    const expectedProducerKeychain: ProducerKeychain = {
+      ...producerKeychain,
+      users: [],
+    };
+
+    expect(KeychainEventV1.parse(removedEvent).data).toMatchObject({
+      producerKeychain: {
+        ...toProducerKeychainV1(expectedProducerKeychain),
+        updatedAt: expect.any(Number),
+      },
       userId: memberId,
     });
   });

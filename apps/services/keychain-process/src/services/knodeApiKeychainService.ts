@@ -74,7 +74,7 @@ export function knodeApiKeychainServiceBuilder(
       knodeApiKeychainId: KnodeApiKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<KnodeApiKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Knode API Keychain ${knodeApiKeychainId}`,
       );
@@ -102,7 +102,7 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return {
-        data: updatedKnodeApiKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
@@ -265,7 +265,7 @@ export function knodeApiKeychainServiceBuilder(
           cognitoIdmClient,
           keychainId: knodeApiKeychainId,
           keychainKind: "Knode API Keychain",
-          params,
+          paginationParams: params,
           users: knodeApiKeychain.users,
         }),
         totalCount: knodeApiKeychain.users.length,
