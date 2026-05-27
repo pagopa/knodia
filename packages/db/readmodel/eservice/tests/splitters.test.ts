@@ -1,9 +1,13 @@
-import { getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockEservice,
+  getMockPurposeFormAnswer,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
+  EservicePurposeFormAnswerSQL,
   EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
@@ -106,5 +110,50 @@ describe("E-service Splitters", () => {
     expect(eserviceVersionRequiredAttributesSQL).toEqual(
       expect.arrayContaining(expectedRequireAttributesSQL),
     );
+  });
+
+  it("should split a ReceiveData E-service with purposeFormAnswers into SQL rows", () => {
+    const metadataVersion = 1;
+    const purposeFormAnswers = [
+      getMockPurposeFormAnswer(0),
+      getMockPurposeFormAnswer(1),
+    ];
+    const eservice = getMockEservice({ purposeFormAnswers });
+
+    const { eservicePurposeFormAnswersSQL } = splitEserviceIntoObjectsSQL(
+      eservice,
+      metadataVersion,
+    );
+
+    const expectedPurposeFormAnswersSQL: EservicePurposeFormAnswerSQL[] =
+      purposeFormAnswers.map((purposeFormAnswer) => ({
+        description: purposeFormAnswer.description,
+        eserviceId: eservice.id,
+        id: purposeFormAnswer.id,
+        metadataVersion,
+        name: purposeFormAnswer.name,
+        schema: purposeFormAnswer.schema,
+        texts: purposeFormAnswer.texts,
+        uiSchema: purposeFormAnswer.uiSchema,
+        uiTexts: purposeFormAnswer.uiTexts,
+        version: purposeFormAnswer.version,
+      }));
+
+    expect(eservicePurposeFormAnswersSQL).toEqual(
+      expect.arrayContaining(expectedPurposeFormAnswersSQL),
+    );
+    expect(eservicePurposeFormAnswersSQL).toHaveLength(2);
+  });
+
+  it("should produce an empty purposeFormAnswers array for an E-service without receiveDataConfig", () => {
+    const metadataVersion = 1;
+    const eservice = getMockEservice();
+
+    const { eservicePurposeFormAnswersSQL } = splitEserviceIntoObjectsSQL(
+      eservice,
+      metadataVersion,
+    );
+
+    expect(eservicePurposeFormAnswersSQL).toEqual([]);
   });
 });

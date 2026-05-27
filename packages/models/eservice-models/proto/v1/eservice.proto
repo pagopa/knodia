@@ -15,6 +15,24 @@ message EserviceV1 {
   int64 createdAt = 10;
   int64 updatedAt = 11;
   optional EserviceTemplateV1 template = 12;
+  optional ReceiveDataConfigV1 receiveDataConfig = 13;
+}
+
+message ReceiveDataConfigV1 {
+  repeated PurposeFormAnswerV1 purposeFormAnswers = 1;
+}
+
+message PurposeFormAnswerV1 {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  // JSON-encoded strings for the form schema parts (mirrors the on-the-wire
+  // representation used elsewhere for purpose form schemas).
+  string schemaJson = 4;
+  string uiSchemaJson = 5;
+  string textsJson = 6;
+  string uiTextsJson = 7;
+  string version = 8;
 }
 
 message EserviceCategoryV1 {

@@ -25,6 +25,7 @@ import {
   generateUserId,
   type KeyId,
   type KnodeApiKeychainId,
+  type PurposeFormAnswerId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
@@ -33,6 +34,7 @@ import {
   EserviceCategory,
   EserviceVersion,
   type EserviceVersionState,
+  type PurposeFormAnswer,
 } from "@knodia/eservice-models";
 import {
   ConsumerKeychain,
@@ -85,10 +87,12 @@ export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
 export function getMockEservice({
   latestVersionState,
   minArrayLength = 1,
+  purposeFormAnswers,
   seed = 0,
 }: {
   latestVersionState?: EserviceVersionState;
   minArrayLength?: number;
+  purposeFormAnswers?: PurposeFormAnswer[];
   seed?: number;
 } = {}): Eservice {
   return {
@@ -115,6 +119,9 @@ export function getMockEservice({
           ],
         }
       : {}),
+    ...(purposeFormAnswers !== undefined
+      ? { receiveDataConfig: { purposeFormAnswers } }
+      : { receiveDataConfig: undefined }),
   };
 }
 
@@ -157,6 +164,22 @@ export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
 
 export function getMockOrganization(seed = 0): Organization {
   return zocker(Organization).setSeed(seed).generate();
+}
+
+export function getMockPurposeFormAnswer(seed = 0): PurposeFormAnswer {
+  return {
+    description: `mock description ${seed}`,
+    id: generateId<PurposeFormAnswerId>(),
+    name: `mock form ${seed}`,
+    schema: {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+    },
+    texts: { en: { "field.label": `Label ${seed}` } },
+    uiSchema: { elements: [], type: "VerticalLayout" },
+    uiTexts: { en: { "groups.foo.label": `Group ${seed}` } },
+    version: "1.0",
+  };
 }
 
 export const MOCK_PURPOSE_FORM_ANSWERS = {

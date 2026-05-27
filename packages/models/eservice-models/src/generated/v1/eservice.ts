@@ -139,6 +139,26 @@ export interface EserviceV1 {
   createdAt: number;
   updatedAt: number;
   template?: EserviceTemplateV1 | undefined;
+  receiveDataConfig?: ReceiveDataConfigV1 | undefined;
+}
+
+export interface ReceiveDataConfigV1 {
+  purposeFormAnswers: PurposeFormAnswerV1[];
+}
+
+export interface PurposeFormAnswerV1 {
+  id: string;
+  name: string;
+  description: string;
+  /**
+   * JSON-encoded strings for the form schema parts (mirrors the on-the-wire
+   * representation used elsewhere for purpose form schemas).
+   */
+  schemaJson: string;
+  uiSchemaJson: string;
+  textsJson: string;
+  uiTextsJson: string;
+  version: string;
 }
 
 export interface EserviceCategoryV1 {
@@ -206,6 +226,7 @@ function createBaseEserviceV1(): EserviceV1 {
     createdAt: 0,
     updatedAt: 0,
     template: undefined,
+    receiveDataConfig: undefined,
   };
 }
 
@@ -246,6 +267,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     }
     if (message.template !== undefined) {
       EserviceTemplateV1.encode(message.template, writer.uint32(98).fork()).join();
+    }
+    if (message.receiveDataConfig !== undefined) {
+      ReceiveDataConfigV1.encode(message.receiveDataConfig, writer.uint32(106).fork()).join();
     }
     return writer;
   },
@@ -353,6 +377,14 @@ export const EserviceV1: MessageFns<EserviceV1> = {
           message.template = EserviceTemplateV1.decode(reader, reader.uint32());
           continue;
         }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.receiveDataConfig = ReceiveDataConfigV1.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -382,6 +414,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
       template: isSet(object.template) ? EserviceTemplateV1.fromJSON(object.template) : undefined,
+      receiveDataConfig: isSet(object.receiveDataConfig)
+        ? ReceiveDataConfigV1.fromJSON(object.receiveDataConfig)
+        : undefined,
     };
   },
 
@@ -423,6 +458,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     if (message.template !== undefined) {
       obj.template = EserviceTemplateV1.toJSON(message.template);
     }
+    if (message.receiveDataConfig !== undefined) {
+      obj.receiveDataConfig = ReceiveDataConfigV1.toJSON(message.receiveDataConfig);
+    }
     return obj;
   },
 
@@ -449,6 +487,252 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     message.template = (object.template !== undefined && object.template !== null)
       ? EserviceTemplateV1.fromPartial(object.template)
       : undefined;
+    message.receiveDataConfig = (object.receiveDataConfig !== undefined && object.receiveDataConfig !== null)
+      ? ReceiveDataConfigV1.fromPartial(object.receiveDataConfig)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseReceiveDataConfigV1(): ReceiveDataConfigV1 {
+  return { purposeFormAnswers: [] };
+}
+
+export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
+  encode(message: ReceiveDataConfigV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.purposeFormAnswers) {
+      PurposeFormAnswerV1.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ReceiveDataConfigV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseReceiveDataConfigV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purposeFormAnswers.push(PurposeFormAnswerV1.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ReceiveDataConfigV1 {
+    return {
+      purposeFormAnswers: globalThis.Array.isArray(object?.purposeFormAnswers)
+        ? object.purposeFormAnswers.map((e: any) => PurposeFormAnswerV1.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ReceiveDataConfigV1): unknown {
+    const obj: any = {};
+    if (message.purposeFormAnswers?.length) {
+      obj.purposeFormAnswers = message.purposeFormAnswers.map((e) => PurposeFormAnswerV1.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ReceiveDataConfigV1>, I>>(base?: I): ReceiveDataConfigV1 {
+    return ReceiveDataConfigV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ReceiveDataConfigV1>, I>>(object: I): ReceiveDataConfigV1 {
+    const message = createBaseReceiveDataConfigV1();
+    message.purposeFormAnswers = object.purposeFormAnswers?.map((e) => PurposeFormAnswerV1.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBasePurposeFormAnswerV1(): PurposeFormAnswerV1 {
+  return {
+    id: "",
+    name: "",
+    description: "",
+    schemaJson: "",
+    uiSchemaJson: "",
+    textsJson: "",
+    uiTextsJson: "",
+    version: "",
+  };
+}
+
+export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
+  encode(message: PurposeFormAnswerV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.schemaJson !== "") {
+      writer.uint32(34).string(message.schemaJson);
+    }
+    if (message.uiSchemaJson !== "") {
+      writer.uint32(42).string(message.uiSchemaJson);
+    }
+    if (message.textsJson !== "") {
+      writer.uint32(50).string(message.textsJson);
+    }
+    if (message.uiTextsJson !== "") {
+      writer.uint32(58).string(message.uiTextsJson);
+    }
+    if (message.version !== "") {
+      writer.uint32(66).string(message.version);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeFormAnswerV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeFormAnswerV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.schemaJson = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.uiSchemaJson = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.textsJson = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.uiTextsJson = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.version = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeFormAnswerV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      description: isSet(object.description) ? globalThis.String(object.description) : "",
+      schemaJson: isSet(object.schemaJson) ? globalThis.String(object.schemaJson) : "",
+      uiSchemaJson: isSet(object.uiSchemaJson) ? globalThis.String(object.uiSchemaJson) : "",
+      textsJson: isSet(object.textsJson) ? globalThis.String(object.textsJson) : "",
+      uiTextsJson: isSet(object.uiTextsJson) ? globalThis.String(object.uiTextsJson) : "",
+      version: isSet(object.version) ? globalThis.String(object.version) : "",
+    };
+  },
+
+  toJSON(message: PurposeFormAnswerV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.schemaJson !== "") {
+      obj.schemaJson = message.schemaJson;
+    }
+    if (message.uiSchemaJson !== "") {
+      obj.uiSchemaJson = message.uiSchemaJson;
+    }
+    if (message.textsJson !== "") {
+      obj.textsJson = message.textsJson;
+    }
+    if (message.uiTextsJson !== "") {
+      obj.uiTextsJson = message.uiTextsJson;
+    }
+    if (message.version !== "") {
+      obj.version = message.version;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeFormAnswerV1>, I>>(base?: I): PurposeFormAnswerV1 {
+    return PurposeFormAnswerV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeFormAnswerV1>, I>>(object: I): PurposeFormAnswerV1 {
+    const message = createBasePurposeFormAnswerV1();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.schemaJson = object.schemaJson ?? "";
+    message.uiSchemaJson = object.uiSchemaJson ?? "";
+    message.textsJson = object.textsJson ?? "";
+    message.uiTextsJson = object.uiTextsJson ?? "";
+    message.version = object.version ?? "";
     return message;
   },
 };

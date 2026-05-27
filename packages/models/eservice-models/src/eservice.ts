@@ -6,8 +6,10 @@ import {
   type EserviceTemplateId,
   EserviceVersionId,
   OrganizationId,
+  PurposeFormAnswerId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import z from "zod";
 
 const INT32_MAX = 2_147_483_647;
@@ -81,6 +83,31 @@ export const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
+// Pre-filled form on a ReceiveData e-service. The Producer publishes one or
+// more of these on the e-service; the Consumer selects one when creating a
+// Purpose, and the backend snapshots it into Purpose.formAnswersJson.
+const PurposeFormSchemaJson = z.record(z.string(), z.unknown());
+const PurposeFormLocalizedTexts = z.strictObject({
+  en: z.record(z.string(), z.string()),
+});
+
+export const PurposeFormAnswer = z.strictObject({
+  description: z.string().max(maxDescriptionLength),
+  id: PurposeFormAnswerId,
+  name: z.string().min(minNameLength).max(maxNameLength),
+  schema: PurposeFormSchemaJson,
+  texts: PurposeFormLocalizedTexts,
+  uiSchema: PurposeFormSchemaJson,
+  uiTexts: PurposeFormLocalizedTexts,
+  version: PurposeFormSchemaVersion,
+});
+export type PurposeFormAnswer = z.infer<typeof PurposeFormAnswer>;
+
+export const ReceiveDataConfig = z.strictObject({
+  purposeFormAnswers: z.array(PurposeFormAnswer),
+});
+export type ReceiveDataConfig = z.infer<typeof ReceiveDataConfig>;
+
 export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
@@ -91,6 +118,7 @@ export const Eservice = z.strictObject({
   mode: EserviceMode,
   name: LocalizedName,
   producerId: OrganizationId,
+  receiveDataConfig: ReceiveDataConfig.optional(), // present only when mode is ReceiveData
   template: ExternalResource<EserviceTemplateId>().optional(), // present only if the eservice is created from a template
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

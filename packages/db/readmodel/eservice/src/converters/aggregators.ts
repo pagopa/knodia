@@ -18,18 +18,22 @@ import {
   EserviceVersionState,
   LocalizedDescription,
   LocalizedName,
+  PurposeFormAnswer,
+  type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 
 import {
   type EserviceCategorySQL,
   type EserviceInterfaceSQL,
   type EserviceItemsSQL,
+  type EservicePurposeFormAnswerSQL,
   type EserviceSQL,
   type EserviceVersionRequiredAttributeSQL,
   type EserviceVersionSQL,
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
+  readmodelEservicePurposeFormAnswer,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
@@ -42,6 +46,7 @@ type EserviceAggregatorInput = {
   category?: EserviceCategorySQL | null;
   eservice: EserviceSQL;
   interface?: EserviceInterfaceSQL | null;
+  purposeFormAnswer?: EservicePurposeFormAnswerSQL | null;
   requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
   version?: EserviceVersionSQL | null;
 }[];
@@ -159,9 +164,32 @@ const toEserviceVersionsAggregator = (
   };
 };
 
+const toReceiveDataConfig = (
+  purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[],
+): ReceiveDataConfig | undefined => {
+  if (purposeFormAnswersSQL.length === 0) {
+    return undefined;
+  }
+  return {
+    purposeFormAnswers: purposeFormAnswersSQL.map((sql) =>
+      PurposeFormAnswer.parse({
+        description: sql.description,
+        id: sql.id,
+        name: sql.name,
+        schema: sql.schema,
+        texts: sql.texts,
+        uiSchema: sql.uiSchema,
+        uiTexts: sql.uiTexts,
+        version: sql.version,
+      }),
+    ),
+  };
+};
+
 const buildEservice = ({
   eserviceCategoriesSQL,
   eserviceInterfacesSQL,
+  eservicePurposeFormAnswersSQL,
   eserviceSQL,
   eserviceVersionRequiredAttributesSQL,
   eserviceVersionsSQL,
@@ -198,6 +226,8 @@ const buildEservice = ({
     scheme: categorySQL.scheme,
   }));
 
+  const receiveDataConfig = toReceiveDataConfig(eservicePurposeFormAnswersSQL);
+
   const eservice: Eservice = {
     categories,
     createdAt: eserviceSQL.createdAt,
@@ -209,6 +239,7 @@ const buildEservice = ({
     mode: EserviceMode.parse(eserviceSQL.mode),
     name: LocalizedName.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
+    ...(receiveDataConfig !== undefined ? { receiveDataConfig } : {}),
     template: toOptionalExternalResource<EserviceTemplateId>(
       eserviceSQL.templateId,
       eserviceSQL.templateKnodeId,
@@ -239,6 +270,7 @@ export const aggregateEservices = (
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
+    purposeFormAnswersSQL,
     requiredAttributesSQL,
     versionsSQL,
   } = toEservicesAggregator(queryRes);
@@ -250,12 +282,17 @@ export const aggregateEservices = (
     requiredAttributesSQL,
   );
   const categoriesSQLByEserviceId = createEserviceSQLPropertyMap(categoriesSQL);
+  const purposeFormAnswersSQLByEserviceId = createEserviceSQLPropertyMap(
+    purposeFormAnswersSQL,
+  );
 
   return eservicesSQL.map((eserviceSQL) => {
     const eserviceId = unsafeBrandId<EserviceId>(eserviceSQL.id);
     return buildEservice({
       eserviceCategoriesSQL: categoriesSQLByEserviceId.get(eserviceId) || [],
       eserviceInterfacesSQL: interfacesSQLByEserviceId.get(eserviceId) || [],
+      eservicePurposeFormAnswersSQL:
+        purposeFormAnswersSQLByEserviceId.get(eserviceId) || [],
       eserviceSQL,
       eserviceVersionRequiredAttributesSQL:
         requiredAttributesSQLByEserviceId.get(eserviceId) || [],
@@ -269,6 +306,7 @@ const createEserviceSQLPropertyMap = <
   T extends
     | EserviceCategorySQL
     | EserviceInterfaceSQL
+    | EservicePurposeFormAnswerSQL
     | EserviceVersionRequiredAttributeSQL
     | EserviceVersionSQL,
 >(
@@ -290,6 +328,7 @@ const toEserviceAggregator = (
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
+    purposeFormAnswersSQL,
     requiredAttributesSQL,
     versionsSQL,
   } = toEservicesAggregator(queryRes);
@@ -297,6 +336,7 @@ const toEserviceAggregator = (
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
+    eservicePurposeFormAnswersSQL: purposeFormAnswersSQL,
     eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service", (e) => e.id),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
@@ -309,6 +349,7 @@ const toEservicesAggregator = (
   categoriesSQL: EserviceCategorySQL[];
   eservicesSQL: EserviceSQL[];
   interfacesSQL: EserviceInterfaceSQL[];
+  purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[];
   requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[];
   versionsSQL: EserviceVersionSQL[];
 } => {
@@ -326,6 +367,9 @@ const toEservicesAggregator = (
 
   const requiredAttributePKSet = new Set<string>();
   const requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[] = [];
+
+  const purposeFormAnswerPKSet = new Set<string>();
+  const purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[] = [];
 
   queryRes.forEach((row) => {
     aggregateByPKString(
@@ -358,12 +402,19 @@ const toEservicesAggregator = (
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
     );
+    aggregateByPKString(
+      row.purposeFormAnswer,
+      purposeFormAnswerPKSet,
+      purposeFormAnswersSQL,
+      readmodelEservicePurposeFormAnswer,
+    );
   });
 
   return {
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
+    purposeFormAnswersSQL,
     requiredAttributesSQL,
     versionsSQL,
   };

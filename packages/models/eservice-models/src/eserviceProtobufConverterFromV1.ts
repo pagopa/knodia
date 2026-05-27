@@ -3,6 +3,7 @@ import type { AttributeGroup } from "@knodia/attribute-models";
 import { fromOptionalExternalResource } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 
 import {
@@ -12,6 +13,8 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type PurposeFormAnswer,
+  type ReceiveDataConfig,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
@@ -21,6 +24,8 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
+  type PurposeFormAnswerV1,
+  type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => {
@@ -35,11 +40,33 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
     mode: fromEserviceModeV1(input.mode),
     name: input.name,
     producerId: unsafeBrandId(input.producerId),
+    receiveDataConfig: input.receiveDataConfig
+      ? fromReceiveDataConfigV1(input.receiveDataConfig)
+      : undefined,
     template: fromOptionalExternalResource(input.template),
     updatedAt: new Date(input.updatedAt),
     versions: input.versions.map(fromEserviceVersionV1),
   };
 };
+
+const fromReceiveDataConfigV1 = (
+  input: ReceiveDataConfigV1,
+): ReceiveDataConfig => ({
+  purposeFormAnswers: input.purposeFormAnswers.map(fromPurposeFormAnswerV1),
+});
+
+const fromPurposeFormAnswerV1 = (
+  input: PurposeFormAnswerV1,
+): PurposeFormAnswer => ({
+  description: input.description,
+  id: unsafeBrandId(input.id),
+  name: input.name,
+  schema: JSON.parse(input.schemaJson) as PurposeFormAnswer["schema"],
+  texts: JSON.parse(input.textsJson) as PurposeFormAnswer["texts"],
+  uiSchema: JSON.parse(input.uiSchemaJson) as PurposeFormAnswer["uiSchema"],
+  uiTexts: JSON.parse(input.uiTextsJson) as PurposeFormAnswer["uiTexts"],
+  version: PurposeFormSchemaVersion.parse(input.version),
+});
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)

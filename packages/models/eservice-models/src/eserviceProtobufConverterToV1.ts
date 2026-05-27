@@ -9,6 +9,8 @@ import type {
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
+  PurposeFormAnswer,
+  ReceiveDataConfig,
 } from "./eservice.ts";
 
 import {
@@ -19,6 +21,8 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
+  type PurposeFormAnswerV1,
+  type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
 
 const toEserviceModeV1 = (mode: EserviceMode): EserviceModeV1 =>
@@ -72,10 +76,34 @@ const toEserviceVersionV1 = (version: EserviceVersion): EserviceVersionV1 => ({
   updatedAt: version.updatedAt.getTime(),
 });
 
+const toPurposeFormAnswerV1 = (
+  purposeFormAnswer: PurposeFormAnswer,
+): PurposeFormAnswerV1 => ({
+  description: purposeFormAnswer.description,
+  id: purposeFormAnswer.id,
+  name: purposeFormAnswer.name,
+  schemaJson: JSON.stringify(purposeFormAnswer.schema),
+  textsJson: JSON.stringify(purposeFormAnswer.texts),
+  uiSchemaJson: JSON.stringify(purposeFormAnswer.uiSchema),
+  uiTextsJson: JSON.stringify(purposeFormAnswer.uiTexts),
+  version: purposeFormAnswer.version,
+});
+
+const toReceiveDataConfigV1 = (
+  receiveDataConfig: ReceiveDataConfig,
+): ReceiveDataConfigV1 => ({
+  purposeFormAnswers: receiveDataConfig.purposeFormAnswers.map(
+    toPurposeFormAnswerV1,
+  ),
+});
+
 export const toEserviceV1 = (eservice: Eservice): EserviceV1 => ({
   ...eservice,
   createdAt: eservice.createdAt.getTime(),
   mode: toEserviceModeV1(eservice.mode),
+  receiveDataConfig: eservice.receiveDataConfig
+    ? toReceiveDataConfigV1(eservice.receiveDataConfig)
+    : undefined,
   updatedAt: eservice.updatedAt.getTime(),
   versions: eservice.versions.map(toEserviceVersionV1),
 });
