@@ -8,7 +8,6 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useEffect } from "react";
 
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
@@ -22,6 +21,11 @@ import {
   keychainTypeOptions,
 } from "../models/keychain-forms";
 
+interface CreateKeychainFormProps {
+  defaultType: KeychainType;
+  onClose: () => void;
+}
+
 interface Props {
   defaultType: KeychainType;
   isOpen: boolean;
@@ -29,6 +33,12 @@ interface Props {
 }
 
 export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
+  return isOpen ? (
+    <CreateKeychainForm defaultType={defaultType} onClose={onClose} />
+  ) : null;
+}
+
+function CreateKeychainForm({ defaultType, onClose }: CreateKeychainFormProps) {
   const { isError, isPending, mutate: createKeychain } = useCreateKeychain();
 
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
@@ -51,23 +61,16 @@ export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
     },
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      form.reset({ ...createKeychainFormDefaultValues, type: defaultType });
-    }
-  }, [isOpen, defaultType, form]);
-
   return (
     <Modal
       actionLabel="Create"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
-      isOpen={isOpen}
+      isOpen
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
         if (!open) {
-          form.reset();
           onClose();
         }
       }}
