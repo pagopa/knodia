@@ -305,6 +305,18 @@ export type API_ProducerKeychainMemberPathParams = z.infer<
   typeof API_ProducerKeychainMemberPathParams
 >;
 
+export const API_CreatedMemberResource = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .meta({
+    description: "Unique identifier of the created member resource",
+    id: "CreatedMemberResource",
+  });
+export type API_CreatedMemberResource = z.infer<
+  typeof API_CreatedMemberResource
+>;
+
 export const API_GetProducerKeychainMembersQueryParams =
   API_PaginationQueryParams;
 export type API_GetProducerKeychainMembersQueryParams = z.infer<

@@ -388,6 +388,15 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    CreatedMemberResource:
+      description: Unique identifier of the created member resource
+      type: object
+      properties:
+        userId:
+          $ref: "#/components/schemas/UserId"
+      required:
+        - userId
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -1129,14 +1138,8 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "204":
           description: Consumer Keychain member removed successfully
-          content:
-            application/json:
-              schema:
-                description: Consumer Keychain member removed successfully
-                allOf:
-                  - $ref: "#/components/schemas/Keychain"
           headers:
             metadata-version:
               required: true
@@ -1203,14 +1206,14 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "201":
           description: Consumer Keychain member added successfully
           content:
             application/json:
               schema:
                 description: Consumer Keychain member added successfully
                 allOf:
-                  - $ref: "#/components/schemas/Keychain"
+                  - $ref: "#/components/schemas/CreatedMemberResource"
           headers:
             metadata-version:
               required: true
@@ -2288,14 +2291,14 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "201":
           description: Knode API Keychain member added successfully
           content:
             application/json:
               schema:
                 description: Knode API Keychain member added successfully
                 allOf:
-                  - $ref: "#/components/schemas/Keychain"
+                  - $ref: "#/components/schemas/CreatedMemberResource"
           headers:
             metadata-version:
               required: true
@@ -2513,14 +2516,8 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "204":
           description: Knode API Keychain member removed successfully
-          content:
-            application/json:
-              schema:
-                description: Knode API Keychain member removed successfully
-                allOf:
-                  - $ref: "#/components/schemas/Keychain"
           headers:
             metadata-version:
               required: true
@@ -2926,14 +2923,14 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "201":
           description: Producer Keychain member added successfully
           content:
             application/json:
               schema:
                 description: Producer Keychain member added successfully
                 allOf:
-                  - $ref: "#/components/schemas/Keychain"
+                  - $ref: "#/components/schemas/CreatedMemberResource"
           headers:
             metadata-version:
               required: true
@@ -3085,14 +3082,8 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "200":
+        "204":
           description: Producer Keychain member removed successfully
-          content:
-            application/json:
-              schema:
-                description: Producer Keychain member removed successfully
-                allOf:
-                  - $ref: "#/components/schemas/Keychain"
           headers:
             metadata-version:
               required: true

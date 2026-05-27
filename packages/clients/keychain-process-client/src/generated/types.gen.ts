@@ -179,6 +179,13 @@ export type ProducerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+/**
+ * Unique identifier of the created member resource
+ */
+export type CreatedMemberResource = {
+    userId: UserId;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -665,7 +672,7 @@ export type RemoveConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
@@ -814,7 +821,7 @@ export type AddConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
@@ -1541,7 +1548,7 @@ export type AddKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddKnodeApiKeychainMemberResponse = AddKnodeApiKeychainMemberResponses[keyof AddKnodeApiKeychainMemberResponses];
@@ -1587,7 +1594,7 @@ export type RemoveKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveKnodeApiKeychainMemberResponse = RemoveKnodeApiKeychainMemberResponses[keyof RemoveKnodeApiKeychainMemberResponses];
@@ -1970,7 +1977,7 @@ export type AddProducerKeychainMemberResponses = {
     /**
      * Producer Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddProducerKeychainMemberResponse = AddProducerKeychainMemberResponses[keyof AddProducerKeychainMemberResponses];
@@ -2016,7 +2023,7 @@ export type RemoveProducerKeychainMemberResponses = {
     /**
      * Producer Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveProducerKeychainMemberResponse = RemoveProducerKeychainMemberResponses[keyof RemoveProducerKeychainMemberResponses];
