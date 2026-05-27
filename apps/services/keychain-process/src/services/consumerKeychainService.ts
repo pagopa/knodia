@@ -91,7 +91,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Consumer Keychain ${consumerKeychainId}`,
       );
@@ -119,7 +119,7 @@ export function consumerKeychainServiceBuilder(
       );
 
       return {
-        data: updatedConsumerKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
@@ -285,7 +285,7 @@ export function consumerKeychainServiceBuilder(
           cognitoIdmClient,
           keychainId: consumerKeychainId,
           keychainKind: "Consumer Keychain",
-          params,
+          paginationParams: params,
           users: consumerKeychain.users,
         }),
         totalCount: consumerKeychain.users.length,

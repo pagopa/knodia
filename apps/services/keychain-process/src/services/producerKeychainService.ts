@@ -61,7 +61,7 @@ export function producerKeychainServiceBuilder(
       producerKeychainId: ProducerKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<ProducerKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Producer Keychain ${producerKeychainId}`,
       );
@@ -89,7 +89,7 @@ export function producerKeychainServiceBuilder(
       );
 
       return {
-        data: updatedProducerKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
@@ -209,7 +209,7 @@ export function producerKeychainServiceBuilder(
           cognitoIdmClient,
           keychainId: producerKeychainId,
           keychainKind: "Producer Keychain",
-          params,
+          paginationParams: params,
           users: producerKeychain.users,
         }),
         totalCount: producerKeychain.users.length,
