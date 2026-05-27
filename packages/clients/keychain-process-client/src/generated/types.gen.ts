@@ -33,6 +33,27 @@ export type Problem = {
     title: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
+/**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
 /**
  * Unique Knode identifier
  */
@@ -73,26 +94,12 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
+/**
+ * Unique identifier of the created member resource
+ */
+export type CreatedMemberResource = {
+    userId: UserId;
 };
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
-/**
- * Unique identifier of the User
- */
-export type UserId = string;
-
-/**
- * Unique identifier of the Key
- */
-export type KeyId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -177,13 +184,6 @@ export type KeychainMembers = {
 export type ProducerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
-};
-
-/**
- * Unique identifier of the created member resource
- */
-export type CreatedMemberResource = {
-    userId: UserId;
 };
 
 export type GetStatusData = {
