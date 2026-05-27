@@ -1,6 +1,7 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   ProducerKeychainId,
@@ -37,6 +38,8 @@ const errorCodes = {
   CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0013",
   KNODE_API_KEYCHAIN_NOT_FOUND: "0014",
   PRODUCER_KEYCHAIN_NOT_FOUND: "0015",
+  ESERVICE_ALREADY_LINKED_TO_PRODUCER_KEYCHAIN: "0016",
+  PRODUCER_KEYCHAIN_ESERVICE_NOT_FOUND: "0017",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -64,6 +67,18 @@ export function consumerKeychainPurposeNotFound({
     detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is not linked to Consumer Keychain with id ${consumerKeychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Purpose Not Found",
+  });
+}
+
+export function eserviceAlreadyLinkedToProducerKeychain(
+  producerKeychainId: ProducerKeychainId,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_ALREADY_LINKED_TO_PRODUCER_KEYCHAIN",
+    detail: `E-service with id ${eserviceId} is already linked to Producer Keychain with id ${producerKeychainId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "E-service Already Linked To Producer Keychain",
   });
 }
 
@@ -108,7 +123,7 @@ export function keychainMemberNotFound(
 
 export function keyNotFoundInKeychain(
   kid: KeyId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
 ) {
   return createApiError<ErrorCodes>({
     code: "KEY_NOT_FOUND_IN_KEYCHAIN",
@@ -136,6 +151,18 @@ export function notAllowedCertificate() {
   });
 }
 
+export function producerKeychainEserviceNotFound(
+  producerKeychainId: ProducerKeychainId,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PRODUCER_KEYCHAIN_ESERVICE_NOT_FOUND",
+    detail: `E-service with id ${eserviceId} is not linked to Producer Keychain with id ${producerKeychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Producer Keychain E-service Not Found",
+  });
+}
+
 export function producerKeychainNotFound(id: ProducerKeychainId) {
   return createApiError<ErrorCodes>({
     code: "PRODUCER_KEYCHAIN_NOT_FOUND",
@@ -158,7 +185,7 @@ export function purposeAlreadyLinkedToConsumerKeychain(
 }
 
 export function tooManyKeysPerKeychain(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   size: number,
 ) {
   return createApiError<ErrorCodes>({

@@ -40,6 +40,7 @@ import {
   type KeychainKey,
   KnodeApiKeychain,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
@@ -321,6 +322,12 @@ export function getMockProducerKeychain(seed = 0): ProducerKeychain {
       .generate(),
     keys: [getMockKeychainKey(seed)],
   });
+}
+
+export function getMockProducerKeychainEservice(
+  seed = 0,
+): ProducerKeychainEservice {
+  return zocker(ProducerKeychainEservice).setSeed(seed).generate();
 }
 
 export function getMockPurpose(seed = 0): Purpose {

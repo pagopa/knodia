@@ -18,11 +18,9 @@ import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
 import { match, P } from "ts-pattern";
 
 import type {
-  API_ConsumerKeychainPatch,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
-  API_KnodeApiKeychainPatch,
-  API_ProducerKeychainPatch,
+  API_KeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -45,7 +43,7 @@ import {
 } from "./validators.ts";
 
 export async function addKeyToKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   authData: UISessionAuthData,
@@ -152,7 +150,7 @@ export async function addMemberToKeychain<
 }
 
 export function removeKeyFromKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
   assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);
@@ -189,10 +187,7 @@ export function updateKeychain<
   K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
-  update:
-    | API_ConsumerKeychainPatch
-    | API_KnodeApiKeychainPatch
-    | API_ProducerKeychainPatch,
+  update: API_KeychainPatch | API_KeychainPatch | API_KeychainPatch,
   authData: UISessionAuthData,
 ): K {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);

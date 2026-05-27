@@ -56,7 +56,6 @@ import {
   API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainOptions,
-  API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainsQueryParams,
@@ -71,6 +70,7 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
 } from "../../models/keychain/api.ts";
@@ -310,7 +310,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_ConsumerKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Consumer Keychain",
       operationId: "updateConsumerKeychain",

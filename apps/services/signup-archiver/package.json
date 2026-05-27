@@ -1,0 +1,29 @@
+{
+  "name": "@knodia/signup-archiver",
+  "type": "module",
+  "scripts": {
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/kafka-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
+    "zod": "catalog:"
+  }
+}

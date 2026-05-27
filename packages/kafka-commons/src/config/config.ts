@@ -97,3 +97,12 @@ export const OrganizationTopicConfig = z
     organizationTopic: c.ORGANIZATION_TOPIC,
   }));
 export type OrganizationTopicConfig = z.infer<typeof OrganizationTopicConfig>;
+
+export const SignupTopicConfig = z
+  .object({
+    SIGNUP_TOPIC: z.string(),
+  })
+  .transform((c) => ({
+    signupTopic: c.SIGNUP_TOPIC,
+  }));
+export type SignupTopicConfig = z.infer<typeof SignupTopicConfig>;

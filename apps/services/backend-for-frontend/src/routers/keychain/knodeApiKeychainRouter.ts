@@ -43,12 +43,12 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
   API_KnodeApiKeychainMembershipCheckResult,
-  API_KnodeApiKeychainPatch,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
 import {
@@ -279,7 +279,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_KnodeApiKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Knode API Keychain",
       operationId: "updateKnodeApiKeychain",
