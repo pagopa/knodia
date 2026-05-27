@@ -18,8 +18,8 @@ vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 import type { KnodeApiKeychain } from "@knodia/keychain-models";
 
 import { API_KeychainMembers, API_User } from "../../src/models/api.ts";
-import { mockKnodeApiKeychains } from "../mockKnodeApiKeychains.ts";
 import { injectAppRequest, seedKnodeApiKeychain } from "../utils.ts";
+import { mockKnodeApiKeychains } from "./mocks/mockKnodeApiKeychains.ts";
 
 const memberIds = [
   "10000000-1000-1000-8000-000000000011",

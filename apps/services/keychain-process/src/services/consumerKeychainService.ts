@@ -34,13 +34,13 @@ import { match, P } from "ts-pattern";
 
 import type {
   API_ConsumerKeychainPatch,
-  API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -125,7 +125,7 @@ export function consumerKeychainServiceBuilder(
       };
     },
     async createConsumerKeychain(
-      seed: API_ConsumerKeychainSeed,
+      seed: API_KeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychain>> {
       const consumerKeychainId = generateId<ConsumerKeychainId>();

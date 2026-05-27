@@ -2,6 +2,7 @@ import type {
   ConsumerKeychainId,
   KeyId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
 } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychain,
@@ -16,6 +17,7 @@ import {
   consumerKeychainPurposeNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
+  producerKeychainNotFound,
 } from "../models/errors.ts";
 
 export const retrieveConsumerKeychain = async (
@@ -99,4 +101,18 @@ export const retrieveKeychainKey = (
   }
 
   return key;
+};
+
+export const retrieveFlatProducerKeychain = async (
+  producerKeychainId: ProducerKeychainId,
+  readmodelService: ReadmodelService,
+) => {
+  const producerKeychain =
+    await readmodelService.getFlatProducerKeychainById(producerKeychainId);
+
+  if (!producerKeychain) {
+    throw producerKeychainNotFound(producerKeychainId);
+  }
+
+  return producerKeychain;
 };
