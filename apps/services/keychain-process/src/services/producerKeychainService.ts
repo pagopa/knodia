@@ -1,4 +1,5 @@
-import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
+/* eslint-disable max-lines-per-function */
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -18,6 +19,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_KeychainMemberSeed,
   API_KeychainSeed,
@@ -34,6 +36,8 @@ import {
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
+  retrieveKeychainMember,
+  retrievePaginatedKeychainUsers,
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
 import {
@@ -157,6 +161,59 @@ export function producerKeychainServiceBuilder(
         producerKeychainId,
         readmodelService,
       );
+    },
+    async getProducerKeychainMember(
+      producerKeychainId: ProducerKeychainId,
+      userId: UserId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser> {
+      logger.info(
+        `Getting member ${userId} of Producer Keychain with id ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      return await retrieveKeychainMember({
+        authData,
+        cognitoIdmClient,
+        keychain: producerKeychain.data,
+        keychainKind: "Producer Keychain",
+        userId,
+      });
+    },
+    async getProducerKeychainMembers(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainMembersQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<IdmUser>> {
+      logger.info(
+        { params },
+        `Getting members of Producer Keychain with id ${producerKeychainId}, with params`,
+      );
+
+      const { data: producerKeychain } = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain,
+      );
+
+      return {
+        results: await retrievePaginatedKeychainUsers({
+          cognitoIdmClient,
+          keychainId: producerKeychainId,
+          keychainKind: "Producer Keychain",
+          params,
+          users: producerKeychain.users,
+        }),
+        totalCount: producerKeychain.users.length,
+      };
     },
     async getProducerKeychains(
       params: API_GetProducerKeychainsQueryParams,
