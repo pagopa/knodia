@@ -23,6 +23,8 @@ import {
   ProducerKeychainDeletedV1,
   ProducerKeychainKeyAddedV1,
   ProducerKeychainKeyRemovedV1,
+  ProducerKeychainMemberAddedV1,
+  ProducerKeychainMemberRemovedV1,
   ProducerKeychainUpdatedV1,
 } from "./generated/v1/keychainEvents.ts";
 
@@ -102,6 +104,14 @@ export const KeychainEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(ProducerKeychainDeletedV1),
     type: z.literal("ProducerKeychainDeletedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(ProducerKeychainMemberAddedV1),
+    type: z.literal("ProducerKeychainMemberAddedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(ProducerKeychainMemberRemovedV1),
+    type: z.literal("ProducerKeychainMemberRemovedV1"),
   }),
   z.object({
     data: protobufBinaryCodec(ProducerKeychainKeyAddedV1),

@@ -1,0 +1,37 @@
+{
+  "name": "@knodia/signup-manager",
+  "type": "module",
+  "scripts": {
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
+    "typecheck": "tsc",
+    "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/spectral-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@stoplight/spectral-cli": "catalog:",
+    "@types/node": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@fastify/cookie": "catalog:",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "axios": "catalog:",
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
+    "jose": "catalog:",
+    "pino-pretty": "catalog:",
+    "zod": "catalog:"
+  }
+}

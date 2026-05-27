@@ -15,10 +15,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockProducerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type {
-  API_Keychain,
-  API_ProducerKeychainPatch,
-} from "../../src/models/api.ts";
+import type { API_Keychain, API_KeychainPatch } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
@@ -33,7 +30,7 @@ const allowedTestTokens: TestToken[] = [
 
 const producerKeychain = getMockProducerKeychain();
 
-const defaultBody: API_ProducerKeychainPatch = {
+const defaultBody: API_KeychainPatch = {
   name: { en: "Updated Producer keychain name" },
 };
 
@@ -47,7 +44,7 @@ async function updateProducerKeychain({
   },
 }: {
   producerKeychainId?: ProducerKeychainId;
-  requestBody?: API_ProducerKeychainPatch;
+  requestBody?: API_KeychainPatch;
   token?: TestToken;
 }) {
   return await injectAppRequest(token)
@@ -81,7 +78,7 @@ describe("PATCH /producerKeychains/:producerKeychainId (ProducerKeychainPatch)",
         description: { en: "Updated Producer keychain description" },
       },
     },
-  ] satisfies { body: API_ProducerKeychainPatch }[])(
+  ] satisfies { body: API_KeychainPatch }[])(
     "should correctly create producer keychain update event with body %S",
     async ({ body }) => {
       await seedProducerKeychain(producerKeychain);

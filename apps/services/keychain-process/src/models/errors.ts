@@ -95,7 +95,7 @@ export function keyAlreadyExists(kid: string) {
 }
 
 export function keychainMemberNotFound(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({
@@ -170,7 +170,7 @@ export function tooManyKeysPerKeychain(
 }
 
 export function userAlreadyMember(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({

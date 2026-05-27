@@ -11,10 +11,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type {
-  API_ConsumerKeychainPatch,
-  API_Keychain,
-} from "../../src/models/api.ts";
+import type { API_Keychain, API_KeychainPatch } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
@@ -35,27 +32,27 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
       body: {
         description: { en: "Updated Consumer keychain description" },
         name: { en: "Updated Consumer keychain name" },
-      } satisfies API_ConsumerKeychainPatch,
+      },
     },
     {
-      body: {} satisfies API_ConsumerKeychainPatch,
+      body: {},
     },
     {
       body: {
         description: null,
-      } satisfies API_ConsumerKeychainPatch,
+      },
     },
     {
       body: {
         name: { en: "Updated Consumer keychain name" },
-      } satisfies API_ConsumerKeychainPatch,
+      },
     },
     {
       body: {
         description: { en: "Updated Consumer keychain description" },
-      } satisfies API_ConsumerKeychainPatch,
+      },
     },
-  ])(
+  ] satisfies { body: API_KeychainPatch }[])(
     "should correctly create consumer keychain update event with body %S",
     async ({ body }) => {
       await seedConsumerKeychain(consumerKeychain);

@@ -112,6 +112,8 @@ export async function handleKeychainEvent(
         type: P.union(
           "ProducerKeychainCreatedV1",
           "ProducerKeychainUpdatedV1",
+          "ProducerKeychainMemberAddedV1",
+          "ProducerKeychainMemberRemovedV1",
           "ProducerKeychainKeyAddedV1",
           "ProducerKeychainKeyRemovedV1",
         ),

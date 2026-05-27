@@ -116,7 +116,7 @@ export function assertUserIsAllowedToRemoveKey(
 
 export function assertUserIsMemberOfKeychain(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);

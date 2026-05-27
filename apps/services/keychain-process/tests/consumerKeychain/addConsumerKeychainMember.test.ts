@@ -22,12 +22,10 @@ import {
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
-import type {
-  API_Keychain,
-  API_KeychainMemberSeed,
-} from "../../src/models/api.ts";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
-import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import type { API_KeychainMemberSeed } from "../../src/models/api.ts";
+
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -72,22 +70,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addConsumerKeycha
       .body(body);
 
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Keychain>();
-    const expectedConsumerKeychain: ConsumerKeychain = {
-      ...consumerKeychain,
-      updatedAt: new Date(responseBody.updatedAt),
-      users: [
-        ...consumerKeychain.users,
-        {
-          addedAt: new Date(responseBody.updatedAt),
-          userId: unsafeBrandUserId(memberId),
-        },
-      ],
+    const responseBody = response.json<API_CreatedMemberResource>();
+    const expectedCreatedMember: API_CreatedMemberResource = {
+      userId: memberId,
     };
-
-    expect(responseBody).toEqual(toAPI_Keychain(expectedConsumerKeychain));
+    expect(responseBody).toEqual(expectedCreatedMember);
 
     const events = await getAllKeychainEvents();
     const updatedEvent = events[1];
@@ -98,9 +87,19 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addConsumerKeycha
       version: 1,
     });
 
-    const updatedEventData = KeychainEventV1.parse(updatedEvent).data;
-    expect(updatedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
+    const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
+    expect(KeychainEventV1.parse(updatedEvent).data).toMatchObject({
+      consumerKeychain: {
+        ...consumerKeychainV1,
+        updatedAt: expect.any(Number),
+        users: [
+          ...consumerKeychainV1.users,
+          {
+            addedAt: expect.any(Number),
+            userId: memberId,
+          },
+        ],
+      },
       userId: memberId,
     });
   });
