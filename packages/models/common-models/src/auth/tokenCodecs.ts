@@ -141,5 +141,6 @@ export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   InternalTokenClaims,
   ExternalUISessionTokenClaims,
   KnodeApiAccessTokenClaims,
+  UISignupSessionTokenClaims,
 ]);
 export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;
