@@ -7,10 +7,10 @@ import type {
   FlatProducerKeychain,
   KeychainKey,
 } from "@knodia/keychain-models";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
 import type {
   API_ConsumerKeychainPurpose,
-  API_CreatedMemberResource,
   API_Keychain,
   API_KeychainKey,
   API_User,
