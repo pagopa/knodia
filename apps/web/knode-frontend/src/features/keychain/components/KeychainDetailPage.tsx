@@ -66,6 +66,7 @@ export function KeychainDetailPage<TTab extends string>(
   props: KeychainDetailPageProps<TTab>,
 ) {
   const { activeTab, keychain, offset, onOffsetChange, onTabChange } = props;
+  const canManageKeychain = useHasRole("administrative");
 
   const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
@@ -86,10 +87,12 @@ export function KeychainDetailPage<TTab extends string>(
 
       <PageHeader
         actions={
-          <>
-            <KeychainDeleteAction {...props} />
-            <KeychainEditAction {...props} />
-          </>
+          canManageKeychain && (
+            <>
+              <KeychainDeleteAction {...props} />
+              <KeychainEditAction {...props} />
+            </>
+          )
         }
         copyableId={keychain.id}
         description={keychain.description?.en}
