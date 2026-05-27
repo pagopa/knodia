@@ -1,6 +1,7 @@
 import type {
   CorrelationId,
   EserviceId,
+  KeyId,
   UserId,
 } from "@knodia/common-models/ids";
 import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/keychain";
@@ -140,4 +141,40 @@ export const createProducerKeychainEserviceUnlinkedV1Event = ({
     type: "ProducerKeychainEserviceUnlinkedV1",
   },
   streamId: producerKeychain.id,
+});
+
+export const createProducerKeychainKeyAddedV1Event = (
+  keychain: ProducerKeychain,
+  kid: KeyId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      kid,
+      producerKeychain: toProducerKeychainV1(keychain),
+    },
+    type: "ProducerKeychainKeyAddedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createProducerKeychainKeyRemovedV1Event = (
+  keychain: ProducerKeychain,
+  kid: KeyId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      kid,
+      producerKeychain: toProducerKeychainV1(keychain),
+    },
+    type: "ProducerKeychainKeyRemovedV1",
+  },
+  streamId: keychain.id,
 });

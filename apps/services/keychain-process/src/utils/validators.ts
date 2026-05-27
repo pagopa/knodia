@@ -147,7 +147,7 @@ export function assertUserIsMemberOfKeychain(
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   maxKeysPerKeychain: number,
   size: number,
 ): void => {
