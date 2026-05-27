@@ -24,10 +24,12 @@ import z from "zod";
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
 import {
+  API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
+  API_KeychainKeys,
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
@@ -486,5 +488,47 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const keys = await producerKeychainService.getProducerKeychainKeys(
+        req.params.producerKeychainId,
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: keys.totalCount,
+        },
+        results: keys.results.map(toAPI_KeychainKey),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve keys of a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainKeys",
+      params: API_ProducerKeychainIdPathParam,
+      querystring: API_GetProducerKeychainKeysQueryParams,
+      response: {
+        200: API_KeychainKeys.meta({
+          description: "Producer Keychain keys retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/keys",
   });
 };

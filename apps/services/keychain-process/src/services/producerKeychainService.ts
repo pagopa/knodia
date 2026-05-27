@@ -21,6 +21,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_KeychainKeySeed,
@@ -168,6 +169,31 @@ export function producerKeychainServiceBuilder(
       return await retrieveFlatProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+    },
+    async getProducerKeychainKeys(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<KeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Producer Keychain with ID ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveFlatProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      return await readmodelService.getProducerKeychainKeys(
+        producerKeychainId,
+        params,
       );
     },
     async getProducerKeychainMember(
