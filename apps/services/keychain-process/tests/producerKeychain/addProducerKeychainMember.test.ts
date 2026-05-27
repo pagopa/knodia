@@ -22,12 +22,10 @@ import {
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
-import type {
-  API_Keychain,
-  API_KeychainMemberSeed,
-} from "../../src/models/api.ts";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
-import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import type { API_KeychainMemberSeed } from "../../src/models/api.ts";
+
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -83,35 +81,36 @@ describe("POST /producerKeychains/:producerKeychainId/members (addProducerKeycha
     const response = await addProducerKeychainMember();
 
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Keychain>();
-    const expectedProducerKeychain: ProducerKeychain = {
-      ...producerKeychain,
-      updatedAt: new Date(responseBody.updatedAt),
-      users: [
-        ...producerKeychain.users,
-        {
-          addedAt: new Date(responseBody.updatedAt),
-          userId: unsafeBrandUserId(memberId),
-        },
-      ],
+    const responseBody = response.json<API_CreatedMemberResource>();
+    const expectedCreatedMember: API_CreatedMemberResource = {
+      userId: memberId,
     };
-
-    expect(responseBody).toEqual(toAPI_Keychain(expectedProducerKeychain));
+    expect(responseBody).toEqual(expectedCreatedMember);
 
     const events = await getAllKeychainEvents();
-    const updatedEvent = events[1];
+    const addedEvent = events[1];
 
-    expect(updatedEvent).toMatchObject({
+    expect(addedEvent).toMatchObject({
       streamId: producerKeychain.id,
       type: "ProducerKeychainMemberAddedV1",
       version: 1,
     });
 
-    const updatedEventData = KeychainEventV1.parse(updatedEvent).data;
-    expect(updatedEventData).toMatchObject({
-      producerKeychain: toProducerKeychainV1(expectedProducerKeychain),
+    const producerKeychainV1 = toProducerKeychainV1(producerKeychain);
+    expect(KeychainEventV1.parse(addedEvent).data).toMatchObject({
+      producerKeychain: {
+        ...producerKeychainV1,
+        updatedAt: expect.any(Number),
+        users: [
+          ...producerKeychainV1.users,
+          {
+            addedAt: expect.any(Number),
+            userId: memberId,
+          },
+        ],
+      },
       userId: memberId,
     });
   });

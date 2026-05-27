@@ -26,6 +26,7 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  type API_CreatedMemberResource,
   API_UnlinkConsumerKeychainIdPathParams,
   API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
@@ -113,7 +114,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollConsumerKeychain = (
-    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
+    response:
+      | AxiosResponse<API_CreatedMemberResource | API_CreatedResource>
+      | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
     consumerKeychainId: ConsumerKeychainId,
   ) =>
