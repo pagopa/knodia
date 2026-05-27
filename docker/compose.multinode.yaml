@@ -991,6 +991,10 @@ services:
       SIGNAL_HUB_DB_USER: local_orion_mock_eservice_user
       SIGNAL_HUB_DB_PASSWORD: local_orion_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1002,6 +1006,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   signal-hub-orion:
     security_opt:
@@ -1720,6 +1726,10 @@ services:
       SIGNAL_HUB_DB_USER: local_lynx_mock_eservice_user
       SIGNAL_HUB_DB_PASSWORD: local_lynx_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1731,6 +1741,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   signal-hub-lynx:
     security_opt:

@@ -66,6 +66,14 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
+      rateLimiterMaxRequests: 200,
+      rateLimiterRedisHost:
+        process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+      rateLimiterRedisPort: Number(
+        process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+      ),
+      rateLimiterTimeoutSeconds: 2,
+      rateLimiterTimeWindowSeconds: 60,
       signalHubDbHost: "localhost",
       signalHubDbName: "signal_hub",
       signalHubDbPassword: "unused",

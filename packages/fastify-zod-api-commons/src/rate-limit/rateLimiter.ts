@@ -10,7 +10,7 @@ import type { RateLimiterConfig } from "./config.ts";
 
 export interface RateLimiter {
   consume(
-    rateLimitKey: ExternalId<OrganizationId> | OrganizationId,
+    organizationId: ExternalId<OrganizationId> | OrganizationId,
     logger: FastifyBaseLogger,
   ): Promise<RateLimiterStatus>;
   disconnect(): Promise<void>;
