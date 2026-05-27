@@ -265,7 +265,7 @@ export function knodeApiKeychainServiceBuilder(
           cognitoIdmClient,
           keychainId: knodeApiKeychainId,
           keychainKind: "Knode API Keychain",
-          params,
+          paginationParams: params,
           users: knodeApiKeychain.users,
         }),
         totalCount: knodeApiKeychain.users.length,

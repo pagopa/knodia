@@ -1,4 +1,5 @@
 import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { API_PaginationQueryParams } from "@knodia/common-models/api";
 import type {
   ConsumerKeychainId,
   KeyId,
@@ -17,7 +18,6 @@ import type {
 
 import { genericInternalError } from "@knodia/common-models/errors";
 
-import type { API_GetProducerKeychainMembersQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
@@ -198,18 +198,18 @@ export async function retrievePaginatedKeychainUsers({
   cognitoIdmClient,
   keychainId,
   keychainKind,
-  params,
+  paginationParams: { limit, offset },
   users,
 }: {
   cognitoIdmClient: CognitoIdmClient;
   keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId;
   keychainKind: KeychainKind;
-  params: API_GetProducerKeychainMembersQueryParams;
+  paginationParams: API_PaginationQueryParams;
   users: KeychainUser[];
 }) {
   const paginatedUserIds = users
     .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-    .slice(params.offset, params.offset + params.limit);
+    .slice(offset, offset + limit);
 
   return await Promise.all(
     paginatedUserIds.map(({ userId }) =>

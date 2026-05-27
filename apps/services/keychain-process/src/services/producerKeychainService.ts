@@ -209,7 +209,7 @@ export function producerKeychainServiceBuilder(
           cognitoIdmClient,
           keychainId: producerKeychainId,
           keychainKind: "Producer Keychain",
-          params,
+          paginationParams: params,
           users: producerKeychain.users,
         }),
         totalCount: producerKeychain.users.length,
