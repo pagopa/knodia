@@ -131,7 +131,6 @@ export const getConsumerKeychainKey = <ThrowOnError extends boolean = true>(opti
  * Remove a member from a Consumer Keychain
  */
 export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainMemberResponses, RemoveConsumerKeychainMemberErrors, ThrowOnError>({
-    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/members/{userId}',
     ...options
@@ -341,7 +340,6 @@ export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(o
  * Remove a member from a Knode API Keychain
  */
 export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainMemberResponses, RemoveKnodeApiKeychainMemberErrors, ThrowOnError>({
-    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/knodeApiKeychains/{knodeApiKeychainId}/members/{userId}',
     ...options
@@ -432,7 +430,6 @@ export const addProducerKeychainMember = <ThrowOnError extends boolean = true>(o
  * Remove a member from a Producer Keychain
  */
 export const removeProducerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveProducerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveProducerKeychainMemberResponses, RemoveProducerKeychainMemberErrors, ThrowOnError>({
-    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producerKeychains/{producerKeychainId}/members/{userId}',
     ...options

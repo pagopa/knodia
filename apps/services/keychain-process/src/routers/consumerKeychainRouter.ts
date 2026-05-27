@@ -34,6 +34,7 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposes,
+  API_CreatedMemberResource,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposePathParams,
@@ -52,6 +53,7 @@ import {
 } from "../models/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
+  toAPI_CreatedMemberResource,
   toAPI_Keychain,
   toAPI_KeychainKey,
   toAPI_User,
@@ -377,7 +379,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: consumerKeychain,
+        data: addedMemberId,
         metadata: { version },
       } = await consumerKeychainService.addConsumerKeychainMember(
         req.params.consumerKeychainId,
@@ -385,7 +387,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         ctx,
       );
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(consumerKeychain));
+      res.status(201).send(toAPI_CreatedMemberResource(addedMemberId));
     },
     method: "POST",
     schema: {
@@ -395,9 +397,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "addConsumerKeychainMember",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: {
+        201: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: API_CreatedMemberResource.meta({
             description: "Consumer Keychain member added successfully",
           }),
         },
@@ -545,7 +547,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: consumerKeychain,
         metadata: { version },
       } = await consumerKeychainService.removeConsumerKeychainMember(
         unsafeBrandId(req.params.consumerKeychainId),
@@ -554,7 +555,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(consumerKeychain));
+      res.status(204).send();
     },
     method: "DELETE",
     schema: {
@@ -563,9 +564,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "removeConsumerKeychainMember",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
-        200: {
+        204: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: z.undefined().meta({
             description: "Consumer Keychain member removed successfully",
           }),
         },
