@@ -296,7 +296,6 @@ export function producerKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-
     async updateProducerKeychain(
       producerKeychainId: ProducerKeychainId,
       update: API_KeychainPatch,
