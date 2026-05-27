@@ -268,6 +268,8 @@ function ProducerEservicesTab() {
   );
 }
 
+// TODO(KN-673): replace with the real Members tab once Producer Keychain
+// member endpoints land.
 function ProducerMembersPlaceholder() {
   return (
     <Section
@@ -281,6 +283,8 @@ function ProducerMembersPlaceholder() {
   );
 }
 
+// TODO(KN-673): replace with the real Public Keys tab once Producer Keychain
+// key endpoints land.
 function ProducerPublicKeysPlaceholder() {
   return (
     <Section title="Public Keys">
