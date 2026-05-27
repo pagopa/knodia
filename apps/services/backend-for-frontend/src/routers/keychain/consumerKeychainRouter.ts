@@ -53,7 +53,6 @@ import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
-  API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainOptions,
   API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
@@ -69,6 +68,7 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainMembershipCheckResult,
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
@@ -658,7 +658,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getConsumerKeychainMembership",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
-        200: API_ConsumerKeychainMembershipCheckResult.meta({
+        200: API_KeychainMembershipCheckResult.meta({
           description:
             "Consumer Keychain membership check retrieved successfully",
         }),

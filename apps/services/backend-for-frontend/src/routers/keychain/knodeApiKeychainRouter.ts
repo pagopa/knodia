@@ -43,12 +43,12 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainMembershipCheckResult,
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
-  API_KnodeApiKeychainMembershipCheckResult,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
 import {
@@ -686,7 +686,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getKnodeApiKeychainMembership",
       params: API_KnodeApiKeychainMemberPathParams,
       response: {
-        200: API_KnodeApiKeychainMembershipCheckResult.meta({
+        200: API_KeychainMembershipCheckResult.meta({
           description:
             "Knode API Keychain membership check retrieved successfully",
         }),
