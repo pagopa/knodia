@@ -1,7 +1,5 @@
 extends:
   - "@knodia/spectral-config/spectral.yaml"
-rules:
-  missing-ratelimit: warn
 overrides:
   # False positive: "knodeApiKeychainId" contains "apikey" (case-insensitive) due to the
   # resource name "KnodeApiKeychain", but it is a path identifier, not a credential.

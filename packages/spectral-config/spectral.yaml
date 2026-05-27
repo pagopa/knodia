@@ -14,8 +14,9 @@ rules:
     off # our Problem schema has no "detail";
     # also, our generated OpenAPI files have allOf when there is a $ref + description,
     # in line with OpenAPI 3.0 spec
-  missing-ratelimit: off # off by default — internal services aren't rate-limited;
-    # frontier services (BFF, authorization-server, signal-hub) override this rule on.
+  missing-ratelimit: error # on by default — disable it explicitly on services
+    # that aren't publicly reachable. Enabled on frontier services (BFF,
+    # authorization-server, signal-hub, mock-eservice, signup-manager).
 
   # Hints
   has-x-api-id: off # we don't use x-api-id custom field
