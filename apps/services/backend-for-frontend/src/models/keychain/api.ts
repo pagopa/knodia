@@ -195,7 +195,6 @@ export const API_KeychainPatch = z
     name: API_KeychainLocalizedName.optional(),
   })
   .meta({ id: "KeychainPatch" });
-
 export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
 
 export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;

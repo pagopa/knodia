@@ -32,13 +32,13 @@ import {
 } from "@knodia/remote-resources-manager-client";
 
 import type {
-  API_ConsumerKeychainPatch,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_KeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -502,7 +502,7 @@ export function consumerKeychainServiceBuilder(
 
     async updateConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
-      update: API_ConsumerKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(`Updating Consumer Keychain ${consumerKeychainId}`);

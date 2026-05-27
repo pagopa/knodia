@@ -2,6 +2,7 @@ import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   OrganizationId,
@@ -20,6 +21,7 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  eserviceAlreadyLinkedToProducerKeychain,
   invalidUserRole,
   keyAlreadyExists,
   keychainMemberNotFound,
@@ -29,6 +31,25 @@ import {
   userNotAllowed,
   userNotFound,
 } from "../models/errors.ts";
+
+export async function assertEserviceIsNotLinkedToProducerKeychain(
+  producerKeychainId: ProducerKeychainId,
+  eserviceId: EserviceId,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  const producerKeychainEservice =
+    await readmodelService.getProducerKeychainEservice({
+      eserviceId,
+      producerKeychainId,
+    });
+
+  if (producerKeychainEservice) {
+    throw eserviceAlreadyLinkedToProducerKeychain(
+      producerKeychainId,
+      eserviceId,
+    );
+  }
+}
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -126,7 +147,7 @@ export function assertUserIsMemberOfKeychain(
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   maxKeysPerKeychain: number,
   size: number,
 ): void => {

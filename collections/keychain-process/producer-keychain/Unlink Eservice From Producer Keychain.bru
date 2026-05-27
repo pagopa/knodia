@@ -1,0 +1,20 @@
+meta {
+  name: Unlink Eservice From Producer Keychain
+  type: http
+}
+
+delete {
+  url: {{host-keychain-process}}/producerKeychains/:producerKeychainId/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

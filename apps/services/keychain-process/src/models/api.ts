@@ -84,25 +84,13 @@ export const API_KeychainSeed = z
   .meta({ id: "KeychainSeed" });
 export type API_KeychainSeed = z.infer<typeof API_KeychainSeed>;
 
-export const API_ConsumerKeychainPatch = z
+export const API_KeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
     name: API_KeychainLocalizedName.optional(),
   })
-  .meta({ id: "ConsumerKeychainPatch" });
-export type API_ConsumerKeychainPatch = z.infer<
-  typeof API_ConsumerKeychainPatch
->;
-
-export const API_KnodeApiKeychainPatch = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.nullable().optional(),
-    name: API_KeychainLocalizedName.optional(),
-  })
-  .meta({ id: "KnodeApiKeychainPatch" });
-export type API_KnodeApiKeychainPatch = z.infer<
-  typeof API_KnodeApiKeychainPatch
->;
+  .meta({ id: "KeychainPatch" });
+export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
 
 export const API_KeychainKeySeed = z
   .strictObject({
@@ -286,16 +274,6 @@ export type API_GetProducerKeychainsQueryParams = z.infer<
   typeof API_GetProducerKeychainsQueryParams
 >;
 
-export const API_ProducerKeychainPatch = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.nullable().optional(),
-    name: API_KeychainLocalizedName.optional(),
-  })
-  .meta({ id: "ProducerKeychainPatch" });
-export type API_ProducerKeychainPatch = z.infer<
-  typeof API_ProducerKeychainPatch
->;
-
 export const API_ProducerKeychainMemberPathParams = z
   .strictObject({
     userId: API_UserId,
@@ -309,4 +287,35 @@ export const API_GetProducerKeychainMembersQueryParams =
   API_PaginationQueryParams;
 export type API_GetProducerKeychainMembersQueryParams = z.infer<
   typeof API_GetProducerKeychainMembersQueryParams
+>;
+
+export const API_ProducerKeychainEserviceLinkSeed = z
+  .strictObject({
+    eserviceId: z.uuid(),
+  })
+  .meta({ id: "ProducerKeychainEserviceLinkSeed" });
+export type API_ProducerKeychainEserviceLinkSeed = z.infer<
+  typeof API_ProducerKeychainEserviceLinkSeed
+>;
+
+export const API_ProducerKeychainEservicePathParams =
+  API_ProducerKeychainIdPathParam.extend({
+    eserviceId: z.uuid(),
+  });
+export type API_ProducerKeychainEservicePathParams = z.infer<
+  typeof API_ProducerKeychainEservicePathParams
+>;
+
+export const API_ProducerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+export type API_ProducerKeychainKeyPathParams = z.infer<
+  typeof API_ProducerKeychainKeyPathParams
+>;
+
+export const API_GetProducerKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetProducerKeychainKeysQueryParams = z.infer<
+  typeof API_GetProducerKeychainKeysQueryParams
 >;

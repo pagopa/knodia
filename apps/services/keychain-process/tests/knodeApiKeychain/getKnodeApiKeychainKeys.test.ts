@@ -184,6 +184,6 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId/keys (getKnodeApiKeychainKe
       query: { limit: "0", offset: "-1" },
     });
 
-    expect((await response).statusCode).toBe(400);
+    expect(response.statusCode).toBe(400);
   });
 });
