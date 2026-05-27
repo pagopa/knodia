@@ -3,7 +3,10 @@ import type { AttributeGroup } from "@knodia/attribute-models";
 import { fromOptionalExternalResource } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
-import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import {
+  PurposeFormAnswers,
+  PurposeFormSchemaVersion,
+} from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 
 import {
@@ -57,16 +60,23 @@ const fromReceiveDataConfigV1 = (
 
 const fromPurposeFormAnswerV1 = (
   input: PurposeFormAnswerV1,
-): PurposeFormAnswer => ({
-  description: input.description,
-  id: unsafeBrandId(input.id),
-  name: input.name,
-  schema: JSON.parse(input.schemaJson) as PurposeFormAnswer["schema"],
-  texts: JSON.parse(input.textsJson) as PurposeFormAnswer["texts"],
-  uiSchema: JSON.parse(input.uiSchemaJson) as PurposeFormAnswer["uiSchema"],
-  uiTexts: JSON.parse(input.uiTextsJson) as PurposeFormAnswer["uiTexts"],
-  version: PurposeFormSchemaVersion.parse(input.version),
-});
+): PurposeFormAnswer => {
+  assertRequired(input.name, "PurposeFormAnswer name is undefined");
+  assertRequired(
+    input.description,
+    "PurposeFormAnswer description is undefined",
+  );
+
+  return {
+    description: input.description,
+    formAnswersJson: PurposeFormAnswers.parse(
+      JSON.parse(input.formAnswersJson),
+    ),
+    formSchemaVersion: PurposeFormSchemaVersion.parse(input.formSchemaVersion),
+    id: unsafeBrandId(input.id),
+    name: input.name,
+  };
+};
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)

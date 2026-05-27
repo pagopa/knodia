@@ -148,17 +148,16 @@ export interface ReceiveDataConfigV1 {
 
 export interface PurposeFormAnswerV1 {
   id: string;
-  name: string;
-  description: string;
+  name: LocalizedTextV1 | undefined;
+  description:
+    | LocalizedTextV1
+    | undefined;
   /**
-   * JSON-encoded strings for the form schema parts (mirrors the on-the-wire
-   * representation used elsewhere for purpose form schemas).
+   * JSON-encoded map of pre-filled answers (mirrors how Purpose serializes
+   * its `formAnswersJson` field).
    */
-  schemaJson: string;
-  uiSchemaJson: string;
-  textsJson: string;
-  uiTextsJson: string;
-  version: string;
+  formAnswersJson: string;
+  formSchemaVersion: string;
 }
 
 export interface EserviceCategoryV1 {
@@ -557,16 +556,7 @@ export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
 };
 
 function createBasePurposeFormAnswerV1(): PurposeFormAnswerV1 {
-  return {
-    id: "",
-    name: "",
-    description: "",
-    schemaJson: "",
-    uiSchemaJson: "",
-    textsJson: "",
-    uiTextsJson: "",
-    version: "",
-  };
+  return { id: "", name: undefined, description: undefined, formAnswersJson: "", formSchemaVersion: "" };
 }
 
 export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
@@ -574,26 +564,17 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (message.name !== "") {
-      writer.uint32(18).string(message.name);
+    if (message.name !== undefined) {
+      LocalizedTextV1.encode(message.name, writer.uint32(18).fork()).join();
     }
-    if (message.description !== "") {
-      writer.uint32(26).string(message.description);
+    if (message.description !== undefined) {
+      LocalizedTextV1.encode(message.description, writer.uint32(26).fork()).join();
     }
-    if (message.schemaJson !== "") {
-      writer.uint32(34).string(message.schemaJson);
+    if (message.formAnswersJson !== "") {
+      writer.uint32(34).string(message.formAnswersJson);
     }
-    if (message.uiSchemaJson !== "") {
-      writer.uint32(42).string(message.uiSchemaJson);
-    }
-    if (message.textsJson !== "") {
-      writer.uint32(50).string(message.textsJson);
-    }
-    if (message.uiTextsJson !== "") {
-      writer.uint32(58).string(message.uiTextsJson);
-    }
-    if (message.version !== "") {
-      writer.uint32(66).string(message.version);
+    if (message.formSchemaVersion !== "") {
+      writer.uint32(42).string(message.formSchemaVersion);
     }
     return writer;
   },
@@ -618,7 +599,7 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
             break;
           }
 
-          message.name = reader.string();
+          message.name = LocalizedTextV1.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -626,7 +607,7 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
             break;
           }
 
-          message.description = reader.string();
+          message.description = LocalizedTextV1.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
@@ -634,7 +615,7 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
             break;
           }
 
-          message.schemaJson = reader.string();
+          message.formAnswersJson = reader.string();
           continue;
         }
         case 5: {
@@ -642,31 +623,7 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
             break;
           }
 
-          message.uiSchemaJson = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.textsJson = reader.string();
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.uiTextsJson = reader.string();
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.version = reader.string();
+          message.formSchemaVersion = reader.string();
           continue;
         }
       }
@@ -681,13 +638,10 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
   fromJSON(object: any): PurposeFormAnswerV1 {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : "",
-      schemaJson: isSet(object.schemaJson) ? globalThis.String(object.schemaJson) : "",
-      uiSchemaJson: isSet(object.uiSchemaJson) ? globalThis.String(object.uiSchemaJson) : "",
-      textsJson: isSet(object.textsJson) ? globalThis.String(object.textsJson) : "",
-      uiTextsJson: isSet(object.uiTextsJson) ? globalThis.String(object.uiTextsJson) : "",
-      version: isSet(object.version) ? globalThis.String(object.version) : "",
+      name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
+      description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
+      formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
+      formSchemaVersion: isSet(object.formSchemaVersion) ? globalThis.String(object.formSchemaVersion) : "",
     };
   },
 
@@ -696,26 +650,17 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
     if (message.id !== "") {
       obj.id = message.id;
     }
-    if (message.name !== "") {
-      obj.name = message.name;
+    if (message.name !== undefined) {
+      obj.name = LocalizedTextV1.toJSON(message.name);
     }
-    if (message.description !== "") {
-      obj.description = message.description;
+    if (message.description !== undefined) {
+      obj.description = LocalizedTextV1.toJSON(message.description);
     }
-    if (message.schemaJson !== "") {
-      obj.schemaJson = message.schemaJson;
+    if (message.formAnswersJson !== "") {
+      obj.formAnswersJson = message.formAnswersJson;
     }
-    if (message.uiSchemaJson !== "") {
-      obj.uiSchemaJson = message.uiSchemaJson;
-    }
-    if (message.textsJson !== "") {
-      obj.textsJson = message.textsJson;
-    }
-    if (message.uiTextsJson !== "") {
-      obj.uiTextsJson = message.uiTextsJson;
-    }
-    if (message.version !== "") {
-      obj.version = message.version;
+    if (message.formSchemaVersion !== "") {
+      obj.formSchemaVersion = message.formSchemaVersion;
     }
     return obj;
   },
@@ -726,13 +671,14 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
   fromPartial<I extends Exact<DeepPartial<PurposeFormAnswerV1>, I>>(object: I): PurposeFormAnswerV1 {
     const message = createBasePurposeFormAnswerV1();
     message.id = object.id ?? "";
-    message.name = object.name ?? "";
-    message.description = object.description ?? "";
-    message.schemaJson = object.schemaJson ?? "";
-    message.uiSchemaJson = object.uiSchemaJson ?? "";
-    message.textsJson = object.textsJson ?? "";
-    message.uiTextsJson = object.uiTextsJson ?? "";
-    message.version = object.version ?? "";
+    message.name = (object.name !== undefined && object.name !== null)
+      ? LocalizedTextV1.fromPartial(object.name)
+      : undefined;
+    message.description = (object.description !== undefined && object.description !== null)
+      ? LocalizedTextV1.fromPartial(object.description)
+      : undefined;
+    message.formAnswersJson = object.formAnswersJson ?? "";
+    message.formSchemaVersion = object.formSchemaVersion ?? "";
     return message;
   },
 };

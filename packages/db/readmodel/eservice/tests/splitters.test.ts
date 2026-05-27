@@ -129,14 +129,11 @@ describe("E-service Splitters", () => {
       purposeFormAnswers.map((purposeFormAnswer) => ({
         description: purposeFormAnswer.description,
         eserviceId: eservice.id,
+        formAnswersJson: purposeFormAnswer.formAnswersJson,
+        formSchemaVersion: purposeFormAnswer.formSchemaVersion,
         id: purposeFormAnswer.id,
         metadataVersion,
         name: purposeFormAnswer.name,
-        schema: purposeFormAnswer.schema,
-        texts: purposeFormAnswer.texts,
-        uiSchema: purposeFormAnswer.uiSchema,
-        uiTexts: purposeFormAnswer.uiTexts,
-        version: purposeFormAnswer.version,
       }));
 
     expect(eservicePurposeFormAnswersSQL).toEqual(

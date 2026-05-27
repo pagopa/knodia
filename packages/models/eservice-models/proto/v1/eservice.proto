@@ -24,15 +24,12 @@ message ReceiveDataConfigV1 {
 
 message PurposeFormAnswerV1 {
   string id = 1;
-  string name = 2;
-  string description = 3;
-  // JSON-encoded strings for the form schema parts (mirrors the on-the-wire
-  // representation used elsewhere for purpose form schemas).
-  string schemaJson = 4;
-  string uiSchemaJson = 5;
-  string textsJson = 6;
-  string uiTextsJson = 7;
-  string version = 8;
+  LocalizedTextV1 name = 2;
+  LocalizedTextV1 description = 3;
+  // JSON-encoded map of pre-filled answers (mirrors how Purpose serializes
+  // its `formAnswersJson` field).
+  string formAnswersJson = 4;
+  string formSchemaVersion = 5;
 }
 
 message EserviceCategoryV1 {

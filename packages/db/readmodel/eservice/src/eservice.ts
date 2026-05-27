@@ -202,16 +202,13 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
 export const readmodelEservicePurposeFormAnswer = eserviceSchema.table(
   "eservice_purpose_form_answer",
   {
-    description: text().notNull(),
+    description: jsonb().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
+    formAnswersJson: jsonb("form_answers_json").notNull(),
+    formSchemaVersion: text("form_schema_version").notNull(),
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
-    name: text().notNull(),
-    schema: jsonb().notNull(),
-    texts: jsonb().notNull(),
-    uiSchema: jsonb("ui_schema").notNull(),
-    uiTexts: jsonb("ui_texts").notNull(),
-    version: text().notNull(),
+    name: jsonb().notNull(),
   },
   (table) => [
     foreignKey({

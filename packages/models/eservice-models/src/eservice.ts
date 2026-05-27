@@ -9,7 +9,10 @@ import {
   PurposeFormAnswerId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
-import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import {
+  PurposeFormAnswers,
+  PurposeFormSchemaVersion,
+} from "@knodia/purpose-models";
 import z from "zod";
 
 const INT32_MAX = 2_147_483_647;
@@ -83,23 +86,19 @@ export const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
-// Pre-filled form on a ReceiveData e-service. The Producer publishes one or
-// more of these on the e-service; the Consumer selects one when creating a
-// Purpose, and the backend snapshots it into Purpose.formAnswersJson.
-const PurposeFormSchemaJson = z.record(z.string(), z.unknown());
-const PurposeFormLocalizedTexts = z.strictObject({
-  en: z.record(z.string(), z.string()),
-});
-
+// Pre-filled purpose form answer on a ReceiveData e-service. The Producer
+// publishes one or more of these on the e-service; the Consumer selects one
+// when creating a Purpose, and the backend snapshots `formAnswersJson` +
+// `formSchemaVersion` into the corresponding fields on the new Purpose.
+// The form schema (schema / uiSchema / texts / uiTexts) is NOT stored here:
+// it's referenced by `formSchemaVersion` and fetched at runtime from the
+// purpose-process service, consistent with how the Purpose model works.
 export const PurposeFormAnswer = z.strictObject({
-  description: z.string().max(maxDescriptionLength),
+  description: LocalizedDescription,
+  formAnswersJson: PurposeFormAnswers,
+  formSchemaVersion: PurposeFormSchemaVersion,
   id: PurposeFormAnswerId,
-  name: z.string().min(minNameLength).max(maxNameLength),
-  schema: PurposeFormSchemaJson,
-  texts: PurposeFormLocalizedTexts,
-  uiSchema: PurposeFormSchemaJson,
-  uiTexts: PurposeFormLocalizedTexts,
-  version: PurposeFormSchemaVersion,
+  name: LocalizedName,
 });
 export type PurposeFormAnswer = z.infer<typeof PurposeFormAnswer>;
 

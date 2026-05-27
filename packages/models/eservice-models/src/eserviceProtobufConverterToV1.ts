@@ -80,13 +80,10 @@ const toPurposeFormAnswerV1 = (
   purposeFormAnswer: PurposeFormAnswer,
 ): PurposeFormAnswerV1 => ({
   description: purposeFormAnswer.description,
+  formAnswersJson: JSON.stringify(purposeFormAnswer.formAnswersJson),
+  formSchemaVersion: purposeFormAnswer.formSchemaVersion,
   id: purposeFormAnswer.id,
   name: purposeFormAnswer.name,
-  schemaJson: JSON.stringify(purposeFormAnswer.schema),
-  textsJson: JSON.stringify(purposeFormAnswer.texts),
-  uiSchemaJson: JSON.stringify(purposeFormAnswer.uiSchema),
-  uiTextsJson: JSON.stringify(purposeFormAnswer.uiTexts),
-  version: purposeFormAnswer.version,
 });
 
 const toReceiveDataConfigV1 = (

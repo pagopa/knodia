@@ -168,17 +168,11 @@ export function getMockOrganization(seed = 0): Organization {
 
 export function getMockPurposeFormAnswer(seed = 0): PurposeFormAnswer {
   return {
-    description: `mock description ${seed}`,
+    description: { en: `Mock purpose form answer description ${seed}` },
+    formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
+    formSchemaVersion: "1.0",
     id: generateId<PurposeFormAnswerId>(),
-    name: `mock form ${seed}`,
-    schema: {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      type: "object",
-    },
-    texts: { en: { "field.label": `Label ${seed}` } },
-    uiSchema: { elements: [], type: "VerticalLayout" },
-    uiTexts: { en: { "groups.foo.label": `Group ${seed}` } },
-    version: "1.0",
+    name: { en: `Mock form ${seed}` },
   };
 }
 

@@ -174,13 +174,10 @@ const toReceiveDataConfig = (
     purposeFormAnswers: purposeFormAnswersSQL.map((sql) =>
       PurposeFormAnswer.parse({
         description: sql.description,
+        formAnswersJson: sql.formAnswersJson,
+        formSchemaVersion: sql.formSchemaVersion,
         id: sql.id,
         name: sql.name,
-        schema: sql.schema,
-        texts: sql.texts,
-        uiSchema: sql.uiSchema,
-        uiTexts: sql.uiTexts,
-        version: sql.version,
       }),
     ),
   };
