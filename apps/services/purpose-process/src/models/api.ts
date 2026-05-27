@@ -35,6 +35,18 @@ export const API_PurposeSeed = z
   .meta({ id: "PurposeSeed" });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
+export const API_ReversePurposeSeed = z
+  .strictObject({
+    consumer: API_PurposeConsumer,
+    dailyCalls: API_PurposeDailyCalls,
+    description: API_LocalizedPurposeDescription,
+    eserviceId: z.uuid(),
+    name: API_LocalizedPurposeName,
+    purposeFormAnswerId: z.uuid(),
+  })
+  .meta({ id: "ReversePurposeSeed" });
+export type API_ReversePurposeSeed = z.infer<typeof API_ReversePurposeSeed>;
+
 export const API_Purpose = z
   .strictObject({
     // formAnswersJson and formSchemaVersion are intentionally excluded —

@@ -7,6 +7,7 @@ import {
 } from "@knodia/common-models/externalResource";
 import {
   type OrganizationId,
+  type PurposeFormAnswerId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -30,6 +31,7 @@ import {
   API_Purpose,
   API_Purposes,
   API_PurposeSeed,
+  API_ReversePurposeSeed,
   API_TotalDailyCalls,
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
@@ -95,6 +97,58 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.createReversePurpose(
+        {
+          consumer: fromExternalResource<OrganizationId>(req.body.consumer),
+          dailyCalls: req.body.dailyCalls,
+          description: req.body.description,
+          eserviceId: unsafeBrandId(req.body.eserviceId),
+          name: req.body.name,
+          purposeFormAnswerId: unsafeBrandId<PurposeFormAnswerId>(
+            req.body.purposeFormAnswerId,
+          ),
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      body: API_ReversePurposeSeed,
+      description:
+        "Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormAnswer published by the Producer on the E-service",
+      headers: KnodiaServiceHeaders,
+      operationId: "createReversePurpose",
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Reverse Purpose created successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Create Reverse Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/receive-mode",
   });
 
   fastify.route({
