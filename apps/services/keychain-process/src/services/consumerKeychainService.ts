@@ -59,7 +59,8 @@ import {
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
+  retrieveKeychainMember,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
@@ -72,7 +73,6 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -251,23 +251,13 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      return await retrieveKeychainUser(
-        userId,
-        consumerKeychainId,
-        "Consumer Keychain",
+      return await retrieveKeychainMember({
+        authData,
         cognitoIdmClient,
-      );
+        keychain: consumerKeychain.data,
+        keychainKind: "Consumer Keychain",
+        userId,
+      });
     },
 
     async getConsumerKeychainMembers(
@@ -290,21 +280,14 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      const paginatedUserIds = consumerKeychain.users
-        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-        .slice(params.offset, params.offset + params.limit);
-
       return {
-        results: await Promise.all(
-          paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              consumerKeychainId,
-              "Consumer Keychain",
-              cognitoIdmClient,
-            ),
-          ),
-        ),
+        results: await retrievePaginatedKeychainUsers({
+          cognitoIdmClient,
+          keychainId: consumerKeychainId,
+          keychainKind: "Consumer Keychain",
+          params,
+          users: consumerKeychain.users,
+        }),
         totalCount: consumerKeychain.users.length,
       };
     },
