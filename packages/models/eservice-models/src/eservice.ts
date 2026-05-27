@@ -86,13 +86,6 @@ export const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
-// Pre-filled purpose form answer on a ReceiveData e-service. The Producer
-// publishes one or more of these on the e-service; the Consumer selects one
-// when creating a Purpose, and the backend snapshots `formAnswersJson` +
-// `formSchemaVersion` into the corresponding fields on the new Purpose.
-// The form schema (schema / uiSchema / texts / uiTexts) is NOT stored here:
-// it's referenced by `formSchemaVersion` and fetched at runtime from the
-// purpose-process service, consistent with how the Purpose model works.
 export const PurposeFormAnswer = z.strictObject({
   description: LocalizedDescription,
   formAnswersJson: PurposeFormAnswers,
@@ -117,7 +110,7 @@ export const Eservice = z.strictObject({
   mode: EserviceMode,
   name: LocalizedName,
   producerId: OrganizationId,
-  receiveDataConfig: ReceiveDataConfig.optional(), // present only when mode is ReceiveData
+  receiveDataConfig: ReceiveDataConfig.optional(),
   template: ExternalResource<EserviceTemplateId>().optional(), // present only if the eservice is created from a template
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

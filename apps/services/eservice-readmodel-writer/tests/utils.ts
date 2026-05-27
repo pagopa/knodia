@@ -4,6 +4,7 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
+  readmodelEservicePurposeFormAnswer,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
@@ -16,6 +17,7 @@ export async function getAllEservices(readmodelDb: NodePgDatabase) {
       category: readmodelEserviceCategory,
       eservice: readmodelEservice,
       interface: readmodelEserviceInterface,
+      purposeFormAnswer: readmodelEservicePurposeFormAnswer,
       requiredAttribute: readmodelEserviceVersionRequiredAttribute,
       version: readmodelEserviceVersion,
     })
@@ -41,6 +43,10 @@ export async function getAllEservices(readmodelDb: NodePgDatabase) {
         readmodelEserviceVersion.id,
         readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
       ),
+    )
+    .leftJoin(
+      readmodelEservicePurposeFormAnswer,
+      eq(readmodelEservice.id, readmodelEservicePurposeFormAnswer.eserviceId),
     );
 
   return aggregateEservices(queryRes);
