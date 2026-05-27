@@ -83,6 +83,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return queryResult.length > 0;
     },
+    async checkProducerKeychainKeyExists(kid: KeyId) {
+      const queryResult = await readmodelDb
+        .select({ kid: readmodelProducerKeychainKey.kid })
+        .from(readmodelProducerKeychainKey)
+        .where(eq(readmodelProducerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
     async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getConsumerKeychainById(
         consumerKeychainId,
