@@ -58,7 +58,6 @@ const buildReceiveDataEservice = (opts: { seed?: number } = {}) => {
       seed: opts.seed,
     }),
     mode: EserviceMode.enum.ReceiveData,
-    purposeFormAnswers,
   };
 };
 
@@ -86,7 +85,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
       const eservice = buildReceiveDataEservice();
       // Pick the SECOND PFA on purpose: ensures the service looks up by id
       // rather than blindly picking purposeFormAnswers[0].
-      const chosen = eservice.purposeFormAnswers[1]!;
+      const chosen = eservice.receiveDataConfig!.purposeFormAnswers[1]!;
       await setupEserviceAndAgreement(eservice);
 
       const body: API_ReversePurposeSeed = {
@@ -175,7 +174,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         eserviceId: eservice.id,
         formAnswersJson: { foo: "bar" },
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId: eservice.purposeFormAnswers[0]!.id,
+        purposeFormAnswerId:
+          eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
       });
     expect(response.statusCode).toBe(400);
   });
@@ -305,7 +305,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         description: { en: "A valid test description for receive-mode" },
         eserviceId: eservice.id,
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId: eservice.purposeFormAnswers[0]!.id,
+        purposeFormAnswerId:
+          eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
       } satisfies API_ReversePurposeSeed);
     expect(response.statusCode).toBe(404);
   });
@@ -344,7 +345,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
           description: { en: "A valid test description for receive-mode" },
           eserviceId: eservice.id,
           name: { en: "Valid Test Name" },
-          purposeFormAnswerId: eservice.purposeFormAnswers[0]!.id,
+          purposeFormAnswerId:
+            eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
         } satisfies API_ReversePurposeSeed);
       expect(response.statusCode).toBe(409);
     },
