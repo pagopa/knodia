@@ -91,16 +91,16 @@ describe("POST /producerKeychains/:producerKeychainId/members (addProducerKeycha
     expect(responseBody).toEqual(expectedCreatedMember);
 
     const events = await getAllKeychainEvents();
-    const updatedEvent = events[1];
+    const addedEvent = events[1];
 
-    expect(updatedEvent).toMatchObject({
+    expect(addedEvent).toMatchObject({
       streamId: producerKeychain.id,
       type: "ProducerKeychainMemberAddedV1",
       version: 1,
     });
 
     const producerKeychainV1 = toProducerKeychainV1(producerKeychain);
-    expect(KeychainEventV1.parse(updatedEvent).data).toMatchObject({
+    expect(KeychainEventV1.parse(addedEvent).data).toMatchObject({
       producerKeychain: {
         ...producerKeychainV1,
         updatedAt: expect.any(Number),
