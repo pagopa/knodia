@@ -120,12 +120,7 @@ export type KeychainSeed = {
     name: KeychainLocalizedName;
 };
 
-export type ConsumerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainPatch = {
+export type KeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
 };
@@ -179,11 +174,6 @@ export type ConsumerKeychainPurposes = {
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
-};
-
-export type ProducerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -392,7 +382,7 @@ export type GetConsumerKeychainResponses = {
 export type GetConsumerKeychainResponse = GetConsumerKeychainResponses[keyof GetConsumerKeychainResponses];
 
 export type UpdateConsumerKeychainData = {
-    body: ConsumerKeychainPatch;
+    body: KeychainPatch;
     headers: {
         /**
          * Unique identifier of the request
@@ -1211,7 +1201,7 @@ export type GetKnodeApiKeychainResponses = {
 export type GetKnodeApiKeychainResponse = GetKnodeApiKeychainResponses[keyof GetKnodeApiKeychainResponses];
 
 export type UpdateKnodeApiKeychainData = {
-    body: KnodeApiKeychainPatch;
+    body: KeychainPatch;
     headers: {
         /**
          * Unique identifier of the request
@@ -1835,7 +1825,7 @@ export type GetProducerKeychainResponses = {
 export type GetProducerKeychainResponse = GetProducerKeychainResponses[keyof GetProducerKeychainResponses];
 
 export type UpdateProducerKeychainData = {
-    body: ProducerKeychainPatch;
+    body: KeychainPatch;
     headers: {
         /**
          * Unique identifier of the request
