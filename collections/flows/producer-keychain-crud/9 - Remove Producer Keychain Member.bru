@@ -1,0 +1,24 @@
+meta {
+  name: 9 - Remove Producer Keychain Member
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/members/:userId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+  userId: {{memberUserId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 204
+}

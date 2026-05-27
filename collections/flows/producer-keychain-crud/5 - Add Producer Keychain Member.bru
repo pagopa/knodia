@@ -1,0 +1,33 @@
+meta {
+  name: 5 - Add Producer Keychain Member
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{memberUserId}}"
+  }
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:pre-request {
+  bru.setVar("memberUserId", "00000000-0000-4000-8000-000000000002")
+}
