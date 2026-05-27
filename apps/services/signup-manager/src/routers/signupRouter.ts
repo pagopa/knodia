@@ -1,3 +1,4 @@
+import type { SerializeOptions } from "@fastify/cookie";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -19,7 +20,7 @@ const OIDC_SESSION_COOKIE_OPTIONS = {
   path: "/",
   sameSite: "strict",
   secure: true,
-} as const satisfies Parameters<FastifyReply["setCookie"]>[2];
+} as const satisfies SerializeOptions;
 
 const OidcSessionCookieData = z.object({
   nonce: z.string(),
