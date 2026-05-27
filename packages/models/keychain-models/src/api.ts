@@ -2,6 +2,7 @@ import { ExternalId } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
   type PurposeId,
 } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
@@ -94,4 +95,11 @@ export const API_UnlinkConsumerKeychainIdPathParams =
   });
 export type API_UnlinkConsumerKeychainIdPathParams = z.infer<
   typeof API_UnlinkConsumerKeychainIdPathParams
+>;
+
+export const API_ProducerKeychainIdPathParam = z.strictObject({
+  producerKeychainId: ProducerKeychainId,
+});
+export type API_ProducerKeychainIdPathParam = z.infer<
+  typeof API_ProducerKeychainIdPathParam
 >;

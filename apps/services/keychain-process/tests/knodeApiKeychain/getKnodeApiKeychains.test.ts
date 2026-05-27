@@ -8,8 +8,8 @@ import { describe, expect, it } from "vitest";
 import type { API_GetKnodeApiKeychainsQueryParams } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
-import { mockKnodeApiKeychains } from "../mockKnodeApiKeychains.ts";
 import { injectAppRequest, seedKnodeApiKeychain } from "../utils.ts";
+import { mockKnodeApiKeychains } from "./mocks/mockKnodeApiKeychains.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },

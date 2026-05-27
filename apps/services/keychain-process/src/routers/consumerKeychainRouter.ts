@@ -34,7 +34,6 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposes,
-  API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposePathParams,
@@ -48,6 +47,7 @@ import {
   API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
+  API_KeychainSeed,
   API_User,
 } from "../models/api.ts";
 import {
@@ -274,7 +274,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_ConsumerKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "createConsumerKeychain",

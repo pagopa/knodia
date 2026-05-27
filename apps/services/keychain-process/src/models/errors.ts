@@ -3,6 +3,7 @@ import type {
   ConsumerKeychainId,
   KeyId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
@@ -35,6 +36,7 @@ const errorCodes = {
   KEY_NOT_FOUND_IN_KEYCHAIN: "0012",
   CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0013",
   KNODE_API_KEYCHAIN_NOT_FOUND: "0014",
+  PRODUCER_KEYCHAIN_NOT_FOUND: "0015",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -131,6 +133,15 @@ export function notAllowedCertificate() {
     detail: "The received key is a x509 certificate",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Not allowed certificate",
+  });
+}
+
+export function producerKeychainNotFound(id: ProducerKeychainId) {
+  return createApiError<ErrorCodes>({
+    code: "PRODUCER_KEYCHAIN_NOT_FOUND",
+    detail: `Producer keychain with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Producer Keychain Not Found",
   });
 }
 

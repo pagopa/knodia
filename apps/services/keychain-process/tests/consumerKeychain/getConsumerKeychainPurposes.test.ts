@@ -9,13 +9,13 @@ import { describe, expect, it } from "vitest";
 import type { API_GetConsumerKeychainPurposesQueryParams } from "../../src/models/api.ts";
 
 import { toAPI_ConsumerKeychainPurpose } from "../../src/models/apiConverter.ts";
+import { consumerKeychainWriterService } from "../setup.ts";
+import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
 import {
   consumerKeychain1,
   consumerKeychain2,
   mockConsumerKeychainPurposes,
-} from "../mockConsumerKeychainPurposes.ts";
-import { consumerKeychainWriterService } from "../setup.ts";
-import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";
+} from "./mocks/mockConsumerKeychainPurposes.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
