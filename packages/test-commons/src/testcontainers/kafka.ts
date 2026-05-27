@@ -8,7 +8,6 @@ import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
 import { initKafka, initKafkaAdmin, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
-import { Pool } from "pg";
 
 import { createTestLogger } from "../utils/logger.ts";
 
@@ -101,8 +100,7 @@ export async function setupKafkaTestProducerAndConsumer(
         handlerWrapper,
         kafkaConfig,
         logger,
-        // Dummy pool, not used in tests. The real Pool instance is closed in the test files' afterAll hooks.
-        new Pool({ connectionString: "" }),
+        undefined,
         (dc) => {
           disconnect = dc;
           resolve();
