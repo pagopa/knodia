@@ -97,7 +97,6 @@ const toKeychainUserSQL = ({
   userId: user.userId,
 });
 
-/** @knipignore */
 export const toProducerKeychainEserviceSQL = (
   producerKeychainEservice: ProducerKeychainEservice,
   metadataVersion: number,

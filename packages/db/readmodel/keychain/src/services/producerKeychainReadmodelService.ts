@@ -3,17 +3,25 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
   FlatProducerKeychain,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eq } from "drizzle-orm";
+import {
+  assertSQLFiltersAreDefined,
+  getTablePKString,
+  throwIfMultiple,
+} from "@knodia/db-readmodel-commons/utils";
+import { eq, type SQL } from "drizzle-orm";
 
 import {
   aggregateFlatProducerKeychain,
   aggregateProducerKeychain,
 } from "../converters/producerKeychainAggregators.ts";
+import { toProducerKeychainEservice } from "../converters/producerKeychainConverters.ts";
 import {
   readmodelProducerKeychain,
+  readmodelProducerKeychainEservice,
   readmodelProducerKeychainKey,
   readmodelProducerKeychainUser,
 } from "../producerKeychain.ts";
@@ -61,6 +69,26 @@ export function producerKeychainReadmodelServiceBuilder(
         .where(eq(readmodelProducerKeychain.id, producerKeychainId));
 
       return aggregateProducerKeychain(queryRes);
+    },
+    async getProducerKeychainEserviceByFilter(
+      filters: SQL | undefined,
+    ): Promise<undefined | WithMetadata<ProducerKeychainEservice>> {
+      assertSQLFiltersAreDefined(filters);
+
+      const queryRes = await readmodelDb
+        .select()
+        .from(readmodelProducerKeychainEservice)
+        .where(filters);
+
+      const producerKeychainEservice = throwIfMultiple(
+        queryRes,
+        "producer keychain eservice",
+        (pke) => getTablePKString(pke, readmodelProducerKeychainEservice),
+      );
+
+      return producerKeychainEservice
+        ? toProducerKeychainEservice(producerKeychainEservice)
+        : undefined;
     },
   };
 }
