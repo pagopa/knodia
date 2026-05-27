@@ -22,10 +22,9 @@ import {
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
-import type {
-  API_CreatedMemberResource,
-  API_KeychainMemberSeed,
-} from "../../src/models/api.ts";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
+
+import type { API_KeychainMemberSeed } from "../../src/models/api.ts";
 
 import {
   getAllKeychainEvents,

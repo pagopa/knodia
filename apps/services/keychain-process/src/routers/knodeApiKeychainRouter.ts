@@ -11,13 +11,15 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_KnodeApiKeychainIdPathParam } from "@knodia/keychain-models/api";
+import {
+  API_CreatedMemberResource,
+  API_KnodeApiKeychainIdPathParam,
+} from "@knodia/keychain-models/api";
 import z from "zod";
 
 import type { KnodeApiKeychainService } from "../services/knodeApiKeychainService.ts";
 
 import {
-  API_CreatedMemberResource,
   API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainMembersQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
