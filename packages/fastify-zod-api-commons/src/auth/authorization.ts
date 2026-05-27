@@ -14,6 +14,7 @@ import type {
   InternalAuthData,
   KnodeApiAuthData,
   UISessionAuthData,
+  UISignupSessionAuthData,
 } from "./authData.ts";
 
 import { forbiddenError, unauthorizedError } from "../models/errors/errors.ts";
@@ -34,7 +35,10 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
-      : UISessionAuthData);
+      : UISessionAuthData)
+    | (Extract<Rules[number], { tokenType: "ui-signup-session" }> extends never
+      ? never
+      : UISignupSessionAuthData);
 
 type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
