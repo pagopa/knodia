@@ -100,3 +100,14 @@ message ProducerKeychainMemberRemovedV1 {
   ProducerKeychainV1 producerKeychain = 1;
   string userId = 2;
 }
+
+message ProducerKeychainEserviceLinkedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string eserviceId = 2;
+  int64 linkedAt = 3;
+}
+
+message ProducerKeychainEserviceUnlinkedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string eserviceId = 2;
+}
