@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package signup.v1;
+
+message OnboardingCompletedV1 {
+  string signup_user_id = 1;
+}
