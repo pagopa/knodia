@@ -16,12 +16,13 @@ body:form-urlencoded {
   grant_type: client_credentials
 }
 
-vars:post-response {
-  access_token: res.body.access_token
-}
-
 script:post-response {
-  if (res.status === 200) return
+  if (res.status === 200) {
+    // Expose as knode-api-jwt (the variable downstream `Authorization:
+    // {{knode-api-jwt}}` requests read), already prefixed with "Bearer ".
+    bru.setVar("knode-api-jwt", `Bearer ${res.body.access_token}`)
+    return
+  }
 
   const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-key>"
   const keychainId = bru.getVar("knodeApiKeychainId") || bru.getEnvVar("knodeApiKeychainId") || "<knodeApiKeychainId>"
