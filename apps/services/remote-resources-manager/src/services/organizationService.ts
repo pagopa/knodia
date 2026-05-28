@@ -5,11 +5,9 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
-import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
   API_GetOrganizationsQueryParams,
@@ -23,31 +21,31 @@ import { assertTokenRemoteOrganizationClaimsMatchRequest } from "../utils/valida
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
 export function organizationServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
 ) {
   return {
     async getOrganization(
       organizationId: ExternalId<OrganizationId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       {
         authData,
         logger,
       }: AuthorizedContext<ExternalUISessionAuthData | UISessionAuthData>,
     ): Promise<API_Organization> {
       logger.info(
-        `Getting Organization ${organizationId} from Knode ${knodeId}`,
+        `Getting Organization ${organizationId} from Knode ${targetKnodeId}`,
       );
 
       if (authData.tokenType === "external-ui-session") {
         assertTokenRemoteOrganizationClaimsMatchRequest(
           authData,
           organizationId,
-          knodeId,
+          targetKnodeId,
         );
       }
 
       const { data } = await k2kGatewayApi.getOrganization({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { organizationId },
       });
 
@@ -57,14 +55,14 @@ export function organizationServiceBuilder(
       requestQuery: API_GetOrganizationsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Organizations> {
-      const { knodeId, ...queryWithoutKnodeId } = requestQuery;
+      const { knodeId: targetKnodeId, ...queryWithoutKnodeId } = requestQuery;
       logger.info({
-        message: `Getting Organizations from Knode ${knodeId} with query`,
+        message: `Getting Organizations from Knode ${targetKnodeId} with query`,
         requestQuery,
       });
 
       const { data } = await k2kGatewayApi.getOrganizations({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         query: queryWithoutKnodeId,
       });
 
