@@ -5,6 +5,7 @@ import type {
   EserviceId,
   KnodeApiKeychainId,
   OrganizationId,
+  ProducerKeychainId,
   PurposeId,
 } from "@knodia/common-models/ids";
 import type { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
@@ -51,6 +52,7 @@ type EventStoreStreamIds =
   | EserviceId
   | KnodeApiKeychainId
   | OrganizationId
+  | ProducerKeychainId
   | PurposeId;
 
 type EventStoreTables =

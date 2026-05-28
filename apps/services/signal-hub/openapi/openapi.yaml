@@ -73,6 +73,64 @@ components:
         - status
         - title
       additionalProperties: false
+    SignalType:
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
+        - SEEDUPDATE
+    Signal:
+      type: object
+      properties:
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        objectId:
+          type: string
+        objectType:
+          type: string
+        signalId:
+          format: int64
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+        signalType:
+          $ref: "#/components/schemas/SignalType"
+      required:
+        - eserviceId
+        - objectId
+        - objectType
+        - signalId
+        - signalType
+      additionalProperties: false
+    PushResponse:
+      type: object
+      properties:
+        signalId:
+          format: int64
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+      required:
+        - signalId
+      additionalProperties: false
+    PullResponse:
+      type: object
+      properties:
+        lastSignalId:
+          format: int64
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+        signals:
+          type: array
+          items:
+            $ref: "#/components/schemas/Signal"
+      required:
+        - signals
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -93,12 +151,33 @@ paths:
   /signals:
     post:
       operationId: pushSignal
+      summary: Push Signal
       tags:
         - signalHub
       description: Push a signal for an E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Signal"
       responses:
         "200":
           description: Signal accepted
+          content:
+            application/json:
+              schema:
+                description: Signal accepted
+                allOf:
+                  - $ref: "#/components/schemas/PushResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -113,6 +192,114 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /signals/{eserviceId}:
+    get:
+      operationId: pullSignals
+      summary: Pull Signals
+      tags:
+        - signalHub
+      description: Pull a list of signals for an E-service
+      parameters:
+        - schema:
+            format: int64
+            default: 0
+            type: integer
+            minimum: 0
+            maximum: 9007199254740991
+          in: query
+          name: lastSignalId
+          required: false
+          description: The ID of the last signal received, used for pagination
+        - schema:
+            format: int32
+            default: 10
+            type: integer
+            minimum: 1
+            maximum: 100
+          in: query
+          name: size
+          required: false
+          description: Maximum number of signals returned
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: Signals pulled successfully
+          content:
+            application/json:
+              schema:
+                description: Signals pulled successfully
+                allOf:
+                  - $ref: "#/components/schemas/PullResponse"
+        "206":
+          description: Signals pulled successfully, but there are more signals to pull
+          content:
+            application/json:
+              schema:
+                description: Signals pulled successfully, but there are more signals to pull
+                allOf:
+                  - $ref: "#/components/schemas/PullResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

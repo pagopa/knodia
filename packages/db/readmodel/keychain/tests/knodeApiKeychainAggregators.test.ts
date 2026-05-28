@@ -1,9 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import {
-  type FlatKnodeApiKeychain,
-  type KnodeApiKeychain,
-} from "@knodia/keychain-models";
+import { type KnodeApiKeychain } from "@knodia/keychain-models";
 import {
   getMockKnodeApiKeychain,
   toExpectKnodeApiKeychain,
@@ -17,7 +14,10 @@ import {
   aggregateKnodeApiKeychains,
 } from "../src/converters/knodeApiKeychainAggregators.ts";
 import { splitKnodeApiKeychainIntoObjectsSQL } from "../src/converters/knodeApiKeychainSplitters.ts";
-import { createKnodeApiKeychainAggregatorInput } from "./knodeApiKeychainUtils.ts";
+import {
+  createKnodeApiKeychainAggregatorInput,
+  toFlatKnodeApiKeychain,
+} from "./knodeApiKeychainUtils.ts";
 
 describe("Knode API keychain aggregators", () => {
   it("should convert Knode API keychain SQL objects into a Knode API keychain business object", () => {
@@ -150,16 +150,3 @@ describe("Knode API keychain aggregators", () => {
     );
   });
 });
-
-function toFlatKnodeApiKeychain(
-  knodeApiKeychain: KnodeApiKeychain,
-): FlatKnodeApiKeychain {
-  return {
-    createdAt: knodeApiKeychain.createdAt,
-    description: knodeApiKeychain.description,
-    id: knodeApiKeychain.id,
-    name: knodeApiKeychain.name,
-    ownerId: knodeApiKeychain.ownerId,
-    updatedAt: knodeApiKeychain.updatedAt,
-  };
-}

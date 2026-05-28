@@ -15,9 +15,16 @@ import type {
   KnodeApiKeychainKeySQL,
   KnodeApiKeychainUserSQL,
 } from "../knodeApiKeychain.ts";
+import type {
+  ProducerKeychainKeySQL,
+  ProducerKeychainUserSQL,
+} from "../producerKeychain.ts";
 
 export function toKeychainKey(
-  keySQL: ConsumerKeychainKeySQL | KnodeApiKeychainKeySQL,
+  keySQL:
+    | ConsumerKeychainKeySQL
+    | KnodeApiKeychainKeySQL
+    | ProducerKeychainKeySQL,
 ): KeychainKey {
   return {
     algorithm: KeyAlgorithm.parse(keySQL.algorithm),
@@ -31,7 +38,10 @@ export function toKeychainKey(
 }
 
 export function toKeychainUser(
-  userSQL: ConsumerKeychainUserSQL | KnodeApiKeychainUserSQL,
+  userSQL:
+    | ConsumerKeychainUserSQL
+    | KnodeApiKeychainUserSQL
+    | ProducerKeychainUserSQL,
 ): KeychainUser {
   return {
     addedAt: userSQL.addedAt,

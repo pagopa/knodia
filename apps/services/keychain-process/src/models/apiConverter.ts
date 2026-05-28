@@ -3,6 +3,7 @@ import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
   FlatKnodeApiKeychain,
+  FlatProducerKeychain,
   KeychainKey,
 } from "@knodia/keychain-models";
 
@@ -14,7 +15,7 @@ import type {
 } from "./api.ts";
 
 export const toAPI_Keychain = (
-  keychain: FlatConsumerKeychain | FlatKnodeApiKeychain,
+  keychain: FlatConsumerKeychain | FlatKnodeApiKeychain | FlatProducerKeychain,
 ): API_Keychain => ({
   createdAt: keychain.createdAt.toISOString(),
   description: keychain.description,

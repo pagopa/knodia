@@ -1,0 +1,53 @@
+{
+  "RMNLNR03H12H501Z": [
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Campania",
+      "fullAddress": "Via Roma 12, 80133 Napoli NA",
+      "postCode": "80133",
+      "postName": "Napoli"
+    },
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Veneto",
+      "fullAddress": "Corso del Popolo, 14, 30172 Mestre VE",
+      "postCode": "30172",
+      "postName": "Mestre"
+    },
+    null
+  ],
+  "CNTLCC89E26L378K": [
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Calabria",
+      "fullAddress": "Via Nazionale 45, 89015 Palmi RC",
+      "postCode": "89015",
+      "postName": "Palmi"
+    },
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Lombardia",
+      "fullAddress": "Via Monte Rosa, 91, 20149 Milano MI",
+      "postCode": "20149",
+      "postName": "Milano"
+    },
+    null
+  ],
+  "RSSGRG65D48G702L": [
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Puglia",
+      "fullAddress": "Via Lecce 12, 72100 Brindisi BR",
+      "postCode": "72100",
+      "postName": "Brindisi"
+    },
+    {
+      "adminUnitL1": "Italia",
+      "adminUnitL2": "Lazio",
+      "fullAddress": "Via Appia Nuova, 250, 00183 Roma RM",
+      "postCode": "00183",
+      "postName": "Roma"
+    },
+    null
+  ]
+}

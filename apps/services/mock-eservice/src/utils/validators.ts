@@ -29,7 +29,7 @@ export function assertTokenClaimsAreValidForEservice(
     throw unauthorizedError("Missing access token claims");
   }
 
-  const { eservice, producer } = claims;
+  const { eservice, producer, purpose } = claims;
   const mismatches: string[] = [];
   if (eservice.id !== expectedEserviceId) {
     mismatches.push(
@@ -54,6 +54,11 @@ export function assertTokenClaimsAreValidForEservice(
   if (producer.knode_id !== knodeId) {
     mismatches.push(
       `producer.knode_id ${producer.knode_id} does not match ${knodeId}`,
+    );
+  }
+  if (purpose.knode_id !== knodeId) {
+    mismatches.push(
+      `purpose.knode_id ${purpose.knode_id} does not match ${knodeId}`,
     );
   }
 

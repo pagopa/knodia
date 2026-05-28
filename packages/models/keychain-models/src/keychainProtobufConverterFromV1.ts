@@ -13,6 +13,7 @@ import {
   type KeychainUserV1,
   KeyFormatV1,
   type KnodeApiKeychainV1,
+  type ProducerKeychainV1,
 } from "./generated/v1/keychain.ts";
 import {
   type ConsumerKeychain,
@@ -21,6 +22,7 @@ import {
   type KeychainUser,
   KeyFormat,
   type KnodeApiKeychain,
+  type ProducerKeychain,
 } from "./keychain.ts";
 
 export const fromConsumerKeychainV1 = (
@@ -80,6 +82,23 @@ export const fromKnodeApiKeychainV1 = (
   input: KnodeApiKeychainV1,
 ): KnodeApiKeychain => {
   assertRequired(input.name, "KnodeApiKeychain name is undefined");
+
+  return {
+    ...input,
+    createdAt: new Date(input.createdAt),
+    id: unsafeBrandId(input.id),
+    keys: input.keys.map(fromKeychainKeyV1),
+    name: input.name,
+    ownerId: unsafeBrandId(input.ownerId),
+    updatedAt: new Date(input.updatedAt),
+    users: input.users.map(fromKeychainUserV1),
+  };
+};
+
+export const fromProducerKeychainV1 = (
+  input: ProducerKeychainV1,
+): ProducerKeychain => {
+  assertRequired(input.name, "ProducerKeychain name is undefined");
 
   return {
     ...input,

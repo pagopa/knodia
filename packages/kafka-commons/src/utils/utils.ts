@@ -1,5 +1,4 @@
 import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
-import type { Pool } from "pg";
 import type { Logger } from "pino";
 import type z from "zod";
 
@@ -55,13 +54,15 @@ export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
 
 export async function processExitAndDisconnect({
   logger,
-  readmodelPool,
+  onShutdown,
 }: {
   logger: Logger;
-  readmodelPool: Pool;
+  onShutdown?: () => Promise<void>;
 }) {
-  await readmodelPool.end();
-  logger.debug("Readmodel pool closed successfully");
+  if (onShutdown) {
+    await onShutdown();
+    logger.debug("Shutdown hook completed successfully");
+  }
 
   processExit({ logger });
 }

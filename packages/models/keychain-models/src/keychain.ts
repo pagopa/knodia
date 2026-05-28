@@ -1,9 +1,11 @@
 import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   OrganizationId,
+  ProducerKeychainId,
   type PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
@@ -90,3 +92,28 @@ export const FlatKnodeApiKeychain = KnodeApiKeychain.omit({
   users: true,
 });
 export type FlatKnodeApiKeychain = z.infer<typeof FlatKnodeApiKeychain>;
+
+export const ProducerKeychain = z.strictObject({
+  createdAt: z.coerce.date(),
+  description: LocalizedDescription.optional(),
+  id: ProducerKeychainId,
+  keys: z.array(KeychainKey),
+  name: LocalizedName,
+  ownerId: OrganizationId,
+  updatedAt: z.coerce.date(),
+  users: z.array(KeychainUser),
+});
+export type ProducerKeychain = z.infer<typeof ProducerKeychain>;
+
+export const FlatProducerKeychain = ProducerKeychain.omit({
+  keys: true,
+  users: true,
+});
+export type FlatProducerKeychain = z.infer<typeof FlatProducerKeychain>;
+
+export const ProducerKeychainEservice = z.strictObject({
+  eserviceId: EserviceId,
+  linkedAt: z.coerce.date(),
+  producerKeychainId: ProducerKeychainId,
+});
+export type ProducerKeychainEservice = z.infer<typeof ProducerKeychainEservice>;
