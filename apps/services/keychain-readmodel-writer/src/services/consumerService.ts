@@ -107,10 +107,22 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
-    .with({ type: "ProducerKeychainCreatedV1" }, async (msg) => {
+    .with(
+      {
+        type: P.union("ProducerKeychainCreatedV1", "ProducerKeychainUpdatedV1"),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "producerKeychain");
+        await producerKeychainWriterService.upsertProducerKeychain(
+          fromProducerKeychainV1(msg.data.producerKeychain),
+          message.version,
+        );
+      },
+    )
+    .with({ type: "ProducerKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "producerKeychain");
-      await producerKeychainWriterService.upsertProducerKeychain(
-        fromProducerKeychainV1(msg.data.producerKeychain),
+      await producerKeychainWriterService.deleteProducerKeychain(
+        fromProducerKeychainV1(msg.data.producerKeychain).id,
         message.version,
       );
     })

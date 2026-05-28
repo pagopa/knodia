@@ -140,3 +140,17 @@ export const retrieveFlatProducerKeychain = async (
 
   return producerKeychain;
 };
+
+export const retrieveProducerKeychain = async (
+  producerKeychainId: ProducerKeychainId,
+  readmodelService: ReadmodelService,
+) => {
+  const producerKeychain =
+    await readmodelService.getProducerKeychainById(producerKeychainId);
+
+  if (!producerKeychain) {
+    throw producerKeychainNotFound(producerKeychainId);
+  }
+
+  return producerKeychain;
+};

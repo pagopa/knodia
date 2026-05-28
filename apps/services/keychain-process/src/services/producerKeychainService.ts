@@ -14,12 +14,22 @@ import { generateId, type ProducerKeychainId } from "@knodia/common-models/ids";
 
 import type {
   API_GetProducerKeychainsQueryParams,
+  API_KeychainPatch,
   API_KeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createProducerKeychainCreatedV1Event } from "../models/producerKeychainEventFactory.ts";
-import { retrieveFlatProducerKeychain } from "../utils/retrievalUtils.ts";
+import {
+  createProducerKeychainCreatedV1Event,
+  createProducerKeychainDeletedV1Event,
+  createProducerKeychainUpdatedV1Event,
+} from "../models/producerKeychainEventFactory.ts";
+import {
+  retrieveFlatProducerKeychain,
+  retrieveProducerKeychain,
+} from "../utils/retrievalUtils.ts";
+import { updateKeychain } from "../utils/utils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
@@ -64,7 +74,30 @@ export function producerKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+    async deleteProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(`Deleting Producer Keychain ${producerKeychainId}`);
 
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createProducerKeychainDeletedV1Event(
+          producerKeychain.data,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+    },
     async getProducerKeychain(
       producerKeychainId: ProducerKeychainId,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -76,7 +109,6 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
     },
-
     async getProducerKeychains(
       params: API_GetProducerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -84,6 +116,37 @@ export function producerKeychainServiceBuilder(
       logger.info({ params }, "Getting Producer keychains with params");
 
       return await readmodelService.getProducerKeychains(params);
+    },
+    async updateProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      update: API_KeychainPatch,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(`Updating Producer Keychain ${producerKeychainId}`);
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const updatedProducerKeychain = updateKeychain(
+        producerKeychain.data,
+        update,
+        authData,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainUpdatedV1Event(
+          updatedProducerKeychain,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
     },
   };
 }
