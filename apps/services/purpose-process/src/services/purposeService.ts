@@ -16,7 +16,7 @@ import {
   type EserviceId,
   generateId,
   type OrganizationId,
-  type PurposeFormAnswerId,
+  type PurposeFormPrefillId,
   type PurposeId,
   type PurposeTemplateId,
 } from "@knodia/common-models/ids";
@@ -37,7 +37,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { purposeFormAnswerNotFound } from "../models/errors.ts";
+import { purposeFormPrefillNotFound } from "../models/errors.ts";
 import {
   CURRENT_FORM_SCHEMA_VERSION,
   type GetFormSchemas,
@@ -202,20 +202,20 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         name,
-        purposeFormAnswerId,
+        purposeFormPrefillId,
       }: {
         consumer: ExternalResource<OrganizationId>;
         dailyCalls: number;
         description: LocalizedPurposeDescription;
         eserviceId: EserviceId;
         name: LocalizedPurposeName;
-        purposeFormAnswerId: PurposeFormAnswerId;
+        purposeFormPrefillId: PurposeFormPrefillId;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<WithMetadata<Purpose>> {
       const purposeId = generateId<PurposeId>();
       logger.info(
-        { requestBody: { consumer, eserviceId, name, purposeFormAnswerId } },
+        { requestBody: { consumer, eserviceId, name, purposeFormPrefillId } },
         `Creating reverse Purpose ${purposeId}`,
       );
 
@@ -224,11 +224,11 @@ export function purposeServiceBuilder(
       assertEserviceAllowsPurposeCreation(eservice);
 
       const purposeFormAnswer =
-        eservice.receiveDataConfig?.purposeFormAnswers.find(
-          (pfa) => pfa.id === purposeFormAnswerId,
+        eservice.receiveDataConfig?.purposeFormPrefills.find(
+          (pfa) => pfa.id === purposeFormPrefillId,
         );
       if (purposeFormAnswer === undefined) {
-        throw purposeFormAnswerNotFound(eserviceId, purposeFormAnswerId);
+        throw purposeFormPrefillNotFound(eserviceId, purposeFormPrefillId);
       }
 
       const agreements = await retrieveAgreements({

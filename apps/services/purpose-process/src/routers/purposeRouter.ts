@@ -7,7 +7,7 @@ import {
 } from "@knodia/common-models/externalResource";
 import {
   type OrganizationId,
-  type PurposeFormAnswerId,
+  type PurposeFormPrefillId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -115,8 +115,8 @@ export const purposeRouter: FastifyPluginAsyncZod<
           description: req.body.description,
           eserviceId: unsafeBrandId(req.body.eserviceId),
           name: req.body.name,
-          purposeFormAnswerId: unsafeBrandId<PurposeFormAnswerId>(
-            req.body.purposeFormAnswerId,
+          purposeFormPrefillId: unsafeBrandId<PurposeFormPrefillId>(
+            req.body.purposeFormPrefillId,
           ),
         },
         ctx,
@@ -129,7 +129,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_ReversePurposeSeed,
       description:
-        "Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormAnswer published by the Producer on the E-service",
+        "Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormPrefill published by the Producer on the E-service",
       headers: KnodiaServiceHeaders,
       operationId: "createReversePurpose",
       response: {

@@ -121,7 +121,7 @@ export type ReversePurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     name: LocalizedPurposeName;
-    purposeFormAnswerId: string;
+    purposeFormPrefillId: string;
 };
 
 export type Purpose = {

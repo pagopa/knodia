@@ -42,7 +42,7 @@ export const API_ReversePurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     name: API_LocalizedPurposeName,
-    purposeFormAnswerId: z.uuid(),
+    purposeFormPrefillId: z.uuid(),
   })
   .meta({ id: "ReversePurposeSeed" });
 export type API_ReversePurposeSeed = z.infer<typeof API_ReversePurposeSeed>;

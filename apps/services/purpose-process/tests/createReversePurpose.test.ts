@@ -19,7 +19,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
   getMockEservice,
-  getMockPurposeFormAnswer,
+  getMockPurposeFormPrefill,
   MOCK_PURPOSE_FORM_ANSWERS,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -41,20 +41,20 @@ const consumerKnodeId = KnodeId.parse("Orion");
 const buildReceiveDataEservice = (opts: { seed?: number } = {}) => {
   // Distinct formAnswersJson per PFA so tests can assert the chosen one was
   // snapshotted (default mock would otherwise return identical answers).
-  const purposeFormAnswers = [
+  const purposeFormPrefills = [
     {
-      ...getMockPurposeFormAnswer(opts.seed ?? 0),
-      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "first-pfa" },
+      ...getMockPurposeFormPrefill(opts.seed ?? 0),
+      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "first-pfp" },
     },
     {
-      ...getMockPurposeFormAnswer((opts.seed ?? 0) + 100),
-      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "second-pfa" },
+      ...getMockPurposeFormPrefill((opts.seed ?? 0) + 100),
+      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "second-pfp" },
     },
   ];
   return {
     ...getMockEservice({
       latestVersionState: "Active",
-      purposeFormAnswers,
+      purposeFormPrefills,
       seed: opts.seed,
     }),
     mode: EserviceMode.enum.ReceiveData,
@@ -80,12 +80,12 @@ const setupEserviceAndAgreement = async (
 
 describe("POST /purposes/receive-mode (createReversePurpose)", () => {
   it.each(allowedTestTokens)(
-    "should create a Purpose snapshotting the chosen PurposeFormAnswer ($type)",
+    "should create a Purpose snapshotting the chosen PurposeFormPrefill ($type)",
     async (token) => {
       const eservice = buildReceiveDataEservice();
       // Pick the SECOND PFA on purpose: ensures the service looks up by id
-      // rather than blindly picking purposeFormAnswers[0].
-      const chosen = eservice.receiveDataConfig!.purposeFormAnswers[1]!;
+      // rather than blindly picking purposeFormPrefills[0].
+      const chosen = eservice.receiveDataConfig!.purposeFormPrefills[1]!;
       await setupEserviceAndAgreement(eservice);
 
       const body: API_ReversePurposeSeed = {
@@ -94,7 +94,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         description: { en: "Test reverse purpose description" },
         eserviceId: eservice.id,
         name: { en: "Test Reverse Purpose" },
-        purposeFormAnswerId: chosen.id,
+        purposeFormPrefillId: chosen.id,
       };
 
       const response = await injectAppRequest(token)
@@ -155,7 +155,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
           description: { en: "A valid test description for receive-mode" },
           eserviceId: generateId(),
           name: { en: "Valid Test Name" },
-          purposeFormAnswerId: generateId(),
+          purposeFormPrefillId: generateId(),
         } satisfies API_ReversePurposeSeed);
       expect([401, 403]).toContain(response.statusCode);
     },
@@ -174,8 +174,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         eserviceId: eservice.id,
         formAnswersJson: { foo: "bar" },
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId:
-          eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
+        purposeFormPrefillId:
+          eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
       });
     expect(response.statusCode).toBe(400);
   });
@@ -189,7 +189,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         description: { en: "A valid test description for receive-mode" },
         eserviceId: generateId(),
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId: generateId(),
+        purposeFormPrefillId: generateId(),
       } satisfies API_ReversePurposeSeed);
     expect(response.statusCode).toBe(404);
   });
@@ -231,13 +231,13 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
           description: { en: "A valid test description for receive-mode" },
           eserviceId: testEservice.id,
           name: { en: "Valid Test Name" },
-          purposeFormAnswerId: generateId(),
+          purposeFormPrefillId: generateId(),
         } satisfies API_ReversePurposeSeed);
       expect(response.statusCode).toBe(409);
     },
   );
 
-  it("should return 404 if the purposeFormAnswerId is not in the e-service.receiveDataConfig", async () => {
+  it("should return 404 if the purposeFormPrefillId is not in the e-service.receiveDataConfig", async () => {
     const eservice = buildReceiveDataEservice({ seed: 10 });
     await setupEserviceAndAgreement(eservice);
 
@@ -249,7 +249,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         description: { en: "A valid test description for receive-mode" },
         eserviceId: eservice.id,
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId: generateId(),
+        purposeFormPrefillId: generateId(),
       } satisfies API_ReversePurposeSeed);
     expect(response.statusCode).toBe(404);
   });
@@ -261,15 +261,15 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
   it.each(notAllowedEserviceVersionStates)(
     "should return 409 if the e-service version is %s",
     async (state) => {
-      const purposeFormAnswers = [
-        getMockPurposeFormAnswer(
+      const purposeFormPrefills = [
+        getMockPurposeFormPrefill(
           50 + notAllowedEserviceVersionStates.indexOf(state),
         ),
       ];
       const testEservice = {
         ...getMockEservice({
           latestVersionState: state,
-          purposeFormAnswers,
+          purposeFormPrefills,
           seed: 50 + notAllowedEserviceVersionStates.indexOf(state),
         }),
         mode: EserviceMode.enum.ReceiveData,
@@ -284,7 +284,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
           description: { en: "A valid test description for receive-mode" },
           eserviceId: testEservice.id,
           name: { en: "Valid Test Name" },
-          purposeFormAnswerId: purposeFormAnswers[0]!.id,
+          purposeFormPrefillId: purposeFormPrefills[0]!.id,
         } satisfies API_ReversePurposeSeed);
       expect(response.statusCode).toBe(409);
     },
@@ -305,8 +305,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
         description: { en: "A valid test description for receive-mode" },
         eserviceId: eservice.id,
         name: { en: "Valid Test Name" },
-        purposeFormAnswerId:
-          eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
+        purposeFormPrefillId:
+          eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
       } satisfies API_ReversePurposeSeed);
     expect(response.statusCode).toBe(404);
   });
@@ -345,8 +345,8 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
           description: { en: "A valid test description for receive-mode" },
           eserviceId: eservice.id,
           name: { en: "Valid Test Name" },
-          purposeFormAnswerId:
-            eservice.receiveDataConfig!.purposeFormAnswers[0]!.id,
+          purposeFormPrefillId:
+            eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
         } satisfies API_ReversePurposeSeed);
       expect(response.statusCode).toBe(409);
     },

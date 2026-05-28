@@ -58,7 +58,7 @@ export const createPurpose = <ThrowOnError extends boolean = true>(options: Opti
 /**
  * Create Reverse Purpose
  *
- * Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormAnswer published by the Producer on the E-service
+ * Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormPrefill published by the Producer on the E-service
  */
 export const createReversePurpose = <ThrowOnError extends boolean = true>(options: Options<CreateReversePurposeData, ThrowOnError>) => (options.client ?? client).post<CreateReversePurposeResponses, CreateReversePurposeErrors, ThrowOnError>({
     responseType: 'json',

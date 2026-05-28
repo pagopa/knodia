@@ -4,7 +4,7 @@ import type {
   EserviceId,
   KnodeId,
   OrganizationId,
-  PurposeFormAnswerId,
+  PurposeFormPrefillId,
   PurposeId,
 } from "@knodia/common-models/ids";
 import type {
@@ -41,7 +41,7 @@ const errorCodes = {
   PURPOSE_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_PURPOSE_PRODUCER: "0010",
   PURPOSE_NOT_IN_EXPECTED_STATES: "0011",
-  PURPOSE_FORM_ANSWER_NOT_FOUND: "0012",
+  PURPOSE_FORM_PREFILL_NOT_FOUND: "0012",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -147,15 +147,15 @@ export function organizationNotPurposeProducer(
   });
 }
 
-export function purposeFormAnswerNotFound(
+export function purposeFormPrefillNotFound(
   eserviceId: EserviceId,
-  purposeFormAnswerId: PurposeFormAnswerId,
+  purposeFormPrefillId: PurposeFormPrefillId,
 ) {
   return createApiError<ErrorCodes>({
-    code: "PURPOSE_FORM_ANSWER_NOT_FOUND",
-    detail: `PurposeFormAnswer ${purposeFormAnswerId} not found on E-service ${eserviceId}`,
+    code: "PURPOSE_FORM_PREFILL_NOT_FOUND",
+    detail: `PurposeFormPrefill ${purposeFormPrefillId} not found on E-service ${eserviceId}`,
     status: HTTP_STATUS_NOT_FOUND,
-    title: "PurposeFormAnswer Not Found",
+    title: "PurposeFormPrefill Not Found",
   });
 }
 
