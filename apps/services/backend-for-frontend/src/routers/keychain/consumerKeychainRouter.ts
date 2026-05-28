@@ -59,7 +59,7 @@ import {
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
-  API_GetConsumerKeychainKeysQueryParams,
+  API_GetKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainOptionsQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
@@ -178,7 +178,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       description: "Retrieve keys of a Consumer Keychain",
       operationId: "getConsumerKeychainKeys",
       params: API_ConsumerKeychainIdPathParam,
-      querystring: API_GetConsumerKeychainKeysQueryParams,
+      querystring: API_GetKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
           description: "Consumer Keychain Keys retrieved successfully",

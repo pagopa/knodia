@@ -85,6 +85,16 @@ export type API_ProducerKeychainMemberPathParams = z.infer<
   typeof API_ProducerKeychainMemberPathParams
 >;
 
+export const API_ProducerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainKeyPathParams = z.infer<
+  typeof API_ProducerKeychainKeyPathParams
+>;
+
 export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
@@ -144,9 +154,9 @@ export type API_ConsumerKeychainOptions = z.infer<
   typeof API_ConsumerKeychainOptions
 >;
 
-export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
-export type API_GetConsumerKeychainKeysQueryParams = z.infer<
-  typeof API_GetConsumerKeychainKeysQueryParams
+export const API_GetKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetKeychainKeysQueryParams = z.infer<
+  typeof API_GetKeychainKeysQueryParams
 >;
 
 export const API_GetConsumerKeychainMembersQueryParams =
@@ -196,11 +206,6 @@ export const API_KeychainPatch = z
   })
   .meta({ id: "KeychainPatch" });
 export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
-
-export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
-export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
-  typeof API_GetKnodeApiKeychainKeysQueryParams
->;
 
 export const API_GetKnodeApiKeychainMembersQueryParams =
   API_PaginationQueryParams;

@@ -3364,6 +3364,177 @@ export type GetProducerKeychainMembershipResponses = {
 
 export type GetProducerKeychainMembershipResponse = GetProducerKeychainMembershipResponses[keyof GetProducerKeychainMembershipResponses];
 
+export type GetProducerKeychainKeysData = {
+    body?: never;
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/keys';
+};
+
+export type GetProducerKeychainKeysErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainKeysError = GetProducerKeychainKeysErrors[keyof GetProducerKeychainKeysErrors];
+
+export type GetProducerKeychainKeysResponses = {
+    /**
+     * Producer Keychain Keys retrieved successfully
+     */
+    200: KeychainKeys;
+};
+
+export type GetProducerKeychainKeysResponse = GetProducerKeychainKeysResponses[keyof GetProducerKeychainKeysResponses];
+
+export type UploadProducerKeychainKeyData = {
+    body: KeychainKeySeed;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/keys';
+};
+
+export type UploadProducerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadProducerKeychainKeyError = UploadProducerKeychainKeyErrors[keyof UploadProducerKeychainKeyErrors];
+
+export type UploadProducerKeychainKeyResponses = {
+    /**
+     * Producer Keychain Key uploaded successfully
+     */
+    201: CreatedKeyResource;
+};
+
+export type UploadProducerKeychainKeyResponse = UploadProducerKeychainKeyResponses[keyof UploadProducerKeychainKeyResponses];
+
+export type RemoveProducerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveProducerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveProducerKeychainKeyError = RemoveProducerKeychainKeyErrors[keyof RemoveProducerKeychainKeyErrors];
+
+export type RemoveProducerKeychainKeyResponses = {
+    /**
+     * Producer Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveProducerKeychainKeyResponse = RemoveProducerKeychainKeyResponses[keyof RemoveProducerKeychainKeyResponses];
+
+export type DownloadProducerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/keys/{keyId}';
+};
+
+export type DownloadProducerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain Key not found
+     */
+    404: Problem;
+};
+
+export type DownloadProducerKeychainKeyError = DownloadProducerKeychainKeyErrors[keyof DownloadProducerKeychainKeyErrors];
+
+export type DownloadProducerKeychainKeyResponses = {
+    /**
+     * Producer Keychain Key downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadProducerKeychainKeyResponse = DownloadProducerKeychainKeyResponses[keyof DownloadProducerKeychainKeyResponses];
+
 export type GetOperatorsData = {
     body?: never;
     path?: never;

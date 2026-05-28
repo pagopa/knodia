@@ -35,7 +35,7 @@ import { z } from "zod";
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedKeyResource,
-  API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKeychainKeysQueryParams,
   API_GetKnodeApiKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
@@ -374,7 +374,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       description: "Retrieve keys of a Knode API Keychain",
       operationId: "getKnodeApiKeychainKeys",
       params: API_KnodeApiKeychainIdPathParam,
-      querystring: API_GetKnodeApiKeychainKeysQueryParams,
+      querystring: API_GetKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
           description: "Knode API Keychain Keys retrieved successfully",
