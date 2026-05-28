@@ -17,8 +17,10 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signup."signup_user" (
     -- UNIQUE per column: INSERT atomically rejects concurrent onboardings
     -- that generated the same name.
     "orion_organization_name" TEXT NOT NULL UNIQUE,
+    "orion_organization_id" UUID,
     "orion_user_name" TEXT NOT NULL UNIQUE,
     "lynx_organization_name" TEXT NOT NULL UNIQUE,
+    "lynx_organization_id" UUID,
     "lynx_user_name" TEXT NOT NULL UNIQUE,
 
     "status" TEXT NOT NULL,

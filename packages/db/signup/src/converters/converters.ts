@@ -11,10 +11,12 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     fiscalNumber: sql.fiscalNumber ?? undefined,
     generatedEntities: {
       Lynx: {
+        organizationId: sql.lynxOrganizationId,
         organizationName: sql.lynxOrganizationName,
         userName: sql.lynxUserName,
       },
       Orion: {
+        organizationId: sql.orionOrganizationId,
         organizationName: sql.orionOrganizationName,
         userName: sql.orionUserName,
       },
@@ -35,9 +37,11 @@ export function toSignupUserSQL(user: SignupUser): NewSignupUser {
     email: user.email,
     familyName: user.familyName,
     fiscalNumber: user.fiscalNumber,
+    lynxOrganizationId: user.generatedEntities.Lynx.organizationId,
     lynxOrganizationName: user.generatedEntities.Lynx.organizationName,
     lynxUserName: user.generatedEntities.Lynx.userName,
     name: user.name,
+    orionOrganizationId: user.generatedEntities.Orion.organizationId,
     orionOrganizationName: user.generatedEntities.Orion.organizationName,
     orionUserName: user.generatedEntities.Orion.userName,
     personIdentifier: user.personIdentifier,
