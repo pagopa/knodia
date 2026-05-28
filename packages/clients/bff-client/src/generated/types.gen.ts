@@ -826,12 +826,7 @@ export type ConsumerKeychainPurposes = {
     results: Array<ConsumerKeychainPurpose>;
 };
 
-export type ConsumerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainPatch = {
+export type KeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
 };
@@ -2051,7 +2046,7 @@ export type GetConsumerKeychainDetailsResponses = {
 export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
 
 export type UpdateConsumerKeychainData = {
-    body: ConsumerKeychainPatch;
+    body: KeychainPatch;
     path: {
         consumerKeychainId: string;
     };
@@ -2635,7 +2630,7 @@ export type GetKnodeApiKeychainDetailsResponses = {
 export type GetKnodeApiKeychainDetailsResponse = GetKnodeApiKeychainDetailsResponses[keyof GetKnodeApiKeychainDetailsResponses];
 
 export type UpdateKnodeApiKeychainData = {
-    body: KnodeApiKeychainPatch;
+    body: KeychainPatch;
     path: {
         knodeApiKeychainId: string;
     };

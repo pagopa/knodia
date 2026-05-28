@@ -31,7 +31,6 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
-  API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposes,
   API_GetConsumerKeychainKeysQueryParams,
@@ -46,6 +45,7 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
   API_User,
@@ -314,7 +314,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_ConsumerKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Consumer Keychain",
       headers: KnodiaServiceHeaders,
