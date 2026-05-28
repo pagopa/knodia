@@ -14,7 +14,6 @@ const schema = pgSchema(signupDbConfig.signupDbSchema);
 
 // Postgres treats NULL as distinct in UNIQUE constraints, so users without a
 // given IdP identifier coexist; the CHECK below requires at least one set.
-/** @knipignore */
 export const signupUser = schema.table(
   "signup_user",
   {
@@ -44,7 +43,5 @@ export const signupUser = schema.table(
   ],
 );
 
-/** @knipignore */
 export type NewSignupUser = typeof signupUser.$inferInsert;
-/** @knipignore */
 export type SignupUserSQL = typeof signupUser.$inferSelect;
