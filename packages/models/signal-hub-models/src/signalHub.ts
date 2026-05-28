@@ -4,8 +4,14 @@ import { z } from "zod";
 export const SignalType = z.enum(["Create", "Update", "Delete", "SeedUpdate"]);
 export type SignalType = z.infer<typeof SignalType>;
 
-export const ObjectSignalType = z.enum(["Create", "Update", "Delete"]);
+export const ObjectSignalType = SignalType.extract([
+  "Create",
+  "Update",
+  "Delete",
+]);
 export type ObjectSignalType = z.infer<typeof ObjectSignalType>;
+
+const SeedUpdateSignalType = SignalType.extract(["SeedUpdate"]);
 
 const SignalBase = z.strictObject({
   createdAt: z.coerce.date(),
@@ -21,7 +27,7 @@ const ObjectSignal = SignalBase.extend({
 });
 
 const SeedUpdateSignal = SignalBase.extend({
-  signalType: z.literal(SignalType.enum.SeedUpdate),
+  signalType: SeedUpdateSignalType,
 });
 
 export const Signal = z.discriminatedUnion("signalType", [

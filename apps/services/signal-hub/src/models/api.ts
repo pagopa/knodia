@@ -8,15 +8,21 @@ export const API_SignalType = z.enum([
 ]);
 export type API_SignalType = z.infer<typeof API_SignalType>;
 
-export const API_ObjectSignalType = z.enum(["CREATE", "UPDATE", "DELETE"]);
+// Create/Update/Delete reference a pseudonymized object (objectId/objectType); SeedUpdate references none.
+export const API_ObjectSignalType = API_SignalType.extract([
+  "CREATE",
+  "UPDATE",
+  "DELETE",
+]);
 export type API_ObjectSignalType = z.infer<typeof API_ObjectSignalType>;
+
+const API_SeedUpdateSignalType = API_SignalType.extract(["SEEDUPDATE"]);
 
 const API_SignalBase = z.strictObject({
   eserviceId: z.uuid(),
   signalId: z.int().positive().meta({ format: "int64" }),
 });
 
-// Create/Update/Delete carry a pseudonymized object (objectId/objectType); SeedUpdate has none.
 const API_ObjectSignal = API_SignalBase.extend({
   objectId: z.string(),
   objectType: z.string(),
@@ -24,7 +30,7 @@ const API_ObjectSignal = API_SignalBase.extend({
 }).meta({ id: "ObjectSignal" });
 
 const API_SeedUpdateSignal = API_SignalBase.extend({
-  signalType: z.literal(API_SignalType.enum.SEEDUPDATE),
+  signalType: API_SeedUpdateSignalType,
 }).meta({ id: "SeedUpdateSignal" });
 
 export const API_Signal = z
