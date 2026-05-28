@@ -78,7 +78,7 @@ export function naturalPersonNotFound(notation: string) {
 export function residenceNotAvailable(notation: string) {
   return createApiError({
     code: "RESIDENCE_NOT_AVAILABLE",
-    detail: `Natural person ${notation} exists but has no residence in the current period`,
+    detail: `No residence address found for natural person ${notation}`,
     status: 404,
     title: "residence_not_available",
   });
