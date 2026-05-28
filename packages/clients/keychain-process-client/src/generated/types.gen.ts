@@ -94,6 +94,10 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
+export type ProducerKeychainEserviceLinkSeed = {
+    eserviceId: string;
+};
+
 /**
  * Unique identifier of the created member resource
  */
@@ -174,10 +178,6 @@ export type ConsumerKeychainPurposes = {
 export type KeychainMembers = {
     pagination: Pagination;
     results: Array<User>;
-};
-
-export type ProducerKeychainEserviceLinkSeed = {
-    eserviceId: string;
 };
 
 export type GetStatusData = {
@@ -2292,7 +2292,7 @@ export type LinkEserviceToProducerKeychainErrors = {
      */
     403: Problem;
     /**
-     * Producer Keychain not found
+     * Producer Keychain or E-service not found
      */
     404: Problem;
     /**

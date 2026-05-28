@@ -120,29 +120,29 @@ function RouteComponent() {
         selectedKey={selectedTab}
       >
         <TabList aria-label="Tabs">
-          <Tab id="production" key="production">
-            Production
-          </Tab>
           <Tab id="consumption" key="consumption">
             Consumption
           </Tab>
+          <Tab id="production" key="production">
+            Production
+          </Tab>
           <Tab id="api" key="api">
-            API
+            Knode API
           </Tab>
         </TabList>
         <TabPanels>
-          <TabPanel id="production" key="production">
-            <KeychainTable
-              isLoading={isProducerLoading}
-              keychains={producerData?.results ?? []}
-              type="production"
-            />
-          </TabPanel>
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isConsumerLoading}
               keychains={consumerData?.results ?? []}
               type="consumption"
+            />
+          </TabPanel>
+          <TabPanel id="production" key="production">
+            <KeychainTable
+              isLoading={isProducerLoading}
+              keychains={producerData?.results ?? []}
+              type="production"
             />
           </TabPanel>
           <TabPanel id="api" key="api">
