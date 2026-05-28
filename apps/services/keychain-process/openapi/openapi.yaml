@@ -175,6 +175,16 @@ components:
         - knodeId
         - purposeId
       additionalProperties: false
+    ProducerKeychainEserviceLinkSeed:
+      type: object
+      properties:
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - eserviceId
+      additionalProperties: false
     CreatedMemberResource:
       description: Unique identifier of the created member resource
       type: object
@@ -374,16 +384,6 @@ components:
       required:
         - pagination
         - results
-      additionalProperties: false
-    ProducerKeychainEserviceLinkSeed:
-      type: object
-      properties:
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - eserviceId
       additionalProperties: false
 paths:
   /status:
