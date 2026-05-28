@@ -1,6 +1,7 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 import type { Purpose } from "@knodia/purpose-models";
 import type { FastifyBaseLogger } from "fastify";
 
@@ -38,7 +39,6 @@ import {
 import { match, P } from "ts-pattern";
 import { type z, ZodError } from "zod";
 
-import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
