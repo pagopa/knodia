@@ -1,5 +1,5 @@
 import { KnodeId } from "@knodia/common-models/ids";
-import { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
+import { TargetKnodeUrlsConfig } from "@knodia/common-models/targetKnodeUrls";
 import { ReadmodelAgreementConfig } from "@knodia/db-readmodel-agreement/config";
 import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
@@ -13,6 +13,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(ReadmodelEserviceConfig)
   .and(ReadmodelKeychainConfig)
   .and(ReadmodelPurposeConfig)
+  .and(TargetKnodeUrlsConfig)
   .and(
     z
       .object({
@@ -41,7 +42,6 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         KNODE_API_TOKEN_DURATION_SECONDS: z.coerce.number().int().positive(),
         KNODE_API_TOKEN_JWT_KID: z.string(),
         KNODE_ID: KnodeId,
-        TARGET_KNODE_URLS: TargetKnodeUrls,
       })
       .transform((c) => ({
         clientAssertionMaxTokenAgeSeconds:
@@ -62,7 +62,6 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         knodeApiTokenDurationSeconds: c.KNODE_API_TOKEN_DURATION_SECONDS,
         knodeApiTokenJwtKid: c.KNODE_API_TOKEN_JWT_KID,
         knodeId: c.KNODE_ID,
-        targetKnodeUrls: c.TARGET_KNODE_URLS,
       })),
   );
 

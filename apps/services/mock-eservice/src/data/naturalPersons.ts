@@ -15,7 +15,8 @@ import {
 import {
   computePeriodId,
   type SignalHubSeedConfig,
-} from "../utils/rotation.ts";
+} from "../signalHub/rotation.ts";
+import { rotatingAddresses } from "./rotatingAddresses.ts";
 
 const CODICE_FISCALE_SCHEME = {
   schemeName: "Codice Fiscale",
@@ -27,10 +28,6 @@ const NaturalPersonRow = API_NaturalPerson.omit({ identifier: true });
 const NaturalPersonsFile = z.record(API_Notation, NaturalPersonRow);
 const ContactPointsFile = z.record(API_Notation, API_ContactPoint);
 const AddressesFile = z.record(API_Notation, API_Address);
-const RotatingAddressesFile = z.record(
-  API_Notation,
-  z.array(API_Address.nullable()).min(1),
-);
 
 const dataDir = dirname(fileURLToPath(import.meta.url));
 const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
@@ -39,10 +36,14 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 const NATURAL_PERSONS = readJson("naturalPersons.json", NaturalPersonsFile);
 const CONTACT_POINTS = readJson("contactPoints.json", ContactPointsFile);
 const ADDRESSES = readJson("addresses.json", AddressesFile);
-const ROTATING_ADDRESSES = readJson(
-  "rotatingAddresses.json",
-  RotatingAddressesFile,
-);
+
+// Distinguishes a genuinely unknown person from a known person whose residence
+// is absent this period (the rotating "deleted" slot) — they must surface as
+// different 404s instead of both reading as "natural person not found".
+type FindResidenceResult =
+  | { kind: "found"; residence: API_Residence }
+  | { kind: "personNotFound" }
+  | { kind: "residenceUnavailable" };
 
 export function findDigitalContact(
   notation: API_Notation,
@@ -69,27 +70,27 @@ export function findResidence(
   notation: API_Notation,
   now: number,
   config: SignalHubSeedConfig,
-): API_Residence | undefined {
+): FindResidenceResult {
   const naturalPerson = findNaturalPersonWithIdentifier(notation);
   if (!naturalPerson) {
-    return undefined;
+    return { kind: "personNotFound" };
   }
 
-  const cycle = ROTATING_ADDRESSES[notation];
+  const cycle = rotatingAddresses[notation];
   if (cycle) {
     const periodId = computePeriodId(now, config);
     const address = cycle.at(periodId % cycle.length);
     if (!address) {
-      return undefined;
+      return { kind: "residenceUnavailable" };
     }
-    return { address, naturalPerson };
+    return { kind: "found", residence: { address, naturalPerson } };
   }
 
   const address = ADDRESSES[notation];
   if (!address) {
-    return undefined;
+    return { kind: "residenceUnavailable" };
   }
-  return { address, naturalPerson };
+  return { kind: "found", residence: { address, naturalPerson } };
 }
 
 function findNaturalPersonWithIdentifier(
