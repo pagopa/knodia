@@ -25,7 +25,7 @@ import {
   generateUserId,
   type KeyId,
   type KnodeApiKeychainId,
-  type PurposeFormAnswerId,
+  type PurposeFormPrefillId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
 import { dateToSeconds } from "@knodia/common-models/utils";
@@ -34,7 +34,7 @@ import {
   EserviceCategory,
   EserviceVersion,
   type EserviceVersionState,
-  type PurposeFormAnswer,
+  type PurposeFormPrefill,
 } from "@knodia/eservice-models";
 import {
   ConsumerKeychain,
@@ -87,12 +87,12 @@ export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
 export function getMockEservice({
   latestVersionState,
   minArrayLength = 1,
-  purposeFormAnswers,
+  purposeFormPrefills,
   seed = 0,
 }: {
   latestVersionState?: EserviceVersionState;
   minArrayLength?: number;
-  purposeFormAnswers?: PurposeFormAnswer[];
+  purposeFormPrefills?: PurposeFormPrefill[];
   seed?: number;
 } = {}): Eservice {
   return {
@@ -119,8 +119,8 @@ export function getMockEservice({
           ],
         }
       : {}),
-    ...(purposeFormAnswers !== undefined
-      ? { receiveDataConfig: { purposeFormAnswers } }
+    ...(purposeFormPrefills !== undefined
+      ? { receiveDataConfig: { purposeFormPrefills } }
       : { receiveDataConfig: undefined }),
   };
 }
@@ -166,12 +166,12 @@ export function getMockOrganization(seed = 0): Organization {
   return zocker(Organization).setSeed(seed).generate();
 }
 
-export function getMockPurposeFormAnswer(seed = 0): PurposeFormAnswer {
+export function getMockPurposeFormPrefill(seed = 0): PurposeFormPrefill {
   return {
-    description: { en: `Mock purpose form answer description ${seed}` },
+    description: { en: `Mock purpose form prefill description ${seed}` },
     formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
     formSchemaVersion: "1.0",
-    id: generateId<PurposeFormAnswerId>(),
+    id: generateId<PurposeFormPrefillId>(),
     name: { en: `Mock form ${seed}` },
   };
 }

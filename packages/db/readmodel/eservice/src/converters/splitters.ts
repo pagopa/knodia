@@ -4,7 +4,7 @@ import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
   EserviceItemsSQL,
-  EservicePurposeFormAnswerSQL,
+  EservicePurposeFormPrefillSQL,
   EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
@@ -13,7 +13,7 @@ import type {
   Eservice,
   EserviceCategory,
   EserviceVersion,
-  PurposeFormAnswer,
+  PurposeFormPrefill,
 } from "@knodia/eservice-models";
 
 export const splitEserviceIntoObjectsSQL = (
@@ -26,10 +26,10 @@ export const splitEserviceIntoObjectsSQL = (
     toEserviceCategorySQL(category, eservice.id, metadataVersion),
   );
 
-  const eservicePurposeFormAnswersSQL =
-    eservice.receiveDataConfig?.purposeFormAnswers.map((purposeFormAnswer) =>
-      toEservicePurposeFormAnswerSQL(
-        purposeFormAnswer,
+  const eservicePurposeFormPrefillsSQL =
+    eservice.receiveDataConfig?.purposeFormPrefills.map((purposeFormPrefill) =>
+      toEservicePurposeFormPrefillSQL(
+        purposeFormPrefill,
         eservice.id,
         metadataVersion,
       ),
@@ -81,7 +81,7 @@ export const splitEserviceIntoObjectsSQL = (
   return {
     eserviceCategoriesSQL,
     eserviceInterfacesSQL,
-    eservicePurposeFormAnswersSQL,
+    eservicePurposeFormPrefillsSQL,
     eserviceSQL,
     eserviceVersionRequiredAttributesSQL,
     eserviceVersionsSQL,
@@ -98,12 +98,12 @@ const toEserviceCategorySQL = (
   metadataVersion,
 });
 
-const toEservicePurposeFormAnswerSQL = (
-  purposeFormAnswer: PurposeFormAnswer,
+const toEservicePurposeFormPrefillSQL = (
+  purposeFormPrefill: PurposeFormPrefill,
   eserviceId: EserviceId,
   metadataVersion: number,
-): EservicePurposeFormAnswerSQL => ({
-  ...purposeFormAnswer,
+): EservicePurposeFormPrefillSQL => ({
+  ...purposeFormPrefill,
   eserviceId,
   metadataVersion,
 });

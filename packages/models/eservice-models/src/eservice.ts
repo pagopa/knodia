@@ -6,7 +6,7 @@ import {
   type EserviceTemplateId,
   EserviceVersionId,
   OrganizationId,
-  PurposeFormAnswerId,
+  PurposeFormPrefillId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import {
@@ -86,17 +86,17 @@ export const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
-export const PurposeFormAnswer = z.strictObject({
+export const PurposeFormPrefill = z.strictObject({
   description: LocalizedDescription,
   formAnswersJson: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
-  id: PurposeFormAnswerId,
+  id: PurposeFormPrefillId,
   name: LocalizedName,
 });
-export type PurposeFormAnswer = z.infer<typeof PurposeFormAnswer>;
+export type PurposeFormPrefill = z.infer<typeof PurposeFormPrefill>;
 
 export const ReceiveDataConfig = z.strictObject({
-  purposeFormAnswers: z.array(PurposeFormAnswer).min(1),
+  purposeFormPrefills: z.array(PurposeFormPrefill).min(1),
 });
 export type ReceiveDataConfig = z.infer<typeof ReceiveDataConfig>;
 

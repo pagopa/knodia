@@ -19,10 +19,10 @@ message EserviceV1 {
 }
 
 message ReceiveDataConfigV1 {
-  repeated PurposeFormAnswerV1 purposeFormAnswers = 1;
+  repeated PurposeFormPrefillV1 purposeFormPrefills = 1;
 }
 
-message PurposeFormAnswerV1 {
+message PurposeFormPrefillV1 {
   string id = 1;
   LocalizedTextV1 name = 2;
   LocalizedTextV1 description = 3;

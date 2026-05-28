@@ -11,7 +11,7 @@ import {
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockEservice,
-  getMockPurposeFormAnswer,
+  getMockPurposeFormPrefill,
   toExpectEservice,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -178,12 +178,12 @@ describe("E-service read model writer tests", async () => {
     } satisfies WithMetadata<Eservice>);
   });
 
-  it("EserviceUpdatedV1 — preserves receiveDataConfig.purposeFormAnswers", async () => {
-    const purposeFormAnswers = [
-      getMockPurposeFormAnswer(0),
-      getMockPurposeFormAnswer(1),
+  it("EserviceUpdatedV1 — preserves receiveDataConfig.purposeFormPrefills", async () => {
+    const purposeFormPrefills = [
+      getMockPurposeFormPrefill(0),
+      getMockPurposeFormPrefill(1),
     ];
-    const eservice = getMockEservice({ purposeFormAnswers });
+    const eservice = getMockEservice({ purposeFormPrefills });
 
     const eventData = protobufBinaryCodec(
       eserviceEvents.EserviceUpdatedV1,
@@ -207,10 +207,10 @@ describe("E-service read model writer tests", async () => {
 
     expect(retrievedEservices.length).toBe(1);
     expect(
-      retrievedEservices[0]?.data.receiveDataConfig?.purposeFormAnswers,
-    ).toHaveLength(purposeFormAnswers.length);
+      retrievedEservices[0]?.data.receiveDataConfig?.purposeFormPrefills,
+    ).toHaveLength(purposeFormPrefills.length);
     expect(retrievedEservices[0]?.data.receiveDataConfig).toEqual({
-      purposeFormAnswers: expect.arrayContaining(purposeFormAnswers),
+      purposeFormPrefills: expect.arrayContaining(purposeFormPrefills),
     });
   });
 });

@@ -18,7 +18,7 @@ import {
   EserviceVersionState,
   LocalizedDescription,
   LocalizedName,
-  PurposeFormAnswer,
+  PurposeFormPrefill,
   type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 
@@ -26,14 +26,14 @@ import {
   type EserviceCategorySQL,
   type EserviceInterfaceSQL,
   type EserviceItemsSQL,
-  type EservicePurposeFormAnswerSQL,
+  type EservicePurposeFormPrefillSQL,
   type EserviceSQL,
   type EserviceVersionRequiredAttributeSQL,
   type EserviceVersionSQL,
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
-  readmodelEservicePurposeFormAnswer,
+  readmodelEservicePurposeFormPrefill,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
@@ -46,7 +46,7 @@ type EserviceAggregatorInput = {
   category?: EserviceCategorySQL | null;
   eservice: EserviceSQL;
   interface?: EserviceInterfaceSQL | null;
-  purposeFormAnswer?: EservicePurposeFormAnswerSQL | null;
+  purposeFormPrefill?: EservicePurposeFormPrefillSQL | null;
   requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
   version?: EserviceVersionSQL | null;
 }[];
@@ -165,14 +165,14 @@ const toEserviceVersionsAggregator = (
 };
 
 const toReceiveDataConfig = (
-  purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[],
+  purposeFormPrefillsSQL: EservicePurposeFormPrefillSQL[],
 ): ReceiveDataConfig | undefined => {
-  if (purposeFormAnswersSQL.length === 0) {
+  if (purposeFormPrefillsSQL.length === 0) {
     return undefined;
   }
   return {
-    purposeFormAnswers: purposeFormAnswersSQL.map((sql) =>
-      PurposeFormAnswer.parse({
+    purposeFormPrefills: purposeFormPrefillsSQL.map((sql) =>
+      PurposeFormPrefill.parse({
         description: sql.description,
         formAnswersJson: sql.formAnswersJson,
         formSchemaVersion: sql.formSchemaVersion,
@@ -186,7 +186,7 @@ const toReceiveDataConfig = (
 const buildEservice = ({
   eserviceCategoriesSQL,
   eserviceInterfacesSQL,
-  eservicePurposeFormAnswersSQL,
+  eservicePurposeFormPrefillsSQL,
   eserviceSQL,
   eserviceVersionRequiredAttributesSQL,
   eserviceVersionsSQL,
@@ -223,7 +223,7 @@ const buildEservice = ({
     scheme: categorySQL.scheme,
   }));
 
-  const receiveDataConfig = toReceiveDataConfig(eservicePurposeFormAnswersSQL);
+  const receiveDataConfig = toReceiveDataConfig(eservicePurposeFormPrefillsSQL);
 
   const eservice: Eservice = {
     categories,
@@ -267,7 +267,7 @@ export const aggregateEservices = (
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
-    purposeFormAnswersSQL,
+    purposeFormPrefillsSQL,
     requiredAttributesSQL,
     versionsSQL,
   } = toEservicesAggregator(queryRes);
@@ -279,8 +279,8 @@ export const aggregateEservices = (
     requiredAttributesSQL,
   );
   const categoriesSQLByEserviceId = createEserviceSQLPropertyMap(categoriesSQL);
-  const purposeFormAnswersSQLByEserviceId = createEserviceSQLPropertyMap(
-    purposeFormAnswersSQL,
+  const purposeFormPrefillsSQLByEserviceId = createEserviceSQLPropertyMap(
+    purposeFormPrefillsSQL,
   );
 
   return eservicesSQL.map((eserviceSQL) => {
@@ -288,8 +288,8 @@ export const aggregateEservices = (
     return buildEservice({
       eserviceCategoriesSQL: categoriesSQLByEserviceId.get(eserviceId) || [],
       eserviceInterfacesSQL: interfacesSQLByEserviceId.get(eserviceId) || [],
-      eservicePurposeFormAnswersSQL:
-        purposeFormAnswersSQLByEserviceId.get(eserviceId) || [],
+      eservicePurposeFormPrefillsSQL:
+        purposeFormPrefillsSQLByEserviceId.get(eserviceId) || [],
       eserviceSQL,
       eserviceVersionRequiredAttributesSQL:
         requiredAttributesSQLByEserviceId.get(eserviceId) || [],
@@ -303,7 +303,7 @@ const createEserviceSQLPropertyMap = <
   T extends
     | EserviceCategorySQL
     | EserviceInterfaceSQL
-    | EservicePurposeFormAnswerSQL
+    | EservicePurposeFormPrefillSQL
     | EserviceVersionRequiredAttributeSQL
     | EserviceVersionSQL,
 >(
@@ -325,7 +325,7 @@ const toEserviceAggregator = (
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
-    purposeFormAnswersSQL,
+    purposeFormPrefillsSQL,
     requiredAttributesSQL,
     versionsSQL,
   } = toEservicesAggregator(queryRes);
@@ -333,7 +333,7 @@ const toEserviceAggregator = (
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
-    eservicePurposeFormAnswersSQL: purposeFormAnswersSQL,
+    eservicePurposeFormPrefillsSQL: purposeFormPrefillsSQL,
     eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service", (e) => e.id),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
@@ -346,7 +346,7 @@ const toEservicesAggregator = (
   categoriesSQL: EserviceCategorySQL[];
   eservicesSQL: EserviceSQL[];
   interfacesSQL: EserviceInterfaceSQL[];
-  purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[];
+  purposeFormPrefillsSQL: EservicePurposeFormPrefillSQL[];
   requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[];
   versionsSQL: EserviceVersionSQL[];
 } => {
@@ -365,8 +365,8 @@ const toEservicesAggregator = (
   const requiredAttributePKSet = new Set<string>();
   const requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[] = [];
 
-  const purposeFormAnswerPKSet = new Set<string>();
-  const purposeFormAnswersSQL: EservicePurposeFormAnswerSQL[] = [];
+  const purposeFormPrefillPKSet = new Set<string>();
+  const purposeFormPrefillsSQL: EservicePurposeFormPrefillSQL[] = [];
 
   queryRes.forEach((row) => {
     aggregateByPKString(
@@ -400,10 +400,10 @@ const toEservicesAggregator = (
       readmodelEserviceVersionRequiredAttribute,
     );
     aggregateByPKString(
-      row.purposeFormAnswer,
-      purposeFormAnswerPKSet,
-      purposeFormAnswersSQL,
-      readmodelEservicePurposeFormAnswer,
+      row.purposeFormPrefill,
+      purposeFormPrefillPKSet,
+      purposeFormPrefillsSQL,
+      readmodelEservicePurposeFormPrefill,
     );
   });
 
@@ -411,7 +411,7 @@ const toEservicesAggregator = (
     categoriesSQL,
     eservicesSQL,
     interfacesSQL,
-    purposeFormAnswersSQL,
+    purposeFormPrefillsSQL,
     requiredAttributesSQL,
     versionsSQL,
   };
