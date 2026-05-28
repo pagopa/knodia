@@ -9,6 +9,38 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "eservice.v1";
 
+/** TODO find a way to share this with purpose-models and make proto gen work */
+export const PurposeFormSchemaVersionV1 = { V1_0: 0, UNRECOGNIZED: -1 } as const;
+
+export type PurposeFormSchemaVersionV1 = typeof PurposeFormSchemaVersionV1[keyof typeof PurposeFormSchemaVersionV1];
+
+export namespace PurposeFormSchemaVersionV1 {
+  export type V1_0 = typeof PurposeFormSchemaVersionV1.V1_0;
+  export type UNRECOGNIZED = typeof PurposeFormSchemaVersionV1.UNRECOGNIZED;
+}
+
+export function purposeFormSchemaVersionV1FromJSON(object: any): PurposeFormSchemaVersionV1 {
+  switch (object) {
+    case 0:
+    case "V1_0":
+      return PurposeFormSchemaVersionV1.V1_0;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PurposeFormSchemaVersionV1.UNRECOGNIZED;
+  }
+}
+
+export function purposeFormSchemaVersionV1ToJSON(object: PurposeFormSchemaVersionV1): string {
+  switch (object) {
+    case PurposeFormSchemaVersionV1.V1_0:
+      return "V1_0";
+    case PurposeFormSchemaVersionV1.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export const EserviceModeV1 = { PROVIDE_DATA: 0, RECEIVE_DATA: 1, UNRECOGNIZED: -1 } as const;
 
 export type EserviceModeV1 = typeof EserviceModeV1[keyof typeof EserviceModeV1];
@@ -151,7 +183,7 @@ export interface PurposeFormAnswerV1 {
   name: LocalizedTextV1 | undefined;
   description: LocalizedTextV1 | undefined;
   formAnswersJson: string;
-  formSchemaVersion: string;
+  formSchemaVersion: PurposeFormSchemaVersionV1;
 }
 
 export interface EserviceCategoryV1 {
@@ -550,7 +582,7 @@ export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
 };
 
 function createBasePurposeFormAnswerV1(): PurposeFormAnswerV1 {
-  return { id: "", name: undefined, description: undefined, formAnswersJson: "", formSchemaVersion: "" };
+  return { id: "", name: undefined, description: undefined, formAnswersJson: "", formSchemaVersion: 0 };
 }
 
 export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
@@ -567,8 +599,8 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
     if (message.formAnswersJson !== "") {
       writer.uint32(34).string(message.formAnswersJson);
     }
-    if (message.formSchemaVersion !== "") {
-      writer.uint32(42).string(message.formSchemaVersion);
+    if (message.formSchemaVersion !== 0) {
+      writer.uint32(40).int32(message.formSchemaVersion);
     }
     return writer;
   },
@@ -613,11 +645,11 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.formSchemaVersion = reader.string();
+          message.formSchemaVersion = reader.int32() as any;
           continue;
         }
       }
@@ -635,7 +667,9 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
       name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
-      formSchemaVersion: isSet(object.formSchemaVersion) ? globalThis.String(object.formSchemaVersion) : "",
+      formSchemaVersion: isSet(object.formSchemaVersion)
+        ? purposeFormSchemaVersionV1FromJSON(object.formSchemaVersion)
+        : 0,
     };
   },
 
@@ -653,8 +687,8 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
     if (message.formAnswersJson !== "") {
       obj.formAnswersJson = message.formAnswersJson;
     }
-    if (message.formSchemaVersion !== "") {
-      obj.formSchemaVersion = message.formSchemaVersion;
+    if (message.formSchemaVersion !== 0) {
+      obj.formSchemaVersion = purposeFormSchemaVersionV1ToJSON(message.formSchemaVersion);
     }
     return obj;
   },
@@ -672,7 +706,7 @@ export const PurposeFormAnswerV1: MessageFns<PurposeFormAnswerV1> = {
       ? LocalizedTextV1.fromPartial(object.description)
       : undefined;
     message.formAnswersJson = object.formAnswersJson ?? "";
-    message.formSchemaVersion = object.formSchemaVersion ?? "";
+    message.formSchemaVersion = object.formSchemaVersion ?? 0;
     return message;
   },
 };

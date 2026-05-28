@@ -5,7 +5,7 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import {
   PurposeFormAnswers,
-  PurposeFormSchemaVersion,
+  type PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 
@@ -28,6 +28,7 @@ import {
   EserviceVersionStateV1,
   type EserviceVersionV1,
   type PurposeFormAnswerV1,
+  PurposeFormSchemaVersionV1,
   type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
 
@@ -74,11 +75,21 @@ const fromPurposeFormAnswerV1 = (
     formAnswersJson: PurposeFormAnswers.parse(
       JSON.parse(input.formAnswersJson),
     ),
-    formSchemaVersion: PurposeFormSchemaVersion.parse(input.formSchemaVersion),
+    formSchemaVersion: fromPurposeFormSchemaVersionV1(input.formSchemaVersion),
     id: unsafeBrandId(input.id),
     name: input.name,
   };
 };
+
+const fromPurposeFormSchemaVersionV1 = (
+  input: PurposeFormSchemaVersionV1,
+): PurposeFormSchemaVersion =>
+  match(input)
+    .with(PurposeFormSchemaVersionV1.V1_0, () => "1.0" as const)
+    .with(PurposeFormSchemaVersionV1.UNRECOGNIZED, () => {
+      throw new Error("Unrecognized PurposeFormSchemaVersionV1 value");
+    })
+    .exhaustive();
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)

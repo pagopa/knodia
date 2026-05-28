@@ -27,7 +27,12 @@ message PurposeFormAnswerV1 {
   LocalizedTextV1 name = 2;
   LocalizedTextV1 description = 3;
   string formAnswersJson = 4;
-  string formSchemaVersion = 5;
+  PurposeFormSchemaVersionV1 formSchemaVersion = 5;
+}
+
+// TODO find a way to share this with purpose-models and make proto gen work
+enum PurposeFormSchemaVersionV1 {
+  V1_0 = 0;
 }
 
 message EserviceCategoryV1 {

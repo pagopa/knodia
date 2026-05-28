@@ -1,4 +1,5 @@
 import type { AttributeGroup } from "@knodia/attribute-models";
+import type { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 
 import { match } from "ts-pattern";
 
@@ -22,6 +23,7 @@ import {
   EserviceVersionStateV1,
   type EserviceVersionV1,
   type PurposeFormAnswerV1,
+  PurposeFormSchemaVersionV1,
   type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
 
@@ -76,11 +78,21 @@ const toEserviceVersionV1 = (version: EserviceVersion): EserviceVersionV1 => ({
   updatedAt: version.updatedAt.getTime(),
 });
 
+const toPurposeFormSchemaVersionV1 = (
+  version: PurposeFormSchemaVersion,
+): PurposeFormSchemaVersionV1 =>
+  match(version)
+    .with("1.0", () => PurposeFormSchemaVersionV1.V1_0)
+    .exhaustive();
+
 const toPurposeFormAnswerV1 = (
   purposeFormAnswer: PurposeFormAnswer,
 ): PurposeFormAnswerV1 => ({
   ...purposeFormAnswer,
   formAnswersJson: JSON.stringify(purposeFormAnswer.formAnswersJson),
+  formSchemaVersion: toPurposeFormSchemaVersionV1(
+    purposeFormAnswer.formSchemaVersion,
+  ),
 });
 
 const toReceiveDataConfigV1 = (
