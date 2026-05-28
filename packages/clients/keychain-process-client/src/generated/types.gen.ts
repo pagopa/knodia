@@ -180,6 +180,17 @@ export type ProducerKeychainEserviceLinkSeed = {
     eserviceId: string;
 };
 
+export type ProducerKeychainEservice = {
+    eserviceId: string;
+    linkedAt: string;
+    producerKeychainId: KeychainId;
+};
+
+export type ProducerKeychainEservices = {
+    pagination: Pagination;
+    results: Array<ProducerKeychainEservice>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -2263,6 +2274,60 @@ export type GetProducerKeychainKeyResponses = {
 
 export type GetProducerKeychainKeyResponse = GetProducerKeychainKeyResponses[keyof GetProducerKeychainKeyResponses];
 
+export type GetProducerKeychainEservicesData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/eservices';
+};
+
+export type GetProducerKeychainEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainEservicesError = GetProducerKeychainEservicesErrors[keyof GetProducerKeychainEservicesErrors];
+
+export type GetProducerKeychainEservicesResponses = {
+    /**
+     * E-services linked to the Producer Keychain retrieved successfully
+     */
+    200: ProducerKeychainEservices;
+};
+
+export type GetProducerKeychainEservicesResponse = GetProducerKeychainEservicesResponses[keyof GetProducerKeychainEservicesResponses];
+
 export type LinkEserviceToProducerKeychainData = {
     body: ProducerKeychainEserviceLinkSeed;
     headers: {
@@ -2357,3 +2422,49 @@ export type UnlinkEserviceFromProducerKeychainResponses = {
 };
 
 export type UnlinkEserviceFromProducerKeychainResponse = UnlinkEserviceFromProducerKeychainResponses[keyof UnlinkEserviceFromProducerKeychainResponses];
+
+export type GetProducerKeychainEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/eservices/{eserviceId}';
+};
+
+export type GetProducerKeychainEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainEserviceError = GetProducerKeychainEserviceErrors[keyof GetProducerKeychainEserviceErrors];
+
+export type GetProducerKeychainEserviceResponses = {
+    /**
+     * E-service linked to the Producer Keychain retrieved successfully
+     */
+    200: ProducerKeychainEservice;
+};
+
+export type GetProducerKeychainEserviceResponse = GetProducerKeychainEserviceResponses[keyof GetProducerKeychainEserviceResponses];
