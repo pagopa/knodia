@@ -274,7 +274,7 @@ const testCases = [
       iss: "my-issuer",
       jti: expect.any(String),
       name: "Mario",
-      PersonIdentifier: "person-identifier-123",
+      personIdentifier: "person-identifier-123",
       spidCode: "spid-code-123",
       sub: "subject-123",
       type: "ui-signup-session",

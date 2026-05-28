@@ -144,7 +144,7 @@ export function extractAuthDataFromToken(
         familyName: c.familyName,
         fiscalNumber: c.fiscalNumber,
         name: c.name,
-        personalIdentifier: c.PersonIdentifier,
+        personalIdentifier: c.personIdentifier,
         spidCode: c.spidCode,
         tokenType: "ui-signup-session",
         uniqueIdentifier: c.sub,

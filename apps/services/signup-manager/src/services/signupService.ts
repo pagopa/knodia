@@ -41,8 +41,7 @@ export function signupServiceBuilder(
        * - eIDAS returns `PersonIdentifier`.
        */
       const subject =
-        claims.spidCode ?? claims.fiscalNumber ?? claims.PersonIdentifier;
-
+        claims.PersonIdentifier ?? claims.spidCode ?? claims.fiscalNumber;
       if (!subject) {
         throw genericInternalError(
           "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",

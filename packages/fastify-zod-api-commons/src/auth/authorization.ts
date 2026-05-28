@@ -36,7 +36,7 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
       : UISessionAuthData)
-    | (Extract<Rules[number], { tokenType: "ui-signup-session" }> extends never
+  | (Extract<Rules[number], { tokenType: "ui-signup-session" }> extends never
       ? never
       : UISignupSessionAuthData);
 

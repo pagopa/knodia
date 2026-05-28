@@ -370,7 +370,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         iss: input.issuer,
         jti: randomUUID(),
         name: input.name,
-        PersonIdentifier: input.PersonIdentifier,
+        personIdentifier: input.PersonIdentifier,
         spidCode: input.spidCode,
         sub: input.subject,
         type: "ui-signup-session",
