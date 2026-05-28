@@ -2259,6 +2259,9 @@ importers:
 
   packages/clients/k2k-gateway:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../models/common-models
       '@knodia/openapi-client-generator':
         specifier: workspace:*
         version: link:../../openapi-client-generator

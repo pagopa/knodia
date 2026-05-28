@@ -20,3 +20,12 @@ export const TargetKnodeUrls = z
   })
   .pipe(z.partialRecord(KnodeId, z.url()));
 export type TargetKnodeUrls = z.infer<typeof TargetKnodeUrls>;
+
+export const TargetKnodeUrlsConfig = z
+  .object({
+    TARGET_KNODE_URLS: TargetKnodeUrls,
+  })
+  .transform((c) => ({
+    targetKnodeUrls: c.TARGET_KNODE_URLS,
+  }));
+export type TargetKnodeUrlsConfig = z.infer<typeof TargetKnodeUrlsConfig>;

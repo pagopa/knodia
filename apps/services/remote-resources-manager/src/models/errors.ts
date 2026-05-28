@@ -1,6 +1,7 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
+  KnodeId,
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
@@ -13,7 +14,11 @@ type ExternalUISessionRemoteOrganizationClaimField =
   | "consumer.id"
   | "consumer.knodeId";
 
-const { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } = constants;
+const {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -23,6 +28,7 @@ const errorCodes = {
   ORGANIZATION_NOT_AGREEMENT_CONSUMER: "0004",
   ORGANIZATION_NOT_PURPOSE_CONSUMER: "0005",
   ORGANIZATION_TOKEN_CLAIM_MISMATCH: "0006",
+  TARGET_KNODE_URL_NOT_CONFIGURED: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -93,5 +99,14 @@ export function purposeNotFound(purposeId: ExternalId<PurposeId>) {
     detail: `Purpose with id ${purposeId} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Purpose Not Found",
+  });
+}
+
+export function targetKnodeUrlNotConfigured(targetKnodeId: KnodeId) {
+  return createApiError<ErrorCodes>({
+    code: "TARGET_KNODE_URL_NOT_CONFIGURED",
+    detail: `No TARGET_KNODE_URLS entry configured for Knode ${targetKnodeId}`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "Target Knode URL Not Configured",
   });
 }
