@@ -96,7 +96,7 @@ export const PurposeFormAnswer = z.strictObject({
 export type PurposeFormAnswer = z.infer<typeof PurposeFormAnswer>;
 
 export const ReceiveDataConfig = z.strictObject({
-  purposeFormAnswers: z.array(PurposeFormAnswer),
+  purposeFormAnswers: z.array(PurposeFormAnswer).min(1),
 });
 export type ReceiveDataConfig = z.infer<typeof ReceiveDataConfig>;
 
