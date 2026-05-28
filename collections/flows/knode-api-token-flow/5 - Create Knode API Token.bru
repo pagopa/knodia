@@ -24,9 +24,10 @@ assert {
 
 script:post-response {
   if (res.status === 200) {
-    // Expose as knode-api-jwt (the variable downstream `Authorization:
-    // {{knode-api-jwt}}` requests read), already prefixed with "Bearer ".
-    bru.setVar("knode-api-jwt", `Bearer ${res.body.access_token}`)
+    // Expose as knode-api-token (the variable downstream `Authorization: Bearer
+    // {{knode-api-token}}` requests read) — like access_token, the var holds the
+    // raw token and the header adds "Bearer ".
+    bru.setVar("knode-api-token", res.body.access_token)
     return
   }
 
