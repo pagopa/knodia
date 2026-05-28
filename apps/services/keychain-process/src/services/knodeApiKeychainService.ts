@@ -22,7 +22,6 @@ import {
   type KnodeApiKeychainId,
   type UserId,
 } from "@knodia/common-models/ids";
-import { match, P } from "ts-pattern";
 
 import type {
   API_GetKnodeApiKeychainKeysQueryParams,
@@ -30,8 +29,8 @@ import type {
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
-  API_KnodeApiKeychainPatch,
-  API_KnodeApiKeychainSeed,
+  API_KeychainPatch,
+  API_KeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -47,19 +46,18 @@ import {
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
-  retrieveKeychainUser,
+  retrieveKeychainMember,
   retrieveKnodeApiKeychain,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
   addMemberToKeychain,
   removeKeyFromKeychain,
   removeMemberFromKeychain,
+  updateKeychain,
 } from "../utils/utils.ts";
-import {
-  assertOrganizationIsKeychainOwner,
-  assertUserIsMemberOfKeychain,
-} from "../utils/validators.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -76,7 +74,7 @@ export function knodeApiKeychainServiceBuilder(
       knodeApiKeychainId: KnodeApiKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<KnodeApiKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Knode API Keychain ${knodeApiKeychainId}`,
       );
@@ -104,12 +102,12 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return {
-        data: updatedKnodeApiKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
     async createKnodeApiKeychain(
-      seed: API_KnodeApiKeychainSeed,
+      seed: API_KeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<KnodeApiKeychain>> {
       const knodeApiKeychainId = generateId<KnodeApiKeychainId>();
@@ -233,23 +231,13 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        knodeApiKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
-        userId,
-        knodeApiKeychainId,
-        knodeApiKeychain.data.users,
-      );
-
-      return await retrieveKeychainUser(
-        userId,
-        knodeApiKeychainId,
-        "Knode API Keychain",
+      return await retrieveKeychainMember({
+        authData,
         cognitoIdmClient,
-      );
+        keychain: knodeApiKeychain.data,
+        keychainKind: "Knode API Keychain",
+        userId,
+      });
     },
 
     async getKnodeApiKeychainMembers(
@@ -272,21 +260,14 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain,
       );
 
-      const paginatedUserIds = knodeApiKeychain.users
-        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-        .slice(params.offset, params.offset + params.limit);
-
       return {
-        results: await Promise.all(
-          paginatedUserIds.map(({ userId }) =>
-            retrieveKeychainUser(
-              userId,
-              knodeApiKeychainId,
-              "Knode API Keychain",
-              cognitoIdmClient,
-            ),
-          ),
-        ),
+        results: await retrievePaginatedKeychainUsers({
+          cognitoIdmClient,
+          keychainId: knodeApiKeychainId,
+          keychainKind: "Knode API Keychain",
+          paginationParams: params,
+          users: knodeApiKeychain.users,
+        }),
         totalCount: knodeApiKeychain.users.length,
       };
     },
@@ -368,7 +349,7 @@ export function knodeApiKeychainServiceBuilder(
 
     async updateKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
-      update: API_KnodeApiKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<KnodeApiKeychain>> {
       logger.info(`Updating Knode API Keychain ${knodeApiKeychainId}`);
@@ -378,21 +359,11 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedKnodeApiKeychain = updateKeychain(
         knodeApiKeychain.data,
+        update,
+        authData,
       );
-
-      const updatedKnodeApiKeychain: KnodeApiKeychain = {
-        ...knodeApiKeychain.data,
-        description: match(update.description)
-          .with(null, () => undefined)
-          .with(undefined, () => knodeApiKeychain.data.description)
-          .with(P.nonNullable, (desc) => desc)
-          .exhaustive(),
-        name: update.name ?? knodeApiKeychain.data.name,
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createKnodeApiKeychainUpdatedV1Event(

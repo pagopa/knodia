@@ -21,6 +21,7 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_CreatedMemberResource,
   API_UnlinkConsumerKeychainIdPathParams,
   API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
@@ -31,10 +32,8 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
-  API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposes,
-  API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposePathParams,
@@ -47,11 +46,14 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
+  API_KeychainSeed,
   API_User,
 } from "../models/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
+  toAPI_CreatedMemberResource,
   toAPI_Keychain,
   toAPI_KeychainKey,
   toAPI_User,
@@ -274,7 +276,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_ConsumerKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "createConsumerKeychain",
@@ -314,7 +316,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_ConsumerKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Consumer Keychain",
       headers: KnodiaServiceHeaders,
@@ -377,7 +379,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: consumerKeychain,
+        data: addedMemberId,
         metadata: { version },
       } = await consumerKeychainService.addConsumerKeychainMember(
         req.params.consumerKeychainId,
@@ -385,7 +387,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         ctx,
       );
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(consumerKeychain));
+      res.status(201).send(toAPI_CreatedMemberResource(addedMemberId));
     },
     method: "POST",
     schema: {
@@ -395,9 +397,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "addConsumerKeychainMember",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: {
+        201: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: API_CreatedMemberResource.meta({
             description: "Consumer Keychain member added successfully",
           }),
         },
@@ -545,7 +547,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: consumerKeychain,
         metadata: { version },
       } = await consumerKeychainService.removeConsumerKeychainMember(
         unsafeBrandId(req.params.consumerKeychainId),
@@ -554,7 +555,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(consumerKeychain));
+      res.status(204).send();
     },
     method: "DELETE",
     schema: {
@@ -563,9 +564,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "removeConsumerKeychainMember",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
-        200: {
+        204: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: z.undefined().meta({
             description: "Consumer Keychain member removed successfully",
           }),
         },

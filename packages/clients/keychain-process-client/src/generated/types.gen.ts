@@ -33,6 +33,27 @@ export type Problem = {
     title: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
+/**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
 /**
  * Unique Knode identifier
  */
@@ -73,26 +94,12 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
+/**
+ * Unique identifier of the created member resource
+ */
+export type CreatedMemberResource = {
+    userId: UserId;
 };
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
-/**
- * Unique identifier of the User
- */
-export type UserId = string;
-
-/**
- * Unique identifier of the Key
- */
-export type KeyId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -108,22 +115,12 @@ export type Keychains = {
     results: Array<Keychain>;
 };
 
-export type ConsumerKeychainSeed = {
+export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
 };
 
-export type KnodeApiKeychainSeed = {
-    description?: KeychainLocalizedDescription;
-    name: KeychainLocalizedName;
-};
-
-export type ConsumerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainPatch = {
+export type KeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
 };
@@ -256,7 +253,7 @@ export type GetConsumerKeychainsResponses = {
 export type GetConsumerKeychainsResponse = GetConsumerKeychainsResponses[keyof GetConsumerKeychainsResponses];
 
 export type CreateConsumerKeychainData = {
-    body: ConsumerKeychainSeed;
+    body: KeychainSeed;
     headers: {
         /**
          * Unique identifier of the request
@@ -385,7 +382,7 @@ export type GetConsumerKeychainResponses = {
 export type GetConsumerKeychainResponse = GetConsumerKeychainResponses[keyof GetConsumerKeychainResponses];
 
 export type UpdateConsumerKeychainData = {
-    body: ConsumerKeychainPatch;
+    body: KeychainPatch;
     headers: {
         /**
          * Unique identifier of the request
@@ -665,7 +662,7 @@ export type RemoveConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
@@ -814,7 +811,7 @@ export type AddConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
@@ -1075,7 +1072,7 @@ export type GetKnodeApiKeychainsResponses = {
 export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
 
 export type CreateKnodeApiKeychainData = {
-    body: KnodeApiKeychainSeed;
+    body: KeychainSeed;
     headers: {
         /**
          * Unique identifier of the request
@@ -1204,7 +1201,7 @@ export type GetKnodeApiKeychainResponses = {
 export type GetKnodeApiKeychainResponse = GetKnodeApiKeychainResponses[keyof GetKnodeApiKeychainResponses];
 
 export type UpdateKnodeApiKeychainData = {
-    body: KnodeApiKeychainPatch;
+    body: KeychainPatch;
     headers: {
         /**
          * Unique identifier of the request
@@ -1541,7 +1538,7 @@ export type AddKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddKnodeApiKeychainMemberResponse = AddKnodeApiKeychainMemberResponses[keyof AddKnodeApiKeychainMemberResponses];
@@ -1587,7 +1584,7 @@ export type RemoveKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveKnodeApiKeychainMemberResponse = RemoveKnodeApiKeychainMemberResponses[keyof RemoveKnodeApiKeychainMemberResponses];
@@ -1637,3 +1634,432 @@ export type GetKnodeApiKeychainMemberResponses = {
 };
 
 export type GetKnodeApiKeychainMemberResponse = GetKnodeApiKeychainMemberResponses[keyof GetKnodeApiKeychainMemberResponses];
+
+export type GetProducerKeychainsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Producer Keychain name
+         */
+        name?: string;
+        /**
+         * Filter by owner Organization ID
+         */
+        ownerId?: OrganizationId;
+    };
+    url: '/producerKeychains';
+};
+
+export type GetProducerKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerKeychainsError = GetProducerKeychainsErrors[keyof GetProducerKeychainsErrors];
+
+export type GetProducerKeychainsResponses = {
+    /**
+     * Producer keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetProducerKeychainsResponse = GetProducerKeychainsResponses[keyof GetProducerKeychainsResponses];
+
+export type CreateProducerKeychainData = {
+    body: KeychainSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/producerKeychains';
+};
+
+export type CreateProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];
+
+export type CreateProducerKeychainResponses = {
+    /**
+     * Producer Keychain created successfully
+     */
+    201: Keychain;
+};
+
+export type CreateProducerKeychainResponse = CreateProducerKeychainResponses[keyof CreateProducerKeychainResponses];
+
+export type DeleteProducerKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type DeleteProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteProducerKeychainError = DeleteProducerKeychainErrors[keyof DeleteProducerKeychainErrors];
+
+export type DeleteProducerKeychainResponses = {
+    /**
+     * Producer Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteProducerKeychainResponse = DeleteProducerKeychainResponses[keyof DeleteProducerKeychainResponses];
+
+export type GetProducerKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type GetProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainError = GetProducerKeychainErrors[keyof GetProducerKeychainErrors];
+
+export type GetProducerKeychainResponses = {
+    /**
+     * Producer Keychain retrieved successfully
+     */
+    200: Keychain;
+};
+
+export type GetProducerKeychainResponse = GetProducerKeychainResponses[keyof GetProducerKeychainResponses];
+
+export type UpdateProducerKeychainData = {
+    body: KeychainPatch;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type UpdateProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];
+
+export type UpdateProducerKeychainResponses = {
+    /**
+     * Producer Keychain updated successfully
+     */
+    200: Keychain;
+};
+
+export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
+
+export type GetProducerKeychainMembersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/members';
+};
+
+export type GetProducerKeychainMembersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainMembersError = GetProducerKeychainMembersErrors[keyof GetProducerKeychainMembersErrors];
+
+export type GetProducerKeychainMembersResponses = {
+    /**
+     * Producer Keychain members retrieved successfully
+     */
+    200: KeychainMembers;
+};
+
+export type GetProducerKeychainMembersResponse = GetProducerKeychainMembersResponses[keyof GetProducerKeychainMembersResponses];
+
+export type AddProducerKeychainMemberData = {
+    body: KeychainMemberSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members';
+};
+
+export type AddProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddProducerKeychainMemberError = AddProducerKeychainMemberErrors[keyof AddProducerKeychainMemberErrors];
+
+export type AddProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member added successfully
+     */
+    201: CreatedMemberResource;
+};
+
+export type AddProducerKeychainMemberResponse = AddProducerKeychainMemberResponses[keyof AddProducerKeychainMemberResponses];
+
+export type RemoveProducerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members/{userId}';
+};
+
+export type RemoveProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or Member not found
+     */
+    404: Problem;
+};
+
+export type RemoveProducerKeychainMemberError = RemoveProducerKeychainMemberErrors[keyof RemoveProducerKeychainMemberErrors];
+
+export type RemoveProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member removed successfully
+     */
+    204: void;
+};
+
+export type RemoveProducerKeychainMemberResponse = RemoveProducerKeychainMemberResponses[keyof RemoveProducerKeychainMemberResponses];
+
+export type GetProducerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members/{userId}';
+};
+
+export type GetProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain Member not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainMemberError = GetProducerKeychainMemberErrors[keyof GetProducerKeychainMemberErrors];
+
+export type GetProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain Member retrieved successfully
+     */
+    200: User;
+};
+
+export type GetProducerKeychainMemberResponse = GetProducerKeychainMemberResponses[keyof GetProducerKeychainMemberResponses];

@@ -78,3 +78,25 @@ message KnodeApiKeychainKeyRemovedV1 {
 message KnodeApiKeychainDeletedV1 {
   KnodeApiKeychainV1 knodeApiKeychain = 1;
 }
+
+message ProducerKeychainCreatedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+}
+
+message ProducerKeychainUpdatedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+}
+
+message ProducerKeychainDeletedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+}
+
+message ProducerKeychainMemberAddedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string userId = 2;
+}
+
+message ProducerKeychainMemberRemovedV1 {
+  ProducerKeychainV1 producerKeychain = 1;
+  string userId = 2;
+}

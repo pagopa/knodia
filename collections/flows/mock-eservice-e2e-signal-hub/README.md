@@ -31,6 +31,15 @@ mock-eservice to observe the full cycle in a reasonable time frame.
 Steps 2 and 3 below use the `{{access_token}}` Bruno var stashed by
 step 11.
 
+Step 4 (Pull Signals) authenticates with a Knode API token (`knode-api-jwt`)
+instead — obtained the same way as the bearer token above: run the
+`knode-api-token-flow`, which sets up a Knode API keychain, signs a Knode API
+client assertion (`pnpm generate-client-assertion --knodeId <Orion|Lynx> …`),
+and exchanges it at the authorization server `/knodeApiToken` endpoint (see
+`knode-api-token-flow/README.md`). Provide the returned token to step 4 either
+by setting `KNODE_API_JWT` in `collections/.env` or with
+`--env-var knode-api-jwt='Bearer <token>'`.
+
 ## Fetch data and observe rotation
 
 3. **2 - Get Residence (Signal Hub Bearer)** — `GET /natural-persons/RMNLNR03H12H501Z/residence`.

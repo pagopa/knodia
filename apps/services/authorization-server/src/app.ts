@@ -9,13 +9,16 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
-import { makeK2K2GatewayApiClientFactory } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
-import { makeApiProblem } from "./models/errors.ts";
+import {
+  makeApiProblem,
+  targetKnodeUrlNotConfigured,
+} from "./models/errors.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
@@ -32,6 +35,7 @@ export function buildApp({
   const tokenGenerator = tokenGeneratorBuilder();
   const getK2K2GatewayApiClient = makeK2K2GatewayApiClientFactory(
     config.targetKnodeUrls,
+    targetKnodeUrlNotConfigured,
   );
 
   const dpopProofStore = createJtiReplayStore(

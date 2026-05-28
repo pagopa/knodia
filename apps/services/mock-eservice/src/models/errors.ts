@@ -15,6 +15,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   INVALID_DPOP_PROOF_ATH: "0009",
   INVALID_DPOP_THUMBPRINT: "0010",
   NATURAL_PERSON_NOT_FOUND: "0011",
+  RESIDENCE_NOT_AVAILABLE: "0012",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -71,5 +72,14 @@ export function naturalPersonNotFound(notation: string) {
     detail: `No natural person found for notation ${notation}`,
     status: 404,
     title: "natural_person_not_found",
+  });
+}
+
+export function residenceNotAvailable(notation: string) {
+  return createApiError({
+    code: "RESIDENCE_NOT_AVAILABLE",
+    detail: `Natural person ${notation} exists but has no residence in the current period`,
+    status: 404,
+    title: "residence_not_available",
   });
 }

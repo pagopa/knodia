@@ -1,6 +1,7 @@
 import type {
   ConsumerKeychainWriterService,
   KnodeApiKeychainWriterService,
+  ProducerKeychainWriterService,
 } from "@knodia/db-readmodel-keychain/services";
 
 import { fromExternalResource } from "@knodia/common-models/externalResource";
@@ -9,6 +10,7 @@ import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
   fromKnodeApiKeychainV1,
+  fromProducerKeychainV1,
   type KeychainEventEnvelopeV1,
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
@@ -18,9 +20,11 @@ export async function handleKeychainEvent(
   {
     consumerKeychainWriterService,
     knodeApiKeychainWriterService,
+    producerKeychainWriterService,
   }: {
     consumerKeychainWriterService: ConsumerKeychainWriterService;
     knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
+    producerKeychainWriterService: ProducerKeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -100,6 +104,30 @@ export async function handleKeychainEvent(
       assertDataExistsInEvent(msg, "knodeApiKeychain");
       await knodeApiKeychainWriterService.deleteKnodeApiKeychain(
         fromKnodeApiKeychainV1(msg.data.knodeApiKeychain).id,
+        message.version,
+      );
+    })
+    .with(
+      {
+        type: P.union(
+          "ProducerKeychainCreatedV1",
+          "ProducerKeychainUpdatedV1",
+          "ProducerKeychainMemberAddedV1",
+          "ProducerKeychainMemberRemovedV1",
+        ),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "producerKeychain");
+        await producerKeychainWriterService.upsertProducerKeychain(
+          fromProducerKeychainV1(msg.data.producerKeychain),
+          message.version,
+        );
+      },
+    )
+    .with({ type: "ProducerKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "producerKeychain");
+      await producerKeychainWriterService.deleteProducerKeychain(
+        fromProducerKeychainV1(msg.data.producerKeychain).id,
         message.version,
       );
     })

@@ -18,36 +18,40 @@ const nowAtPeriod = (periodId: number) =>
   periodId * CONFIG.expireSeconds * 1000;
 
 describe("findResidence", () => {
-  it("returns undefined for an unknown notation", () => {
-    expect(
-      findResidence(UNKNOWN_NOTATION, nowAtPeriod(0), CONFIG),
-    ).toBeUndefined();
+  it("returns personNotFound for an unknown notation", () => {
+    expect(findResidence(UNKNOWN_NOTATION, nowAtPeriod(0), CONFIG)).toEqual({
+      kind: "personNotFound",
+    });
   });
 
   it("returns the same address across periods for a static entry", () => {
-    const r0 = findResidence(STATIC_NOTATION, nowAtPeriod(0), CONFIG);
-    const r1 = findResidence(STATIC_NOTATION, nowAtPeriod(1), CONFIG);
-    const r2 = findResidence(STATIC_NOTATION, nowAtPeriod(2), CONFIG);
-    expect(r0).toBeDefined();
-    expect(r0?.address).toEqual(r1?.address);
-    expect(r0?.address).toEqual(r2?.address);
+    const addresses = [0, 1, 2].map((p) => {
+      const result = findResidence(STATIC_NOTATION, nowAtPeriod(p), CONFIG);
+      return result.kind === "found" ? result.residence.address : undefined;
+    });
+    expect(addresses[0]).toBeDefined();
+    expect(addresses[0]).toEqual(addresses[1]);
+    expect(addresses[0]).toEqual(addresses[2]);
   });
 
-  it("cycles A → B → undefined → A → B → undefined for a rotating entry", () => {
-    const responses = [0, 1, 2, 3, 4, 5].map((p) =>
+  it("cycles found → found → residenceUnavailable for a rotating entry", () => {
+    const results = [0, 1, 2, 3, 4, 5].map((p) =>
       findResidence(ROTATING_NOTATION, nowAtPeriod(p), CONFIG),
     );
+    expect(results.map((r) => r.kind)).toEqual([
+      "found",
+      "found",
+      "residenceUnavailable",
+      "found",
+      "found",
+      "residenceUnavailable",
+    ]);
 
-    expect(responses[0]).toBeDefined();
-    expect(responses[1]).toBeDefined();
-    expect(responses[2]).toBeUndefined();
-    expect(responses[3]).toBeDefined();
-    expect(responses[4]).toBeDefined();
-    expect(responses[5]).toBeUndefined();
-
-    expect(responses[0]?.address).toEqual(responses[3]?.address);
-    expect(responses[1]?.address).toEqual(responses[4]?.address);
-
-    expect(responses[0]?.address).not.toEqual(responses[1]?.address);
+    const addresses = results.map((r) =>
+      r.kind === "found" ? r.residence.address : undefined,
+    );
+    expect(addresses[0]).toEqual(addresses[3]);
+    expect(addresses[1]).toEqual(addresses[4]);
+    expect(addresses[0]).not.toEqual(addresses[1]);
   });
 });

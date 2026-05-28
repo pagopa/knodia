@@ -86,7 +86,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(res.json().address.fullAddress).toMatch(/Mestre/);
     });
 
-    it("returns 404 in the Delete phase (periodId 2)", async () => {
+    it("returns 404 residence_not_available in the Delete phase (periodId 2)", async () => {
       vi.setSystemTime(PERIOD_MS * 2 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
@@ -95,6 +95,7 @@ describe("mock-eservice Signal Hub router", () => {
         url: `/natural-persons/${ROTATING_NOTATION}/residence`,
       });
       expect(res.statusCode).toBe(404);
+      expect(res.json().title).toBe("residence_not_available");
     });
 
     it("wraps back to the Create phase at periodId 3", async () => {
@@ -109,7 +110,7 @@ describe("mock-eservice Signal Hub router", () => {
       expect(res.json().address.fullAddress).toMatch(/Napoli/);
     });
 
-    it("returns 404 for an unknown notation", async () => {
+    it("returns 404 natural_person_not_found for an unknown notation", async () => {
       vi.setSystemTime(PERIOD_MS * 0 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
@@ -118,6 +119,7 @@ describe("mock-eservice Signal Hub router", () => {
         url: `/natural-persons/${UNKNOWN_NOTATION}/residence`,
       });
       expect(res.statusCode).toBe(404);
+      expect(res.json().title).toBe("natural_person_not_found");
     });
 
     it("returns 401 for a token issued for a different mock e-service", async () => {

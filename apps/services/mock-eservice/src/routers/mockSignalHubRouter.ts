@@ -4,6 +4,7 @@ import { requestContext } from "@fastify/request-context";
 import { type KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { match } from "ts-pattern";
 import z from "zod";
 
 import { findResidence } from "../data/naturalPersons.ts";
@@ -13,7 +14,10 @@ import {
   API_Residence,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { naturalPersonNotFound } from "../models/errors.ts";
+import {
+  naturalPersonNotFound,
+  residenceNotAvailable,
+} from "../models/errors.ts";
 import {
   SIGNAL_HUB_MOCK_ESERVICE_ID,
   SIGNAL_HUB_MOCK_ESERVICE_VERSION_ID,
@@ -46,14 +50,21 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
 
       const { identifierNotation } = req.params;
       const result = findResidence(identifierNotation, Date.now(), seedConfig);
-      if (!result) {
-        throw naturalPersonNotFound(identifierNotation);
-      }
+
+      const residence = match(result)
+        .with({ kind: "found" }, ({ residence }) => residence)
+        .with({ kind: "residenceUnavailable" }, () => {
+          throw residenceNotAvailable(identifierNotation);
+        })
+        .with({ kind: "personNotFound" }, () => {
+          throw naturalPersonNotFound(identifierNotation);
+        })
+        .exhaustive();
 
       logger.info(
         `Mock e-service /natural-persons/${identifierNotation}/residence returned residence`,
       );
-      res.status(200).send(result);
+      res.status(200).send(residence);
     },
     method: "GET",
     schema: {
@@ -68,7 +79,8 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Invalid Codice Fiscale" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         404: API_Problem.meta({
-          description: "No natural person found for the given Codice Fiscale",
+          description:
+            "No natural person found for the Codice Fiscale, or the person exists but has no residence in the current period",
         }),
       },
       summary: "Get residence",

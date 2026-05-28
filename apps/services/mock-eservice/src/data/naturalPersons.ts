@@ -37,6 +37,14 @@ const NATURAL_PERSONS = readJson("naturalPersons.json", NaturalPersonsFile);
 const CONTACT_POINTS = readJson("contactPoints.json", ContactPointsFile);
 const ADDRESSES = readJson("addresses.json", AddressesFile);
 
+// Distinguishes a genuinely unknown person from a known person whose residence
+// is absent this period (the rotating "deleted" slot) — they must surface as
+// different 404s instead of both reading as "natural person not found".
+type FindResidenceResult =
+  | { kind: "found"; residence: API_Residence }
+  | { kind: "personNotFound" }
+  | { kind: "residenceUnavailable" };
+
 export function findDigitalContact(
   notation: API_Notation,
 ): API_DigitalContact | undefined {
@@ -62,10 +70,10 @@ export function findResidence(
   notation: API_Notation,
   now: number,
   config: SignalHubSeedConfig,
-): API_Residence | undefined {
+): FindResidenceResult {
   const naturalPerson = findNaturalPersonWithIdentifier(notation);
   if (!naturalPerson) {
-    return undefined;
+    return { kind: "personNotFound" };
   }
 
   const cycle = rotatingAddresses[notation];
@@ -73,16 +81,16 @@ export function findResidence(
     const periodId = computePeriodId(now, config);
     const address = cycle.at(periodId % cycle.length);
     if (!address) {
-      return undefined;
+      return { kind: "residenceUnavailable" };
     }
-    return { address, naturalPerson };
+    return { kind: "found", residence: { address, naturalPerson } };
   }
 
   const address = ADDRESSES[notation];
   if (!address) {
-    return undefined;
+    return { kind: "residenceUnavailable" };
   }
-  return { address, naturalPerson };
+  return { kind: "found", residence: { address, naturalPerson } };
 }
 
 function findNaturalPersonWithIdentifier(
