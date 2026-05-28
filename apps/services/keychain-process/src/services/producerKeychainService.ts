@@ -192,7 +192,7 @@ export function producerKeychainServiceBuilder(
         `Getting E-service ${eserviceId} linked to Producer Keychain ${producerKeychainId}`,
       );
 
-      await retrieveProducerKeychain(producerKeychainId, readmodelService);
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
 
       return await retrieveProducerKeychainEservice(
         { eserviceId, producerKeychainId },
@@ -209,7 +209,7 @@ export function producerKeychainServiceBuilder(
         `Getting E-services linked to Producer Keychain ${producerKeychainId} with params`,
       );
 
-      await retrieveProducerKeychain(producerKeychainId, readmodelService);
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
 
       return await readmodelService.getProducerKeychainEservices(
         producerKeychainId,
