@@ -15,7 +15,7 @@ const USERNAME = "Mario Rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
-let MOCK_USERS = [
+const MOCK_USERS = [
   {
     Attributes: [
       { Name: "sub", Value: USER_ID },
@@ -206,9 +206,10 @@ function filterUsers(payload) {
 }
 
 function removeUserByUsername(username) {
-  const before = MOCK_USERS.length;
-  MOCK_USERS = MOCK_USERS.filter((user) => user.Username !== username);
-  return before - MOCK_USERS.length;
+  const idx = MOCK_USERS.findIndex((user) => user.Username === username);
+  if (idx === -1) return 0;
+  MOCK_USERS.splice(idx, 1);
+  return 1;
 }
 
 function handleListUsersInGroup(req, res, payload) {

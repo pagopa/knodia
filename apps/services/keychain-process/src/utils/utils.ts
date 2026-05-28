@@ -1,11 +1,10 @@
-import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
   KeychainKey,
-  KeychainUser,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import { InternalError } from "@knodia/common-models/errors";
@@ -16,10 +15,12 @@ import {
   type UserId,
 } from "@knodia/common-models/ids";
 import { calculateKid, createJWK, decodeBase64Pem } from "@knodia/crypto";
+import { match, P } from "ts-pattern";
 
 import type {
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -106,7 +107,7 @@ export async function addKeyToKeychain<
 }
 
 export async function addMemberToKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   member: API_KeychainMemberSeed,
@@ -148,27 +149,6 @@ export async function addMemberToKeychain<
   };
 }
 
-export async function listActiveKeychainMembers(
-  users: KeychainUser[],
-  params: { limit: number; offset: number },
-  cognitoIdmClient: CognitoIdmClient,
-): Promise<ListResult<IdmUser>> {
-  const sortedUsers = users.toSorted(
-    (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
-  );
-
-  const activeMembers = (
-    await Promise.all(
-      sortedUsers.map(({ userId }) => cognitoIdmClient.getUserById(userId)),
-    )
-  ).filter((member): member is IdmUser => member !== undefined);
-
-  return {
-    results: activeMembers.slice(params.offset, params.offset + params.limit),
-    totalCount: activeMembers.length,
-  };
-}
-
 export function removeKeyFromKeychain<
   K extends ConsumerKeychain | KnodeApiKeychain,
 >(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
@@ -184,7 +164,7 @@ export function removeKeyFromKeychain<
 }
 
 export function removeMemberFromKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   userId: UserId,
@@ -200,5 +180,22 @@ export function removeMemberFromKeychain<
       updatedAt: new Date(),
       users: keychain.users.filter((member) => member.userId !== userId),
     },
+  };
+}
+
+export function updateKeychain<
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
+>(keychain: K, update: API_KeychainPatch, authData: UISessionAuthData): K {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+
+  return {
+    ...keychain,
+    description: match(update.description)
+      .with(null, () => undefined)
+      .with(undefined, () => keychain.description)
+      .with(P.nonNullable, (desc) => desc)
+      .exhaustive(),
+    name: update.name ?? keychain.name,
+    updatedAt: new Date(),
   };
 }

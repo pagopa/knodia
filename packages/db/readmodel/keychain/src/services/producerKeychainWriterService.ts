@@ -1,3 +1,4 @@
+import type { ProducerKeychainId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -5,7 +6,7 @@ import {
   updateMetadataVersionInTables,
 } from "@knodia/db-readmodel-commons/utils";
 import { type ProducerKeychain } from "@knodia/keychain-models";
-import { eq } from "drizzle-orm";
+import { and, eq, lte } from "drizzle-orm";
 
 import { splitProducerKeychainIntoObjectsSQL } from "../converters/producerKeychainSplitters.ts";
 import {
@@ -22,6 +23,19 @@ export type ProducerKeychainWriterService = ReturnType<
 
 export function producerKeychainWriterServiceBuilder(db: NodePgDatabase) {
   return {
+    async deleteProducerKeychain(
+      producerKeychainId: ProducerKeychainId,
+      metadataVersion: number,
+    ): Promise<void> {
+      await db
+        .delete(readmodelProducerKeychain)
+        .where(
+          and(
+            eq(readmodelProducerKeychain.id, producerKeychainId),
+            lte(readmodelProducerKeychain.metadataVersion, metadataVersion),
+          ),
+        );
+    },
     async upsertProducerKeychain(
       producerKeychain: ProducerKeychain,
       metadataVersion: number,

@@ -9,7 +9,8 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./factory": "./src/factory.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -18,6 +19,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/openapi-client-generator": "workspace:*",
     "axios": "catalog:"
   }

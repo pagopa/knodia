@@ -1,13 +1,20 @@
+import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
+import type { API_PaginationQueryParams } from "@knodia/common-models/api";
 import type {
   ConsumerKeychainId,
   KeyId,
   KnodeApiKeychainId,
   ProducerKeychainId,
+  UserId,
 } from "@knodia/common-models/ids";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
+  KeychainUser,
   KnodeApiKeychain,
+  ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -15,10 +22,15 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   consumerKeychainNotFound,
   consumerKeychainPurposeNotFound,
+  keychainMemberNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
   producerKeychainNotFound,
 } from "../models/errors.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserIsMemberOfKeychain,
+} from "./validators.ts";
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -116,3 +128,65 @@ export const retrieveFlatProducerKeychain = async (
 
   return producerKeychain;
 };
+
+export const retrieveProducerKeychain = async (
+  producerKeychainId: ProducerKeychainId,
+  readmodelService: ReadmodelService,
+) => {
+  const producerKeychain =
+    await readmodelService.getProducerKeychainById(producerKeychainId);
+
+  if (!producerKeychain) {
+    throw producerKeychainNotFound(producerKeychainId);
+  }
+
+  return producerKeychain;
+};
+
+export async function retrieveKeychainMember<
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
+>({
+  authData,
+  cognitoIdmClient,
+  keychain,
+  userId,
+}: {
+  authData: UISessionAuthData;
+  cognitoIdmClient: CognitoIdmClient;
+  keychain: K;
+  userId: UserId;
+}): Promise<IdmUser> {
+  assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
+  assertUserIsMemberOfKeychain(userId, keychain.id, keychain.users);
+
+  const member = await cognitoIdmClient.getUserById(userId);
+  if (!member) {
+    throw keychainMemberNotFound(keychain.id, userId);
+  }
+  return member;
+}
+
+export async function retrievePaginatedKeychainUsers({
+  cognitoIdmClient,
+  paginationParams: { limit, offset },
+  users,
+}: {
+  cognitoIdmClient: CognitoIdmClient;
+  paginationParams: API_PaginationQueryParams;
+  users: KeychainUser[];
+}): Promise<ListResult<IdmUser>> {
+  const sortedUsers = users.toSorted(
+    (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+  );
+
+  const activeMembers = (
+    await Promise.all(
+      sortedUsers.map(({ userId }) => cognitoIdmClient.getUserById(userId)),
+    )
+  ).filter((member): member is IdmUser => member !== undefined);
+
+  return {
+    results: activeMembers.slice(offset, offset + limit),
+    totalCount: activeMembers.length,
+  };
+}

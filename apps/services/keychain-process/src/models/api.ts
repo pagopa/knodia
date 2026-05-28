@@ -17,6 +17,7 @@ import {
   API_KeychainLocalizedName,
   API_KeyFormat,
   API_KnodeApiKeychainIdPathParam,
+  API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -83,25 +84,13 @@ export const API_KeychainSeed = z
   .meta({ id: "KeychainSeed" });
 export type API_KeychainSeed = z.infer<typeof API_KeychainSeed>;
 
-export const API_ConsumerKeychainPatch = z
+export const API_KeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
     name: API_KeychainLocalizedName.optional(),
   })
-  .meta({ id: "ConsumerKeychainPatch" });
-export type API_ConsumerKeychainPatch = z.infer<
-  typeof API_ConsumerKeychainPatch
->;
-
-export const API_KnodeApiKeychainPatch = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.nullable().optional(),
-    name: API_KeychainLocalizedName.optional(),
-  })
-  .meta({ id: "KnodeApiKeychainPatch" });
-export type API_KnodeApiKeychainPatch = z.infer<
-  typeof API_KnodeApiKeychainPatch
->;
+  .meta({ id: "KeychainPatch" });
+export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
 
 export const API_KeychainKeySeed = z
   .strictObject({
@@ -283,4 +272,19 @@ export const API_GetProducerKeychainsQueryParams =
   });
 export type API_GetProducerKeychainsQueryParams = z.infer<
   typeof API_GetProducerKeychainsQueryParams
+>;
+
+export const API_ProducerKeychainMemberPathParams = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+export type API_ProducerKeychainMemberPathParams = z.infer<
+  typeof API_ProducerKeychainMemberPathParams
+>;
+
+export const API_GetProducerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainMembersQueryParams = z.infer<
+  typeof API_GetProducerKeychainMembersQueryParams
 >;

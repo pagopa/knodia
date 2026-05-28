@@ -30,16 +30,15 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
-import { match, P } from "ts-pattern";
 
 import type {
-  API_ConsumerKeychainPatch,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_KeychainSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -55,25 +54,25 @@ import {
   createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/consumerKeychainEventFactory.ts";
-import { keychainMemberNotFound } from "../models/errors.ts";
 import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainPurpose,
   retrieveFlatConsumerKeychain,
   retrieveKeychainKey,
+  retrieveKeychainMember,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
   addMemberToKeychain,
-  listActiveKeychainMembers,
   removeKeyFromKeychain,
   removeMemberFromKeychain,
+  updateKeychain,
 } from "../utils/utils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
-  assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -92,7 +91,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Consumer Keychain ${consumerKeychainId}`,
       );
@@ -120,7 +119,7 @@ export function consumerKeychainServiceBuilder(
       );
 
       return {
-        data: updatedConsumerKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
@@ -252,22 +251,12 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
+      return await retrieveKeychainMember({
+        authData,
+        cognitoIdmClient,
+        keychain: consumerKeychain.data,
         userId,
-        consumerKeychainId,
-        consumerKeychain.data.users,
-      );
-
-      const member = await cognitoIdmClient.getUserById(userId);
-      if (!member) {
-        throw keychainMemberNotFound(consumerKeychainId, userId);
-      }
-      return member;
+      });
     },
 
     async getConsumerKeychainMembers(
@@ -290,11 +279,11 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      return await listActiveKeychainMembers(
-        consumerKeychain.users,
-        params,
+      return await retrievePaginatedKeychainUsers({
         cognitoIdmClient,
-      );
+        paginationParams: params,
+        users: consumerKeychain.users,
+      });
     },
 
     async getConsumerKeychainPurpose(
@@ -507,7 +496,7 @@ export function consumerKeychainServiceBuilder(
 
     async updateConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
-      update: API_ConsumerKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(`Updating Consumer Keychain ${consumerKeychainId}`);
@@ -517,21 +506,11 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedConsumerKeychain = updateKeychain(
         consumerKeychain.data,
+        update,
+        authData,
       );
-
-      const updatedConsumerKeychain: ConsumerKeychain = {
-        ...consumerKeychain.data,
-        description: match(update.description)
-          .with(null, () => undefined)
-          .with(undefined, () => consumerKeychain.data.description)
-          .with(P.nonNullable, (desc) => desc)
-          .exhaustive(),
-        name: update.name ?? consumerKeychain.data.name,
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainUpdatedV1Event(

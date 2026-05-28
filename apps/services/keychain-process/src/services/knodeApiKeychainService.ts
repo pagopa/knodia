@@ -22,7 +22,6 @@ import {
   type KnodeApiKeychainId,
   type UserId,
 } from "@knodia/common-models/ids";
-import { match, P } from "ts-pattern";
 
 import type {
   API_GetKnodeApiKeychainKeysQueryParams,
@@ -30,12 +29,11 @@ import type {
   API_GetKnodeApiKeychainsQueryParams,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_KeychainSeed,
-  API_KnodeApiKeychainPatch,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { keychainMemberNotFound } from "../models/errors.ts";
 import {
   createKnodeApiKeychainCreatedV1Event,
   createKnodeApiKeychainDeletedV1Event,
@@ -48,19 +46,18 @@ import {
 import {
   retrieveFlatKnodeApiKeychain,
   retrieveKeychainKey,
+  retrieveKeychainMember,
   retrieveKnodeApiKeychain,
+  retrievePaginatedKeychainUsers,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
   addMemberToKeychain,
-  listActiveKeychainMembers,
   removeKeyFromKeychain,
   removeMemberFromKeychain,
+  updateKeychain,
 } from "../utils/utils.ts";
-import {
-  assertOrganizationIsKeychainOwner,
-  assertUserIsMemberOfKeychain,
-} from "../utils/validators.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -77,7 +74,7 @@ export function knodeApiKeychainServiceBuilder(
       knodeApiKeychainId: KnodeApiKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<KnodeApiKeychain>> {
+    ): Promise<WithMetadata<UserId>> {
       logger.info(
         `Adding member ${member.userId} to Knode API Keychain ${knodeApiKeychainId}`,
       );
@@ -105,7 +102,7 @@ export function knodeApiKeychainServiceBuilder(
       );
 
       return {
-        data: updatedKnodeApiKeychain,
+        data: addedUserId,
         metadata: { version: newVersion },
       };
     },
@@ -234,22 +231,12 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        knodeApiKeychain.data,
-      );
-
-      assertUserIsMemberOfKeychain(
+      return await retrieveKeychainMember({
+        authData,
+        cognitoIdmClient,
+        keychain: knodeApiKeychain.data,
         userId,
-        knodeApiKeychainId,
-        knodeApiKeychain.data.users,
-      );
-
-      const member = await cognitoIdmClient.getUserById(userId);
-      if (!member) {
-        throw keychainMemberNotFound(knodeApiKeychainId, userId);
-      }
-      return member;
+      });
     },
 
     async getKnodeApiKeychainMembers(
@@ -272,11 +259,11 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain,
       );
 
-      return await listActiveKeychainMembers(
-        knodeApiKeychain.users,
-        params,
+      return await retrievePaginatedKeychainUsers({
         cognitoIdmClient,
-      );
+        paginationParams: params,
+        users: knodeApiKeychain.users,
+      });
     },
 
     async getKnodeApiKeychains(
@@ -356,7 +343,7 @@ export function knodeApiKeychainServiceBuilder(
 
     async updateKnodeApiKeychain(
       knodeApiKeychainId: KnodeApiKeychainId,
-      update: API_KnodeApiKeychainPatch,
+      update: API_KeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<KnodeApiKeychain>> {
       logger.info(`Updating Knode API Keychain ${knodeApiKeychainId}`);
@@ -366,21 +353,11 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
+      const updatedKnodeApiKeychain = updateKeychain(
         knodeApiKeychain.data,
+        update,
+        authData,
       );
-
-      const updatedKnodeApiKeychain: KnodeApiKeychain = {
-        ...knodeApiKeychain.data,
-        description: match(update.description)
-          .with(null, () => undefined)
-          .with(undefined, () => knodeApiKeychain.data.description)
-          .with(P.nonNullable, (desc) => desc)
-          .exhaustive(),
-        name: update.name ?? knodeApiKeychain.data.name,
-        updatedAt: new Date(),
-      };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
         createKnodeApiKeychainUpdatedV1Event(

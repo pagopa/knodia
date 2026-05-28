@@ -22,12 +22,10 @@ import {
 
 vi.mock("@knodia/cognito-idm-client", () => cognitoIdmClientModuleMock);
 
-import type {
-  API_Keychain,
-  API_KeychainMemberSeed,
-} from "../../src/models/api.ts";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
-import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import type { API_KeychainMemberSeed } from "../../src/models/api.ts";
+
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -72,22 +70,13 @@ describe("POST /knodeApiKeychains/:knodeApiKeychainId/members (addKnodeApiKeycha
       .body(body);
 
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Keychain>();
-    const expectedKnodeApiKeychain: KnodeApiKeychain = {
-      ...knodeApiKeychain,
-      updatedAt: new Date(responseBody.updatedAt),
-      users: [
-        ...knodeApiKeychain.users,
-        {
-          addedAt: new Date(responseBody.updatedAt),
-          userId: unsafeBrandUserId(memberId),
-        },
-      ],
+    const responseBody = response.json<API_CreatedMemberResource>();
+    const expectedCreatedMember: API_CreatedMemberResource = {
+      userId: memberId,
     };
-
-    expect(responseBody).toEqual(toAPI_Keychain(expectedKnodeApiKeychain));
+    expect(responseBody).toEqual(expectedCreatedMember);
 
     const events = await getAllKeychainEvents();
     const addedEvent = events[1];
@@ -98,9 +87,19 @@ describe("POST /knodeApiKeychains/:knodeApiKeychainId/members (addKnodeApiKeycha
       version: 1,
     });
 
-    const addedEventData = KeychainEventV1.parse(addedEvent).data;
-    expect(addedEventData).toMatchObject({
-      knodeApiKeychain: toKnodeApiKeychainV1(expectedKnodeApiKeychain),
+    const knodeApiKeychainV1 = toKnodeApiKeychainV1(knodeApiKeychain);
+    expect(KeychainEventV1.parse(addedEvent).data).toMatchObject({
+      knodeApiKeychain: {
+        ...knodeApiKeychainV1,
+        updatedAt: expect.any(Number),
+        users: [
+          ...knodeApiKeychainV1.users,
+          {
+            addedAt: expect.any(Number),
+            userId: memberId,
+          },
+        ],
+      },
       userId: memberId,
     });
   });

@@ -95,12 +95,12 @@ export function keyAlreadyExists(kid: string) {
 }
 
 export function keychainMemberNotFound(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({
     code: "KEYCHAIN_MEMBER_NOT_FOUND",
-    detail: `User ${userId} is not a member of keychain ${keychainId}`,
+    detail: `User ${userId} is not currently an active member of keychain ${keychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Keychain Member Not Found",
   });
@@ -170,7 +170,7 @@ export function tooManyKeysPerKeychain(
 }
 
 export function userAlreadyMember(
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   userId: UserId,
 ) {
   return createApiError<ErrorCodes>({
@@ -183,7 +183,7 @@ export function userAlreadyMember(
 
 export function userNotAllowed(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
 ) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",

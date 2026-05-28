@@ -26,6 +26,7 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  type API_CreatedMemberResource,
   API_UnlinkConsumerKeychainIdPathParams,
   API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
@@ -55,7 +56,6 @@ import {
   API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainOptions,
-  API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
@@ -71,6 +71,7 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainPatch,
   API_Keychains,
 } from "../../models/keychain/api.ts";
 import {
@@ -113,7 +114,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollConsumerKeychain = (
-    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
+    response:
+      | AxiosResponse<API_CreatedMemberResource | API_CreatedResource>
+      | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
     consumerKeychainId: ConsumerKeychainId,
   ) =>
@@ -307,7 +310,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "PATCH",
     schema: {
-      body: API_ConsumerKeychainPatch,
+      body: API_KeychainPatch,
       consumes: ["application/merge-patch+json"],
       description: "Update a Consumer Keychain",
       operationId: "updateConsumerKeychain",

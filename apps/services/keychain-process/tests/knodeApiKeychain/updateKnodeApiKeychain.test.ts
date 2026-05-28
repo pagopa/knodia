@@ -11,10 +11,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockKnodeApiKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type {
-  API_Keychain,
-  API_KnodeApiKeychainPatch,
-} from "../../src/models/api.ts";
+import type { API_Keychain, API_KeychainPatch } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
 import {
@@ -35,27 +32,27 @@ describe("PATCH /knodeApiKeychains/:knodeApiKeychainId (KnodeApiKeychainPatch)",
       body: {
         description: { en: "Updated Knode API keychain description" },
         name: { en: "Updated Knode API keychain name" },
-      } satisfies API_KnodeApiKeychainPatch,
+      },
     },
     {
-      body: {} satisfies API_KnodeApiKeychainPatch,
+      body: {},
     },
     {
       body: {
         description: null,
-      } satisfies API_KnodeApiKeychainPatch,
+      },
     },
     {
       body: {
         name: { en: "Updated Knode API keychain name" },
-      } satisfies API_KnodeApiKeychainPatch,
+      },
     },
     {
       body: {
         description: { en: "Updated Knode API keychain description" },
-      } satisfies API_KnodeApiKeychainPatch,
+      },
     },
-  ])(
+  ] satisfies { body: API_KeychainPatch }[])(
     "should correctly create Knode API keychain update event with body %S",
     async ({ body }) => {
       await seedKnodeApiKeychain(knodeApiKeychain);
