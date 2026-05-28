@@ -3530,11 +3530,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Producer Keychain not found
+          description: Producer Keychain or E-service not found
           content:
             application/problem+json:
               schema:
-                description: Producer Keychain not found
+                description: Producer Keychain or E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "409":

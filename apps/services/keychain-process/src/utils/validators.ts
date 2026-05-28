@@ -10,6 +10,7 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { Eservice } from "@knodia/eservice-models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { KeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
@@ -47,6 +48,17 @@ export async function assertEserviceIsNotLinkedToProducerKeychain(
     throw eserviceAlreadyLinkedToProducerKeychain(
       producerKeychainId,
       eserviceId,
+    );
+  }
+}
+
+export function assertOrganizationIsEserviceProducer(
+  organizationId: OrganizationId,
+  eservice: Pick<Eservice, "producerId">,
+): void {
+  if (eservice.producerId !== organizationId) {
+    throw forbiddenError(
+      `Caller organization ${organizationId} is not the Producer of the E-service`,
     );
   }
 }
