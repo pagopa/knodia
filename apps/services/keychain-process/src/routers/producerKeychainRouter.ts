@@ -25,6 +25,7 @@ import z from "zod";
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
 import {
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
@@ -39,6 +40,7 @@ import {
   API_KeychainSeed,
   API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainEservicePathParams,
+  API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainMemberPathParams,
   API_User,
@@ -47,6 +49,7 @@ import {
   toAPI_CreatedMemberResource,
   toAPI_Keychain,
   toAPI_KeychainKey,
+  toAPI_ProducerKeychainEservice,
   toAPI_User,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -658,5 +661,50 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } =
+        await producerKeychainService.getProducerKeychainEservices(
+          req.params.producerKeychainId,
+          req.query,
+          ctx,
+        );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_ProducerKeychainEservice),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a list of E-services linked to a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainEservices",
+      params: API_ProducerKeychainIdPathParam,
+      querystring: API_GetProducerKeychainEservicesQueryParams,
+      response: {
+        200: API_ProducerKeychainEservices.meta({
+          description:
+            "E-services linked to the Producer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain Not Found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices",
   });
 };

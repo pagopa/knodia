@@ -23,6 +23,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
@@ -178,6 +179,23 @@ export function producerKeychainServiceBuilder(
       return await retrieveFlatProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+    },
+    async getProducerKeychainEservices(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainEservicesQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ProducerKeychainEservice>> {
+      logger.info(
+        { params },
+        `Getting E-services linked to Producer Keychain ${producerKeychainId} with params`,
+      );
+
+      await retrieveProducerKeychain(producerKeychainId, readmodelService);
+
+      return await readmodelService.getProducerKeychainEservices(
+        producerKeychainId,
+        params,
       );
     },
     async getProducerKeychainKey(

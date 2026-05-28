@@ -319,3 +319,30 @@ export const API_GetProducerKeychainKeysQueryParams = API_PaginationQueryParams;
 export type API_GetProducerKeychainKeysQueryParams = z.infer<
   typeof API_GetProducerKeychainKeysQueryParams
 >;
+
+export const API_GetProducerKeychainEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainEservicesQueryParams = z.infer<
+  typeof API_GetProducerKeychainEservicesQueryParams
+>;
+
+export const API_ProducerKeychainEservice = z
+  .strictObject({
+    eserviceId: z.uuid(),
+    linkedAt: z.iso.datetime(),
+    producerKeychainId: API_KeychainId,
+  })
+  .meta({ id: "ProducerKeychainEservice" });
+export type API_ProducerKeychainEservice = z.infer<
+  typeof API_ProducerKeychainEservice
+>;
+
+export const API_ProducerKeychainEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ProducerKeychainEservice),
+  })
+  .meta({ id: "ProducerKeychainEservices" });
+export type API_ProducerKeychainEservices = z.infer<
+  typeof API_ProducerKeychainEservices
+>;
