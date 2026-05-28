@@ -17,11 +17,7 @@ import type { SupportedKeychain } from "../models/commons";
 
 import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
-type AddKeychainMemberActionProps = SupportedKeychain;
-
-export function AddKeychainMemberAction(
-  keychain: AddKeychainMemberActionProps,
-) {
+export function AddKeychainMemberAction(keychain: SupportedKeychain) {
   const [isOpen, setIsOpen] = useState(false);
   const isAdmin = useHasRole("administrative");
 
