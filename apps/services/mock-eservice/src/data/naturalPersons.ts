@@ -40,7 +40,7 @@ const ADDRESSES = readJson("addresses.json", AddressesFile);
 // Distinguishes a genuinely unknown person from a known person whose residence
 // is absent this period (the rotating "deleted" slot) — they must surface as
 // different 404s instead of both reading as "natural person not found".
-export type FindResidenceResult =
+type FindResidenceResult =
   | { kind: "found"; residence: API_Residence }
   | { kind: "personNotFound" }
   | { kind: "residenceUnavailable" };
