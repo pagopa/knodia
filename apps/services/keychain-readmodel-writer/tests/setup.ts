@@ -1,6 +1,7 @@
 import {
   readmodelConsumerKeychain,
   readmodelKnodeApiKeychain,
+  readmodelProducerKeychain,
 } from "@knodia/db-readmodel-keychain";
 import {
   type ConsumerKeychainWriterService,
@@ -53,6 +54,7 @@ afterEach(async () => {
     readmodelDb,
     readmodelConsumerKeychain,
     readmodelKnodeApiKeychain,
+    readmodelProducerKeychain,
   );
 });
 

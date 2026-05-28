@@ -2,6 +2,7 @@
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
 import {
   type ExternalResource,
@@ -13,10 +14,7 @@ import {
   assertEntityExists,
   getExternalEntitiesMap,
 } from "@knodia/fastify-zod-api-commons/utils";
-import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
   API_CatalogEserviceSearchResults,
@@ -38,7 +36,7 @@ import {
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   remoteResourceDbService: RemoteResourceDbService,
 ) {
   return {
@@ -53,7 +51,7 @@ export function eserviceServiceBuilder(
 
       const { data: blob, headers } =
         await k2kGatewayApi.downloadEserviceLatestVersionInterface({
-          client: k2kGatewayClient,
+          client: getK2K2GatewayApiClient(eserviceId.knodeId),
           path: { eserviceId: eserviceId.id },
           responseType: "arraybuffer",
         });
@@ -79,12 +77,14 @@ export function eserviceServiceBuilder(
       reqQuery: API_GetCatalogEservicesQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceSearchResults> {
-      const { knodeId, ...bodyWithoutKnodeId } = reqBody;
+      const { knodeId: targetKnodeId, ...bodyWithoutKnodeId } = reqBody;
 
       logger.info(
         { requestBody: reqBody, requestQuery: reqQuery },
-        `Getting E-services owned by Knode ${knodeId} with query parameters and body data`,
+        `Getting E-services owned by Knode ${targetKnodeId} with query parameters and body data`,
       );
+
+      const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
 
       const { data } = await k2kGatewayApi.getCatalogEservices({
         body: bodyWithoutKnodeId,
@@ -105,7 +105,7 @@ export function eserviceServiceBuilder(
             })
             .then((res) => res.data.results),
         getEntityId: (agreement) => agreement.producerId,
-        getKnodeId: knodeId,
+        getKnodeId: targetKnodeId,
         items: data.results,
       });
 
@@ -113,8 +113,10 @@ export function eserviceServiceBuilder(
         pagination: data.pagination,
         results: data.results.map((r) => {
           const producer = assertEntityExists(
-            producersMap.get(knodeId)?.get(unsafeBrandExternalId(r.producerId)),
-            `Producer Organization ${r.producerId} owned by Knode ${knodeId} not found for E-service ${r.id}`,
+            producersMap
+              .get(targetKnodeId)
+              ?.get(unsafeBrandExternalId(r.producerId)),
+            `Producer Organization ${r.producerId} owned by Knode ${targetKnodeId} not found for E-service ${r.id}`,
           );
           return toAPI_CatalogEserviceSearchResult(r, producer.name);
         }),
@@ -129,6 +131,8 @@ export function eserviceServiceBuilder(
         { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
         `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
+
+      const k2kGatewayClient = getK2K2GatewayApiClient(eserviceId.knodeId);
 
       const eserviceIdPath = { eserviceId: eserviceId.id };
 
@@ -193,10 +197,12 @@ export function eserviceServiceBuilder(
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
         );
-      for (const knodeId of knodesWithAgreements) {
+      for (const targetKnodeId of knodesWithAgreements) {
         logger.info(
-          `Getting E-services from Knode ${knodeId} for Consumer Organization ${authData.organizationId}`,
+          `Getting E-services from Knode ${targetKnodeId} for Consumer Organization ${authData.organizationId}`,
         );
+
+        const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
 
         const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
           client: k2kGatewayClient,
@@ -224,7 +230,7 @@ export function eserviceServiceBuilder(
                     })
                     .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.producerId,
-                getKnodeId: knodeId,
+                getKnodeId: targetKnodeId,
                 items: consumerAgreements.results,
               }),
               getExternalEntitiesMap({
@@ -240,7 +246,7 @@ export function eserviceServiceBuilder(
                     })
                     .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: knodeId,
+                getKnodeId: targetKnodeId,
                 items: consumerAgreements.results,
               }),
               getExternalEntitiesMap({
@@ -254,7 +260,7 @@ export function eserviceServiceBuilder(
                     ),
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: knodeId,
+                getKnodeId: targetKnodeId,
                 items: consumerAgreements.results,
               }),
             ]);
@@ -266,24 +272,24 @@ export function eserviceServiceBuilder(
                   agreement,
                   eservice: assertEntityExists(
                     eservicesMap
-                      .get(knodeId)
+                      .get(targetKnodeId)
                       ?.get(unsafeBrandExternalId(agreement.eserviceId)),
-                    `E-service ${agreement.eserviceId} owned by Knode ${knodeId} not found for Agreement ${agreement.id}`,
+                    `E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
                   ),
                   eserviceVersion: assertEntityExists(
                     eserviceVersionsMap
-                      .get(knodeId)
+                      .get(targetKnodeId)
                       ?.get(unsafeBrandExternalId(agreement.eserviceVersionId)),
-                    `E-service version for E-service ${agreement.eserviceId} owned by Knode ${knodeId} not found for Agreement ${agreement.id}`,
+                    `E-service version for E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
                   ),
                   producer: {
                     ...assertEntityExists(
                       producersMap
-                        .get(knodeId)
+                        .get(targetKnodeId)
                         ?.get(unsafeBrandExternalId(agreement.producerId)),
-                      `Producer Organization ${agreement.producerId} owned by Knode ${knodeId} not found for Agreement ${agreement.id}`,
+                      `Producer Organization ${agreement.producerId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
                     ),
-                    knodeId,
+                    knodeId: targetKnodeId,
                   },
                 }),
               ),

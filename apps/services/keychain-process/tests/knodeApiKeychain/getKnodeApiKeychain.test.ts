@@ -7,8 +7,8 @@ import { describe, expect, it } from "vitest";
 import type { API_Keychain } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
-import { mockKnodeApiKeychains } from "../mockKnodeApiKeychains.ts";
 import { injectAppRequest, seedKnodeApiKeychain } from "../utils.ts";
+import { mockKnodeApiKeychains } from "./mocks/mockKnodeApiKeychains.ts";
 
 const knodeApiKeychain = mockKnodeApiKeychains[0]!;
 const VALID_KNODE_API_KEYCHAIN_ID = knodeApiKeychain.id;
