@@ -32,6 +32,18 @@ script:pre-request {
 }
 
 script:post-response {
+  if (res.status === 401) {
+    throw new Error(
+      "Pull Signals returned 401: the Knode API token (knode-api-jwt) is missing, malformed, or expired.\n" +
+      "Get one by running the knode-api-token-flow — it signs a Knode API client assertion and exchanges it at the authorization server /knodeApiToken endpoint (see collections/flows/knode-api-token-flow/README.md).\n" +
+      "Then provide it here: set KNODE_API_JWT in collections/.env, or pass --env-var knode-api-jwt='Bearer <token>'."
+    )
+  }
+  if (res.status === 403) {
+    throw new Error(
+      "Pull Signals returned 403: the consumer organization is not authorized to pull signals for this e-service (no active Agreement + Purpose). Complete the bearer-token-flow setup (agreement active + purpose created) for this e-service first."
+    )
+  }
   if (res.status !== 200 && res.status !== 206) {
     throw new Error(`Unexpected status ${res.status}. Expected 200, or 206 when there are more signals to pull.`)
   }
