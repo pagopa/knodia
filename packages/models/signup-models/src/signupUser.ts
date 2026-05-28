@@ -11,18 +11,18 @@ export function generateSignupUserId(): SignupUserId {
 export const SignupUserStatus = z.enum(["ACTIVE", "SUSPENDED"]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
-// Per-Knode generated names that signup-updater uses to create org+user on each Knode.
-const SignupGeneratedNamesPerKnode = z.strictObject({
+// Per-Knode generated entities that signup-updater uses to create org+user on each Knode.
+const SignupGeneratedEntitiesPerKnode = z.strictObject({
   organizationName: z.string(),
   userName: z.string(),
 });
 
 /** @knipignore */
-export const SignupGeneratedNames = z.strictObject({
-  Lynx: SignupGeneratedNamesPerKnode,
-  Orion: SignupGeneratedNamesPerKnode,
+export const SignupGeneratedEntities = z.strictObject({
+  Lynx: SignupGeneratedEntitiesPerKnode,
+  Orion: SignupGeneratedEntitiesPerKnode,
 });
-export type SignupGeneratedNames = z.infer<typeof SignupGeneratedNames>;
+export type SignupGeneratedEntities = z.infer<typeof SignupGeneratedEntities>;
 
 export const SignupUser = z
   .strictObject({
@@ -32,7 +32,7 @@ export const SignupUser = z
     email: z.email(),
     familyName: z.string(),
     fiscalNumber: z.string().optional(),
-    generatedNames: SignupGeneratedNames,
+    generatedEntities: SignupGeneratedEntities,
     name: z.string(),
     personIdentifier: z.string().optional(),
     signupUserId: SignupUserId,

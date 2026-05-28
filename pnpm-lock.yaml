@@ -3176,6 +3176,9 @@ importers:
 
   packages/db/signup:
     dependencies:
+      '@knodia/signup-models':
+        specifier: workspace:*
+        version: link:../../models/signup-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)

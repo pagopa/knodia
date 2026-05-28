@@ -8,7 +8,7 @@ const baseRecord = {
   email: "mario.rossi@example.org",
   familyName: "Rossi",
   fiscalNumber: "RSSMRA80A01H501U",
-  generatedNames: {
+  generatedEntities: {
     Lynx: { organizationName: "Vega 9PD Org", userName: "vega_9pd_user" },
     Orion: { organizationName: "Rigel XA1 Org", userName: "rigel_xa1_user" },
   },
