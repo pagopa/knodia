@@ -1,7 +1,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource, API_FileDownload } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_FileDownload,
+} from "@knodia/common-models/api";
 import {
   type ProducerKeychainId,
   unsafeBrandId,
@@ -82,12 +85,12 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
 
   const pollProducerKeychain = (
     response:
+      | AxiosResponse<void>
       | AxiosResponse<
           | keychainProcessApi.CreatedMemberResource
           | keychainProcessApi.Keychain
           | keychainProcessApi.KeychainKey
-        >
-      | AxiosResponse<void>,
+        >,
     headers: KnodiaServiceHeaders,
     producerKeychainId: ProducerKeychainId,
   ) =>

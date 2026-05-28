@@ -18,7 +18,7 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
-import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -37,7 +37,7 @@ import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurpos
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 
-import type { KeychainWithKeyOps, SupportedKeychain } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainKeysQuery,
@@ -45,6 +45,7 @@ import {
   consumerKeychainPurposesQuery,
   knodeApiKeychainKeysQuery,
   knodeApiKeychainMembersQuery,
+  producerKeychainKeysQuery,
   producerKeychainMembersQuery,
 } from "../services/queries";
 
@@ -61,7 +62,7 @@ type MembersTabProps = SupportedKeychain & {
   onOffsetChange: (offset: number) => void;
 };
 
-type PublicKeysTabProps = KeychainWithKeyOps & {
+type PublicKeysTabProps = SupportedKeychain & {
   offset: number;
   onOffsetChange: (offset: number) => void;
 };
@@ -134,13 +135,7 @@ export function KeychainDetailPage<TTab extends string>(
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
-            {match(props)
-              .with({ type: "production" }, () => (
-                <ProducerPublicKeysPlaceholder />
-              ))
-              .otherwise((p) => (
-                <PublicKeysTab {...p} />
-              ))}
+            <PublicKeysTab {...props} />
           </TabPanel>
           {match(props)
             .with({ type: "consumption" }, ({ keychainId }) => (
@@ -278,18 +273,6 @@ function ProducerEservicesTab() {
   );
 }
 
-// TODO(KN-673): replace with the real Public Keys tab once Producer Keychain
-// key endpoints land.
-function ProducerPublicKeysPlaceholder() {
-  return (
-    <Section title="Public Keys">
-      <Banner icon={<SelectionPlusIcon />} kind="neutral">
-        You don&apos;t have a public key yet. Upload your first one.
-      </Banner>
-    </Section>
-  );
-}
-
 function PublicKeysTab(props: PublicKeysTabProps) {
   const { offset, onOffsetChange } = props;
   const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
@@ -310,9 +293,18 @@ function PublicKeysTab(props: PublicKeysTabProps) {
     enabled: props.type === "api",
   });
 
+  const producerQuery = useQuery({
+    ...producerKeychainKeysQuery(
+      props.keychainId as ProducerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "production",
+  });
+
   const { data, isLoading } = match(props.type)
     .with("consumption", () => consumerQuery)
     .with("api", () => apiQuery)
+    .with("production", () => producerQuery)
     .exhaustive();
 
   const hasReachedMaxKeys = data
@@ -320,6 +312,9 @@ function PublicKeysTab(props: PublicKeysTabProps) {
     : false;
 
   const isKeychainMember = useIsCurrentUserKeychainMember(props);
+  // TODO(KN-458): currently the download-key authorization is only enforced
+  // in the frontend (admin OR member). Once the backend policy for non-member
+  // technical operators is finalized, mirror the same rule in keychain-process.
   const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (

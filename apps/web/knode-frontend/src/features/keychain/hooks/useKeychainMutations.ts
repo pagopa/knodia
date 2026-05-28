@@ -9,7 +9,7 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { KeychainWithKeyOps, SupportedKeychain } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainKeysQueryKey,
@@ -20,6 +20,7 @@ import {
   knodeApiKeychainMembershipQueryKey,
   knodeApiKeychainMembersQueryKey,
   knodeApiKeychainsQueryKey,
+  producerKeychainKeysQueryKey,
   producerKeychainMembershipQueryKey,
   producerKeychainMembersQueryKey,
   producerKeychainsQueryKey,
@@ -65,7 +66,7 @@ export function useAddKeychainMember(keychain: SupportedKeychain) {
   });
 }
 
-export function useRemoveKeychainKey(keychain: KeychainWithKeyOps) {
+export function useRemoveKeychainKey(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (keyId: string) =>
@@ -80,6 +81,12 @@ export function useRemoveKeychainKey(keychain: KeychainWithKeyOps) {
           bffApi.removeKnodeApiKeychainKey({
             client,
             path: { keyId, knodeApiKeychainId: keychainId },
+          }),
+        )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.removeProducerKeychainKey({
+            client,
+            path: { keyId, producerKeychainId: keychainId },
           }),
         )
         .exhaustive(),
@@ -122,7 +129,7 @@ export function useRemoveKeychainMember(keychain: SupportedKeychain) {
   });
 }
 
-export function useUploadKeychainKey(keychain: KeychainWithKeyOps) {
+export function useUploadKeychainKey(keychain: SupportedKeychain) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: UploadKeyBody) =>
@@ -139,6 +146,13 @@ export function useUploadKeychainKey(keychain: KeychainWithKeyOps) {
             body,
             client,
             path: { knodeApiKeychainId: keychainId },
+          }),
+        )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.uploadProducerKeychainKey({
+            body,
+            client,
+            path: { producerKeychainId: keychainId },
           }),
         )
         .exhaustive(),
@@ -164,7 +178,7 @@ function invalidateKeychainsList(
 
 function invalidateKeysList(
   queryClient: QueryClient,
-  keychain: KeychainWithKeyOps,
+  keychain: SupportedKeychain,
 ) {
   queryClient.invalidateQueries({
     queryKey: match(keychain)
@@ -173,6 +187,9 @@ function invalidateKeysList(
       )
       .with({ type: "api" }, ({ keychainId }) =>
         knodeApiKeychainKeysQueryKey(keychainId),
+      )
+      .with({ type: "production" }, ({ keychainId }) =>
+        producerKeychainKeysQueryKey(keychainId),
       )
       .exhaustive(),
   });
