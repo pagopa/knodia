@@ -46,6 +46,7 @@ import {
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
+  retrieveEservice,
   retrieveFlatProducerKeychain,
   retrieveKeychainKey,
   retrieveKeychainMember,
@@ -62,6 +63,7 @@ import {
 } from "../utils/utils.ts";
 import {
   assertEserviceIsNotLinkedToProducerKeychain,
+  assertOrganizationIsEserviceProducer,
   assertOrganizationIsKeychainOwner,
 } from "../utils/validators.ts";
 
@@ -330,8 +332,9 @@ export function producerKeychainServiceBuilder(
         `Linking E-service ${eserviceId} to Producer Keychain ${producerKeychainId}`,
       );
 
-      const [producerKeychain] = await Promise.all([
+      const [producerKeychain, eservice] = await Promise.all([
         retrieveProducerKeychain(producerKeychainId, readmodelService),
+        retrieveEservice(eserviceId, readmodelService),
         assertEserviceIsNotLinkedToProducerKeychain(
           producerKeychainId,
           eserviceId,
@@ -341,6 +344,10 @@ export function producerKeychainServiceBuilder(
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
         producerKeychain.data,
+      );
+      assertOrganizationIsEserviceProducer(
+        authData.organizationId,
+        eservice.data,
       );
 
       const linkedAt = new Date();

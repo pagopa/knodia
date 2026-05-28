@@ -40,6 +40,7 @@ const errorCodes = {
   PRODUCER_KEYCHAIN_NOT_FOUND: "0015",
   ESERVICE_ALREADY_LINKED_TO_PRODUCER_KEYCHAIN: "0016",
   PRODUCER_KEYCHAIN_ESERVICE_NOT_FOUND: "0017",
+  ESERVICE_NOT_FOUND: "0018",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -79,6 +80,15 @@ export function eserviceAlreadyLinkedToProducerKeychain(
     detail: `E-service with id ${eserviceId} is already linked to Producer Keychain with id ${producerKeychainId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Already Linked To Producer Keychain",
+  });
+}
+
+export function eserviceNotFound(eserviceId: EserviceId) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_NOT_FOUND",
+    detail: `E-service with id ${eserviceId} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "E-service Not Found",
   });
 }
 

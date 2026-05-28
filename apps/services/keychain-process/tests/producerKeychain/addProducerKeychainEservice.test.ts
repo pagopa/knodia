@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  type EserviceId,
-  generateId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   KeychainEventV1,
@@ -15,12 +11,16 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { getMockProducerKeychain } from "@knodia/test-commons/utils";
+import {
+  getMockEservice,
+  getMockProducerKeychain,
+} from "@knodia/test-commons/utils";
 import { assert, beforeEach, describe, expect, it } from "vitest";
 
 import {
   getAllKeychainEvents,
   injectAppRequest,
+  seedEservice,
   seedProducerKeychain,
   seedProducerKeychainEservice,
 } from "../utils.ts";
@@ -34,11 +34,18 @@ describe("POST /producerKeychains/:producerKeychainId/eservices (linkEserviceToP
     ...getMockProducerKeychain(),
     ownerId: TEST_ORGANIZATION_ID,
   };
-  const eserviceId = generateId<EserviceId>();
+  const eservice = {
+    ...getMockEservice(),
+    producerId: TEST_ORGANIZATION_ID,
+  };
+  const eserviceId = eservice.id;
   const body = { eserviceId };
 
   beforeEach(async () => {
-    await seedProducerKeychain(producerKeychain);
+    await Promise.all([
+      seedProducerKeychain(producerKeychain),
+      seedEservice(eservice),
+    ]);
   });
 
   it("should correctly create producer keychain eservice link event", async () => {
@@ -124,6 +131,26 @@ describe("POST /producerKeychains/:producerKeychainId/eservices (linkEserviceToP
     })
       .post(`/producerKeychains/${producerKeychain.id}/eservices`)
       .body(body);
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 404 if the eservice does not exist", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/producerKeychains/${producerKeychain.id}/eservices`)
+      .body({ eserviceId: generateId() });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 403 if the requester is not the eservice producer", async () => {
+    const foreignEservice = {
+      ...getMockEservice({ seed: 1 }),
+      producerId: generateId<OrganizationId>(),
+    };
+    await seedEservice(foreignEservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/producerKeychains/${producerKeychain.id}/eservices`)
+      .body({ eserviceId: foreignEservice.id });
     expect(response.statusCode).toBe(403);
   });
 

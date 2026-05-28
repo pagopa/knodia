@@ -2357,7 +2357,7 @@ export type LinkEserviceToProducerKeychainErrors = {
      */
     403: Problem;
     /**
-     * Producer Keychain not found
+     * Producer Keychain or E-service not found
      */
     404: Problem;
     /**
