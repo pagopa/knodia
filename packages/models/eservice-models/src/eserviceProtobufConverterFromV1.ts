@@ -55,6 +55,7 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
 const fromReceiveDataConfigV1 = (
   input: ReceiveDataConfigV1,
 ): ReceiveDataConfig => ({
+  ...input,
   purposeFormAnswers: input.purposeFormAnswers.map(fromPurposeFormAnswerV1),
 });
 
@@ -68,6 +69,7 @@ const fromPurposeFormAnswerV1 = (
   );
 
   return {
+    ...input,
     description: input.description,
     formAnswersJson: PurposeFormAnswers.parse(
       JSON.parse(input.formAnswersJson),

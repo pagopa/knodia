@@ -79,16 +79,14 @@ const toEserviceVersionV1 = (version: EserviceVersion): EserviceVersionV1 => ({
 const toPurposeFormAnswerV1 = (
   purposeFormAnswer: PurposeFormAnswer,
 ): PurposeFormAnswerV1 => ({
-  description: purposeFormAnswer.description,
+  ...purposeFormAnswer,
   formAnswersJson: JSON.stringify(purposeFormAnswer.formAnswersJson),
-  formSchemaVersion: purposeFormAnswer.formSchemaVersion,
-  id: purposeFormAnswer.id,
-  name: purposeFormAnswer.name,
 });
 
 const toReceiveDataConfigV1 = (
   receiveDataConfig: ReceiveDataConfig,
 ): ReceiveDataConfigV1 => ({
+  ...receiveDataConfig,
   purposeFormAnswers: receiveDataConfig.purposeFormAnswers.map(
     toPurposeFormAnswerV1,
   ),
