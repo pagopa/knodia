@@ -2,6 +2,7 @@ import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { API_PaginationQueryParams } from "@knodia/common-models/api";
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   ProducerKeychainId,
@@ -24,6 +25,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   consumerKeychainNotFound,
   consumerKeychainPurposeNotFound,
+  eserviceNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
   producerKeychainEserviceNotFound,
@@ -51,6 +53,19 @@ export const retrieveConsumerKeychain = async (
   }
 
   return consumerKeychain;
+};
+
+export const retrieveEservice = async (
+  eserviceId: EserviceId,
+  readmodelService: ReadmodelService,
+) => {
+  const eservice = await readmodelService.getEserviceById(eserviceId);
+
+  if (!eservice) {
+    throw eserviceNotFound(eserviceId);
+  }
+
+  return eservice;
 };
 
 export const retrieveFlatConsumerKeychain = async (

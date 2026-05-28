@@ -70,7 +70,7 @@ export function KeychainDetailPage<TTab extends string>(
 
   const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
-    .with("api", () => "API")
+    .with("api", () => "Knode API")
     .with("production", () => "Production")
     .exhaustive();
 

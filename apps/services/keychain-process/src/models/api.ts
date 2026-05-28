@@ -289,15 +289,6 @@ export type API_GetProducerKeychainMembersQueryParams = z.infer<
   typeof API_GetProducerKeychainMembersQueryParams
 >;
 
-export const API_ProducerKeychainEserviceLinkSeed = z
-  .strictObject({
-    eserviceId: z.uuid(),
-  })
-  .meta({ id: "ProducerKeychainEserviceLinkSeed" });
-export type API_ProducerKeychainEserviceLinkSeed = z.infer<
-  typeof API_ProducerKeychainEserviceLinkSeed
->;
-
 export const API_ProducerKeychainEservicePathParams =
   API_ProducerKeychainIdPathParam.extend({
     eserviceId: z.uuid(),

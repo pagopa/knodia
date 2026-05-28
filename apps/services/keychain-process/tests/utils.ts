@@ -1,3 +1,4 @@
+import type { Eservice } from "@knodia/eservice-models";
 import type {
   ConsumerKeychain,
   ConsumerKeychainPurpose,
@@ -35,6 +36,7 @@ import {
 import {
   app,
   consumerKeychainWriterService,
+  eserviceWriterService,
   eventStoreDb,
   knodeApiKeychainWriterService,
   producerKeychainWriterService,
@@ -105,6 +107,10 @@ export async function seedConsumerKeychainPurpose(
     consumerKeychainPurpose,
     1,
   );
+}
+
+export async function seedEservice(eservice: Eservice) {
+  await eserviceWriterService.upsertEservice(eservice, 0);
 }
 
 export async function seedKnodeApiKeychain(knodeApiKeychain: KnodeApiKeychain) {
