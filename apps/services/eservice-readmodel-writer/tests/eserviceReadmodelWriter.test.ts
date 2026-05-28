@@ -206,6 +206,9 @@ describe("E-service read model writer tests", async () => {
     const retrievedEservices = await getAllEservices(readmodelDb);
 
     expect(retrievedEservices.length).toBe(1);
+    expect(
+      retrievedEservices[0]?.data.receiveDataConfig?.purposeFormAnswers,
+    ).toHaveLength(purposeFormAnswers.length);
     expect(retrievedEservices[0]?.data.receiveDataConfig).toEqual({
       purposeFormAnswers: expect.arrayContaining(purposeFormAnswers),
     });

@@ -100,6 +100,9 @@ describe("E-service Aggregators", () => {
       createEserviceAggregatorInput(eserviceSQLObjects),
     );
 
+    expect(
+      aggregatedEservice?.data.receiveDataConfig?.purposeFormAnswers,
+    ).toHaveLength(purposeFormAnswers.length);
     expect(aggregatedEservice?.data.receiveDataConfig).toEqual({
       purposeFormAnswers: expect.arrayContaining(purposeFormAnswers),
     });
