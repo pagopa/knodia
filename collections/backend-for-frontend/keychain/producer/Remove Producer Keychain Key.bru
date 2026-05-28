@@ -1,23 +1,19 @@
 meta {
-  name: 11 - Delete Producer Keychain
+  name: Remove Producer Keychain Key
   type: http
-  seq: 11
 }
 
 delete {
-  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/keys/:keyId
   body: none
   auth: none
 }
 
 params:path {
   producerKeychainId: {{producerKeychainId}}
+  keyId: {{keyId}}
 }
 
 headers {
   Authorization: {{ui-session-jwt}}
-}
-
-assert {
-  res.status: eq 204
 }

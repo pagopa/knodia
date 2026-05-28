@@ -1,18 +1,17 @@
 meta {
-  name: 9 - Remove Producer Keychain Member
+  name: 16 - Delete Producer Keychain
   type: http
-  seq: 9
+  seq: 16
 }
 
 delete {
-  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/members/:userId
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId
   body: none
   auth: none
 }
 
 params:path {
   producerKeychainId: {{producerKeychainId}}
-  userId: {{memberUserId}}
 }
 
 headers {
