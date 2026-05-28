@@ -20,6 +20,7 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
+  readmodelEservicePurposeFormPrefill,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
@@ -139,6 +140,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .select({
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
+              interface: readmodelEserviceInterface,
+              purposeFormPrefill: readmodelEservicePurposeFormPrefill,
+              requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
             .innerJoin(
@@ -148,6 +153,37 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .leftJoin(
+              readmodelEserviceVersion,
+              eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
+            )
+            .leftJoin(
+              readmodelEserviceInterface,
+              eq(
+                readmodelEserviceInterface.eserviceVersionId,
+                readmodelEserviceVersion.id,
+              ),
+            )
+            .leftJoin(
+              readmodelEserviceVersionRequiredAttribute,
+              and(
+                eq(
+                  readmodelEserviceVersionRequiredAttribute.eserviceId,
+                  readmodelEserviceVersion.eserviceId,
+                ),
+                eq(
+                  readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+                  readmodelEserviceVersion.id,
+                ),
+              ),
+            )
+            .leftJoin(
+              readmodelEservicePurposeFormPrefill,
+              eq(
+                readmodelEservicePurposeFormPrefill.eserviceId,
+                readmodelEservice.id,
+              ),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
@@ -293,6 +329,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .select({
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
+              interface: readmodelEserviceInterface,
+              purposeFormPrefill: readmodelEservicePurposeFormPrefill,
+              requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
             .innerJoin(
@@ -302,6 +342,37 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .leftJoin(
+              readmodelEserviceVersion,
+              eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
+            )
+            .leftJoin(
+              readmodelEserviceInterface,
+              eq(
+                readmodelEserviceInterface.eserviceVersionId,
+                readmodelEserviceVersion.id,
+              ),
+            )
+            .leftJoin(
+              readmodelEserviceVersionRequiredAttribute,
+              and(
+                eq(
+                  readmodelEserviceVersionRequiredAttribute.eserviceId,
+                  readmodelEserviceVersion.eserviceId,
+                ),
+                eq(
+                  readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+                  readmodelEserviceVersion.id,
+                ),
+              ),
+            )
+            .leftJoin(
+              readmodelEservicePurposeFormPrefill,
+              eq(
+                readmodelEservicePurposeFormPrefill.eserviceId,
+                readmodelEservice.id,
+              ),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
