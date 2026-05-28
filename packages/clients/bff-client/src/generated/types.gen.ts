@@ -2229,10 +2229,6 @@ export type GetConsumerKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Consumer Keychain not found
-     */
-    404: Problem;
 };
 
 export type GetConsumerKeychainMembershipError = GetConsumerKeychainMembershipErrors[keyof GetConsumerKeychainMembershipErrors];
@@ -2984,10 +2980,6 @@ export type GetKnodeApiKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Knode API Keychain not found
-     */
-    404: Problem;
 };
 
 export type GetKnodeApiKeychainMembershipError = GetKnodeApiKeychainMembershipErrors[keyof GetKnodeApiKeychainMembershipErrors];
@@ -3347,10 +3339,6 @@ export type GetProducerKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Producer Keychain not found
-     */
-    404: Problem;
 };
 
 export type GetProducerKeychainMembershipError = GetProducerKeychainMembershipErrors[keyof GetProducerKeychainMembershipErrors];

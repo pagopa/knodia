@@ -3948,14 +3948,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Consumer Keychain not found
-          content:
-            application/problem+json:
-              schema:
-                description: Consumer Keychain not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /consumerKeychains/options:
     get:
       operationId: getConsumerKeychainOptions
@@ -5033,14 +5025,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Knode API Keychain not found
-          content:
-            application/problem+json:
-              schema:
-                description: Knode API Keychain not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /producerKeychains:
     post:
       operationId: createProducerKeychain
@@ -5538,14 +5522,6 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Producer Keychain not found
-          content:
-            application/problem+json:
-              schema:
-                description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producerKeychains/{producerKeychainId}/keys:
