@@ -26,8 +26,6 @@ message PurposeFormAnswerV1 {
   string id = 1;
   LocalizedTextV1 name = 2;
   LocalizedTextV1 description = 3;
-  // JSON-encoded map of pre-filled answers (mirrors how Purpose serializes
-  // its `formAnswersJson` field).
   string formAnswersJson = 4;
   string formSchemaVersion = 5;
 }

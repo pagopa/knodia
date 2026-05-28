@@ -149,13 +149,7 @@ export interface ReceiveDataConfigV1 {
 export interface PurposeFormAnswerV1 {
   id: string;
   name: LocalizedTextV1 | undefined;
-  description:
-    | LocalizedTextV1
-    | undefined;
-  /**
-   * JSON-encoded map of pre-filled answers (mirrors how Purpose serializes
-   * its `formAnswersJson` field).
-   */
+  description: LocalizedTextV1 | undefined;
   formAnswersJson: string;
   formSchemaVersion: string;
 }
