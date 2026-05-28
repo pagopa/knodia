@@ -1,6 +1,5 @@
 export { RateLimiterConfig } from "./config.ts";
 export { enforceRateLimit } from "./enforceRateLimit.ts";
-export { rateLimitOpenapiPlugin } from "./openapi.ts";
 export {
   initRedisRateLimiter,
   type RateLimiter,

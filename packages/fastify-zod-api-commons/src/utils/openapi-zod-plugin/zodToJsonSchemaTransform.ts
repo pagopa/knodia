@@ -14,11 +14,9 @@ import type { OpenAPIV3 } from "openapi-types";
 import { createJsonSchemaTransform } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { API_Problem } from "../../models/api.ts";
 import { RATE_LIMIT_HEADERS } from "../../rate-limit/headers.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
 import {
-  rateLimitedOperationIds,
   responseHeadersStore,
   sharedHeaderComponentsStore,
 } from "./responseHeadersStore.ts";
@@ -119,32 +117,6 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
 
 const TOO_MANY_REQUESTS_STATUS = "429";
 
-const TOO_MANY_REQUESTS = API_Problem.meta({
-  description: "Too Many Requests",
-});
-
-/**
- * Inject `response[429] = API_Problem` for routes flagged by the rate-limit
- * openapi plugin. Runs before `attachRateLimitHeaders`, which then triggers
- * naturally on the freshly-added 429 entry and attaches the X-RateLimit-* /
- * Retry-After header refs.
- *
- * Routes outside any rate-limited scope are untouched; routes that already
- * declare 429 in their Zod schema keep their own definition.
- */
-const ensureRateLimit429Response = (input: TransformInput): TransformInput => {
-  const operationId = input.schema.operationId;
-  if (!operationId) return input;
-  if (!rateLimitedOperationIds.has(operationId)) return input;
-
-  const schema = input.schema as { response?: Record<string, unknown> };
-  const response = (schema.response ??= {});
-  if (!(TOO_MANY_REQUESTS_STATUS in response)) {
-    response[TOO_MANY_REQUESTS_STATUS] = TOO_MANY_REQUESTS;
-  }
-  return input;
-};
-
 const int32HeaderComponent = (description: string): OpenAPIV3.HeaderObject => ({
   description,
   // `required: false` because earlier-lifecycle 4xx (401/403) responses won't
@@ -198,11 +170,6 @@ const buildRateLimitHeaderRefs = (
 
 /**
  * Attach rate-limit header refs to routes that declare a 429 response.
- *
- * Trigger: presence of `response[429]` in the route schema. The previous step,
- * `ensureRateLimit429Response`, has just added that entry for every operation
- * flagged by `rateLimitOpenapiPlugin`; routes outside any rate-limited scope
- * are skipped.
  *
  * Side effects (lazy, transform-time only):
  *  - `responseHeadersStore[operationId]`         += X-RateLimit-* refs
@@ -264,7 +231,6 @@ export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
     applyTransformSteps(input, [
       enforceOperationId,
       extractResponseHeaders,
-      ensureRateLimit429Response,
       attachRateLimitHeaders,
       convertCookiesZodToJsonSchema,
     ]),

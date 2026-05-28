@@ -166,6 +166,35 @@ components:
         - correlationId
         - receivedAt
       additionalProperties: false
+  headers:
+    RateLimitLimit:
+      description: Total requests allowed in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRemaining:
+      description: Requests remaining in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitReset:
+      description: Seconds before the current window resets.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRetryAfter:
+      description: Seconds the client should wait before retrying.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
 paths:
   /digital-contacts:
     post:

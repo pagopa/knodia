@@ -5724,6 +5724,21 @@ paths:
               $ref: "#/components/headers/RateLimitRemaining"
             X-RateLimit-Reset:
               $ref: "#/components/headers/RateLimitReset"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "429":
           description: Too Many Requests
           content:
@@ -7745,6 +7760,21 @@ paths:
               $ref: "#/components/headers/RateLimitRemaining"
             X-RateLimit-Reset:
               $ref: "#/components/headers/RateLimitReset"
+        "404":
+          description: Knode API Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Knode API Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "429":
           description: Too Many Requests
           content:
@@ -7783,13 +7813,6 @@ paths:
                 description: Producer Keychain created successfully
                 allOf:
                   - $ref: "#/components/schemas/CreatedResource"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -7798,13 +7821,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -7813,13 +7829,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -7828,30 +7837,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     get:
       operationId: getProducerKeychains
       tags:
@@ -7894,13 +7879,6 @@ paths:
                 description: Producer Keychains retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychains"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -7909,13 +7887,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -7924,13 +7895,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -7939,30 +7903,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}:
     get:
       operationId: getProducerKeychainDetails
@@ -7986,13 +7926,6 @@ paths:
                 description: Producer Keychain details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainDetails"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8001,13 +7934,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8016,13 +7942,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8031,13 +7950,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8046,30 +7958,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     patch:
       operationId: updateProducerKeychain
       tags:
@@ -8092,13 +7980,6 @@ paths:
       responses:
         "204":
           description: Producer Keychain updated successfully
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8107,13 +7988,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8122,13 +7996,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8137,13 +8004,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8152,30 +8012,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     delete:
       operationId: deleteProducerKeychain
       tags:
@@ -8192,13 +8028,6 @@ paths:
       responses:
         "204":
           description: Producer Keychain deleted successfully
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8207,13 +8036,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8222,13 +8044,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8237,13 +8052,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8252,30 +8060,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/members:
     post:
       operationId: addProducerKeychainMember
@@ -8299,13 +8083,6 @@ paths:
       responses:
         "204":
           description: Producer Keychain Member added successfully
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8314,13 +8091,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8329,13 +8099,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8344,13 +8107,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8359,13 +8115,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "409":
           description: Conflict
           content:
@@ -8374,30 +8123,6 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     get:
       operationId: getProducerKeychainMembers
       tags:
@@ -8437,13 +8162,6 @@ paths:
                 description: Producer Keychain Members retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainMembers"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8452,13 +8170,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8467,13 +8178,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8482,13 +8186,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8497,30 +8194,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/members/{userId}:
     delete:
       operationId: removeProducerKeychainMember
@@ -8543,13 +8216,6 @@ paths:
       responses:
         "204":
           description: Producer Keychain Member removed successfully
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8558,13 +8224,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8573,13 +8232,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8588,13 +8240,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8603,30 +8248,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/membership/{userId}:
     get:
       operationId: getProducerKeychainMembership
@@ -8655,13 +8276,6 @@ paths:
                 description: Producer Keychain membership check retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainMembershipCheckResult"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8670,13 +8284,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8685,13 +8292,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8700,30 +8300,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/keys:
     get:
       operationId: getProducerKeychainKeys
@@ -8764,13 +8340,6 @@ paths:
                 description: Producer Keychain Keys retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainKeys"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8779,13 +8348,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8794,13 +8356,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8809,13 +8364,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8824,30 +8372,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     post:
       operationId: uploadProducerKeychainKey
       tags:
@@ -8876,13 +8400,6 @@ paths:
                 description: Producer Keychain Key uploaded successfully
                 allOf:
                   - $ref: "#/components/schemas/CreatedKeyResource"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -8891,13 +8408,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -8906,13 +8416,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -8921,13 +8424,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -8936,13 +8432,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "409":
           description: Conflict
           content:
@@ -8951,30 +8440,6 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/keys/{keyId}:
     get:
       operationId: downloadProducerKeychainKey
@@ -9004,13 +8469,6 @@ paths:
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9019,13 +8477,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9034,13 +8485,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9049,13 +8493,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain Key not found
           content:
@@ -9064,30 +8501,6 @@ paths:
                 description: Producer Keychain Key not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     delete:
       operationId: removeProducerKeychainKey
       tags:
@@ -9109,13 +8522,6 @@ paths:
       responses:
         "204":
           description: Producer Keychain Key removed successfully
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9124,13 +8530,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9139,13 +8538,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9154,13 +8546,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -9169,30 +8554,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/eservices:
     get:
       operationId: getProducerKeychainEservices
@@ -9233,13 +8594,6 @@ paths:
                 description: E-services linked to the Producer Keychain retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerKeychainEservices"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9248,13 +8602,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9263,13 +8610,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9278,13 +8618,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain not found
           content:
@@ -9293,30 +8626,6 @@ paths:
                 description: Producer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
     post:
       operationId: linkEserviceToProducerKeychain
       tags:
@@ -9339,13 +8648,6 @@ paths:
       responses:
         "204":
           description: E-service successfully linked to Producer Keychain
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9354,13 +8656,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9369,13 +8664,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9384,13 +8672,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain or E-service not found
           content:
@@ -9399,13 +8680,6 @@ paths:
                 description: Producer Keychain or E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "409":
           description: Conflict
           content:
@@ -9414,30 +8688,6 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /producerKeychains/{producerKeychainId}/eservices/{eserviceId}:
     delete:
       operationId: unlinkEserviceFromProducerKeychain
@@ -9462,13 +8712,6 @@ paths:
       responses:
         "204":
           description: E-service successfully unlinked from Producer Keychain
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9477,13 +8720,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9492,13 +8728,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9507,13 +8736,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: Producer Keychain or E-service link not found
           content:
@@ -9522,30 +8744,6 @@ paths:
                 description: Producer Keychain or E-service link not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /operators:
     get:
       operationId: getOperators
@@ -9888,13 +9086,6 @@ paths:
                 description: Consumer PurposeFormOptions retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerPurposeFormOptions"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Bad Request
           content:
@@ -9903,13 +9094,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -9918,13 +9102,6 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "403":
           description: Forbidden
           content:
@@ -9933,13 +9110,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: E-service not found
           content:
@@ -9948,13 +9118,6 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
         "409":
           description: E-service mode is not ReceiveData
           content:
@@ -9963,30 +9126,6 @@ paths:
                 description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-        "429":
-          description: Too Many Requests
-          content:
-            application/problem+json:
-              schema:
-                description: Too Many Requests
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-          headers:
-            X-RateLimit-Limit:
-              $ref: "#/components/headers/RateLimitLimit"
-            X-RateLimit-Remaining:
-              $ref: "#/components/headers/RateLimitRemaining"
-            X-RateLimit-Reset:
-              $ref: "#/components/headers/RateLimitReset"
-            Retry-After:
-              $ref: "#/components/headers/RateLimitRetryAfter"
   /consumer/eservices/{eserviceId}/interface:
     get:
       operationId: getConsumerEserviceLatestVersionInterface

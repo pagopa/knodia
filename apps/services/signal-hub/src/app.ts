@@ -15,7 +15,6 @@ import {
 import {
   initRedisRateLimiter,
   type RateLimiterConfig,
-  rateLimitOpenapiPlugin,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
@@ -86,7 +85,6 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(rateLimitPlugin, { rateLimiter });
-    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(signalHubRouter, {
       signalHubService: signalHubServiceBuilder(
         readmodelServiceBuilder(readmodelDb),

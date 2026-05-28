@@ -11,7 +11,6 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import {
   initRedisRateLimiter,
-  rateLimitOpenapiPlugin,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
@@ -87,7 +86,6 @@ export function buildApp({
   app.register(rateLimitResponseHeadersPlugin);
   app.register(healthRouter);
   app.register(async (tokenScope) => {
-    tokenScope.register(rateLimitOpenapiPlugin);
     tokenScope.register(tokenRouter, {
       tokenService: tokenServiceBuilder({
         config,
