@@ -20,17 +20,21 @@ import z from "zod";
 import type { ProducerKeychainService } from "../services/producerKeychainService.ts";
 
 import {
+  API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_Keychain,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
   API_ProducerKeychainMemberPathParams,
+  API_User,
 } from "../models/api.ts";
 import {
   toAPI_CreatedMemberResource,
   toAPI_Keychain,
+  toAPI_User,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -307,6 +311,85 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({
           description: "Producer Keychain or Member not found",
+        }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/members/:userId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } =
+        await producerKeychainService.getProducerKeychainMembers(
+          req.params.producerKeychainId,
+          req.query,
+          ctx,
+        );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_User),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve members of a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainMembers",
+      params: API_ProducerKeychainIdPathParam,
+      querystring: API_GetProducerKeychainMembersQueryParams,
+      response: {
+        200: API_KeychainMembers.meta({
+          description: "Producer Keychain members retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const member = await producerKeychainService.getProducerKeychainMember(
+        req.params.producerKeychainId,
+        unsafeBrandUserId(req.params.userId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_User(member));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Producer Keychain Member by user ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainMember",
+      params: API_ProducerKeychainMemberPathParams,
+      response: {
+        200: API_User.meta({
+          description: "Producer Keychain Member retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain Member not found",
         }),
       },
       tags: [apiTags.producerKeychain],

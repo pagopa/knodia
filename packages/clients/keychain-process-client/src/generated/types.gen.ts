@@ -1869,6 +1869,60 @@ export type UpdateProducerKeychainResponses = {
 
 export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
 
+export type GetProducerKeychainMembersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/members';
+};
+
+export type GetProducerKeychainMembersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainMembersError = GetProducerKeychainMembersErrors[keyof GetProducerKeychainMembersErrors];
+
+export type GetProducerKeychainMembersResponses = {
+    /**
+     * Producer Keychain members retrieved successfully
+     */
+    200: KeychainMembers;
+};
+
+export type GetProducerKeychainMembersResponse = GetProducerKeychainMembersResponses[keyof GetProducerKeychainMembersResponses];
+
 export type AddProducerKeychainMemberData = {
     body: KeychainMemberSeed;
     headers: {
@@ -1963,3 +2017,49 @@ export type RemoveProducerKeychainMemberResponses = {
 };
 
 export type RemoveProducerKeychainMemberResponse = RemoveProducerKeychainMemberResponses[keyof RemoveProducerKeychainMemberResponses];
+
+export type GetProducerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members/{userId}';
+};
+
+export type GetProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain Member not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainMemberError = GetProducerKeychainMemberErrors[keyof GetProducerKeychainMemberErrors];
+
+export type GetProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain Member retrieved successfully
+     */
+    200: User;
+};
+
+export type GetProducerKeychainMemberResponse = GetProducerKeychainMemberResponses[keyof GetProducerKeychainMemberResponses];
