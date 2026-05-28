@@ -42,16 +42,21 @@ function renderDetail(roles?: readonly UserRole[]) {
 }
 
 describe("KeychainDetailPage — action gating", () => {
-  it("renders Edit and Delete actions for administrative users", () => {
+  it("renders Edit and Delete actions for administrative users", async () => {
     renderDetail();
 
-    expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Edit" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
   });
 
-  it("hides Edit and Delete actions for technical-only users", () => {
+  it("hides Edit and Delete actions for technical-only users", async () => {
     renderDetail(["technical"]);
 
+    expect(
+      await screen.findByRole("tab", { name: "Public Keys" }),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Edit" }),
     ).not.toBeInTheDocument();
