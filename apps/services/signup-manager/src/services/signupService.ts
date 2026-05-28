@@ -1,10 +1,18 @@
+import type { TokenGenerator } from "@knodia/token-generator";
+
+import { genericInternalError } from "@knodia/common-models/errors";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
+import type { SignupManagerConfig } from "../config/config.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
 
-export function signupServiceBuilder(oneIdentityClient: OneIdentityClient) {
+export function signupServiceBuilder(
+  config: SignupManagerConfig,
+  oneIdentityClient: OneIdentityClient,
+  tokenGenerator: TokenGenerator,
+) {
   return {
     async exchangeOIDCCode({
       code,
@@ -27,12 +35,34 @@ export function signupServiceBuilder(oneIdentityClient: OneIdentityClient) {
         oidcSession.nonce,
       );
 
-      // TODO: Build the ui-signup-session token based on the claims returned by the OI.
-      void claims;
+      /**
+       * - SPID can return `spidCode` and `fiscalNumber`;
+       * - CIE returns `fiscalNumber`;
+       * - eIDAS returns `PersonIdentifier`.
+       */
+      const subject =
+        claims.PersonIdentifier ?? claims.spidCode ?? claims.fiscalNumber;
+      if (!subject) {
+        throw genericInternalError(
+          "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
+        );
+      }
 
-      return {
-        uiSignupSessionToken: "",
-      };
+      const sessionToken = await tokenGenerator.generateUISignupSessionToken({
+        audience: config.uiSignupSessionJwt.audience,
+        dateOfBirth: claims.dateOfBirth,
+        familyName: claims.familyName,
+        fiscalNumber: claims.fiscalNumber,
+        issuer: config.uiSignupSessionJwt.issuer,
+        kid: config.uiSignupSessionJwt.kid,
+        name: claims.name,
+        PersonIdentifier: claims.PersonIdentifier,
+        secondsDuration: config.uiSignupSessionJwt.secondsDuration,
+        spidCode: claims.spidCode,
+        subject,
+      });
+
+      return { uiSignupSessionToken: sessionToken.serialized };
     },
 
     startOIDCSession({ nonce, state }: { nonce: string; state: string }) {

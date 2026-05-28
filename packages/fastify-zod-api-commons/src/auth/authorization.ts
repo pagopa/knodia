@@ -14,6 +14,7 @@ import type {
   InternalAuthData,
   KnodeApiAuthData,
   UISessionAuthData,
+  UISignupSessionAuthData,
 } from "./authData.ts";
 
 import { forbiddenError, unauthorizedError } from "../models/errors/errors.ts";
@@ -34,13 +35,17 @@ type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
   // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
-      : UISessionAuthData);
+      : UISessionAuthData)
+  | (Extract<Rules[number], { tokenType: "ui-signup-session" }> extends never
+      ? never
+      : UISignupSessionAuthData);
 
 type AuthorizationRule =
   | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
   | { tokenType: "knode-api" }
-  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
+  | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> }
+  | { tokenType: "ui-signup-session" };
 
 /**
   ---- EXAMPLE USAGE: ----
@@ -109,6 +114,9 @@ function assertAuthDataAdmitted<
     .with({ tokenType: "knode-api" }, () =>
       assertKnodeApiTokenAdmitted(admittedRules),
     )
+    .with({ tokenType: "ui-signup-session" }, () =>
+      assertUISignupSessionTokenAdmitted(admittedRules),
+    )
     .exhaustive();
 }
 
@@ -172,6 +180,16 @@ function assertUISessionTokenAdmitted(
   ) {
     throw forbiddenError(
       `Invalid roles ${JSON.stringify(authData.userRoles)} for this operation`,
+    );
+  }
+}
+
+function assertUISignupSessionTokenAdmitted(
+  admittedRules: NonEmptyArray<AuthorizationRule>,
+): void {
+  if (!admittedRules.some((rule) => rule.tokenType === "ui-signup-session")) {
+    throw forbiddenError(
+      `Invalid token type "ui-signup-session" for this operation`,
     );
   }
 }
