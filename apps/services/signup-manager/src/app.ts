@@ -9,6 +9,7 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { SignupManagerConfig } from "./config/config.ts";
 
@@ -49,7 +50,11 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
   // Public routes (no auth required)
   app.register(healthRouter);
   app.register(signupRouter, {
-    signupService: signupServiceBuilder(oneIdentityClientBuilder(config)),
+    signupService: signupServiceBuilder(
+      config,
+      oneIdentityClientBuilder(config),
+      tokenGeneratorBuilder(),
+    ),
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.

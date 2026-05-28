@@ -27,6 +27,7 @@
     "@fastify/cookie": "catalog:",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/token-generator": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
