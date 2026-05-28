@@ -6,6 +6,7 @@ import type {
   KnodeApiAccessTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
+  UISignupSessionTokenClaims,
 } from "@knodia/common-models/auth";
 
 export interface EserviceAccessToken extends BaseToken {
@@ -40,6 +41,11 @@ export interface UISessionRefreshToken extends BaseToken {
 export interface UISessionToken extends BaseToken {
   payload: UISessionTokenClaims;
   type: "ui-session";
+}
+
+export interface UISignupSessionToken extends BaseToken {
+  payload: UISignupSessionTokenClaims;
+  type: "ui-signup-session";
 }
 
 interface BaseToken {

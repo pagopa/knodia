@@ -7,6 +7,7 @@ import type {
   KnodeApiAccessTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
+  UISignupSessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
 import type {
@@ -41,6 +42,7 @@ import type {
   KnodeApiAccessToken,
   UISessionRefreshToken,
   UISessionToken,
+  UISignupSessionToken,
 } from "./models.ts";
 
 const JWT_HEADER_ALG = "RS256";
@@ -102,6 +104,17 @@ interface UISessionTokenInput extends TokenParams {
   username: string;
 }
 
+interface UISignupSessionTokenInput extends TokenParams {
+  audience: string;
+  dateOfBirth: string;
+  familyName: string;
+  fiscalNumber: string | undefined;
+  name: string;
+  PersonIdentifier: string | undefined;
+  spidCode: string | undefined;
+  subject: string;
+}
+
 const b64url = (data: string): string =>
   Buffer.from(data).toString("base64url");
 
@@ -146,7 +159,8 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | InternalTokenClaims
       | KnodeApiAccessTokenClaims
       | UISessionRefreshTokenClaims
-      | UISessionTokenClaims,
+      | UISessionTokenClaims
+      | UISignupSessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
     const typ =
       "type" in claims && claims.type === "refresh-ui-session"
@@ -340,6 +354,29 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
       return { header, payload: claims, serialized, type: "ui-session" };
+    },
+
+    async generateUISignupSessionToken(
+      input: UISignupSessionTokenInput,
+    ): Promise<UISignupSessionToken> {
+      const now = dateToSeconds(new Date());
+      const claims: UISignupSessionTokenClaims = {
+        aud: input.audience,
+        dateOfBirth: input.dateOfBirth,
+        exp: now + input.secondsDuration,
+        familyName: input.familyName,
+        fiscalNumber: input.fiscalNumber,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        name: input.name,
+        personIdentifier: input.PersonIdentifier,
+        spidCode: input.spidCode,
+        sub: input.subject,
+        type: "ui-signup-session",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return { header, payload: claims, serialized, type: "ui-signup-session" };
     },
   };
 }
