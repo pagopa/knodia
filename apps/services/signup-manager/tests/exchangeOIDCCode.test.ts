@@ -21,6 +21,15 @@ vi.mock("jose", () => ({
 }));
 
 import { OIDC_SESSION_COOKIE_NAME } from "../src/routers/signupRouter.ts";
+
+vi.mock("@knodia/token-generator", () => ({
+  tokenGeneratorBuilder: () => ({
+    generateUISignupSessionToken: vi.fn().mockResolvedValue({
+      serialized: "mock-signup-session-token",
+    }),
+  }),
+}));
+
 import { app } from "./setup.ts";
 
 function expectOIDCSessionCookieCleared(response: {
