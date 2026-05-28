@@ -12,3 +12,9 @@ export const sharedHeaderComponentsStore = new Map<
   string,
   OpenAPIV3.HeaderObject
 >();
+
+// Populated at route-registration time by `rateLimitOpenapiPlugin`. Read at
+// spec-transform time to inject the 429 response (+ X-RateLimit-*/Retry-After
+// headers) on every route in a rate-limited scope. Decouples the runtime
+// rate-limit wiring from the spec-generation logic that documents it.
+export const rateLimitedOperationIds = new Set<string>();

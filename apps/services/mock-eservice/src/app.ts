@@ -12,7 +12,7 @@ import {
 import {
   initRedisRateLimiter,
   type RateLimiter,
-  rateLimitOpenapiDocs,
+  rateLimitOpenapiPlugin,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
@@ -151,7 +151,7 @@ export function buildApp({
       rateLimitPlugin,
       protectedRateLimitOptions(rateLimiter),
     );
-    protectedApp.register(rateLimitOpenapiDocs);
+    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
@@ -173,7 +173,7 @@ export function buildApp({
       rateLimitPlugin,
       protectedRateLimitOptions(rateLimiter),
     );
-    protectedApp.register(rateLimitOpenapiDocs);
+    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(mockDpopRouter, { knodeId });
   });
 
@@ -258,7 +258,7 @@ function buildBearerApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(rateLimitOpenapiDocs);
+    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(mockBearerRouter, { knodeId });
   });
 
@@ -366,7 +366,7 @@ function buildBearerSignalHubApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(rateLimitOpenapiDocs);
+    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
   });
 
@@ -421,7 +421,7 @@ function buildDpopApp({
       jwksResolvers,
       jwtClockToleranceSeconds,
     });
-    protectedApp.register(rateLimitOpenapiDocs);
+    protectedApp.register(rateLimitOpenapiPlugin);
     protectedApp.register(mockDpopRouter, { knodeId });
   });
 
