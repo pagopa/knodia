@@ -181,6 +181,22 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
     },
+    async getProducerKeychainEservice(
+      producerKeychainId: ProducerKeychainId,
+      eserviceId: EserviceId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychainEservice>> {
+      logger.info(
+        `Getting E-service ${eserviceId} linked to Producer Keychain ${producerKeychainId}`,
+      );
+
+      await retrieveProducerKeychain(producerKeychainId, readmodelService);
+
+      return await retrieveProducerKeychainEservice(
+        { eserviceId, producerKeychainId },
+        readmodelService,
+      );
+    },
     async getProducerKeychainEservices(
       producerKeychainId: ProducerKeychainId,
       params: API_GetProducerKeychainEservicesQueryParams,

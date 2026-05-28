@@ -38,6 +38,7 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainEservice,
   API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainEservices,
@@ -706,5 +707,42 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { data: eservice } =
+        await producerKeychainService.getProducerKeychainEservice(
+          req.params.producerKeychainId,
+          unsafeBrandId(req.params.eserviceId),
+          ctx,
+        );
+
+      res.status(200).send(toAPI_ProducerKeychainEservice(eservice));
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a specific E-service linked to a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKeychainEservice",
+      params: API_ProducerKeychainEservicePathParams,
+      response: {
+        200: API_ProducerKeychainEservice.meta({
+          description:
+            "E-service linked to the Producer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices/:eserviceId",
   });
 };
