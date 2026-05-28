@@ -81,7 +81,7 @@ describe("GET /producerKeychains/:producerKeychainId/eservices/:eserviceId (getP
     },
   );
 
-  it("should return 404 for non-existent producer keychain ($type, $roles)", async () => {
+  it("should return 404 for non-existent producer keychain", async () => {
     const response = await getProducerKeychainEservice({
       producerKeychainId: generateId<ProducerKeychainId>(),
     });

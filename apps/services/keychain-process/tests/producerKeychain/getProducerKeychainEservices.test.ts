@@ -28,8 +28,8 @@ const seedProducerKeychains = async () => {
     seedProducerKeychain(producerKeychain2),
   ]);
   await Promise.all(
-    mockProducerKeychainEservices.map((ckp) =>
-      producerKeychainWriterService.upsertProducerKeychainEservice(ckp, 1),
+    mockProducerKeychainEservices.map((pke) =>
+      producerKeychainWriterService.upsertProducerKeychainEservice(pke, 1),
     ),
   );
 };
@@ -55,12 +55,12 @@ async function getProducerKeychainEservices({
 
 describe("GET /producerKeychains/:producerKeychainId/eservices (getProducerKeychainEservices)", () => {
   const sortedMockProducerKeychainEservices = mockProducerKeychainEservices
-    .filter((ckp) => ckp.producerKeychainId === producerKeychain1.id)
+    .filter((pke) => pke.producerKeychainId === producerKeychain1.id)
     .sort((a, b) => {
       const linkedAtDiff = b.linkedAt.getTime() - a.linkedAt.getTime();
       return linkedAtDiff !== 0
         ? linkedAtDiff
-        : a.producerKeychainId.localeCompare(b.producerKeychainId);
+        : a.eserviceId.localeCompare(b.eserviceId);
     });
 
   it.each([
