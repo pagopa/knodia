@@ -33,6 +33,27 @@ export type Problem = {
     title: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
+/**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
 /**
  * Unique Knode identifier
  */
@@ -73,26 +94,12 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
+/**
+ * Unique identifier of the created member resource
+ */
+export type CreatedMemberResource = {
+    userId: UserId;
 };
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
-/**
- * Unique identifier of the User
- */
-export type UserId = string;
-
-/**
- * Unique identifier of the Key
- */
-export type KeyId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -655,7 +662,7 @@ export type RemoveConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
@@ -804,7 +811,7 @@ export type AddConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
@@ -1531,7 +1538,7 @@ export type AddKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member added successfully
      */
-    200: Keychain;
+    201: CreatedMemberResource;
 };
 
 export type AddKnodeApiKeychainMemberResponse = AddKnodeApiKeychainMemberResponses[keyof AddKnodeApiKeychainMemberResponses];
@@ -1577,7 +1584,7 @@ export type RemoveKnodeApiKeychainMemberResponses = {
     /**
      * Knode API Keychain member removed successfully
      */
-    200: Keychain;
+    204: void;
 };
 
 export type RemoveKnodeApiKeychainMemberResponse = RemoveKnodeApiKeychainMemberResponses[keyof RemoveKnodeApiKeychainMemberResponses];
@@ -1861,3 +1868,98 @@ export type UpdateProducerKeychainResponses = {
 };
 
 export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
+
+export type AddProducerKeychainMemberData = {
+    body: KeychainMemberSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members';
+};
+
+export type AddProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddProducerKeychainMemberError = AddProducerKeychainMemberErrors[keyof AddProducerKeychainMemberErrors];
+
+export type AddProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member added successfully
+     */
+    201: CreatedMemberResource;
+};
+
+export type AddProducerKeychainMemberResponse = AddProducerKeychainMemberResponses[keyof AddProducerKeychainMemberResponses];
+
+export type RemoveProducerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        userId: UserId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/members/{userId}';
+};
+
+export type RemoveProducerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or Member not found
+     */
+    404: Problem;
+};
+
+export type RemoveProducerKeychainMemberError = RemoveProducerKeychainMemberErrors[keyof RemoveProducerKeychainMemberErrors];
+
+export type RemoveProducerKeychainMemberResponses = {
+    /**
+     * Producer Keychain member removed successfully
+     */
+    204: void;
+};
+
+export type RemoveProducerKeychainMemberResponse = RemoveProducerKeychainMemberResponses[keyof RemoveProducerKeychainMemberResponses];

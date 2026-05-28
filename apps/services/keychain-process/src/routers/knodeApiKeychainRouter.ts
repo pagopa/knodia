@@ -11,7 +11,10 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_KnodeApiKeychainIdPathParam } from "@knodia/keychain-models/api";
+import {
+  API_CreatedMemberResource,
+  API_KnodeApiKeychainIdPathParam,
+} from "@knodia/keychain-models/api";
 import z from "zod";
 
 import type { KnodeApiKeychainService } from "../services/knodeApiKeychainService.ts";
@@ -34,6 +37,7 @@ import {
   API_User,
 } from "../models/api.ts";
 import {
+  toAPI_CreatedMemberResource,
   toAPI_Keychain,
   toAPI_KeychainKey,
   toAPI_User,
@@ -333,7 +337,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: knodeApiKeychain,
+        data: addedMemberId,
         metadata: { version },
       } = await knodeApiKeychainService.addKnodeApiKeychainMember(
         req.params.knodeApiKeychainId,
@@ -342,7 +346,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(knodeApiKeychain));
+      res.status(201).send(toAPI_CreatedMemberResource(addedMemberId));
     },
     method: "POST",
     schema: {
@@ -352,9 +356,9 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       operationId: "addKnodeApiKeychainMember",
       params: API_KnodeApiKeychainIdPathParam,
       response: {
-        200: {
+        201: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: API_CreatedMemberResource.meta({
             description: "Knode API Keychain member added successfully",
           }),
         },
@@ -455,7 +459,6 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: knodeApiKeychain,
         metadata: { version },
       } = await knodeApiKeychainService.removeKnodeApiKeychainMember(
         req.params.knodeApiKeychainId,
@@ -464,7 +467,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_Keychain(knodeApiKeychain));
+      res.status(204).send();
     },
     method: "DELETE",
     schema: {
@@ -473,9 +476,9 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       operationId: "removeKnodeApiKeychainMember",
       params: API_KnodeApiKeychainMemberPathParams,
       response: {
-        200: {
+        204: {
           headers: MetadataVersionHeader,
-          properties: API_Keychain.meta({
+          properties: z.undefined().meta({
             description: "Knode API Keychain member removed successfully",
           }),
         },

@@ -5,6 +5,7 @@ import type {
   KeyId,
   KnodeApiKeychainId,
   OrganizationId,
+  ProducerKeychainId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
@@ -90,7 +91,7 @@ export function assertUserHasTechnicalRole(user: IdmUser): void {
 
 export function assertUserIsAllowedToPerformKeychainOperation(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
@@ -101,7 +102,7 @@ export function assertUserIsAllowedToPerformKeychainOperation(
 
 export function assertUserIsAllowedToRemoveKey(
   authData: UISessionAuthData,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
   const { userId, userRoles } = authData;
@@ -115,7 +116,7 @@ export function assertUserIsAllowedToRemoveKey(
 
 export function assertUserIsMemberOfKeychain(
   userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
   const isMember = members.some((member) => member.userId === userId);
