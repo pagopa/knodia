@@ -1,3 +1,5 @@
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { TokenGenerator } from "@knodia/token-generator";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -5,6 +7,7 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
 import type { SignupManagerConfig } from "../config/config.ts";
+import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
 
@@ -14,6 +17,11 @@ export function signupServiceBuilder(
   tokenGenerator: TokenGenerator,
 ) {
   return {
+    async confirmOnboarding(
+      { email }: API_ConfirmOnboardingRequestBody,
+      ctx: AuthorizedContext<UISessionAuthData>,
+    ) {},
+
     async exchangeOIDCCode({
       code,
       oidcSession,

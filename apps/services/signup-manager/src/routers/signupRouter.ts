@@ -2,50 +2,31 @@ import type { SerializeOptions } from "@fastify/cookie";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import type { SignupService } from "../services/signupService.ts";
 
+import {
+  API_ConfirmOnboardingRequestBody,
+  API_OIDCCallbackQuery,
+  API_OIDCSessionCookie,
+  API_SessionResponse,
+  OIDC_SESSION_COOKIE_NAME,
+  OidcSessionCookieData,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignupRouterOptions {
   signupService: SignupService;
 }
-
-export const OIDC_SESSION_COOKIE_NAME = "oidc-session";
-const OIDC_SESSION_COOKIE_OPTIONS = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "strict",
-  secure: true,
-} as const satisfies SerializeOptions;
-
-const OidcSessionCookieData = z.object({
-  nonce: z.string(),
-  state: z.string(),
-});
-
-type OidcSessionCookieData = z.infer<typeof OidcSessionCookieData>;
-
-const API_OIDCCallbackQuery = z.object({
-  code: z.string(),
-  state: z.string(),
-});
-
-const API_SessionResponse = z
-  .strictObject({
-    uiSignupSessionToken: z.string(),
-  })
-  .meta({ id: "SessionResponse" });
-
-const API_OIDCSessionCookie = z.object({
-  [OIDC_SESSION_COOKIE_NAME]: z.string().optional().meta({
-    description:
-      "HttpOnly cookie carrying the OIDC state and nonce (set by /auth/oidc/start)",
-  }),
-});
 
 export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify,
@@ -108,7 +89,44 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     },
     url: "/auth/oidc/token",
   });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] }, // TODO
+      ]);
+
+      await signupService.confirmOnboarding(req.body, ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ConfirmOnboardingRequestBody,
+      description: "Confirm onboarding for the user caller",
+      headers: KnodiaServiceHeaders,
+      operationId: "confirmOnboarding",
+      response: {
+        204: z
+          .undefined()
+          .meta({ description: "Onboarding confirmed successfully" }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/onboarding/confirm",
+  });
 };
+
+const OIDC_SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  path: "/",
+  sameSite: "strict",
+  secure: true,
+} as const satisfies SerializeOptions;
 
 const oidcSessionCookie = {
   clear: (res: FastifyReply) =>
