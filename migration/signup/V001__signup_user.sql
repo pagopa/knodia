@@ -35,3 +35,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signup."signup_user" (
 -- signup-manager creates and reads signup users
 GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
 GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
+
+-- signup-updater reads signup users to propagate them to the Knodes
+GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;
