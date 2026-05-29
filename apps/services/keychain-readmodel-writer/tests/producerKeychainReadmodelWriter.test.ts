@@ -1,14 +1,17 @@
+/* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { generateUserId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   keychainEvents,
+  type KeychainKey,
   type ProducerKeychain,
   toProducerKeychainV1,
 } from "@knodia/keychain-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
+  getMockKeychainKey,
   getMockProducerKeychain,
   toExpectProducerKeychain,
 } from "@knodia/test-commons/utils";
@@ -205,6 +208,94 @@ describe("Keychain read model writer tests", async () => {
     expect(retrievedKeychains.length).toBe(1);
     expect(retrievedKeychains[0]).toEqual({
       data: toExpectProducerKeychain(keychainWithMemberRemoved),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+  });
+
+  it("ProducerKeychainKeyAddedV1", async () => {
+    const producerKeychain = getMockProducerKeychain();
+
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      0,
+    );
+
+    const key = getMockKeychainKey(1);
+
+    const keychainWithKeyAdded: ProducerKeychain = {
+      ...producerKeychain,
+      keys: [...producerKeychain.keys, key],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainKeyAddedV1,
+    ).encode({
+      kid: key.kid,
+      producerKeychain: toProducerKeychainV1(keychainWithKeyAdded),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainKeyAddedV1",
+      metadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(keychainWithKeyAdded),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+  });
+
+  it("ProducerKeychainKeyRemovedV1", async () => {
+    const keyToKeep = getMockKeychainKey(0);
+    const keyToRemove = getMockKeychainKey(1);
+    const existingKeys: KeychainKey[] = [keyToKeep, keyToRemove];
+    const producerKeychain: ProducerKeychain = {
+      ...getMockProducerKeychain(),
+      keys: existingKeys,
+    };
+
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      0,
+    );
+
+    const keychainWithKeyRemoved: ProducerKeychain = {
+      ...producerKeychain,
+      keys: [keyToKeep],
+    };
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainKeyRemovedV1,
+    ).encode({
+      kid: keyToRemove.kid,
+      producerKeychain: toProducerKeychainV1(keychainWithKeyRemoved),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainKeyRemovedV1",
+      metadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(keychainWithKeyRemoved),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ProducerKeychain>);
   });

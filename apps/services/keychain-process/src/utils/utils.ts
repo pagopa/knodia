@@ -43,7 +43,7 @@ import {
 } from "./validators.ts";
 
 export async function addKeyToKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(
   keychain: K,
   authData: UISessionAuthData,
@@ -150,7 +150,7 @@ export async function addMemberToKeychain<
 }
 
 export function removeKeyFromKeychain<
-  K extends ConsumerKeychain | KnodeApiKeychain,
+  K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
 >(keychain: K, authData: UISessionAuthData, kid: KeyId): K {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
   assertUserIsAllowedToRemoveKey(authData, keychain.id, keychain.users);

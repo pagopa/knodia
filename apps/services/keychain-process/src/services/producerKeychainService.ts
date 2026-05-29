@@ -9,11 +9,13 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   FlatProducerKeychain,
+  KeychainKey,
   ProducerKeychain,
 } from "@knodia/keychain-models";
 
 import {
   generateId,
+  type KeyId,
   type ProducerKeychainId,
   type UserId,
 } from "@knodia/common-models/ids";
@@ -21,6 +23,7 @@ import {
 import type {
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
+  API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_KeychainPatch,
   API_KeychainSeed,
@@ -30,6 +33,8 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
+  createProducerKeychainKeyAddedV1Event,
+  createProducerKeychainKeyRemovedV1Event,
   createProducerKeychainMemberAddedV1Event,
   createProducerKeychainMemberRemovedV1Event,
   createProducerKeychainUpdatedV1Event,
@@ -41,7 +46,9 @@ import {
   retrieveProducerKeychain,
 } from "../utils/retrievalUtils.ts";
 import {
+  addKeyToKeychain,
   addMemberToKeychain,
+  removeKeyFromKeychain,
   removeMemberFromKeychain,
   updateKeychain,
 } from "../utils/utils.ts";
@@ -55,6 +62,7 @@ export function producerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
   cognitoIdmClient: CognitoIdmClient,
+  config: { maxKeysPerKeychain: number },
 ) {
   return {
     async addProducerKeychainMember(
@@ -223,6 +231,40 @@ export function producerKeychainServiceBuilder(
 
       return await readmodelService.getProducerKeychains(params);
     },
+    async removeProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      kid: KeyId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychain>> {
+      logger.info(
+        `Removing key ${kid} from Producer Keychain ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const updatedProducerKeychain = removeKeyFromKeychain(
+        producerKeychain.data,
+        authData,
+        kid,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainKeyRemovedV1Event(
+          updatedProducerKeychain,
+          kid,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
     async removeProducerKeychainMember(
       producerKeychainId: ProducerKeychainId,
       userId: UserId,
@@ -282,6 +324,41 @@ export function producerKeychainServiceBuilder(
 
       return {
         data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+    async uploadProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      keySeed: API_KeychainKeySeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<KeychainKey>> {
+      logger.info(`Uploading key to Producer Keychain ${producerKeychainId}`);
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      const { newKey, updatedKeychain: updatedProducerKeychain } =
+        await addKeyToKeychain(
+          producerKeychain.data,
+          authData,
+          keySeed,
+          readmodelService,
+          config.maxKeysPerKeychain,
+        );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainKeyAddedV1Event(
+          updatedProducerKeychain,
+          newKey.kid,
+          correlationId,
+          producerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: newKey,
         metadata: { version: newVersion },
       };
     },

@@ -538,7 +538,7 @@ export type RemoveConsumerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -584,7 +584,7 @@ export type GetConsumerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -1255,7 +1255,7 @@ export type RemoveKnodeApiKeychainKeyData = {
     };
     path: {
         knodeApiKeychainId: string;
-        keyId: string;
+        keyId: KeyId;
     };
     query?: never;
     url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
@@ -1301,7 +1301,7 @@ export type GetKnodeApiKeychainKeyData = {
     };
     path: {
         knodeApiKeychainId: string;
-        keyId: string;
+        keyId: KeyId;
     };
     query?: never;
     url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
@@ -2063,3 +2063,98 @@ export type GetProducerKeychainMemberResponses = {
 };
 
 export type GetProducerKeychainMemberResponse = GetProducerKeychainMemberResponses[keyof GetProducerKeychainMemberResponses];
+
+export type UploadProducerKeychainKeyData = {
+    body: KeychainKeySeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/keys';
+};
+
+export type UploadProducerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadProducerKeychainKeyError = UploadProducerKeychainKeyErrors[keyof UploadProducerKeychainKeyErrors];
+
+export type UploadProducerKeychainKeyResponses = {
+    /**
+     * Producer Keychain Key uploaded successfully
+     */
+    201: KeychainKey;
+};
+
+export type UploadProducerKeychainKeyResponse = UploadProducerKeychainKeyResponses[keyof UploadProducerKeychainKeyResponses];
+
+export type RemoveProducerKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: KeyId;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveProducerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveProducerKeychainKeyError = RemoveProducerKeychainKeyErrors[keyof RemoveProducerKeychainKeyErrors];
+
+export type RemoveProducerKeychainKeyResponses = {
+    /**
+     * Producer Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveProducerKeychainKeyResponse = RemoveProducerKeychainKeyResponses[keyof RemoveProducerKeychainKeyResponses];

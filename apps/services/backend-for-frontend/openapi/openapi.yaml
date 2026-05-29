@@ -3344,7 +3344,7 @@ paths:
       description: Download a Consumer Keychain Key
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -3404,7 +3404,7 @@ paths:
       description: Remove a key from a Consumer Keychain
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -4706,7 +4706,7 @@ paths:
       description: Download a Knode API Keychain Key
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -4766,7 +4766,7 @@ paths:
       description: Remove a key from a Knode API Keychain
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
