@@ -40,9 +40,12 @@ beforeAll(async () => {
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
-    knodeUrl: "http://localhost:0",
     readmodelDb,
     remoteResourceDb,
+    targetKnodeUrls: {
+      Lynx: "http://localhost:0",
+      Orion: "http://localhost:0",
+    },
   });
 
   remoteResourceDbService = remoteResourceDbServiceBuilder(remoteResourceDb);

@@ -31,3 +31,11 @@ export function getRotatedSeed(
     .digest("hex")
     .substring(0, config.saltLength);
 }
+
+export function nextBoundaryMs(
+  now: number,
+  config: SignalHubSeedConfig,
+): number {
+  const periodId = computePeriodId(now, config);
+  return config.startDateMs + (periodId + 1) * config.expireSeconds * 1000;
+}

@@ -1169,6 +1169,9 @@ importers:
       '@knodia/db-jti-replay-store':
         specifier: workspace:*
         version: link:../../../packages/db/jti-replay-store
+      '@knodia/db-signal-hub':
+        specifier: workspace:*
+        version: link:../../../packages/db/signal-hub
       '@knodia/dpop-validator':
         specifier: workspace:*
         version: link:../../../packages/dpop-validator
@@ -1178,6 +1181,12 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/signal-hub-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/signal-hub-models
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.5
@@ -1190,9 +1199,15 @@ importers:
       jose:
         specifier: 'catalog:'
         version: 6.1.3
+      pino:
+        specifier: 'catalog:'
+        version: 10.2.1
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1865,6 +1880,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       axios:
         specifier: 'catalog:'
         version: 1.15.2
@@ -2259,6 +2277,9 @@ importers:
 
   packages/clients/k2k-gateway:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../models/common-models
       '@knodia/openapi-client-generator':
         specifier: workspace:*
         version: link:../../openapi-client-generator

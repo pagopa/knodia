@@ -84,6 +84,9 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
             organizationKnodeId: a.organization.knodeId,
           }),
         )
+        .with({ tokenType: "ui-signup-session" }, () => ({
+          correlationId,
+        }))
         .exhaustive();
       const logger = request.log.child(loggerMetadata);
       request.log = logger;
