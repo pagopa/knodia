@@ -11,12 +11,12 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     fiscalNumber: sql.fiscalNumber ?? undefined,
     generatedEntities: {
       Lynx: {
-        organizationId: sql.lynxOrganizationId,
+        organizationId: sql.lynxOrganizationId ?? undefined,
         organizationName: sql.lynxOrganizationName,
         userName: sql.lynxUserName,
       },
       Orion: {
-        organizationId: sql.orionOrganizationId,
+        organizationId: sql.orionOrganizationId ?? undefined,
         organizationName: sql.orionOrganizationName,
         userName: sql.orionUserName,
       },

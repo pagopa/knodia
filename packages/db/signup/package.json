@@ -13,10 +13,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./config": "./src/config.ts",
-    "./services": "./src/services/signupService.ts",
+    "./services": "./src/services/signupDbService.ts",
     "./utils": "./src/utils/utils.ts"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/signup-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
@@ -29,6 +30,7 @@
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

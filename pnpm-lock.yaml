@@ -3176,6 +3176,9 @@ importers:
 
   packages/db/signup:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../models/common-models
       '@knodia/signup-models':
         specifier: workspace:*
         version: link:../../models/signup-models
@@ -3210,6 +3213,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
   packages/dpop-validator:
     dependencies:

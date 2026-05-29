@@ -13,7 +13,8 @@ export type IDS =
   | ProducerKeychainId
   | PurposeFormOptionId
   | PurposeId
-  | PurposeTemplateId;
+  | PurposeTemplateId
+  | SignupUserId;
 
 export const CorrelationId = z.uuid().brand<"CorrelationId">();
 export type CorrelationId = z.infer<typeof CorrelationId>;
@@ -53,6 +54,9 @@ export type PurposeTemplateId = z.infer<typeof PurposeTemplateId>;
 
 export const ProducerKeychainId = z.uuid().brand<"ProducerKeychainId">();
 export type ProducerKeychainId = z.infer<typeof ProducerKeychainId>;
+
+export const SignupUserId = z.uuid().brand<"SignupUserId">();
+export type SignupUserId = z.infer<typeof SignupUserId>;
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;

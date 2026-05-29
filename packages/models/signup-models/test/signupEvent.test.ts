@@ -1,12 +1,12 @@
+import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import { OnboardingCompletedV1 as OnboardingCompletedProtoV1 } from "../src/generated/v1/signupEvents.ts";
 import { SignupEventV1 } from "../src/signupEvent.ts";
-import { generateSignupUserId } from "../src/signupUser.ts";
 
 describe("SignupEventV1 codec", () => {
   it("encodes and decodes an OnboardingCompletedV1 payload", () => {
-    const signupUserId = generateSignupUserId();
+    const signupUserId = generateId<SignupUserId>();
     const event: SignupEventV1 = {
       data: { signupUserId },
       type: "OnboardingCompletedV1",
@@ -25,7 +25,7 @@ describe("SignupEventV1 codec", () => {
     expect(() =>
       SignupEventV1.decode({
         data: OnboardingCompletedProtoV1.encode({
-          signupUserId: generateSignupUserId(),
+          signupUserId: generateId<SignupUserId>(),
         }).finish(),
         // @ts-expect-error invalid type at runtime is the whole point
         type: "UnknownEventV1",

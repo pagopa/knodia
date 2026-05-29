@@ -1,4 +1,5 @@
-import type { SignupUser, SignupUserId } from "@knodia/signup-models";
+import type { SignupUserId } from "@knodia/common-models/ids";
+import type { SignupUser } from "@knodia/signup-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eq } from "drizzle-orm";
@@ -7,10 +8,10 @@ import { toSignupUser, toSignupUserSQL } from "../converters/converters.ts";
 import { signupUser } from "../signupUser.ts";
 
 /** @knipignore */
-export type SignupService = ReturnType<typeof signupServiceBuilder>;
+export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
 /** @knipignore */
-export function signupServiceBuilder(db: NodePgDatabase) {
+export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
     async getSignupUserById(
       signupUserId: SignupUserId,

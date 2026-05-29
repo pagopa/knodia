@@ -1,6 +1,7 @@
+import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
-import { generateSignupUserId, SignupUser } from "../src/signupUser.ts";
+import { SignupUser } from "../src/signupUser.ts";
 
 const baseRecord = {
   createdAt: new Date("2026-05-28T10:00:00Z"),
@@ -13,7 +14,7 @@ const baseRecord = {
     Orion: { organizationName: "Rigel XA1 Org", userName: "rigel_xa1_user" },
   },
   name: "Mario",
-  signupUserId: generateSignupUserId(),
+  signupUserId: generateId<SignupUserId>(),
   spidCode: "SPID-XYZ-1",
   status: "ACTIVE" as const,
   updatedAt: new Date("2026-05-28T10:00:00Z"),

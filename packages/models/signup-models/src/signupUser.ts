@@ -1,13 +1,5 @@
+import { OrganizationId, SignupUserId } from "@knodia/common-models/ids";
 import { z } from "zod";
-
-import { OrganizationId } from "../../common-models/src/ids/brandedIds.ts";
-
-export const SignupUserId = z.uuid().brand<"SignupUserId">();
-export type SignupUserId = z.infer<typeof SignupUserId>;
-
-export function generateSignupUserId(): SignupUserId {
-  return crypto.randomUUID() as SignupUserId;
-}
 
 /** @knipignore */
 export const SignupUserStatus = z.enum(["ACTIVE", "SUSPENDED"]);
