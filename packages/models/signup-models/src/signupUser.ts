@@ -5,7 +5,6 @@ import { z } from "zod";
 export const SignupUserStatus = z.enum(["ACTIVE", "SUSPENDED"]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
-// Per-Knode generated entities that signup-updater uses to create org+user on each Knode.
 // OrganizationId is added by signup-updater once the organization is created by the process.
 const SignupGeneratedEntitiesPerKnode = z.strictObject({
   organizationId: OrganizationId.optional(),

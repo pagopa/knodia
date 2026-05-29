@@ -35,8 +35,6 @@ describe("SignupEventV1 codec", () => {
 
   it("rejects a payload that is valid protobuf but decodes to an empty signupUserId", () => {
     // OnboardingCompletedProtoV1 default-encodes signupUserId="" to zero bytes.
-    // We construct the wire bytes that decode to { signupUserId: "" } and
-    // verify the domain layer (SignupUserId UUID brand) rejects them.
     const emptyPayloadBytes = OnboardingCompletedProtoV1.encode({
       signupUserId: "",
     }).finish();
