@@ -1,13 +1,11 @@
-import { OrganizationId, SignupUserId } from "@knodia/common-models/ids";
+import { SignupUserId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
 /** @knipignore */
 export const SignupUserStatus = z.enum(["ACTIVE", "SUSPENDED"]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
-// OrganizationId is added by signup-updater once the organization is created by the process.
 const SignupGeneratedEntitiesPerKnode = z.strictObject({
-  organizationId: OrganizationId.optional(),
   organizationName: z.string(),
   userName: z.string(),
 });

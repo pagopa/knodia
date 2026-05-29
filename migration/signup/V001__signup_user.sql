@@ -17,10 +17,8 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signup."signup_user" (
     -- UNIQUE per column: INSERT atomically rejects concurrent onboardings
     -- that generated the same name.
     "orion_organization_name" TEXT NOT NULL UNIQUE,
-    "orion_organization_id" UUID,
     "orion_user_name" TEXT NOT NULL UNIQUE,
     "lynx_organization_name" TEXT NOT NULL UNIQUE,
-    "lynx_organization_id" UUID,
     "lynx_user_name" TEXT NOT NULL UNIQUE,
 
     "status" TEXT NOT NULL,
@@ -37,7 +35,3 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signup."signup_user" (
 -- signup-manager creates and reads signup users
 GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
 GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
-
--- signup-updater fills in the per-Knode org ids and advances status after propagating to the Knodes
-GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;
-GRANT SELECT, UPDATE ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;

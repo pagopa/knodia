@@ -1,8 +1,4 @@
-import {
-  generateId,
-  type OrganizationId,
-  type SignupUserId,
-} from "@knodia/common-models/ids";
+import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import type { SignupUserSQL } from "../src/signupUser.ts";
@@ -16,11 +12,9 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     email: "mario.rossi@example.org",
     familyName: "Rossi",
     fiscalNumber: "RSSMRA80A01H501U",
-    lynxOrganizationId: generateId<OrganizationId>(),
     lynxOrganizationName: "Lynx Org",
     lynxUserName: "lynx_user",
     name: "Mario",
-    orionOrganizationId: generateId<OrganizationId>(),
     orionOrganizationName: "Orion Org",
     orionUserName: "orion_user",
     personIdentifier: null,
@@ -40,28 +34,21 @@ describe("toSignupUser", () => {
     expect(user.signupUserId).toBe(row.signupUserId);
     expect(user.fiscalNumber).toBe("RSSMRA80A01H501U");
     expect(user.generatedEntities.Lynx).toEqual({
-      organizationId: row.lynxOrganizationId,
       organizationName: "Lynx Org",
       userName: "lynx_user",
     });
-    expect(user.generatedEntities.Orion.organizationId).toBe(
-      row.orionOrganizationId,
-    );
+    expect(user.generatedEntities.Orion.organizationName).toBe("Orion Org");
   });
 
-  it("coerces NULL optional columns to undefined (org IDs included)", () => {
+  it("coerces NULL optional columns to undefined", () => {
     const user = toSignupUser(
       baseRow({
         fiscalNumber: null,
-        lynxOrganizationId: null,
-        orionOrganizationId: null,
         personIdentifier: null,
         spidCode: "SPID-ONLY",
       }),
     );
 
-    expect(user.generatedEntities.Lynx.organizationId).toBeUndefined();
-    expect(user.generatedEntities.Orion.organizationId).toBeUndefined();
     expect(user.fiscalNumber).toBeUndefined();
     expect(user.personIdentifier).toBeUndefined();
     expect(user.spidCode).toBe("SPID-ONLY");
@@ -82,25 +69,6 @@ describe("toSignupUserSQL", () => {
     const sql = toSignupUserSQL(user);
 
     expect(sql.signupUserId).toBe(user.signupUserId);
-    expect(sql.lynxOrganizationId).toBe(
-      user.generatedEntities.Lynx.organizationId,
-    );
     expect(sql.orionOrganizationName).toBe("Orion Org");
-  });
-
-  it("leaves absent optional org IDs undefined", () => {
-    const user = toSignupUser(
-      baseRow({
-        fiscalNumber: null,
-        lynxOrganizationId: null,
-        orionOrganizationId: null,
-        personIdentifier: null,
-        spidCode: "SPID-ONLY",
-      }),
-    );
-    const sql = toSignupUserSQL(user);
-
-    expect(sql.lynxOrganizationId).toBeUndefined();
-    expect(sql.orionOrganizationId).toBeUndefined();
   });
 });
