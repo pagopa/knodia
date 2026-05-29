@@ -21,6 +21,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
   API_KeychainKeySeed,
@@ -41,6 +42,7 @@ import {
 } from "../models/producerKeychainEventFactory.ts";
 import {
   retrieveFlatProducerKeychain,
+  retrieveKeychainKey,
   retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
   retrieveProducerKeychain,
@@ -168,6 +170,47 @@ export function producerKeychainServiceBuilder(
       return await retrieveFlatProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+    },
+    async getProducerKeychainKey(
+      producerKeychainId: ProducerKeychainId,
+      kid: KeyId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<KeychainKey> {
+      logger.info(
+        `Getting key with ID ${kid} of Producer Keychain with ID ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      return retrieveKeychainKey(producerKeychain.data, kid);
+    },
+    async getProducerKeychainKeys(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<KeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Producer Keychain with ID ${producerKeychainId}`,
+      );
+
+      const producerKeychain = await retrieveFlatProducerKeychain(
+        producerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      return await readmodelService.getProducerKeychainKeys(
+        producerKeychainId,
+        params,
       );
     },
     async getProducerKeychainMember(

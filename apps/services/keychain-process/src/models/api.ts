@@ -297,3 +297,8 @@ export const API_ProducerKeychainKeyPathParams = z
 export type API_ProducerKeychainKeyPathParams = z.infer<
   typeof API_ProducerKeychainKeyPathParams
 >;
+
+export const API_GetProducerKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetProducerKeychainKeysQueryParams = z.infer<
+  typeof API_GetProducerKeychainKeysQueryParams
+>;
