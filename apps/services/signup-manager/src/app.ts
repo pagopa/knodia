@@ -13,6 +13,8 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { createProducer } from "@knodia/kafka-commons";
+import { createLogger } from "@knodia/logger";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { SignupManagerConfig } from "./config/config.ts";
@@ -21,14 +23,17 @@ import { oneIdentityClientBuilder } from "./clients/oneIdentityClient.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { signupRouter } from "./routers/signupRouter.ts";
+import { signupEventProducerBuilder } from "./services/signupEventProducer.ts";
 import { signupServiceBuilder } from "./services/signupService.ts";
 
 /** @knipignore */
 export function buildApp({
   config,
+  kafkaProducer,
   signupDb,
 }: {
   config: SignupManagerConfig;
+  kafkaProducer: Awaited<ReturnType<typeof createProducer>>;
   signupDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -65,6 +70,10 @@ export function buildApp({
       oneIdentityClientBuilder(config),
       tokenGeneratorBuilder(),
       signupDbServiceBuilder(signupDb),
+      signupEventProducerBuilder({
+        producer: kafkaProducer,
+        topic: config.signupTopic,
+      }),
     ),
   });
 
@@ -77,11 +86,17 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: SignupManagerConfig) {
+export async function buildAppFromConfig(config: SignupManagerConfig) {
   const { db: signupDb, pool: signupPool } =
     makeSignupDrizzleConnection(config);
 
-  const app = buildApp({ config, signupDb });
+  const kafkaProducer = await createProducer(
+    [config.signupTopic],
+    config,
+    createLogger({ config }),
+  );
+
+  const app = buildApp({ config, kafkaProducer, signupDb });
 
   app.addHook("onClose", async () => {
     await signupPool.end();

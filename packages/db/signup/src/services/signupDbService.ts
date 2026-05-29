@@ -62,6 +62,20 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
+    async checkSignupUserNameAlreadyTaken(userName: string): Promise<boolean> {
+      const result = await db
+        .select()
+        .from(signupUser)
+        .where(
+          or(
+            eq(signupUser.lynxOrganizationName, userName),
+            eq(signupUser.orionOrganizationName, userName),
+          ),
+        )
+        .limit(1);
+      return result.length > 0;
+    },
+
     async getSignupUserById(
       signupUserId: SignupUserId,
     ): Promise<SignupUser | undefined> {

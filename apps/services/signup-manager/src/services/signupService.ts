@@ -11,7 +11,9 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
 import type { SignupManagerConfig } from "../config/config.ts";
 import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
+import type { SignupEventProducer } from "./signupEventProducer.ts";
 
+import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIdentifiersDoNotExist,
@@ -24,6 +26,7 @@ export function signupServiceBuilder(
   oneIdentityClient: OneIdentityClient,
   tokenGenerator: TokenGenerator,
   signupDbService: SignupDbService,
+  signupEventProducer: SignupEventProducer,
 ) {
   return {
     async confirmOnboarding(
@@ -36,11 +39,10 @@ export function signupServiceBuilder(
       await assertSignupUserIdentifiersDoNotExist(authData, signupDbService);
       await assertSignupUserEmailDoesNotExist(email, signupDbService);
 
-      // TODO: Produce names
-      const lynxOrganizationName = `TODO`;
-      const lynxUserName = `TODO`;
-      const orionOrganizationName = `TODO`;
-      const orionUserName = `TODO`;
+      const [lynxOrganizationName, orionOrganizationName] = await Promise.all([
+        generateUniqueUserName(signupDbService),
+        generateUniqueUserName(signupDbService),
+      ]);
 
       const newSignupUser: SignupUser = {
         createdAt: now,
@@ -51,11 +53,11 @@ export function signupServiceBuilder(
         generatedEntities: {
           Lynx: {
             organizationName: lynxOrganizationName,
-            userName: lynxUserName,
+            userName: toUserName(lynxOrganizationName),
           },
           Orion: {
             organizationName: orionOrganizationName,
-            userName: orionUserName,
+            userName: toUserName(orionOrganizationName),
           },
         },
         name: authData.name,
@@ -67,7 +69,9 @@ export function signupServiceBuilder(
       };
 
       await signupDbService.insertSignupUser(newSignupUser);
-      // TODO Produce Event
+      await signupEventProducer.publishOnboardingCompletedEvent({
+        signupUserId,
+      });
     },
 
     async exchangeOIDCCode({
@@ -130,4 +134,23 @@ export function signupServiceBuilder(
       };
     },
   };
+}
+
+async function generateUniqueUserName(signupDbService: SignupDbService) {
+  let attempts = 0;
+  const MAX_ATTEMPTS = 10;
+
+  while (attempts < MAX_ATTEMPTS) {
+    const name = generateRandomOrgName();
+    const nameTaken =
+      await signupDbService.checkSignupUserNameAlreadyTaken(name);
+    if (!nameTaken) {
+      return name;
+    }
+    attempts++;
+  }
+
+  throw genericInternalError(
+    "Failed to generate a unique organization name after multiple attempts",
+  );
 }
