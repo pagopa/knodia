@@ -6,7 +6,6 @@ modules:
   - path: packages/models/keychain-models/proto
   - path: packages/models/organization-models/proto
   - path: packages/models/purpose-models/proto
-  - path: packages/models/signup-models/proto
 
 lint:
   use:
