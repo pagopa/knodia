@@ -33,3 +33,11 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_signup."signup_user" (
             OR "fiscal_number" IS NOT NULL
             OR "person_identifier" IS NOT NULL)
 );
+
+-- signup-manager creates and reads signup users
+GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_manager_user;
+
+-- signup-updater fills in the per-Knode org ids and advances status after propagating to the Knodes
+GRANT USAGE ON SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;
+GRANT SELECT, UPDATE ON ALL TABLES IN SCHEMA ${NAMESPACE}_signup TO ${NAMESPACE}_signup_updater_user;
