@@ -39,6 +39,7 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainEservice,
   API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,
