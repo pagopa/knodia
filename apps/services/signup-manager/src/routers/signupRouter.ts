@@ -93,7 +93,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] }, // TODO
+        { tokenType: "ui-signup-session" },
       ]);
 
       await signupService.confirmOnboarding(req.body, ctx);

@@ -1,4 +1,8 @@
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+
 import cookie from "@fastify/cookie";
+import { signupDbServiceBuilder } from "@knodia/db-signup/services";
+import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -20,7 +24,13 @@ import { signupRouter } from "./routers/signupRouter.ts";
 import { signupServiceBuilder } from "./services/signupService.ts";
 
 /** @knipignore */
-export function buildApp({ config }: { config: SignupManagerConfig }) {
+export function buildApp({
+  config,
+  signupDb,
+}: {
+  config: SignupManagerConfig;
+  signupDb: NodePgDatabase;
+}) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -54,6 +64,7 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
       config,
       oneIdentityClientBuilder(config),
       tokenGeneratorBuilder(),
+      signupDbServiceBuilder(signupDb),
     ),
   });
 
@@ -67,7 +78,14 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
 }
 
 export function buildAppFromConfig(config: SignupManagerConfig) {
-  const app = buildApp({ config });
+  const { db: signupDb, pool: signupPool } =
+    makeSignupDrizzleConnection(config);
+
+  const app = buildApp({ config, signupDb });
+
+  app.addHook("onClose", async () => {
+    await signupPool.end();
+  });
 
   return app;
 }

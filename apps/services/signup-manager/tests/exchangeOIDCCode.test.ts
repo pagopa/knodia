@@ -20,8 +20,6 @@ vi.mock("jose", () => ({
   jwtVerify: mockJwtVerify,
 }));
 
-import { OIDC_SESSION_COOKIE_NAME } from "../src/routers/signupRouter.ts";
-
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateUISignupSessionToken: vi.fn().mockResolvedValue({
@@ -30,6 +28,7 @@ vi.mock("@knodia/token-generator", () => ({
   }),
 }));
 
+import { OIDC_SESSION_COOKIE_NAME } from "../src/models/api.ts";
 import { app } from "./setup.ts";
 
 function expectOIDCSessionCookieCleared(response: {
