@@ -2,19 +2,18 @@
 import type z from "zod";
 
 import { type EserviceId, generateId } from "@knodia/common-models/ids";
-import { type ProducerKeychain } from "@knodia/keychain-models";
+import {
+  type ProducerKeychain,
+  type ProducerKeychainEservice,
+} from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockProducerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_GetProducerKeychainsQueryParams } from "../../src/models/api.ts";
 
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
-import {
-  injectAppRequest,
-  seedProducerKeychain,
-  seedProducerKeychainEservice,
-} from "../utils.ts";
+import { producerKeychainWriterService } from "../setup.ts";
+import { injectAppRequest, seedProducerKeychain } from "../utils.ts";
 import { mockProducerKeychains } from "./mocks/mockProducerKeychains.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -55,6 +54,42 @@ const seededProducerKeychains = mockProducerKeychains.map(
 
 const seedProducerKeychains = async () => {
   await Promise.all(seededProducerKeychains.map(seedProducerKeychain));
+};
+
+const eserviceId1 = generateId<EserviceId>();
+const eserviceId2 = generateId<EserviceId>();
+const producerKeychainEservices: ProducerKeychainEservice[] = [
+  {
+    eserviceId: eserviceId1,
+    linkedAt: new Date(),
+    producerKeychainId: seededProducerKeychains[0]!.id,
+  },
+  {
+    eserviceId: eserviceId1,
+    linkedAt: new Date(),
+    producerKeychainId: seededProducerKeychains[4]!.id,
+  },
+  {
+    eserviceId: eserviceId2,
+    linkedAt: new Date(),
+    producerKeychainId: seededProducerKeychains[4]!.id,
+  },
+  {
+    eserviceId: eserviceId2,
+    linkedAt: new Date(),
+    producerKeychainId: seededProducerKeychains[2]!.id,
+  },
+];
+const producerKeychainIdsWithLinkedEservice1 = new Set([
+  producerKeychainEservices[0]!.producerKeychainId,
+  producerKeychainEservices[1]!.producerKeychainId,
+]);
+const seedProducerKeychainEservices = async () => {
+  await Promise.all(
+    producerKeychainEservices.map((link) =>
+      producerKeychainWriterService.upsertProducerKeychainEservice(link, 0),
+    ),
+  );
 };
 
 describe("GET /producerKeychains (getProducerKeychains)", () => {
@@ -101,8 +136,20 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       totalCount: seededProducerKeychains.length,
     },
     {
+      expectedResult: sortedMockProducerKeychains.filter((pk) =>
+        producerKeychainIdsWithLinkedEservice1.has(pk.id),
+      ),
+      query: {
+        ...defaultQuery,
+        eserviceId: eserviceId1,
+      },
+      testCase:
+        "filter by linked eserviceId, sort by updatedAt desc by default",
+      totalCount: 2,
+    },
+    {
       expectedResult: sortedMockProducerKeychains.filter(
-        (ck) => ck.ownerId === ownerIdFilter,
+        (pk) => pk.ownerId === ownerIdFilter,
       ),
       query: {
         ...defaultQuery,
@@ -112,14 +159,28 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       totalCount: 3,
     },
     {
-      expectedResult: sortedMockProducerKeychains.filter((ck) =>
-        ck.name.en.toLowerCase().includes(matchingNamePrefix),
+      expectedResult: sortedMockProducerKeychains.filter((pk) =>
+        pk.name.en.toLowerCase().includes(matchingNamePrefix),
       ),
       query: {
         ...defaultQuery,
         name: matchingNamePrefix.toUpperCase(),
       },
       testCase: "filter by name, case insensitive",
+      totalCount: 2,
+    },
+    {
+      expectedResult: sortedMockProducerKeychains.filter(
+        (pk) =>
+          pk.ownerId === ownerIdFilter &&
+          producerKeychainIdsWithLinkedEservice1.has(pk.id),
+      ),
+      query: {
+        ...defaultQuery,
+        eserviceId: eserviceId1,
+        ownerId: ownerIdFilter,
+      },
+      testCase: "filter by ownerId and linked eserviceId together",
       totalCount: 2,
     },
   ] satisfies {
@@ -131,6 +192,7 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
     "should return producer keychains with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
       await seedProducerKeychains();
+      await seedProducerKeychainEservices();
 
       const response = await getMockProducerKeychains({ query });
 
@@ -145,34 +207,6 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       });
     },
   );
-
-  it("should filter producer keychains by linked eserviceId", async () => {
-    const eserviceId = generateId<EserviceId>();
-    const linkedKeychain = getMockProducerKeychain(20);
-    const unlinkedKeychain = getMockProducerKeychain(21);
-
-    await seedProducerKeychain(linkedKeychain);
-    await seedProducerKeychain(unlinkedKeychain);
-    await seedProducerKeychainEservice(linkedKeychain, {
-      eserviceId,
-      linkedAt: new Date(),
-      producerKeychainId: linkedKeychain.id,
-    });
-
-    const response = await getMockProducerKeychains({
-      query: { ...defaultQuery, eserviceId },
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      pagination: {
-        limit: Number(defaultQuery.limit),
-        offset: Number(defaultQuery.offset),
-        total: 1,
-      },
-      results: [toAPI_Keychain(linkedKeychain)],
-    });
-  });
 
   it.each(allowedTestTokens)(
     "should return 200 for authorized token ($type, $roles)",

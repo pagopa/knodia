@@ -18,6 +18,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_CreatedMemberResource,
+  API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import z from "zod";
@@ -38,8 +39,6 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
-  API_ProducerKeychainEservice,
-  API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,

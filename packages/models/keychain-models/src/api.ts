@@ -105,6 +105,15 @@ export type API_ProducerKeychainIdPathParam = z.infer<
   typeof API_ProducerKeychainIdPathParam
 >;
 
+export const API_ProducerKeychainEserviceLinkSeed = z
+  .strictObject({
+    eserviceId: z.uuid(),
+  })
+  .meta({ id: "ProducerKeychainEserviceLinkSeed" });
+export type API_ProducerKeychainEserviceLinkSeed = z.infer<
+  typeof API_ProducerKeychainEserviceLinkSeed
+>;
+
 export const API_CreatedMemberResource = z
   .strictObject({
     userId: API_UserId,
