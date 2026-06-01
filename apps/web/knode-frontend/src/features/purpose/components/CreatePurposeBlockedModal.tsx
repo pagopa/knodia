@@ -25,7 +25,13 @@ export function CreatePurposeBlockedModal({
               "To create a Purpose, you should have an active Agreement.",
             title: "Your Agreement is archived",
           }
-        : null;
+        : agreementState === "PendingConsumerOperatorIdentification"
+          ? {
+              description:
+                "To create a Purpose, an authorized operator from your organization must first confirm this Agreement on the Producer Knode.",
+              title: "Your Agreement is pending confirmation",
+            }
+          : null;
 
   if (banner === null) return null;
 
