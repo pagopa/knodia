@@ -244,10 +244,6 @@ export function purposeServiceBuilder(
         eserviceId,
       });
 
-      // No assertFormAnswersAreValid: the Producer published the snapshot, the
-      // Consumer only selected it. Schema validation belongs to the Producer
-      // at publish-time, not to this service.
-
       const now = new Date();
       const purpose: Purpose = {
         consumer,
