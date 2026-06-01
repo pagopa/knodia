@@ -194,7 +194,7 @@ export const getPurposes = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Create a Purpose
  *
- * Create a new Purpose
+ * Create a new Purpose for an E-service on behalf of the calling Consumer. The body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers, `ReceiveData` references a Producer-published PurposeFormOption.
  */
 export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
     responseType: 'json',
