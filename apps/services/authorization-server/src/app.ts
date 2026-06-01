@@ -11,6 +11,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import {
   initRedisRateLimiter,
+  type RateLimiter,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
@@ -30,10 +31,12 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 export function buildApp({
   config,
   dynamoClient,
+  rateLimiter: rateLimiterOverride,
   readmodelDb,
 }: {
   config: AuthorizationServerConfig;
   dynamoClient?: DynamoDBClient;
+  rateLimiter?: RateLimiter;
   readmodelDb: NodePgDatabase;
 }) {
   const tokenGenerator = tokenGeneratorBuilder();
@@ -74,28 +77,28 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const rateLimiter = initRedisRateLimiter({
-    config,
-    knodeId: config.knodeId,
-    logger: app.log,
-    serviceName: "authorization-server",
-  });
+  const rateLimiter =
+    rateLimiterOverride ??
+    initRedisRateLimiter({
+      config,
+      knodeId: config.knodeId,
+      logger: app.log,
+      serviceName: "authorization-server",
+    });
 
   app.removeAllContentTypeParsers();
   app.register(formBody);
   app.register(rateLimitResponseHeadersPlugin);
   app.register(healthRouter);
-  app.register(async (tokenScope) => {
-    tokenScope.register(tokenRouter, {
-      tokenService: tokenServiceBuilder({
-        config,
-        dpopProofStore,
-        getK2K2GatewayApiClient,
-        rateLimiter,
-        readmodelService: readmodelServiceBuilder(readmodelDb),
-        tokenGenerator,
-      }),
-    });
+  app.register(tokenRouter, {
+    tokenService: tokenServiceBuilder({
+      config,
+      dpopProofStore,
+      getK2K2GatewayApiClient,
+      rateLimiter,
+      readmodelService: readmodelServiceBuilder(readmodelDb),
+      tokenGenerator,
+    }),
   });
 
   app.addHook("onClose", async () => {
@@ -106,12 +109,16 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: AuthorizationServerConfig) {
+export function buildAppFromConfig(
+  config: AuthorizationServerConfig,
+  rateLimiter?: RateLimiter,
+) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
 
   const app = buildApp({
     config,
+    rateLimiter,
     readmodelDb,
   });
 

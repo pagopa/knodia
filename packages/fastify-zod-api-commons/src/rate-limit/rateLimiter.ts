@@ -33,6 +33,23 @@ interface InitRedisRateLimiterOptions {
   serviceName: HTTPServiceName;
 }
 
+// Rate limiter for build paths that wire the app without serving traffic —
+// today only OpenAPI generation, which boots the app to read its schema and
+// then closes it. It never opens a Redis connection, so the generator stays
+// hermetic (no Redis needed in CI) and the process exits cleanly. Keeping
+// this here lets the production `initRedisRateLimiter` stay simple instead of
+// carrying generation-only startup machinery.
+export const noopRateLimiter: RateLimiter = {
+  consume: async () => ({
+    degraded: true,
+    limitReached: false,
+    maxRequests: 0,
+    remainingRequests: 0,
+    resetMs: 0,
+  }),
+  disconnect: async () => undefined,
+};
+
 export function initRedisRateLimiter({
   config,
   knodeId,
@@ -70,41 +87,16 @@ export function initRedisRateLimiter({
     logger.warn({ err }, "Redis rate-limiter error");
   });
 
-  // Lazy connect: connecting at init pins the event loop in any build path
-  // that doesn't actually call `consume` (e.g. OpenAPI generation in CI
-  // with no Redis), because the linear reconnect strategy keeps scheduling
-  // setTimeouts we cannot cancel from outside the client.
-  //
-  // The first `consume()` kicks the connection off and waits up to
-  // `timeoutMs` for it to complete via a single shared `initialWaiter`. If
-  // Redis is up this resolves in ~ms and the first request gets real
-  // headers; if Redis is down the timer wins and we fall back to fail-open.
-  //
-  // Subsequent calls reuse the SAME `initialWaiter` (already resolved after
-  // the first wait): they don't re-arm the timer or re-attach `.finally` to
-  // the still-pending `connectPromise`. That avoids two regressions caught
-  // in review: a per-request `timeoutMs` latency under sustained outage,
-  // and unbounded growth of promise reactions on the long-lived
-  // `connectPromise`. The wait timer is `.unref()`'d so it never on its
-  // own keeps the process alive — only the node-redis reconnect loop does,
-  // and `disconnect()` handles that.
-  let connectPromise: Promise<unknown> | undefined;
-  let initialWaiter: Promise<void> | undefined;
-  const ensureConnected = async (): Promise<void> => {
-    const pending = (connectPromise ??= client
-      .connect()
-      .catch(() => undefined));
-    if (client.isReady) return;
-    initialWaiter ??= new Promise<void>((resolve) => {
-      const timer = setTimeout(resolve, timeoutMs);
-      timer.unref();
-      void pending.finally(() => {
-        clearTimeout(timer);
-        resolve();
-      });
-    });
-    await initialWaiter;
-  };
+  // Eager, non-blocking connect (mirrors PDND): kick off the connection but
+  // don't await it. If Redis is down the client retries in the background per
+  // `reconnectStrategy`, and `disableOfflineQueue: true` makes `consume`
+  // reject immediately (→ fail-open) until it recovers, so startup never
+  // blocks on Redis. Build paths that wire the app without serving traffic
+  // (OpenAPI generation) use `noopRateLimiter`, so this never runs there.
+  void client.connect().catch(() => {
+    // The `error` handler above already logged; swallow here so the unawaited
+    // promise can't surface as an unhandled rejection.
+  });
 
   const rateLimiter = new RateLimiterRedis({
     duration: config.rateLimiterTimeWindowSeconds,
@@ -124,7 +116,6 @@ export function initRedisRateLimiter({
 
   return {
     async consume(rateLimitKey, logger): Promise<RateLimiterStatus> {
-      await ensureConnected();
       try {
         // Bound consume latency: node-redis v4 has no per-command timeout,
         // so a stalled Redis (failover, slow Lua, cluster slot moved while
@@ -169,17 +160,13 @@ export function initRedisRateLimiter({
         return failOpenStatus;
       }
     },
-    // No-op when `connect()` was never triggered (e.g. OpenAPI generation
-    // never calls `consume`): the client has no socket and no pending
-    // reconnect timer. Otherwise QUIT if ready, DISCONNECT if mid-retry.
-    // The `allowReconnect=false` flag makes the next `reconnectStrategy`
-    // call return `false`, so when the currently-pending (uncancellable)
-    // inner `setTimeout(retryIn)` fires, the loop exits instead of
-    // scheduling another wait — bounding the shutdown delay to the
-    // current `retryIn` (≤ 5s with the cap above).
+    // QUIT if connected, DISCONNECT if mid-retry. Setting `allowReconnect`
+    // false makes the next `reconnectStrategy` call return `false`, so when
+    // the currently-pending (uncancellable) inner `setTimeout(retryIn)`
+    // fires, the background loop exits instead of scheduling another wait —
+    // bounding the shutdown delay to the current `retryIn` (≤ 5s).
     disconnect: async () => {
       allowReconnect = false;
-      if (!connectPromise) return;
       if (client.isReady) {
         await client.quit().catch(() => undefined);
       } else {

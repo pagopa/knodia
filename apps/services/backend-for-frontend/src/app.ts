@@ -9,6 +9,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import {
   initRedisRateLimiter,
+  type RateLimiter,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
@@ -45,6 +46,7 @@ import { authServiceBuilder } from "./services/authService.ts";
 export function buildAppFromConfig(
   config: BffProcessConfig,
   injectedDynamoClient?: DynamoDBClient,
+  rateLimiterOverride?: RateLimiter,
 ) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
@@ -128,12 +130,14 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
-  const rateLimiter = initRedisRateLimiter({
-    config,
-    knodeId: config.knodeId,
-    logger: app.log,
-    serviceName: "backend-for-frontend",
-  });
+  const rateLimiter =
+    rateLimiterOverride ??
+    initRedisRateLimiter({
+      config,
+      knodeId: config.knodeId,
+      logger: app.log,
+      serviceName: "backend-for-frontend",
+    });
   const authService = authServiceBuilder({
     config,
     magicLinkTokenStore,

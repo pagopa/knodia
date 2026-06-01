@@ -25,16 +25,6 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         EXPECTED_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_ID: KnodeId,
-        SIGNAL_HUB_SEED_EXPIRE_SECONDS: z.coerce.number().int().positive(),
-        SIGNAL_HUB_SEED_SALT_LENGTH: z.coerce.number().int().positive(),
-        SIGNAL_HUB_SEED_START_DATE_MS: z.coerce
-          .number()
-          .int()
-          .nonnegative()
-          .refine((ms) => ms <= Date.now(), {
-            message:
-              "SIGNAL_HUB_SEED_START_DATE_MS must not be in the future — periodId would go negative.",
-          }),
         WELL_KNOWN_URLS: z
           .string()
           .min(1)
@@ -49,9 +39,6 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         expectedIssuer: c.EXPECTED_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
         knodeId: c.KNODE_ID,
-        signalHubSeedExpireSeconds: c.SIGNAL_HUB_SEED_EXPIRE_SECONDS,
-        signalHubSeedSaltLength: c.SIGNAL_HUB_SEED_SALT_LENGTH,
-        signalHubSeedStartDateMs: c.SIGNAL_HUB_SEED_START_DATE_MS,
         wellKnownUrls: c.WELL_KNOWN_URLS,
       })),
   );

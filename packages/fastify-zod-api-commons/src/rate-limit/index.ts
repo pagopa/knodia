@@ -2,6 +2,7 @@ export { RateLimiterConfig } from "./config.ts";
 export { enforceRateLimit } from "./enforceRateLimit.ts";
 export {
   initRedisRateLimiter,
+  noopRateLimiter,
   type RateLimiter,
   type RateLimiterStatus,
 } from "./rateLimiter.ts";

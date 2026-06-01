@@ -4,5 +4,5 @@ rules:
   # are still placeholders. The default `missing-ratelimit: error` will start
   # firing as soon as real routes are added; at that point wire up
   # `initRedisRateLimiter` + `rateLimitPlugin` + `rateLimitResponseHeadersPlugin`
-  # + `rateLimitOpenapiDocs` and drop this override.
+  # and declare `429` in each route's Zod response map, then drop this override.
   missing-ratelimit: off
