@@ -20,10 +20,18 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/cognito-idm-client": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-signup": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/organization-process-client": "workspace:*",
+    "@knodia/signup-models": "workspace:*",
+    "@knodia/token-generator": "workspace:*",
+    "axios": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
