@@ -1,8 +1,12 @@
+import type { UserRole } from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 
 import {
+  AdminAddUserToGroupCommand,
+  AdminCreateUserCommand,
   AdminListGroupsForUserCommand,
   CognitoIdentityProviderClient,
+  CreateGroupCommand,
   ListUsersCommand,
   ListUsersInGroupCommand,
   type UserType,
@@ -50,6 +54,55 @@ export function buildCognitoIdmClient({
       return false;
     },
 
+    async createOrganizationUser(input: {
+      email: string;
+      familyName: string;
+      givenName: string;
+      organizationId: OrganizationId;
+      roles: UserRole[];
+      username: string;
+    }): Promise<void> {
+      const groupName = getOrganizationGroupName(input.organizationId);
+
+      // The org is brand-new, so its group does not exist yet: create it first.
+      await swallowCognitoError("GroupExistsException", () =>
+        client.send(
+          new CreateGroupCommand({
+            GroupName: groupName,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+      );
+
+      // Idempotent on redelivery: the username is unique per signup user, so an
+      // existing one is a prior attempt for the same user.
+      await swallowCognitoError("UsernameExistsException", () =>
+        client.send(
+          new AdminCreateUserCommand({
+            DesiredDeliveryMediums: ["EMAIL"],
+            UserAttributes: [
+              { Name: "email", Value: input.email },
+              { Name: "email_verified", Value: "true" },
+              { Name: "given_name", Value: input.givenName },
+              { Name: "family_name", Value: input.familyName },
+              { Name: "custom:organizationId", Value: input.organizationId },
+              { Name: "custom:roles", Value: input.roles.join(",") },
+            ],
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+      );
+
+      await client.send(
+        new AdminAddUserToGroupCommand({
+          GroupName: groupName,
+          Username: input.username,
+          UserPoolId: cognitoUserPoolId,
+        }),
+      );
+    },
+
     async getOrganizationUsers(
       organizationId: OrganizationId,
     ): Promise<IdmUser[]> {
@@ -90,4 +143,18 @@ export function buildCognitoIdmClient({
 
 function getOrganizationGroupName(organizationId: OrganizationId) {
   return `org:${organizationId}`;
+}
+
+async function swallowCognitoError(
+  exceptionName: string,
+  operation: () => Promise<unknown>,
+): Promise<void> {
+  try {
+    await operation();
+  } catch (error) {
+    if (error instanceof Error && error.name === exceptionName) {
+      return;
+    }
+    throw error;
+  }
 }
