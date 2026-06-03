@@ -41,6 +41,11 @@ export type ConfirmOnboardingRequestBody = {
     email: string;
 };
 
+export type CurrentSignupUser = {
+    email?: string;
+    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'NOT_COMPLETED';
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -95,6 +100,41 @@ export type ExchangeOidcCodeResponses = {
 };
 
 export type ExchangeOidcCodeResponse = ExchangeOidcCodeResponses[keyof ExchangeOidcCodeResponses];
+
+export type GetCurrentSignupUserData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/me';
+};
+
+export type GetCurrentSignupUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetCurrentSignupUserError = GetCurrentSignupUserErrors[keyof GetCurrentSignupUserErrors];
+
+export type GetCurrentSignupUserResponses = {
+    /**
+     * Current signup user onboarding status
+     */
+    200: CurrentSignupUser;
+};
+
+export type GetCurrentSignupUserResponse = GetCurrentSignupUserResponses[keyof GetCurrentSignupUserResponses];
 
 export type ConfirmOnboardingData = {
     body: ConfirmOnboardingRequestBody;

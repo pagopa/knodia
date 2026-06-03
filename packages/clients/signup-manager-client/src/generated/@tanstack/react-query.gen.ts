@@ -4,8 +4,8 @@ import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanst
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { confirmOnboarding, exchangeOidcCode, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
-import type { ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
+import { confirmOnboarding, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
+import type { ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -92,6 +92,24 @@ export const exchangeOidcCodeOptions = (options: Options<ExchangeOidcCodeData>) 
         return data;
     },
     queryKey: exchangeOidcCodeQueryKey(options)
+});
+
+export const getCurrentSignupUserQueryKey = (options: Options<GetCurrentSignupUserData>) => createQueryKey('getCurrentSignupUser', options);
+
+/**
+ * Get current signup user onboarding status
+ */
+export const getCurrentSignupUserOptions = (options: Options<GetCurrentSignupUserData>) => queryOptions<GetCurrentSignupUserResponse, AxiosError<GetCurrentSignupUserError>, GetCurrentSignupUserResponse, ReturnType<typeof getCurrentSignupUserQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getCurrentSignupUser({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getCurrentSignupUserQueryKey(options)
 });
 
 /**

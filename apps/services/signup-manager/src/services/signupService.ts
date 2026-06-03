@@ -85,6 +85,17 @@ export function signupServiceBuilder(
         signupUserId,
       });
     },
+    async getCurrentSignupUser({
+      authData,
+    }: AuthorizedContext<UISignupSessionAuthData>): Promise<
+      SignupUser | undefined
+    > {
+      return await signupDbService.getSignupUserByIdentifiers({
+        fiscalNumber: authData.fiscalNumber,
+        personIdentifier: authData.personIdentifier,
+        spidCode: authData.spidCode,
+      });
+    },
   };
 }
 
