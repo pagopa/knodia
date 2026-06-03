@@ -132,7 +132,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     });
   });
 
-  it("treats a 409 as already processed: no throw, no Cognito user for that node", async () => {
+  it("throws on a 409 (name collision with a different org) so the message is redelivered", async () => {
     getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
     createOrganizationMock.mockRejectedValue(conflict);
 
@@ -143,25 +143,27 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
         correlationId,
         logger,
       ),
-    ).resolves.toBeUndefined();
+    ).rejects.toBeDefined();
 
-    expect(createOrganizationMock).toHaveBeenCalledTimes(2);
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
   });
 
-  it("handles a mixed result: one node created, the other already exists", async () => {
+  it("throws if a node returns a 409 even after another node was provisioned", async () => {
     getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
     createOrganizationMock
       .mockResolvedValueOnce({ data: { id: generateId<OrganizationId>() } })
       .mockRejectedValueOnce(conflict);
 
-    await handleSignupMessage(
-      onboardingEvent(generateId<SignupUserId>()),
-      buildDeps(),
-      correlationId,
-      logger,
-    );
+    await expect(
+      handleSignupMessage(
+        onboardingEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toBeDefined();
 
+    // Orion is fully provisioned before Lynx's 409 aborts the loop.
     expect(createOrganizationMock).toHaveBeenCalledTimes(2);
     expect(cognitoCreateUserMock).toHaveBeenCalledTimes(1);
   });

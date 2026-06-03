@@ -56,7 +56,7 @@ export const API_OrganizationSeed = z
     attributes: z.array(API_Attribute),
     externalRequestId: z.uuid().optional().meta({
       description:
-        "Idempotency key. At most one Organization is created per externalRequestId: a repeated request with the same key returns the existing Organization instead of creating a duplicate.",
+        "Idempotency key. A repeated request with the same key returns the already-created Organization instead of a duplicate. Deduplication relies on the eventually-consistent readmodel, so a redelivery racing ahead of projection may still create a second Organization.",
     }),
     name: z.string().min(1),
   })

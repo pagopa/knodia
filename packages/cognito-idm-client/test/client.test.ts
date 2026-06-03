@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe("createOrganizationUser", () => {
-  it("creates the group, the suppressed user, and the membership in order", async () => {
+  it("creates the group, the user, and the membership in order", async () => {
     const send = vi
       .spyOn(CognitoIdentityProviderClient.prototype, "send")
       .mockResolvedValue(undefined as never);

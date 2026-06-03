@@ -14,7 +14,6 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
-import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
 import type { SignupUpdaterDeps } from "../utils/utils.ts";
@@ -56,33 +55,24 @@ function assertSignupUserExists(
   }
 }
 
+// A 409 (name collision with a different org) propagates: it's an unrecoverable
+// invariant violation, so we fail loudly rather than silently drop the user.
 async function createTestingOrganization(
   orgClient: OrganizationProcessClient,
   headers: ReturnType<typeof getKnodiaServiceHeaders>,
   name: string,
   externalRequestId: string,
-): Promise<OrganizationId | undefined> {
-  try {
-    const { data } = await organizationProcessApi.createOrganization({
-      body: {
-        attributes: [TESTING_ORGANIZATION_ATTRIBUTE],
-        externalRequestId,
-        name,
-      },
-      client: orgClient,
-      headers,
-    });
-    return unsafeBrandId<OrganizationId>(data.id);
-  } catch (error) {
-    if (isConflictError(error)) {
-      return undefined;
-    }
-    throw error;
-  }
-}
-
-function isConflictError(error: unknown): boolean {
-  return isAxiosError(error) && error.response?.status === 409;
+): Promise<OrganizationId> {
+  const { data } = await organizationProcessApi.createOrganization({
+    body: {
+      attributes: [TESTING_ORGANIZATION_ATTRIBUTE],
+      externalRequestId,
+      name,
+    },
+    client: orgClient,
+    headers,
+  });
+  return unsafeBrandId<OrganizationId>(data.id);
 }
 
 async function provisionKnode(
@@ -99,19 +89,16 @@ async function provisionKnode(
     await deps.internalTokenProvider.get(),
   );
 
+  logger.info(
+    `Provisioning organization and user for signup user ${user.signupUserId} on ${knodeId}`,
+  );
+
   const organizationId = await createTestingOrganization(
     orgClient,
     headers,
     entities.organizationName,
     organizationExternalRequestId(user.signupUserId, knodeId),
   );
-  // undefined = 409 (a different organization already holds this name).
-  if (organizationId === undefined) {
-    logger.info(
-      `Organization "${entities.organizationName}" already exists on ${knodeId}; skipping`,
-    );
-    return;
-  }
 
   await cognitoClient.createOrganizationUser({
     email: user.email,
