@@ -20,6 +20,7 @@ import { match } from "ts-pattern";
 import type { SignupUpdaterDeps } from "../utils/utils.ts";
 
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
+import { organizationExternalRequestId } from "../utils/organizationExternalRequestId.ts";
 
 const TESTING_ORGANIZATION_ATTRIBUTE = {
   code: "testing_organization",
@@ -59,11 +60,13 @@ async function createTestingOrganization(
   orgClient: OrganizationProcessClient,
   headers: ReturnType<typeof getKnodiaServiceHeaders>,
   name: string,
+  externalRequestId: string,
 ): Promise<OrganizationId | undefined> {
   try {
     const { data } = await organizationProcessApi.createOrganization({
       body: {
         attributes: [TESTING_ORGANIZATION_ATTRIBUTE],
+        externalRequestId,
         name,
       },
       client: orgClient,
@@ -100,12 +103,15 @@ async function provisionKnode(
     orgClient,
     headers,
     entities.organizationName,
+    organizationExternalRequestId(user.signupUserId, knodeId),
   );
-  // undefined = 409 from organization-process: org names are unique per signup
-  // user, so this same user's org already exists (redelivery) → skip.
+  // undefined = 409 (a different organization already holds this name). With the
+  // externalRequestId idempotency key a normal redelivery instead returns the
+  // existing organization (200) and provisioning continues idempotently, so this
+  // path is now only a true-collision safety net.
   if (organizationId === undefined) {
     logger.info(
-      `Organization "${entities.organizationName}" already exists on ${knodeId}; skipping (already processed)`,
+      `Organization "${entities.organizationName}" already exists on ${knodeId}; skipping`,
     );
     return;
   }
