@@ -45,4 +45,36 @@ describe("Organization read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Organization>);
   });
+
+  it("drops a duplicate organization that reuses an externalRequestId", async () => {
+    const externalRequestId = "22222222-2222-4222-8222-222222222222";
+    const first: Organization = {
+      ...getMockOrganization(1),
+      externalRequestId,
+    };
+    const second: Organization = {
+      ...getMockOrganization(2),
+      externalRequestId,
+    };
+
+    for (const organization of [first, second]) {
+      await sendTestEvent({
+        data: protobufBinaryCodec(
+          organizationEvents.OrganizationCreatedV1,
+        ).encode({ organization: toOrganizationV1(organization) }),
+        eventType: "OrganizationCreatedV1",
+        metadataVersion: 0,
+        producer,
+        streamId: organization.id,
+        topicName,
+      });
+      await consumer.waitForNextMessage();
+    }
+
+    const retrievedOrganizations = await getAllOrganizations(readmodelDb);
+    // The second organization collides on the unique externalRequestId and is
+    // dropped by the writer; only the first is projected.
+    expect(retrievedOrganizations.length).toBe(1);
+    expect(retrievedOrganizations[0]?.data.id).toBe(first.id);
+  });
 });

@@ -39,7 +39,21 @@ export function organizationWriterServiceBuilder(db: NodePgDatabase) {
           .delete(readmodelOrganization)
           .where(eq(readmodelOrganization.id, organization.id));
 
-        await tx.insert(readmodelOrganization).values(organizationSQL);
+        const inserted = await tx
+          .insert(readmodelOrganization)
+          .values(organizationSQL)
+          .onConflictDoNothing({
+            target: readmodelOrganization.externalRequestId,
+          })
+          .returning({ id: readmodelOrganization.id });
+
+        // A different organization already owns this externalRequestId (a
+        // duplicate created in the createOrganization pre-check race window):
+        // drop the duplicate projection so the readmodel keeps one organization
+        // per key instead of failing the unique index and poisoning the consumer.
+        if (inserted.length === 0) {
+          return;
+        }
 
         if (attributesSQL.length > 0) {
           await tx.insert(readmodelOrganizationAttribute).values(attributesSQL);

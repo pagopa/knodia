@@ -73,6 +73,10 @@ export type Operators = Array<Operator>;
 
 export type OrganizationSeed = {
     attributes: Array<Attribute>;
+    /**
+     * Idempotency key. At most one Organization is created per externalRequestId: a repeated request with the same key returns the existing Organization instead of creating a duplicate.
+     */
+    externalRequestId?: string;
     name: string;
 };
 

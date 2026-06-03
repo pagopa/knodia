@@ -20,6 +20,7 @@ describe("Organization Splitters", () => {
 
     const expectedOrganizationSQL: OrganizationSQL = {
       createdAt: organization.createdAt,
+      externalRequestId: organization.externalRequestId ?? null,
       id: organization.id,
       metadataVersion,
       name: organization.name,

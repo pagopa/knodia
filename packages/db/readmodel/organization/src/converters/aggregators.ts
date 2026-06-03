@@ -54,6 +54,7 @@ const buildOrganization = ({
   data: {
     attributes: attributesSQL.map(toOrganizationAttribute),
     createdAt: organizationSQL.createdAt,
+    externalRequestId: organizationSQL.externalRequestId ?? undefined,
     id: unsafeBrandId(organizationSQL.id),
     name: organizationSQL.name,
     updatedAt: organizationSQL.updatedAt,

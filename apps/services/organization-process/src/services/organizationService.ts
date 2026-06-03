@@ -41,6 +41,24 @@ export function organizationServiceBuilder(
       seed: API_OrganizationSeed,
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Organization> {
+      // Idempotency: a repeated request carrying the same externalRequestId
+      // returns the organization created by the first one instead of a
+      // duplicate. The readmodel is eventually consistent, so a too-fast
+      // redelivery can still slip past this lookup; the unique index on
+      // external_request_id is the hard guard behind it.
+      if (seed.externalRequestId !== undefined) {
+        const existing =
+          await readmodelService.getOrganizationByExternalRequestId(
+            seed.externalRequestId,
+          );
+        if (existing !== undefined) {
+          logger.info(
+            `Organization ${existing.data.id} already exists for externalRequestId ${seed.externalRequestId}; returning it`,
+          );
+          return existing.data;
+        }
+      }
+
       const organizationId = generateId<OrganizationId>();
 
       logger.info(`Creating Organization ${organizationId}`);
@@ -58,6 +76,7 @@ export function organizationServiceBuilder(
       const organization: Organization = {
         attributes: seed.attributes,
         createdAt: now,
+        externalRequestId: seed.externalRequestId,
         id: organizationId,
         name: seed.name,
         updatedAt: now,

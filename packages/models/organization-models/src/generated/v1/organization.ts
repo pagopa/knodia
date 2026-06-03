@@ -15,6 +15,7 @@ export interface OrganizationV1 {
   attributes: OrganizationAttributeV1[];
   createdAt: number;
   updatedAt: number;
+  externalRequestId: string;
 }
 
 export interface OrganizationAttributeV1 {
@@ -23,7 +24,7 @@ export interface OrganizationAttributeV1 {
 }
 
 function createBaseOrganizationV1(): OrganizationV1 {
-  return { id: "", name: "", attributes: [], createdAt: 0, updatedAt: 0 };
+  return { id: "", name: "", attributes: [], createdAt: 0, updatedAt: 0, externalRequestId: "" };
 }
 
 export const OrganizationV1: MessageFns<OrganizationV1> = {
@@ -42,6 +43,9 @@ export const OrganizationV1: MessageFns<OrganizationV1> = {
     }
     if (message.updatedAt !== 0) {
       writer.uint32(40).int64(message.updatedAt);
+    }
+    if (message.externalRequestId !== "") {
+      writer.uint32(50).string(message.externalRequestId);
     }
     return writer;
   },
@@ -93,6 +97,14 @@ export const OrganizationV1: MessageFns<OrganizationV1> = {
           message.updatedAt = longToNumber(reader.int64());
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.externalRequestId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -111,6 +123,7 @@ export const OrganizationV1: MessageFns<OrganizationV1> = {
         : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+      externalRequestId: isSet(object.externalRequestId) ? globalThis.String(object.externalRequestId) : "",
     };
   },
 
@@ -131,6 +144,9 @@ export const OrganizationV1: MessageFns<OrganizationV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
+    if (message.externalRequestId !== "") {
+      obj.externalRequestId = message.externalRequestId;
+    }
     return obj;
   },
 
@@ -144,6 +160,7 @@ export const OrganizationV1: MessageFns<OrganizationV1> = {
     message.attributes = object.attributes?.map((e) => OrganizationAttributeV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
+    message.externalRequestId = object.externalRequestId ?? "";
     return message;
   },
 };

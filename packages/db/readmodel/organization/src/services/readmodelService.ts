@@ -15,6 +15,26 @@ export function organizationReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
 ) {
   return {
+    async getOrganizationByExternalRequestId(
+      externalRequestId: string,
+    ): Promise<undefined | WithMetadata<Organization>> {
+      const queryRes = await readmodelDb
+        .select({
+          attribute: readmodelOrganizationAttribute,
+          organization: readmodelOrganization,
+        })
+        .from(readmodelOrganization)
+        .leftJoin(
+          readmodelOrganizationAttribute,
+          eq(
+            readmodelOrganizationAttribute.organizationId,
+            readmodelOrganization.id,
+          ),
+        )
+        .where(eq(readmodelOrganization.externalRequestId, externalRequestId));
+
+      return aggregateOrganization(queryRes);
+    },
     async getOrganizationById(
       organizationId: OrganizationId,
     ): Promise<undefined | WithMetadata<Organization>> {

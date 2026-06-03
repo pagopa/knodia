@@ -164,7 +164,13 @@ export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
 }
 
 export function getMockOrganization(seed = 0): Organization {
-  return zocker(Organization).setSeed(seed).generate();
+  // externalRequestId is an opt-in idempotency key: mock orgs must not carry a
+  // random one, or two distinct seeds could collide on the readmodel's unique
+  // index. Tests that need it set it explicitly.
+  return {
+    ...zocker(Organization).setSeed(seed).generate(),
+    externalRequestId: undefined,
+  };
 }
 
 export function getMockPurposeFormOption(seed = 0): PurposeFormOption {

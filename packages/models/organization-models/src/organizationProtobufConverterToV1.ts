@@ -6,5 +6,6 @@ export const toOrganizationV1 = (
 ): OrganizationV1 => ({
   ...organization,
   createdAt: organization.createdAt.getTime(),
+  externalRequestId: organization.externalRequestId ?? "",
   updatedAt: organization.updatedAt.getTime(),
 });

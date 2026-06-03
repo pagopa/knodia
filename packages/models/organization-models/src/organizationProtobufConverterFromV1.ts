@@ -6,6 +6,7 @@ import type { Organization } from "./organization.ts";
 export const fromOrganizationV1 = (input: OrganizationV1): Organization => ({
   ...input,
   createdAt: new Date(input.createdAt),
+  externalRequestId: input.externalRequestId || undefined,
   id: unsafeBrandId(input.id),
   updatedAt: new Date(input.updatedAt),
 });

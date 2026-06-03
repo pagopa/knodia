@@ -54,6 +54,10 @@ export type API_GetOrganizationsQueryParams = z.infer<
 export const API_OrganizationSeed = z
   .strictObject({
     attributes: z.array(API_Attribute),
+    externalRequestId: z.uuid().optional().meta({
+      description:
+        "Idempotency key. At most one Organization is created per externalRequestId: a repeated request with the same key returns the existing Organization instead of creating a duplicate.",
+    }),
     name: z.string().min(1),
   })
   .meta({ id: "OrganizationSeed" });
