@@ -25,7 +25,7 @@ import { organizationExternalRequestId } from "../utils/organizationExternalRequ
 const TESTING_ORGANIZATION_ATTRIBUTE = {
   code: "testing_organization",
   scheme: "knodia",
-};
+} satisfies organizationProcessApi.Attribute;
 
 export async function handleSignupMessage(
   event: SignupEventV1,
@@ -105,10 +105,7 @@ async function provisionKnode(
     entities.organizationName,
     organizationExternalRequestId(user.signupUserId, knodeId),
   );
-  // undefined = 409 (a different organization already holds this name). With the
-  // externalRequestId idempotency key a normal redelivery instead returns the
-  // existing organization (200) and provisioning continues idempotently, so this
-  // path is now only a true-collision safety net.
+  // undefined = 409 (a different organization already holds this name).
   if (organizationId === undefined) {
     logger.info(
       `Organization "${entities.organizationName}" already exists on ${knodeId}; skipping`,
