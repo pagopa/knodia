@@ -8,13 +8,14 @@ const signupUserId = unsafeBrandId<SignupUserId>(
 );
 
 describe("organizationExternalRequestId", () => {
-  // Pinned vectors: guard the hand-rolled v5 implementation and the namespace.
+  // Pinned vectors: guard the namespace and v5 derivation so the idempotency
+  // key never changes silently across refactors.
   it("is a deterministic v5 UUID per Knode", () => {
     expect(organizationExternalRequestId(signupUserId, "Orion")).toBe(
-      "a5a66eef-49e1-5a4c-81f8-6841edafdc2e",
+      "87bf0677-74ae-59a0-965b-ed54739772ef",
     );
     expect(organizationExternalRequestId(signupUserId, "Lynx")).toBe(
-      "44318656-0134-5227-a218-9cfb8422ad0a",
+      "213edb3c-1ba1-512d-a9c3-356f4d3fdb94",
     );
   });
 

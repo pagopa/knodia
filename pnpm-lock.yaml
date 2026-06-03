@@ -285,6 +285,9 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
+    uuid:
+      specifier: 14.0.0
+      version: 14.0.0
     vite:
       specifier: npm:rolldown-vite@7.2.5
       version: 7.2.5
@@ -1980,6 +1983,9 @@ importers:
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
+      uuid:
+        specifier: 'catalog:'
+        version: 14.0.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -10380,6 +10386,10 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
+    hasBin: true
+
   validate-npm-package-name@3.0.0:
     resolution: {integrity: sha512-M6w37eVCMMouJ9V/sdPGnC5H4uDr73/+xdq0FBLO3TFFX1+7wiUY6Es328NN+y43tmY+doUdN9g9J21vqB7iLw==}
 
@@ -18286,6 +18296,8 @@ snapshots:
   utility-types@3.11.0: {}
 
   uuid@10.0.0: {}
+
+  uuid@14.0.0: {}
 
   validate-npm-package-name@3.0.0:
     dependencies:
