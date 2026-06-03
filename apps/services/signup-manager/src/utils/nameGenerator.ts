@@ -1,14 +1,8 @@
-import { genericInternalError } from "@knodia/common-models/errors";
-
 type GeneratedOrganizationName =
   `${string} ${(typeof randomStarNames)[number]} Org`;
 
 export function generateRandomOrgName(): GeneratedOrganizationName {
-  const randomStarName = randomPick(randomStarNames);
-  if (!randomStarName) {
-    throw genericInternalError("Failed to generate random organization name");
-  }
-  return `${randomAlphaNumeric3()} ${randomStarName} Org`;
+  return `${randomAlphaNumeric3()} ${randomPick(randomStarNames) ?? "Sun"} Org`;
 }
 
 export function toUserName(orgName: GeneratedOrganizationName): string {
@@ -29,6 +23,7 @@ function randomAlphaNumeric3(): string {
     () => alphabet[Math.floor(Math.random() * alphabet.length)],
   ).join("");
 }
+
 function randomPick<T>(items: readonly T[]): T | undefined {
   const index = Math.floor(Math.random() * items.length);
   return items[index];

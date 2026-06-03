@@ -15,10 +15,15 @@ vi.mock("axios", async (importOriginal) => {
     post: mockAxiosPost,
   };
 });
-vi.mock("jose", () => ({
-  createRemoteJWKSet: vi.fn(() => "mock-jwks"),
-  jwtVerify: mockJwtVerify,
-}));
+vi.mock("jose", async (importOriginal) => {
+  const original = await importOriginal<typeof import("jose")>();
+
+  return {
+    ...original,
+    createRemoteJWKSet: vi.fn(() => "mock-jwks"),
+    jwtVerify: mockJwtVerify,
+  };
+});
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({

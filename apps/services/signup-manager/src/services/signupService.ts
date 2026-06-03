@@ -9,7 +9,7 @@ import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
-import type { SignupManagerConfig } from "../config/config.ts";
+import type { OneIdentityConfig } from "../config/config.ts";
 import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
@@ -22,7 +22,7 @@ import {
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
 
 export function signupServiceBuilder(
-  config: SignupManagerConfig,
+  config: OneIdentityConfig,
   oneIdentityClient: OneIdentityClient,
   tokenGenerator: TokenGenerator,
   signupDbService: SignupDbService,

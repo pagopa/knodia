@@ -89,7 +89,11 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     },
     url: "/auth/oidc/token",
   });
+};
 
+export const protectedSignupRouter: FastifyPluginAsyncZod<
+  SignupRouterOptions
+> = async (fastify, { signupService }) => {
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [

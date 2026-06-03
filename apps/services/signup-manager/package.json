@@ -25,11 +25,13 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
     "@fastify/cookie": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/signup-models": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "axios": "catalog:",
