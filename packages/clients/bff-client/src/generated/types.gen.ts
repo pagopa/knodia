@@ -826,12 +826,7 @@ export type ConsumerKeychainPurposes = {
     results: Array<ConsumerKeychainPurpose>;
 };
 
-export type ConsumerKeychainPatch = {
-    description?: KeychainLocalizedDescription | null;
-    name?: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainPatch = {
+export type KeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
 };
@@ -1812,7 +1807,7 @@ export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyRespons
 export type RemoveConsumerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -1852,7 +1847,7 @@ export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyRespons
 export type DownloadConsumerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -2051,7 +2046,7 @@ export type GetConsumerKeychainDetailsResponses = {
 export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
 
 export type UpdateConsumerKeychainData = {
-    body: ConsumerKeychainPatch;
+    body: KeychainPatch;
     path: {
         consumerKeychainId: string;
     };
@@ -2635,7 +2630,7 @@ export type GetKnodeApiKeychainDetailsResponses = {
 export type GetKnodeApiKeychainDetailsResponse = GetKnodeApiKeychainDetailsResponses[keyof GetKnodeApiKeychainDetailsResponses];
 
 export type UpdateKnodeApiKeychainData = {
-    body: KnodeApiKeychainPatch;
+    body: KeychainPatch;
     path: {
         knodeApiKeychainId: string;
     };
@@ -2767,7 +2762,7 @@ export type UploadKnodeApiKeychainKeyResponse = UploadKnodeApiKeychainKeyRespons
 export type RemoveKnodeApiKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         knodeApiKeychainId: string;
     };
     query?: never;
@@ -2807,7 +2802,7 @@ export type RemoveKnodeApiKeychainKeyResponse = RemoveKnodeApiKeychainKeyRespons
 export type DownloadKnodeApiKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         knodeApiKeychainId: string;
     };
     query?: never;

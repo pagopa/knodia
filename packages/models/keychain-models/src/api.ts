@@ -1,3 +1,4 @@
+import { API_UserId } from "@knodia/common-models/api";
 import { ExternalId } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
@@ -102,4 +103,16 @@ export const API_ProducerKeychainIdPathParam = z.strictObject({
 });
 export type API_ProducerKeychainIdPathParam = z.infer<
   typeof API_ProducerKeychainIdPathParam
+>;
+
+export const API_CreatedMemberResource = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .meta({
+    description: "Unique identifier of the created member resource",
+    id: "CreatedMemberResource",
+  });
+export type API_CreatedMemberResource = z.infer<
+  typeof API_CreatedMemberResource
 >;

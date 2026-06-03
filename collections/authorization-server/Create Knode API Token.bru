@@ -16,12 +16,14 @@ body:form-urlencoded {
   grant_type: client_credentials
 }
 
-vars:post-response {
-  access_token: res.body.access_token
-}
-
 script:post-response {
-  if (res.status === 200) return
+  if (res.status === 200) {
+    // Expose as knode-api-token (the variable downstream `Authorization: Bearer
+    // {{knode-api-token}}` requests read) — like access_token, the var holds the
+    // raw token and the header adds "Bearer ".
+    bru.setVar("knode-api-token", res.body.access_token)
+    return
+  }
 
   const keyPath = bru.getProcessEnv("KEYCHAIN_PRIVATE_RS256_KEY_PATH") || "<path-to-private-key>"
   const keychainId = bru.getVar("knodeApiKeychainId") || bru.getEnvVar("knodeApiKeychainId") || "<knodeApiKeychainId>"

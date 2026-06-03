@@ -94,6 +94,34 @@ export interface ProducerKeychainCreatedV1 {
   producerKeychain: ProducerKeychainV1 | undefined;
 }
 
+export interface ProducerKeychainUpdatedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+}
+
+export interface ProducerKeychainDeletedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+}
+
+export interface ProducerKeychainMemberAddedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  userId: string;
+}
+
+export interface ProducerKeychainMemberRemovedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  userId: string;
+}
+
+export interface ProducerKeychainKeyAddedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  kid: string;
+}
+
+export interface ProducerKeychainKeyRemovedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  kid: string;
+}
+
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
   return { consumerKeychain: undefined };
 }
@@ -1372,6 +1400,458 @@ export const ProducerKeychainCreatedV1: MessageFns<ProducerKeychainCreatedV1> = 
     message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
       ? ProducerKeychainV1.fromPartial(object.producerKeychain)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseProducerKeychainUpdatedV1(): ProducerKeychainUpdatedV1 {
+  return { producerKeychain: undefined };
+}
+
+export const ProducerKeychainUpdatedV1: MessageFns<ProducerKeychainUpdatedV1> = {
+  encode(message: ProducerKeychainUpdatedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainUpdatedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainUpdatedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainUpdatedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+    };
+  },
+
+  toJSON(message: ProducerKeychainUpdatedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainUpdatedV1>, I>>(base?: I): ProducerKeychainUpdatedV1 {
+    return ProducerKeychainUpdatedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainUpdatedV1>, I>>(object: I): ProducerKeychainUpdatedV1 {
+    const message = createBaseProducerKeychainUpdatedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseProducerKeychainDeletedV1(): ProducerKeychainDeletedV1 {
+  return { producerKeychain: undefined };
+}
+
+export const ProducerKeychainDeletedV1: MessageFns<ProducerKeychainDeletedV1> = {
+  encode(message: ProducerKeychainDeletedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainDeletedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainDeletedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainDeletedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+    };
+  },
+
+  toJSON(message: ProducerKeychainDeletedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainDeletedV1>, I>>(base?: I): ProducerKeychainDeletedV1 {
+    return ProducerKeychainDeletedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainDeletedV1>, I>>(object: I): ProducerKeychainDeletedV1 {
+    const message = createBaseProducerKeychainDeletedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseProducerKeychainMemberAddedV1(): ProducerKeychainMemberAddedV1 {
+  return { producerKeychain: undefined, userId: "" };
+}
+
+export const ProducerKeychainMemberAddedV1: MessageFns<ProducerKeychainMemberAddedV1> = {
+  encode(message: ProducerKeychainMemberAddedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainMemberAddedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainMemberAddedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainMemberAddedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+    };
+  },
+
+  toJSON(message: ProducerKeychainMemberAddedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainMemberAddedV1>, I>>(base?: I): ProducerKeychainMemberAddedV1 {
+    return ProducerKeychainMemberAddedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainMemberAddedV1>, I>>(
+    object: I,
+  ): ProducerKeychainMemberAddedV1 {
+    const message = createBaseProducerKeychainMemberAddedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseProducerKeychainMemberRemovedV1(): ProducerKeychainMemberRemovedV1 {
+  return { producerKeychain: undefined, userId: "" };
+}
+
+export const ProducerKeychainMemberRemovedV1: MessageFns<ProducerKeychainMemberRemovedV1> = {
+  encode(message: ProducerKeychainMemberRemovedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainMemberRemovedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainMemberRemovedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainMemberRemovedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+    };
+  },
+
+  toJSON(message: ProducerKeychainMemberRemovedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainMemberRemovedV1>, I>>(base?: I): ProducerKeychainMemberRemovedV1 {
+    return ProducerKeychainMemberRemovedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainMemberRemovedV1>, I>>(
+    object: I,
+  ): ProducerKeychainMemberRemovedV1 {
+    const message = createBaseProducerKeychainMemberRemovedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseProducerKeychainKeyAddedV1(): ProducerKeychainKeyAddedV1 {
+  return { producerKeychain: undefined, kid: "" };
+}
+
+export const ProducerKeychainKeyAddedV1: MessageFns<ProducerKeychainKeyAddedV1> = {
+  encode(message: ProducerKeychainKeyAddedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.kid !== "") {
+      writer.uint32(18).string(message.kid);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainKeyAddedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainKeyAddedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.kid = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainKeyAddedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      kid: isSet(object.kid) ? globalThis.String(object.kid) : "",
+    };
+  },
+
+  toJSON(message: ProducerKeychainKeyAddedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.kid !== "") {
+      obj.kid = message.kid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainKeyAddedV1>, I>>(base?: I): ProducerKeychainKeyAddedV1 {
+    return ProducerKeychainKeyAddedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainKeyAddedV1>, I>>(object: I): ProducerKeychainKeyAddedV1 {
+    const message = createBaseProducerKeychainKeyAddedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.kid = object.kid ?? "";
+    return message;
+  },
+};
+
+function createBaseProducerKeychainKeyRemovedV1(): ProducerKeychainKeyRemovedV1 {
+  return { producerKeychain: undefined, kid: "" };
+}
+
+export const ProducerKeychainKeyRemovedV1: MessageFns<ProducerKeychainKeyRemovedV1> = {
+  encode(message: ProducerKeychainKeyRemovedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.kid !== "") {
+      writer.uint32(18).string(message.kid);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainKeyRemovedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainKeyRemovedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.kid = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainKeyRemovedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      kid: isSet(object.kid) ? globalThis.String(object.kid) : "",
+    };
+  },
+
+  toJSON(message: ProducerKeychainKeyRemovedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.kid !== "") {
+      obj.kid = message.kid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainKeyRemovedV1>, I>>(base?: I): ProducerKeychainKeyRemovedV1 {
+    return ProducerKeychainKeyRemovedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainKeyRemovedV1>, I>>(object: I): ProducerKeychainKeyRemovedV1 {
+    const message = createBaseProducerKeychainKeyRemovedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.kid = object.kid ?? "";
     return message;
   },
 };
