@@ -69,7 +69,7 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     name: "Mario",
     signupUserId: generateId<SignupUserId>(),
     spidCode: "SPID-123",
-    status: "ACTIVE",
+    status: "Active",
     updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };

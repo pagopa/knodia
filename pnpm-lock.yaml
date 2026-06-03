@@ -1971,9 +1971,6 @@ importers:
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.15.2
       pino:
         specifier: 'catalog:'
         version: 10.2.1
