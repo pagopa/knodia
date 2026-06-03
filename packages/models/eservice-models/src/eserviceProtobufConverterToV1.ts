@@ -86,12 +86,12 @@ const toPurposeFormSchemaVersionV1 = (
     .exhaustive();
 
 const toPurposeFormOptionV1 = (
-  purposeFormOptions: PurposeFormOption,
+  purposeFormOption: PurposeFormOption,
 ): PurposeFormOptionV1 => ({
-  ...purposeFormOptions,
-  formAnswersJson: JSON.stringify(purposeFormOptions.formAnswersJson),
+  ...purposeFormOption,
+  formAnswersJson: JSON.stringify(purposeFormOption.formAnswersJson),
   formSchemaVersion: toPurposeFormSchemaVersionV1(
-    purposeFormOptions.formSchemaVersion,
+    purposeFormOption.formSchemaVersion,
   ),
 });
 

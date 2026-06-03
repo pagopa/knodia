@@ -99,11 +99,11 @@ const toEserviceCategorySQL = (
 });
 
 const toEservicePurposeFormOptionSQL = (
-  purposeFormOptions: PurposeFormOption,
+  purposeFormOption: PurposeFormOption,
   eserviceId: EserviceId,
   metadataVersion: number,
 ): EservicePurposeFormOptionSQL => ({
-  ...purposeFormOptions,
+  ...purposeFormOption,
   eserviceId,
   metadataVersion,
 });

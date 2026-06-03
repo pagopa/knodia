@@ -126,14 +126,14 @@ describe("E-service Splitters", () => {
     );
 
     const expectedPurposeFormOptionsSQL: EservicePurposeFormOptionSQL[] =
-      purposeFormOptions.map((purposeFormOptions) => ({
-        description: purposeFormOptions.description,
+      purposeFormOptions.map((purposeFormOption) => ({
+        description: purposeFormOption.description,
         eserviceId: eservice.id,
-        formAnswersJson: purposeFormOptions.formAnswersJson,
-        formSchemaVersion: purposeFormOptions.formSchemaVersion,
-        id: purposeFormOptions.id,
+        formAnswersJson: purposeFormOption.formAnswersJson,
+        formSchemaVersion: purposeFormOption.formSchemaVersion,
+        id: purposeFormOption.id,
         metadataVersion,
-        name: purposeFormOptions.name,
+        name: purposeFormOption.name,
       }));
 
     expect(eservicePurposeFormOptionSQL).toEqual(
