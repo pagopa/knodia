@@ -55,10 +55,17 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
 
 const fromReceiveDataConfigV1 = (
   input: ReceiveDataConfigV1,
-): ReceiveDataConfig => ({
-  ...input,
-  purposeFormOptions: input.purposeFormOptions.map(fromPurposeFormOptionsV1),
-});
+): ReceiveDataConfig => {
+  if (input.purposeFormOptions.length === 0) {
+    throw new Error(
+      "ReceiveDataConfigV1.purposeFormOptions must contain at least one element",
+    );
+  }
+  return {
+    ...input,
+    purposeFormOptions: input.purposeFormOptions.map(fromPurposeFormOptionsV1),
+  };
+};
 
 const fromPurposeFormOptionsV1 = (
   input: PurposeFormOptionsV1,
