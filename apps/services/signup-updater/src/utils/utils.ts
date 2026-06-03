@@ -29,8 +29,6 @@ export const createProcessMessage = (deps: SignupUpdaterDeps, logger: Logger) =>
     message,
     partition,
   }: EachMessagePayload): Promise<void> {
-    // Signup events are plain JSON (not protobuf / event-store CDC), so they
-    // carry no envelope: parse + validate the value and mint a correlationId.
     const event = decodeKafkaJsonMessage(message, SignupEventV1);
     const correlationId = generateId<CorrelationId>();
     const messageLogger = logger.child({

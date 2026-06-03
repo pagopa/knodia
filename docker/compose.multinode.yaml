@@ -646,66 +646,6 @@ services:
       kafka:
         condition: service_healthy
 
-  # Central signup subsystem consumer: reads the shared signup topic (read-only on
-  # the signup DB) and provisions BOTH Knodes (org in each organization-process +
-  # Cognito user in each pool). Idempotent on redelivery via the unique org name (409).
-  signup-updater:
-    security_opt:
-      - no-new-privileges:true
-    labels:
-      knodia.check.on.startup: "true"
-    container_name: knodia-multinode-signup-updater
-    mem_limit: 200m
-    build:
-      context: ..
-      dockerfile: apps/services/signup-updater/Dockerfile
-    environment:
-      NODE_OPTIONS: "--max-old-space-size=150"
-      LOG_LEVEL: info
-      KAFKA_BROKERS: kafka:9092
-      KAFKA_LOG_LEVEL: INFO
-      KAFKA_CLIENT_ID: kafka-signup-updater
-      KAFKA_GROUP_ID: kafka-signup-updater
-      TOPIC_STARTING_OFFSET: earliest
-      SIGNUP_TOPIC: signup.events
-      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
-      SIGNUP_DB_USER: local_signup_updater_user
-      SIGNUP_DB_PASSWORD: local_signup_updater_user
-      SIGNUP_DB_HOST: postgres
-      SIGNUP_DB_PORT: "5432"
-      SIGNUP_DB_NAME: signup
-      SIGNUP_DB_SCHEMA: local_signup
-      SIGNUP_DB_USE_SSL: "false"
-      ORGANIZATION_PROCESS_ORION_URL: "http://organization-process-orion:3000"
-      ORGANIZATION_PROCESS_LYNX_URL: "http://organization-process-lynx:3000"
-      COGNITO_USER_POOL_ID_ORION: "local-user-pool-id-for-tests"
-      COGNITO_USER_POOL_ID_LYNX: "local-user-pool-id-for-tests"
-      INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
-      INTERNAL_JWT_ISSUER: "local-knodia"
-      INTERNAL_JWT_KID: "alias/local-knodia-key"
-      INTERNAL_JWT_SECONDS_DURATION: "3600"
-      INTERNAL_JWT_SUBJECT: "signup-updater"
-      AWS_REGION: eu-south-1
-      AWS_ACCESS_KEY_ID: testawskey
-      AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
-      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-setup:
-        condition: service_completed_successfully
-      flyway-signup:
-        condition: service_completed_successfully
-      local-kms-setup:
-        condition: service_completed_successfully
-      local-cognito:
-        condition: service_started
-      organization-process-orion:
-        condition: service_started
-      organization-process-lynx:
-        condition: service_started
-
   agreement-readmodel-writer-orion:
     security_opt:
       - no-new-privileges:true
@@ -1844,6 +1784,66 @@ services:
       - -c
       - "while true; do node src/index.ts || true; sleep ${SIGNAL_HUB_CLEANUP_INTERVAL_SECONDS:-3600}; done"
     restart: unless-stopped
+
+  # ============================================================
+  # Signup
+  # ============================================================
+  signup-updater:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signup-updater
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-updater/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-signup-updater
+      KAFKA_GROUP_ID: kafka-signup-updater
+      TOPIC_STARTING_OFFSET: earliest
+      SIGNUP_TOPIC: signup.events
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+      SIGNUP_DB_USER: local_signup_updater_user
+      SIGNUP_DB_PASSWORD: local_signup_updater_user
+      SIGNUP_DB_HOST: postgres
+      SIGNUP_DB_PORT: "5432"
+      SIGNUP_DB_NAME: signup
+      SIGNUP_DB_SCHEMA: local_signup
+      SIGNUP_DB_USE_SSL: "false"
+      ORGANIZATION_PROCESS_ORION_URL: "http://organization-process-orion:3000"
+      ORGANIZATION_PROCESS_LYNX_URL: "http://organization-process-lynx:3000"
+      COGNITO_USER_POOL_ID_ORION: "local-user-pool-id-for-tests"
+      COGNITO_USER_POOL_ID_LYNX: "local-user-pool-id-for-tests"
+      INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
+      INTERNAL_JWT_ISSUER: "local-knodia"
+      INTERNAL_JWT_KID: "alias/local-knodia-key"
+      INTERNAL_JWT_SECONDS_DURATION: "3600"
+      INTERNAL_JWT_SUBJECT: "signup-updater"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-setup:
+        condition: service_completed_successfully
+      flyway-signup:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+      local-cognito:
+        condition: service_started
+      organization-process-orion:
+        condition: service_started
+      organization-process-lynx:
+        condition: service_started
 
   # ============================================================
   # Frontends
