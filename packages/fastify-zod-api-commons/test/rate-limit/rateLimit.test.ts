@@ -2,6 +2,7 @@ import { requestContext } from "@fastify/request-context";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { getTestUISessionTokenClaims } from "@knodia/test-commons/auth";
 import { createTestLogger } from "@knodia/test-commons/utils";
+import { RateLimiterRedis, type RateLimiterRes } from "rate-limiter-flexible";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -182,6 +183,35 @@ describe("initRedisRateLimiter", () => {
       resetMs: buildRateLimiterConfig().rateLimiterTimeWindowSeconds * 1_000,
     });
     expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it("fails open when a connected Redis stalls past the consume timeout", async () => {
+    // A stalled-but-connected Redis (failover, slow Lua, moved slot while TCP
+    // stays up) never settles consume(), so only the Promise.race timeout can
+    // unblock the request. Mock the underlying consume to hang and give the
+    // limiter a short timeout so the race resolves quickly.
+    const stalledRateLimiter = buildRateLimiter(
+      buildRateLimiterConfig({ rateLimiterTimeoutSeconds: 0.1 }),
+    );
+    vi.spyOn(RateLimiterRedis.prototype, "consume").mockImplementation(
+      () => new Promise<RateLimiterRes>(() => undefined),
+    );
+    const warnSpy = vi.spyOn(testLogger, "warn");
+
+    const status = await stalledRateLimiter.consume(
+      freshOrganizationId(),
+      testLogger,
+    );
+    await stalledRateLimiter.disconnect();
+
+    expect(status).toEqual({
+      degraded: true,
+      limitReached: false,
+      maxRequests: MAX_REQUESTS,
+      remainingRequests: MAX_REQUESTS,
+      resetMs: buildRateLimiterConfig().rateLimiterTimeWindowSeconds * 1_000,
+    });
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("timed out"));
   });
 
   it("degrades after disconnect", async () => {

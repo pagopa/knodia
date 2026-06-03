@@ -152,12 +152,10 @@ export function buildAppFromConfig(
   // /auth/* is rate-limited inline inside authService, post-credential check.
   // /auth/logout intentionally bypasses rate limiting.
   app.register(healthRouter);
-  app.register(async (authScope) => {
-    authScope.register(authRouter, {
-      authCookieAllowedOrigins: config.authCookieAllowedOrigins,
-      authService,
-      cookieConfig: config.cookie,
-    });
+  app.register(authRouter, {
+    authCookieAllowedOrigins: config.authCookieAllowedOrigins,
+    authService,
+    cookieConfig: config.cookie,
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
