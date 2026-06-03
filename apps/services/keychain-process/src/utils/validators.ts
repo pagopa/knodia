@@ -126,7 +126,7 @@ export function assertUserIsMemberOfKeychain(
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   maxKeysPerKeychain: number,
   size: number,
 ): void => {
@@ -140,16 +140,21 @@ export async function assertKeyIsUnique(
   keychainKeys: { kid: KeyId }[],
   readmodelService: ReadmodelService,
 ) {
-  const [consumerKeychainKeyExists, knodeApiKeychainKeyExists] =
-    await Promise.all([
-      readmodelService.checkConsumerKeychainKeyExists(kid),
-      readmodelService.checkKnodeApiKeychainKeyExists(kid),
-    ]);
+  const [
+    consumerKeychainKeyExists,
+    knodeApiKeychainKeyExists,
+    producerKeychainKeyExists,
+  ] = await Promise.all([
+    readmodelService.checkConsumerKeychainKeyExists(kid),
+    readmodelService.checkKnodeApiKeychainKeyExists(kid),
+    readmodelService.checkProducerKeychainKeyExists(kid),
+  ]);
 
   const alreadyExists =
     keychainKeys.some((key) => key.kid === kid) ||
     consumerKeychainKeyExists ||
-    knodeApiKeychainKeyExists;
+    knodeApiKeychainKeyExists ||
+    producerKeychainKeyExists;
 
   if (alreadyExists) {
     throw keyAlreadyExists(kid);

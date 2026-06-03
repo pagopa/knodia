@@ -114,6 +114,8 @@ export async function handleKeychainEvent(
           "ProducerKeychainUpdatedV1",
           "ProducerKeychainMemberAddedV1",
           "ProducerKeychainMemberRemovedV1",
+          "ProducerKeychainKeyAddedV1",
+          "ProducerKeychainKeyRemovedV1",
         ),
       },
       async (msg) => {
