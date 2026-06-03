@@ -8,8 +8,8 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mockup 04 Company Digital Domicile (Receive data) - Lynx"}'::jsonb,
-  '{"en": "Cross-Border Receive data E-Service that allows forwarding the digital domicile of a legal entity. The signature is ACK = sendDigitalContact(legal_entity, contact_point). The Producer publishes pre-filled lawfulness-of-processing forms for the Consumer to choose from when creating a Purpose."}'::jsonb,
+  '{"en": "Mockup 04 Citizen Survey Submission (Receive data) - Lynx"}'::jsonb,
+  '{"en": "Cross-Border Receive data E-Service that collects survey submissions from citizens; the Producer publishes pre-filled lawfulness-of-processing forms for the Consumer to choose from when creating a Purpose."}'::jsonb,
   'ReceiveData',
   true, false,
   0, now(), now()
@@ -90,7 +90,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
   eservice_id, scheme, code, metadata_version
 ) VALUES (
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  'vc_example_eservice_categories', 'organization.private_company.digital_domicile',
+  'vc_example_eservice_categories', 'citizen.statistics.survey_submission',
   0
 );
 
@@ -103,7 +103,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_prefill" (
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
   '{"en": "Public interest task"}'::jsonb,
   '{"en": "Pre-filled lawfulness for processing personal data in the exercise of a public interest task under Art. 6(1)(e) GDPR."}'::jsonb,
-  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Forwarding the digital domicile of legal entities to the Producer for cross-border communication.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["PUBLIC_INTEREST"],"legalBasisPublicInterest":"PUBLIC_INTEREST_TASK","publicInterestTaskText":"Public registry of company digital domiciles maintained for cross-border administrative communication, as mandated by national legislation.","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
+  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Citizen survey collection for statistical reporting.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["PUBLIC_INTEREST"],"legalBasisPublicInterest":"PUBLIC_INTEREST_TASK","publicInterestTaskText":"National statistical surveys mandated by national legislation on official statistics.","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
@@ -122,7 +122,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_prefill" (
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
   '{"en": "Legal obligation"}'::jsonb,
   '{"en": "Pre-filled lawfulness for processing personal data to comply with a legal obligation under Art. 6(1)(c) GDPR."}'::jsonb,
-  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Forwarding the digital domicile of legal entities to comply with mandatory registry updates.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Italian Digital Administration Code, art. 6-bis D.Lgs. 82/2005 (registry of certified electronic addresses).","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
+  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Citizen survey collection required by statutory reporting obligations.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Italian National Statistics Act, art. 7 D.Lgs. 322/1989.","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
