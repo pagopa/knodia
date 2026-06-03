@@ -1,7 +1,7 @@
 import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
-import { SignupUser } from "../src/signupUser.ts";
+import { SignupUser, type SignupUserStatus } from "../src/signupUser.ts";
 
 const baseRecord = {
   createdAt: new Date("2026-05-28T10:00:00Z"),
@@ -16,7 +16,7 @@ const baseRecord = {
   name: "Mario",
   signupUserId: generateId<SignupUserId>(),
   spidCode: "SPID-XYZ-1",
-  status: "ACTIVE" as const,
+  status: "Active" as SignupUserStatus,
   updatedAt: new Date("2026-05-28T10:00:00Z"),
 };
 

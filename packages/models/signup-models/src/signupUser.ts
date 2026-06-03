@@ -1,8 +1,7 @@
 import { SignupUserId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
-/** @knipignore */
-export const SignupUserStatus = z.enum(["ACTIVE", "SUSPENDED"]);
+export const SignupUserStatus = z.enum(["Active", "Suspended"]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
 const SignupGeneratedEntitiesPerKnode = z.strictObject({

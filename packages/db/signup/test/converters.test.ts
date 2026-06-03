@@ -20,7 +20,7 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     personIdentifier: null,
     signupUserId: generateId<SignupUserId>(),
     spidCode: "SPID-XYZ-1",
-    status: "ACTIVE",
+    status: "Active",
     updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };
