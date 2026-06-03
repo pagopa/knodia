@@ -10,7 +10,7 @@ import type {
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
-  PurposeFormPrefill,
+  PurposeFormOptions,
   ReceiveDataConfig,
 } from "./eservice.ts";
 
@@ -22,7 +22,7 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
-  type PurposeFormPrefillV1,
+  type PurposeFormOptionsV1,
   PurposeFormSchemaVersionV1,
   type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
@@ -85,13 +85,13 @@ const toPurposeFormSchemaVersionV1 = (
     .with("1.0", () => PurposeFormSchemaVersionV1.V1_0)
     .exhaustive();
 
-const toPurposeFormPrefillV1 = (
-  purposeFormPrefill: PurposeFormPrefill,
-): PurposeFormPrefillV1 => ({
-  ...purposeFormPrefill,
-  formAnswersJson: JSON.stringify(purposeFormPrefill.formAnswersJson),
+const toPurposeFormOptionsV1 = (
+  purposeFormOptions: PurposeFormOptions,
+): PurposeFormOptionsV1 => ({
+  ...purposeFormOptions,
+  formAnswersJson: JSON.stringify(purposeFormOptions.formAnswersJson),
   formSchemaVersion: toPurposeFormSchemaVersionV1(
-    purposeFormPrefill.formSchemaVersion,
+    purposeFormOptions.formSchemaVersion,
   ),
 });
 
@@ -99,8 +99,8 @@ const toReceiveDataConfigV1 = (
   receiveDataConfig: ReceiveDataConfig,
 ): ReceiveDataConfigV1 => ({
   ...receiveDataConfig,
-  purposeFormPrefills: receiveDataConfig.purposeFormPrefills.map(
-    toPurposeFormPrefillV1,
+  purposeFormOptions: receiveDataConfig.purposeFormOptions.map(
+    toPurposeFormOptionsV1,
   ),
 });
 

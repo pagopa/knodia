@@ -11,7 +11,7 @@ export type IDS =
   | KnodeApiKeychainId
   | OrganizationId
   | ProducerKeychainId
-  | PurposeFormPrefillId
+  | PurposeFormOptionsId
   | PurposeId
   | PurposeTemplateId;
 
@@ -42,8 +42,8 @@ export type KnodeApiKeychainId = z.infer<typeof KnodeApiKeychainId>;
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;
 
-export const PurposeFormPrefillId = z.uuid().brand<"PurposeFormPrefillId">();
-export type PurposeFormPrefillId = z.infer<typeof PurposeFormPrefillId>;
+export const PurposeFormOptionsId = z.uuid().brand<"PurposeFormOptionsId">();
+export type PurposeFormOptionsId = z.infer<typeof PurposeFormOptionsId>;
 
 export const EserviceTemplateId = z.uuid().brand<"EserviceTemplateId">();
 export type EserviceTemplateId = z.infer<typeof EserviceTemplateId>;

@@ -199,8 +199,8 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
   ],
 );
 
-export const readmodelEservicePurposeFormPrefill = eserviceSchema.table(
-  "eservice_purpose_form_prefill",
+export const readmodelEservicePurposeFormOptions = eserviceSchema.table(
+  "eservice_purpose_form_options",
   {
     description: jsonb().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
@@ -214,12 +214,12 @@ export const readmodelEservicePurposeFormPrefill = eserviceSchema.table(
     foreignKey({
       columns: [table.eserviceId],
       foreignColumns: [readmodelEservice.id],
-      name: "eservice_purpose_form_prefill_eservice_id_eservice_id_fk",
+      name: "eservice_purpose_form_options_eservice_id_eservice_id_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_purpose_form_prefill_eservice_id_metadata_v_fkey",
+      name: "eservice_purpose_form_options_eservice_id_metadata_v_fkey",
     }),
   ],
 );
@@ -233,13 +233,13 @@ export type EserviceInterfaceSQL = InferSelectModel<
 export interface EserviceItemsSQL {
   eserviceCategoriesSQL: EserviceCategorySQL[];
   eserviceInterfacesSQL: EserviceInterfaceSQL[];
-  eservicePurposeFormPrefillsSQL: EservicePurposeFormPrefillSQL[];
+  eservicePurposeFormOptionsSQL: EservicePurposeFormOptionsSQL[];
   eserviceSQL: EserviceSQL;
   eserviceVersionRequiredAttributesSQL: EserviceVersionRequiredAttributeSQL[];
   eserviceVersionsSQL: EserviceVersionSQL[];
 }
-export type EservicePurposeFormPrefillSQL = InferSelectModel<
-  typeof readmodelEservicePurposeFormPrefill
+export type EservicePurposeFormOptionsSQL = InferSelectModel<
+  typeof readmodelEservicePurposeFormOptions
 >;
 export type EserviceSQL = InferSelectModel<typeof readmodelEservice>;
 export type EserviceVersionRequiredAttributeSQL = InferSelectModel<
@@ -254,8 +254,8 @@ export type NewReadmodelEserviceCategory =
   typeof readmodelEserviceCategory.$inferInsert;
 export type NewReadmodelEserviceInterface =
   typeof readmodelEserviceInterface.$inferInsert;
-export type NewReadmodelEservicePurposeFormPrefill =
-  typeof readmodelEservicePurposeFormPrefill.$inferInsert;
+export type NewReadmodelEservicePurposeFormOptions =
+  typeof readmodelEservicePurposeFormOptions.$inferInsert;
 export type NewReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferInsert;
 
@@ -267,8 +267,8 @@ export type ReadmodelEserviceCategory =
   typeof readmodelEserviceCategory.$inferSelect;
 export type ReadmodelEserviceInterface =
   typeof readmodelEserviceInterface.$inferSelect;
-export type ReadmodelEservicePurposeFormPrefill =
-  typeof readmodelEservicePurposeFormPrefill.$inferSelect;
+export type ReadmodelEservicePurposeFormOptions =
+  typeof readmodelEservicePurposeFormOptions.$inferSelect;
 export type ReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferSelect;
 export type ReadmodelEserviceVersionRequiredAttribute =

@@ -16,7 +16,7 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
-  type PurposeFormPrefill,
+  type PurposeFormOptions,
   type ReceiveDataConfig,
 } from "./eservice.ts";
 import {
@@ -27,7 +27,7 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
-  type PurposeFormPrefillV1,
+  type PurposeFormOptionsV1,
   PurposeFormSchemaVersionV1,
   type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
@@ -57,16 +57,16 @@ const fromReceiveDataConfigV1 = (
   input: ReceiveDataConfigV1,
 ): ReceiveDataConfig => ({
   ...input,
-  purposeFormPrefills: input.purposeFormPrefills.map(fromPurposeFormPrefillV1),
+  purposeFormOptions: input.purposeFormOptions.map(fromPurposeFormOptionsV1),
 });
 
-const fromPurposeFormPrefillV1 = (
-  input: PurposeFormPrefillV1,
-): PurposeFormPrefill => {
-  assertRequired(input.name, "PurposeFormPrefill name is undefined");
+const fromPurposeFormOptionsV1 = (
+  input: PurposeFormOptionsV1,
+): PurposeFormOptions => {
+  assertRequired(input.name, "PurposeFormOptions name is undefined");
   assertRequired(
     input.description,
-    "PurposeFormPrefill description is undefined",
+    "PurposeFormOptions description is undefined",
   );
 
   return {

@@ -175,10 +175,10 @@ export interface EserviceV1 {
 }
 
 export interface ReceiveDataConfigV1 {
-  purposeFormPrefills: PurposeFormPrefillV1[];
+  purposeFormOptions: PurposeFormOptionsV1[];
 }
 
-export interface PurposeFormPrefillV1 {
+export interface PurposeFormOptionsV1 {
   id: string;
   name: LocalizedTextV1 | undefined;
   description: LocalizedTextV1 | undefined;
@@ -520,13 +520,13 @@ export const EserviceV1: MessageFns<EserviceV1> = {
 };
 
 function createBaseReceiveDataConfigV1(): ReceiveDataConfigV1 {
-  return { purposeFormPrefills: [] };
+  return { purposeFormOptions: [] };
 }
 
 export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
   encode(message: ReceiveDataConfigV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.purposeFormPrefills) {
-      PurposeFormPrefillV1.encode(v!, writer.uint32(10).fork()).join();
+    for (const v of message.purposeFormOptions) {
+      PurposeFormOptionsV1.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -543,7 +543,7 @@ export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
             break;
           }
 
-          message.purposeFormPrefills.push(PurposeFormPrefillV1.decode(reader, reader.uint32()));
+          message.purposeFormOptions.push(PurposeFormOptionsV1.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -557,16 +557,16 @@ export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
 
   fromJSON(object: any): ReceiveDataConfigV1 {
     return {
-      purposeFormPrefills: globalThis.Array.isArray(object?.purposeFormPrefills)
-        ? object.purposeFormPrefills.map((e: any) => PurposeFormPrefillV1.fromJSON(e))
+      purposeFormOptions: globalThis.Array.isArray(object?.purposeFormOptions)
+        ? object.purposeFormOptions.map((e: any) => PurposeFormOptionsV1.fromJSON(e))
         : [],
     };
   },
 
   toJSON(message: ReceiveDataConfigV1): unknown {
     const obj: any = {};
-    if (message.purposeFormPrefills?.length) {
-      obj.purposeFormPrefills = message.purposeFormPrefills.map((e) => PurposeFormPrefillV1.toJSON(e));
+    if (message.purposeFormOptions?.length) {
+      obj.purposeFormOptions = message.purposeFormOptions.map((e) => PurposeFormOptionsV1.toJSON(e));
     }
     return obj;
   },
@@ -576,17 +576,17 @@ export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiveDataConfigV1>, I>>(object: I): ReceiveDataConfigV1 {
     const message = createBaseReceiveDataConfigV1();
-    message.purposeFormPrefills = object.purposeFormPrefills?.map((e) => PurposeFormPrefillV1.fromPartial(e)) || [];
+    message.purposeFormOptions = object.purposeFormOptions?.map((e) => PurposeFormOptionsV1.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBasePurposeFormPrefillV1(): PurposeFormPrefillV1 {
+function createBasePurposeFormOptionsV1(): PurposeFormOptionsV1 {
   return { id: "", name: undefined, description: undefined, formAnswersJson: "", formSchemaVersion: 0 };
 }
 
-export const PurposeFormPrefillV1: MessageFns<PurposeFormPrefillV1> = {
-  encode(message: PurposeFormPrefillV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const PurposeFormOptionsV1: MessageFns<PurposeFormOptionsV1> = {
+  encode(message: PurposeFormOptionsV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -605,10 +605,10 @@ export const PurposeFormPrefillV1: MessageFns<PurposeFormPrefillV1> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): PurposeFormPrefillV1 {
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeFormOptionsV1 {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePurposeFormPrefillV1();
+    const message = createBasePurposeFormOptionsV1();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -661,7 +661,7 @@ export const PurposeFormPrefillV1: MessageFns<PurposeFormPrefillV1> = {
     return message;
   },
 
-  fromJSON(object: any): PurposeFormPrefillV1 {
+  fromJSON(object: any): PurposeFormOptionsV1 {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
@@ -673,7 +673,7 @@ export const PurposeFormPrefillV1: MessageFns<PurposeFormPrefillV1> = {
     };
   },
 
-  toJSON(message: PurposeFormPrefillV1): unknown {
+  toJSON(message: PurposeFormOptionsV1): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -693,11 +693,11 @@ export const PurposeFormPrefillV1: MessageFns<PurposeFormPrefillV1> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PurposeFormPrefillV1>, I>>(base?: I): PurposeFormPrefillV1 {
-    return PurposeFormPrefillV1.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<PurposeFormOptionsV1>, I>>(base?: I): PurposeFormOptionsV1 {
+    return PurposeFormOptionsV1.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PurposeFormPrefillV1>, I>>(object: I): PurposeFormPrefillV1 {
-    const message = createBasePurposeFormPrefillV1();
+  fromPartial<I extends Exact<DeepPartial<PurposeFormOptionsV1>, I>>(object: I): PurposeFormOptionsV1 {
+    const message = createBasePurposeFormOptionsV1();
     message.id = object.id ?? "";
     message.name = (object.name !== undefined && object.name !== null)
       ? LocalizedTextV1.fromPartial(object.name)

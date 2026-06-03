@@ -20,7 +20,7 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
-  readmodelEservicePurposeFormPrefill,
+  readmodelEservicePurposeFormOptions,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
@@ -141,7 +141,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
               interface: readmodelEserviceInterface,
-              purposeFormPrefill: readmodelEservicePurposeFormPrefill,
+              purposeFormOptions: readmodelEservicePurposeFormOptions,
               requiredAttribute: readmodelEserviceVersionRequiredAttribute,
               version: readmodelEserviceVersion,
             })
@@ -179,9 +179,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               ),
             )
             .leftJoin(
-              readmodelEservicePurposeFormPrefill,
+              readmodelEservicePurposeFormOptions,
               eq(
-                readmodelEservicePurposeFormPrefill.eserviceId,
+                readmodelEservicePurposeFormOptions.eserviceId,
                 readmodelEservice.id,
               ),
             )
@@ -330,7 +330,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
               interface: readmodelEserviceInterface,
-              purposeFormPrefill: readmodelEservicePurposeFormPrefill,
+              purposeFormOptions: readmodelEservicePurposeFormOptions,
               requiredAttribute: readmodelEserviceVersionRequiredAttribute,
               version: readmodelEserviceVersion,
             })
@@ -368,9 +368,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               ),
             )
             .leftJoin(
-              readmodelEservicePurposeFormPrefill,
+              readmodelEservicePurposeFormOptions,
               eq(
-                readmodelEservicePurposeFormPrefill.eserviceId,
+                readmodelEservicePurposeFormOptions.eserviceId,
                 readmodelEservice.id,
               ),
             )

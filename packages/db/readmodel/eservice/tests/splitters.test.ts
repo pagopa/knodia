@@ -1,13 +1,13 @@
 import {
   getMockEservice,
-  getMockPurposeFormPrefill,
+  getMockPurposeFormOptions,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
-  EservicePurposeFormPrefillSQL,
+  EservicePurposeFormOptionsSQL,
   EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
@@ -112,45 +112,45 @@ describe("E-service Splitters", () => {
     );
   });
 
-  it("should split a ReceiveData E-service with purposeFormPrefills into SQL rows", () => {
+  it("should split a ReceiveData E-service with purposeFormOptions into SQL rows", () => {
     const metadataVersion = 1;
-    const purposeFormPrefills = [
-      getMockPurposeFormPrefill(0),
-      getMockPurposeFormPrefill(1),
+    const purposeFormOptions = [
+      getMockPurposeFormOptions(0),
+      getMockPurposeFormOptions(1),
     ];
-    const eservice = getMockEservice({ purposeFormPrefills });
+    const eservice = getMockEservice({ purposeFormOptions });
 
-    const { eservicePurposeFormPrefillsSQL } = splitEserviceIntoObjectsSQL(
+    const { eservicePurposeFormOptionsSQL } = splitEserviceIntoObjectsSQL(
       eservice,
       metadataVersion,
     );
 
-    const expectedPurposeFormPrefillsSQL: EservicePurposeFormPrefillSQL[] =
-      purposeFormPrefills.map((purposeFormPrefill) => ({
-        description: purposeFormPrefill.description,
+    const expectedPurposeFormOptionssSQL: EservicePurposeFormOptionsSQL[] =
+      purposeFormOptions.map((purposeFormOptions) => ({
+        description: purposeFormOptions.description,
         eserviceId: eservice.id,
-        formAnswersJson: purposeFormPrefill.formAnswersJson,
-        formSchemaVersion: purposeFormPrefill.formSchemaVersion,
-        id: purposeFormPrefill.id,
+        formAnswersJson: purposeFormOptions.formAnswersJson,
+        formSchemaVersion: purposeFormOptions.formSchemaVersion,
+        id: purposeFormOptions.id,
         metadataVersion,
-        name: purposeFormPrefill.name,
+        name: purposeFormOptions.name,
       }));
 
-    expect(eservicePurposeFormPrefillsSQL).toEqual(
-      expect.arrayContaining(expectedPurposeFormPrefillsSQL),
+    expect(eservicePurposeFormOptionsSQL).toEqual(
+      expect.arrayContaining(expectedPurposeFormOptionssSQL),
     );
-    expect(eservicePurposeFormPrefillsSQL).toHaveLength(2);
+    expect(eservicePurposeFormOptionsSQL).toHaveLength(2);
   });
 
-  it("should produce an empty purposeFormPrefills array for an E-service without receiveDataConfig", () => {
+  it("should produce an empty purposeFormOptions array for an E-service without receiveDataConfig", () => {
     const metadataVersion = 1;
     const eservice = getMockEservice();
 
-    const { eservicePurposeFormPrefillsSQL } = splitEserviceIntoObjectsSQL(
+    const { eservicePurposeFormOptionsSQL } = splitEserviceIntoObjectsSQL(
       eservice,
       metadataVersion,
     );
 
-    expect(eservicePurposeFormPrefillsSQL).toEqual([]);
+    expect(eservicePurposeFormOptionsSQL).toEqual([]);
   });
 });
