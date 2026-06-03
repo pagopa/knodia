@@ -1,13 +1,13 @@
 import {
   getMockEservice,
-  getMockPurposeFormOptions,
+  getMockPurposeFormOption,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
-  EservicePurposeFormOptionsSQL,
+  EservicePurposeFormOptionSQL,
   EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
@@ -115,17 +115,17 @@ describe("E-service Splitters", () => {
   it("should split a ReceiveData E-service with purposeFormOptions into SQL rows", () => {
     const metadataVersion = 1;
     const purposeFormOptions = [
-      getMockPurposeFormOptions(0),
-      getMockPurposeFormOptions(1),
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
     ];
     const eservice = getMockEservice({ purposeFormOptions });
 
-    const { eservicePurposeFormOptionsSQL } = splitEserviceIntoObjectsSQL(
+    const { eservicePurposeFormOptionSQL } = splitEserviceIntoObjectsSQL(
       eservice,
       metadataVersion,
     );
 
-    const expectedPurposeFormOptionssSQL: EservicePurposeFormOptionsSQL[] =
+    const expectedPurposeFormOptionsSQL: EservicePurposeFormOptionSQL[] =
       purposeFormOptions.map((purposeFormOptions) => ({
         description: purposeFormOptions.description,
         eserviceId: eservice.id,
@@ -136,21 +136,21 @@ describe("E-service Splitters", () => {
         name: purposeFormOptions.name,
       }));
 
-    expect(eservicePurposeFormOptionsSQL).toEqual(
-      expect.arrayContaining(expectedPurposeFormOptionssSQL),
+    expect(eservicePurposeFormOptionSQL).toEqual(
+      expect.arrayContaining(expectedPurposeFormOptionsSQL),
     );
-    expect(eservicePurposeFormOptionsSQL).toHaveLength(2);
+    expect(eservicePurposeFormOptionSQL).toHaveLength(2);
   });
 
   it("should produce an empty purposeFormOptions array for an E-service without receiveDataConfig", () => {
     const metadataVersion = 1;
     const eservice = getMockEservice();
 
-    const { eservicePurposeFormOptionsSQL } = splitEserviceIntoObjectsSQL(
+    const { eservicePurposeFormOptionSQL } = splitEserviceIntoObjectsSQL(
       eservice,
       metadataVersion,
     );
 
-    expect(eservicePurposeFormOptionsSQL).toEqual([]);
+    expect(eservicePurposeFormOptionSQL).toEqual([]);
   });
 });

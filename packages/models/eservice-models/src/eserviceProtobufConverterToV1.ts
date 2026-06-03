@@ -10,7 +10,7 @@ import type {
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
-  PurposeFormOptions,
+  PurposeFormOption,
   ReceiveDataConfig,
 } from "./eservice.ts";
 
@@ -22,7 +22,7 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
-  type PurposeFormOptionsV1,
+  type PurposeFormOptionV1,
   PurposeFormSchemaVersionV1,
   type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
@@ -85,9 +85,9 @@ const toPurposeFormSchemaVersionV1 = (
     .with("1.0", () => PurposeFormSchemaVersionV1.V1_0)
     .exhaustive();
 
-const toPurposeFormOptionsV1 = (
-  purposeFormOptions: PurposeFormOptions,
-): PurposeFormOptionsV1 => ({
+const toPurposeFormOptionV1 = (
+  purposeFormOptions: PurposeFormOption,
+): PurposeFormOptionV1 => ({
   ...purposeFormOptions,
   formAnswersJson: JSON.stringify(purposeFormOptions.formAnswersJson),
   formSchemaVersion: toPurposeFormSchemaVersionV1(
@@ -100,7 +100,7 @@ const toReceiveDataConfigV1 = (
 ): ReceiveDataConfigV1 => ({
   ...receiveDataConfig,
   purposeFormOptions: receiveDataConfig.purposeFormOptions.map(
-    toPurposeFormOptionsV1,
+    toPurposeFormOptionV1,
   ),
 });
 

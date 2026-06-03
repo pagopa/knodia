@@ -3,7 +3,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import { type Eservice } from "@knodia/eservice-models";
 import {
   getMockEservice,
-  getMockPurposeFormOptions,
+  getMockPurposeFormOption,
   toExpectEservice,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -83,8 +83,8 @@ describe("E-service Aggregators", () => {
 
   it("should preserve receiveDataConfig.purposeFormOptions in the split→aggregate roundtrip", () => {
     const purposeFormOptions = [
-      getMockPurposeFormOptions(0),
-      getMockPurposeFormOptions(1),
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
     ];
     const eservice: WithMetadata<Eservice> = {
       data: getMockEservice({ purposeFormOptions }),

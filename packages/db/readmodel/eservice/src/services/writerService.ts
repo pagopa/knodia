@@ -5,7 +5,7 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
-  readmodelEservicePurposeFormOptions,
+  readmodelEservicePurposeFormOption,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
@@ -42,7 +42,7 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
         const {
           eserviceCategoriesSQL,
           eserviceInterfacesSQL,
-          eservicePurposeFormOptionsSQL,
+          eservicePurposeFormOptionSQL,
           eserviceSQL,
           eserviceVersionRequiredAttributesSQL,
           eserviceVersionsSQL,
@@ -72,10 +72,10 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
             .values(eserviceVersionRequiredAttributesSQL);
         }
 
-        if (eservicePurposeFormOptionsSQL.length > 0) {
+        if (eservicePurposeFormOptionSQL.length > 0) {
           await tx
-            .insert(readmodelEservicePurposeFormOptions)
-            .values(eservicePurposeFormOptionsSQL);
+            .insert(readmodelEservicePurposeFormOption)
+            .values(eservicePurposeFormOptionSQL);
         }
       });
     },

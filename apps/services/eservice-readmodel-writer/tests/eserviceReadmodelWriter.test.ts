@@ -11,7 +11,7 @@ import {
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockEservice,
-  getMockPurposeFormOptions,
+  getMockPurposeFormOption,
   toExpectEservice,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -180,8 +180,8 @@ describe("E-service read model writer tests", async () => {
 
   it("EserviceUpdatedV1 — preserves receiveDataConfig.purposeFormOptions", async () => {
     const purposeFormOptions = [
-      getMockPurposeFormOptions(0),
-      getMockPurposeFormOptions(1),
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
     ];
     const eservice = getMockEservice({ purposeFormOptions });
 
