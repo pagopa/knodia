@@ -20,7 +20,6 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
-  readmodelEservicePurposeFormOptions,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
@@ -135,15 +134,12 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
+        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
-              interface: readmodelEserviceInterface,
-              purposeFormOptions: readmodelEservicePurposeFormOptions,
-              requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
             .innerJoin(
@@ -153,37 +149,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
-            )
-            .leftJoin(
-              readmodelEserviceVersion,
-              eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
-            )
-            .leftJoin(
-              readmodelEserviceInterface,
-              eq(
-                readmodelEserviceInterface.eserviceVersionId,
-                readmodelEserviceVersion.id,
-              ),
-            )
-            .leftJoin(
-              readmodelEserviceVersionRequiredAttribute,
-              and(
-                eq(
-                  readmodelEserviceVersionRequiredAttribute.eserviceId,
-                  readmodelEserviceVersion.eserviceId,
-                ),
-                eq(
-                  readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
-                  readmodelEserviceVersion.id,
-                ),
-              ),
-            )
-            .leftJoin(
-              readmodelEservicePurposeFormOptions,
-              eq(
-                readmodelEservicePurposeFormOptions.eserviceId,
-                readmodelEservice.id,
-              ),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
@@ -324,15 +289,12 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
+        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
-              interface: readmodelEserviceInterface,
-              purposeFormOptions: readmodelEservicePurposeFormOptions,
-              requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
             .innerJoin(
@@ -342,37 +304,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
-            )
-            .leftJoin(
-              readmodelEserviceVersion,
-              eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
-            )
-            .leftJoin(
-              readmodelEserviceInterface,
-              eq(
-                readmodelEserviceInterface.eserviceVersionId,
-                readmodelEserviceVersion.id,
-              ),
-            )
-            .leftJoin(
-              readmodelEserviceVersionRequiredAttribute,
-              and(
-                eq(
-                  readmodelEserviceVersionRequiredAttribute.eserviceId,
-                  readmodelEserviceVersion.eserviceId,
-                ),
-                eq(
-                  readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
-                  readmodelEserviceVersion.id,
-                ),
-              ),
-            )
-            .leftJoin(
-              readmodelEservicePurposeFormOptions,
-              eq(
-                readmodelEservicePurposeFormOptions.eserviceId,
-                readmodelEservice.id,
-              ),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
