@@ -33,7 +33,6 @@ import { protectedSignupRouter, signupRouter } from "./routers/signupRouter.ts";
 import { signupEventProducerBuilder } from "./services/signupEventProducer.ts";
 import { signupServiceBuilder } from "./services/signupService.ts";
 
-/** @knipignore */
 export function buildApp({
   config,
   kafkaProducer,

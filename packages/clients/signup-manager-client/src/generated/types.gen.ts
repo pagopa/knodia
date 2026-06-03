@@ -37,6 +37,10 @@ export type SessionResponse = {
     uiSignupSessionToken: string;
 };
 
+export type ConfirmOnboardingRequestBody = {
+    email: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -91,3 +95,46 @@ export type ExchangeOidcCodeResponses = {
 };
 
 export type ExchangeOidcCodeResponse = ExchangeOidcCodeResponses[keyof ExchangeOidcCodeResponses];
+
+export type ConfirmOnboardingData = {
+    body: ConfirmOnboardingRequestBody;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/onboarding/confirm';
+};
+
+export type ConfirmOnboardingErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ConfirmOnboardingError = ConfirmOnboardingErrors[keyof ConfirmOnboardingErrors];
+
+export type ConfirmOnboardingResponses = {
+    /**
+     * Onboarding confirmed successfully
+     */
+    204: void;
+};
+
+export type ConfirmOnboardingResponse = ConfirmOnboardingResponses[keyof ConfirmOnboardingResponses];
