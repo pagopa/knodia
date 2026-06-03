@@ -250,13 +250,13 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: No natural person found for the Codice Fiscale, or the person
-            exists but has no residence in the current period
+          description: No natural person found for the Codice Fiscale, or no residence
+            address found for that person
           content:
             application/problem+json:
               schema:
-                description: No natural person found for the Codice Fiscale, or the person
-                  exists but has no residence in the current period
+                description: No natural person found for the Codice Fiscale, or no residence
+                  address found for that person
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /pseudonymization:

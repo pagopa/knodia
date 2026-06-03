@@ -20,7 +20,7 @@ params:query {
 }
 
 headers {
-  Authorization: {{knode-api-jwt}}
+  Authorization: Bearer {{knode-api-token}}
 }
 
 script:pre-request {
@@ -34,9 +34,9 @@ script:pre-request {
 script:post-response {
   if (res.status === 401) {
     throw new Error(
-      "Pull Signals returned 401: the Knode API token (knode-api-jwt) is missing, malformed, or expired.\n" +
+      "Pull Signals returned 401: the Knode API token (knode-api-token) is missing, malformed, or expired.\n" +
       "Get one by running the knode-api-token-flow — it signs a Knode API client assertion and exchanges it at the authorization server /knodeApiToken endpoint (see collections/flows/knode-api-token-flow/README.md).\n" +
-      "Then provide it here: set KNODE_API_JWT in collections/.env, or pass --env-var knode-api-jwt='Bearer <token>'."
+      "Then provide it here: set KNODE_API_JWT in collections/.env, or pass --env-var knode-api-token='<token>'."
     )
   }
   if (res.status === 403) {
