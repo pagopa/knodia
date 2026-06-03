@@ -91,7 +91,11 @@ export function callerOrganizationIdFromAuthData(
     .with({ tokenType: "ui-session" }, (a) => a.organizationId)
     .with({ tokenType: "external-ui-session" }, (a) => a.consumer.id)
     .with({ tokenType: "knode-api" }, (a) => a.organization.id)
-    .with({ tokenType: "ui-signup-session" }, () => undefined)
+    .with(
+      { tokenType: "ui-signup-session" },
+      // TODO: This will be handled when we add rate-limiting to signup
+      () => undefined,
+    )
     .with({ tokenType: "internal" }, () => undefined)
     .exhaustive();
 }
