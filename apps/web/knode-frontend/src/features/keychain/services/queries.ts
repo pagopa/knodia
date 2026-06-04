@@ -26,6 +26,7 @@ import {
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
   getProducerKeychainDetailsOptions,
+  getProducerKeychainEservicesOptions,
   getProducerKeychainKeysOptions,
   getProducerKeychainKeysQueryKey,
   getProducerKeychainMembershipOptions,
@@ -42,6 +43,7 @@ const KEYCHAINS_PAGE_LIMIT = 10;
 const KEYS_PAGE_LIMIT = 50;
 const MEMBERS_PAGE_LIMIT = 50;
 const PURPOSES_PAGE_LIMIT = 10;
+const ESERVICES_PAGE_LIMIT = 5;
 
 export const consumerKeychainsQuery = (offset: number) =>
   getConsumerKeychainsOptions({
@@ -180,6 +182,16 @@ export const consumerKeychainPurposesQuery = (
     client,
     path: { consumerKeychainId },
     query: { limit: PURPOSES_PAGE_LIMIT, offset },
+  });
+
+export const producerKeychainEservicesQuery = (
+  producerKeychainId: ProducerKeychainId,
+  offset: number,
+) =>
+  getProducerKeychainEservicesOptions({
+    client,
+    path: { producerKeychainId },
+    query: { limit: ESERVICES_PAGE_LIMIT, offset },
   });
 
 export const consumerKeychainsQueryKey = () =>
