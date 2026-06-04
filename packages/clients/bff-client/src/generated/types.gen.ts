@@ -1807,7 +1807,7 @@ export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyRespons
 export type RemoveConsumerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -1847,7 +1847,7 @@ export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyRespons
 export type DownloadConsumerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -2762,7 +2762,7 @@ export type UploadKnodeApiKeychainKeyResponse = UploadKnodeApiKeychainKeyRespons
 export type RemoveKnodeApiKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         knodeApiKeychainId: string;
     };
     query?: never;
@@ -2802,7 +2802,7 @@ export type RemoveKnodeApiKeychainKeyResponse = RemoveKnodeApiKeychainKeyRespons
 export type DownloadKnodeApiKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         knodeApiKeychainId: string;
     };
     query?: never;

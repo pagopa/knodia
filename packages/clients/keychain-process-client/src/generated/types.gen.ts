@@ -553,7 +553,7 @@ export type RemoveConsumerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -599,7 +599,7 @@ export type GetConsumerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         consumerKeychainId: string;
     };
     query?: never;
@@ -1270,7 +1270,7 @@ export type RemoveKnodeApiKeychainKeyData = {
     };
     path: {
         knodeApiKeychainId: string;
-        keyId: string;
+        keyId: KeyId;
     };
     query?: never;
     url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
@@ -1316,7 +1316,7 @@ export type GetKnodeApiKeychainKeyData = {
     };
     path: {
         knodeApiKeychainId: string;
-        keyId: string;
+        keyId: KeyId;
     };
     query?: never;
     url: '/knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}';
@@ -2191,7 +2191,7 @@ export type RemoveProducerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         producerKeychainId: string;
     };
     query?: never;
@@ -2237,7 +2237,7 @@ export type GetProducerKeychainKeyData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
-        keyId: string;
+        keyId: KeyId;
         producerKeychainId: string;
     };
     query?: never;

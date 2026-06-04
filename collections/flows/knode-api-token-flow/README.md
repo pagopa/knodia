@@ -27,8 +27,9 @@ pnpm generate-client-assertion \
 ```
 
 It writes `KNODE_API_CLIENT_ASSERTION_JWT` to `collections/.env`. Step 5
-picks it up and calls `/knodeApiToken`; on success the response
-`access_token` is stashed as a Bruno var.
+picks it up and calls `/knodeApiToken`; on success the response token is
+stashed as the `knode-api-token` Bruno var (raw token; downstream requests add
+`Bearer ` inline via `Authorization: Bearer {{knode-api-token}}`).
 
 If step 5 fails (or any step 1–4 hits 409 "kid already exists") the
 bru file prints the exact command to run.

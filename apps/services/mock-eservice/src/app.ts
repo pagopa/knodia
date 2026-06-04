@@ -25,6 +25,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
+import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
@@ -59,16 +60,9 @@ export function buildApp({
     expectedIssuer,
     jwtClockToleranceSeconds,
     knodeId,
-    signalHubSeedExpireSeconds,
-    signalHubSeedSaltLength,
-    signalHubSeedStartDateMs,
   } = config;
 
-  const seedConfig = {
-    expireSeconds: signalHubSeedExpireSeconds,
-    saltLength: signalHubSeedSaltLength,
-    startDateMs: signalHubSeedStartDateMs,
-  };
+  const seedConfig = toSignalHubSeedConfig(config);
 
   const dpopProofStore = createJtiReplayStore(
     dynamoDbDpopProofsTable,
@@ -187,20 +181,9 @@ function buildBearerSignalHubApp({
   config: MockEserviceConfig;
   jwksResolvers: JWTVerifyGetKey[];
 }) {
-  const {
-    acceptedAudiences,
-    expectedIssuer,
-    knodeId,
-    signalHubSeedExpireSeconds,
-    signalHubSeedSaltLength,
-    signalHubSeedStartDateMs,
-  } = config;
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
 
-  const seedConfig = {
-    expireSeconds: signalHubSeedExpireSeconds,
-    saltLength: signalHubSeedSaltLength,
-    startDateMs: signalHubSeedStartDateMs,
-  };
+  const seedConfig = toSignalHubSeedConfig(config);
 
   const app = createMockFastifyApp(
     config,
