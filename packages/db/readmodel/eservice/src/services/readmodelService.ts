@@ -23,6 +23,7 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
+  readmodelEservicePurposeFormOption,
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
@@ -39,6 +40,7 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           category: readmodelEserviceCategory,
           eservice: readmodelEservice,
           interface: readmodelEserviceInterface,
+          purposeFormOptions: readmodelEservicePurposeFormOption,
           requiredAttribute: readmodelEserviceVersionRequiredAttribute,
           version: readmodelEserviceVersion,
         })
@@ -69,6 +71,13 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
               readmodelEserviceVersion.id,
             ),
+          ),
+        )
+        .leftJoin(
+          readmodelEservicePurposeFormOption,
+          eq(
+            readmodelEservicePurposeFormOption.eserviceId,
+            readmodelEservice.id,
           ),
         )
         .where(filters);

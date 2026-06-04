@@ -6,8 +6,13 @@ import {
   type EserviceTemplateId,
   EserviceVersionId,
   OrganizationId,
+  PurposeFormOptionId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
+import {
+  PurposeFormAnswers,
+  PurposeFormSchemaVersion,
+} from "@knodia/purpose-models";
 import z from "zod";
 
 const INT32_MAX = 2_147_483_647;
@@ -81,6 +86,20 @@ export const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
+export const PurposeFormOption = z.strictObject({
+  description: LocalizedDescription,
+  formAnswersJson: PurposeFormAnswers,
+  formSchemaVersion: PurposeFormSchemaVersion,
+  id: PurposeFormOptionId,
+  name: LocalizedName,
+});
+export type PurposeFormOption = z.infer<typeof PurposeFormOption>;
+
+export const ReceiveDataConfig = z.strictObject({
+  purposeFormOptions: z.array(PurposeFormOption).min(1),
+});
+export type ReceiveDataConfig = z.infer<typeof ReceiveDataConfig>;
+
 export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
@@ -91,6 +110,7 @@ export const Eservice = z.strictObject({
   mode: EserviceMode,
   name: LocalizedName,
   producerId: OrganizationId,
+  receiveDataConfig: ReceiveDataConfig.optional(),
   template: ExternalResource<EserviceTemplateId>().optional(), // present only if the eservice is created from a template
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),
