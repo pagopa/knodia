@@ -99,6 +99,40 @@ export type API_GetEserviceDetailsQueryParams = z.infer<
   typeof API_GetEserviceDetailsQueryParams
 >;
 
+export const API_GetEservicePurposeFormOptionsQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetEservicePurposeFormOptionsQueryParams = z.infer<
+  typeof API_GetEservicePurposeFormOptionsQueryParams
+>;
+
+const API_PurposeFormSchemaVersionRef = z.string().meta({
+  description:
+    'Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")',
+});
+
+const API_PurposeFormOptionAnswers = z.record(z.string(), z.unknown()).meta({
+  description: "Key-value pairs of answers to the Purpose form",
+});
+
+const API_PurposeFormOption = z
+  .strictObject({
+    description: z.strictObject({ en: z.string() }),
+    formAnswersJson: API_PurposeFormOptionAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersionRef,
+    id: z.uuid(),
+    name: z.strictObject({ en: z.string() }),
+  })
+  .meta({ id: "PurposeFormOption" });
+type API_PurposeFormOption = z.infer<typeof API_PurposeFormOption>;
+
+export const API_PurposeFormOptions = z
+  .strictObject({
+    items: z.array(API_PurposeFormOption),
+  })
+  .meta({ id: "PurposeFormOptions" });
+export type API_PurposeFormOptions = z.infer<typeof API_PurposeFormOptions>;
+
 const API_EserviceVersionDetails = z
   .strictObject({
     accessTokenAudience: z.array(z.string()),

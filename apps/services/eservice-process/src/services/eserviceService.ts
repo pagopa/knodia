@@ -25,6 +25,7 @@ import {
   type EserviceInterface,
   type EserviceVersion,
   EserviceVersionState,
+  type PurposeFormOption,
 } from "@knodia/eservice-models";
 import { getEserviceTemplate } from "@knodia/eservice-template-models";
 
@@ -255,6 +256,21 @@ export function eserviceServiceBuilder(
         eserviceId,
         readmodelService,
       );
+    },
+    async getEservicePurposeFormOptions(
+      eserviceId: EserviceId,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<PurposeFormOption[]> {
+      logger.info(
+        `Getting purpose form options of E-service with ID ${eserviceId}`,
+      );
+
+      const { data: eservice } = await retrieveEservice(
+        eserviceId,
+        readmodelService,
+      );
+
+      return eservice.receiveDataConfig?.purposeFormOptions ?? [];
     },
 
     async getEservices(

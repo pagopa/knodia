@@ -24,11 +24,13 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
+  API_PurposeFormOptions,
 } from "../models/api.ts";
 import {
   toAPI_Eservice,
   toAPI_EserviceVersion,
   toAPI_EserviceVersionInterfaceDocument,
+  toAPI_PurposeFormOption,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -196,6 +198,43 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const options = await eserviceService.getEservicePurposeFormOptions(
+        unsafeBrandId(req.params.eserviceId),
+        ctx,
+      );
+
+      res.status(200).send({
+        items: options.map(toAPI_PurposeFormOption),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the list of PurposeFormOption entries (pre-filled form answers published by the Producer) for a ReceiveData E-service. Returns an empty list for E-services without receiveDataConfig.",
+      headers: KnodiaServiceHeaders,
+      operationId: "getEservicePurposeFormOptions",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_PurposeFormOptions.meta({
+          description: "PurposeFormOption list retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/purposeFormOptions",
   });
 
   fastify.route({

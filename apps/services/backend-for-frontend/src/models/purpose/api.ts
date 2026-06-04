@@ -3,7 +3,10 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import {
+  API_EserviceMode,
+  API_EserviceVersionState,
+} from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
@@ -12,6 +15,10 @@ import {
   API_LocalizedPurposeName,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
+  API_PurposeFormSchema,
+  API_PurposeFormTexts,
+  API_PurposeFormUiSchema,
+  API_PurposeFormUiTexts,
   API_PurposeState,
   API_PurposeTemplateReference,
 } from "@knodia/purpose-models/api";
@@ -20,22 +27,85 @@ import z from "zod";
 import { API_CompactAgreement } from "../agreement/api.ts";
 import { API_CompactEservice } from "../eservice/api.ts";
 
+const API_PurposeSeedBase = z.strictObject({
+  dailyCalls: API_PurposeDailyCalls,
+  description: API_LocalizedPurposeDescription,
+  eserviceId: z.uuid(),
+  knodeId: API_KnodeId,
+  name: API_LocalizedPurposeName,
+});
+
+const API_PurposeSeedForProvideData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ProvideData"]),
+  formAnswersJson: API_PurposeFormAnswers,
+  formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
+  template: API_PurposeTemplateReference.optional(),
+}).meta({ id: "PurposeSeedForProvideData" });
+
+const API_PurposeSeedForReceiveData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ReceiveData"]),
+  purposeFormOptionId: z.uuid().meta({
+    description:
+      "Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service",
+  }),
+}).meta({ id: "PurposeSeedForReceiveData" });
+
 export const API_PurposeSeed = z
-  .strictObject({
-    dailyCalls: API_PurposeDailyCalls,
-    description: API_LocalizedPurposeDescription,
-    eserviceId: z.uuid(),
-    formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
-    knodeId: API_KnodeId,
-    name: API_LocalizedPurposeName,
-    template: API_PurposeTemplateReference.optional(),
-  })
+  .discriminatedUnion("eserviceMode", [
+    API_PurposeSeedForProvideData,
+    API_PurposeSeedForReceiveData,
+  ])
   .meta({
-    description: "Seed data to create a new Purpose",
+    description:
+      "Seed data to create a new Purpose. The shape depends on the target E-service mode: in ProvideData the Consumer authors `formAnswersJson` against the current schema, in ReceiveData the Consumer picks one of the `PurposeFormOption` entries published by the Producer by `purposeFormOptionId`.",
+    discriminator: {
+      mapping: {
+        ProvideData: "#/components/schemas/PurposeSeedForProvideData",
+        ReceiveData: "#/components/schemas/PurposeSeedForReceiveData",
+      },
+      propertyName: "eserviceMode",
+    },
     id: "PurposeSeed",
   });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
+
+export const API_GetConsumerEservicePurposeFormOptionsQueryParams =
+  z.strictObject({
+    knodeId: API_KnodeId,
+  });
+export type API_GetConsumerEservicePurposeFormOptionsQueryParams = z.infer<
+  typeof API_GetConsumerEservicePurposeFormOptionsQueryParams
+>;
+
+const API_ConsumerPurposeFormOption = z
+  .strictObject({
+    description: API_LocalizedPurposeDescription,
+    formAnswersJson: API_PurposeFormAnswers,
+    id: z.uuid(),
+    name: API_LocalizedPurposeName,
+    schema: API_PurposeFormSchema,
+    texts: API_PurposeFormTexts,
+    uiSchema: API_PurposeFormUiSchema,
+    uiTexts: API_PurposeFormUiTexts,
+    version: API_ExternalPurposeFormSchemaVersion,
+  })
+  .meta({
+    description:
+      "Pre-filled PurposeFormOption enriched at runtime with the corresponding form schema, UI schema, legal texts and UI texts fetched from the Producer's purpose-process by formSchemaVersion",
+    id: "ConsumerPurposeFormOption",
+  });
+type API_ConsumerPurposeFormOption = z.infer<
+  typeof API_ConsumerPurposeFormOption
+>;
+
+export const API_ConsumerPurposeFormOptions = z
+  .strictObject({
+    items: z.array(API_ConsumerPurposeFormOption),
+  })
+  .meta({ id: "ConsumerPurposeFormOptions" });
+export type API_ConsumerPurposeFormOptions = z.infer<
+  typeof API_ConsumerPurposeFormOptions
+>;
 
 export const API_GetConsumerPurposeFormSchemaQueryParams = z.strictObject({
   knodeId: API_KnodeId,

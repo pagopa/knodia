@@ -215,9 +215,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       );
 
       const { data } = await remoteResourcesManagerApi.createPurpose({
-        // The BFF PurposeSeed only carries ProvideData fields today; the
-        // ReceiveData branch is added in a downstream PR (KN-75 stack).
-        body: { ...req.body, eserviceMode: "ProvideData" },
+        body: req.body,
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
@@ -227,7 +225,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_PurposeSeed,
-      description: "Create a new Purpose for an E-service",
+      description:
+        "Create a new Purpose for an E-service. The body is a discriminated union on `eserviceMode`: ProvideData carries `formAnswersJson` + `formSchemaVersion`, ReceiveData carries `purposeFormOptionId` referencing one of the Producer's pre-filled options.",
       operationId: "createConsumerPurpose",
       response: {
         201: API_CreatedResource.meta({

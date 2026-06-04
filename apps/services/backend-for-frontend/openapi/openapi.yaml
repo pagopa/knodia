@@ -1511,6 +1511,9 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
+    PurposeFormSchema:
+      type: object
+      additionalProperties: {}
     PurposeFormTexts:
       type: object
       properties:
@@ -1531,6 +1534,9 @@ components:
       required:
         - en
       additionalProperties: false
+    PurposeFormUiSchema:
+      type: object
+      additionalProperties: {}
     PurposeFormSchemasResponse:
       description: Current Purpose form schemas (JSON Schema + UI Schema + legal/UI
         texts) with their version identifier
@@ -1556,6 +1562,334 @@ components:
         - uiSchema
         - uiTexts
         - version
+      additionalProperties: false
+    PurposeSeedForProvideData:
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ProvideData
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+        template:
+          allOf:
+            - $ref: "#/components/schemas/PurposeTemplateReference"
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - knodeId
+        - name
+        - eserviceMode
+        - formAnswersJson
+        - formSchemaVersion
+      additionalProperties: false
+    PurposeSeedForReceiveData:
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ReceiveData
+        purposeFormOptionId:
+          description: Identifier of the PurposeFormOption (pre-filled set of form
+            answers) chosen by the Consumer among those published by the
+            Producer on the E-service
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - knodeId
+        - name
+        - eserviceMode
+        - purposeFormOptionId
+      additionalProperties: false
+    PurposeSeed:
+      description: "Seed data to create a new Purpose. The shape depends on the target
+        E-service mode: in ProvideData the Consumer authors `formAnswersJson`
+        against the current schema, in ReceiveData the Consumer picks one of the
+        `PurposeFormOption` entries published by the Producer by
+        `purposeFormOptionId`."
+      discriminator:
+        mapping:
+          ProvideData: "#/components/schemas/PurposeSeedForProvideData"
+          ReceiveData: "#/components/schemas/PurposeSeedForReceiveData"
+        propertyName: eserviceMode
+      oneOf:
+        - $ref: "#/components/schemas/PurposeSeedForProvideData"
+        - $ref: "#/components/schemas/PurposeSeedForReceiveData"
+    ConsumerPurposeFormOption:
+      description: Pre-filled PurposeFormOption enriched at runtime with the
+        corresponding form schema, UI schema, legal texts and UI texts fetched
+        from the Producer's purpose-process by formSchemaVersion
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        schema:
+          $ref: "#/components/schemas/PurposeFormSchema"
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
+        uiSchema:
+          $ref: "#/components/schemas/PurposeFormUiSchema"
+        uiTexts:
+          $ref: "#/components/schemas/PurposeFormUiTexts"
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - description
+        - formAnswersJson
+        - id
+        - name
+        - schema
+        - texts
+        - uiSchema
+        - uiTexts
+        - version
+      additionalProperties: false
+    ConsumerPurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerPurposeFormOption"
+      required:
+        - items
+      additionalProperties: false
+    ConsumerPurpose:
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Purpose has been recently updated
+          type: boolean
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        keychains:
+          description: Number of Consumer Keychains associated with this purpose
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - dailyCalls
+        - eservice
+        - hasRecentlyBeenUpdated
+        - id
+        - keychains
+        - name
+        - producer
+        - state
+        - updatedAt
+      additionalProperties: false
+    ConsumerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    ProducerPurpose:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Purpose has been recently updated
+          type: boolean
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - hasRecentlyBeenUpdated
+        - id
+        - name
+        - state
+        - updatedAt
+      additionalProperties: false
+    ProducerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducerPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    PurposeDetailsEservice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - id
+        - name
+        - latestVersionState
+      additionalProperties: false
+    PurposeDetails:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/CompactAgreement"
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/PurposeDetailsEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+        suspendedByConsumerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        suspendedByProducerAt:
+          nullable: true
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - agreement
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - id
+        - maxDailyCallsPerConsumer
+        - name
+        - producer
+        - state
+        - suspendedByConsumerAt
+        - suspendedByProducerAt
+        - updatedAt
       additionalProperties: false
     KeychainLocalizedName:
       description: Name of the Keychain
@@ -2013,229 +2347,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/PurposeTemplate"
-    PurposeSeed:
-      description: Seed data to create a new Purpose
-      type: object
-      properties:
-        dailyCalls:
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 1000000000
-        description:
-          $ref: "#/components/schemas/LocalizedPurposeDescription"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        formAnswersJson:
-          $ref: "#/components/schemas/PurposeFormAnswers"
-        formSchemaVersion:
-          description: Version identifier for the Purpose form schema provided by the
-            target Knode
-          type: string
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
-        template:
-          allOf:
-            - $ref: "#/components/schemas/PurposeTemplateReference"
-      required:
-        - dailyCalls
-        - description
-        - eserviceId
-        - formAnswersJson
-        - formSchemaVersion
-        - knodeId
-        - name
-      additionalProperties: false
-    ConsumerPurpose:
-      type: object
-      properties:
-        dailyCalls:
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 1000000000
-        eservice:
-          $ref: "#/components/schemas/CompactEservice"
-        hasRecentlyBeenUpdated:
-          description: Indicates whether the Purpose has been recently updated
-          type: boolean
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        keychains:
-          description: Number of Consumer Keychains associated with this purpose
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 9007199254740991
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
-        producer:
-          $ref: "#/components/schemas/CompactOrganization"
-        state:
-          $ref: "#/components/schemas/PurposeState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - dailyCalls
-        - eservice
-        - hasRecentlyBeenUpdated
-        - id
-        - keychains
-        - name
-        - producer
-        - state
-        - updatedAt
-      additionalProperties: false
-    ConsumerPurposes:
-      type: object
-      properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/ConsumerPurpose"
-      required:
-        - pagination
-        - results
-      additionalProperties: false
-    ProducerPurpose:
-      type: object
-      properties:
-        consumer:
-          $ref: "#/components/schemas/CompactOrganization"
-        dailyCalls:
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 1000000000
-        description:
-          $ref: "#/components/schemas/LocalizedPurposeDescription"
-        eservice:
-          $ref: "#/components/schemas/CompactEservice"
-        hasRecentlyBeenUpdated:
-          description: Indicates whether the Purpose has been recently updated
-          type: boolean
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
-        state:
-          $ref: "#/components/schemas/PurposeState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - consumer
-        - dailyCalls
-        - description
-        - eservice
-        - hasRecentlyBeenUpdated
-        - id
-        - name
-        - state
-        - updatedAt
-      additionalProperties: false
-    ProducerPurposes:
-      type: object
-      properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/ProducerPurpose"
-      required:
-        - pagination
-        - results
-      additionalProperties: false
-    PurposeDetailsEservice:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          $ref: "#/components/schemas/LocalizedName"
-        latestVersionState:
-          $ref: "#/components/schemas/EserviceVersionState"
-      required:
-        - id
-        - name
-        - latestVersionState
-      additionalProperties: false
-    PurposeDetails:
-      type: object
-      properties:
-        agreement:
-          $ref: "#/components/schemas/CompactAgreement"
-        consumer:
-          $ref: "#/components/schemas/CompactOrganization"
-        dailyCalls:
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 1000000000
-        description:
-          $ref: "#/components/schemas/LocalizedPurposeDescription"
-        eservice:
-          $ref: "#/components/schemas/PurposeDetailsEservice"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        maxDailyCallsPerConsumer:
-          format: int32
-          type: integer
-          minimum: -9007199254740991
-          maximum: 9007199254740991
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
-        producer:
-          $ref: "#/components/schemas/CompactOrganization"
-        state:
-          $ref: "#/components/schemas/PurposeState"
-        suspendedByConsumerAt:
-          nullable: true
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        suspendedByProducerAt:
-          nullable: true
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - agreement
-        - consumer
-        - dailyCalls
-        - description
-        - eservice
-        - id
-        - maxDailyCallsPerConsumer
-        - name
-        - producer
-        - state
-        - suspendedByConsumerAt
-        - suspendedByProducerAt
-        - updatedAt
-      additionalProperties: false
 paths:
   /status:
     get:
@@ -6196,6 +6307,70 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getConsumerEservicePurposeFormOptions
+      summary: Get Consumer PurposeFormOptions
+      tags:
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries published by the
+        Producer on a ReceiveData E-service, enriched with the corresponding
+        form schema, UI schema, legal texts and UI texts. Returns an empty list
+        when the E-service has no receiveDataConfig.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: Consumer PurposeFormOptions retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer PurposeFormOptions retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerPurposeFormOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/eservices/{eserviceId}/interface:
     get:
       operationId: getConsumerEserviceLatestVersionInterface
@@ -6884,7 +7059,10 @@ paths:
       summary: Create a consumer Purpose
       tags:
         - purpose
-      description: Create a new Purpose for an E-service
+      description: "Create a new Purpose for an E-service. The body is a discriminated
+        union on `eserviceMode`: ProvideData carries `formAnswersJson` +
+        `formSchemaVersion`, ReceiveData carries `purposeFormOptionId`
+        referencing one of the Producer's pre-filled options."
       requestBody:
         required: true
         content:

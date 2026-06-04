@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ArchiveEserviceData, ArchiveEserviceErrors, ArchiveEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
+import type { ArchiveEserviceData, ArchiveEserviceErrors, ArchiveEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEservicePurposeFormOptionsData, GetEservicePurposeFormOptionsErrors, GetEservicePurposeFormOptionsResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -73,6 +73,16 @@ export const updateEservice = <ThrowOnError extends boolean = true>(options: Opt
         'Content-Type': 'application/merge-patch+json',
         ...options.headers
     }
+});
+
+/**
+ * Retrieve the list of PurposeFormOption entries (pre-filled form answers published by the Producer) for a ReceiveData E-service. Returns an empty list for E-services without receiveDataConfig.
+ */
+export const getEservicePurposeFormOptions = <ThrowOnError extends boolean = true>(options: Options<GetEservicePurposeFormOptionsData, ThrowOnError>) => (options.client ?? client).get<GetEservicePurposeFormOptionsResponses, GetEservicePurposeFormOptionsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}/purposeFormOptions',
+    ...options
 });
 
 /**

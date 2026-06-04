@@ -457,6 +457,54 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    PurposeFormOption:
+      type: object
+      properties:
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        formAnswersJson:
+          description: Key-value pairs of answers to the Purpose form
+          type: object
+          additionalProperties: {}
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema referenced by the
+            option (e.g., "1.0")
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PurposeFormOption"
+      required:
+        - items
+      additionalProperties: false
     EserviceVersionDetails:
       type: object
       properties:
@@ -1122,6 +1170,67 @@ paths:
                 description: E-service detail retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/EserviceDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getEservicePurposeFormOptions
+      summary: Get PurposeFormOptions for an E-service
+      tags:
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries published by the
+        Producer on a ReceiveData E-service hosted on a remote Knode. Returns an
+        empty list when the E-service has no receiveDataConfig.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: PurposeFormOption list retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: PurposeFormOption list retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormOptions"
         "400":
           description: Bad Request
           content:

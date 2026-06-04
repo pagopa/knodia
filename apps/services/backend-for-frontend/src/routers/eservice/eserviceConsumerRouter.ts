@@ -45,6 +45,10 @@ import {
   toAPI_ConsumerEservice,
   toAPI_ConsumerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
+import {
+  API_ConsumerPurposeFormOptions,
+  API_GetConsumerEservicePurposeFormOptionsQueryParams,
+} from "../../models/purpose/api.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceConsumerRouterOptions {
@@ -208,6 +212,66 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      logger.info(
+        { eserviceId: req.params.eserviceId, knodeId: req.query.knodeId },
+        "Getting PurposeFormOptions enriched with form schemas",
+      );
+
+      const [{ data: options }, { data: schemas }] = await Promise.all([
+        remoteResourcesManagerApi.getEservicePurposeFormOptions({
+          client: remoteResourcesManagerClient,
+          headers,
+          path: { eserviceId: req.params.eserviceId },
+          query: { knodeId: req.query.knodeId },
+        }),
+        remoteResourcesManagerApi.getCurrentPurposeFormSchemas({
+          client: remoteResourcesManagerClient,
+          headers,
+          query: { knodeId: req.query.knodeId },
+        }),
+      ]);
+
+      res.send({
+        items: options.items.map((option) => ({
+          description: option.description,
+          formAnswersJson: option.formAnswersJson,
+          id: option.id,
+          name: option.name,
+          schema: schemas.schema,
+          texts: schemas.texts,
+          uiSchema: schemas.uiSchema,
+          uiTexts: schemas.uiTexts,
+          version: schemas.version,
+        })),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig.",
+      operationId: "getConsumerEservicePurposeFormOptions",
+      params: API_EserviceIdPathParam,
+      querystring: API_GetConsumerEservicePurposeFormOptionsQueryParams,
+      response: {
+        200: API_ConsumerPurposeFormOptions.meta({
+          description: "Consumer PurposeFormOptions retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+      },
+      summary: "Get Consumer PurposeFormOptions",
+      tags: [apiTags.eservice],
+    },
+    url: "/consumer/eservices/:eserviceId/purposeFormOptions",
   });
 
   fastify.route({

@@ -94,6 +94,12 @@ export type Pagination = {
     total: number;
 };
 
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormSchemaVersion = '1.0';
+
 export type EserviceVersionInterfaceDocument = {
     /**
      * SHA-256 checksum of the interface document
@@ -137,6 +143,18 @@ export type Eservice = {
 export type Eservices = {
     pagination: Pagination;
     results: Array<Eservice>;
+};
+
+export type PurposeFormOption = {
+    description: LocalizedDescription;
+    formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
+    id: string;
+    name: LocalizedName;
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
 };
 
 export type EserviceVersion = {
@@ -547,6 +565,51 @@ export type UpdateEserviceResponses = {
 };
 
 export type UpdateEserviceResponse = UpdateEserviceResponses[keyof UpdateEserviceResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEserviceLatestVersionData = {
     body?: never;

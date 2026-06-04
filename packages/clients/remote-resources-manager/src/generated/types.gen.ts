@@ -211,6 +211,30 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
+export type PurposeFormOption = {
+    description: {
+        en: string;
+    };
+    /**
+     * Key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: {
+        en: string;
+    };
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
+
 export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
@@ -544,6 +568,47 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEservicesData = {
     body?: never;
