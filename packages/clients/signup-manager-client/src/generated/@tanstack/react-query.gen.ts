@@ -94,24 +94,6 @@ export const exchangeOidcCodeOptions = (options: Options<ExchangeOidcCodeData>) 
     queryKey: exchangeOidcCodeQueryKey(options)
 });
 
-export const getCurrentSignupUserQueryKey = (options: Options<GetCurrentSignupUserData>) => createQueryKey('getCurrentSignupUser', options);
-
-/**
- * Get current signup user onboarding status
- */
-export const getCurrentSignupUserOptions = (options: Options<GetCurrentSignupUserData>) => queryOptions<GetCurrentSignupUserResponse, AxiosError<GetCurrentSignupUserError>, GetCurrentSignupUserResponse, ReturnType<typeof getCurrentSignupUserQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getCurrentSignupUser({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getCurrentSignupUserQueryKey(options)
-});
-
 /**
  * Confirm onboarding for the caller user
  */
@@ -128,3 +110,21 @@ export const confirmOnboardingMutation = (options?: Partial<Options<ConfirmOnboa
     };
     return mutationOptions;
 };
+
+export const getCurrentSignupUserQueryKey = (options?: Options<GetCurrentSignupUserData>) => createQueryKey('getCurrentSignupUser', options);
+
+/**
+ * Get current signup user onboarding status
+ */
+export const getCurrentSignupUserOptions = (options?: Options<GetCurrentSignupUserData>) => queryOptions<GetCurrentSignupUserResponse, AxiosError<GetCurrentSignupUserError>, GetCurrentSignupUserResponse, ReturnType<typeof getCurrentSignupUserQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getCurrentSignupUser({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getCurrentSignupUserQueryKey(options)
+});

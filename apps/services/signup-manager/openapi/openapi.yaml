@@ -184,45 +184,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /me:
-    get:
-      operationId: getCurrentSignupUser
-      tags:
-        - signup
-      description: Get current signup user onboarding status
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Current signup user onboarding status
-          content:
-            application/json:
-              schema:
-                description: Current signup user onboarding status
-                allOf:
-                  - $ref: "#/components/schemas/CurrentSignupUser"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /onboarding/confirm:
     post:
       operationId: confirmOnboarding
@@ -268,6 +229,37 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /me:
+    get:
+      operationId: getCurrentSignupUser
+      tags:
+        - signup
+      description: Get current signup user onboarding status
+      responses:
+        "200":
+          description: Current signup user onboarding status
+          content:
+            application/json:
+              schema:
+                description: Current signup user onboarding status
+                allOf:
+                  - $ref: "#/components/schemas/CurrentSignupUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
