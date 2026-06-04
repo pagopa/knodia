@@ -1,6 +1,11 @@
 import type { FastifyInstance } from "fastify";
 
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
+import { readmodelEservice } from "@knodia/db-readmodel-eservice";
+import {
+  type EserviceWriterService,
+  eserviceWriterServiceBuilder,
+} from "@knodia/db-readmodel-eservice/writer";
 import {
   readmodelConsumerKeychain,
   readmodelKnodeApiKeychain,
@@ -26,6 +31,7 @@ let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let consumerKeychainWriterService: ConsumerKeychainWriterService;
+let eserviceWriterService: EserviceWriterService;
 let knodeApiKeychainWriterService: KnodeApiKeychainWriterService;
 let producerKeychainWriterService: ProducerKeychainWriterService;
 export const mockMaxKeysPerKeychain = 5;
@@ -36,6 +42,7 @@ async function resetTestDatabases() {
     resetTestDatabase(
       readmodelDb,
       readmodelConsumerKeychain,
+      readmodelEservice,
       readmodelKnodeApiKeychain,
       readmodelProducerKeychain,
     ),
@@ -65,6 +72,7 @@ beforeAll(async () => {
 
   consumerKeychainWriterService =
     consumerKeychainWriterServiceBuilder(readmodelDb);
+  eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
   knodeApiKeychainWriterService =
     knodeApiKeychainWriterServiceBuilder(readmodelDb);
   producerKeychainWriterService =
@@ -82,6 +90,7 @@ afterAll(async () => {
 export {
   app,
   consumerKeychainWriterService,
+  eserviceWriterService,
   eventStoreDb,
   knodeApiKeychainWriterService,
   producerKeychainWriterService,

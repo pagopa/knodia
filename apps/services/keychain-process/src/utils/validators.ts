@@ -2,6 +2,7 @@ import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   OrganizationId,
@@ -9,6 +10,7 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { Eservice } from "@knodia/eservice-models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { KeychainUser } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
@@ -20,6 +22,7 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  eserviceAlreadyLinkedToProducerKeychain,
   invalidUserRole,
   keyAlreadyExists,
   keychainMemberNotFound,
@@ -29,6 +32,36 @@ import {
   userNotAllowed,
   userNotFound,
 } from "../models/errors.ts";
+
+export async function assertEserviceIsNotLinkedToProducerKeychain(
+  producerKeychainId: ProducerKeychainId,
+  eserviceId: EserviceId,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  const producerKeychainEservice =
+    await readmodelService.getProducerKeychainEservice({
+      eserviceId,
+      producerKeychainId,
+    });
+
+  if (producerKeychainEservice) {
+    throw eserviceAlreadyLinkedToProducerKeychain(
+      producerKeychainId,
+      eserviceId,
+    );
+  }
+}
+
+export function assertOrganizationIsEserviceProducer(
+  organizationId: OrganizationId,
+  eservice: Pick<Eservice, "producerId">,
+): void {
+  if (eservice.producerId !== organizationId) {
+    throw forbiddenError(
+      `Caller organization ${organizationId} is not the Producer of the E-service`,
+    );
+  }
+}
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,

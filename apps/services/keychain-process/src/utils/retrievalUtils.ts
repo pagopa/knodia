@@ -2,6 +2,7 @@ import type { CognitoIdmClient, IdmUser } from "@knodia/cognito-idm-client";
 import type { API_PaginationQueryParams } from "@knodia/common-models/api";
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   ProducerKeychainId,
@@ -15,6 +16,7 @@ import type {
   KeychainUser,
   KnodeApiKeychain,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -22,9 +24,11 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   consumerKeychainNotFound,
   consumerKeychainPurposeNotFound,
+  eserviceNotFound,
   keychainMemberNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
+  producerKeychainEserviceNotFound,
   producerKeychainNotFound,
 } from "../models/errors.ts";
 import {
@@ -44,6 +48,19 @@ export const retrieveConsumerKeychain = async (
   }
 
   return consumerKeychain;
+};
+
+export const retrieveEservice = async (
+  eserviceId: EserviceId,
+  readmodelService: ReadmodelService,
+) => {
+  const eservice = await readmodelService.getEserviceById(eserviceId);
+
+  if (!eservice) {
+    throw eserviceNotFound(eserviceId);
+  }
+
+  return eservice;
 };
 
 export const retrieveFlatConsumerKeychain = async (
@@ -141,6 +158,25 @@ export const retrieveProducerKeychain = async (
   }
 
   return producerKeychain;
+};
+
+export const retrieveProducerKeychainEservice = async (
+  producerKeychainEservice: Omit<ProducerKeychainEservice, "linkedAt">,
+  readmodelService: ReadmodelService,
+) => {
+  const producerKeychainEserviceResult =
+    await readmodelService.getProducerKeychainEservice(
+      producerKeychainEservice,
+    );
+
+  if (!producerKeychainEserviceResult) {
+    throw producerKeychainEserviceNotFound(
+      producerKeychainEservice.producerKeychainId,
+      producerKeychainEservice.eserviceId,
+    );
+  }
+
+  return producerKeychainEserviceResult;
 };
 
 export async function retrieveKeychainMember<

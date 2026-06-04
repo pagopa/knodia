@@ -112,6 +112,17 @@ export interface ProducerKeychainMemberRemovedV1 {
   userId: string;
 }
 
+export interface ProducerKeychainEserviceLinkedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  eserviceId: string;
+  linkedAt: number;
+}
+
+export interface ProducerKeychainEserviceUnlinkedV1 {
+  producerKeychain: ProducerKeychainV1 | undefined;
+  eserviceId: string;
+}
+
 export interface ProducerKeychainKeyAddedV1 {
   producerKeychain: ProducerKeychainV1 | undefined;
   kid: string;
@@ -1692,6 +1703,190 @@ export const ProducerKeychainMemberRemovedV1: MessageFns<ProducerKeychainMemberR
       ? ProducerKeychainV1.fromPartial(object.producerKeychain)
       : undefined;
     message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseProducerKeychainEserviceLinkedV1(): ProducerKeychainEserviceLinkedV1 {
+  return { producerKeychain: undefined, eserviceId: "", linkedAt: 0 };
+}
+
+export const ProducerKeychainEserviceLinkedV1: MessageFns<ProducerKeychainEserviceLinkedV1> = {
+  encode(message: ProducerKeychainEserviceLinkedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.eserviceId !== "") {
+      writer.uint32(18).string(message.eserviceId);
+    }
+    if (message.linkedAt !== 0) {
+      writer.uint32(24).int64(message.linkedAt);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainEserviceLinkedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainEserviceLinkedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.eserviceId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.linkedAt = longToNumber(reader.int64());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainEserviceLinkedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      eserviceId: isSet(object.eserviceId) ? globalThis.String(object.eserviceId) : "",
+      linkedAt: isSet(object.linkedAt) ? globalThis.Number(object.linkedAt) : 0,
+    };
+  },
+
+  toJSON(message: ProducerKeychainEserviceLinkedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.eserviceId !== "") {
+      obj.eserviceId = message.eserviceId;
+    }
+    if (message.linkedAt !== 0) {
+      obj.linkedAt = Math.round(message.linkedAt);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainEserviceLinkedV1>, I>>(
+    base?: I,
+  ): ProducerKeychainEserviceLinkedV1 {
+    return ProducerKeychainEserviceLinkedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainEserviceLinkedV1>, I>>(
+    object: I,
+  ): ProducerKeychainEserviceLinkedV1 {
+    const message = createBaseProducerKeychainEserviceLinkedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.eserviceId = object.eserviceId ?? "";
+    message.linkedAt = object.linkedAt ?? 0;
+    return message;
+  },
+};
+
+function createBaseProducerKeychainEserviceUnlinkedV1(): ProducerKeychainEserviceUnlinkedV1 {
+  return { producerKeychain: undefined, eserviceId: "" };
+}
+
+export const ProducerKeychainEserviceUnlinkedV1: MessageFns<ProducerKeychainEserviceUnlinkedV1> = {
+  encode(message: ProducerKeychainEserviceUnlinkedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.producerKeychain !== undefined) {
+      ProducerKeychainV1.encode(message.producerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.eserviceId !== "") {
+      writer.uint32(18).string(message.eserviceId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProducerKeychainEserviceUnlinkedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProducerKeychainEserviceUnlinkedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.producerKeychain = ProducerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.eserviceId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProducerKeychainEserviceUnlinkedV1 {
+    return {
+      producerKeychain: isSet(object.producerKeychain)
+        ? ProducerKeychainV1.fromJSON(object.producerKeychain)
+        : undefined,
+      eserviceId: isSet(object.eserviceId) ? globalThis.String(object.eserviceId) : "",
+    };
+  },
+
+  toJSON(message: ProducerKeychainEserviceUnlinkedV1): unknown {
+    const obj: any = {};
+    if (message.producerKeychain !== undefined) {
+      obj.producerKeychain = ProducerKeychainV1.toJSON(message.producerKeychain);
+    }
+    if (message.eserviceId !== "") {
+      obj.eserviceId = message.eserviceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProducerKeychainEserviceUnlinkedV1>, I>>(
+    base?: I,
+  ): ProducerKeychainEserviceUnlinkedV1 {
+    return ProducerKeychainEserviceUnlinkedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProducerKeychainEserviceUnlinkedV1>, I>>(
+    object: I,
+  ): ProducerKeychainEserviceUnlinkedV1 {
+    const message = createBaseProducerKeychainEserviceUnlinkedV1();
+    message.producerKeychain = (object.producerKeychain !== undefined && object.producerKeychain !== null)
+      ? ProducerKeychainV1.fromPartial(object.producerKeychain)
+      : undefined;
+    message.eserviceId = object.eserviceId ?? "";
     return message;
   },
 };
