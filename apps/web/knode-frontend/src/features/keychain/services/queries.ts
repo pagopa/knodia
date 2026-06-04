@@ -63,6 +63,15 @@ export const producerKeychainsQuery = (offset: number) =>
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
   });
 
+// TODO(KN-473): replace hardcoded limit with pagination when the number of producer keychains grows
+const PRODUCER_KEYCHAIN_OPTIONS_LIMIT = 50;
+
+export const producerKeychainOptionsQuery = () =>
+  getProducerKeychainsOptions({
+    client,
+    query: { limit: PRODUCER_KEYCHAIN_OPTIONS_LIMIT, offset: 0 },
+  });
+
 export const consumerKeychainDetailsQuery = (
   consumerKeychainId: ConsumerKeychainId,
 ) =>

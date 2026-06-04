@@ -12,7 +12,7 @@ import { useState } from "react";
 import z from "zod";
 
 import { useHasRole } from "@/contexts/auth";
-import { producerKeychainsQuery } from "@/features/keychain/services/queries";
+import { producerKeychainOptionsQuery } from "@/features/keychain/services/queries";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { useLinkKeychainToEservice } from "../hooks/useEserviceKeychainMutations";
@@ -63,7 +63,7 @@ function LinkKeychainModal({
   const navigate = useNavigate();
   const { isError, isPending, mutate } = useLinkKeychainToEservice(eserviceId);
   const { data, isLoading } = useQuery({
-    ...producerKeychainsQuery(0),
+    ...producerKeychainOptionsQuery(),
     enabled: isOpen,
   });
 
