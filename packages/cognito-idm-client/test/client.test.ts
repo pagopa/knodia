@@ -57,7 +57,6 @@ describe("createOrganizationUser", () => {
     });
     expect(createUser.input.UserAttributes).toEqual(
       expect.arrayContaining([
-        { Name: "custom:organizationId", Value: organizationId },
         { Name: "custom:roles", Value: "administrative,technical" },
       ]),
     );

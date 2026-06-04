@@ -85,7 +85,6 @@ export function buildCognitoIdmClient({
               { Name: "email_verified", Value: "true" },
               { Name: "given_name", Value: input.givenName },
               { Name: "family_name", Value: input.familyName },
-              { Name: "custom:organizationId", Value: input.organizationId },
               { Name: "custom:roles", Value: input.roles.join(",") },
             ],
             Username: input.username,
