@@ -3,6 +3,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import {
+  type EserviceId,
   unsafeBrandId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
@@ -17,6 +18,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_CreatedMemberResource,
+  API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import z from "zod";
@@ -36,6 +38,7 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainMemberPathParams,
   API_User,
@@ -566,5 +569,96 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await producerKeychainService.linkEserviceToProducerKeychain(
+        {
+          eserviceId: unsafeBrandId<EserviceId>(req.body.eserviceId),
+          producerKeychainId: req.params.producerKeychainId,
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ProducerKeychainEserviceLinkSeed,
+      description: "Link an E-service to a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "linkEserviceToProducerKeychain",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "E-service successfully linked to Producer Keychain",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain or E-service not found",
+        }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await producerKeychainService.unlinkEserviceFromProducerKeychain(
+        {
+          eserviceId: unsafeBrandId<EserviceId>(req.params.eserviceId),
+          producerKeychainId: req.params.producerKeychainId,
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink an E-service from a Producer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "unlinkEserviceFromProducerKeychain",
+      params: API_ProducerKeychainEservicePathParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description:
+              "E-service successfully unlinked from Producer Keychain",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain or E-service link not found",
+        }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices/:eserviceId",
   });
 };

@@ -1,12 +1,17 @@
 /* eslint-disable max-lines-per-function */
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { generateUserId } from "@knodia/common-models/ids";
+import {
+  type EserviceId,
+  generateId,
+  generateUserId,
+} from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   keychainEvents,
   type KeychainKey,
   type ProducerKeychain,
+  type ProducerKeychainEservice,
   toProducerKeychainV1,
 } from "@knodia/keychain-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
@@ -24,7 +29,10 @@ import {
   readmodelDb,
   topicName,
 } from "./setup.ts";
-import { getAllProducerKeychains } from "./utils.ts";
+import {
+  getAllProducerKeychains,
+  getProducerKeychainEservicesByKeychainId,
+} from "./utils.ts";
 
 describe("Keychain read model writer tests", async () => {
   it("ProducerKeychainCreatedV1", async () => {
@@ -298,5 +306,123 @@ describe("Keychain read model writer tests", async () => {
       data: toExpectProducerKeychain(keychainWithKeyRemoved),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ProducerKeychain>);
+  });
+
+  it("ProducerKeychainEserviceLinkedV1", async () => {
+    const producerKeychain = getMockProducerKeychain();
+    const eserviceId = generateId<EserviceId>();
+
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      0,
+    );
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainEserviceLinkedV1,
+    ).encode({
+      eserviceId,
+      linkedAt: new Date().getTime(),
+      producerKeychain: toProducerKeychainV1(producerKeychain),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainEserviceLinkedV1",
+      metadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(producerKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+
+    const retrievedEservices = await getProducerKeychainEservicesByKeychainId(
+      producerKeychain.id,
+      readmodelDb,
+    );
+    expect(retrievedEservices.length).toBe(1);
+    expect(retrievedEservices[0]).toEqual({
+      data: {
+        eserviceId,
+        linkedAt: expect.any(Date),
+        producerKeychainId: producerKeychain.id,
+      },
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ProducerKeychainEservice>);
+  });
+
+  it("ProducerKeychainEserviceUnlinkedV1", async () => {
+    const oldMetadataVersion = 2;
+    const producerKeychain = getMockProducerKeychain();
+    await producerKeychainWriterService.upsertProducerKeychain(
+      producerKeychain,
+      oldMetadataVersion,
+    );
+
+    const eserviceId1 = generateId<EserviceId>();
+    const producerKeychainEservice1: ProducerKeychainEservice = {
+      eserviceId: eserviceId1,
+      linkedAt: new Date(),
+      producerKeychainId: producerKeychain.id,
+    };
+    await producerKeychainWriterService.upsertProducerKeychainEservice(
+      producerKeychainEservice1,
+      oldMetadataVersion,
+    );
+
+    const eserviceId2 = generateId<EserviceId>();
+    const producerKeychainEservice2: ProducerKeychainEservice = {
+      eserviceId: eserviceId2,
+      linkedAt: new Date(),
+      producerKeychainId: producerKeychain.id,
+    };
+    await producerKeychainWriterService.upsertProducerKeychainEservice(
+      producerKeychainEservice2,
+      oldMetadataVersion,
+    );
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ProducerKeychainEserviceUnlinkedV1,
+    ).encode({
+      eserviceId: eserviceId1,
+      producerKeychain: toProducerKeychainV1(producerKeychain),
+    });
+
+    const newMetadataVersion = oldMetadataVersion + 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ProducerKeychainEserviceUnlinkedV1",
+      metadataVersion: newMetadataVersion,
+      producer,
+      streamId: producerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllProducerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectProducerKeychain(producerKeychain),
+      metadata: { version: newMetadataVersion },
+    } satisfies WithMetadata<ProducerKeychain>);
+
+    const retrievedEservices = await getProducerKeychainEservicesByKeychainId(
+      producerKeychain.id,
+      readmodelDb,
+    );
+    expect(retrievedEservices.length).toBe(1);
+    expect(retrievedEservices[0]).toEqual({
+      data: producerKeychainEservice2,
+      metadata: { version: newMetadataVersion },
+    } satisfies WithMetadata<ProducerKeychainEservice>);
   });
 });
