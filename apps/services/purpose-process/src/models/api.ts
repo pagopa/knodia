@@ -23,10 +23,6 @@ import {
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
-// `POST /purposes` accepts a discriminated union on `eserviceMode`. The
-// caller declares which kind of e-service the Purpose targets, and the
-// server picks the matching branch + validates the body against the
-// concrete shape.
 const API_PurposeSeedBase = z.strictObject({
   consumer: API_PurposeConsumer,
   dailyCalls: API_PurposeDailyCalls,
@@ -44,9 +40,6 @@ const API_PurposeSeedForProvideData = API_PurposeSeedBase.extend({
 
 const API_PurposeSeedForReceiveData = API_PurposeSeedBase.extend({
   eserviceMode: API_EserviceMode.extract(["ReceiveData"]),
-  // Selects one of the PurposeFormOptions the Producer has pre-published
-  // on the e-service. The backend snapshots its formAnswersJson and
-  // formSchemaVersion into the new Purpose.
   purposeFormOptionId: z.uuid(),
 }).meta({ id: "PurposeSeedForReceiveData" });
 

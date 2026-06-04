@@ -88,7 +88,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_PurposeSeed,
       description:
-        "Create a new Purpose for an E-service on behalf of a Consumer. The request body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers (optionally derived from a Purpose Template), `ReceiveData` references a pre-filled PurposeFormOption published by the Producer on the E-service — the backend snapshots its answers into the new Purpose.",
+        "Create a new Purpose for an E-service on behalf of a Consumer. The request body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers, `ReceiveData` references a pre-filled `PurposeFormOption` published by the Producer.",
       headers: KnodiaServiceHeaders,
       operationId: "createPurpose",
       response: {

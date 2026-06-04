@@ -50,9 +50,6 @@ export const assertEserviceModeIs = (
   }
 };
 
-// A ReceiveData e-service must carry its `receiveDataConfig`. A missing one
-// at this point is a data-integrity anomaly: throws 500 (not 404) and refines
-// the type so callers can dereference `eservice.receiveDataConfig` directly.
 export function assertReceiveDataConfigIsDefined(
   eservice: Eservice,
 ): asserts eservice is Eservice & { receiveDataConfig: ReceiveDataConfig } {

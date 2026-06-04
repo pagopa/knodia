@@ -82,9 +82,6 @@ type CallerIdentity =
       actor: typeof PurposeActor.enum.Producer;
       ctx: AuthorizedContext<UISessionAuthData>;
     };
-// Discriminated union mirroring API_PurposeSeed at the service layer:
-// ProvideData carries inline form answers + optional template, ReceiveData
-// carries a reference to a Producer-published PurposeFormOption.
 type CreatePurposeInput =
   | (CreatePurposeInputBase & {
       eserviceMode: typeof EserviceMode.enum.ProvideData;

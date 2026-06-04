@@ -1,10 +1,10 @@
 meta {
-  name: Create Reverse Purpose
+  name: Create Purpose For Receive-data E-service
   type: http
 }
 
 post {
-  url: {{host-purpose-process}}/purposes/receive-mode
+  url: {{host-purpose-process}}/purposes
   body: json
   auth: none
 }
@@ -22,13 +22,14 @@ body:json {
     },
     "dailyCalls": 1000,
     "description": {
-      "en": "Test reverse purpose for local development"
+      "en": "Test purpose for a Receive-data E-service"
     },
     "eserviceId": "{{eserviceId}}",
+    "eserviceMode": "ReceiveData",
     "name": {
-      "en": "My Test Reverse Purpose"
+      "en": "My Test Purpose For Receive-data E-service"
     },
-    "purposeFormPrefillId": "{{purposeFormPrefillId}}"
+    "purposeFormOptionId": "{{purposeFormOptionId}}"
   }
 }
 
