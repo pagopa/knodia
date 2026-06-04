@@ -77,6 +77,20 @@ export const InternalTokenClaims = BaseJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
+export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
+  dateOfBirth: z.string(),
+  familyName: z.string(),
+  fiscalNumber: z.string().optional(),
+  name: z.string(),
+  personIdentifier: z.string().optional(),
+  spidCode: z.string().optional(),
+  type: z.literal("ui-signup-session"),
+});
+
+export type UISignupSessionTokenClaims = z.infer<
+  typeof UISignupSessionTokenClaims
+>;
+
 export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
   type: z.literal("refresh-ui-session"),
 });
@@ -127,5 +141,6 @@ export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   InternalTokenClaims,
   ExternalUISessionTokenClaims,
   KnodeApiAccessTokenClaims,
+  UISignupSessionTokenClaims,
 ]);
 export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;

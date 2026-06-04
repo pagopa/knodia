@@ -8,11 +8,9 @@ import type {
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
-import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
   API_CreatedPurposeResource,
@@ -37,32 +35,32 @@ import {
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
 export function purposeServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
+  getK2K2GatewayApiClient: K2K2GatewayApiClientFactory,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
 ) {
   return {
     async archivePurpose(
       purposeId: ExternalId<PurposeId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Purpose> {
-      logger.info(`Archiving Purpose ${purposeId} on Knode ${knodeId}`);
+      logger.info(`Archiving Purpose ${purposeId} on Knode ${targetKnodeId}`);
 
       await verifyConsumerCanActOnPurpose(
         purposeId,
-        knodeId,
+        targetKnodeId,
         authData.organizationId,
         remoteResourceDbService,
         readmodelService,
       );
 
       const { data } = await k2kGatewayApi.archivePurpose({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data, knodeId);
+      return toAPI_Purpose(data, targetKnodeId);
     },
 
     async createPurpose(
@@ -75,7 +73,7 @@ export function purposeServiceBuilder(
         eserviceId,
         formAnswersJson,
         formSchemaVersion,
-        knodeId,
+        knodeId: targetKnodeId,
         name,
         template,
       } = reqBody;
@@ -83,7 +81,7 @@ export function purposeServiceBuilder(
 
       logger.info(
         { requestBody: reqBody },
-        `Creating purpose for e-service owned by Knode ${knodeId} with body data`,
+        `Creating purpose for e-service owned by Knode ${targetKnodeId} with body data`,
       );
 
       await retrieveOrganization(consumerId, readmodelService);
@@ -101,20 +99,20 @@ export function purposeServiceBuilder(
             ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
             : undefined,
         },
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
       });
 
       await remoteResourceDbService.insertPurpose({
         consumerId,
         eserviceId,
-        knodeId,
+        knodeId: targetKnodeId,
         purposeId: data.id,
       });
 
       return data;
     },
     async getCurrentPurposeFormSchemas(
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{
       schema: Record<string, unknown>;
@@ -123,37 +121,39 @@ export function purposeServiceBuilder(
       uiTexts: { en: Record<string, string> };
       version: string;
     }> {
-      logger.info(`Getting current Purpose form schemas from Knode ${knodeId}`);
+      logger.info(
+        `Getting current Purpose form schemas from Knode ${targetKnodeId}`,
+      );
       const { data } = await k2kGatewayApi.getCurrentPurposeFormSchemas({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
       });
       return data;
     },
     async getPurpose(
       {
-        knodeId,
         purposeId,
+        targetKnodeId,
       }: {
-        knodeId: KnodeId;
         purposeId: ExternalId<PurposeId>;
+        targetKnodeId: KnodeId;
       },
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Purpose> {
-      logger.info(`Getting Purpose ${purposeId} from Knode ${knodeId}`);
+      logger.info(`Getting Purpose ${purposeId} from Knode ${targetKnodeId}`);
 
       const remotePurpose = await remoteResourceDbService.getPurposeById(
         purposeId,
-        knodeId,
+        targetKnodeId,
       );
 
       assertPurposeExists(remotePurpose, purposeId);
 
       const { data } = await k2kGatewayApi.getPurpose({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data, knodeId);
+      return toAPI_Purpose(data, targetKnodeId);
     },
 
     async getPurposes(
@@ -175,13 +175,13 @@ export function purposeServiceBuilder(
       let dynamicOffset = offset;
       let results: API_Purpose[] = [];
 
-      for (const knodeId of knodesWithPurposes) {
+      for (const targetKnodeId of knodesWithPurposes) {
         logger.info(
-          `Getting Purposes from Knode ${knodeId} for consumer ${consumerId}`,
+          `Getting Purposes from Knode ${targetKnodeId} for consumer ${consumerId}`,
         );
 
         const { data } = await k2kGatewayApi.getPurposes({
-          client: k2kGatewayClient,
+          client: getK2K2GatewayApiClient(targetKnodeId),
           query: {
             consumerId,
             eserviceId,
@@ -193,7 +193,9 @@ export function purposeServiceBuilder(
 
         if (results.length < limit) {
           results = results.concat(
-            data.results.map((purpose) => toAPI_Purpose(purpose, knodeId)),
+            data.results.map((purpose) =>
+              toAPI_Purpose(purpose, targetKnodeId),
+            ),
           );
           dynamicLimit = limit - results.length;
           dynamicOffset = 0;
@@ -214,55 +216,57 @@ export function purposeServiceBuilder(
 
     async reactivatePurpose(
       purposeId: ExternalId<PurposeId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Purpose> {
-      logger.info(`Reactivating Purpose ${purposeId} on Knode ${knodeId}`);
+      logger.info(
+        `Reactivating Purpose ${purposeId} on Knode ${targetKnodeId}`,
+      );
 
       await verifyConsumerCanActOnPurpose(
         purposeId,
-        knodeId,
+        targetKnodeId,
         authData.organizationId,
         remoteResourceDbService,
         readmodelService,
       );
 
       const { data } = await k2kGatewayApi.reactivatePurpose({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data, knodeId);
+      return toAPI_Purpose(data, targetKnodeId);
     },
 
     async suspendPurpose(
       purposeId: ExternalId<PurposeId>,
-      knodeId: KnodeId,
+      targetKnodeId: KnodeId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Purpose> {
-      logger.info(`Suspending Purpose ${purposeId} on Knode ${knodeId}`);
+      logger.info(`Suspending Purpose ${purposeId} on Knode ${targetKnodeId}`);
 
       await verifyConsumerCanActOnPurpose(
         purposeId,
-        knodeId,
+        targetKnodeId,
         authData.organizationId,
         remoteResourceDbService,
         readmodelService,
       );
 
       const { data } = await k2kGatewayApi.suspendPurpose({
-        client: k2kGatewayClient,
+        client: getK2K2GatewayApiClient(targetKnodeId),
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data, knodeId);
+      return toAPI_Purpose(data, targetKnodeId);
     },
   };
 }
 
 async function verifyConsumerCanActOnPurpose(
   purposeId: ExternalId<PurposeId>,
-  knodeId: KnodeId,
+  targetKnodeId: KnodeId,
   organizationId: OrganizationId,
   remoteResourceDbService: RemoteResourceDbService,
   readmodelService: ReadmodelService,
@@ -271,7 +275,7 @@ async function verifyConsumerCanActOnPurpose(
 
   const remotePurpose = await remoteResourceDbService.getPurposeById(
     purposeId,
-    knodeId,
+    targetKnodeId,
   );
 
   assertPurposeExists(remotePurpose, purposeId);

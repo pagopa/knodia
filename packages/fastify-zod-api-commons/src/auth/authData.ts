@@ -21,7 +21,8 @@ export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
   | KnodeApiAuthData
-  | UISessionAuthData;
+  | UISessionAuthData
+  | UISignupSessionAuthData;
 
 export interface ExternalUISessionAuthData {
   agreement: {
@@ -66,6 +67,17 @@ export interface UISessionAuthData {
   tokenType: "ui-session";
   userId: UserId;
   userRoles: NonEmptyArray<UserRole>;
+}
+
+export interface UISignupSessionAuthData {
+  dateOfBirth: string;
+  familyName: string;
+  fiscalNumber: string | undefined;
+  name: string;
+  personalIdentifier: string | undefined;
+  spidCode: string | undefined;
+  tokenType: "ui-signup-session";
+  uniqueIdentifier: string;
 }
 
 export function extractAuthDataFromToken(
@@ -123,6 +135,19 @@ export function extractAuthDataFromToken(
           knodeId: c.organization.knode_id,
         },
         tokenType: "knode-api",
+      }),
+    )
+    .with(
+      { type: "ui-signup-session" },
+      (c): UISignupSessionAuthData => ({
+        dateOfBirth: c.dateOfBirth,
+        familyName: c.familyName,
+        fiscalNumber: c.fiscalNumber,
+        name: c.name,
+        personalIdentifier: c.personIdentifier,
+        spidCode: c.spidCode,
+        tokenType: "ui-signup-session",
+        uniqueIdentifier: c.sub,
       }),
     )
     .exhaustive();

@@ -1,3 +1,4 @@
+import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 import type { TokenGenerator } from "@knodia/token-generator";
 import type { FastifyBaseLogger } from "fastify";
 
@@ -11,7 +12,6 @@ import {
   verifyDpopProofSignature,
 } from "@knodia/dpop-validator";
 
-import type { K2K2GatewayApiClientFactory } from "../clients/clientsProvider.ts";
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
