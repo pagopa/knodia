@@ -179,6 +179,8 @@ export async function retrievePaginatedKeychainUsers({
     (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
   );
 
+  // TODO(KN-718): fetching every member before paginating in memory can put
+  // significant load on the Cognito quotas for large keychains.
   const activeMembers = (
     await Promise.all(
       sortedUsers.map(({ userId }) => cognitoIdmClient.getUserById(userId)),
