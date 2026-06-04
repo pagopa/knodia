@@ -1,3 +1,4 @@
+import { TargetKnodeUrlsConfig } from "@knodia/common-models/targetKnodeUrls";
 import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
 import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
 import {
@@ -6,21 +7,13 @@ import {
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { env } from "node:process";
-import { z } from "zod";
+import { type z } from "zod";
 
 const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(RemoteResourceDbConfig)
   .and(ReadmodelOrganizationConfig)
-  .and(
-    z
-      .object({
-        KNODE_URL: z.url(),
-      })
-      .transform((c) => ({
-        knodeUrl: c.KNODE_URL,
-      })),
-  );
+  .and(TargetKnodeUrlsConfig);
 export type RemoteResourcesManagerConfig = z.infer<
   typeof RemoteResourcesManagerConfig
 >;

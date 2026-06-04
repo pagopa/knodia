@@ -15,7 +15,8 @@ DECLARE
         '${NAMESPACE}_purpose_rmw_user',
         '${NAMESPACE}_authorization_server_user',
         '${NAMESPACE}_signal_hub_user',
-        '${NAMESPACE}_signal_hub_cleaner_user'
+        '${NAMESPACE}_signal_hub_cleaner_user',
+        '${NAMESPACE}_mock_eservice_user'
     ];
 BEGIN
     FOREACH role_name IN ARRAY role_names LOOP

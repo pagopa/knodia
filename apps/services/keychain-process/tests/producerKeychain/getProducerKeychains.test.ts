@@ -136,8 +136,8 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       totalCount: seededProducerKeychains.length,
     },
     {
-      expectedResult: sortedMockProducerKeychains.filter((ck) =>
-        producerKeychainIdsWithLinkedEservice1.has(ck.id),
+      expectedResult: sortedMockProducerKeychains.filter((pk) =>
+        producerKeychainIdsWithLinkedEservice1.has(pk.id),
       ),
       query: {
         ...defaultQuery,
@@ -149,7 +149,7 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
     },
     {
       expectedResult: sortedMockProducerKeychains.filter(
-        (ck) => ck.ownerId === ownerIdFilter,
+        (pk) => pk.ownerId === ownerIdFilter,
       ),
       query: {
         ...defaultQuery,
@@ -159,8 +159,8 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
       totalCount: 3,
     },
     {
-      expectedResult: sortedMockProducerKeychains.filter((ck) =>
-        ck.name.en.toLowerCase().includes(matchingNamePrefix),
+      expectedResult: sortedMockProducerKeychains.filter((pk) =>
+        pk.name.en.toLowerCase().includes(matchingNamePrefix),
       ),
       query: {
         ...defaultQuery,
@@ -171,9 +171,9 @@ describe("GET /producerKeychains (getProducerKeychains)", () => {
     },
     {
       expectedResult: sortedMockProducerKeychains.filter(
-        (ck) =>
-          ck.ownerId === ownerIdFilter &&
-          producerKeychainIdsWithLinkedEservice1.has(ck.id),
+        (pk) =>
+          pk.ownerId === ownerIdFilter &&
+          producerKeychainIdsWithLinkedEservice1.has(pk.id),
       ),
       query: {
         ...defaultQuery,

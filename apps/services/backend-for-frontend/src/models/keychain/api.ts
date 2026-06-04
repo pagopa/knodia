@@ -225,7 +225,7 @@ export type API_KnodeApiKeychainMemberPathParams = z.infer<
 
 export const API_KnodeApiKeychainKeyPathParams = z
   .strictObject({
-    keyId: z.string(),
+    keyId: API_KeyId,
   })
   .extend(API_KnodeApiKeychainIdPathParam.shape);
 
@@ -296,7 +296,7 @@ export type API_ConsumerKeychainMemberPathParams = z.infer<
 
 export const API_ConsumerKeychainKeyPathParams = z
   .strictObject({
-    keyId: z.string(),
+    keyId: API_KeyId,
   })
   .extend(API_ConsumerKeychainIdPathParam.shape);
 

@@ -140,8 +140,8 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       const data = await purposeService.getPurpose(
         {
-          knodeId: KnodeId.parse(req.query.knodeId),
           purposeId: unsafeBrandExternalId(req.params.purposeId),
+          targetKnodeId: KnodeId.parse(req.query.knodeId),
         },
         ctx,
       );

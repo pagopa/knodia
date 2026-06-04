@@ -4,9 +4,7 @@ import type { TargetKnodeUrls } from "@knodia/common-models/targetKnodeUrls";
 import {
   createK2K2GatewayApiClient,
   type K2K2GatewayApiClient,
-} from "@knodia/k2k-gateway-client";
-
-import { targetKnodeUrlNotConfigured } from "../models/errors.ts";
+} from "./index.ts";
 
 export type K2K2GatewayApiClientFactory = ReturnType<
   typeof makeK2K2GatewayApiClientFactory
@@ -14,6 +12,7 @@ export type K2K2GatewayApiClientFactory = ReturnType<
 
 export function makeK2K2GatewayApiClientFactory(
   targetKnodeUrls: TargetKnodeUrls,
+  onMissingUrl: (targetKnodeId: KnodeId) => Error,
 ) {
   const cache = new Map<KnodeId, K2K2GatewayApiClient>();
   return function getK2K2GatewayApiClient(
@@ -23,7 +22,7 @@ export function makeK2K2GatewayApiClientFactory(
     if (cached) return cached;
     const baseURL = targetKnodeUrls[targetKnodeId];
     if (!baseURL) {
-      throw targetKnodeUrlNotConfigured(targetKnodeId);
+      throw onMissingUrl(targetKnodeId);
     }
     const client = createK2K2GatewayApiClient({ baseURL });
     cache.set(targetKnodeId, client);
