@@ -908,7 +908,7 @@ paths:
       description: Retrieve a Consumer Keychain Key by kid
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -974,7 +974,7 @@ paths:
       description: Remove a key from a Consumer Keychain
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -1973,7 +1973,7 @@ paths:
           name: knodeApiKeychainId
           required: true
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -2039,7 +2039,7 @@ paths:
           name: knodeApiKeychainId
           required: true
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -3344,7 +3344,7 @@ paths:
       description: Remove a key from a Producer Keychain
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -3410,7 +3410,7 @@ paths:
       description: Retrieve a Producer Keychain Key by kid
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
