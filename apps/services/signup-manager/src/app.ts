@@ -29,7 +29,9 @@ import type {
 import { oneIdentityClientBuilder } from "./clients/oneIdentityClient.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { protectedSignupRouter, signupRouter } from "./routers/signupRouter.ts";
+import { authRouter } from "./routers/authRouter.ts";
+import { signupRouter } from "./routers/signupRouter.ts";
+import { authServiceBuilder } from "./services/authService.ts";
 import { signupEventProducerBuilder } from "./services/signupEventProducer.ts";
 import { signupServiceBuilder } from "./services/signupService.ts";
 
@@ -56,6 +58,10 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
+            description: "Authentication routes",
+            name: apiTags.auth,
+          },
+          {
             description: "Signup routes",
             name: apiTags.signup,
           },
@@ -68,10 +74,13 @@ export function buildApp({
 
   app.register(cookie);
 
-  const signupService = signupServiceBuilder(
+  const authService = authServiceBuilder(
     config,
     oneIdentityClientBuilder(config),
     tokenGeneratorBuilder(),
+  );
+
+  const signupService = signupServiceBuilder(
     signupDbServiceBuilder(signupDb),
     signupEventProducerBuilder({
       producer: kafkaProducer,
@@ -81,15 +90,15 @@ export function buildApp({
 
   // Public routes (no auth required)
   app.register(healthRouter);
-  app.register(signupRouter, {
-    signupService,
+  app.register(authRouter, {
+    authService,
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
-    protectedApp.register(protectedSignupRouter, { signupService });
+    protectedApp.register(signupRouter, { signupService });
   });
 
   return app;
