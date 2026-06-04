@@ -3551,6 +3551,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../purpose-models
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
