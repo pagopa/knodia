@@ -1,4 +1,6 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { Banner } from "@knodia/ui-kit/ui";
+import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Section } from "@/components/Section";
@@ -7,7 +9,6 @@ import { ProducerKeychainsTable } from "@/features/keychain/components/ProducerK
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { eserviceLinkedProducerKeychainsQuery } from "../../services/queries";
-import { EserviceKeychainsEmptyState } from "../EserviceKeychainsEmptyState";
 import { LinkKeychainAction } from "../LinkKeychainAction";
 import { UnlinkKeychainAction } from "../UnlinkKeychainAction";
 
@@ -36,7 +37,7 @@ export function ProductionEServiceKeychainsTab() {
       title="Keychains"
     >
       <ProducerKeychainsTable
-        emptyState={<EserviceKeychainsEmptyState />}
+        emptyState={<EserviceKeychainsEmptyState isAdmin={isAdmin} />}
         isLoading={isLoading}
         keychains={keychains}
         rowActions={
@@ -51,5 +52,17 @@ export function ProductionEServiceKeychainsTab() {
         }
       />
     </Section>
+  );
+}
+
+function EserviceKeychainsEmptyState({ isAdmin }: { isAdmin: boolean }) {
+  return isAdmin ? (
+    <Banner icon={<SelectionPlusIcon />} kind="neutral">
+      Link a Production Keychain to sign responses from the E-Service.
+    </Banner>
+  ) : (
+    <Banner icon={<SelectionIcon />} kind="neutral">
+      There are no Keychains connected to this E-Service yet.
+    </Banner>
   );
 }
