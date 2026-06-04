@@ -11,8 +11,8 @@ export const Route = createFileRoute("/login/callback")({
     state: search.state,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ deps }) => {
-    await signupManagerApi.exchangeOidcCode({
+  loader: async ({ deps, context: { auth } }) => {
+    const response = await signupManagerApi.exchangeOidcCode({
       client,
       query: {
         code: deps.code,
@@ -20,7 +20,12 @@ export const Route = createFileRoute("/login/callback")({
       },
       withCredentials: true,
     });
-    return redirect({ to: "/success" });
+
+    auth.setSessionToken(response.data.uiSignupSessionToken);
+    throw redirect({ replace: true, to: "/home" });
+  },
+  onError: () => {
+    throw redirect({ to: "/login" });
   },
   pendingComponent: () => (
     <div className="flex min-h-screen items-center justify-center">

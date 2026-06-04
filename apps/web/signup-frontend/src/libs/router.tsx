@@ -5,15 +5,19 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 
+import { type AuthContext } from "@/libs/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
 export interface RouterContext {
+  auth: AuthContext;
   queryClient: QueryClient;
 }
 
 export const router = createRouter({
   context: {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    auth: undefined!, // This will be set after we wrap the app in an AuthProvider
     queryClient,
   },
   defaultPreload: "intent",
@@ -23,7 +27,6 @@ export const router = createRouter({
   defaultPreloadStaleTime: 0,
   routeTree,
   scrollRestoration: true,
-  scrollToTopSelectors: [() => document.getElementById("main-content")],
 });
 
 /**
