@@ -104,25 +104,33 @@ export type Pagination = {
  */
 export type OrganizationId = string;
 
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     consumer: PurposeConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: string;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
 
-export type ReversePurposeSeed = {
+export type PurposeSeedForReceiveData = {
     consumer: PurposeConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: string;
     name: LocalizedPurposeName;
-    purposeFormPrefillId: string;
+    eserviceMode: 'ReceiveData';
+    purposeFormOptionId: string;
 };
+
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
 
 export type Purpose = {
     consumer: PurposeConsumer;
@@ -297,53 +305,6 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
-
-export type CreateReversePurposeData = {
-    body: ReversePurposeSeed;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path?: never;
-    query?: never;
-    url: '/purposes/receive-mode';
-};
-
-export type CreateReversePurposeErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
-};
-
-export type CreateReversePurposeError = CreateReversePurposeErrors[keyof CreateReversePurposeErrors];
-
-export type CreateReversePurposeResponses = {
-    /**
-     * Reverse Purpose created successfully
-     */
-    201: Purpose;
-};
-
-export type CreateReversePurposeResponse = CreateReversePurposeResponses[keyof CreateReversePurposeResponses];
 
 export type GetPurposesTotalDailyCallsData = {
     body?: never;

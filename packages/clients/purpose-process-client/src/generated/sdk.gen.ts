@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ArchivePurposeData, ArchivePurposeErrors, ArchivePurposeResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, CreateReversePurposeData, CreateReversePurposeErrors, CreateReversePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses } from './types.gen.ts';
+import type { ArchivePurposeData, ArchivePurposeErrors, ArchivePurposeResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasErrors, GetCurrentPurposeFormSchemasResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetPurposesTotalDailyCallsData, GetPurposesTotalDailyCallsErrors, GetPurposesTotalDailyCallsResponses, GetStatusData, GetStatusResponses, ReactivatePurposeByConsumerData, ReactivatePurposeByConsumerErrors, ReactivatePurposeByConsumerResponses, ReactivatePurposeByProducerData, ReactivatePurposeByProducerErrors, ReactivatePurposeByProducerResponses, SuspendPurposeByConsumerData, SuspendPurposeByConsumerErrors, SuspendPurposeByConsumerResponses, SuspendPurposeByProducerData, SuspendPurposeByProducerErrors, SuspendPurposeByProducerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -42,28 +42,12 @@ export const getPurposes = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Create Purpose
  *
- * Create a new Purpose for an E-service on behalf of a consumer
+ * Create a new Purpose for an E-service on behalf of a Consumer. The request body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers (optionally derived from a Purpose Template), `ReceiveData` references a pre-filled PurposeFormOption published by the Producer on the E-service — the backend snapshots its answers into the new Purpose.
  */
 export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/purposes',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Create Reverse Purpose
- *
- * Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormPrefill published by the Producer on the E-service
- */
-export const createReversePurpose = <ThrowOnError extends boolean = true>(options: Options<CreateReversePurposeData, ThrowOnError>) => (options.client ?? client).post<CreateReversePurposeResponses, CreateReversePurposeErrors, ThrowOnError>({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/purposes/receive-mode',
     ...options,
     headers: {
         'Content-Type': 'application/json',

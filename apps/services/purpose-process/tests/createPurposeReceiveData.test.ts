@@ -19,12 +19,12 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
   getMockEservice,
-  getMockPurposeFormPrefill,
+  getMockPurposeFormOption,
   MOCK_PURPOSE_FORM_ANSWERS,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Purpose, API_ReversePurposeSeed } from "../src/models/api.ts";
+import type { API_Purpose, API_PurposeSeed } from "../src/models/api.ts";
 
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import {
@@ -33,28 +33,33 @@ import {
   toExpectAPI_Purpose,
 } from "./utils.ts";
 
+type API_PurposeSeedReceiveData = Extract<
+  API_PurposeSeed,
+  { eserviceMode: "ReceiveData" }
+>;
+
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 const consumerId = generateExternalId<OrganizationId>();
 const consumerKnodeId = KnodeId.parse("Orion");
 
 const buildReceiveDataEservice = (opts: { seed?: number } = {}) => {
-  // Distinct formAnswersJson per PFA so tests can assert the chosen one was
-  // snapshotted (default mock would otherwise return identical answers).
-  const purposeFormPrefills = [
+  // Distinct formAnswersJson per prefill so tests can assert the chosen one
+  // was snapshotted (default mock would otherwise return identical answers).
+  const purposeFormOptions = [
     {
-      ...getMockPurposeFormPrefill(opts.seed ?? 0),
+      ...getMockPurposeFormOption(opts.seed ?? 0),
       formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "first-pfp" },
     },
     {
-      ...getMockPurposeFormPrefill((opts.seed ?? 0) + 100),
+      ...getMockPurposeFormOption((opts.seed ?? 0) + 100),
       formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "second-pfp" },
     },
   ];
   return {
     ...getMockEservice({
       latestVersionState: "Active",
-      purposeFormPrefills,
+      purposeFormOptions,
       seed: opts.seed,
     }),
     mode: EserviceMode.enum.ReceiveData,
@@ -78,27 +83,28 @@ const setupEserviceAndAgreement = async (
   );
 };
 
-describe("POST /purposes/receive-mode (createReversePurpose)", () => {
+describe("POST /purposes (ReceiveData mode)", () => {
   it.each(allowedTestTokens)(
-    "should create a Purpose snapshotting the chosen PurposeFormPrefill ($type)",
+    "should create a Purpose snapshotting the chosen PurposeFormOption ($type)",
     async (token) => {
       const eservice = buildReceiveDataEservice();
-      // Pick the SECOND PFA on purpose: ensures the service looks up by id
-      // rather than blindly picking purposeFormPrefills[0].
-      const chosen = eservice.receiveDataConfig!.purposeFormPrefills[1]!;
+      // Pick the SECOND prefill on purpose: ensures the service looks up by
+      // id rather than blindly picking purposeFormOptions[0].
+      const chosen = eservice.receiveDataConfig!.purposeFormOptions[1]!;
       await setupEserviceAndAgreement(eservice);
 
-      const body: API_ReversePurposeSeed = {
+      const body: API_PurposeSeedReceiveData = {
         consumer: { id: consumerId, knodeId: consumerKnodeId },
         dailyCalls: 1000,
-        description: { en: "Test reverse purpose description" },
+        description: { en: "Test ReceiveData purpose description" },
         eserviceId: eservice.id,
-        name: { en: "Test Reverse Purpose" },
-        purposeFormPrefillId: chosen.id,
+        eserviceMode: "ReceiveData",
+        name: { en: "Test ReceiveData Purpose" },
+        purposeFormOptionId: chosen.id,
       };
 
       const response = await injectAppRequest(token)
-        .post("/purposes/receive-mode")
+        .post("/purposes")
         .body(body);
 
       expect(response.statusCode).toBe(201);
@@ -148,15 +154,16 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
     "should return 401/403 for $type token",
     async (token) => {
       const response = await injectAppRequest(token)
-        .post("/purposes/receive-mode")
+        .post("/purposes")
         .body({
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           dailyCalls: 1,
-          description: { en: "A valid test description for receive-mode" },
+          description: { en: "A valid test description for receive-data" },
           eserviceId: generateId(),
+          eserviceMode: "ReceiveData",
           name: { en: "Valid Test Name" },
-          purposeFormPrefillId: generateId(),
-        } satisfies API_ReversePurposeSeed);
+          purposeFormOptionId: generateId(),
+        } satisfies API_PurposeSeedReceiveData);
       expect([401, 403]).toContain(response.statusCode);
     },
   );
@@ -166,31 +173,33 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
     await setupEserviceAndAgreement(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes/receive-mode")
+      .post("/purposes")
       .body({
         consumer: { id: consumerId, knodeId: consumerKnodeId },
         dailyCalls: 1000,
-        description: { en: "A valid test description for receive-mode" },
+        description: { en: "A valid test description for receive-data" },
         eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
         formAnswersJson: { foo: "bar" },
         name: { en: "Valid Test Name" },
-        purposeFormPrefillId:
-          eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
+        purposeFormOptionId:
+          eservice.receiveDataConfig!.purposeFormOptions[0]!.id,
       });
     expect(response.statusCode).toBe(400);
   });
 
   it("should return 404 if the e-service does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes/receive-mode")
+      .post("/purposes")
       .body({
         consumer: { id: consumerId, knodeId: consumerKnodeId },
         dailyCalls: 1000,
-        description: { en: "A valid test description for receive-mode" },
+        description: { en: "A valid test description for receive-data" },
         eserviceId: generateId(),
+        eserviceMode: "ReceiveData",
         name: { en: "Valid Test Name" },
-        purposeFormPrefillId: generateId(),
-      } satisfies API_ReversePurposeSeed);
+        purposeFormOptionId: generateId(),
+      } satisfies API_PurposeSeedReceiveData);
     expect(response.statusCode).toBe(404);
   });
 
@@ -199,7 +208,7 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
   );
 
   it.each(notAllowedEserviceModes)(
-    "should return 409 if the e-service mode is %s",
+    "should return 409 if the e-service mode is %s (mode mismatch)",
     async (mode) => {
       const testEservice = {
         ...getMockEservice({
@@ -224,34 +233,97 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
       );
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .post("/purposes/receive-mode")
+        .post("/purposes")
         .body({
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           dailyCalls: 1000,
-          description: { en: "A valid test description for receive-mode" },
+          description: { en: "A valid test description for receive-data" },
           eserviceId: testEservice.id,
+          eserviceMode: "ReceiveData",
           name: { en: "Valid Test Name" },
-          purposeFormPrefillId: generateId(),
-        } satisfies API_ReversePurposeSeed);
+          purposeFormOptionId: generateId(),
+        } satisfies API_PurposeSeedReceiveData);
       expect(response.statusCode).toBe(409);
     },
   );
 
-  it("should return 404 if the purposeFormPrefillId is not in the e-service.receiveDataConfig", async () => {
+  it("should return 404 if the purposeFormOptionId is not in the e-service.receiveDataConfig", async () => {
     const eservice = buildReceiveDataEservice({ seed: 10 });
     await setupEserviceAndAgreement(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes/receive-mode")
+      .post("/purposes")
       .body({
         consumer: { id: consumerId, knodeId: consumerKnodeId },
         dailyCalls: 1000,
-        description: { en: "A valid test description for receive-mode" },
+        description: { en: "A valid test description for receive-data" },
         eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
         name: { en: "Valid Test Name" },
-        purposeFormPrefillId: generateId(),
-      } satisfies API_ReversePurposeSeed);
+        purposeFormOptionId: generateId(),
+      } satisfies API_PurposeSeedReceiveData);
     expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 500 if the e-service is in ReceiveData mode but has no receiveDataConfig (data-integrity anomaly)", async () => {
+    const eservice = {
+      ...getMockEservice({ latestVersionState: "Active", seed: 15 }),
+      mode: EserviceMode.enum.ReceiveData,
+      receiveDataConfig: undefined,
+    };
+    await eserviceWriterService.upsertEservice(eservice, 1);
+    await agreementWriterService.upsertAgreement(
+      {
+        ...getMockAgreement({ seed: 15 }),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        eserviceId: eservice.id,
+        eserviceVersionId: eservice.versions[0]!.id,
+        producerId: eservice.producerId,
+        state: "Active",
+      },
+      1,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        dailyCalls: 1000,
+        description: { en: "A valid test description for receive-data" },
+        eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
+        name: { en: "Valid Test Name" },
+        purposeFormOptionId: generateId(),
+      } satisfies API_PurposeSeedReceiveData);
+    expect(response.statusCode).toBe(500);
+  });
+
+  it("should return 400 if the snapshotted form answers fail schema validation", async () => {
+    // Producer slipped a malformed prefill past its own publish-time check:
+    // assertFormAnswersAreValid runs in the service as a safety net.
+    const baseEservice = buildReceiveDataEservice({ seed: 17 });
+    const malformedPrefill = {
+      ...baseEservice.receiveDataConfig!.purposeFormOptions[0]!,
+      formAnswersJson: { purpose: "INVALID_VALUE" },
+    };
+    const eservice = {
+      ...baseEservice,
+      receiveDataConfig: { purposeFormOptions: [malformedPrefill] },
+    };
+    await setupEserviceAndAgreement(eservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        dailyCalls: 1000,
+        description: { en: "A valid test description for receive-data" },
+        eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
+        name: { en: "Valid Test Name" },
+        purposeFormOptionId: malformedPrefill.id,
+      } satisfies API_PurposeSeedReceiveData);
+    expect(response.statusCode).toBe(400);
   });
 
   const notAllowedEserviceVersionStates = EserviceVersionState.options.filter(
@@ -261,15 +333,15 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
   it.each(notAllowedEserviceVersionStates)(
     "should return 409 if the e-service version is %s",
     async (state) => {
-      const purposeFormPrefills = [
-        getMockPurposeFormPrefill(
+      const purposeFormOptions = [
+        getMockPurposeFormOption(
           50 + notAllowedEserviceVersionStates.indexOf(state),
         ),
       ];
       const testEservice = {
         ...getMockEservice({
           latestVersionState: state,
-          purposeFormPrefills,
+          purposeFormOptions,
           seed: 50 + notAllowedEserviceVersionStates.indexOf(state),
         }),
         mode: EserviceMode.enum.ReceiveData,
@@ -277,15 +349,16 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .post("/purposes/receive-mode")
+        .post("/purposes")
         .body({
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           dailyCalls: 1000,
-          description: { en: "A valid test description for receive-mode" },
+          description: { en: "A valid test description for receive-data" },
           eserviceId: testEservice.id,
+          eserviceMode: "ReceiveData",
           name: { en: "Valid Test Name" },
-          purposeFormPrefillId: purposeFormPrefills[0]!.id,
-        } satisfies API_ReversePurposeSeed);
+          purposeFormOptionId: purposeFormOptions[0]!.id,
+        } satisfies API_PurposeSeedReceiveData);
       expect(response.statusCode).toBe(409);
     },
   );
@@ -295,19 +368,20 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes/receive-mode")
+      .post("/purposes")
       .body({
         consumer: {
           id: generateExternalId<OrganizationId>(),
           knodeId: consumerKnodeId,
         },
         dailyCalls: 1000,
-        description: { en: "A valid test description for receive-mode" },
+        description: { en: "A valid test description for receive-data" },
         eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
         name: { en: "Valid Test Name" },
-        purposeFormPrefillId:
-          eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
-      } satisfies API_ReversePurposeSeed);
+        purposeFormOptionId:
+          eservice.receiveDataConfig!.purposeFormOptions[0]!.id,
+      } satisfies API_PurposeSeedReceiveData);
     expect(response.statusCode).toBe(404);
   });
 
@@ -338,16 +412,17 @@ describe("POST /purposes/receive-mode (createReversePurpose)", () => {
       );
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .post("/purposes/receive-mode")
+        .post("/purposes")
         .body({
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           dailyCalls: 1000,
-          description: { en: "A valid test description for receive-mode" },
+          description: { en: "A valid test description for receive-data" },
           eserviceId: eservice.id,
+          eserviceMode: "ReceiveData",
           name: { en: "Valid Test Name" },
-          purposeFormPrefillId:
-            eservice.receiveDataConfig!.purposeFormPrefills[0]!.id,
-        } satisfies API_ReversePurposeSeed);
+          purposeFormOptionId:
+            eservice.receiveDataConfig!.purposeFormOptions[0]!.id,
+        } satisfies API_PurposeSeedReceiveData);
       expect(response.statusCode).toBe(409);
     },
   );

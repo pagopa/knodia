@@ -6,8 +6,9 @@ import {
   fromOptionalExternalResource,
 } from "@knodia/common-models/externalResource";
 import {
+  type EserviceId,
   type OrganizationId,
-  type PurposeFormPrefillId,
+  type PurposeFormOptionId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -21,6 +22,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { PurposeActor } from "@knodia/purpose-models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
+import { match } from "ts-pattern";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
@@ -31,7 +33,6 @@ import {
   API_Purpose,
   API_Purposes,
   API_PurposeSeed,
-  API_ReversePurposeSeed,
   API_TotalDailyCalls,
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
@@ -51,24 +52,34 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
+      const seedBase = {
+        consumer: fromExternalResource<OrganizationId>(req.body.consumer),
+        dailyCalls: req.body.dailyCalls,
+        description: req.body.description,
+        eserviceId: unsafeBrandId<EserviceId>(req.body.eserviceId),
+        name: req.body.name,
+      };
+      const seed = match(req.body)
+        .with({ eserviceMode: "ProvideData" }, (b) => ({
+          ...seedBase,
+          eserviceMode: b.eserviceMode,
+          formAnswersJson: b.formAnswersJson,
+          formSchemaVersion: b.formSchemaVersion,
+          template: fromOptionalExternalResource<PurposeTemplateId>(b.template),
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (b) => ({
+          ...seedBase,
+          eserviceMode: b.eserviceMode,
+          purposeFormOptionId: unsafeBrandId<PurposeFormOptionId>(
+            b.purposeFormOptionId,
+          ),
+        }))
+        .exhaustive();
+
       const {
         data: purpose,
         metadata: { version },
-      } = await purposeService.createPurpose(
-        {
-          consumer: fromExternalResource<OrganizationId>(req.body.consumer),
-          dailyCalls: req.body.dailyCalls,
-          description: req.body.description,
-          eserviceId: unsafeBrandId(req.body.eserviceId),
-          formAnswersJson: req.body.formAnswersJson,
-          formSchemaVersion: req.body.formSchemaVersion,
-          name: req.body.name,
-          template: fromOptionalExternalResource<PurposeTemplateId>(
-            req.body.template,
-          ),
-        },
-        ctx,
-      );
+      } = await purposeService.createPurpose(seed, ctx);
 
       setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Purpose(purpose));
@@ -77,7 +88,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_PurposeSeed,
       description:
-        "Create a new Purpose for an E-service on behalf of a consumer",
+        "Create a new Purpose for an E-service on behalf of a Consumer. The request body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers (optionally derived from a Purpose Template), `ReceiveData` references a pre-filled PurposeFormOption published by the Producer on the E-service — the backend snapshots its answers into the new Purpose.",
       headers: KnodiaServiceHeaders,
       operationId: "createPurpose",
       response: {
@@ -97,58 +108,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
-      ]);
-
-      const {
-        data: purpose,
-        metadata: { version },
-      } = await purposeService.createReversePurpose(
-        {
-          consumer: fromExternalResource<OrganizationId>(req.body.consumer),
-          dailyCalls: req.body.dailyCalls,
-          description: req.body.description,
-          eserviceId: unsafeBrandId(req.body.eserviceId),
-          name: req.body.name,
-          purposeFormPrefillId: unsafeBrandId<PurposeFormPrefillId>(
-            req.body.purposeFormPrefillId,
-          ),
-        },
-        ctx,
-      );
-
-      setMetadataVersionHeader(res, version);
-      res.status(201).send(toAPI_Purpose(purpose));
-    },
-    method: "POST",
-    schema: {
-      body: API_ReversePurposeSeed,
-      description:
-        "Create a Purpose in ReceiveData mode by selecting a pre-filled PurposeFormPrefill published by the Producer on the E-service",
-      headers: KnodiaServiceHeaders,
-      operationId: "createReversePurpose",
-      response: {
-        201: {
-          headers: MetadataVersionHeader,
-          properties: API_Purpose.meta({
-            description: "Reverse Purpose created successfully",
-          }),
-        },
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Not Found" }),
-        409: API_Problem.meta({ description: "Conflict" }),
-      },
-      summary: "Create Reverse Purpose",
-      tags: [apiTags.purpose],
-    },
-    url: "/purposes/receive-mode",
   });
 
   fastify.route({

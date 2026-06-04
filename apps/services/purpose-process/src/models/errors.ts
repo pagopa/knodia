@@ -4,7 +4,7 @@ import type {
   EserviceId,
   KnodeId,
   OrganizationId,
-  PurposeFormPrefillId,
+  PurposeFormOptionId,
   PurposeId,
 } from "@knodia/common-models/ids";
 import type {
@@ -25,6 +25,7 @@ const {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
   HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
 } = constants;
 
@@ -41,7 +42,8 @@ const errorCodes = {
   PURPOSE_NOT_IN_REACTIVATABLE_STATE: "0009",
   ORGANIZATION_NOT_PURPOSE_PRODUCER: "0010",
   PURPOSE_NOT_IN_EXPECTED_STATES: "0011",
-  PURPOSE_FORM_PREFILL_NOT_FOUND: "0012",
+  PURPOSE_FORM_OPTION_NOT_FOUND: "0012",
+  RECEIVE_DATA_CONFIG_MISSING: "0013",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -147,15 +149,15 @@ export function organizationNotPurposeProducer(
   });
 }
 
-export function purposeFormPrefillNotFound(
+export function purposeFormOptionNotFound(
   eserviceId: EserviceId,
-  purposeFormPrefillId: PurposeFormPrefillId,
+  purposeFormOptionId: PurposeFormOptionId,
 ) {
   return createApiError<ErrorCodes>({
-    code: "PURPOSE_FORM_PREFILL_NOT_FOUND",
-    detail: `PurposeFormPrefill ${purposeFormPrefillId} not found on E-service ${eserviceId}`,
+    code: "PURPOSE_FORM_OPTION_NOT_FOUND",
+    detail: `PurposeFormOption ${purposeFormOptionId} not found on E-service ${eserviceId}`,
     status: HTTP_STATUS_NOT_FOUND,
-    title: "PurposeFormPrefill Not Found",
+    title: "PurposeFormOption Not Found",
   });
 }
 
@@ -224,5 +226,14 @@ export function purposeNotInSuspendableState({
     detail: `Purpose ${purposeId} cannot be suspended by ${suspendedBy} (state=${state}, suspendedByConsumerAt=${suspendedByConsumerAt?.toISOString() ?? "null"}, suspendedByProducerAt=${suspendedByProducerAt?.toISOString() ?? "null"})`,
     status: HTTP_STATUS_CONFLICT,
     title: "Purpose Not In Suspendable State",
+  });
+}
+
+export function receiveDataConfigMissing(eserviceId: EserviceId) {
+  return createApiError<ErrorCodes>({
+    code: "RECEIVE_DATA_CONFIG_MISSING",
+    detail: `E-service ${eserviceId} is in ReceiveData mode but has no receiveDataConfig (data-integrity anomaly)`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "Receive Data Config Missing",
   });
 }

@@ -193,7 +193,7 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    PurposeSeed:
+    PurposeSeedForProvideData:
       type: object
       properties:
         consumer:
@@ -209,12 +209,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ProvideData
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
         template:
           allOf:
             - $ref: "#/components/schemas/PurposeTemplateReference"
@@ -223,11 +227,12 @@ components:
         - dailyCalls
         - description
         - eserviceId
+        - name
+        - eserviceMode
         - formAnswersJson
         - formSchemaVersion
-        - name
       additionalProperties: false
-    ReversePurposeSeed:
+    PurposeSeedForReceiveData:
       type: object
       properties:
         consumer:
@@ -245,7 +250,11 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
-        purposeFormPrefillId:
+        eserviceMode:
+          type: string
+          enum:
+            - ReceiveData
+        purposeFormOptionId:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -255,8 +264,18 @@ components:
         - description
         - eserviceId
         - name
-        - purposeFormPrefillId
+        - eserviceMode
+        - purposeFormOptionId
       additionalProperties: false
+    PurposeSeed:
+      discriminator:
+        mapping:
+          ProvideData: "#/components/schemas/PurposeSeedForProvideData"
+          ReceiveData: "#/components/schemas/PurposeSeedForReceiveData"
+        propertyName: eserviceMode
+      oneOf:
+        - $ref: "#/components/schemas/PurposeSeedForProvideData"
+        - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     Purpose:
       type: object
       properties:
@@ -383,7 +402,12 @@ paths:
       summary: Create Purpose
       tags:
         - purpose
-      description: Create a new Purpose for an E-service on behalf of a consumer
+      description: "Create a new Purpose for an E-service on behalf of a Consumer. The
+        request body is a discriminated union on `eserviceMode`: `ProvideData`
+        carries inline form answers (optionally derived from a Purpose
+        Template), `ReceiveData` references a pre-filled PurposeFormOption
+        published by the Producer on the E-service — the backend snapshots its
+        answers into the new Purpose."
       requestBody:
         required: true
         content:
@@ -568,83 +592,6 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /purposes/receive-mode:
-    post:
-      operationId: createReversePurpose
-      summary: Create Reverse Purpose
-      tags:
-        - purpose
-      description: Create a Purpose in ReceiveData mode by selecting a pre-filled
-        PurposeFormPrefill published by the Producer on the E-service
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReversePurposeSeed"
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "201":
-          description: Reverse Purpose created successfully
-          content:
-            application/json:
-              schema:
-                description: Reverse Purpose created successfully
-                allOf:
-                  - $ref: "#/components/schemas/Purpose"
-          headers:
-            metadata-version:
-              required: true
-              schema:
-                type: string
-              description: Metadata version of the resource
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "409":
-          description: Conflict
-          content:
-            application/problem+json:
-              schema:
-                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /purposes/totalDailyCalls:

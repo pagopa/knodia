@@ -11,6 +11,7 @@ import {
   type Eservice,
   type EserviceMode,
   EserviceVersionState,
+  type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 import {
   type Purpose,
@@ -27,6 +28,7 @@ import {
   purposeNotInExpectedStates,
   purposeNotInReactivatableState,
   purposeNotInSuspendableState,
+  receiveDataConfigMissing,
 } from "../models/errors.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
@@ -47,6 +49,17 @@ export const assertEserviceModeIs = (
     throw eserviceModeNotAllowed(eservice.id, eservice.mode, expectedMode);
   }
 };
+
+// A ReceiveData e-service must carry its `receiveDataConfig`. A missing one
+// at this point is a data-integrity anomaly: throws 500 (not 404) and refines
+// the type so callers can dereference `eservice.receiveDataConfig` directly.
+export function assertReceiveDataConfigIsDefined(
+  eservice: Eservice,
+): asserts eservice is Eservice & { receiveDataConfig: ReceiveDataConfig } {
+  if (eservice.receiveDataConfig === undefined) {
+    throw receiveDataConfigMissing(eservice.id);
+  }
+}
 
 export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
   const hasAllowedVersion = eservice.versions.some((v) =>
