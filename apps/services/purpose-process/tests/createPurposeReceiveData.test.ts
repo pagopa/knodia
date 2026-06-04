@@ -49,11 +49,17 @@ const buildReceiveDataEservice = (opts: { seed?: number } = {}) => {
   const purposeFormOptions = [
     {
       ...getMockPurposeFormOption(opts.seed ?? 0),
-      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "first-pfp" },
+      formAnswersJson: {
+        ...MOCK_PURPOSE_FORM_ANSWERS,
+        institutionalPurpose: "first-pfp",
+      },
     },
     {
       ...getMockPurposeFormOption((opts.seed ?? 0) + 100),
-      formAnswersJson: { ...MOCK_PURPOSE_FORM_ANSWERS, marker: "second-pfp" },
+      formAnswersJson: {
+        ...MOCK_PURPOSE_FORM_ANSWERS,
+        institutionalPurpose: "second-pfp",
+      },
     },
   ];
   return {
