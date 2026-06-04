@@ -45,11 +45,9 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version" (
   max_daily_calls_per_knode = EXCLUDED.max_daily_calls_per_knode,
   updated_at = now();
 
--- NOTE: this interface row is a placeholder; the YAML file referenced by
--- `path` / `name` is NOT actually uploaded to MinIO, so the download from the
--- UI will fail until the real file is added. Tracked as a follow-up task
--- alongside the creation of the mock-eservice receive-data router (see
--- apps/services/mock-eservice/src/routers/).
+-- The interface YAML referenced by `path` / `name` is generated from the
+-- Receive-data router in apps/services/mock-eservice/src/routers/ and uploaded
+-- to S3 / MinIO by scripts/seed/seed.sh.
 INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   id, eservice_id, eservice_version_id,
   checksum, content_type, name, path, pretty_name,

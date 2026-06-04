@@ -1,0 +1,84 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+
+import { requestContext } from "@fastify/request-context";
+import {
+  type EserviceId,
+  type EserviceVersionId,
+  generateId,
+  type KnodeId,
+  type OrganizationId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+
+import { API_Ack, API_SendDigitalContactRequest } from "../models/api.ts";
+import { apiTags } from "../models/apiTags.ts";
+import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
+
+// Identity of this mock e-service. Hardcoded on purpose.
+// (kept in sync with scripts/seed/sql/<tenant>/mock-receive-data-eservice.sql).
+const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
+  "b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08",
+);
+const EXPECTED_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
+  "c2e5b1d4-8f3a-4e72-9d28-2b5c9c4f6d19",
+);
+const EXPECTED_PRODUCER_ID = unsafeBrandId<OrganizationId>(
+  "00000000-0000-4000-8000-000000000004",
+);
+
+interface MockReceiveDataRouterOptions {
+  knodeId: KnodeId;
+}
+
+export const mockReceiveDataRouter: FastifyPluginAsyncZod<
+  MockReceiveDataRouterOptions
+> = async (fastify, { knodeId }) => {
+  fastify.route({
+    handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+
+      assertTokenClaimsAreValidForEservice(
+        EXPECTED_ESERVICE_ID,
+        EXPECTED_ESERVICE_VERSION_ID,
+        EXPECTED_PRODUCER_ID,
+        knodeId,
+      );
+
+      const { contactPoint, legalEntity } = req.body;
+
+      // This is a Receive-data mock: the Producer does not persist anything.
+      // It just acknowledges receipt with a correlation id and a timestamp,
+      // mirroring the `ACK = sendDigitalContact(legal_entity, contact_point)`
+      // signature defined for Cross-Border E-service 04.
+      const ack = {
+        correlationId: generateId(),
+        receivedAt: new Date().toISOString(),
+      } as const;
+
+      logger.info(
+        { contactPoint, legalEntity: legalEntity.identifier },
+        `Mock e-service /digital-contacts received submission, ack ${ack.correlationId}`,
+      );
+      res.status(202).send(ack);
+    },
+    method: "POST",
+    schema: {
+      body: API_SendDigitalContactRequest,
+      description:
+        "Receives the digital contact point of a legal entity from the Consumer and returns an acknowledgment (Cross-Border E-service 04, Bearer-protected, Receive-data mode).",
+      operationId: "sendDigitalContact",
+      response: {
+        202: API_Ack.meta({
+          description: "Submission accepted by the Producer",
+        }),
+        400: API_Problem.meta({ description: "Invalid submission body" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      summary: "Send digital contact",
+      tags: [apiTags.companyDigitalDomicile],
+    },
+    url: "/digital-contacts",
+  });
+};

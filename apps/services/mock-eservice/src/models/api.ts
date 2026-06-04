@@ -224,3 +224,29 @@ export const API_Evidence = z
     id: "Evidence",
   });
 export type API_Evidence = z.infer<typeof API_Evidence>;
+
+export const API_SendDigitalContactRequest = z
+  .strictObject({
+    contactPoint: API_ContactPoint,
+    legalEntity: API_LegalEntity,
+  })
+  .meta({
+    description:
+      "Submission of the digital contact point of a legal entity to the Producer (Cross-Border E-service 04, Receive data).",
+    id: "SendDigitalContactRequest",
+  });
+export type API_SendDigitalContactRequest = z.infer<
+  typeof API_SendDigitalContactRequest
+>;
+
+export const API_Ack = z
+  .strictObject({
+    correlationId: z.uuid(),
+    receivedAt: z.iso.datetime(),
+  })
+  .meta({
+    description:
+      "Acknowledgment returned by the Producer upon successful receipt of a digital-contact submission.",
+    id: "Ack",
+  });
+export type API_Ack = z.infer<typeof API_Ack>;
