@@ -12,6 +12,15 @@ const OneIdentityConfig = z
     ONE_IDENTITY_DOMAIN: z.string(),
     ONE_IDENTITY_JWKS_URI: z.string(),
     ONE_IDENTITY_REDIRECT_URL: z.string(),
+
+    UI_SIGNUP_SESSION_JWT_AUDIENCE: z.string(),
+    UI_SIGNUP_SESSION_JWT_ISSUER: z.string(),
+    UI_SIGNUP_SESSION_JWT_KID: z.string(),
+    UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(3600),
   })
   .transform((c) => ({
     oneIdentityClientId: c.ONE_IDENTITY_CLIENT_ID,
@@ -19,6 +28,13 @@ const OneIdentityConfig = z
     oneIdentityDomain: c.ONE_IDENTITY_DOMAIN,
     oneIdentityJWKSUri: c.ONE_IDENTITY_JWKS_URI,
     oneIdentityRedirectUrl: c.ONE_IDENTITY_REDIRECT_URL,
+
+    uiSignupSessionJwt: {
+      audience: c.UI_SIGNUP_SESSION_JWT_AUDIENCE,
+      issuer: c.UI_SIGNUP_SESSION_JWT_ISSUER,
+      kid: c.UI_SIGNUP_SESSION_JWT_KID,
+      secondsDuration: c.UI_SIGNUP_SESSION_JWT_SECONDS_DURATION,
+    },
   }));
 export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;
 

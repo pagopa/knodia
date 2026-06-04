@@ -22,15 +22,12 @@ assert {
   res.body.token_type: eq Bearer
 }
 
-vars:post-response {
-  access_token: res.body.access_token
-}
-
 script:post-response {
   if (res.status === 200) {
-    // Also expose under the same name the script-derived env uses, so downstream
-    // requests can `Authorization: {{knode-api-jwt}}` regardless of token source.
-    bru.setVar("knode-api-jwt", `Bearer ${res.body.access_token}`)
+    // Expose as knode-api-token (the variable downstream `Authorization: Bearer
+    // {{knode-api-token}}` requests read) — like access_token, the var holds the
+    // raw token and the header adds "Bearer ".
+    bru.setVar("knode-api-token", res.body.access_token)
     return
   }
 

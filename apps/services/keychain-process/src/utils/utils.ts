@@ -185,11 +185,7 @@ export function removeMemberFromKeychain<
 
 export function updateKeychain<
   K extends ConsumerKeychain | KnodeApiKeychain | ProducerKeychain,
->(
-  keychain: K,
-  update: API_KeychainPatch | API_KeychainPatch | API_KeychainPatch,
-  authData: UISessionAuthData,
-): K {
+>(keychain: K, update: API_KeychainPatch, authData: UISessionAuthData): K {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
 
   return {

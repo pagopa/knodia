@@ -27,7 +27,7 @@ const OneIdentityIdTokenClaims = z.object({
   iss: z.url(),
   name: z.string(),
   nonce: z.string(),
-  personIdentifier: z.string().optional(),
+  PersonIdentifier: z.string().optional(),
   spidCode: z.string().optional(),
   sub: z.string(),
 });
