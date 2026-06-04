@@ -24,7 +24,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
       email: "onboarded.user@example.com",
       fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
       spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "ACTIVE",
+      status: "Active",
     });
     await seedSignupUser(signupUser);
 
@@ -42,7 +42,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
       email: "suspended.user@example.com",
       fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
       spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "SUSPENDED",
+      status: "Suspended",
     });
     await seedSignupUser(signupUser);
 

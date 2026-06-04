@@ -37,10 +37,17 @@ export type API_ConfirmOnboardingRequestBody = z.infer<
   typeof API_ConfirmOnboardingRequestBody
 >;
 
+export const API_OnboardingStatus = z.enum([
+  "ACTIVE",
+  "SUSPENDED",
+  "NOT_COMPLETED",
+]);
+export type API_OnboardingStatus = z.infer<typeof API_OnboardingStatus>;
+
 export const API_CurrentSignupUser = z
   .strictObject({
     email: z.email().optional(),
-    onboardingStatus: z.enum(["ACTIVE", "SUSPENDED", "NOT_COMPLETED"]),
+    onboardingStatus: API_OnboardingStatus,
   })
   .meta({ id: "CurrentSignupUser" });
 export type API_CurrentSignupUser = z.infer<typeof API_CurrentSignupUser>;
