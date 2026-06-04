@@ -12,7 +12,7 @@ export function signupEventProducerBuilder({
   topic: string;
 }) {
   return {
-    async publishOnboardingCompletedEvent(
+    async publishOnboardingCompletedV1Event(
       data: SignupEventV1["data"],
     ): Promise<void> {
       const event: SignupEventV1 = {

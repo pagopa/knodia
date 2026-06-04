@@ -1,18 +1,22 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { SignupUser } from "@knodia/signup-models";
 import type { TokenGenerator } from "@knodia/token-generator";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { generateId, type SignupUserId } from "@knodia/common-models/ids";
+import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
+import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
+import { DrizzleQueryError } from "drizzle-orm";
+import { DatabaseError } from "pg";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
 import type { OneIdentityConfig } from "../config/config.ts";
 import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
+import { signupUserGeneratedEntitiesAlreadyTaken } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
   assertSignupUserEmailDoesNotExist,
@@ -39,10 +43,8 @@ export function signupServiceBuilder(
       await assertSignupUserIdentifiersDoNotExist(authData, signupDbService);
       await assertSignupUserEmailDoesNotExist(email, signupDbService);
 
-      const [lynxOrganizationName, orionOrganizationName] = await Promise.all([
-        generateUniqueUserName(signupDbService),
-        generateUniqueUserName(signupDbService),
-      ]);
+      const { lynxOrganizationName, orionOrganizationName } =
+        await generateUniqueOrganizationNames(signupDbService);
 
       const newSignupUser: SignupUser = {
         createdAt: now,
@@ -61,15 +63,32 @@ export function signupServiceBuilder(
           },
         },
         name: authData.name,
-        personIdentifier: authData.personalIdentifier,
+        personIdentifier: authData.personIdentifier,
         signupUserId,
         spidCode: authData.spidCode,
-        status: "ACTIVE",
+        status: SignupUserStatus.enum.Active,
         updatedAt: now,
       };
 
-      await signupDbService.insertSignupUser(newSignupUser);
-      await signupEventProducer.publishOnboardingCompletedEvent({
+      try {
+        await signupDbService.insertSignupUser(newSignupUser);
+      } catch (error) {
+        /**
+         * The uniqueness checks in the asserts above are performed before the insert and are not
+         * done in the same transaction. If a concurrent onboarding inserts the same email or one of
+         * the same identifiers in the meantime, the database will reject this insert with a unique
+         * constraint violation.
+         *
+         * In that case, we map the database error to a 409 Conflict so the client gets a meaningful
+         * response instead of a generic internal error.
+         */
+
+        if (isPgUniqueViolation(error))
+          throw signupUserGeneratedEntitiesAlreadyTaken();
+        throw error;
+      }
+
+      await signupEventProducer.publishOnboardingCompletedV1Event({
         signupUserId,
       });
     },
@@ -136,21 +155,47 @@ export function signupServiceBuilder(
   };
 }
 
-async function generateUniqueUserName(signupDbService: SignupDbService) {
-  let attempts = 0;
+async function generateUniqueOrganizationNames(
+  signupDbService: SignupDbService,
+) {
   const MAX_ATTEMPTS = 10;
 
-  while (attempts < MAX_ATTEMPTS) {
-    const name = generateRandomOrgName();
-    const nameTaken =
-      await signupDbService.checkSignupUserNameAlreadyTaken(name);
-    if (!nameTaken) {
-      return name;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const lynxOrganizationName = generateRandomOrgName();
+    const orionOrganizationName = generateRandomOrgName();
+
+    if (lynxOrganizationName === orionOrganizationName) {
+      continue;
     }
-    attempts++;
+
+    const [lynxNameTaken, orionNameTaken] = await Promise.all([
+      signupDbService.checkSignupOrganizationNameAlreadyTaken(
+        lynxOrganizationName,
+      ),
+      signupDbService.checkSignupOrganizationNameAlreadyTaken(
+        orionOrganizationName,
+      ),
+    ]);
+
+    if (!lynxNameTaken && !orionNameTaken) {
+      return {
+        lynxOrganizationName,
+        orionOrganizationName,
+      };
+    }
   }
 
   throw genericInternalError(
-    "Failed to generate a unique organization name after multiple attempts",
+    "Failed to generate unique organization names after multiple attempts",
+  );
+}
+
+function isPgUniqueViolation(
+  error: unknown,
+): error is DrizzleQueryError & { cause: DatabaseError } {
+  return (
+    error instanceof DrizzleQueryError &&
+    error.cause instanceof DatabaseError &&
+    error.cause?.code === PG_UNIQUE_VIOLATION
   );
 }

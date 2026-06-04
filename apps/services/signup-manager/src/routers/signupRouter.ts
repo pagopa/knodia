@@ -6,10 +6,7 @@ import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  KnodiaServiceHeaders,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import type { SignupService } from "../services/signupService.ts";
@@ -107,8 +104,7 @@ export const protectedSignupRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_ConfirmOnboardingRequestBody,
-      description: "Confirm onboarding for the user caller",
-      headers: KnodiaServiceHeaders,
+      description: "Confirm onboarding for the caller user",
       operationId: "confirmOnboarding",
       response: {
         204: z

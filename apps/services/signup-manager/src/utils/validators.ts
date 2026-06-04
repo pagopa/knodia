@@ -10,8 +10,7 @@ export async function assertSignupUserEmailDoesNotExist(
   email: string,
   signupDbService: SignupDbService,
 ): Promise<void> {
-  const existing =
-    await signupDbService.checkActiveSignupUserEmailExists(email);
+  const existing = await signupDbService.checkSignupUserEmailExists(email);
 
   if (existing) {
     throw signupUserEmailAlreadyAssociated(email);
@@ -22,9 +21,9 @@ export async function assertSignupUserIdentifiersDoNotExist(
   authData: UISignupSessionAuthData,
   signupDbService: SignupDbService,
 ): Promise<void> {
-  const existing = await signupDbService.checkActiveSignupUserIdentifierExists({
+  const existing = await signupDbService.checkSignupUserIdentifierExists({
     fiscalNumber: authData.fiscalNumber,
-    personIdentifier: authData.personalIdentifier,
+    personIdentifier: authData.personIdentifier,
     spidCode: authData.spidCode,
   });
 

@@ -14,7 +14,23 @@ export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 /** @knipignore */
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async checkActiveSignupUserEmailExists(email: string): Promise<boolean> {
+    async checkSignupOrganizationNameAlreadyTaken(
+      organizationName: string,
+    ): Promise<boolean> {
+      const result = await db
+        .select()
+        .from(signupUser)
+        .where(
+          or(
+            eq(signupUser.lynxOrganizationName, organizationName),
+            eq(signupUser.orionOrganizationName, organizationName),
+          ),
+        )
+        .limit(1);
+      return result.length > 0;
+    },
+
+    async checkSignupUserEmailExists(email: string): Promise<boolean> {
       const result = await db
         .select({ signupUserId: signupUser.signupUserId })
         .from(signupUser)
@@ -24,7 +40,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
-    async checkActiveSignupUserIdentifierExists({
+    async checkSignupUserIdentifierExists({
       fiscalNumber,
       personIdentifier,
       spidCode,
@@ -59,20 +75,6 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .where(or(...identifierFilters))
         .limit(1);
 
-      return result.length > 0;
-    },
-
-    async checkSignupUserNameAlreadyTaken(userName: string): Promise<boolean> {
-      const result = await db
-        .select()
-        .from(signupUser)
-        .where(
-          or(
-            eq(signupUser.lynxOrganizationName, userName),
-            eq(signupUser.orionOrganizationName, userName),
-          ),
-        )
-        .limit(1);
       return result.length > 0;
     },
 
