@@ -1,6 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
 import { UISignupSessionTokenClaims } from "@knodia/common-models/auth";
-import { decodeJwt } from "jose";
 import {
   createContext,
   useCallback,
@@ -8,6 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import z from "zod";
 
 export interface AuthContext {
   isAuthenticated: boolean;
@@ -20,6 +20,30 @@ export interface AuthContext {
 const AuthContext = createContext<AuthContext | null>(null);
 
 const key = "sessionToken";
+const UISignupSessionToken = z
+  .string()
+  .transform((token, ctx) => {
+    const payload = token.split(".")[1];
+
+    if (!payload) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Invalid JWT: missing payload",
+      });
+      return z.NEVER;
+    }
+
+    try {
+      return JSON.parse(window.atob(payload)) as unknown;
+    } catch {
+      ctx.addIssue({
+        code: "custom",
+        message: "Invalid JWT: payload is not valid JSON",
+      });
+      return z.NEVER;
+    }
+  })
+  .pipe(UISignupSessionTokenClaims);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [sessionToken, setSessionTokenState] = useState<null | string>(
@@ -33,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      return UISignupSessionTokenClaims.parse(decodeJwt(sessionToken));
+      return UISignupSessionToken.parse(sessionToken);
     } catch (error) {
       console.warn("Failed to decode UI signup session token claims", error);
       throw error;

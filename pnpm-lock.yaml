@@ -2162,6 +2162,9 @@ importers:
 
   apps/web/signup-frontend:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/signup-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/signup-manager-client

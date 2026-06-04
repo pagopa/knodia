@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@tailwindcss/vite": "catalog:",
