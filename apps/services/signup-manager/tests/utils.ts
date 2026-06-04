@@ -52,7 +52,7 @@ export function makeSignupUser(
     name: "Seed",
     signupUserId: seed,
     spidCode: `SPID-${seed}`,
-    status: "ACTIVE",
+    status: "Active",
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     ...overrides,
   };

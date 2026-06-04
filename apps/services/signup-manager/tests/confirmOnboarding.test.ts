@@ -1,3 +1,4 @@
+import { SignupEventV1 } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import { kafkaProducerMock } from "./setup.ts";
@@ -23,23 +24,28 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
 
     const signupUser = signupUsers[0];
 
-    expect(signupUser).toMatchObject({
+    expect(signupUser).toEqual({
+      createdAt: expect.any(Date),
       dateOfBirth: validUISignupSessionTokenClaims.dateOfBirth,
       email: validConfirmOnboardingBody.email,
       familyName: validUISignupSessionTokenClaims.familyName,
       fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+      lynxOrganizationName: expect.any(String),
+      lynxUserName: expect.any(String),
       name: validUISignupSessionTokenClaims.name,
+      orionOrganizationName: expect.any(String),
+      orionUserName: expect.any(String),
+      personIdentifier: null,
+      signupUserId: expect.any(String),
       spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "ACTIVE",
+      status: "Active",
+      updatedAt: expect.any(Date),
     });
-
-    expect(signupUser?.personIdentifier).toBeNull();
-    expect(signupUser?.signupUserId).toEqual(expect.any(String));
 
     expect(kafkaProducerMock.send).toHaveBeenCalledOnce();
     const [sendPayload] = kafkaProducerMock.send.mock.calls[0] ?? [];
 
-    expect(sendPayload).toMatchObject({
+    expect(sendPayload).toEqual({
       messages: [{ value: expect.any(String) }],
       topic: "test-signup-topic",
     });
@@ -47,8 +53,9 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     const messageValue = sendPayload?.messages[0]?.value;
     expect(messageValue).toBeDefined();
 
-    const event = JSON.parse(messageValue as string);
-    expect(event).toMatchObject({
+    const event = SignupEventV1.parse(JSON.parse(messageValue as string));
+
+    expect(event).toEqual({
       data: { signupUserId: signupUser?.signupUserId },
       type: "OnboardingCompletedV1",
     });

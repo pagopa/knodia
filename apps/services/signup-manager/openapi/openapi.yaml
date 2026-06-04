@@ -173,21 +173,13 @@ paths:
       operationId: confirmOnboarding
       tags:
         - signup
-      description: Confirm onboarding for the user caller
+      description: Confirm onboarding for the caller user
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ConfirmOnboardingRequestBody"
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
       responses:
         "204":
           description: Onboarding confirmed successfully

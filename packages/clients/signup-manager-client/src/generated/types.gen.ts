@@ -98,12 +98,6 @@ export type ExchangeOidcCodeResponse = ExchangeOidcCodeResponses[keyof ExchangeO
 
 export type ConfirmOnboardingData = {
     body: ConfirmOnboardingRequestBody;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
     path?: never;
     query?: never;
     url: '/onboarding/confirm';

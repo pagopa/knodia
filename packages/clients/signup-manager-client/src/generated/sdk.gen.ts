@@ -42,7 +42,7 @@ export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
- * Confirm onboarding for the user caller
+ * Confirm onboarding for the caller user
  */
 export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: Options<ConfirmOnboardingData, ThrowOnError>) => (options.client ?? client).post<ConfirmOnboardingResponses, ConfirmOnboardingErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

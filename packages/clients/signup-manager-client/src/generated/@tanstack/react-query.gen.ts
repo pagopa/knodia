@@ -95,7 +95,7 @@ export const exchangeOidcCodeOptions = (options: Options<ExchangeOidcCodeData>) 
 });
 
 /**
- * Confirm onboarding for the user caller
+ * Confirm onboarding for the caller user
  */
 export const confirmOnboardingMutation = (options?: Partial<Options<ConfirmOnboardingData>>): UseMutationOptions<ConfirmOnboardingResponse, AxiosError<ConfirmOnboardingError>, Options<ConfirmOnboardingData>> => {
     const mutationOptions: UseMutationOptions<ConfirmOnboardingResponse, AxiosError<ConfirmOnboardingError>, Options<ConfirmOnboardingData>> = {
