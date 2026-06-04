@@ -205,6 +205,13 @@ function filterUsers(payload) {
   return [];
 }
 
+function removeUserByUsername(username) {
+  const idx = MOCK_USERS.findIndex((user) => user.Username === username);
+  if (idx === -1) return 0;
+  MOCK_USERS.splice(idx, 1);
+  return 1;
+}
+
 function handleListUsersInGroup(req, res, payload) {
   const filteredUsers = filterUsersByGroup(payload.GroupName);
   const response = paginateItems(
@@ -239,6 +246,23 @@ function handleListUsers(req, res, payload) {
   writeJson(res, 200, response, {
     "x-amz-target": req.headers["x-amz-target"] ?? "",
   });
+}
+
+function handleAdminDeleteUser(req, res, payload) {
+  const removed = removeUserByUsername(payload.Username);
+
+  console.log(
+    `[admin-delete-user] Removed ${removed} user(s) for user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {},
+    {
+      "x-amz-target": req.headers["x-amz-target"] ?? "",
+    },
+  );
 }
 
 function handleAdminListGroupsForUser(req, res, payload) {
@@ -325,6 +349,11 @@ createServer(async (req, res) => {
         target === "AWSCognitoIdentityProviderService.AdminListGroupsForUser"
       ) {
         handleAdminListGroupsForUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
+        handleAdminDeleteUser(req, res, payload);
         return;
       }
     }

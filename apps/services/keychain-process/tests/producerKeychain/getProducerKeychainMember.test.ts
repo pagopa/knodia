@@ -215,4 +215,17 @@ describe("GET /producerKeychains/:producerKeychainId/members/:userId (getProduce
     expect(response.statusCode).toBe(400);
     expect(cognitoIdmClientMock.getUserById).not.toHaveBeenCalled();
   });
+
+  it("should return 404 when the user no longer exists in IDM", async () => {
+    await seedProducerKeychain(producerKeychain);
+
+    cognitoIdmClientMock.getUserById.mockResolvedValue(undefined);
+
+    const response = await getProducerKeychainMember(
+      VALID_PRODUCER_KEYCHAIN_ID,
+      VALID_MEMBER_ID,
+    );
+
+    expect(response.statusCode).toBe(404);
+  });
 });
