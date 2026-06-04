@@ -9,8 +9,6 @@ import { Button, Modal } from "@knodia/ui-kit/ui";
 import { MinusSquareIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
-import { useHasRole } from "@/contexts/auth";
-
 import { useUnlinkKeychainFromEservice } from "../hooks/useEserviceKeychainMutations";
 
 export function UnlinkKeychainAction({
@@ -21,11 +19,8 @@ export function UnlinkKeychainAction({
   keychain: bffApi.Keychain;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const isAdmin = useHasRole("administrative");
   const { isError, isPending, mutate } =
     useUnlinkKeychainFromEservice(eserviceId);
-
-  if (!isAdmin) return null;
 
   const handleUnlink = () => {
     mutate(unsafeBrandId<ProducerKeychainId>(keychain.id), {

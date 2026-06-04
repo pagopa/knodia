@@ -11,7 +11,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import z from "zod";
 
-import { useHasRole } from "@/contexts/auth";
 import { producerKeychainOptionsQuery } from "@/features/keychain/services/queries";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
@@ -25,9 +24,6 @@ export function LinkKeychainAction({
   linkedKeychainIds: string[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const isAdmin = useHasRole("administrative");
-
-  if (!isAdmin) return null;
 
   return (
     <>

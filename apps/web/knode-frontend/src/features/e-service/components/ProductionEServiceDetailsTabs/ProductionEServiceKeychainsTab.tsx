@@ -2,6 +2,7 @@ import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { useQuery } from "@tanstack/react-query";
 
 import { Section } from "@/components/Section";
+import { useHasRole } from "@/contexts/auth";
 import { ProducerKeychainsTable } from "@/features/keychain/components/ProducerKeychainsTable";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
@@ -13,6 +14,7 @@ import { UnlinkKeychainAction } from "../UnlinkKeychainAction";
 export function ProductionEServiceKeychainsTab() {
   const eservice = useProductionEserviceDetailsContext();
   const eserviceId = unsafeBrandId<EserviceId>(eservice.id);
+  const isAdmin = useHasRole("administrative");
 
   const { data, isLoading } = useQuery(
     eserviceLinkedProducerKeychainsQuery(eserviceId),
@@ -24,10 +26,12 @@ export function ProductionEServiceKeychainsTab() {
   return (
     <Section
       actions={
-        <LinkKeychainAction
-          eserviceId={eserviceId}
-          linkedKeychainIds={linkedKeychainIds}
-        />
+        isAdmin ? (
+          <LinkKeychainAction
+            eserviceId={eserviceId}
+            linkedKeychainIds={linkedKeychainIds}
+          />
+        ) : undefined
       }
       title="Keychains"
     >
@@ -35,9 +39,16 @@ export function ProductionEServiceKeychainsTab() {
         emptyState={<EserviceKeychainsEmptyState />}
         isLoading={isLoading}
         keychains={keychains}
-        rowActions={(keychain) => (
-          <UnlinkKeychainAction eserviceId={eserviceId} keychain={keychain} />
-        )}
+        rowActions={
+          isAdmin
+            ? (keychain) => (
+                <UnlinkKeychainAction
+                  eserviceId={eserviceId}
+                  keychain={keychain}
+                />
+              )
+            : undefined
+        }
       />
     </Section>
   );
