@@ -80,7 +80,7 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         404: API_Problem.meta({
           description:
-            "No natural person found for the Codice Fiscale, or the person exists but has no residence in the current period",
+            "No natural person found for the Codice Fiscale, or no residence address found for that person",
         }),
       },
       summary: "Get residence",

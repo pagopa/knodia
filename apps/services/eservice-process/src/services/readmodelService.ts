@@ -134,6 +134,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
+        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
@@ -288,6 +289,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
+        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
