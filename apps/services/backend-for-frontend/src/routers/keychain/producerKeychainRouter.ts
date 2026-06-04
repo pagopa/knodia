@@ -9,6 +9,10 @@ import {
   type ProducerKeychainId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import {
+  eserviceProcessApi,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
@@ -36,6 +40,7 @@ import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedKeyResource,
   API_GetKeychainKeysQueryParams,
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
@@ -47,6 +52,7 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainMemberPathParams,
   API_ProducerKeychainsQueryParams,
@@ -55,12 +61,14 @@ import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
   toAPI_KeychainKey,
+  toAPI_ProducerKeychainEservice,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { resourceExists } from "../../utils/resourceExists.ts";
 
 interface ProducerKeychainRouterOptions {
+  eserviceProcessClient: EserviceProcessClient;
   keychainProcessClient: KeychainProcessClient;
   organizationProcessClient: OrganizationProcessClient;
   pollingService: PollingService;
@@ -71,7 +79,12 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
-  { keychainProcessClient, organizationProcessClient, pollingService },
+  {
+    eserviceProcessClient,
+    keychainProcessClient,
+    organizationProcessClient,
+    pollingService,
+  },
 ) => {
   const retrieveProducerKeychainById = async (
     producerKeychainId: ProducerKeychainId,
@@ -703,5 +716,73 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { limit, offset } = req.query;
+
+      logger.info(
+        { requestParams: req.params, requestQuery: req.query },
+        `Getting E-services linked to Producer Keychain with ID ${req.params.producerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const {
+        data: { pagination, results: linkedEservices },
+      } = await keychainProcessApi.getProducerKeychainEservices({
+        client: keychainProcessClient,
+        headers,
+        path: { producerKeychainId: req.params.producerKeychainId },
+        query: { limit, offset },
+      });
+
+      const results = await Promise.all(
+        linkedEservices.map(async (link) => {
+          const [{ data: eservice }, { data: latestVersion }] =
+            await Promise.all([
+              eserviceProcessApi.getEservice({
+                client: eserviceProcessClient,
+                headers,
+                path: { eserviceId: link.eserviceId },
+              }),
+              eserviceProcessApi.getEserviceLatestVersion({
+                client: eserviceProcessClient,
+                headers,
+                path: { eserviceId: link.eserviceId },
+              }),
+            ]);
+
+          return toAPI_ProducerKeychainEservice(
+            link,
+            eservice,
+            latestVersion.state,
+          );
+        }),
+      );
+
+      res.send({ pagination, results });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve E-services linked to a Producer Keychain",
+      operationId: "getProducerKeychainEservices",
+      params: API_ProducerKeychainIdPathParam,
+      querystring: API_GetProducerKeychainEservicesQueryParams,
+      response: {
+        200: API_ProducerKeychainEservices.meta({
+          description:
+            "E-services linked to the Producer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Keychain not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices",
   });
 };
