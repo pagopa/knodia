@@ -7,6 +7,7 @@ import type {
   ProducerKeychainId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type {
   ConsumerKeychain,
@@ -16,13 +17,12 @@ import type {
   ProducerKeychain,
 } from "@knodia/keychain-models";
 
-import { genericInternalError } from "@knodia/common-models/errors";
-
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   consumerKeychainNotFound,
   consumerKeychainPurposeNotFound,
+  keychainMemberNotFound,
   keyNotFoundInKeychain,
   knodeApiKeychainNotFound,
   producerKeychainNotFound,
@@ -31,11 +31,6 @@ import {
   assertOrganizationIsKeychainOwner,
   assertUserIsMemberOfKeychain,
 } from "./validators.ts";
-
-type KeychainKind =
-  | "Consumer Keychain"
-  | "Knode API Keychain"
-  | "Producer Keychain";
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -120,26 +115,6 @@ export const retrieveKeychainKey = (
   return key;
 };
 
-async function retrieveKeychainUser(
-  userId: UserId,
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
-  keychainKind: KeychainKind,
-  cognitoIdmClient: CognitoIdmClient,
-): Promise<IdmUser> {
-  const user = await cognitoIdmClient.getUserById(userId);
-  if (!user) {
-    /**
-     * This should not happen as users are validated when added as members.
-     * If it does happen, it means there's a data inconsistency that should
-     * be investigated. Hence, we throw a generic internal error.
-     */
-    throw genericInternalError(
-      `User ${userId} in ${keychainKind} ${keychainId} not found in IDM`,
-    );
-  }
-  return user;
-}
-
 export const retrieveFlatProducerKeychain = async (
   producerKeychainId: ProducerKeychainId,
   readmodelService: ReadmodelService,
@@ -174,46 +149,46 @@ export async function retrieveKeychainMember<
   authData,
   cognitoIdmClient,
   keychain,
-  keychainKind,
   userId,
 }: {
   authData: UISessionAuthData;
   cognitoIdmClient: CognitoIdmClient;
   keychain: K;
-  keychainKind: KeychainKind;
   userId: UserId;
-}) {
+}): Promise<IdmUser> {
   assertOrganizationIsKeychainOwner(authData.organizationId, keychain);
   assertUserIsMemberOfKeychain(userId, keychain.id, keychain.users);
 
-  return await retrieveKeychainUser(
-    userId,
-    keychain.id,
-    keychainKind,
-    cognitoIdmClient,
-  );
+  const member = await cognitoIdmClient.getUserById(userId);
+  if (!member) {
+    throw keychainMemberNotFound(keychain.id, userId);
+  }
+  return member;
 }
 
 export async function retrievePaginatedKeychainUsers({
   cognitoIdmClient,
-  keychainId,
-  keychainKind,
   paginationParams: { limit, offset },
   users,
 }: {
   cognitoIdmClient: CognitoIdmClient;
-  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId;
-  keychainKind: KeychainKind;
   paginationParams: API_PaginationQueryParams;
   users: KeychainUser[];
-}) {
-  const paginatedUserIds = users
-    .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
-    .slice(offset, offset + limit);
-
-  return await Promise.all(
-    paginatedUserIds.map(({ userId }) =>
-      retrieveKeychainUser(userId, keychainId, keychainKind, cognitoIdmClient),
-    ),
+}): Promise<ListResult<IdmUser>> {
+  const sortedUsers = users.toSorted(
+    (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
   );
+
+  // TODO(KN-718): fetching every member before paginating in memory can put
+  // significant load on the Cognito quotas for large keychains.
+  const activeMembers = (
+    await Promise.all(
+      sortedUsers.map(({ userId }) => cognitoIdmClient.getUserById(userId)),
+    )
+  ).filter((member): member is IdmUser => member !== undefined);
+
+  return {
+    results: activeMembers.slice(offset, offset + limit),
+    totalCount: activeMembers.length,
+  };
 }

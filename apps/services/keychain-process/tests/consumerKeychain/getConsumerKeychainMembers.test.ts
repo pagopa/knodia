@@ -232,4 +232,33 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should exclude users that no longer exist in IDM and adjust totalCount accordingly", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const deletedUserIds = new Set([
+      existingUsers[1]!.id,
+      existingUsers[2]!.id,
+    ]);
+    cognitoIdmClientMock.getUserById.mockImplementation(
+      async (userId: string) =>
+        deletedUserIds.has(unsafeBrandUserId(userId))
+          ? undefined
+          : existingUsers.find((u) => u.id === userId),
+    );
+
+    const response = await getConsumerKeychainMembers({
+      query: { limit: "10", offset: "0" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = API_KeychainMembers.parse(response.json());
+    const expectedActiveMembers = existingMembers
+      .filter(({ userId }) => !deletedUserIds.has(userId))
+      .map(({ userId }) =>
+        toAPI_User(existingUsers.find((u) => u.id === userId)!),
+      );
+    expect(body.pagination.total).toBe(expectedActiveMembers.length);
+    expect(body.results).toEqual(expectedActiveMembers);
+  });
 });
