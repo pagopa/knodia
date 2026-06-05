@@ -54,8 +54,8 @@ describe("emitMockSignals", () => {
       (r) => r.signalType === SignalType.enum.SeedUpdate,
     );
     expect(seedUpdates).toHaveLength(1);
-    expect(seedUpdates[0]?.objectId).toBe("");
-    expect(seedUpdates[0]?.objectType).toBe("");
+    expect(seedUpdates[0]?.objectId).toBeNull();
+    expect(seedUpdates[0]?.objectType).toBeNull();
 
     const mockSignalRows = rows.filter(
       (r) => r.signalType !== SignalType.enum.SeedUpdate,
@@ -134,16 +134,16 @@ describe("emitMockSignals", () => {
       {
         correlationId: generateId<CorrelationId>(),
         eserviceId: SIGNAL_HUB_MOCK_ESERVICE_ID,
-        objectId: "",
-        objectType: "",
+        objectId: null,
+        objectType: null,
         signalId: 100,
         signalType: SignalType.enum.SeedUpdate,
       },
       {
         correlationId: generateId<CorrelationId>(),
         eserviceId: OTHER_ESERVICE_ID,
-        objectId: "",
-        objectType: "",
+        objectId: null,
+        objectType: null,
         signalId: 999,
         signalType: SignalType.enum.SeedUpdate,
       },
