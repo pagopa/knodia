@@ -432,4 +432,54 @@ describe("POST /purposes (ReceiveData mode)", () => {
       expect(response.statusCode).toBe(409);
     },
   );
+
+  it("should return 400 when dailyCalls exceed the e-service per-consumer limit", async () => {
+    const eservice = buildReceiveDataEservice();
+    const limitedEservice = {
+      ...eservice,
+      versions: [
+        {
+          ...eservice.versions[0]!,
+          maxDailyCallsPerConsumer: 100,
+          maxDailyCallsPerKnode: 1000,
+        },
+      ],
+    };
+    await setupEserviceAndAgreement(limitedEservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        dailyCalls: 101,
+        description: { en: "A valid test description for receive-data" },
+        eserviceId: limitedEservice.id,
+        eserviceMode: "ReceiveData",
+        name: { en: "Valid Test Name" },
+        purposeFormOptionId:
+          limitedEservice.receiveDataConfig!.purposeFormOptions[0]!.id,
+      } satisfies API_PurposeSeedReceiveData);
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 when dailyCalls is below the minimum", async () => {
+    const eservice = buildReceiveDataEservice();
+    await setupEserviceAndAgreement(eservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        dailyCalls: 0,
+        description: { en: "A valid test description for receive-data" },
+        eserviceId: eservice.id,
+        eserviceMode: "ReceiveData",
+        name: { en: "Valid Test Name" },
+        purposeFormOptionId:
+          eservice.receiveDataConfig!.purposeFormOptions[0]!.id,
+      } satisfies API_PurposeSeedReceiveData);
+
+    expect(response.statusCode).toBe(400);
+  });
 });

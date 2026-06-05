@@ -10,6 +10,7 @@ import { type Agreement, AgreementState } from "@knodia/agreement-models";
 import {
   type Eservice,
   type EserviceMode,
+  type EserviceVersion,
   EserviceVersionState,
   type ReceiveDataConfig,
 } from "@knodia/eservice-models";
@@ -22,6 +23,7 @@ import { match } from "ts-pattern";
 
 import {
   agreementNotInExpectedStates,
+  dailyCallsExceedLimit,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
@@ -67,6 +69,37 @@ export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
     throw eserviceVersionNotInExpectedStates(
       eservice.id,
       purposeCreationAllowedEserviceVersionStates,
+    );
+  }
+};
+
+// The lower bound (>= minDailyCalls) is enforced by the API schema; here we
+// enforce the per-e-service upper bound, which depends on the e-service version
+// and so can't live in the static body schema. Mirrors the front-end check.
+export const assertDailyCallsAreWithinLimit = (
+  eservice: Eservice,
+  dailyCalls: number,
+) => {
+  const eserviceVersion = eservice.versions
+    .filter((v) =>
+      purposeCreationAllowedEserviceVersionStates.includes(v.state),
+    )
+    .reduce<
+      EserviceVersion | undefined
+    >((latest, v) => (latest === undefined || v.versionNumber > latest.versionNumber ? v : latest), undefined);
+
+  if (eserviceVersion === undefined) {
+    throw eserviceVersionNotInExpectedStates(
+      eservice.id,
+      purposeCreationAllowedEserviceVersionStates,
+    );
+  }
+
+  if (dailyCalls > eserviceVersion.maxDailyCallsPerConsumer) {
+    throw dailyCallsExceedLimit(
+      eservice.id,
+      dailyCalls,
+      eserviceVersion.maxDailyCallsPerConsumer,
     );
   }
 };

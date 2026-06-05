@@ -59,6 +59,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertAgreementAllowsPurposeCreation,
+  assertDailyCallsAreWithinLimit,
   assertEserviceAllowsPurposeCreation,
   assertEserviceModeIs,
   assertOrganizationIsPurposeProducer,
@@ -164,6 +165,7 @@ export function purposeServiceBuilder(
       );
       assertEserviceModeIs(eservice, seed.eserviceMode);
       assertEserviceAllowsPurposeCreation(eservice);
+      assertDailyCallsAreWithinLimit(eservice, seed.dailyCalls);
 
       const agreements = await retrieveAgreements({
         consumerId: seed.consumer.id,

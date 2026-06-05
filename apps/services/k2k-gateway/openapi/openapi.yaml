@@ -780,7 +780,7 @@ components:
           description: Expected number of daily API calls for this Purpose
           format: int32
           type: integer
-          minimum: 0
+          minimum: 1
           maximum: 1000000000
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
@@ -839,7 +839,7 @@ components:
           description: Expected number of daily API calls for this Purpose
           format: int32
           type: integer
-          minimum: 0
+          minimum: 1
           maximum: 1000000000
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"

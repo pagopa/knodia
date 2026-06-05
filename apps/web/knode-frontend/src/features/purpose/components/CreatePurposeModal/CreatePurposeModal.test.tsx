@@ -72,6 +72,32 @@ describe("CreatePurposeModal", () => {
     });
   });
 
+  it("validates dailyCalls against the minimum", async () => {
+    const { user } = renderWizard();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Name")).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText("Name"), "Valid Purpose Name");
+    await user.type(
+      screen.getByLabelText("Description"),
+      "A valid description for testing purposes",
+    );
+
+    const dailyCallsInput = screen.getByRole("textbox", {
+      name: "How many API calls do you plan to make per day?",
+    });
+    await user.clear(dailyCallsInput);
+    await user.type(dailyCallsInput, "0");
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Must be at least 1/)).toBeInTheDocument();
+    });
+  });
+
   it("shows leave confirmation modal and calls onClose when confirmed", async () => {
     const { onClose, user } = renderWizard();
 
