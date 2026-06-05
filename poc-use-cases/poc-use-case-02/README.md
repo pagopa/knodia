@@ -1,14 +1,8 @@
 # POC Use Case 02 — Demo Flow
 
-Step-by-step instructions to demonstrate [POC Use Case 02](https://pagopa.atlassian.net/wiki/spaces/IT/pages/2914353300/POC+Use+Case+02) end-to-end.
+Step-by-step instructions to run the POC Use Case 02 demo end-to-end. See [POC Use Case 02](https://pagopa.atlassian.net/wiki/spaces/IT/pages/2914353300/POC+Use+Case+02) for the scenario.
 
-The phases follow the *Interaction Flow* diagram on the use case page: Phases 1–3 cover the *submit registration request* path, Phase 4 the *recovery of evidence changes* path. The `companyLynx` ↔ registry interactions (request, confirmation, nullification) and the registry's `verify scope` / `verify evidence` gates are **narrated only** — they are not implemented in the POC.
-
-## Conventions
-
-- `[UI]` — performed in a node frontend.
-- `[scripting]` — runs a dedicated script from `poc-use-cases/poc-use-case-02/scripts/` (to be implemented). Each script wraps the existing repo scripts (`generate-client-assertion`, token requests, e-service / Signal Hub calls) and takes the IDs of the UI-created entities as params, so the use case folder is self-contained.
-- `[narration]` — described out loud only; nothing is implemented (the dashed boxes and verify gates in the diagram).
+Legend: **[UI]** — do it in the node frontend · **[script]** — run a script from this folder · **[narration]** — just explain it out loud, nothing to do.
 
 ## Prerequisites
 
@@ -25,9 +19,9 @@ Steps:
 
 1. **[UI]** Log in to the Lynx Knode as a User of the `businessBookletLynx` Organization.
 2. **[UI]** Go to the Production > E-services section.
-3. **[UI]** Click "Create E-service" to demonstrate the E-service creation flow.
-4. **[UI]** That was just to demonstrate the creation flow; the correct E-service was already created in advance by the seed. Open the right E-service (name TBD) and show its details: the `getCompanyInformation` / `getEvidences` operations, Consumer Requirements = the `companiesRegistries` attribute, category `organization.private_company.construction_activity`, and Signal Hub enabled.
-5. **[UI]** Create a Knode API Keychain for `businessBookletLynx` (used in Phase 4 to publish evidence-change signals): add a member and upload a public key. Note its ID (`producerKnodeApiKeychainId`).
+3. **[UI]** Click "Create E-service" to show the E-service creation flow.
+4. **[UI]** That was only to show the creation flow — the E-service used by the demo was already created in advance. Open it (name TBD) and show its detail page.
+5. **[UI]** Create a Knode API Keychain for `businessBookletLynx` (needed in Phase 4 to publish signals): add a member and upload a public key. Note its ID.
 
 ## Phase 2
 
@@ -38,14 +32,13 @@ Description: the Construction Companies Registry of the Orion domain wants to im
 Steps:
 
 1. **[UI]** Log in to the Orion Knode as a User of the `constructionCompaniesRegistryOrion` Organization.
-2. **[UI]** Go to the Consumption > E-services section and open the Lynx Cross-border E-Service from the catalogue.
-3. **[UI]** Create an Agreement for the E-service. It can be granted because the Organization holds the `companiesRegistries` attribute, which satisfies the E-service's Consumer Requirements.
-4. **[UI]** _(Lynx side)_ As a `businessBookletLynx` operator, confirm the Agreement — the Lynx producer E-service has operator confirmation enabled — so it becomes `Active`.
+2. **[UI]** Go to the Consumption > E-services section and open the Lynx Cross-border E-Service.
+3. **[UI]** Create an Agreement for the E-service.
+4. **[UI]** _(Lynx side)_ As a `businessBookletLynx` operator, confirm the Agreement so it becomes Active.
 5. **[UI]** Create a Purpose for the Agreement.
-6. **[UI]** Create a Consumer Keychain, add a member, upload a public key, and link the Purpose to the keychain.
-7. **[UI]** Create a Knode API Keychain (used in Phase 4 to pull signals): add a member and upload a public key.
-
-Record `eserviceId`, `agreementId`, `purposeId`, `consumerKeychainId` and `consumerKnodeApiKeychainId` — they are the params for the Phase 3 / 4 scripts.
+6. **[UI]** Create a Consumer Keychain, add a member, upload a public key, and link the Purpose to it.
+7. **[UI]** Create a Knode API Keychain (needed in Phase 4 to pull signals): add a member and upload a public key.
+8. Note the IDs shown in the UI (E-service, Agreement, Purpose, Consumer Keychain, Knode API Keychain) — you'll pass them to the scripts in Phases 3–4.
 
 ## Phase 3
 
@@ -55,13 +48,10 @@ Description: the Construction Companies Registry of the Orion domain receives a 
 
 Steps:
 
-1. **[narration]** A construction company (`companyLynx`) submits a registration request to the registry (`submit request` → `receive request`). The demo runner starts the script below.
-2. **[scripting]** Run `submit-registration-request` (params: `consumerKeychainId`, `purposeId`, `uidCompany`). It obtains a Lynx access token and calls `getCompanyInformation(uidCompany)`.
-   - _Expected:_ `200` with the company `legal_entity` data.
-3. **[narration]** The registry verifies the scope (`verify scope`) — narrated OK. On KO it would return a nullification to `companyLynx`.
-4. **[scripting]** The same script then calls `getEvidences(uidCompany)`.
-   - _Expected:_ `200` with the `evidence` list.
-5. **[narration]** The registry verifies the evidence (`verify evidence`) — narrated OK — and would return a registration confirmation to `companyLynx` (`receive confirmation`). On KO, a nullification.
+1. **[narration]** A construction company (`companyLynx`) submits a registration request to the registry.
+2. **[script]** Run `submit-registration-request` (Consumer Keychain id, Purpose id, company id) — the registry retrieves the company's information and evidence from Lynx.
+   - _Expected:_ the company information and evidence are returned.
+3. **[narration]** The registry verifies the company's scope and evidence and, on success, confirms the registration to the company; on failure it returns a nullification.
 
 ## Phase 4
 
@@ -71,23 +61,8 @@ Description: the Construction Companies Registry of the Orion domain monitors th
 
 Steps:
 
-1. **[scripting]** _(producer side)_ Run `publish-evidence-update-signal` (params: `producerKnodeApiKeychainId`, `eserviceId`, `uidCompany`). It simulates `businessBookletLynx` changing a company's evidence and publishing the matching signal to the Lynx Signal Hub (`company evidence updates` → `submit updates company signal`).
-   - _Expected:_ the signal is accepted by the Lynx Signal Hub.
-2. **[scripting]** _(consumer side)_ Run `recover-evidence-changes` (params: `consumerKnodeApiKeychainId`, `consumerKeychainId`, `purposeId`, `eserviceId`, `uidCompany`). It pulls the signals from the Lynx Signal Hub (`updates company signal recover`); on a signal for a monitored company it re-fetches `getEvidences(uidCompany)` (`company evidence recover`).
-   - _Expected:_ the new signal appears and the re-fetched evidence reflects the change.
-3. **[narration]** The registry verifies the evidence (`verify evidence`) — narrated OK — and updates the company's registration in Orion accordingly.
-
-## Scripts to implement
-
-Under `poc-use-cases/poc-use-case-02/scripts/` (defined in detail when implementing the corresponding work items):
-
-- `submit-registration-request` — params: `consumerKeychainId`, `purposeId`, `uidCompany`. Signs a client assertion, gets a Lynx access token, calls `getCompanyInformation` then `getEvidences`.
-- `publish-evidence-update-signal` — params: `producerKnodeApiKeychainId`, `eserviceId`, `uidCompany`. Pushes an evidence-change signal to the Lynx Signal Hub.
-- `recover-evidence-changes` — params: `consumerKnodeApiKeychainId`, `consumerKeychainId`, `purposeId`, `eserviceId`, `uidCompany`. Pulls signals from the Lynx Signal Hub and re-fetches `getEvidences`.
-
-Each wraps the existing repo scripts (`pnpm generate-client-assertion`, token endpoints, e-service / Signal Hub calls).
-
-## To finalize during implementation
-
-- Seeded E-service name and the exact endpoint paths / params for `getCompanyInformation` / `getEvidences`.
-- Signal content for `evidence` (`objectType` / `objectId`) and how the producer publishes it (see the "POC con Signal Hub" note in the implementation plan).
+1. **[script]** _(producer side)_ Run `publish-evidence-update-signal` (producer Knode API Keychain id, E-service id, company id) — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
+   - _Expected:_ the signal is published.
+2. **[script]** _(consumer side)_ Run `recover-evidence-changes` (consumer Knode API Keychain id, Consumer Keychain id, Purpose id, E-service id, company id) — the registry reads the new signal and re-retrieves the company's evidence from Lynx.
+   - _Expected:_ the new signal is read and the updated evidence is returned.
+3. **[narration]** The registry verifies the evidence and updates the company's registration in Orion accordingly.
