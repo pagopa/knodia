@@ -11,6 +11,7 @@ import {
   type Eservice,
   type EserviceMode,
   EserviceVersionState,
+  findEserviceLatestVersion,
   type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 import {
@@ -23,6 +24,7 @@ import { match } from "ts-pattern";
 import {
   agreementNotInExpectedStates,
   dailyCallsExceedLimit,
+  eserviceLatestVersionNotFound,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
@@ -76,8 +78,9 @@ export const assertDailyCallsAreWithinLimit = (
   eservice: Eservice,
   dailyCalls: number,
 ) => {
-  const latestVersion = eservice.versions.reduce((latest, version) =>
-    version.versionNumber > latest.versionNumber ? version : latest,
+  const latestVersion = findEserviceLatestVersion(
+    eservice,
+    eserviceLatestVersionNotFound,
   );
 
   if (dailyCalls > latestVersion.maxDailyCallsPerConsumer) {

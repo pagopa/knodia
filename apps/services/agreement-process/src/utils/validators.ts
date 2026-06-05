@@ -21,6 +21,8 @@ import {
   type Eservice,
   type EserviceVersion,
   EserviceVersionState,
+  findEserviceLatestVersion,
+  findEserviceVersion,
 } from "@knodia/eservice-models";
 import { match } from "ts-pattern";
 
@@ -34,15 +36,12 @@ import {
   agreementNotInSuspendableState,
   agreementTokenClaimMismatch,
   consumerMissingRequiredAttributes,
+  eserviceVersionNotFound,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
   type ExternalUISessionClaimField,
   organizationNotAgreementProducer,
 } from "../models/errors.ts";
-import {
-  retrieveEserviceLatestVersion,
-  retrieveEserviceVersionFromEservice,
-} from "./utils.ts";
 
 const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
@@ -138,9 +137,10 @@ export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
 ): EserviceVersion => {
-  const eserviceVersion = retrieveEserviceVersionFromEservice(
+  const eserviceVersion = findEserviceVersion(
     eservice,
     eserviceVersionId,
+    eserviceVersionNotFound,
   );
 
   if (
@@ -173,7 +173,10 @@ export const assertEserviceVersionIsLatest = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
 ) => {
-  const eserviceLatestVersion = retrieveEserviceLatestVersion(eservice);
+  const eserviceLatestVersion = findEserviceLatestVersion(
+    eservice,
+    eserviceVersionNotFound,
+  );
 
   if (eserviceLatestVersion.id !== eserviceVersionId) {
     throw eserviceVersionNotLatest(

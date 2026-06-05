@@ -45,6 +45,7 @@ const errorCodes = {
   PURPOSE_FORM_OPTION_NOT_FOUND: "0012",
   RECEIVE_DATA_CONFIG_MISSING: "0013",
   DAILY_CALLS_EXCEED_LIMIT: "0014",
+  ESERVICE_LATEST_VERSION_NOT_FOUND: "0015",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -100,6 +101,15 @@ export function dailyCallsExceedLimit(
     detail: `dailyCalls ${dailyCalls} exceeds the per-consumer limit of ${maxDailyCallsPerConsumer} for E-service ${eserviceId}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Daily Calls Exceed Limit",
+  });
+}
+
+export function eserviceLatestVersionNotFound(eserviceId: EserviceId) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_LATEST_VERSION_NOT_FOUND",
+    detail: `E-service latest version not found for E-service '${eserviceId}'`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "E-service Version Not Found",
   });
 }
 
