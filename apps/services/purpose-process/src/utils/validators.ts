@@ -72,10 +72,6 @@ export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
   }
 };
 
-// Enforce the per-e-service upper bound on dailyCalls, which depends on the
-// e-service version and so can't live in the static body schema. Mirrors the
-// front-end check, which validates against the latest version's
-// maxDailyCallsPerConsumer.
 export const assertDailyCallsAreWithinLimit = (
   eservice: Eservice,
   dailyCalls: number,
