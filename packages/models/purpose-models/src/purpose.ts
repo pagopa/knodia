@@ -14,7 +14,7 @@ export const maxNameLength = 60;
 export const minDescriptionLength = 10;
 export const maxDescriptionLength = 250;
 
-export const minDailyCalls = 1;
+export const minDailyCalls = 0;
 export const maxDailyCalls = 1_000_000_000;
 
 export const LocalizedPurposeName = LocalizedText(minNameLength, maxNameLength);
