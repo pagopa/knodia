@@ -39,12 +39,12 @@ const logger = { info: vi.fn() } as unknown as Logger;
 function buildDeps(): SignupUpdaterDeps {
   const node = {
     cognitoClient: { createOrganizationUser: cognitoCreateUserMock },
-    orgClient: {},
-  };
-  return {
     internalTokenProvider: {
       get: vi.fn().mockResolvedValue({ serialized: "mock-internal-token" }),
     },
+    orgClient: {},
+  };
+  return {
     nodeClients: { Lynx: node, Orion: node },
     signupDbService: { getSignupUserById: getSignupUserByIdMock },
   } as unknown as SignupUpdaterDeps;

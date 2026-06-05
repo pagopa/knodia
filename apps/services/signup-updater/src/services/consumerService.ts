@@ -83,10 +83,11 @@ async function provisionKnode(
   logger: Logger,
 ): Promise<void> {
   const entities = user.generatedEntities[knodeId];
-  const { cognitoClient, orgClient } = deps.nodeClients[knodeId];
+  const { cognitoClient, internalTokenProvider, orgClient } =
+    deps.nodeClients[knodeId];
   const headers = getKnodiaServiceHeaders(
     correlationId,
-    await deps.internalTokenProvider.get(),
+    await internalTokenProvider.get(),
   );
 
   logger.info(

@@ -1,5 +1,6 @@
 import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { Logger } from "pino";
 
 import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
 import { eq } from "drizzle-orm";
@@ -19,6 +20,7 @@ export function organizationWriterServiceBuilder(db: NodePgDatabase) {
     async upsertOrganization(
       organization: Organization,
       metadataVersion: number,
+      logger?: Logger,
     ): Promise<void> {
       const { attributesSQL, organizationSQL } =
         splitOrganizationIntoObjectsSQL(organization, metadataVersion);
@@ -49,6 +51,9 @@ export function organizationWriterServiceBuilder(db: NodePgDatabase) {
 
         if (inserted.length === 0) {
           // A different organization already owns this externalRequestId.
+          logger?.warn(
+            `Skipping organization ${organization.id}: externalRequestId ${organization.externalRequestId} already owned by another organization`,
+          );
           return;
         }
 

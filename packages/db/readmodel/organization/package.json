@@ -18,6 +18,7 @@
     "@knodia/organization-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
+    "pino": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

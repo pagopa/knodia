@@ -3052,6 +3052,9 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.16.3
+      pino:
+        specifier: 'catalog:'
+        version: 10.2.1
       zod:
         specifier: 'catalog:'
         version: 4.2.0

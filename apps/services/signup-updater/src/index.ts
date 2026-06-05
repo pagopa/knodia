@@ -18,13 +18,15 @@ const buildNodeClient = (knodeId: KnodeId) => ({
   cognitoClient: buildCognitoIdmClient({
     cognitoUserPoolId: config.cognitoUserPoolIds[knodeId],
   }),
+  internalTokenProvider: refreshableInternalTokenGenerator(
+    config.internalJwt[knodeId],
+  ),
   orgClient: createOrganizationProcessApiClient({
     baseURL: config.organizationProcessUrls[knodeId],
   }),
 });
 
 const deps: SignupUpdaterDeps = {
-  internalTokenProvider: refreshableInternalTokenGenerator(config.internalJwt),
   nodeClients: {
     Lynx: buildNodeClient(KnodeId.enum.Lynx),
     Orion: buildNodeClient(KnodeId.enum.Orion),

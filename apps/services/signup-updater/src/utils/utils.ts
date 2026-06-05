@@ -16,10 +16,13 @@ import { SignupEventV1 } from "@knodia/signup-models";
 import { handleSignupMessage } from "../services/consumerService.ts";
 
 export interface SignupUpdaterDeps {
-  internalTokenProvider: RefreshableInternalTokenGenerator;
   nodeClients: Record<
     KnodeId,
-    { cognitoClient: CognitoIdmClient; orgClient: OrganizationProcessClient }
+    {
+      cognitoClient: CognitoIdmClient;
+      internalTokenProvider: RefreshableInternalTokenGenerator;
+      orgClient: OrganizationProcessClient;
+    }
   >;
   signupDbService: SignupDbService;
 }

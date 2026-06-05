@@ -33,7 +33,11 @@ export const createProcessMessage = (
 
     const messageLogger = logger.child(loggerMetadata);
 
-    await handleOrganizationEvent(event, organizationWriterService);
+    await handleOrganizationEvent(
+      event,
+      organizationWriterService,
+      messageLogger,
+    );
 
     messageLogger.info(
       `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,

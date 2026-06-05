@@ -14,9 +14,14 @@ const SignupUpdaterConfig = LoggerConfig.and(KafkaConsumerConfig)
       .object({
         COGNITO_USER_POOL_ID_LYNX: z.string().min(1),
         COGNITO_USER_POOL_ID_ORION: z.string().min(1),
-        INTERNAL_JWT_AUDIENCE: z.string().min(1),
-        INTERNAL_JWT_ISSUER: z.string().min(1),
-        INTERNAL_JWT_KID: z.string().min(1),
+        // audience/issuer/kid differ per Knode: each Knode validates the
+        // internal token against its own trust config and signs with its own key.
+        INTERNAL_JWT_AUDIENCE_LYNX: z.string().min(1),
+        INTERNAL_JWT_AUDIENCE_ORION: z.string().min(1),
+        INTERNAL_JWT_ISSUER_LYNX: z.string().min(1),
+        INTERNAL_JWT_ISSUER_ORION: z.string().min(1),
+        INTERNAL_JWT_KID_LYNX: z.string().min(1),
+        INTERNAL_JWT_KID_ORION: z.string().min(1),
         INTERNAL_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -32,11 +37,20 @@ const SignupUpdaterConfig = LoggerConfig.and(KafkaConsumerConfig)
           Orion: c.COGNITO_USER_POOL_ID_ORION,
         },
         internalJwt: {
-          audience: c.INTERNAL_JWT_AUDIENCE,
-          issuer: c.INTERNAL_JWT_ISSUER,
-          kid: c.INTERNAL_JWT_KID,
-          secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
-          subject: c.INTERNAL_JWT_SUBJECT,
+          Lynx: {
+            audience: c.INTERNAL_JWT_AUDIENCE_LYNX,
+            issuer: c.INTERNAL_JWT_ISSUER_LYNX,
+            kid: c.INTERNAL_JWT_KID_LYNX,
+            secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
+            subject: c.INTERNAL_JWT_SUBJECT,
+          },
+          Orion: {
+            audience: c.INTERNAL_JWT_AUDIENCE_ORION,
+            issuer: c.INTERNAL_JWT_ISSUER_ORION,
+            kid: c.INTERNAL_JWT_KID_ORION,
+            secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
+            subject: c.INTERNAL_JWT_SUBJECT,
+          },
         },
         organizationProcessUrls: {
           Lynx: c.ORGANIZATION_PROCESS_LYNX_URL,
