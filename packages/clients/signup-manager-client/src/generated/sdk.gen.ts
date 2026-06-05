@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
+import type { ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -39,4 +39,17 @@ export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: O
     responseType: 'json',
     url: '/auth/oidc/token',
     ...options
+});
+
+/**
+ * Confirm onboarding for the caller user
+ */
+export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: Options<ConfirmOnboardingData, ThrowOnError>) => (options.client ?? client).post<ConfirmOnboardingResponses, ConfirmOnboardingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/onboarding/confirm',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });

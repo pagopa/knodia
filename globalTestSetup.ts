@@ -3,6 +3,7 @@ import { eventstoreTemplate } from "./packages/test-commons/src/eventstore"
 import { readmodelTemplate } from "./packages/test-commons/src/readmodel"
 import { remoteResourceDbTemplate } from "./packages/test-commons/src/remoteResourceDb"
 import { signalHubDbTemplate } from "./packages/test-commons/src/signalHubDb"
+import { signupDbTemplate } from "./packages/test-commons/src/signupDb"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
 import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
 import { createTestInfraNetwork } from "./packages/test-commons/src/testcontainers/network"
@@ -28,7 +29,7 @@ export default async function setup(project: TestProject) {
   await runTestFlywayMigrations({
     connectionString: postgresConnectionString,
     network,
-    templates: [eventstoreTemplate, readmodelTemplate, remoteResourceDbTemplate, signalHubDbTemplate],
+    templates: [eventstoreTemplate, readmodelTemplate, remoteResourceDbTemplate, signalHubDbTemplate, signupDbTemplate],
   });
 
   project.provide("POSTGRES_CONNECTION_STRING", postgresConnectionString);

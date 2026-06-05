@@ -19,19 +19,28 @@
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
+    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
     "@fastify/cookie": "catalog:",
+    "@fastify/request-context": "catalog:",
+    "@knodia/db-signup": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/signup-models": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "axios": "catalog:",
+    "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
+    "pg": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }
