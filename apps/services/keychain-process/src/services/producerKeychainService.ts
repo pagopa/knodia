@@ -23,6 +23,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
@@ -180,6 +181,39 @@ export function producerKeychainServiceBuilder(
       return await retrieveFlatProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+    },
+    async getProducerKeychainEservice(
+      producerKeychainId: ProducerKeychainId,
+      eserviceId: EserviceId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychainEservice>> {
+      logger.info(
+        `Getting E-service ${eserviceId} linked to Producer Keychain ${producerKeychainId}`,
+      );
+
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
+
+      return await retrieveProducerKeychainEservice(
+        { eserviceId, producerKeychainId },
+        readmodelService,
+      );
+    },
+    async getProducerKeychainEservices(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainEservicesQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ProducerKeychainEservice>> {
+      logger.info(
+        { params },
+        `Getting E-services linked to Producer Keychain ${producerKeychainId} with params`,
+      );
+
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
+
+      return await readmodelService.getProducerKeychainEservices(
+        producerKeychainId,
+        params,
       );
     },
     async getProducerKeychainKey(
