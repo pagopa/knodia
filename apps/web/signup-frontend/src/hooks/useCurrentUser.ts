@@ -1,10 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { useAuth } from "@/libs/auth";
+import { useAuthContext } from "@/contexts/auth";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export function useCurrentUser() {
-  const { sessionTokenClaims } = useAuth();
+  const { sessionTokenClaims } = useAuthContext();
   const { data } = useSuspenseQuery(getCurrentSignupUserQuery());
 
   if (!sessionTokenClaims || !data) {
