@@ -22,6 +22,7 @@ import {
   type KnodeApiKeychainId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { match } from "ts-pattern";
 
 import type {
   API_GetKnodeApiKeychainKeysQueryParams,
@@ -57,7 +58,10 @@ import {
   removeMemberFromKeychain,
   updateKeychain,
 } from "../utils/utils.ts";
-import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserIsAllowedToDownloadKey,
+} from "../utils/validators.ts";
 
 export type KnodeApiKeychainService = ReturnType<
   typeof knodeApiKeychainServiceBuilder
@@ -177,7 +181,10 @@ export function knodeApiKeychainServiceBuilder(
     async getKnodeApiKeychainKey(
       knodeApiKeychainId: KnodeApiKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Knode API Keychain with ID ${knodeApiKeychainId}`,
@@ -187,6 +194,17 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychainId,
         readmodelService,
       );
+
+      match(authData)
+        .with({ tokenType: "internal" }, () => undefined)
+        .with({ tokenType: "ui-session" }, (uiAuthData) =>
+          assertUserIsAllowedToDownloadKey(
+            uiAuthData,
+            knodeApiKeychainId,
+            knodeApiKeychain.data.users,
+          ),
+        )
+        .exhaustive();
 
       return retrieveKeychainKey(knodeApiKeychain.data, kid);
     },
