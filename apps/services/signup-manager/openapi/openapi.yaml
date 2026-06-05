@@ -112,7 +112,7 @@ paths:
     get:
       operationId: startOIDCSession
       tags:
-        - signup
+        - auth
       description: Initiate OIDC session
       security: []
       responses:
@@ -122,7 +122,7 @@ paths:
     get:
       operationId: exchangeOIDCCode
       tags:
-        - signup
+        - auth
       description: Handle OIDC callback and exchange authorization code for session token
       parameters:
         - schema:
@@ -223,5 +223,7 @@ security:
 tags:
   - description: Health check routes
     name: health
+  - description: Authentication routes
+    name: auth
   - description: Signup routes
     name: signup

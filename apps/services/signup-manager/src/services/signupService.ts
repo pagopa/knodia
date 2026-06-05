@@ -12,7 +12,7 @@ import { DatabaseError } from "pg";
 import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
-import { signupUserGeneratedEntitiesAlreadyTaken } from "../models/errors.ts";
+import { signupUserGeneratedEntitiesAlreadyExist } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
   assertSignupUserEmailDoesNotExist,
@@ -77,7 +77,7 @@ export function signupServiceBuilder(
          */
 
         if (isPgUniqueViolation(error))
-          throw signupUserGeneratedEntitiesAlreadyTaken();
+          throw signupUserGeneratedEntitiesAlreadyExist();
         throw error;
       }
 

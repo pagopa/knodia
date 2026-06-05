@@ -8,7 +8,7 @@ const { HTTP_STATUS_CONFLICT } = constants;
 const errorCodes = {
   SIGNUP_USER_EMAIL_ALREADY_ASSOCIATED: "0001",
   SIGNUP_USER_IDENTIFIER_ALREADY_ASSOCIATED: "0002",
-  SIGNUP_USER_GENERATED_ENTITIES_ALREADY_TAKEN: "0003",
+  SIGNUP_USER_GENERATED_ENTITIES_ALREADY_EXIST: "0003",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -27,13 +27,13 @@ export function signupUserEmailAlreadyAssociated(email: string) {
   });
 }
 
-export function signupUserGeneratedEntitiesAlreadyTaken() {
+export function signupUserGeneratedEntitiesAlreadyExist() {
   return createApiError<ErrorCodes>({
-    code: "SIGNUP_USER_GENERATED_ENTITIES_ALREADY_TAKEN",
+    code: "SIGNUP_USER_GENERATED_ENTITIES_ALREADY_EXIST",
     detail:
-      "Generated signup entities are already associated with another onboarded user. Please retry the onboarding confirmation",
+      "Generated signup entities exist already and are associated with another onboarded user. Please retry the onboarding confirmation",
     status: HTTP_STATUS_CONFLICT,
-    title: "Signup User Generated Entities Already Taken",
+    title: "Signup User Generated Entities Already Exist",
   });
 }
 
