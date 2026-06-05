@@ -4,6 +4,7 @@ import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/e
 import {
   type Eservice,
   type EserviceVersionState,
+  findEserviceLatestVersion,
 } from "@knodia/eservice-models";
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
@@ -25,8 +26,8 @@ export async function getAllEserviceEvents() {
 export const injectAppRequest = createInjectAppRequest(() => app);
 
 export async function seedEservice(eservice: Eservice) {
-  const latestVersion = eservice.versions.reduce((latest, version) =>
-    version.versionNumber > latest.versionNumber ? version : latest,
+  const latestVersion = findEserviceLatestVersion(eservice, (eserviceId) =>
+    new Error(`E-service latest version not found for E-service ${eserviceId}`),
   );
 
   await eserviceEventStoreWriterBuilder(eventStoreDb).insertEvent(
