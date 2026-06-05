@@ -3,13 +3,14 @@ import { RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import { AuthProvider, useAuth } from "@/libs/auth";
 import { router } from "@/libs/router";
 import { queryClient } from "@/libs/tanstack-query";
 
+import { AuthContextProvider, useAuthContext } from "./contexts/auth";
+
 // eslint-disable-next-line react-refresh/only-export-components
 function InnerApp() {
-  const auth = useAuth();
+  const auth = useAuthContext();
 
   return <RouterProvider context={{ auth }} router={router} />;
 }
@@ -21,9 +22,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <AuthContextProvider>
           <InnerApp />
-        </AuthProvider>
+        </AuthContextProvider>
       </QueryClientProvider>
     </StrictMode>,
   );
