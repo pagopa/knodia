@@ -3,6 +3,7 @@ import { Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { setAuthToken } from "@/libs/auth";
 import { client } from "@/libs/axios";
 
 export const Route = createFileRoute("/login/callback")({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/login/callback")({
     state: search.state,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ deps, context: { auth } }) => {
+  loader: async ({ deps }) => {
     const response = await signupManagerApi.exchangeOidcCode({
       client,
       query: {
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/login/callback")({
       withCredentials: true,
     });
 
-    auth.setSessionToken(response.data.uiSignupSessionToken);
+    setAuthToken(response.data.uiSignupSessionToken);
     throw redirect({ replace: true, to: "/home" });
   },
   onError: () => {

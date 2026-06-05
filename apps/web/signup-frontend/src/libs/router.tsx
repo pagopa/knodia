@@ -5,7 +5,7 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 
-import { type AuthContext } from "@/libs/auth";
+import { type AuthContext } from "@/contexts/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 

@@ -1,20 +1,14 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { getStoredSessionToken } from "@/libs/auth";
+import { redirectToLogin } from "@/libs/auth";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: ({ context }) => {
-    if (!context.auth.isAuthenticated && !getStoredSessionToken()) {
-      throw redirect({ to: "/login" });
-    }
+  beforeLoad: ({ context: { auth } }) => {
+    if (!auth.isAuthenticated) redirectToLogin();
   },
-  component: AuthenticatedLayout,
+  component: Outlet,
   loader: async ({ context: { queryClient } }) => {
     await queryClient.ensureQueryData(getCurrentSignupUserQuery());
   },
 });
-
-function AuthenticatedLayout() {
-  return <Outlet />;
-}

@@ -3,12 +3,12 @@ import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 
-import { getStoredSessionToken, setStoredSessionToken } from "./auth";
+import { clearAuthToken, getAuthToken, redirectToLogin } from "./auth";
 
 const authUrls = ["/auth/oidc/token"];
 
 function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
-  const token = getStoredSessionToken();
+  const token = getAuthToken();
   if (token) {
     axiosConfig.headers.Authorization = `Bearer ${token}`;
   }
@@ -25,8 +25,8 @@ async function handleUnauthorized(error: unknown): Promise<unknown> {
     return Promise.reject(error);
   }
 
-  setStoredSessionToken(null);
-  window.location.assign("/login");
+  clearAuthToken();
+  redirectToLogin();
 
   return Promise.reject(error);
 }
