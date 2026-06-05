@@ -295,7 +295,7 @@ export function consumerKeychainServiceBuilder(
         `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,
       );
 
-      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+      await retrieveFlatConsumerKeychain(consumerKeychainId, readmodelService);
 
       return await retrieveConsumerKeychainPurpose(
         { consumerKeychainId, purpose },
@@ -313,7 +313,7 @@ export function consumerKeychainServiceBuilder(
         `Getting Purposes linked to Consumer Keychain ${consumerKeychainId} with params`,
       );
 
-      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+      await retrieveFlatConsumerKeychain(consumerKeychainId, readmodelService);
 
       return await readmodelService.getConsumerKeychainPurposes(
         consumerKeychainId,
