@@ -20,8 +20,8 @@ Steps:
 1. **[UI]** Log in to the Lynx Knode as a User of the `businessBookletLynx` Organization.
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create E-service" to show the E-service creation flow.
-4. **[UI]** That was only to show the creation flow — the E-service used by the demo was already created in advance. Open it (name TBD) and show its detail page.
-5. **[UI]** Create a Knode API Keychain for `businessBookletLynx` (needed in Phase 4 to publish signals): add a member and upload a public key. Note its ID.
+4. **[UI]** That was only to show the creation flow — the E-service used by the demo (`Company Information & Evidence - Lynx`) was already created in advance. Open it and show its detail page.
+5. **[UI]** In the Keychains section, create a Knode API Keychain for `businessBookletLynx` (needed in Phase 4 to publish signals): add a member and upload a public key. Note its ID.
 
 ## Phase 2
 
@@ -32,12 +32,12 @@ Description: the Construction Companies Registry of the Orion domain wants to im
 Steps:
 
 1. **[UI]** Log in to the Orion Knode as a User of the `constructionCompaniesRegistryOrion` Organization.
-2. **[UI]** Go to the Consumption > E-services section and open the Lynx Cross-border E-Service.
-3. **[UI]** Create an Agreement for the E-service.
-4. **[UI]** _(Lynx side)_ As a `businessBookletLynx` operator, confirm the Agreement so it becomes Active.
+2. **[UI]** Go to the Consumption > E-services section, search the catalogue, and open the Lynx Cross-border E-Service.
+3. **[UI]** Request an Agreement for the E-service.
+4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.
 5. **[UI]** Create a Purpose for the Agreement.
-6. **[UI]** Create a Consumer Keychain, add a member, upload a public key, and link the Purpose to it.
-7. **[UI]** Create a Knode API Keychain (needed in Phase 4 to pull signals): add a member and upload a public key.
+6. **[UI]** In the Keychains section, create a Consumer Keychain, add a member, upload a public key, and link the Purpose to it.
+7. **[UI]** In the Keychains section, create a Knode API Keychain (needed in Phase 4 to pull signals): add a member and upload a public key.
 8. Note the IDs shown in the UI (E-service, Agreement, Purpose, Consumer Keychain, Knode API Keychain) — you'll pass them to the scripts in Phases 3–4.
 
 ## Phase 3
@@ -49,7 +49,7 @@ Description: the Construction Companies Registry of the Orion domain receives a 
 Steps:
 
 1. **[narration]** A construction company (`companyLynx`) submits a registration request to the registry.
-2. **[script]** Run `submit-registration-request` (Consumer Keychain id, Purpose id, company id) — the registry retrieves the company's information and evidence from Lynx.
+2. **[script]** Run `submit-registration-request` (Consumer Keychain id, Purpose id, company id — the company's VAT, e.g. `01229430085`) — the registry retrieves the company's information and evidence from Lynx.
    - _Expected:_ the company information and evidence are returned.
 3. **[narration]** The registry verifies the company's scope and evidence and, on success, confirms the registration to the company; on failure it returns a nullification.
 
