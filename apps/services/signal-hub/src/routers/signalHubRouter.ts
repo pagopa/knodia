@@ -1,7 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
@@ -15,7 +14,7 @@ import {
   API_PushResponse,
   API_Signal,
 } from "../models/api.ts";
-import { toAPI_PullResponse, toSignalType } from "../models/apiConverter.ts";
+import { fromAPI_Signal, toAPI_PullResponse } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignalHubRouterOptions {
@@ -39,21 +38,11 @@ export const signalHubRouter: FastifyPluginAsyncZod<
         `Push signal request received from organization ${organization.id} (Knode ${organization.knodeId})`,
       );
 
-      const { eserviceId, objectId, objectType, signalId, signalType } =
-        req.body;
+      const seed = fromAPI_Signal(req.body);
 
-      await signalHubService.pushSignal(
-        {
-          eserviceId: unsafeBrandId(eserviceId),
-          objectId,
-          objectType,
-          signalId,
-          signalType: toSignalType(signalType),
-        },
-        ctx,
-      );
+      await signalHubService.pushSignal(seed, ctx);
 
-      res.status(200).send({ signalId });
+      res.status(200).send({ signalId: seed.signalId });
     },
     method: "POST",
     schema: {
