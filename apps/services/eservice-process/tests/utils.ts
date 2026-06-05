@@ -26,8 +26,12 @@ export async function getAllEserviceEvents() {
 export const injectAppRequest = createInjectAppRequest(() => app);
 
 export async function seedEservice(eservice: Eservice) {
-  const latestVersion = findEserviceLatestVersion(eservice, (eserviceId) =>
-    new Error(`E-service latest version not found for E-service ${eserviceId}`),
+  const latestVersion = findEserviceLatestVersion(
+    eservice,
+    (eserviceId) =>
+      new Error(
+        `E-service latest version not found for E-service ${eserviceId}`,
+      ),
   );
 
   await eserviceEventStoreWriterBuilder(eventStoreDb).insertEvent(
