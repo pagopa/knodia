@@ -8,7 +8,11 @@ import z from "zod";
 
 import type { SignupService } from "../services/signupService.ts";
 
-import { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
+import {
+  API_ConfirmOnboardingRequestBody,
+  API_CurrentSignupUser,
+} from "../models/api.ts";
+import { toAPI_CurrentSignupUser } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignupRouterOptions {
@@ -46,5 +50,31 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       tags: [apiTags.signup],
     },
     url: "/onboarding/confirm",
+  });
+
+  fastify.route({
+    handler: async (_req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
+      const currentSignupUser = await signupService.getCurrentSignupUser(ctx);
+
+      res.status(200).send(toAPI_CurrentSignupUser(currentSignupUser));
+    },
+    method: "GET",
+    schema: {
+      description: "Get current signup user onboarding status",
+      operationId: "getCurrentSignupUser",
+      response: {
+        200: API_CurrentSignupUser.meta({
+          description: "Current signup user onboarding status",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/me",
   });
 };

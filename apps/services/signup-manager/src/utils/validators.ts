@@ -21,13 +21,13 @@ export async function assertSignupUserIdentifiersDoNotExist(
   authData: UISignupSessionAuthData,
   signupDbService: SignupDbService,
 ): Promise<void> {
-  const existing = await signupDbService.checkSignupUserIdentifierExists({
+  const signupUser = await signupDbService.getSignupUserByIdentifiers({
     fiscalNumber: authData.fiscalNumber,
     personIdentifier: authData.personIdentifier,
     spidCode: authData.spidCode,
   });
 
-  if (existing) {
+  if (signupUser) {
     throw signupUserIdentifierAlreadyAssociated();
   }
 }

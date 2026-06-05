@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
+import type { ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -52,4 +52,14 @@ export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: 
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get current signup user onboarding status
+ */
+export const getCurrentSignupUser = <ThrowOnError extends boolean = true>(options?: Options<GetCurrentSignupUserData, ThrowOnError>) => (options?.client ?? client).get<GetCurrentSignupUserResponses, GetCurrentSignupUserErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/me',
+    ...options
 });

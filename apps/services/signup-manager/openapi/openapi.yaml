@@ -91,6 +91,22 @@ components:
       required:
         - email
       additionalProperties: false
+    CurrentSignupUser:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+        onboardingStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - NOT_COMPLETED
+      required:
+        - onboardingStatus
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -213,6 +229,37 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /me:
+    get:
+      operationId: getCurrentSignupUser
+      tags:
+        - signup
+      description: Get current signup user onboarding status
+      responses:
+        "200":
+          description: Current signup user onboarding status
+          content:
+            application/json:
+              schema:
+                description: Current signup user onboarding status
+                allOf:
+                  - $ref: "#/components/schemas/CurrentSignupUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

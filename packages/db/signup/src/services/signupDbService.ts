@@ -40,7 +40,18 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
-    async checkSignupUserIdentifierExists({
+    async getSignupUserById(
+      signupUserId: SignupUserId,
+    ): Promise<SignupUser | undefined> {
+      const [result] = await db
+        .select()
+        .from(signupUser)
+        .where(eq(signupUser.signupUserId, signupUserId))
+        .limit(1);
+      return result ? toSignupUser(result) : undefined;
+    },
+
+    async getSignupUserByIdentifiers({
       fiscalNumber,
       personIdentifier,
       spidCode,
@@ -48,7 +59,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       fiscalNumber?: string;
       personIdentifier?: string;
       spidCode?: string;
-    }): Promise<boolean> {
+    }): Promise<SignupUser | undefined> {
       const identifierFilters = [
         fiscalNumber ? eq(signupUser.fiscalNumber, fiscalNumber) : undefined,
         personIdentifier
@@ -70,23 +81,14 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       }
 
       const result = await db
-        .select({ signupUserId: signupUser.signupUserId })
+        .select()
         .from(signupUser)
         .where(or(...identifierFilters))
         .limit(1);
 
-      return result.length > 0;
-    },
+      const signupUserResult = result.at(0);
 
-    async getSignupUserById(
-      signupUserId: SignupUserId,
-    ): Promise<SignupUser | undefined> {
-      const [result] = await db
-        .select()
-        .from(signupUser)
-        .where(eq(signupUser.signupUserId, signupUserId))
-        .limit(1);
-      return result ? toSignupUser(result) : undefined;
+      return signupUserResult ? toSignupUser(signupUserResult) : undefined;
     },
 
     async insertSignupUser(user: SignupUser): Promise<void> {

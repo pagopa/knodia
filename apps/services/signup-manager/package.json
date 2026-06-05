@@ -42,6 +42,7 @@
     "jose": "catalog:",
     "pg": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
