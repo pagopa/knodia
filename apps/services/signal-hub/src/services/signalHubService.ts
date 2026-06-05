@@ -3,12 +3,13 @@ import type { SignalHubSignalSQL } from "@knodia/db-signal-hub";
 import type { SignalHubDbService } from "@knodia/db-signal-hub/services";
 import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { SignalType } from "@knodia/signal-hub-models";
 
 import { toExternalResource } from "@knodia/common-models/externalResource";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import { type SignalSeed, SignalType } from "@knodia/signal-hub-models";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
+import { match } from "ts-pattern";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -59,21 +60,11 @@ export function signalHubServiceBuilder(
       return await signalHubDbService.getSignals(signalId, eserviceId, size);
     },
     async pushSignal(
-      {
-        eserviceId,
-        objectId,
-        objectType,
-        signalId,
-        signalType,
-      }: {
-        eserviceId: EserviceId;
-        objectId: string;
-        objectType: string;
-        signalId: number;
-        signalType: SignalType;
-      },
+      seed: SignalSeed,
       { authData, correlationId, logger }: AuthorizedContext<KnodeApiAuthData>,
     ) {
+      const { eserviceId, signalId, signalType } = seed;
+
       logger.info(`Pushing signal ${signalId} for E-service ${eserviceId}`);
 
       const { data: eservice } = await retrieveEserviceById(
@@ -87,6 +78,20 @@ export function signalHubServiceBuilder(
       );
       assertEserviceIsActiveWithSignalHubEnabled(eservice);
       await assertSignalCanBePushed(signalId, eserviceId, signalHubDbService);
+
+      // SeedUpdate signals reference no object, so their object columns are null.
+      const { objectId, objectType } = match(seed)
+        .with({ signalType: SignalType.enum.SeedUpdate }, () => ({
+          objectId: null,
+          objectType: null,
+        }))
+        .with(
+          { signalType: SignalType.enum.Create },
+          { signalType: SignalType.enum.Update },
+          { signalType: SignalType.enum.Delete },
+          ({ objectId, objectType }) => ({ objectId, objectType }),
+        )
+        .exhaustive();
 
       const signal: Omit<SignalHubSignalSQL, "id"> = {
         correlationId,

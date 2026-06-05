@@ -1,4 +1,12 @@
+import type { Producer } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
+import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
+import type { SignupTopicConfig } from "@knodia/kafka-commons/config";
+import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+
 import cookie from "@fastify/cookie";
+import { signupDbServiceBuilder } from "@knodia/db-signup/services";
+import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -9,18 +17,33 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { createProducer } from "@knodia/kafka-commons";
+import { createLogger } from "@knodia/logger";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
-import type { SignupManagerConfig } from "./config/config.ts";
+import type {
+  OneIdentityConfig,
+  SignupManagerConfig,
+} from "./config/config.ts";
 
 import { oneIdentityClientBuilder } from "./clients/oneIdentityClient.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { authRouter } from "./routers/authRouter.ts";
 import { signupRouter } from "./routers/signupRouter.ts";
+import { authServiceBuilder } from "./services/authService.ts";
+import { signupEventProducerBuilder } from "./services/signupEventProducer.ts";
 import { signupServiceBuilder } from "./services/signupService.ts";
 
-/** @knipignore */
-export function buildApp({ config }: { config: SignupManagerConfig }) {
+export function buildApp({
+  config,
+  kafkaProducer,
+  signupDb,
+}: {
+  config: AuthConfig & LoggerConfig & OneIdentityConfig & SignupTopicConfig;
+  kafkaProducer: Producer;
+  signupDb: NodePgDatabase;
+}) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -35,6 +58,10 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
         tags: [
           healthRouterTag,
           {
+            description: "Authentication routes",
+            name: apiTags.auth,
+          },
+          {
             description: "Signup routes",
             name: apiTags.signup,
           },
@@ -47,27 +74,51 @@ export function buildApp({ config }: { config: SignupManagerConfig }) {
 
   app.register(cookie);
 
+  const authService = authServiceBuilder(
+    config,
+    oneIdentityClientBuilder(config),
+    tokenGeneratorBuilder(),
+  );
+
+  const signupService = signupServiceBuilder(
+    signupDbServiceBuilder(signupDb),
+    signupEventProducerBuilder({
+      producer: kafkaProducer,
+      topic: config.signupTopic,
+    }),
+  );
+
   // Public routes (no auth required)
   app.register(healthRouter);
-  app.register(signupRouter, {
-    signupService: signupServiceBuilder(
-      config,
-      oneIdentityClientBuilder(config),
-      tokenGeneratorBuilder(),
-    ),
+  app.register(authRouter, {
+    authService,
   });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(signupRouter, { signupService });
   });
 
   return app;
 }
 
-export function buildAppFromConfig(config: SignupManagerConfig) {
-  const app = buildApp({ config });
+export async function buildAppFromConfig(config: SignupManagerConfig) {
+  const { db: signupDb, pool: signupPool } =
+    makeSignupDrizzleConnection(config);
+
+  const kafkaProducer = await createProducer(
+    [config.signupTopic],
+    config,
+    createLogger({ config }),
+  );
+
+  const app = buildApp({ config, kafkaProducer, signupDb });
+
+  app.addHook("onClose", async () => {
+    await signupPool.end();
+  });
 
   return app;
 }
