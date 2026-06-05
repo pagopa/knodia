@@ -1,13 +1,20 @@
-import { getMockProducerKeychain } from "@knodia/test-commons/utils";
+import {
+  getMockProducerKeychain,
+  getMockProducerKeychainEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type {
+  ProducerKeychainEserviceSQL,
   ProducerKeychainKeySQL,
   ProducerKeychainSQL,
   ProducerKeychainUserSQL,
 } from "../src/producerKeychain.ts";
 
-import { splitProducerKeychainIntoObjectsSQL } from "../src/converters/producerKeychainSplitters.ts";
+import {
+  splitProducerKeychainIntoObjectsSQL,
+  toProducerKeychainEserviceSQL,
+} from "../src/converters/producerKeychainSplitters.ts";
 
 describe("Producer keychain splitters", () => {
   it("should split a Producer keychain business object into Producer keychain SQL objects", () => {
@@ -67,5 +74,26 @@ describe("Producer keychain splitters", () => {
     );
 
     expect(producerKeychainSQL.description).toBeNull();
+  });
+
+  it("should split a Producer keychain Eservice business object into a Producer keychain Eservice SQL object", () => {
+    const metadataVersion = 1;
+    const producerKeychainEservice = getMockProducerKeychainEservice();
+
+    const producerKeychainEserviceSQL = toProducerKeychainEserviceSQL(
+      producerKeychainEservice,
+      metadataVersion,
+    );
+
+    const expectedProducerKeychainEserviceSQL: ProducerKeychainEserviceSQL = {
+      eserviceId: producerKeychainEservice.eserviceId,
+      linkedAt: producerKeychainEservice.linkedAt,
+      metadataVersion,
+      producerKeychainId: producerKeychainEservice.producerKeychainId,
+    };
+
+    expect(producerKeychainEserviceSQL).toEqual(
+      expectedProducerKeychainEserviceSQL,
+    );
   });
 });

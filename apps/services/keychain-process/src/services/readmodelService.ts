@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import type {
   ConsumerKeychainId,
+  EserviceId,
   KeyId,
   KnodeApiKeychainId,
   ProducerKeychainId,
@@ -12,6 +13,7 @@ import type {
   FlatKnodeApiKeychain,
   FlatProducerKeychain,
   KeychainKey,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -20,6 +22,7 @@ import {
   getTableTotalCount,
   ilikeJsonB,
 } from "@knodia/db-readmodel-commons/utils";
+import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
@@ -59,6 +62,7 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const consumerKeychainReadmodelService =
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
+  const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   const knodeApiKeychainReadmodelService =
     knodeApiKeychainReadmodelServiceBuilder(readmodelDb);
   const producerKeychainReadmodelService =
@@ -283,6 +287,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         };
       });
     },
+    async getEserviceById(eserviceId: EserviceId) {
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
+    },
     async getFlatConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getFlatConsumerKeychainById(
         consumerKeychainId,
@@ -406,6 +413,22 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getProducerKeychainById(producerKeychainId: ProducerKeychainId) {
       return await producerKeychainReadmodelService.getProducerKeychainById(
         producerKeychainId,
+      );
+    },
+    async getProducerKeychainEservice(
+      producerKeychainEservice: Omit<ProducerKeychainEservice, "linkedAt">,
+    ) {
+      return await producerKeychainReadmodelService.getProducerKeychainEserviceByFilter(
+        and(
+          eq(
+            readmodelProducerKeychainEservice.producerKeychainId,
+            producerKeychainEservice.producerKeychainId,
+          ),
+          eq(
+            readmodelProducerKeychainEservice.eserviceId,
+            producerKeychainEservice.eserviceId,
+          ),
+        ),
       );
     },
     async getProducerKeychainKeys(

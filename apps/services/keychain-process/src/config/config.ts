@@ -1,5 +1,6 @@
 import { CognitoIdmClientConfig } from "@knodia/cognito-idm-client";
 import { EventStoreKeychainConfig } from "@knodia/db-event-store-keychain/config";
+import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import {
   AuthConfig,
@@ -22,6 +23,7 @@ const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
       })),
   )
   .and(EventStoreKeychainConfig)
+  .and(ReadmodelEserviceConfig)
   .and(ReadmodelKeychainConfig)
   .and(CognitoIdmClientConfig);
 

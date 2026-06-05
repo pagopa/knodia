@@ -11,9 +11,11 @@ import type {
   FlatProducerKeychain,
   KeychainKey,
   ProducerKeychain,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 
 import {
+  type EserviceId,
   generateId,
   type KeyId,
   type ProducerKeychainId,
@@ -34,6 +36,8 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createProducerKeychainCreatedV1Event,
   createProducerKeychainDeletedV1Event,
+  createProducerKeychainEserviceLinkedV1Event,
+  createProducerKeychainEserviceUnlinkedV1Event,
   createProducerKeychainKeyAddedV1Event,
   createProducerKeychainKeyRemovedV1Event,
   createProducerKeychainMemberAddedV1Event,
@@ -41,11 +45,13 @@ import {
   createProducerKeychainUpdatedV1Event,
 } from "../models/producerKeychainEventFactory.ts";
 import {
+  retrieveEservice,
   retrieveFlatProducerKeychain,
   retrieveKeychainKey,
   retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
   retrieveProducerKeychain,
+  retrieveProducerKeychainEservice,
 } from "../utils/retrievalUtils.ts";
 import {
   addKeyToKeychain,
@@ -54,7 +60,11 @@ import {
   removeMemberFromKeychain,
   updateKeychain,
 } from "../utils/utils.ts";
-import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
+import {
+  assertEserviceIsNotLinkedToProducerKeychain,
+  assertOrganizationIsEserviceProducer,
+  assertOrganizationIsKeychainOwner,
+} from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
   typeof producerKeychainServiceBuilder
@@ -268,6 +278,54 @@ export function producerKeychainServiceBuilder(
 
       return await readmodelService.getProducerKeychains(params);
     },
+    async linkEserviceToProducerKeychain(
+      {
+        eserviceId,
+        producerKeychainId,
+      }: {
+        eserviceId: EserviceId;
+        producerKeychainId: ProducerKeychainId;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychainEservice>> {
+      logger.info(
+        `Linking E-service ${eserviceId} to Producer Keychain ${producerKeychainId}`,
+      );
+
+      const [producerKeychain, eservice] = await Promise.all([
+        retrieveProducerKeychain(producerKeychainId, readmodelService),
+        retrieveEservice(eserviceId, readmodelService),
+        assertEserviceIsNotLinkedToProducerKeychain(
+          producerKeychainId,
+          eserviceId,
+          readmodelService,
+        ),
+      ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+      assertOrganizationIsEserviceProducer(
+        authData.organizationId,
+        eservice.data,
+      );
+
+      const linkedAt = new Date();
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainEserviceLinkedV1Event({
+          correlationId,
+          currentMetadataVersion: producerKeychain.metadata.version,
+          eserviceId,
+          linkedAt,
+          producerKeychain: producerKeychain.data,
+        }),
+      );
+
+      return {
+        data: { eserviceId, linkedAt, producerKeychainId },
+        metadata: { version: newVersion },
+      };
+    },
     async removeProducerKeychainKey(
       producerKeychainId: ProducerKeychainId,
       kid: KeyId,
@@ -330,6 +388,46 @@ export function producerKeychainServiceBuilder(
 
       return {
         data: updatedProducerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+    async unlinkEserviceFromProducerKeychain(
+      {
+        eserviceId,
+        producerKeychainId,
+      }: {
+        eserviceId: EserviceId;
+        producerKeychainId: ProducerKeychainId;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychainEservice>> {
+      logger.info(
+        `Unlinking E-service ${eserviceId} from Producer Keychain ${producerKeychainId}`,
+      );
+
+      const [producerKeychain, producerKeychainEservice] = await Promise.all([
+        retrieveProducerKeychain(producerKeychainId, readmodelService),
+        retrieveProducerKeychainEservice(
+          { eserviceId, producerKeychainId },
+          readmodelService,
+        ),
+      ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createProducerKeychainEserviceUnlinkedV1Event({
+          correlationId,
+          currentMetadataVersion: producerKeychain.metadata.version,
+          eserviceId,
+          producerKeychain: producerKeychain.data,
+        }),
+      );
+
+      return {
+        data: producerKeychainEservice.data,
         metadata: { version: newVersion },
       };
     },
