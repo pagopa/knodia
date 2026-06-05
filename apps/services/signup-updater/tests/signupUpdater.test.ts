@@ -106,7 +106,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
 
     expect(createOrganizationMock).toHaveBeenCalledTimes(2);
     // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
-    const orionCall = createOrganizationMock.mock.calls[0]?.[0];
+    const orionCall = createOrganizationMock.mock.calls.at(0)?.at(0);
     expect(orionCall?.body).toEqual({
       attributes: [{ code: "testing_organization", scheme: "knodia" }],
       externalRequestId: organizationExternalRequestId(
@@ -118,7 +118,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     expect(orionCall?.headers.authorization).toBe("Bearer mock-internal-token");
 
     expect(cognitoCreateUserMock).toHaveBeenCalledTimes(2);
-    expect(cognitoCreateUserMock.mock.calls[0]?.[0]).toMatchObject({
+    expect(cognitoCreateUserMock.mock.calls.at(0)?.at(0)).toMatchObject({
       email: "mario.rossi@example.org",
       familyName: "Rossi",
       givenName: "Mario",
@@ -126,7 +126,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
       roles: ["administrative", "technical"],
       username: "mario.rossi.orion",
     });
-    expect(cognitoCreateUserMock.mock.calls[1]?.[0]).toMatchObject({
+    expect(cognitoCreateUserMock.mock.calls.at(1)?.at(0)).toMatchObject({
       organizationId: lynxOrgId,
       username: "mario.rossi.lynx",
     });

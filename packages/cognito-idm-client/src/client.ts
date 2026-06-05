@@ -64,7 +64,6 @@ export function buildCognitoIdmClient({
     }): Promise<void> {
       const groupName = getOrganizationGroupName(input.organizationId);
 
-      // Create a group for the new organization.
       await swallowCognitoError("GroupExistsException", () =>
         client.send(
           new CreateGroupCommand({

@@ -40,7 +40,7 @@ describe("Organization read model writer tests", async () => {
     const retrievedOrganizations = await getAllOrganizations(readmodelDb);
 
     expect(retrievedOrganizations.length).toBe(1);
-    expect(retrievedOrganizations[0]).toEqual({
+    expect(retrievedOrganizations.at(0)).toEqual({
       data: toExpectOrganization(organization),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Organization>);
@@ -75,6 +75,6 @@ describe("Organization read model writer tests", async () => {
     // The second organization collides on the unique externalRequestId and is
     // dropped by the writer; only the first is projected.
     expect(retrievedOrganizations.length).toBe(1);
-    expect(retrievedOrganizations[0]?.data.id).toBe(first.id);
+    expect(retrievedOrganizations.at(0)?.data.id).toBe(first.id);
   });
 });

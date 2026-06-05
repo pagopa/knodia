@@ -41,14 +41,14 @@ describe("createOrganizationUser", () => {
       );
     }
 
-    const createGroup = groupCall[0] as CreateGroupCommand;
+    const createGroup = groupCall.at(0) as CreateGroupCommand;
     expect(createGroup).toBeInstanceOf(CreateGroupCommand);
     expect(createGroup.input).toMatchObject({
       GroupName: `org:${organizationId}`,
       UserPoolId: cognitoUserPoolId,
     });
 
-    const createUser = userCall[0] as AdminCreateUserCommand;
+    const createUser = userCall.at(0) as AdminCreateUserCommand;
     expect(createUser).toBeInstanceOf(AdminCreateUserCommand);
     expect(createUser.input).toMatchObject({
       DesiredDeliveryMediums: ["EMAIL"],
@@ -61,7 +61,7 @@ describe("createOrganizationUser", () => {
       ]),
     );
 
-    const addToGroup = membershipCall[0] as AdminAddUserToGroupCommand;
+    const addToGroup = membershipCall.at(0) as AdminAddUserToGroupCommand;
     expect(addToGroup).toBeInstanceOf(AdminAddUserToGroupCommand);
     expect(addToGroup.input).toMatchObject({
       GroupName: `org:${organizationId}`,
