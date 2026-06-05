@@ -62,6 +62,7 @@ export const sessionRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "Get a Session Organization",
       tags: [apiTags.auth],
     },
     url: "/session/organization",

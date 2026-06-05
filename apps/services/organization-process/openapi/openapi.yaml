@@ -195,6 +195,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -211,6 +212,7 @@ paths:
   /organizations:
     post:
       operationId: createOrganization
+      summary: Create an Organization
       tags:
         - organization
       description: Create a new Organization
@@ -271,6 +273,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getOrganizations
+      summary: List Organizations
       tags:
         - organization
       description: Retrieve a list of Organizations
@@ -345,6 +348,7 @@ paths:
   /organizations/{organizationId}:
     get:
       operationId: getOrganization
+      summary: Get an Organization
       tags:
         - organization
       description: Retrieve an Organization by its ID
@@ -407,6 +411,7 @@ paths:
   /operators:
     get:
       operationId: getOperators
+      summary: List Operators
       tags:
         - operator
       description: Retrieve Operators of the requesting User's Organization

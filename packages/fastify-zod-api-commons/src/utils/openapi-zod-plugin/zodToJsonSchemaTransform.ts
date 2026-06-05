@@ -69,6 +69,19 @@ const enforceOperationId = (input: TransformInput): TransformInput => {
   return input;
 };
 
+const enforceSummary = (input: TransformInput): TransformInput => {
+  if (!shouldSkipOperationIdCheck(input)) {
+    const { route, schema } = input;
+    if (!schema.summary) {
+      throw new Error(
+        `Missing summary in schema for route ${route.method} ${route.url}.`,
+      );
+    }
+  }
+
+  return input;
+};
+
 /**
  * Extract response headers from the input schema before the base transform runs.
  *
@@ -138,6 +151,7 @@ export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
   baseTransform(
     applyTransformSteps(input, [
       enforceOperationId,
+      enforceSummary,
       extractResponseHeaders,
       convertCookiesZodToJsonSchema,
     ]),

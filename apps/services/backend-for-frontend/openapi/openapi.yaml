@@ -2207,6 +2207,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -2223,6 +2224,7 @@ paths:
   /auth/uiSession:
     post:
       operationId: createSession
+      summary: Create a Session
       tags:
         - auth
       description: Validate a Cognito token and generate a session token. Sets a
@@ -2270,6 +2272,7 @@ paths:
   /auth/uiSession/refresh:
     post:
       operationId: refreshSession
+      summary: Refresh a Session
       tags:
         - auth
       description: Refresh an expired UI session token using the refresh token cookie
@@ -2310,6 +2313,7 @@ paths:
   /auth/logout:
     post:
       operationId: logout
+      summary: Log out of a Session
       tags:
         - auth
       description: Clear the refresh token cookie
@@ -2336,6 +2340,7 @@ paths:
   /auth/externalUiSession:
     post:
       operationId: createExternalSession
+      summary: Create an external Session from a Magic link
       tags:
         - auth
       description: Validate a single-use magic-link token and mint a short-lived
@@ -2375,6 +2380,7 @@ paths:
   /eserviceTemplates:
     get:
       operationId: getEserviceTemplates
+      summary: List E-service Templates
       tags:
         - eserviceTemplate
       description: Retrieve a list of E-Service Templates available for a given Knode
@@ -2420,6 +2426,7 @@ paths:
   /eserviceTemplates/{eserviceTemplateId}:
     get:
       operationId: getEserviceTemplate
+      summary: Get an E-service Template
       tags:
         - eserviceTemplate
       description: Retrieve an E-service Template with all its details
@@ -2544,6 +2551,7 @@ paths:
   /purposeTemplates:
     get:
       operationId: getPurposeTemplates
+      summary: List Purpose Templates
       tags:
         - purposeTemplate
       description: Retrieve a list of Purpose Templates available for a given Knode,
@@ -2597,6 +2605,7 @@ paths:
   /purposeTemplates/{purposeTemplateId}:
     get:
       operationId: getPurposeTemplate
+      summary: Get a Purpose Template
       tags:
         - purposeTemplate
       description: Retrieve a Purpose Template with all its details
@@ -2657,6 +2666,7 @@ paths:
   /producer/eservices:
     post:
       operationId: createEservice
+      summary: Create an E-service
       tags:
         - eservice
       description: Create a new E-service
@@ -2701,6 +2711,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getProducerEservices
+      summary: List producer E-services
       tags:
         - eservice
       description: Retrieve a paginated list of E-services produced by the logged-in
@@ -2799,6 +2810,7 @@ paths:
   /producer/eservices/fromTemplate:
     post:
       operationId: createEserviceFromTemplate
+      summary: Create an E-service from a Template
       tags:
         - eservice
       description: Create a new E-service from a Template
@@ -2852,6 +2864,7 @@ paths:
   /producer/eservices/{eserviceId}:
     get:
       operationId: getProducerEserviceDetails
+      summary: Get a producer E-service
       tags:
         - eservice
       description: Retrieve an E-service with all its details
@@ -2906,6 +2919,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     patch:
       operationId: updateProducerEservice
+      summary: Update a producer E-service
       tags:
         - eservice
       description: Update an E-service
@@ -3028,6 +3042,7 @@ paths:
   /producer/eservices/{eserviceId}/suspend:
     post:
       operationId: suspendEservice
+      summary: Suspend an E-service
       tags:
         - eservice
       description: Suspend an E-service
@@ -3085,6 +3100,7 @@ paths:
   /producer/eservices/{eserviceId}/reactivate:
     post:
       operationId: reactivateEservice
+      summary: Reactivate an E-service
       tags:
         - eservice
       description: Reactivate a suspended E-service
@@ -3142,6 +3158,7 @@ paths:
   /producer/eservices/{eserviceId}/archive:
     post:
       operationId: archiveProducerEservice
+      summary: Archive a producer E-service
       tags:
         - eservice
       description: Archive an E-service
@@ -3199,6 +3216,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/keys:
     get:
       operationId: getConsumerKeychainKeys
+      summary: List Consumer Keychain Keys
       tags:
         - consumerKeychain
       description: Retrieve keys of a Consumer Keychain
@@ -3270,6 +3288,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     post:
       operationId: uploadConsumerKeychainKey
+      summary: Upload a Consumer Keychain Key
       tags:
         - consumerKeychain
       description: Upload a key to a Consumer Keychain
@@ -3339,6 +3358,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/keys/{keyId}:
     get:
       operationId: downloadConsumerKeychainKey
+      summary: Download a Consumer Keychain Key
       tags:
         - consumerKeychain
       description: Download a Consumer Keychain Key
@@ -3399,6 +3419,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     delete:
       operationId: removeConsumerKeychainKey
+      summary: Remove a Consumer Keychain Key
       tags:
         - consumerKeychain
       description: Remove a key from a Consumer Keychain
@@ -3453,6 +3474,7 @@ paths:
   /consumerKeychains:
     post:
       operationId: createConsumerKeychain
+      summary: Create a Consumer Keychain
       tags:
         - consumerKeychain
       description: Create a new Consumer Keychain
@@ -3497,6 +3519,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getConsumerKeychains
+      summary: List Consumer Keychains
       tags:
         - consumerKeychain
       description: Retrieve a paginated list of Consumer Keychains owned by the
@@ -3573,6 +3596,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}:
     patch:
       operationId: updateConsumerKeychain
+      summary: Update a Consumer Keychain
       tags:
         - consumerKeychain
       description: Update a Consumer Keychain
@@ -3627,6 +3651,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     delete:
       operationId: deleteConsumerKeychain
+      summary: Delete a Consumer Keychain
       tags:
         - consumerKeychain
       description: Delete a Consumer Keychain
@@ -3675,6 +3700,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getConsumerKeychainDetails
+      summary: Get a Consumer Keychain
       tags:
         - consumerKeychain
       description: Retrieve a Consumer Keychain with all its details
@@ -3730,6 +3756,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/members:
     post:
       operationId: addConsumerKeychainMember
+      summary: Add a Member to a Consumer Keychain
       tags:
         - consumerKeychain
       description: Add a member to a Consumer Keychain
@@ -3792,6 +3819,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getConsumerKeychainMembers
+      summary: List Consumer Keychain Members
       tags:
         - consumerKeychain
       description: Retrieve members of a Consumer Keychain
@@ -3864,6 +3892,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/members/{userId}:
     delete:
       operationId: removeConsumerKeychainMember
+      summary: Remove a Member from a Consumer Keychain
       tags:
         - consumerKeychain
       description: Remove a Member from a Consumer Keychain
@@ -3918,6 +3947,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/membership/{userId}:
     get:
       operationId: getConsumerKeychainMembership
+      summary: Check a Member of a Consumer Keychain
       tags:
         - consumerKeychain
       description: Check whether the given User is a Member of a Consumer Keychain
@@ -3978,6 +4008,7 @@ paths:
   /consumerKeychains/options:
     get:
       operationId: getConsumerKeychainOptions
+      summary: List Consumer Keychain options
       tags:
         - consumerKeychain
       description: Retrieve Consumer Keychain options for combobox selection
@@ -4041,6 +4072,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/purposes:
     get:
       operationId: getConsumerKeychainPurposes
+      summary: List Purposes linked to a Consumer Keychain
       tags:
         - consumerKeychain
       description: Retrieve Purposes linked to a Consumer Keychain
@@ -4112,6 +4144,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     post:
       operationId: linkPurposeToConsumerKeychain
+      summary: Link a Purpose to a Consumer Keychain
       tags:
         - consumerKeychain
       description: Link a Purpose to a Consumer Keychain
@@ -4175,6 +4208,7 @@ paths:
   /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
     get:
       operationId: getConsumerKeychainPurposeLink
+      summary: Check a Purpose link to a Consumer Keychain
       tags:
         - consumerKeychain
       description: Check whether the given Purpose is linked to a Consumer Keychain
@@ -4241,6 +4275,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     delete:
       operationId: unlinkPurposeFromConsumerKeychain
+      summary: Unlink a Purpose from a Consumer Keychain
       tags:
         - consumerKeychain
       description: Unlink a Purpose from a Consumer Keychain
@@ -4302,6 +4337,7 @@ paths:
   /knodeApiKeychains:
     post:
       operationId: createKnodeApiKeychain
+      summary: Create a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Create a new Knode API Keychain
@@ -4346,6 +4382,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getKnodeApiKeychains
+      summary: List Knode API Keychains
       tags:
         - knodeApiKeychain
       description: Retrieve a paginated list of Knode API Keychains owned by the
@@ -4404,6 +4441,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}:
     get:
       operationId: getKnodeApiKeychainDetails
+      summary: Get a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Retrieve a Knode API Keychain with all its details
@@ -4458,6 +4496,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     patch:
       operationId: updateKnodeApiKeychain
+      summary: Update a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Update a Knode API Keychain
@@ -4512,6 +4551,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     delete:
       operationId: deleteKnodeApiKeychain
+      summary: Delete a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Delete a Knode API Keychain
@@ -4561,6 +4601,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}/keys:
     get:
       operationId: getKnodeApiKeychainKeys
+      summary: List Knode API Keychain Keys
       tags:
         - knodeApiKeychain
       description: Retrieve keys of a Knode API Keychain
@@ -4632,6 +4673,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     post:
       operationId: uploadKnodeApiKeychainKey
+      summary: Upload a Knode API Keychain Key
       tags:
         - knodeApiKeychain
       description: Upload a key to a Knode API Keychain
@@ -4701,6 +4743,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}/keys/{keyId}:
     get:
       operationId: downloadKnodeApiKeychainKey
+      summary: Download a Knode API Keychain Key
       tags:
         - knodeApiKeychain
       description: Download a Knode API Keychain Key
@@ -4761,6 +4804,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     delete:
       operationId: removeKnodeApiKeychainKey
+      summary: Remove a Knode API Keychain Key
       tags:
         - knodeApiKeychain
       description: Remove a key from a Knode API Keychain
@@ -4815,6 +4859,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}/members:
     get:
       operationId: getKnodeApiKeychainMembers
+      summary: List Knode API Keychain Members
       tags:
         - knodeApiKeychain
       description: Retrieve members of a Knode API Keychain
@@ -4886,6 +4931,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     post:
       operationId: addKnodeApiKeychainMember
+      summary: Add a Member to a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Add a member to a Knode API Keychain
@@ -4949,6 +4995,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}/members/{userId}:
     delete:
       operationId: removeKnodeApiKeychainMember
+      summary: Remove a Member from a Knode API Keychain
       tags:
         - knodeApiKeychain
       description: Remove a Member from a Knode API Keychain
@@ -5003,6 +5050,7 @@ paths:
   /knodeApiKeychains/{knodeApiKeychainId}/membership/{userId}:
     get:
       operationId: getKnodeApiKeychainMembership
+      summary: Check a Knode API Keychain Membership
       tags:
         - knodeApiKeychain
       description: Check whether the given User is a Member of a Knode API Keychain
@@ -5063,6 +5111,7 @@ paths:
   /operators:
     get:
       operationId: getOperators
+      summary: List Operators
       tags:
         - operator
       description: Retrieve Operators of the requesting User's Organization
@@ -5411,6 +5460,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getConsumerAgreements
+      summary: List consumer Agreements
       tags:
         - agreement
       description: Retrieve a paginated list of Consumer Agreements, optionally
@@ -5479,6 +5529,7 @@ paths:
   /consumer/agreements/counters:
     get:
       operationId: getConsumerAgreementCounters
+      summary: Get consumer Agreement counters
       tags:
         - agreement
       description: Retrieve Consumer Agreement counters per state
@@ -5518,6 +5569,7 @@ paths:
   /consumer/agreements/pending:
     get:
       operationId: getPendingConsumerAgreements
+      summary: List pending consumer Agreements
       tags:
         - agreement
       description: Retrieve a paginated list of Consumer Agreements pending action
@@ -5645,6 +5697,7 @@ paths:
   /consumer/agreements/{agreementId}/reactivate:
     post:
       operationId: reactivateAgreementByConsumer
+      summary: Reactivate an Agreement by consumer
       tags:
         - agreement
       description: Reactivate an Agreement as Consumer
@@ -5707,6 +5760,7 @@ paths:
   /consumer/agreements/{agreementId}/suspend:
     post:
       operationId: suspendAgreementByConsumer
+      summary: Suspend an Agreement by consumer
       tags:
         - agreement
       description: Suspend an Agreement as Consumer
@@ -5769,6 +5823,7 @@ paths:
   /consumer/agreements/{agreementId}/archive:
     post:
       operationId: archiveAgreementByConsumer
+      summary: Archive an Agreement by consumer
       tags:
         - agreement
       description: Archive an Agreement as Consumer
@@ -6082,6 +6137,7 @@ paths:
   /consumer/purposes/{purposeId}/reactivate:
     post:
       operationId: reactivatePurposeByConsumer
+      summary: Reactivate a Purpose by consumer
       tags:
         - purpose
       description: Reactivate a Purpose as Consumer
@@ -6144,6 +6200,7 @@ paths:
   /consumer/purposes/{purposeId}/suspend:
     post:
       operationId: suspendPurposeByConsumer
+      summary: Suspend a Purpose by consumer
       tags:
         - purpose
       description: Suspend a Purpose as Consumer
@@ -6206,6 +6263,7 @@ paths:
   /consumer/purposes/{purposeId}/archive:
     post:
       operationId: archivePurposeByConsumer
+      summary: Archive a Purpose by consumer
       tags:
         - purpose
       description: Archive a Purpose as Consumer
@@ -6268,6 +6326,7 @@ paths:
   /session/organization:
     get:
       operationId: getSessionOrganization
+      summary: Get a Session Organization
       tags:
         - auth
       description: Retrieve the Organization of the current session's User
@@ -6307,6 +6366,7 @@ paths:
   /producer/agreements:
     get:
       operationId: getProducerAgreements
+      summary: List producer Agreements
       tags:
         - agreement
       description: Retrieve a paginated list of Agreements produced by the logged-in
@@ -6390,6 +6450,7 @@ paths:
   /producer/agreements/{agreementId}:
     get:
       operationId: getProducerAgreementDetails
+      summary: Get a producer Agreement
       tags:
         - agreement
       description: Retrieve a Producer Agreement with all its details
@@ -6445,6 +6506,7 @@ paths:
   /producer/agreements/{agreementId}/reactivate:
     post:
       operationId: reactivateAgreementByProducer
+      summary: Reactivate an Agreement by producer
       tags:
         - agreement
       description: Reactivate an Agreement as Producer
@@ -6502,6 +6564,7 @@ paths:
   /producer/agreements/{agreementId}/suspend:
     post:
       operationId: suspendAgreementByProducer
+      summary: Suspend an Agreement by producer
       tags:
         - agreement
       description: Suspend an Agreement as Producer
@@ -6651,6 +6714,7 @@ paths:
   /producer/purposes/{purposeId}:
     get:
       operationId: getProducerPurposeDetails
+      summary: Get a producer Purpose
       tags:
         - purpose
       description: Retrieve a Producer Purpose with details
@@ -6706,6 +6770,7 @@ paths:
   /producer/purposes/{purposeId}/reactivate:
     post:
       operationId: reactivatePurposeByProducer
+      summary: Reactivate a Purpose by producer
       tags:
         - purpose
       description: Reactivate a Purpose as Producer
@@ -6763,6 +6828,7 @@ paths:
   /producer/purposes/{purposeId}/suspend:
     post:
       operationId: suspendPurposeByProducer
+      summary: Suspend a Purpose by producer
       tags:
         - purpose
       description: Suspend a Purpose as Producer

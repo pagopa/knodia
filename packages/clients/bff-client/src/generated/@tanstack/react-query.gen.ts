@@ -43,6 +43,8 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
 export const getStatusQueryKey = (options?: Options<GetStatusData>) => createQueryKey('getStatus', options);
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatusOptions = (options?: Options<GetStatusData>) => queryOptions<GetStatusResponse, AxiosError<DefaultError>, GetStatusResponse, ReturnType<typeof getStatusQueryKey>>({
@@ -59,6 +61,8 @@ export const getStatusOptions = (options?: Options<GetStatusData>) => queryOptio
 });
 
 /**
+ * Create a Session
+ *
  * Validate a Cognito token and generate a session token. Sets a HttpOnly refresh token cookie.
  */
 export const createSessionMutation = (options?: Partial<Options<CreateSessionData>>): UseMutationOptions<CreateSessionResponse, AxiosError<CreateSessionError>, Options<CreateSessionData>> => {
@@ -76,6 +80,8 @@ export const createSessionMutation = (options?: Partial<Options<CreateSessionDat
 };
 
 /**
+ * Refresh a Session
+ *
  * Refresh an expired UI session token using the refresh token cookie
  */
 export const refreshSessionMutation = (options?: Partial<Options<RefreshSessionData>>): UseMutationOptions<RefreshSessionResponse, AxiosError<RefreshSessionError>, Options<RefreshSessionData>> => {
@@ -93,6 +99,8 @@ export const refreshSessionMutation = (options?: Partial<Options<RefreshSessionD
 };
 
 /**
+ * Log out of a Session
+ *
  * Clear the refresh token cookie
  */
 export const logoutMutation = (options?: Partial<Options<LogoutData>>): UseMutationOptions<LogoutResponse, AxiosError<LogoutError>, Options<LogoutData>> => {
@@ -110,6 +118,8 @@ export const logoutMutation = (options?: Partial<Options<LogoutData>>): UseMutat
 };
 
 /**
+ * Create an external Session from a Magic link
+ *
  * Validate a single-use magic-link token and mint a short-lived external-ui-session token scoped to the action in the magic link.
  */
 export const createExternalSessionMutation = (options?: Partial<Options<CreateExternalSessionData>>): UseMutationOptions<CreateExternalSessionResponse, AxiosError<CreateExternalSessionError>, Options<CreateExternalSessionData>> => {
@@ -129,6 +139,8 @@ export const createExternalSessionMutation = (options?: Partial<Options<CreateEx
 export const getEserviceTemplatesQueryKey = (options: Options<GetEserviceTemplatesData>) => createQueryKey('getEserviceTemplates', options);
 
 /**
+ * List E-service Templates
+ *
  * Retrieve a list of E-Service Templates available for a given Knode
  */
 export const getEserviceTemplatesOptions = (options: Options<GetEserviceTemplatesData>) => queryOptions<GetEserviceTemplatesResponse, AxiosError<GetEserviceTemplatesError>, GetEserviceTemplatesResponse, ReturnType<typeof getEserviceTemplatesQueryKey>>({
@@ -147,6 +159,8 @@ export const getEserviceTemplatesOptions = (options: Options<GetEserviceTemplate
 export const getEserviceTemplateQueryKey = (options: Options<GetEserviceTemplateData>) => createQueryKey('getEserviceTemplate', options);
 
 /**
+ * Get an E-service Template
+ *
  * Retrieve an E-service Template with all its details
  */
 export const getEserviceTemplateOptions = (options: Options<GetEserviceTemplateData>) => queryOptions<GetEserviceTemplateResponse, AxiosError<GetEserviceTemplateError>, GetEserviceTemplateResponse, ReturnType<typeof getEserviceTemplateQueryKey>>({
@@ -185,6 +199,8 @@ export const downloadEserviceTemplateInterfaceOptions = (options: Options<Downlo
 export const getPurposeTemplatesQueryKey = (options: Options<GetPurposeTemplatesData>) => createQueryKey('getPurposeTemplates', options);
 
 /**
+ * List Purpose Templates
+ *
  * Retrieve a list of Purpose Templates available for a given Knode, optionally filtered by E-service
  */
 export const getPurposeTemplatesOptions = (options: Options<GetPurposeTemplatesData>) => queryOptions<GetPurposeTemplatesResponse, AxiosError<GetPurposeTemplatesError>, GetPurposeTemplatesResponse, ReturnType<typeof getPurposeTemplatesQueryKey>>({
@@ -203,6 +219,8 @@ export const getPurposeTemplatesOptions = (options: Options<GetPurposeTemplatesD
 export const getPurposeTemplateQueryKey = (options: Options<GetPurposeTemplateData>) => createQueryKey('getPurposeTemplate', options);
 
 /**
+ * Get a Purpose Template
+ *
  * Retrieve a Purpose Template with all its details
  */
 export const getPurposeTemplateOptions = (options: Options<GetPurposeTemplateData>) => queryOptions<GetPurposeTemplateResponse, AxiosError<GetPurposeTemplateError>, GetPurposeTemplateResponse, ReturnType<typeof getPurposeTemplateQueryKey>>({
@@ -221,6 +239,8 @@ export const getPurposeTemplateOptions = (options: Options<GetPurposeTemplateDat
 export const getProducerEservicesQueryKey = (options: Options<GetProducerEservicesData>) => createQueryKey('getProducerEservices', options);
 
 /**
+ * List producer E-services
+ *
  * Retrieve a paginated list of E-services produced by the logged-in user's organization
  */
 export const getProducerEservicesOptions = (options: Options<GetProducerEservicesData>) => queryOptions<GetProducerEservicesResponse, AxiosError<GetProducerEservicesError>, GetProducerEservicesResponse, ReturnType<typeof getProducerEservicesQueryKey>>({
@@ -268,6 +288,8 @@ const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'hea
 export const getProducerEservicesInfiniteQueryKey = (options: Options<GetProducerEservicesData>): QueryKey<Options<GetProducerEservicesData>> => createQueryKey('getProducerEservices', options, true);
 
 /**
+ * List producer E-services
+ *
  * Retrieve a paginated list of E-services produced by the logged-in user's organization
  */
 export const getProducerEservicesInfiniteOptions = (options: Options<GetProducerEservicesData>) => infiniteQueryOptions<GetProducerEservicesResponse, AxiosError<GetProducerEservicesError>, InfiniteData<GetProducerEservicesResponse>, QueryKey<Options<GetProducerEservicesData>>, number | Pick<QueryKey<Options<GetProducerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -293,6 +315,8 @@ export const getProducerEservicesInfiniteOptions = (options: Options<GetProducer
 });
 
 /**
+ * Create an E-service
+ *
  * Create a new E-service
  */
 export const createEserviceMutation = (options?: Partial<Options<CreateEserviceData>>): UseMutationOptions<CreateEserviceResponse, AxiosError<CreateEserviceError>, Options<CreateEserviceData>> => {
@@ -310,6 +334,8 @@ export const createEserviceMutation = (options?: Partial<Options<CreateEserviceD
 };
 
 /**
+ * Create an E-service from a Template
+ *
  * Create a new E-service from a Template
  */
 export const createEserviceFromTemplateMutation = (options?: Partial<Options<CreateEserviceFromTemplateData>>): UseMutationOptions<CreateEserviceFromTemplateResponse, AxiosError<CreateEserviceFromTemplateError>, Options<CreateEserviceFromTemplateData>> => {
@@ -329,6 +355,8 @@ export const createEserviceFromTemplateMutation = (options?: Partial<Options<Cre
 export const getProducerEserviceDetailsQueryKey = (options: Options<GetProducerEserviceDetailsData>) => createQueryKey('getProducerEserviceDetails', options);
 
 /**
+ * Get a producer E-service
+ *
  * Retrieve an E-service with all its details
  */
 export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEserviceDetailsData>) => queryOptions<GetProducerEserviceDetailsResponse, AxiosError<GetProducerEserviceDetailsError>, GetProducerEserviceDetailsResponse, ReturnType<typeof getProducerEserviceDetailsQueryKey>>({
@@ -345,6 +373,8 @@ export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEs
 });
 
 /**
+ * Update a producer E-service
+ *
  * Update an E-service
  */
 export const updateProducerEserviceMutation = (options?: Partial<Options<UpdateProducerEserviceData>>): UseMutationOptions<UpdateProducerEserviceResponse, AxiosError<UpdateProducerEserviceError>, Options<UpdateProducerEserviceData>> => {
@@ -383,6 +413,8 @@ export const getProducerEserviceLatestVersionInterfaceOptions = (options: Option
 
 /**
  * Suspend an E-service
+ *
+ * Suspend an E-service
  */
 export const suspendEserviceMutation = (options?: Partial<Options<SuspendEserviceData>>): UseMutationOptions<SuspendEserviceResponse, AxiosError<SuspendEserviceError>, Options<SuspendEserviceData>> => {
     const mutationOptions: UseMutationOptions<SuspendEserviceResponse, AxiosError<SuspendEserviceError>, Options<SuspendEserviceData>> = {
@@ -399,6 +431,8 @@ export const suspendEserviceMutation = (options?: Partial<Options<SuspendEservic
 };
 
 /**
+ * Reactivate an E-service
+ *
  * Reactivate a suspended E-service
  */
 export const reactivateEserviceMutation = (options?: Partial<Options<ReactivateEserviceData>>): UseMutationOptions<ReactivateEserviceResponse, AxiosError<ReactivateEserviceError>, Options<ReactivateEserviceData>> => {
@@ -416,6 +450,8 @@ export const reactivateEserviceMutation = (options?: Partial<Options<ReactivateE
 };
 
 /**
+ * Archive a producer E-service
+ *
  * Archive an E-service
  */
 export const archiveProducerEserviceMutation = (options?: Partial<Options<ArchiveProducerEserviceData>>): UseMutationOptions<ArchiveProducerEserviceResponse, AxiosError<ArchiveProducerEserviceError>, Options<ArchiveProducerEserviceData>> => {
@@ -435,6 +471,8 @@ export const archiveProducerEserviceMutation = (options?: Partial<Options<Archiv
 export const getConsumerKeychainKeysQueryKey = (options: Options<GetConsumerKeychainKeysData>) => createQueryKey('getConsumerKeychainKeys', options);
 
 /**
+ * List Consumer Keychain Keys
+ *
  * Retrieve keys of a Consumer Keychain
  */
 export const getConsumerKeychainKeysOptions = (options: Options<GetConsumerKeychainKeysData>) => queryOptions<GetConsumerKeychainKeysResponse, AxiosError<GetConsumerKeychainKeysError>, GetConsumerKeychainKeysResponse, ReturnType<typeof getConsumerKeychainKeysQueryKey>>({
@@ -453,6 +491,8 @@ export const getConsumerKeychainKeysOptions = (options: Options<GetConsumerKeych
 export const getConsumerKeychainKeysInfiniteQueryKey = (options: Options<GetConsumerKeychainKeysData>): QueryKey<Options<GetConsumerKeychainKeysData>> => createQueryKey('getConsumerKeychainKeys', options, true);
 
 /**
+ * List Consumer Keychain Keys
+ *
  * Retrieve keys of a Consumer Keychain
  */
 export const getConsumerKeychainKeysInfiniteOptions = (options: Options<GetConsumerKeychainKeysData>) => infiniteQueryOptions<GetConsumerKeychainKeysResponse, AxiosError<GetConsumerKeychainKeysError>, InfiniteData<GetConsumerKeychainKeysResponse>, QueryKey<Options<GetConsumerKeychainKeysData>>, number | Pick<QueryKey<Options<GetConsumerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -478,6 +518,8 @@ export const getConsumerKeychainKeysInfiniteOptions = (options: Options<GetConsu
 });
 
 /**
+ * Upload a Consumer Keychain Key
+ *
  * Upload a key to a Consumer Keychain
  */
 export const uploadConsumerKeychainKeyMutation = (options?: Partial<Options<UploadConsumerKeychainKeyData>>): UseMutationOptions<UploadConsumerKeychainKeyResponse, AxiosError<UploadConsumerKeychainKeyError>, Options<UploadConsumerKeychainKeyData>> => {
@@ -495,6 +537,8 @@ export const uploadConsumerKeychainKeyMutation = (options?: Partial<Options<Uplo
 };
 
 /**
+ * Remove a Consumer Keychain Key
+ *
  * Remove a key from a Consumer Keychain
  */
 export const removeConsumerKeychainKeyMutation = (options?: Partial<Options<RemoveConsumerKeychainKeyData>>): UseMutationOptions<RemoveConsumerKeychainKeyResponse, AxiosError<RemoveConsumerKeychainKeyError>, Options<RemoveConsumerKeychainKeyData>> => {
@@ -515,6 +559,8 @@ export const downloadConsumerKeychainKeyQueryKey = (options: Options<DownloadCon
 
 /**
  * Download a Consumer Keychain Key
+ *
+ * Download a Consumer Keychain Key
  */
 export const downloadConsumerKeychainKeyOptions = (options: Options<DownloadConsumerKeychainKeyData>) => queryOptions<DownloadConsumerKeychainKeyResponse, AxiosError<DownloadConsumerKeychainKeyError>, DownloadConsumerKeychainKeyResponse, ReturnType<typeof downloadConsumerKeychainKeyQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -532,6 +578,8 @@ export const downloadConsumerKeychainKeyOptions = (options: Options<DownloadCons
 export const getConsumerKeychainsQueryKey = (options: Options<GetConsumerKeychainsData>) => createQueryKey('getConsumerKeychains', options);
 
 /**
+ * List Consumer Keychains
+ *
  * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychainsData>) => queryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, GetConsumerKeychainsResponse, ReturnType<typeof getConsumerKeychainsQueryKey>>({
@@ -550,6 +598,8 @@ export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychain
 export const getConsumerKeychainsInfiniteQueryKey = (options: Options<GetConsumerKeychainsData>): QueryKey<Options<GetConsumerKeychainsData>> => createQueryKey('getConsumerKeychains', options, true);
 
 /**
+ * List Consumer Keychains
+ *
  * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumerKeychainsData>) => infiniteQueryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, InfiniteData<GetConsumerKeychainsResponse>, QueryKey<Options<GetConsumerKeychainsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -575,6 +625,8 @@ export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumer
 });
 
 /**
+ * Create a Consumer Keychain
+ *
  * Create a new Consumer Keychain
  */
 export const createConsumerKeychainMutation = (options?: Partial<Options<CreateConsumerKeychainData>>): UseMutationOptions<CreateConsumerKeychainResponse, AxiosError<CreateConsumerKeychainError>, Options<CreateConsumerKeychainData>> => {
@@ -592,6 +644,8 @@ export const createConsumerKeychainMutation = (options?: Partial<Options<CreateC
 };
 
 /**
+ * Delete a Consumer Keychain
+ *
  * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychainMutation = (options?: Partial<Options<DeleteConsumerKeychainData>>): UseMutationOptions<DeleteConsumerKeychainResponse, AxiosError<DeleteConsumerKeychainError>, Options<DeleteConsumerKeychainData>> => {
@@ -611,6 +665,8 @@ export const deleteConsumerKeychainMutation = (options?: Partial<Options<DeleteC
 export const getConsumerKeychainDetailsQueryKey = (options: Options<GetConsumerKeychainDetailsData>) => createQueryKey('getConsumerKeychainDetails', options);
 
 /**
+ * Get a Consumer Keychain
+ *
  * Retrieve a Consumer Keychain with all its details
  */
 export const getConsumerKeychainDetailsOptions = (options: Options<GetConsumerKeychainDetailsData>) => queryOptions<GetConsumerKeychainDetailsResponse, AxiosError<GetConsumerKeychainDetailsError>, GetConsumerKeychainDetailsResponse, ReturnType<typeof getConsumerKeychainDetailsQueryKey>>({
@@ -627,6 +683,8 @@ export const getConsumerKeychainDetailsOptions = (options: Options<GetConsumerKe
 });
 
 /**
+ * Update a Consumer Keychain
+ *
  * Update a Consumer Keychain
  */
 export const updateConsumerKeychainMutation = (options?: Partial<Options<UpdateConsumerKeychainData>>): UseMutationOptions<UpdateConsumerKeychainResponse, AxiosError<UpdateConsumerKeychainError>, Options<UpdateConsumerKeychainData>> => {
@@ -646,6 +704,8 @@ export const updateConsumerKeychainMutation = (options?: Partial<Options<UpdateC
 export const getConsumerKeychainMembersQueryKey = (options: Options<GetConsumerKeychainMembersData>) => createQueryKey('getConsumerKeychainMembers', options);
 
 /**
+ * List Consumer Keychain Members
+ *
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembersOptions = (options: Options<GetConsumerKeychainMembersData>) => queryOptions<GetConsumerKeychainMembersResponse, AxiosError<GetConsumerKeychainMembersError>, GetConsumerKeychainMembersResponse, ReturnType<typeof getConsumerKeychainMembersQueryKey>>({
@@ -664,6 +724,8 @@ export const getConsumerKeychainMembersOptions = (options: Options<GetConsumerKe
 export const getConsumerKeychainMembersInfiniteQueryKey = (options: Options<GetConsumerKeychainMembersData>): QueryKey<Options<GetConsumerKeychainMembersData>> => createQueryKey('getConsumerKeychainMembers', options, true);
 
 /**
+ * List Consumer Keychain Members
+ *
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembersInfiniteOptions = (options: Options<GetConsumerKeychainMembersData>) => infiniteQueryOptions<GetConsumerKeychainMembersResponse, AxiosError<GetConsumerKeychainMembersError>, InfiniteData<GetConsumerKeychainMembersResponse>, QueryKey<Options<GetConsumerKeychainMembersData>>, number | Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -689,6 +751,8 @@ export const getConsumerKeychainMembersInfiniteOptions = (options: Options<GetCo
 });
 
 /**
+ * Add a Member to a Consumer Keychain
+ *
  * Add a member to a Consumer Keychain
  */
 export const addConsumerKeychainMemberMutation = (options?: Partial<Options<AddConsumerKeychainMemberData>>): UseMutationOptions<AddConsumerKeychainMemberResponse, AxiosError<AddConsumerKeychainMemberError>, Options<AddConsumerKeychainMemberData>> => {
@@ -706,6 +770,8 @@ export const addConsumerKeychainMemberMutation = (options?: Partial<Options<AddC
 };
 
 /**
+ * Remove a Member from a Consumer Keychain
+ *
  * Remove a Member from a Consumer Keychain
  */
 export const removeConsumerKeychainMemberMutation = (options?: Partial<Options<RemoveConsumerKeychainMemberData>>): UseMutationOptions<RemoveConsumerKeychainMemberResponse, AxiosError<RemoveConsumerKeychainMemberError>, Options<RemoveConsumerKeychainMemberData>> => {
@@ -725,6 +791,8 @@ export const removeConsumerKeychainMemberMutation = (options?: Partial<Options<R
 export const getConsumerKeychainMembershipQueryKey = (options: Options<GetConsumerKeychainMembershipData>) => createQueryKey('getConsumerKeychainMembership', options);
 
 /**
+ * Check a Member of a Consumer Keychain
+ *
  * Check whether the given User is a Member of a Consumer Keychain
  */
 export const getConsumerKeychainMembershipOptions = (options: Options<GetConsumerKeychainMembershipData>) => queryOptions<GetConsumerKeychainMembershipResponse, AxiosError<GetConsumerKeychainMembershipError>, GetConsumerKeychainMembershipResponse, ReturnType<typeof getConsumerKeychainMembershipQueryKey>>({
@@ -743,6 +811,8 @@ export const getConsumerKeychainMembershipOptions = (options: Options<GetConsume
 export const getConsumerKeychainOptionsQueryKey = (options: Options<GetConsumerKeychainOptionsData>) => createQueryKey('getConsumerKeychainOptions', options);
 
 /**
+ * List Consumer Keychain options
+ *
  * Retrieve Consumer Keychain options for combobox selection
  */
 export const getConsumerKeychainOptionsOptions = (options: Options<GetConsumerKeychainOptionsData>) => queryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, GetConsumerKeychainOptionsResponse, ReturnType<typeof getConsumerKeychainOptionsQueryKey>>({
@@ -761,6 +831,8 @@ export const getConsumerKeychainOptionsOptions = (options: Options<GetConsumerKe
 export const getConsumerKeychainOptionsInfiniteQueryKey = (options: Options<GetConsumerKeychainOptionsData>): QueryKey<Options<GetConsumerKeychainOptionsData>> => createQueryKey('getConsumerKeychainOptions', options, true);
 
 /**
+ * List Consumer Keychain options
+ *
  * Retrieve Consumer Keychain options for combobox selection
  */
 export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetConsumerKeychainOptionsData>) => infiniteQueryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, InfiniteData<GetConsumerKeychainOptionsResponse>, QueryKey<Options<GetConsumerKeychainOptionsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -788,6 +860,8 @@ export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetCo
 export const getConsumerKeychainPurposesQueryKey = (options: Options<GetConsumerKeychainPurposesData>) => createQueryKey('getConsumerKeychainPurposes', options);
 
 /**
+ * List Purposes linked to a Consumer Keychain
+ *
  * Retrieve Purposes linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposesOptions = (options: Options<GetConsumerKeychainPurposesData>) => queryOptions<GetConsumerKeychainPurposesResponse, AxiosError<GetConsumerKeychainPurposesError>, GetConsumerKeychainPurposesResponse, ReturnType<typeof getConsumerKeychainPurposesQueryKey>>({
@@ -806,6 +880,8 @@ export const getConsumerKeychainPurposesOptions = (options: Options<GetConsumerK
 export const getConsumerKeychainPurposesInfiniteQueryKey = (options: Options<GetConsumerKeychainPurposesData>): QueryKey<Options<GetConsumerKeychainPurposesData>> => createQueryKey('getConsumerKeychainPurposes', options, true);
 
 /**
+ * List Purposes linked to a Consumer Keychain
+ *
  * Retrieve Purposes linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposesInfiniteOptions = (options: Options<GetConsumerKeychainPurposesData>) => infiniteQueryOptions<GetConsumerKeychainPurposesResponse, AxiosError<GetConsumerKeychainPurposesError>, InfiniteData<GetConsumerKeychainPurposesResponse>, QueryKey<Options<GetConsumerKeychainPurposesData>>, number | Pick<QueryKey<Options<GetConsumerKeychainPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -832,6 +908,8 @@ export const getConsumerKeychainPurposesInfiniteOptions = (options: Options<GetC
 
 /**
  * Link a Purpose to a Consumer Keychain
+ *
+ * Link a Purpose to a Consumer Keychain
  */
 export const linkPurposeToConsumerKeychainMutation = (options?: Partial<Options<LinkPurposeToConsumerKeychainData>>): UseMutationOptions<LinkPurposeToConsumerKeychainResponse, AxiosError<LinkPurposeToConsumerKeychainError>, Options<LinkPurposeToConsumerKeychainData>> => {
     const mutationOptions: UseMutationOptions<LinkPurposeToConsumerKeychainResponse, AxiosError<LinkPurposeToConsumerKeychainError>, Options<LinkPurposeToConsumerKeychainData>> = {
@@ -848,6 +926,8 @@ export const linkPurposeToConsumerKeychainMutation = (options?: Partial<Options<
 };
 
 /**
+ * Unlink a Purpose from a Consumer Keychain
+ *
  * Unlink a Purpose from a Consumer Keychain
  */
 export const unlinkPurposeFromConsumerKeychainMutation = (options?: Partial<Options<UnlinkPurposeFromConsumerKeychainData>>): UseMutationOptions<UnlinkPurposeFromConsumerKeychainResponse, AxiosError<UnlinkPurposeFromConsumerKeychainError>, Options<UnlinkPurposeFromConsumerKeychainData>> => {
@@ -867,6 +947,8 @@ export const unlinkPurposeFromConsumerKeychainMutation = (options?: Partial<Opti
 export const getConsumerKeychainPurposeLinkQueryKey = (options: Options<GetConsumerKeychainPurposeLinkData>) => createQueryKey('getConsumerKeychainPurposeLink', options);
 
 /**
+ * Check a Purpose link to a Consumer Keychain
+ *
  * Check whether the given Purpose is linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposeLinkOptions = (options: Options<GetConsumerKeychainPurposeLinkData>) => queryOptions<GetConsumerKeychainPurposeLinkResponse, AxiosError<GetConsumerKeychainPurposeLinkError>, GetConsumerKeychainPurposeLinkResponse, ReturnType<typeof getConsumerKeychainPurposeLinkQueryKey>>({
@@ -885,6 +967,8 @@ export const getConsumerKeychainPurposeLinkOptions = (options: Options<GetConsum
 export const getKnodeApiKeychainsQueryKey = (options: Options<GetKnodeApiKeychainsData>) => createQueryKey('getKnodeApiKeychains', options);
 
 /**
+ * List Knode API Keychains
+ *
  * Retrieve a paginated list of Knode API Keychains owned by the current user organization
  */
 export const getKnodeApiKeychainsOptions = (options: Options<GetKnodeApiKeychainsData>) => queryOptions<GetKnodeApiKeychainsResponse, AxiosError<GetKnodeApiKeychainsError>, GetKnodeApiKeychainsResponse, ReturnType<typeof getKnodeApiKeychainsQueryKey>>({
@@ -903,6 +987,8 @@ export const getKnodeApiKeychainsOptions = (options: Options<GetKnodeApiKeychain
 export const getKnodeApiKeychainsInfiniteQueryKey = (options: Options<GetKnodeApiKeychainsData>): QueryKey<Options<GetKnodeApiKeychainsData>> => createQueryKey('getKnodeApiKeychains', options, true);
 
 /**
+ * List Knode API Keychains
+ *
  * Retrieve a paginated list of Knode API Keychains owned by the current user organization
  */
 export const getKnodeApiKeychainsInfiniteOptions = (options: Options<GetKnodeApiKeychainsData>) => infiniteQueryOptions<GetKnodeApiKeychainsResponse, AxiosError<GetKnodeApiKeychainsError>, InfiniteData<GetKnodeApiKeychainsResponse>, QueryKey<Options<GetKnodeApiKeychainsData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -928,6 +1014,8 @@ export const getKnodeApiKeychainsInfiniteOptions = (options: Options<GetKnodeApi
 });
 
 /**
+ * Create a Knode API Keychain
+ *
  * Create a new Knode API Keychain
  */
 export const createKnodeApiKeychainMutation = (options?: Partial<Options<CreateKnodeApiKeychainData>>): UseMutationOptions<CreateKnodeApiKeychainResponse, AxiosError<CreateKnodeApiKeychainError>, Options<CreateKnodeApiKeychainData>> => {
@@ -945,6 +1033,8 @@ export const createKnodeApiKeychainMutation = (options?: Partial<Options<CreateK
 };
 
 /**
+ * Delete a Knode API Keychain
+ *
  * Delete a Knode API Keychain
  */
 export const deleteKnodeApiKeychainMutation = (options?: Partial<Options<DeleteKnodeApiKeychainData>>): UseMutationOptions<DeleteKnodeApiKeychainResponse, AxiosError<DeleteKnodeApiKeychainError>, Options<DeleteKnodeApiKeychainData>> => {
@@ -964,6 +1054,8 @@ export const deleteKnodeApiKeychainMutation = (options?: Partial<Options<DeleteK
 export const getKnodeApiKeychainDetailsQueryKey = (options: Options<GetKnodeApiKeychainDetailsData>) => createQueryKey('getKnodeApiKeychainDetails', options);
 
 /**
+ * Get a Knode API Keychain
+ *
  * Retrieve a Knode API Keychain with all its details
  */
 export const getKnodeApiKeychainDetailsOptions = (options: Options<GetKnodeApiKeychainDetailsData>) => queryOptions<GetKnodeApiKeychainDetailsResponse, AxiosError<GetKnodeApiKeychainDetailsError>, GetKnodeApiKeychainDetailsResponse, ReturnType<typeof getKnodeApiKeychainDetailsQueryKey>>({
@@ -980,6 +1072,8 @@ export const getKnodeApiKeychainDetailsOptions = (options: Options<GetKnodeApiKe
 });
 
 /**
+ * Update a Knode API Keychain
+ *
  * Update a Knode API Keychain
  */
 export const updateKnodeApiKeychainMutation = (options?: Partial<Options<UpdateKnodeApiKeychainData>>): UseMutationOptions<UpdateKnodeApiKeychainResponse, AxiosError<UpdateKnodeApiKeychainError>, Options<UpdateKnodeApiKeychainData>> => {
@@ -999,6 +1093,8 @@ export const updateKnodeApiKeychainMutation = (options?: Partial<Options<UpdateK
 export const getKnodeApiKeychainKeysQueryKey = (options: Options<GetKnodeApiKeychainKeysData>) => createQueryKey('getKnodeApiKeychainKeys', options);
 
 /**
+ * List Knode API Keychain Keys
+ *
  * Retrieve keys of a Knode API Keychain
  */
 export const getKnodeApiKeychainKeysOptions = (options: Options<GetKnodeApiKeychainKeysData>) => queryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, GetKnodeApiKeychainKeysResponse, ReturnType<typeof getKnodeApiKeychainKeysQueryKey>>({
@@ -1017,6 +1113,8 @@ export const getKnodeApiKeychainKeysOptions = (options: Options<GetKnodeApiKeych
 export const getKnodeApiKeychainKeysInfiniteQueryKey = (options: Options<GetKnodeApiKeychainKeysData>): QueryKey<Options<GetKnodeApiKeychainKeysData>> => createQueryKey('getKnodeApiKeychainKeys', options, true);
 
 /**
+ * List Knode API Keychain Keys
+ *
  * Retrieve keys of a Knode API Keychain
  */
 export const getKnodeApiKeychainKeysInfiniteOptions = (options: Options<GetKnodeApiKeychainKeysData>) => infiniteQueryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, InfiniteData<GetKnodeApiKeychainKeysResponse>, QueryKey<Options<GetKnodeApiKeychainKeysData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1042,6 +1140,8 @@ export const getKnodeApiKeychainKeysInfiniteOptions = (options: Options<GetKnode
 });
 
 /**
+ * Upload a Knode API Keychain Key
+ *
  * Upload a key to a Knode API Keychain
  */
 export const uploadKnodeApiKeychainKeyMutation = (options?: Partial<Options<UploadKnodeApiKeychainKeyData>>): UseMutationOptions<UploadKnodeApiKeychainKeyResponse, AxiosError<UploadKnodeApiKeychainKeyError>, Options<UploadKnodeApiKeychainKeyData>> => {
@@ -1059,6 +1159,8 @@ export const uploadKnodeApiKeychainKeyMutation = (options?: Partial<Options<Uplo
 };
 
 /**
+ * Remove a Knode API Keychain Key
+ *
  * Remove a key from a Knode API Keychain
  */
 export const removeKnodeApiKeychainKeyMutation = (options?: Partial<Options<RemoveKnodeApiKeychainKeyData>>): UseMutationOptions<RemoveKnodeApiKeychainKeyResponse, AxiosError<RemoveKnodeApiKeychainKeyError>, Options<RemoveKnodeApiKeychainKeyData>> => {
@@ -1079,6 +1181,8 @@ export const downloadKnodeApiKeychainKeyQueryKey = (options: Options<DownloadKno
 
 /**
  * Download a Knode API Keychain Key
+ *
+ * Download a Knode API Keychain Key
  */
 export const downloadKnodeApiKeychainKeyOptions = (options: Options<DownloadKnodeApiKeychainKeyData>) => queryOptions<DownloadKnodeApiKeychainKeyResponse, AxiosError<DownloadKnodeApiKeychainKeyError>, DownloadKnodeApiKeychainKeyResponse, ReturnType<typeof downloadKnodeApiKeychainKeyQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -1096,6 +1200,8 @@ export const downloadKnodeApiKeychainKeyOptions = (options: Options<DownloadKnod
 export const getKnodeApiKeychainMembersQueryKey = (options: Options<GetKnodeApiKeychainMembersData>) => createQueryKey('getKnodeApiKeychainMembers', options);
 
 /**
+ * List Knode API Keychain Members
+ *
  * Retrieve members of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembersOptions = (options: Options<GetKnodeApiKeychainMembersData>) => queryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, GetKnodeApiKeychainMembersResponse, ReturnType<typeof getKnodeApiKeychainMembersQueryKey>>({
@@ -1114,6 +1220,8 @@ export const getKnodeApiKeychainMembersOptions = (options: Options<GetKnodeApiKe
 export const getKnodeApiKeychainMembersInfiniteQueryKey = (options: Options<GetKnodeApiKeychainMembersData>): QueryKey<Options<GetKnodeApiKeychainMembersData>> => createQueryKey('getKnodeApiKeychainMembers', options, true);
 
 /**
+ * List Knode API Keychain Members
+ *
  * Retrieve members of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembersInfiniteOptions = (options: Options<GetKnodeApiKeychainMembersData>) => infiniteQueryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, InfiniteData<GetKnodeApiKeychainMembersResponse>, QueryKey<Options<GetKnodeApiKeychainMembersData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1139,6 +1247,8 @@ export const getKnodeApiKeychainMembersInfiniteOptions = (options: Options<GetKn
 });
 
 /**
+ * Add a Member to a Knode API Keychain
+ *
  * Add a member to a Knode API Keychain
  */
 export const addKnodeApiKeychainMemberMutation = (options?: Partial<Options<AddKnodeApiKeychainMemberData>>): UseMutationOptions<AddKnodeApiKeychainMemberResponse, AxiosError<AddKnodeApiKeychainMemberError>, Options<AddKnodeApiKeychainMemberData>> => {
@@ -1156,6 +1266,8 @@ export const addKnodeApiKeychainMemberMutation = (options?: Partial<Options<AddK
 };
 
 /**
+ * Remove a Member from a Knode API Keychain
+ *
  * Remove a Member from a Knode API Keychain
  */
 export const removeKnodeApiKeychainMemberMutation = (options?: Partial<Options<RemoveKnodeApiKeychainMemberData>>): UseMutationOptions<RemoveKnodeApiKeychainMemberResponse, AxiosError<RemoveKnodeApiKeychainMemberError>, Options<RemoveKnodeApiKeychainMemberData>> => {
@@ -1175,6 +1287,8 @@ export const removeKnodeApiKeychainMemberMutation = (options?: Partial<Options<R
 export const getKnodeApiKeychainMembershipQueryKey = (options: Options<GetKnodeApiKeychainMembershipData>) => createQueryKey('getKnodeApiKeychainMembership', options);
 
 /**
+ * Check a Knode API Keychain Membership
+ *
  * Check whether the given User is a Member of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembershipOptions = (options: Options<GetKnodeApiKeychainMembershipData>) => queryOptions<GetKnodeApiKeychainMembershipResponse, AxiosError<GetKnodeApiKeychainMembershipError>, GetKnodeApiKeychainMembershipResponse, ReturnType<typeof getKnodeApiKeychainMembershipQueryKey>>({
@@ -1193,6 +1307,8 @@ export const getKnodeApiKeychainMembershipOptions = (options: Options<GetKnodeAp
 export const getOperatorsQueryKey = (options?: Options<GetOperatorsData>) => createQueryKey('getOperators', options);
 
 /**
+ * List Operators
+ *
  * Retrieve Operators of the requesting User's Organization
  */
 export const getOperatorsOptions = (options?: Options<GetOperatorsData>) => queryOptions<GetOperatorsResponse, AxiosError<GetOperatorsError>, GetOperatorsResponse, ReturnType<typeof getOperatorsQueryKey>>({
@@ -1319,6 +1435,8 @@ export const getConsumerEservicesInfiniteOptions = (options: Options<GetConsumer
 export const getConsumerAgreementsQueryKey = (options?: Options<GetConsumerAgreementsData>) => createQueryKey('getConsumerAgreements', options);
 
 /**
+ * List consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements, optionally filtered by state
  */
 export const getConsumerAgreementsOptions = (options?: Options<GetConsumerAgreementsData>) => queryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, GetConsumerAgreementsResponse, ReturnType<typeof getConsumerAgreementsQueryKey>>({
@@ -1337,6 +1455,8 @@ export const getConsumerAgreementsOptions = (options?: Options<GetConsumerAgreem
 export const getConsumerAgreementsInfiniteQueryKey = (options?: Options<GetConsumerAgreementsData>): QueryKey<Options<GetConsumerAgreementsData>> => createQueryKey('getConsumerAgreements', options, true);
 
 /**
+ * List consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements, optionally filtered by state
  */
 export const getConsumerAgreementsInfiniteOptions = (options?: Options<GetConsumerAgreementsData>) => infiniteQueryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, InfiniteData<GetConsumerAgreementsResponse>, QueryKey<Options<GetConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1383,6 +1503,8 @@ export const createConsumerAgreementMutation = (options?: Partial<Options<Create
 export const getConsumerAgreementCountersQueryKey = (options?: Options<GetConsumerAgreementCountersData>) => createQueryKey('getConsumerAgreementCounters', options);
 
 /**
+ * Get consumer Agreement counters
+ *
  * Retrieve Consumer Agreement counters per state
  */
 export const getConsumerAgreementCountersOptions = (options?: Options<GetConsumerAgreementCountersData>) => queryOptions<GetConsumerAgreementCountersResponse, AxiosError<GetConsumerAgreementCountersError>, GetConsumerAgreementCountersResponse, ReturnType<typeof getConsumerAgreementCountersQueryKey>>({
@@ -1401,6 +1523,8 @@ export const getConsumerAgreementCountersOptions = (options?: Options<GetConsume
 export const getPendingConsumerAgreementsQueryKey = (options: Options<GetPendingConsumerAgreementsData>) => createQueryKey('getPendingConsumerAgreements', options);
 
 /**
+ * List pending consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements pending action
  */
 export const getPendingConsumerAgreementsOptions = (options: Options<GetPendingConsumerAgreementsData>) => queryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, GetPendingConsumerAgreementsResponse, ReturnType<typeof getPendingConsumerAgreementsQueryKey>>({
@@ -1419,6 +1543,8 @@ export const getPendingConsumerAgreementsOptions = (options: Options<GetPendingC
 export const getPendingConsumerAgreementsInfiniteQueryKey = (options: Options<GetPendingConsumerAgreementsData>): QueryKey<Options<GetPendingConsumerAgreementsData>> => createQueryKey('getPendingConsumerAgreements', options, true);
 
 /**
+ * List pending consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements pending action
  */
 export const getPendingConsumerAgreementsInfiniteOptions = (options: Options<GetPendingConsumerAgreementsData>) => infiniteQueryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, InfiniteData<GetPendingConsumerAgreementsResponse>, QueryKey<Options<GetPendingConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1463,6 +1589,8 @@ export const createAgreementConsumerActivationMagicLinkMutation = (options?: Par
 };
 
 /**
+ * Reactivate an Agreement by consumer
+ *
  * Reactivate an Agreement as Consumer
  */
 export const reactivateAgreementByConsumerMutation = (options?: Partial<Options<ReactivateAgreementByConsumerData>>): UseMutationOptions<ReactivateAgreementByConsumerResponse, AxiosError<ReactivateAgreementByConsumerError>, Options<ReactivateAgreementByConsumerData>> => {
@@ -1480,6 +1608,8 @@ export const reactivateAgreementByConsumerMutation = (options?: Partial<Options<
 };
 
 /**
+ * Suspend an Agreement by consumer
+ *
  * Suspend an Agreement as Consumer
  */
 export const suspendAgreementByConsumerMutation = (options?: Partial<Options<SuspendAgreementByConsumerData>>): UseMutationOptions<SuspendAgreementByConsumerResponse, AxiosError<SuspendAgreementByConsumerError>, Options<SuspendAgreementByConsumerData>> => {
@@ -1497,6 +1627,8 @@ export const suspendAgreementByConsumerMutation = (options?: Partial<Options<Sus
 };
 
 /**
+ * Archive an Agreement by consumer
+ *
  * Archive an Agreement as Consumer
  */
 export const archiveAgreementByConsumerMutation = (options?: Partial<Options<ArchiveAgreementByConsumerData>>): UseMutationOptions<ArchiveAgreementByConsumerResponse, AxiosError<ArchiveAgreementByConsumerError>, Options<ArchiveAgreementByConsumerData>> => {
@@ -1622,6 +1754,8 @@ export const getConsumerPurposeDetailsOptions = (options: Options<GetConsumerPur
 });
 
 /**
+ * Reactivate a Purpose by consumer
+ *
  * Reactivate a Purpose as Consumer
  */
 export const reactivatePurposeByConsumerMutation = (options?: Partial<Options<ReactivatePurposeByConsumerData>>): UseMutationOptions<ReactivatePurposeByConsumerResponse, AxiosError<ReactivatePurposeByConsumerError>, Options<ReactivatePurposeByConsumerData>> => {
@@ -1639,6 +1773,8 @@ export const reactivatePurposeByConsumerMutation = (options?: Partial<Options<Re
 };
 
 /**
+ * Suspend a Purpose by consumer
+ *
  * Suspend a Purpose as Consumer
  */
 export const suspendPurposeByConsumerMutation = (options?: Partial<Options<SuspendPurposeByConsumerData>>): UseMutationOptions<SuspendPurposeByConsumerResponse, AxiosError<SuspendPurposeByConsumerError>, Options<SuspendPurposeByConsumerData>> => {
@@ -1656,6 +1792,8 @@ export const suspendPurposeByConsumerMutation = (options?: Partial<Options<Suspe
 };
 
 /**
+ * Archive a Purpose by consumer
+ *
  * Archive a Purpose as Consumer
  */
 export const archivePurposeByConsumerMutation = (options?: Partial<Options<ArchivePurposeByConsumerData>>): UseMutationOptions<ArchivePurposeByConsumerResponse, AxiosError<ArchivePurposeByConsumerError>, Options<ArchivePurposeByConsumerData>> => {
@@ -1675,6 +1813,8 @@ export const archivePurposeByConsumerMutation = (options?: Partial<Options<Archi
 export const getSessionOrganizationQueryKey = (options?: Options<GetSessionOrganizationData>) => createQueryKey('getSessionOrganization', options);
 
 /**
+ * Get a Session Organization
+ *
  * Retrieve the Organization of the current session's User
  */
 export const getSessionOrganizationOptions = (options?: Options<GetSessionOrganizationData>) => queryOptions<GetSessionOrganizationResponse, AxiosError<GetSessionOrganizationError>, GetSessionOrganizationResponse, ReturnType<typeof getSessionOrganizationQueryKey>>({
@@ -1693,6 +1833,8 @@ export const getSessionOrganizationOptions = (options?: Options<GetSessionOrgani
 export const getProducerAgreementsQueryKey = (options: Options<GetProducerAgreementsData>) => createQueryKey('getProducerAgreements', options);
 
 /**
+ * List producer Agreements
+ *
  * Retrieve a paginated list of Agreements produced by the logged-in user's organization
  */
 export const getProducerAgreementsOptions = (options: Options<GetProducerAgreementsData>) => queryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, GetProducerAgreementsResponse, ReturnType<typeof getProducerAgreementsQueryKey>>({
@@ -1711,6 +1853,8 @@ export const getProducerAgreementsOptions = (options: Options<GetProducerAgreeme
 export const getProducerAgreementsInfiniteQueryKey = (options: Options<GetProducerAgreementsData>): QueryKey<Options<GetProducerAgreementsData>> => createQueryKey('getProducerAgreements', options, true);
 
 /**
+ * List producer Agreements
+ *
  * Retrieve a paginated list of Agreements produced by the logged-in user's organization
  */
 export const getProducerAgreementsInfiniteOptions = (options: Options<GetProducerAgreementsData>) => infiniteQueryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, InfiniteData<GetProducerAgreementsResponse>, QueryKey<Options<GetProducerAgreementsData>>, number | Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1738,6 +1882,8 @@ export const getProducerAgreementsInfiniteOptions = (options: Options<GetProduce
 export const getProducerAgreementDetailsQueryKey = (options: Options<GetProducerAgreementDetailsData>) => createQueryKey('getProducerAgreementDetails', options);
 
 /**
+ * Get a producer Agreement
+ *
  * Retrieve a Producer Agreement with all its details
  */
 export const getProducerAgreementDetailsOptions = (options: Options<GetProducerAgreementDetailsData>) => queryOptions<GetProducerAgreementDetailsResponse, AxiosError<GetProducerAgreementDetailsError>, GetProducerAgreementDetailsResponse, ReturnType<typeof getProducerAgreementDetailsQueryKey>>({
@@ -1754,6 +1900,8 @@ export const getProducerAgreementDetailsOptions = (options: Options<GetProducerA
 });
 
 /**
+ * Reactivate an Agreement by producer
+ *
  * Reactivate an Agreement as Producer
  */
 export const reactivateAgreementByProducerMutation = (options?: Partial<Options<ReactivateAgreementByProducerData>>): UseMutationOptions<ReactivateAgreementByProducerResponse, AxiosError<ReactivateAgreementByProducerError>, Options<ReactivateAgreementByProducerData>> => {
@@ -1771,6 +1919,8 @@ export const reactivateAgreementByProducerMutation = (options?: Partial<Options<
 };
 
 /**
+ * Suspend an Agreement by producer
+ *
  * Suspend an Agreement as Producer
  */
 export const suspendAgreementByProducerMutation = (options?: Partial<Options<SuspendAgreementByProducerData>>): UseMutationOptions<SuspendAgreementByProducerResponse, AxiosError<SuspendAgreementByProducerError>, Options<SuspendAgreementByProducerData>> => {
@@ -1839,6 +1989,8 @@ export const getProducerPurposesInfiniteOptions = (options: Options<GetProducerP
 export const getProducerPurposeDetailsQueryKey = (options: Options<GetProducerPurposeDetailsData>) => createQueryKey('getProducerPurposeDetails', options);
 
 /**
+ * Get a producer Purpose
+ *
  * Retrieve a Producer Purpose with details
  */
 export const getProducerPurposeDetailsOptions = (options: Options<GetProducerPurposeDetailsData>) => queryOptions<GetProducerPurposeDetailsResponse, AxiosError<GetProducerPurposeDetailsError>, GetProducerPurposeDetailsResponse, ReturnType<typeof getProducerPurposeDetailsQueryKey>>({
@@ -1855,6 +2007,8 @@ export const getProducerPurposeDetailsOptions = (options: Options<GetProducerPur
 });
 
 /**
+ * Reactivate a Purpose by producer
+ *
  * Reactivate a Purpose as Producer
  */
 export const reactivatePurposeByProducerMutation = (options?: Partial<Options<ReactivatePurposeByProducerData>>): UseMutationOptions<ReactivatePurposeByProducerResponse, AxiosError<ReactivatePurposeByProducerError>, Options<ReactivatePurposeByProducerData>> => {
@@ -1872,6 +2026,8 @@ export const reactivatePurposeByProducerMutation = (options?: Partial<Options<Re
 };
 
 /**
+ * Suspend a Purpose by producer
+ *
  * Suspend a Purpose as Producer
  */
 export const suspendPurposeByProducerMutation = (options?: Partial<Options<SuspendPurposeByProducerData>>): UseMutationOptions<SuspendPurposeByProducerResponse, AxiosError<SuspendPurposeByProducerError>, Options<SuspendPurposeByProducerData>> => {

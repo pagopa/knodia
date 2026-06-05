@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -28,6 +30,8 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * List Consumer Keychains
+ *
  * Retrieve a list of Consumer Keychains
  */
 export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
@@ -38,6 +42,8 @@ export const getConsumerKeychains = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create a Consumer Keychain
+ *
  * Create a new Consumer Keychain
  */
 export const createConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerKeychainResponses, CreateConsumerKeychainErrors, ThrowOnError>({
@@ -53,6 +59,8 @@ export const createConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 
 /**
  * Delete a Consumer Keychain
+ *
+ * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -61,6 +69,8 @@ export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Get a Consumer Keychain
+ *
  * Retrieve a Consumer Keychain by its ID
  */
 export const getConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainResponses, GetConsumerKeychainErrors, ThrowOnError>({
@@ -71,6 +81,8 @@ export const getConsumerKeychain = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * Update a Consumer Keychain
+ *
  * Update a Consumer Keychain
  */
 export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateConsumerKeychainResponses, UpdateConsumerKeychainErrors, ThrowOnError>({
@@ -85,6 +97,8 @@ export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List Consumer Keychain Keys
+ *
  * Retrieve keys of a Consumer Keychain
  */
 export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainKeysResponses, GetConsumerKeychainKeysErrors, ThrowOnError>({
@@ -95,6 +109,8 @@ export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a Consumer Keychain Key
+ *
  * Upload a key to a Consumer Keychain
  */
 export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadConsumerKeychainKeyResponses, UploadConsumerKeychainKeyErrors, ThrowOnError>({
@@ -109,6 +125,8 @@ export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Consumer Keychain Key
+ *
  * Remove a key from a Consumer Keychain
  */
 export const removeConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainKeyErrors, ThrowOnError>({
@@ -118,6 +136,8 @@ export const removeConsumerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Get a Consumer Keychain Key
+ *
  * Retrieve a Consumer Keychain Key by kid
  */
 export const getConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainKeyResponses, GetConsumerKeychainKeyErrors, ThrowOnError>({
@@ -128,6 +148,8 @@ export const getConsumerKeychainKey = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Remove a Member from a Consumer Keychain
+ *
  * Remove a member from a Consumer Keychain
  */
 export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainMemberResponses, RemoveConsumerKeychainMemberErrors, ThrowOnError>({
@@ -137,6 +159,8 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Get a Consumer Keychain Member
+ *
  * Retrieve a Consumer Keychain Member by user ID
  */
 export const getConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMemberResponses, GetConsumerKeychainMemberErrors, ThrowOnError>({
@@ -147,6 +171,8 @@ export const getConsumerKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * List Consumer Keychain Members
+ *
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembersResponses, GetConsumerKeychainMembersErrors, ThrowOnError>({
@@ -157,6 +183,8 @@ export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Add a Member to a Consumer Keychain
+ *
  * Add a member to a Consumer Keychain
  */
 export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddConsumerKeychainMemberResponses, AddConsumerKeychainMemberErrors, ThrowOnError>({
@@ -171,6 +199,8 @@ export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * List Purposes linked to a Consumer Keychain
+ *
  * Retrieve a list of Purposes linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposesResponses, GetConsumerKeychainPurposesErrors, ThrowOnError>({
@@ -181,6 +211,8 @@ export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * Link a Purpose to a Consumer Keychain
+ *
  * Link a Purpose to a Consumer Keychain
  */
 export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<LinkPurposeToConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<LinkPurposeToConsumerKeychainResponses, LinkPurposeToConsumerKeychainErrors, ThrowOnError>({
@@ -195,6 +227,8 @@ export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = tru
 
 /**
  * Unlink a Purpose from a Consumer Keychain
+ *
+ * Unlink a Purpose from a Consumer Keychain
  */
 export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -203,6 +237,8 @@ export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean =
 });
 
 /**
+ * Get a Purpose linked to a Consumer Keychain
+ *
  * Retrieve a specific Purpose linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurpose = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposeData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposeResponses, GetConsumerKeychainPurposeErrors, ThrowOnError>({
@@ -213,6 +249,8 @@ export const getConsumerKeychainPurpose = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * List Knode API Keychains
+ *
  * Retrieve a list of Knode API Keychains
  */
 export const getKnodeApiKeychains = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainsResponses, GetKnodeApiKeychainsErrors, ThrowOnError>({
@@ -223,6 +261,8 @@ export const getKnodeApiKeychains = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create a Knode API Keychain
+ *
  * Create a new Knode API Keychain
  */
 export const createKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateKnodeApiKeychainResponses, CreateKnodeApiKeychainErrors, ThrowOnError>({
@@ -238,6 +278,8 @@ export const createKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 
 /**
  * Delete a Knode API Keychain
+ *
+ * Delete a Knode API Keychain
  */
 export const deleteKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteKnodeApiKeychainResponses, DeleteKnodeApiKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -246,6 +288,8 @@ export const deleteKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Get a Knode API Keychain
+ *
  * Retrieve a Knode API Keychain by its ID
  */
 export const getKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainResponses, GetKnodeApiKeychainErrors, ThrowOnError>({
@@ -256,6 +300,8 @@ export const getKnodeApiKeychain = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * Update a Knode API Keychain
+ *
  * Update a Knode API Keychain
  */
 export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateKnodeApiKeychainResponses, UpdateKnodeApiKeychainErrors, ThrowOnError>({
@@ -270,6 +316,8 @@ export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Remove a Knode API Keychain Key
+ *
  * Remove a key from a Knode API Keychain
  */
 export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainKeyErrors, ThrowOnError>({
@@ -279,6 +327,8 @@ export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Get a Knode API Keychain Key
+ *
  * Retrieve a Knode API Keychain Key by kid
  */
 export const getKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainKeyResponses, GetKnodeApiKeychainKeyErrors, ThrowOnError>({
@@ -289,6 +339,8 @@ export const getKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List Knode API Keychain Keys
+ *
  * Retrieve keys of a Knode API Keychain
  */
 export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainKeysErrors, ThrowOnError>({
@@ -299,6 +351,8 @@ export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a Knode API Keychain Key
+ *
  * Upload a key to a Knode API Keychain
  */
 export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadKnodeApiKeychainKeyResponses, UploadKnodeApiKeychainKeyErrors, ThrowOnError>({
@@ -313,6 +367,8 @@ export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * List Knode API Keychain Members
+ *
  * Retrieve members of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainMembersErrors, ThrowOnError>({
@@ -323,6 +379,8 @@ export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Add a Knode API Keychain Member
+ *
  * Add a member to a Knode API Keychain
  */
 export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddKnodeApiKeychainMemberResponses, AddKnodeApiKeychainMemberErrors, ThrowOnError>({
@@ -337,6 +395,8 @@ export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Knode API Keychain Member
+ *
  * Remove a member from a Knode API Keychain
  */
 export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainMemberResponses, RemoveKnodeApiKeychainMemberErrors, ThrowOnError>({
@@ -346,6 +406,8 @@ export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Get a Knode API Keychain Member
+ *
  * Retrieve a Knode API Keychain Member by user ID
  */
 export const getKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMemberResponses, GetKnodeApiKeychainMemberErrors, ThrowOnError>({
@@ -356,6 +418,8 @@ export const getKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * List Producer Keychains
+ *
  * Retrieve a list of Producer Keychains
  */
 export const getProducerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainsResponses, GetProducerKeychainsErrors, ThrowOnError>({
@@ -366,6 +430,8 @@ export const getProducerKeychains = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create a Producer Keychain
+ *
  * Create a new Producer Keychain
  */
 export const createProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateProducerKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateProducerKeychainResponses, CreateProducerKeychainErrors, ThrowOnError>({
@@ -381,6 +447,8 @@ export const createProducerKeychain = <ThrowOnError extends boolean = true>(opti
 
 /**
  * Delete a Producer Keychain
+ *
+ * Delete a Producer Keychain
  */
 export const deleteProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteProducerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteProducerKeychainResponses, DeleteProducerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -389,6 +457,8 @@ export const deleteProducerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Get a Producer Keychain
+ *
  * Retrieve a Producer Keychain by its ID
  */
 export const getProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainResponses, GetProducerKeychainErrors, ThrowOnError>({
@@ -399,6 +469,8 @@ export const getProducerKeychain = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * Update a Producer Keychain
+ *
  * Update a Producer Keychain
  */
 export const updateProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateProducerKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateProducerKeychainResponses, UpdateProducerKeychainErrors, ThrowOnError>({
@@ -413,6 +485,8 @@ export const updateProducerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List Producer Keychain Members
+ *
  * Retrieve members of a Producer Keychain
  */
 export const getProducerKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainMembersResponses, GetProducerKeychainMembersErrors, ThrowOnError>({
@@ -423,6 +497,8 @@ export const getProducerKeychainMembers = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Add a Member to a Producer Keychain
+ *
  * Add a member to a Producer Keychain
  */
 export const addProducerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddProducerKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddProducerKeychainMemberResponses, AddProducerKeychainMemberErrors, ThrowOnError>({
@@ -437,6 +513,8 @@ export const addProducerKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Member from a Producer Keychain
+ *
  * Remove a member from a Producer Keychain
  */
 export const removeProducerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveProducerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveProducerKeychainMemberResponses, RemoveProducerKeychainMemberErrors, ThrowOnError>({
@@ -446,6 +524,8 @@ export const removeProducerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Get a Producer Keychain Member
+ *
  * Retrieve a Producer Keychain Member by user ID
  */
 export const getProducerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainMemberResponses, GetProducerKeychainMemberErrors, ThrowOnError>({
@@ -456,6 +536,8 @@ export const getProducerKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * List Producer Keychain Keys
+ *
  * Retrieve keys of a Producer Keychain
  */
 export const getProducerKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainKeysResponses, GetProducerKeychainKeysErrors, ThrowOnError>({
@@ -466,6 +548,8 @@ export const getProducerKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a Producer Keychain Key
+ *
  * Upload a key to a Producer Keychain
  */
 export const uploadProducerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadProducerKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadProducerKeychainKeyResponses, UploadProducerKeychainKeyErrors, ThrowOnError>({
@@ -480,6 +564,8 @@ export const uploadProducerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Producer Keychain Key
+ *
  * Remove a key from a Producer Keychain
  */
 export const removeProducerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveProducerKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveProducerKeychainKeyResponses, RemoveProducerKeychainKeyErrors, ThrowOnError>({
@@ -489,6 +575,8 @@ export const removeProducerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Get a Producer Keychain Key
+ *
  * Retrieve a Producer Keychain Key by kid
  */
 export const getProducerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainKeyResponses, GetProducerKeychainKeyErrors, ThrowOnError>({
@@ -499,6 +587,8 @@ export const getProducerKeychainKey = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Link an E-service to a Producer Keychain
+ *
  * Link an E-service to a Producer Keychain
  */
 export const linkEserviceToProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<LinkEserviceToProducerKeychainData, ThrowOnError>) => (options.client ?? client).post<LinkEserviceToProducerKeychainResponses, LinkEserviceToProducerKeychainErrors, ThrowOnError>({
@@ -512,6 +602,8 @@ export const linkEserviceToProducerKeychain = <ThrowOnError extends boolean = tr
 });
 
 /**
+ * Unlink an E-service from a Producer Keychain
+ *
  * Unlink an E-service from a Producer Keychain
  */
 export const unlinkEserviceFromProducerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkEserviceFromProducerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkEserviceFromProducerKeychainResponses, UnlinkEserviceFromProducerKeychainErrors, ThrowOnError>({

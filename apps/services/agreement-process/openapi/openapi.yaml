@@ -314,6 +314,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -330,6 +331,7 @@ paths:
   /agreements:
     post:
       operationId: createAgreement
+      summary: Create an Agreement
       tags:
         - agreement
       description: Create a new Agreement
@@ -404,6 +406,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getAgreements
+      summary: List Agreements
       tags:
         - agreement
       description: Retrieve a list of Agreements
@@ -513,6 +516,7 @@ paths:
   /agreements/{agreementId}:
     get:
       operationId: getAgreement
+      summary: Get an Agreement
       tags:
         - agreement
       description: Retrieve an Agreement by its ID
@@ -581,6 +585,7 @@ paths:
   /agreements/{agreementId}/activationClaims:
     get:
       operationId: getAgreementActivationClaims
+      summary: Get Agreement activation claims
       tags:
         - agreement
       description: Retrieve the activation-claims projection for a pending Agreement.
@@ -652,6 +657,7 @@ paths:
   /agreements/{agreementId}/activate:
     post:
       operationId: activateAgreement
+      summary: Activate an Agreement
       tags:
         - agreement
       description: Activate an Agreement (consumer operator identification)
@@ -728,6 +734,7 @@ paths:
   /agreements/{agreementId}/suspendByConsumer:
     post:
       operationId: suspendAgreementByConsumer
+      summary: Suspend an Agreement by consumer
       tags:
         - agreement
       description: Suspend an Agreement by Consumer
@@ -804,6 +811,7 @@ paths:
   /agreements/{agreementId}/suspendByProducer:
     post:
       operationId: suspendAgreementByProducer
+      summary: Suspend an Agreement by producer
       tags:
         - agreement
       description: Suspend an Agreement by Producer
@@ -880,6 +888,7 @@ paths:
   /agreements/{agreementId}/reactivateByConsumer:
     post:
       operationId: reactivateAgreementByConsumer
+      summary: Reactivate an Agreement by consumer
       tags:
         - agreement
       description: Reactivate an Agreement by Consumer
@@ -956,6 +965,7 @@ paths:
   /agreements/{agreementId}/reactivateByProducer:
     post:
       operationId: reactivateAgreementByProducer
+      summary: Reactivate an Agreement by producer
       tags:
         - agreement
       description: Reactivate an Agreement by Producer
@@ -1032,6 +1042,7 @@ paths:
   /agreements/{agreementId}/archive:
     post:
       operationId: archiveAgreement
+      summary: Archive an Agreement
       tags:
         - agreement
       description: Archive an Agreement on behalf of its Consumer

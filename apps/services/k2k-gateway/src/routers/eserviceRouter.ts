@@ -277,6 +277,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      summary: "List E-services",
       tags: [apiTags.eservice],
     },
     url: "/eservices",

@@ -99,6 +99,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      summary: "List Organizations",
       tags: [apiTags.organization],
     },
     url: "/organizations",

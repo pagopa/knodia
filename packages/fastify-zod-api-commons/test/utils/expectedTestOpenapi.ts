@@ -234,6 +234,7 @@ const expectedTestGet = {
     "401": { ...unauthorizedResponse, headers: expectedResponseHeaders },
     "403": { ...forbiddenResponse, headers: expectedResponseHeaders },
   },
+  summary: "Get tests",
   tags: [testTags.test],
 };
 
@@ -278,6 +279,7 @@ const expectedTestPost = {
     "401": unauthorizedResponse,
     "403": forbiddenResponse,
   },
+  summary: "Create test",
   tags: [testTags.test],
 };
 
@@ -305,6 +307,7 @@ const expectedStatusGet = {
       "200": expectedHealthResponse,
     },
     security: [],
+    summary: "Get status",
     tags: [healthRouterTag.name],
   },
 };
@@ -338,6 +341,7 @@ const expectedTestCookiePost = {
       description: "OK",
     },
   },
+  summary: "Test cookie",
   tags: [testTags.test],
 };
 

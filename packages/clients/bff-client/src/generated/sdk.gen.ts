@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -28,6 +30,8 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * Create a Session
+ *
  * Validate a Cognito token and generate a session token. Sets a HttpOnly refresh token cookie.
  */
 export const createSession = <ThrowOnError extends boolean = true>(options: Options<CreateSessionData, ThrowOnError>) => (options.client ?? client).post<CreateSessionResponses, CreateSessionErrors, ThrowOnError>({
@@ -41,6 +45,8 @@ export const createSession = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
+ * Refresh a Session
+ *
  * Refresh an expired UI session token using the refresh token cookie
  */
 export const refreshSession = <ThrowOnError extends boolean = true>(options: Options<RefreshSessionData, ThrowOnError>) => (options.client ?? client).post<RefreshSessionResponses, RefreshSessionErrors, ThrowOnError>({
@@ -50,11 +56,15 @@ export const refreshSession = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
+ * Log out of a Session
+ *
  * Clear the refresh token cookie
  */
 export const logout = <ThrowOnError extends boolean = true>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, LogoutErrors, ThrowOnError>({ url: '/auth/logout', ...options });
 
 /**
+ * Create an external Session from a Magic link
+ *
  * Validate a single-use magic-link token and mint a short-lived external-ui-session token scoped to the action in the magic link.
  */
 export const createExternalSession = <ThrowOnError extends boolean = true>(options: Options<CreateExternalSessionData, ThrowOnError>) => (options.client ?? client).post<CreateExternalSessionResponses, CreateExternalSessionErrors, ThrowOnError>({
@@ -68,6 +78,8 @@ export const createExternalSession = <ThrowOnError extends boolean = true>(optio
 });
 
 /**
+ * List E-service Templates
+ *
  * Retrieve a list of E-Service Templates available for a given Knode
  */
 export const getEserviceTemplates = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplatesData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplatesResponses, GetEserviceTemplatesErrors, ThrowOnError>({
@@ -78,6 +90,8 @@ export const getEserviceTemplates = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Get an E-service Template
+ *
  * Retrieve an E-service Template with all its details
  */
 export const getEserviceTemplate = <ThrowOnError extends boolean = true>(options: Options<GetEserviceTemplateData, ThrowOnError>) => (options.client ?? client).get<GetEserviceTemplateResponses, GetEserviceTemplateErrors, ThrowOnError>({
@@ -100,6 +114,8 @@ export const downloadEserviceTemplateInterface = <ThrowOnError extends boolean =
 });
 
 /**
+ * List Purpose Templates
+ *
  * Retrieve a list of Purpose Templates available for a given Knode, optionally filtered by E-service
  */
 export const getPurposeTemplates = <ThrowOnError extends boolean = true>(options: Options<GetPurposeTemplatesData, ThrowOnError>) => (options.client ?? client).get<GetPurposeTemplatesResponses, GetPurposeTemplatesErrors, ThrowOnError>({
@@ -110,6 +126,8 @@ export const getPurposeTemplates = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * Get a Purpose Template
+ *
  * Retrieve a Purpose Template with all its details
  */
 export const getPurposeTemplate = <ThrowOnError extends boolean = true>(options: Options<GetPurposeTemplateData, ThrowOnError>) => (options.client ?? client).get<GetPurposeTemplateResponses, GetPurposeTemplateErrors, ThrowOnError>({
@@ -120,6 +138,8 @@ export const getPurposeTemplate = <ThrowOnError extends boolean = true>(options:
 });
 
 /**
+ * List producer E-services
+ *
  * Retrieve a paginated list of E-services produced by the logged-in user's organization
  */
 export const getProducerEservices = <ThrowOnError extends boolean = true>(options: Options<GetProducerEservicesData, ThrowOnError>) => (options.client ?? client).get<GetProducerEservicesResponses, GetProducerEservicesErrors, ThrowOnError>({
@@ -130,6 +150,8 @@ export const getProducerEservices = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create an E-service
+ *
  * Create a new E-service
  */
 export const createEservice = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceResponses, CreateEserviceErrors, ThrowOnError>({
@@ -144,6 +166,8 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
+ * Create an E-service from a Template
+ *
  * Create a new E-service from a Template
  */
 export const createEserviceFromTemplate = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceFromTemplateData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceFromTemplateResponses, CreateEserviceFromTemplateErrors, ThrowOnError>({
@@ -158,6 +182,8 @@ export const createEserviceFromTemplate = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Get a producer E-service
+ *
  * Retrieve an E-service with all its details
  */
 export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceDetailsResponses, GetProducerEserviceDetailsErrors, ThrowOnError>({
@@ -168,6 +194,8 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Update a producer E-service
+ *
  * Update an E-service
  */
 export const updateProducerEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateProducerEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateProducerEserviceResponses, UpdateProducerEserviceErrors, ThrowOnError>({
@@ -194,6 +222,8 @@ export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends b
 
 /**
  * Suspend an E-service
+ *
+ * Suspend an E-service
  */
 export const suspendEservice = <ThrowOnError extends boolean = true>(options: Options<SuspendEserviceData, ThrowOnError>) => (options.client ?? client).post<SuspendEserviceResponses, SuspendEserviceErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -202,6 +232,8 @@ export const suspendEservice = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
+ * Reactivate an E-service
+ *
  * Reactivate a suspended E-service
  */
 export const reactivateEservice = <ThrowOnError extends boolean = true>(options: Options<ReactivateEserviceData, ThrowOnError>) => (options.client ?? client).post<ReactivateEserviceResponses, ReactivateEserviceErrors, ThrowOnError>({
@@ -211,6 +243,8 @@ export const reactivateEservice = <ThrowOnError extends boolean = true>(options:
 });
 
 /**
+ * Archive a producer E-service
+ *
  * Archive an E-service
  */
 export const archiveProducerEservice = <ThrowOnError extends boolean = true>(options: Options<ArchiveProducerEserviceData, ThrowOnError>) => (options.client ?? client).post<ArchiveProducerEserviceResponses, ArchiveProducerEserviceErrors, ThrowOnError>({
@@ -220,6 +254,8 @@ export const archiveProducerEservice = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * List Consumer Keychain Keys
+ *
  * Retrieve keys of a Consumer Keychain
  */
 export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainKeysResponses, GetConsumerKeychainKeysErrors, ThrowOnError>({
@@ -230,6 +266,8 @@ export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a Consumer Keychain Key
+ *
  * Upload a key to a Consumer Keychain
  */
 export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadConsumerKeychainKeyResponses, UploadConsumerKeychainKeyErrors, ThrowOnError>({
@@ -244,6 +282,8 @@ export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Consumer Keychain Key
+ *
  * Remove a key from a Consumer Keychain
  */
 export const removeConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainKeyErrors, ThrowOnError>({
@@ -254,6 +294,8 @@ export const removeConsumerKeychainKey = <ThrowOnError extends boolean = true>(o
 
 /**
  * Download a Consumer Keychain Key
+ *
+ * Download a Consumer Keychain Key
  */
 export const downloadConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<DownloadConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<DownloadConsumerKeychainKeyResponses, DownloadConsumerKeychainKeyErrors, ThrowOnError>({
     responseType: 'json',
@@ -263,6 +305,8 @@ export const downloadConsumerKeychainKey = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * List Consumer Keychains
+ *
  * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
@@ -273,6 +317,8 @@ export const getConsumerKeychains = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create a Consumer Keychain
+ *
  * Create a new Consumer Keychain
  */
 export const createConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerKeychainResponses, CreateConsumerKeychainErrors, ThrowOnError>({
@@ -288,6 +334,8 @@ export const createConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 
 /**
  * Delete a Consumer Keychain
+ *
+ * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -296,6 +344,8 @@ export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Get a Consumer Keychain
+ *
  * Retrieve a Consumer Keychain with all its details
  */
 export const getConsumerKeychainDetails = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainDetailsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainDetailsResponses, GetConsumerKeychainDetailsErrors, ThrowOnError>({
@@ -306,6 +356,8 @@ export const getConsumerKeychainDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Update a Consumer Keychain
+ *
  * Update a Consumer Keychain
  */
 export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateConsumerKeychainResponses, UpdateConsumerKeychainErrors, ThrowOnError>({
@@ -319,6 +371,8 @@ export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List Consumer Keychain Members
+ *
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembersResponses, GetConsumerKeychainMembersErrors, ThrowOnError>({
@@ -329,6 +383,8 @@ export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Add a Member to a Consumer Keychain
+ *
  * Add a member to a Consumer Keychain
  */
 export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddConsumerKeychainMemberResponses, AddConsumerKeychainMemberErrors, ThrowOnError>({
@@ -343,6 +399,8 @@ export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(o
 
 /**
  * Remove a Member from a Consumer Keychain
+ *
+ * Remove a Member from a Consumer Keychain
  */
 export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainMemberResponses, RemoveConsumerKeychainMemberErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -351,6 +409,8 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Check a Member of a Consumer Keychain
+ *
  * Check whether the given User is a Member of a Consumer Keychain
  */
 export const getConsumerKeychainMembership = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembershipData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembershipErrors, ThrowOnError>({
@@ -361,6 +421,8 @@ export const getConsumerKeychainMembership = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * List Consumer Keychain options
+ *
  * Retrieve Consumer Keychain options for combobox selection
  */
 export const getConsumerKeychainOptions = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainOptionsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainOptionsResponses, GetConsumerKeychainOptionsErrors, ThrowOnError>({
@@ -371,6 +433,8 @@ export const getConsumerKeychainOptions = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * List Purposes linked to a Consumer Keychain
+ *
  * Retrieve Purposes linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposesResponses, GetConsumerKeychainPurposesErrors, ThrowOnError>({
@@ -381,6 +445,8 @@ export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * Link a Purpose to a Consumer Keychain
+ *
  * Link a Purpose to a Consumer Keychain
  */
 export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<LinkPurposeToConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<LinkPurposeToConsumerKeychainResponses, LinkPurposeToConsumerKeychainErrors, ThrowOnError>({
@@ -395,6 +461,8 @@ export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = tru
 
 /**
  * Unlink a Purpose from a Consumer Keychain
+ *
+ * Unlink a Purpose from a Consumer Keychain
  */
 export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -403,6 +471,8 @@ export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean =
 });
 
 /**
+ * Check a Purpose link to a Consumer Keychain
+ *
  * Check whether the given Purpose is linked to a Consumer Keychain
  */
 export const getConsumerKeychainPurposeLink = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposeLinkData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposeLinkResponses, GetConsumerKeychainPurposeLinkErrors, ThrowOnError>({
@@ -413,6 +483,8 @@ export const getConsumerKeychainPurposeLink = <ThrowOnError extends boolean = tr
 });
 
 /**
+ * List Knode API Keychains
+ *
  * Retrieve a paginated list of Knode API Keychains owned by the current user organization
  */
 export const getKnodeApiKeychains = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainsResponses, GetKnodeApiKeychainsErrors, ThrowOnError>({
@@ -423,6 +495,8 @@ export const getKnodeApiKeychains = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Create a Knode API Keychain
+ *
  * Create a new Knode API Keychain
  */
 export const createKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateKnodeApiKeychainResponses, CreateKnodeApiKeychainErrors, ThrowOnError>({
@@ -438,6 +512,8 @@ export const createKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 
 /**
  * Delete a Knode API Keychain
+ *
+ * Delete a Knode API Keychain
  */
 export const deleteKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteKnodeApiKeychainResponses, DeleteKnodeApiKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -446,6 +522,8 @@ export const deleteKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Get a Knode API Keychain
+ *
  * Retrieve a Knode API Keychain with all its details
  */
 export const getKnodeApiKeychainDetails = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainDetailsData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainDetailsResponses, GetKnodeApiKeychainDetailsErrors, ThrowOnError>({
@@ -456,6 +534,8 @@ export const getKnodeApiKeychainDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Update a Knode API Keychain
+ *
  * Update a Knode API Keychain
  */
 export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(options: Options<UpdateKnodeApiKeychainData, ThrowOnError>) => (options.client ?? client).patch<UpdateKnodeApiKeychainResponses, UpdateKnodeApiKeychainErrors, ThrowOnError>({
@@ -469,6 +549,8 @@ export const updateKnodeApiKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List Knode API Keychain Keys
+ *
  * Retrieve keys of a Knode API Keychain
  */
 export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainKeysResponses, GetKnodeApiKeychainKeysErrors, ThrowOnError>({
@@ -479,6 +561,8 @@ export const getKnodeApiKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a Knode API Keychain Key
+ *
  * Upload a key to a Knode API Keychain
  */
 export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadKnodeApiKeychainKeyResponses, UploadKnodeApiKeychainKeyErrors, ThrowOnError>({
@@ -493,6 +577,8 @@ export const uploadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Remove a Knode API Keychain Key
+ *
  * Remove a key from a Knode API Keychain
  */
 export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainKeyResponses, RemoveKnodeApiKeychainKeyErrors, ThrowOnError>({
@@ -503,6 +589,8 @@ export const removeKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(o
 
 /**
  * Download a Knode API Keychain Key
+ *
+ * Download a Knode API Keychain Key
  */
 export const downloadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>(options: Options<DownloadKnodeApiKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<DownloadKnodeApiKeychainKeyResponses, DownloadKnodeApiKeychainKeyErrors, ThrowOnError>({
     responseType: 'json',
@@ -512,6 +600,8 @@ export const downloadKnodeApiKeychainKey = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * List Knode API Keychain Members
+ *
  * Retrieve members of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembersResponses, GetKnodeApiKeychainMembersErrors, ThrowOnError>({
@@ -522,6 +612,8 @@ export const getKnodeApiKeychainMembers = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Add a Member to a Knode API Keychain
+ *
  * Add a member to a Knode API Keychain
  */
 export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<AddKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).post<AddKnodeApiKeychainMemberResponses, AddKnodeApiKeychainMemberErrors, ThrowOnError>({
@@ -536,6 +628,8 @@ export const addKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(o
 
 /**
  * Remove a Member from a Knode API Keychain
+ *
+ * Remove a Member from a Knode API Keychain
  */
 export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveKnodeApiKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveKnodeApiKeychainMemberResponses, RemoveKnodeApiKeychainMemberErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -544,6 +638,8 @@ export const removeKnodeApiKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Check a Knode API Keychain Membership
+ *
  * Check whether the given User is a Member of a Knode API Keychain
  */
 export const getKnodeApiKeychainMembership = <ThrowOnError extends boolean = true>(options: Options<GetKnodeApiKeychainMembershipData, ThrowOnError>) => (options.client ?? client).get<GetKnodeApiKeychainMembershipResponses, GetKnodeApiKeychainMembershipErrors, ThrowOnError>({
@@ -554,6 +650,8 @@ export const getKnodeApiKeychainMembership = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * List Operators
+ *
  * Retrieve Operators of the requesting User's Organization
  */
 export const getOperators = <ThrowOnError extends boolean = true>(options?: Options<GetOperatorsData, ThrowOnError>) => (options?.client ?? client).get<GetOperatorsResponses, GetOperatorsErrors, ThrowOnError>({
@@ -616,6 +714,8 @@ export const getConsumerEservices = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * List consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements, optionally filtered by state
  */
 export const getConsumerAgreements = <ThrowOnError extends boolean = true>(options?: Options<GetConsumerAgreementsData, ThrowOnError>) => (options?.client ?? client).get<GetConsumerAgreementsResponses, GetConsumerAgreementsErrors, ThrowOnError>({
@@ -642,6 +742,8 @@ export const createConsumerAgreement = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Get consumer Agreement counters
+ *
  * Retrieve Consumer Agreement counters per state
  */
 export const getConsumerAgreementCounters = <ThrowOnError extends boolean = true>(options?: Options<GetConsumerAgreementCountersData, ThrowOnError>) => (options?.client ?? client).get<GetConsumerAgreementCountersResponses, GetConsumerAgreementCountersErrors, ThrowOnError>({
@@ -652,6 +754,8 @@ export const getConsumerAgreementCounters = <ThrowOnError extends boolean = true
 });
 
 /**
+ * List pending consumer Agreements
+ *
  * Retrieve a paginated list of Consumer Agreements pending action
  */
 export const getPendingConsumerAgreements = <ThrowOnError extends boolean = true>(options: Options<GetPendingConsumerAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetPendingConsumerAgreementsResponses, GetPendingConsumerAgreementsErrors, ThrowOnError>({
@@ -674,6 +778,8 @@ export const createAgreementConsumerActivationMagicLink = <ThrowOnError extends 
 });
 
 /**
+ * Reactivate an Agreement by consumer
+ *
  * Reactivate an Agreement as Consumer
  */
 export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByConsumerResponses, ReactivateAgreementByConsumerErrors, ThrowOnError>({
@@ -683,6 +789,8 @@ export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * Suspend an Agreement by consumer
+ *
  * Suspend an Agreement as Consumer
  */
 export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByConsumerResponses, SuspendAgreementByConsumerErrors, ThrowOnError>({
@@ -692,6 +800,8 @@ export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Archive an Agreement by consumer
+ *
  * Archive an Agreement as Consumer
  */
 export const archiveAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ArchiveAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ArchiveAgreementByConsumerResponses, ArchiveAgreementByConsumerErrors, ThrowOnError>({
@@ -753,6 +863,8 @@ export const getConsumerPurposeDetails = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Reactivate a Purpose by consumer
+ *
  * Reactivate a Purpose as Consumer
  */
 export const reactivatePurposeByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivatePurposeByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivatePurposeByConsumerResponses, ReactivatePurposeByConsumerErrors, ThrowOnError>({
@@ -762,6 +874,8 @@ export const reactivatePurposeByConsumer = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * Suspend a Purpose by consumer
+ *
  * Suspend a Purpose as Consumer
  */
 export const suspendPurposeByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeByConsumerResponses, SuspendPurposeByConsumerErrors, ThrowOnError>({
@@ -771,6 +885,8 @@ export const suspendPurposeByConsumer = <ThrowOnError extends boolean = true>(op
 });
 
 /**
+ * Archive a Purpose by consumer
+ *
  * Archive a Purpose as Consumer
  */
 export const archivePurposeByConsumer = <ThrowOnError extends boolean = true>(options: Options<ArchivePurposeByConsumerData, ThrowOnError>) => (options.client ?? client).post<ArchivePurposeByConsumerResponses, ArchivePurposeByConsumerErrors, ThrowOnError>({
@@ -780,6 +896,8 @@ export const archivePurposeByConsumer = <ThrowOnError extends boolean = true>(op
 });
 
 /**
+ * Get a Session Organization
+ *
  * Retrieve the Organization of the current session's User
  */
 export const getSessionOrganization = <ThrowOnError extends boolean = true>(options?: Options<GetSessionOrganizationData, ThrowOnError>) => (options?.client ?? client).get<GetSessionOrganizationResponses, GetSessionOrganizationErrors, ThrowOnError>({
@@ -790,6 +908,8 @@ export const getSessionOrganization = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List producer Agreements
+ *
  * Retrieve a paginated list of Agreements produced by the logged-in user's organization
  */
 export const getProducerAgreements = <ThrowOnError extends boolean = true>(options: Options<GetProducerAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetProducerAgreementsResponses, GetProducerAgreementsErrors, ThrowOnError>({
@@ -800,6 +920,8 @@ export const getProducerAgreements = <ThrowOnError extends boolean = true>(optio
 });
 
 /**
+ * Get a producer Agreement
+ *
  * Retrieve a Producer Agreement with all its details
  */
 export const getProducerAgreementDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerAgreementDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerAgreementDetailsResponses, GetProducerAgreementDetailsErrors, ThrowOnError>({
@@ -810,6 +932,8 @@ export const getProducerAgreementDetails = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * Reactivate an Agreement by producer
+ *
  * Reactivate an Agreement as Producer
  */
 export const reactivateAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByProducerResponses, ReactivateAgreementByProducerErrors, ThrowOnError>({
@@ -819,6 +943,8 @@ export const reactivateAgreementByProducer = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * Suspend an Agreement by producer
+ *
  * Suspend an Agreement as Producer
  */
 export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByProducerResponses, SuspendAgreementByProducerErrors, ThrowOnError>({
@@ -840,6 +966,8 @@ export const getProducerPurposes = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * Get a producer Purpose
+ *
  * Retrieve a Producer Purpose with details
  */
 export const getProducerPurposeDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerPurposeDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerPurposeDetailsResponses, GetProducerPurposeDetailsErrors, ThrowOnError>({
@@ -850,6 +978,8 @@ export const getProducerPurposeDetails = <ThrowOnError extends boolean = true>(o
 });
 
 /**
+ * Reactivate a Purpose by producer
+ *
  * Reactivate a Purpose as Producer
  */
 export const reactivatePurposeByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivatePurposeByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivatePurposeByProducerResponses, ReactivatePurposeByProducerErrors, ThrowOnError>({
@@ -859,6 +989,8 @@ export const reactivatePurposeByProducer = <ThrowOnError extends boolean = true>
 });
 
 /**
+ * Suspend a Purpose by producer
+ *
  * Suspend a Purpose as Producer
  */
 export const suspendPurposeByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendPurposeByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendPurposeByProducerResponses, SuspendPurposeByProducerErrors, ThrowOnError>({

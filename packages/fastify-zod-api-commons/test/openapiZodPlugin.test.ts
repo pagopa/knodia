@@ -1,6 +1,8 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import type { OpenAPIV3 } from "openapi-types";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import z from "zod";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import {
@@ -86,5 +88,57 @@ describe("openapiZodPlugin", () => {
     expect(openapiYaml).toContain("title: Test API");
     expect(openapiYaml).toContain("version: 1.0.0");
     expect(openapiYaml).toContain("/test");
+  });
+});
+
+describe("summary enforcement", () => {
+  const buildAppWithRoute = (
+    schema: Record<string, unknown>,
+    url: string,
+  ): ReturnType<typeof buildTestApp> => {
+    const router: FastifyPluginAsyncZod = async (app) => {
+      app.route({
+        handler: (_req, res) => {
+          res.send({ test: "ok" });
+        },
+        method: "GET",
+        schema: {
+          operationId: "summaryEnforcementTest",
+          response: { 200: z.strictObject({ test: z.string() }) },
+          ...schema,
+        },
+        url,
+      });
+    };
+
+    const fastify = buildTestApp();
+    void fastify.register(router);
+    return fastify;
+  };
+
+  it("throws when a route is missing a summary", async () => {
+    const fastify = buildAppWithRoute({}, "/no-summary");
+    await fastify.ready();
+    expect(() => fastify.swagger()).toThrow(
+      "Missing summary in schema for route GET /no-summary.",
+    );
+    await fastify.close();
+  });
+
+  it("passes when a route declares a summary", async () => {
+    const fastify = buildAppWithRoute(
+      { summary: "Has a summary" },
+      "/with-summary",
+    );
+    await fastify.ready();
+    expect(() => fastify.swagger()).not.toThrow();
+    await fastify.close();
+  });
+
+  it("exempts /docs/* routes from the summary check", async () => {
+    const fastify = buildAppWithRoute({}, "/docs/no-summary");
+    await fastify.ready();
+    expect(() => fastify.swagger()).not.toThrow();
+    await fastify.close();
   });
 });

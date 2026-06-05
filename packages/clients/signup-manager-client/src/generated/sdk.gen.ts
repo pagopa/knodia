@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -28,11 +30,15 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * Start an OIDC Session
+ *
  * Initiate OIDC session
  */
 export const startOidcSession = <ThrowOnError extends boolean = true>(options?: Options<StartOidcSessionData, ThrowOnError>) => (options?.client ?? client).get<unknown, unknown, ThrowOnError>({ url: '/auth/oidc/start', ...options });
 
 /**
+ * Exchange an OIDC authorization code for a Token
+ *
  * Handle OIDC callback and exchange authorization code for session token
  */
 export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: Options<ExchangeOidcCodeData, ThrowOnError>) => (options.client ?? client).get<ExchangeOidcCodeResponses, ExchangeOidcCodeErrors, ThrowOnError>({

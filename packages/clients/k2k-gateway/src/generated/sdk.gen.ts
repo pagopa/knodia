@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -106,6 +108,8 @@ export const downloadEserviceLatestVersionInterface = <ThrowOnError extends bool
 });
 
 /**
+ * List E-services
+ *
  * Retrieve a list of E-services
  */
 export const getEservices = <ThrowOnError extends boolean = true>(options: Options<GetEservicesData, ThrowOnError>) => (options.client ?? client).get<GetEservicesResponses, GetEservicesErrors, ThrowOnError>({
@@ -207,6 +211,8 @@ export const getOrganization = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
+ * List Organizations
+ *
  * Retrieve a list of Organizations
  */
 export const getOrganizations = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationsData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationsResponses, GetOrganizationsErrors, ThrowOnError>({
@@ -216,6 +222,8 @@ export const getOrganizations = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
+ * List Purposes
+ *
  * Retrieve a list of Purposes
  */
 export const getPurposes = <ThrowOnError extends boolean = true>(options: Options<GetPurposesData, ThrowOnError>) => (options.client ?? client).get<GetPurposesResponses, GetPurposesErrors, ThrowOnError>({

@@ -36,6 +36,7 @@ export const healthRouter: FastifyPluginAsyncZod = async (fastify) => {
         200: API_Problem.meta({ description: title }),
       },
       security: [],
+      summary: "Get status",
       tags: [healthRouterTag.name],
     },
     url: healthRouterUrl,

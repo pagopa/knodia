@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -28,6 +30,8 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * List Agreements
+ *
  * Retrieve a list of Agreements
  */
 export const getAgreements = <ThrowOnError extends boolean = true>(options: Options<GetAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementsResponses, GetAgreementsErrors, ThrowOnError>({
@@ -38,6 +42,8 @@ export const getAgreements = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
+ * Create an Agreement
+ *
  * Create a new Agreement
  */
 export const createAgreement = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementResponses, CreateAgreementErrors, ThrowOnError>({
@@ -52,6 +58,8 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
+ * Get an Agreement
+ *
  * Retrieve an Agreement by its ID
  */
 export const getAgreement = <ThrowOnError extends boolean = true>(options: Options<GetAgreementData, ThrowOnError>) => (options.client ?? client).get<GetAgreementResponses, GetAgreementErrors, ThrowOnError>({
@@ -62,6 +70,8 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
 });
 
 /**
+ * Get Agreement activation claims
+ *
  * Retrieve the activation-claims projection for a pending Agreement. Used by k2k-gateway to mint magic-link tokens.
  */
 export const getAgreementActivationClaims = <ThrowOnError extends boolean = true>(options: Options<GetAgreementActivationClaimsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementActivationClaimsResponses, GetAgreementActivationClaimsErrors, ThrowOnError>({
@@ -72,6 +82,8 @@ export const getAgreementActivationClaims = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Activate an Agreement
+ *
  * Activate an Agreement (consumer operator identification)
  */
 export const activateAgreement = <ThrowOnError extends boolean = true>(options: Options<ActivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ActivateAgreementResponses, ActivateAgreementErrors, ThrowOnError>({
@@ -82,6 +94,8 @@ export const activateAgreement = <ThrowOnError extends boolean = true>(options: 
 });
 
 /**
+ * Suspend an Agreement by consumer
+ *
  * Suspend an Agreement by Consumer
  */
 export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByConsumerResponses, SuspendAgreementByConsumerErrors, ThrowOnError>({
@@ -92,6 +106,8 @@ export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Suspend an Agreement by producer
+ *
  * Suspend an Agreement by Producer
  */
 export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByProducerResponses, SuspendAgreementByProducerErrors, ThrowOnError>({
@@ -102,6 +118,8 @@ export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Reactivate an Agreement by consumer
+ *
  * Reactivate an Agreement by Consumer
  */
 export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByConsumerResponses, ReactivateAgreementByConsumerErrors, ThrowOnError>({
@@ -112,6 +130,8 @@ export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * Reactivate an Agreement by producer
+ *
  * Reactivate an Agreement by Producer
  */
 export const reactivateAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByProducerResponses, ReactivateAgreementByProducerErrors, ThrowOnError>({
@@ -122,6 +142,8 @@ export const reactivateAgreementByProducer = <ThrowOnError extends boolean = tru
 });
 
 /**
+ * Archive an Agreement
+ *
  * Archive an Agreement on behalf of its Consumer
  */
 export const archiveAgreement = <ThrowOnError extends boolean = true>(options: Options<ArchiveAgreementData, ThrowOnError>) => (options.client ?? client).post<ArchiveAgreementResponses, ArchiveAgreementErrors, ThrowOnError>({

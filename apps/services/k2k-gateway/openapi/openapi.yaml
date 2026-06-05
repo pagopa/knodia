@@ -943,6 +943,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -1213,6 +1214,7 @@ paths:
   /eservices:
     get:
       operationId: getEservices
+      summary: List E-services
       tags:
         - eservice
       description: Retrieve a list of E-services
@@ -1643,6 +1645,7 @@ paths:
   /organizations:
     get:
       operationId: getOrganizations
+      summary: List Organizations
       tags:
         - organization
       description: Retrieve a list of Organizations
@@ -1739,6 +1742,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getPurposes
+      summary: List Purposes
       tags:
         - resource
         - purpose

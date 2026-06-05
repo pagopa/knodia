@@ -156,6 +156,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service

@@ -85,6 +85,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -101,6 +102,7 @@ paths:
   /auth/oidc/start:
     get:
       operationId: startOIDCSession
+      summary: Start an OIDC Session
       tags:
         - signup
       description: Initiate OIDC session
@@ -111,6 +113,7 @@ paths:
   /auth/oidc/token:
     get:
       operationId: exchangeOIDCCode
+      summary: Exchange an OIDC authorization code for a Token
       tags:
         - signup
       description: Handle OIDC callback and exchange authorization code for session token

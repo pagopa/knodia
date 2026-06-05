@@ -589,6 +589,7 @@ paths:
   /status:
     get:
       operationId: getStatus
+      summary: Get status
       tags:
         - health
       description: Check the health status of the service
@@ -605,6 +606,7 @@ paths:
   /eservices:
     get:
       operationId: getEservices
+      summary: List E-services
       tags:
         - eservice
       description: Retrieve a list of E-services
@@ -726,6 +728,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     post:
       operationId: createEservice
+      summary: Create an E-service
       tags:
         - eservice
       description: Create a new E-service
@@ -801,6 +804,7 @@ paths:
   /eservices/{eserviceId}:
     get:
       operationId: getEservice
+      summary: Get an E-service
       tags:
         - eservice
       description: Retrieve an E-service by its ID
@@ -868,6 +872,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     patch:
       operationId: updateEservice
+      summary: Update an E-service
       tags:
         - eservice
       description: Update an E-service
@@ -950,6 +955,7 @@ paths:
   /eservices/{eserviceId}/versions/latest:
     get:
       operationId: getEserviceLatestVersion
+      summary: Get the latest E-service Version
       tags:
         - eservice
       description: Retrieve the latest version of an E-service
@@ -1012,6 +1018,7 @@ paths:
   /eservices/{eserviceId}/versions/latest/interface:
     get:
       operationId: getEserviceLatestVersionInterface
+      summary: Get the latest E-service Version Interface
       tags:
         - eservice
       description: Retrieve the interface document of the latest E-service version
@@ -1074,6 +1081,7 @@ paths:
   /eservices/{eserviceId}/suspend:
     post:
       operationId: suspendEservice
+      summary: Suspend an E-service
       tags:
         - eservice
       description: Suspend an E-service
@@ -1150,6 +1158,7 @@ paths:
   /eservices/{eserviceId}/reactivate:
     post:
       operationId: reactivateEservice
+      summary: Reactivate an E-service
       tags:
         - eservice
       description: Reactivate a suspended E-service
@@ -1226,6 +1235,7 @@ paths:
   /eservices/{eserviceId}/archive:
     post:
       operationId: archiveEservice
+      summary: Archive an E-service
       tags:
         - eservice
       description: Archive a suspended E-service
@@ -1302,6 +1312,7 @@ paths:
   /catalog:
     post:
       operationId: getCatalogEservices
+      summary: Search for E-services
       tags:
         - eservice
       description: Retrieve a list of E-services based on complex search criteria

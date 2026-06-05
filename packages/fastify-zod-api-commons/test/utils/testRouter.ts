@@ -57,6 +57,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
           .string()
           .meta({ description: "Route-level response header" }),
       }),
+      summary: "Get tests",
       tags: [testTags.test],
     },
     url: "/test",
@@ -89,6 +90,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "Create test",
       tags: [testTags.test],
     },
     url: "/test",
@@ -111,6 +113,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       response: {
         200: API_Test.meta({ description: "OK" }),
       },
+      summary: "Test cookie",
       tags: [testTags.test],
     },
     url: "/test/cookie",

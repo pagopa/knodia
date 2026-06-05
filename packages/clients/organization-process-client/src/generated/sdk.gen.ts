@@ -19,6 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -28,6 +30,8 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * List Organizations
+ *
  * Retrieve a list of Organizations
  */
 export const getOrganizations = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationsData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationsResponses, GetOrganizationsErrors, ThrowOnError>({
@@ -38,6 +42,8 @@ export const getOrganizations = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
+ * Create an Organization
+ *
  * Create a new Organization
  */
 export const createOrganization = <ThrowOnError extends boolean = true>(options: Options<CreateOrganizationData, ThrowOnError>) => (options.client ?? client).post<CreateOrganizationResponses, CreateOrganizationErrors, ThrowOnError>({
@@ -52,6 +58,8 @@ export const createOrganization = <ThrowOnError extends boolean = true>(options:
 });
 
 /**
+ * Get an Organization
+ *
  * Retrieve an Organization by its ID
  */
 export const getOrganization = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationResponses, GetOrganizationErrors, ThrowOnError>({
@@ -62,6 +70,8 @@ export const getOrganization = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
+ * List Operators
+ *
  * Retrieve Operators of the requesting User's Organization
  */
 export const getOperators = <ThrowOnError extends boolean = true>(options: Options<GetOperatorsData, ThrowOnError>) => (options.client ?? client).get<GetOperatorsResponses, GetOperatorsErrors, ThrowOnError>({

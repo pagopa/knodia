@@ -43,6 +43,8 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
 export const getStatusQueryKey = (options?: Options<GetStatusData>) => createQueryKey('getStatus', options);
 
 /**
+ * Get status
+ *
  * Check the health status of the service
  */
 export const getStatusOptions = (options?: Options<GetStatusData>) => queryOptions<GetStatusResponse, AxiosError<DefaultError>, GetStatusResponse, ReturnType<typeof getStatusQueryKey>>({
@@ -61,6 +63,8 @@ export const getStatusOptions = (options?: Options<GetStatusData>) => queryOptio
 export const startOidcSessionQueryKey = (options?: Options<StartOidcSessionData>) => createQueryKey('startOidcSession', options);
 
 /**
+ * Start an OIDC Session
+ *
  * Initiate OIDC session
  */
 export const startOidcSessionOptions = (options?: Options<StartOidcSessionData>) => queryOptions<unknown, AxiosError<DefaultError>, unknown, ReturnType<typeof startOidcSessionQueryKey>>({
@@ -79,6 +83,8 @@ export const startOidcSessionOptions = (options?: Options<StartOidcSessionData>)
 export const exchangeOidcCodeQueryKey = (options: Options<ExchangeOidcCodeData>) => createQueryKey('exchangeOidcCode', options);
 
 /**
+ * Exchange an OIDC authorization code for a Token
+ *
  * Handle OIDC callback and exchange authorization code for session token
  */
 export const exchangeOidcCodeOptions = (options: Options<ExchangeOidcCodeData>) => queryOptions<ExchangeOidcCodeResponse, AxiosError<ExchangeOidcCodeError>, ExchangeOidcCodeResponse, ReturnType<typeof exchangeOidcCodeQueryKey>>({

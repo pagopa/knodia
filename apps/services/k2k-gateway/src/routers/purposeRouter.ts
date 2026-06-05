@@ -354,6 +354,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      summary: "List Purposes",
       tags: [apiTags.resource, apiTags.purpose],
     },
     url: "/purposes",
