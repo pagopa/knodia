@@ -94,7 +94,7 @@ export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true
 });
 
 /**
- * Suspend Purpose by Consumer
+ * Suspend a Purpose by consumer
  *
  * Suspend a Purpose by Consumer
  */
@@ -106,7 +106,7 @@ export const suspendPurposeByConsumer = <ThrowOnError extends boolean = true>(op
 });
 
 /**
- * Suspend Purpose by Producer
+ * Suspend a Purpose by producer
  *
  * Suspend a Purpose by Producer
  */
@@ -118,7 +118,7 @@ export const suspendPurposeByProducer = <ThrowOnError extends boolean = true>(op
 });
 
 /**
- * Reactivate Purpose by Consumer
+ * Reactivate a Purpose by consumer
  *
  * Reactivate a Purpose by Consumer
  */
@@ -130,7 +130,7 @@ export const reactivatePurposeByConsumer = <ThrowOnError extends boolean = true>
 });
 
 /**
- * Reactivate Purpose by Producer
+ * Reactivate a Purpose by producer
  *
  * Reactivate a Purpose by Producer
  */

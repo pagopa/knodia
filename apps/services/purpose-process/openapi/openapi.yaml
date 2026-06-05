@@ -719,7 +719,7 @@ paths:
   /purposes/{purposeId}/suspendByConsumer:
     post:
       operationId: suspendPurposeByConsumer
-      summary: Suspend Purpose by Consumer
+      summary: Suspend a Purpose by consumer
       tags:
         - purpose
       description: Suspend a Purpose by Consumer
@@ -796,7 +796,7 @@ paths:
   /purposes/{purposeId}/suspendByProducer:
     post:
       operationId: suspendPurposeByProducer
-      summary: Suspend Purpose by Producer
+      summary: Suspend a Purpose by producer
       tags:
         - purpose
       description: Suspend a Purpose by Producer
@@ -873,7 +873,7 @@ paths:
   /purposes/{purposeId}/reactivateByConsumer:
     post:
       operationId: reactivatePurposeByConsumer
-      summary: Reactivate Purpose by Consumer
+      summary: Reactivate a Purpose by consumer
       tags:
         - purpose
       description: Reactivate a Purpose by Consumer
@@ -950,7 +950,7 @@ paths:
   /purposes/{purposeId}/reactivateByProducer:
     post:
       operationId: reactivatePurposeByProducer
-      summary: Reactivate Purpose by Producer
+      summary: Reactivate a Purpose by producer
       tags:
         - purpose
       description: Reactivate a Purpose by Producer

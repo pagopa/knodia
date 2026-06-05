@@ -53,11 +53,11 @@ const zodObjectToResponseHeaders = (
 type TransformInput = Parameters<typeof baseTransform>[0];
 type TransformStep = (input: TransformInput) => TransformInput;
 
-const shouldSkipOperationIdCheck = ({ route }: TransformInput): boolean =>
+const isDocsRoute = ({ route }: TransformInput): boolean =>
   route.url.startsWith("/docs/");
 
 const enforceOperationId = (input: TransformInput): TransformInput => {
-  if (!shouldSkipOperationIdCheck(input)) {
+  if (!isDocsRoute(input)) {
     const { route, schema } = input;
     if (!schema.operationId) {
       throw new Error(
@@ -70,7 +70,7 @@ const enforceOperationId = (input: TransformInput): TransformInput => {
 };
 
 const enforceSummary = (input: TransformInput): TransformInput => {
-  if (!shouldSkipOperationIdCheck(input)) {
+  if (!isDocsRoute(input)) {
     const { route, schema } = input;
     if (!schema.summary) {
       throw new Error(
@@ -83,7 +83,7 @@ const enforceSummary = (input: TransformInput): TransformInput => {
 };
 
 const enforceDescription = (input: TransformInput): TransformInput => {
-  if (!shouldSkipOperationIdCheck(input)) {
+  if (!isDocsRoute(input)) {
     const { route, schema } = input;
     if (!schema.description) {
       throw new Error(
