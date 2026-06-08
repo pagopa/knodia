@@ -3,9 +3,9 @@ import z from "zod";
 import { keychainType, type KeychainType } from "./commons";
 
 export const keychainTypeOptions = [
-  { id: "consumption", label: "Consumer" },
-  { id: "production", label: "Producer" },
-  { id: "api", label: "API" },
+  { id: "consumption", label: "Consumption" },
+  { id: "production", label: "Production" },
+  { id: "api", label: "Knode API" },
 ] as const satisfies readonly { id: KeychainType; label: string }[];
 
 const baseKeychainFormSchema = z.object({

@@ -1,6 +1,7 @@
 import type {
   ConsumerKeychainId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
   UserId,
 } from "@knodia/common-models/ids";
 
@@ -24,6 +25,15 @@ import {
   getKnodeApiKeychainMembersQueryKey,
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
+  getProducerKeychainDetailsOptions,
+  getProducerKeychainKeysOptions,
+  getProducerKeychainKeysQueryKey,
+  getProducerKeychainMembershipOptions,
+  getProducerKeychainMembershipQueryKey,
+  getProducerKeychainMembersOptions,
+  getProducerKeychainMembersQueryKey,
+  getProducerKeychainsOptions,
+  getProducerKeychainsQueryKey,
 } from "@knodia/bff-client/tanstack-query";
 
 import { client } from "@/libs/axios";
@@ -45,6 +55,12 @@ export const knodeApiKeychainsQuery = (offset: number) =>
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
   });
 
+export const producerKeychainsQuery = (offset: number) =>
+  getProducerKeychainsOptions({
+    client,
+    query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
+  });
+
 export const consumerKeychainDetailsQuery = (
   consumerKeychainId: ConsumerKeychainId,
 ) =>
@@ -59,6 +75,14 @@ export const knodeApiKeychainDetailsQuery = (
   getKnodeApiKeychainDetailsOptions({
     client,
     path: { knodeApiKeychainId },
+  });
+
+export const producerKeychainDetailsQuery = (
+  producerKeychainId: ProducerKeychainId,
+) =>
+  getProducerKeychainDetailsOptions({
+    client,
+    path: { producerKeychainId },
   });
 
 export const consumerKeychainKeysQuery = (
@@ -119,6 +143,35 @@ export const knodeApiKeychainMembershipQuery = (
     path: { knodeApiKeychainId, userId },
   });
 
+export const producerKeychainMembersQuery = (
+  producerKeychainId: ProducerKeychainId,
+  offset: number,
+) =>
+  getProducerKeychainMembersOptions({
+    client,
+    path: { producerKeychainId },
+    query: { limit: MEMBERS_PAGE_LIMIT, offset },
+  });
+
+export const producerKeychainKeysQuery = (
+  producerKeychainId: ProducerKeychainId,
+  offset: number,
+) =>
+  getProducerKeychainKeysOptions({
+    client,
+    path: { producerKeychainId },
+    query: { limit: KEYS_PAGE_LIMIT, offset },
+  });
+
+export const producerKeychainMembershipQuery = (
+  producerKeychainId: ProducerKeychainId,
+  userId: UserId,
+) =>
+  getProducerKeychainMembershipOptions({
+    client,
+    path: { producerKeychainId, userId },
+  });
+
 export const consumerKeychainPurposesQuery = (
   consumerKeychainId: ConsumerKeychainId,
   offset: number,
@@ -138,6 +191,13 @@ export const consumerKeychainsQueryKey = () =>
 
 export const knodeApiKeychainsQueryKey = () =>
   getKnodeApiKeychainsQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
+  });
+
+export const producerKeychainsQueryKey = () =>
+  getProducerKeychainsQueryKey({
     client,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     query: undefined!,
@@ -199,4 +259,33 @@ export const knodeApiKeychainMembershipQueryKey = (
   getKnodeApiKeychainMembershipQueryKey({
     client,
     path: { knodeApiKeychainId, userId },
+  });
+
+export const producerKeychainMembersQueryKey = (
+  producerKeychainId: ProducerKeychainId,
+) =>
+  getProducerKeychainMembersQueryKey({
+    client,
+    path: { producerKeychainId },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
+  });
+
+export const producerKeychainKeysQueryKey = (
+  producerKeychainId: ProducerKeychainId,
+) =>
+  getProducerKeychainKeysQueryKey({
+    client,
+    path: { producerKeychainId },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
+  });
+
+export const producerKeychainMembershipQueryKey = (
+  producerKeychainId: ProducerKeychainId,
+  userId: UserId,
+) =>
+  getProducerKeychainMembershipQueryKey({
+    client,
+    path: { producerKeychainId, userId },
   });

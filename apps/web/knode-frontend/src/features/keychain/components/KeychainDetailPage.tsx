@@ -2,9 +2,11 @@ import type { bffApi } from "@knodia/bff-client";
 import type {
   ConsumerKeychainId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
 } from "@knodia/common-models/ids";
 
 import {
+  Banner,
   Breadcrumb,
   Breadcrumbs,
   Button,
@@ -16,7 +18,9 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
+import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { match } from "ts-pattern";
 
@@ -41,6 +45,8 @@ import {
   consumerKeychainPurposesQuery,
   knodeApiKeychainKeysQuery,
   knodeApiKeychainMembersQuery,
+  producerKeychainKeysQuery,
+  producerKeychainMembersQuery,
 } from "../services/queries";
 
 type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
@@ -51,7 +57,12 @@ type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
   onTabChange: (tab: TTab) => void;
 };
 
-type KeychainTabProps = SupportedKeychain & {
+type MembersTabProps = SupportedKeychain & {
+  offset: number;
+  onOffsetChange: (offset: number) => void;
+};
+
+type PublicKeysTabProps = SupportedKeychain & {
   offset: number;
   onOffsetChange: (offset: number) => void;
 };
@@ -60,10 +71,12 @@ export function KeychainDetailPage<TTab extends string>(
   props: KeychainDetailPageProps<TTab>,
 ) {
   const { activeTab, keychain, offset, onOffsetChange, onTabChange } = props;
+  const canManageKeychain = useHasRole("administrative");
 
   const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
-    .with("api", () => "API")
+    .with("api", () => "Knode API")
+    .with("production", () => "Production")
     .exhaustive();
 
   return (
@@ -79,10 +92,12 @@ export function KeychainDetailPage<TTab extends string>(
 
       <PageHeader
         actions={
-          <>
-            <KeychainDeleteAction {...props} />
-            <KeychainEditAction {...props} />
-          </>
+          canManageKeychain && (
+            <>
+              <KeychainDeleteAction {...props} />
+              <KeychainEditAction {...props} />
+            </>
+          )
         }
         copyableId={keychain.id}
         description={keychain.description?.en}
@@ -108,6 +123,11 @@ export function KeychainDetailPage<TTab extends string>(
               </Tab>
             ))
             .with("api", () => null)
+            .with("production", () => (
+              <Tab id="e-services" key="e-services">
+                E-Services
+              </Tab>
+            ))
             .exhaustive()}
           <Tab id="members" key="members">
             Members
@@ -128,6 +148,11 @@ export function KeychainDetailPage<TTab extends string>(
               </TabPanel>
             ))
             .with({ type: "api" }, () => null)
+            .with({ type: "production" }, () => (
+              <TabPanel id="e-services" key="e-services">
+                <ProducerEservicesTab />
+              </TabPanel>
+            ))
             .exhaustive()}
           <TabPanel id="members" key="members">
             <MembersTab {...props} />
@@ -171,7 +196,7 @@ function ConsumerPurposesTab({
   );
 }
 
-function MembersTab(props: KeychainTabProps) {
+function MembersTab(props: MembersTabProps) {
   const { offset, onOffsetChange } = props;
 
   const consumerQuery = useQuery({
@@ -190,9 +215,18 @@ function MembersTab(props: KeychainTabProps) {
     enabled: props.type === "api",
   });
 
+  const producerQuery = useQuery({
+    ...producerKeychainMembersQuery(
+      props.keychainId as ProducerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "production",
+  });
+
   const { data, isLoading } = match(props.type)
     .with("consumption", () => consumerQuery)
     .with("api", () => apiQuery)
+    .with("production", () => producerQuery)
     .exhaustive();
 
   return (
@@ -217,7 +251,29 @@ function MembersTab(props: KeychainTabProps) {
   );
 }
 
-function PublicKeysTab(props: KeychainTabProps) {
+function ProducerEservicesTab() {
+  const navigate = useNavigate();
+
+  return (
+    <Section
+      description="You can link an E-Service to the Keychain on the E-Service page."
+      title="E-Services"
+    >
+      <Banner
+        action={{
+          label: "Go to E-Services list",
+          onPress: () => navigate({ to: "/production/e-services" }),
+        }}
+        icon={<SelectionIcon />}
+        kind="neutral"
+      >
+        There are no E-Services linked to this Keychain yet.
+      </Banner>
+    </Section>
+  );
+}
+
+function PublicKeysTab(props: PublicKeysTabProps) {
   const { offset, onOffsetChange } = props;
   const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
 
@@ -237,9 +293,18 @@ function PublicKeysTab(props: KeychainTabProps) {
     enabled: props.type === "api",
   });
 
+  const producerQuery = useQuery({
+    ...producerKeychainKeysQuery(
+      props.keychainId as ProducerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "production",
+  });
+
   const { data, isLoading } = match(props.type)
     .with("consumption", () => consumerQuery)
     .with("api", () => apiQuery)
+    .with("production", () => producerQuery)
     .exhaustive();
 
   const hasReachedMaxKeys = data
@@ -247,6 +312,9 @@ function PublicKeysTab(props: KeychainTabProps) {
     : false;
 
   const isKeychainMember = useIsCurrentUserKeychainMember(props);
+  // TODO(KN-458): currently the download-key authorization is only enforced
+  // in the frontend (admin OR member). Once the backend policy for non-member
+  // technical operators is finalized, mirror the same rule in keychain-process.
   const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (

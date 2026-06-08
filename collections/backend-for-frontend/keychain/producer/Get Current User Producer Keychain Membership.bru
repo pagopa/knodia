@@ -1,0 +1,19 @@
+meta {
+  name: Get Current User Producer Keychain Membership
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/membership/:userId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+  userId: {{userId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
