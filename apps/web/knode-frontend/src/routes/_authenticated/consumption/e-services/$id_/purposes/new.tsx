@@ -4,6 +4,7 @@ import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-p
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
+import { CreatePurposeReceiveDataModal } from "@/features/purpose/components/CreatePurposeReceiveDataModal/CreatePurposeReceiveDataModal";
 import { requireRole } from "@/libs/routeGuards";
 
 export const Route = createFileRoute(
@@ -36,6 +37,16 @@ function RouteComponent() {
       search: { knodeId },
       to: "/consumption/e-services/$id",
     });
+
+  if (eservice.mode === "ReceiveData") {
+    return (
+      <CreatePurposeReceiveDataModal
+        eservice={eservice}
+        knodeId={knodeId}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <CreatePurposeModal

@@ -23,6 +23,7 @@ interface Props {
   formSchemaVersion: string;
   initialTemplate?: bffApi.PurposeTemplateDetails;
   knodeId: KnodeId;
+  onDirty?: () => void;
 }
 
 export function PurposeFormProvider({
@@ -31,6 +32,7 @@ export function PurposeFormProvider({
   formSchemaVersion,
   initialTemplate,
   knodeId,
+  onDirty,
 }: Props) {
   const [data, setData] = useState<PurposeFormDraftData>(() =>
     buildInitialDraft(initialTemplate),
@@ -39,13 +41,21 @@ export function PurposeFormProvider({
     () => (initialTemplate?.formAnswersJson ?? {}) as FormValues,
   );
 
-  const updateDetailsStep = useCallback((stepData: DetailsStepData) => {
-    setData((prev) => ({ ...prev, ...stepData }));
-  }, []);
+  const updateDetailsStep = useCallback(
+    (stepData: DetailsStepData) => {
+      setData((prev) => ({ ...prev, ...stepData }));
+      onDirty?.();
+    },
+    [onDirty],
+  );
 
-  const updateFormAnswers = useCallback((answers: FormValues) => {
-    setFormAnswers((prev) => ({ ...prev, ...answers }));
-  }, []);
+  const updateFormAnswers = useCallback(
+    (answers: FormValues) => {
+      setFormAnswers((prev) => ({ ...prev, ...answers }));
+      onDirty?.();
+    },
+    [onDirty],
+  );
 
   const selectedTemplate = useMemo(
     () => (initialTemplate ? { id: initialTemplate.id, knodeId } : undefined),
