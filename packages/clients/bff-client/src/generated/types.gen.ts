@@ -768,12 +768,7 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type ConsumerKeychainSeed = {
-    description?: KeychainLocalizedDescription;
-    name: KeychainLocalizedName;
-};
-
-export type KnodeApiKeychainSeed = {
+export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
 };
@@ -1935,7 +1930,7 @@ export type GetConsumerKeychainsResponses = {
 export type GetConsumerKeychainsResponse = GetConsumerKeychainsResponses[keyof GetConsumerKeychainsResponses];
 
 export type CreateConsumerKeychainData = {
-    body: ConsumerKeychainSeed;
+    body: KeychainSeed;
     path?: never;
     query?: never;
     url: '/consumerKeychains';
@@ -2519,7 +2514,7 @@ export type GetKnodeApiKeychainsResponses = {
 export type GetKnodeApiKeychainsResponse = GetKnodeApiKeychainsResponses[keyof GetKnodeApiKeychainsResponses];
 
 export type CreateKnodeApiKeychainData = {
-    body: KnodeApiKeychainSeed;
+    body: KeychainSeed;
     path?: never;
     query?: never;
     url: '/knodeApiKeychains';
@@ -3009,6 +3004,198 @@ export type GetKnodeApiKeychainMembershipResponses = {
 };
 
 export type GetKnodeApiKeychainMembershipResponse = GetKnodeApiKeychainMembershipResponses[keyof GetKnodeApiKeychainMembershipResponses];
+
+export type GetProducerKeychainsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains';
+};
+
+export type GetProducerKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerKeychainsError = GetProducerKeychainsErrors[keyof GetProducerKeychainsErrors];
+
+export type GetProducerKeychainsResponses = {
+    /**
+     * Producer Keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetProducerKeychainsResponse = GetProducerKeychainsResponses[keyof GetProducerKeychainsResponses];
+
+export type CreateProducerKeychainData = {
+    body: KeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/producerKeychains';
+};
+
+export type CreateProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];
+
+export type CreateProducerKeychainResponses = {
+    /**
+     * Producer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateProducerKeychainResponse = CreateProducerKeychainResponses[keyof CreateProducerKeychainResponses];
+
+export type DeleteProducerKeychainData = {
+    body?: never;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type DeleteProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteProducerKeychainError = DeleteProducerKeychainErrors[keyof DeleteProducerKeychainErrors];
+
+export type DeleteProducerKeychainResponses = {
+    /**
+     * Producer Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteProducerKeychainResponse = DeleteProducerKeychainResponses[keyof DeleteProducerKeychainResponses];
+
+export type GetProducerKeychainDetailsData = {
+    body?: never;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type GetProducerKeychainDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainDetailsError = GetProducerKeychainDetailsErrors[keyof GetProducerKeychainDetailsErrors];
+
+export type GetProducerKeychainDetailsResponses = {
+    /**
+     * Producer Keychain details retrieved successfully
+     */
+    200: KeychainDetails;
+};
+
+export type GetProducerKeychainDetailsResponse = GetProducerKeychainDetailsResponses[keyof GetProducerKeychainDetailsResponses];
+
+export type UpdateProducerKeychainData = {
+    body: KeychainPatch;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}';
+};
+
+export type UpdateProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];
+
+export type UpdateProducerKeychainResponses = {
+    /**
+     * Producer Keychain updated successfully
+     */
+    204: void;
+};
+
+export type UpdateProducerKeychainResponse = UpdateProducerKeychainResponses[keyof UpdateProducerKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;

@@ -4,16 +4,16 @@ import {
   consumerKeychainDetailsTab,
   type ConsumerKeychainDetailsTab,
   keychainType,
+  type KeychainType,
   knodeApiKeychainDetailsTab,
   type KnodeApiKeychainDetailsTab,
+  producerKeychainDetailsTab,
+  type ProducerKeychainDetailsTab,
 } from "./commons";
-
-export const supportedKeychainTab = keychainType.exclude(["production"]);
-type SupportedKeychainTab = z.infer<typeof supportedKeychainTab>;
 
 export const keychainSearchDefaultValues = {
   offset: 0,
-  type: "consumption" satisfies SupportedKeychainTab,
+  type: "consumption" satisfies KeychainType,
 } as const;
 
 export const keychainSearchSchema = z.object({
@@ -22,7 +22,7 @@ export const keychainSearchSchema = z.object({
     .min(0)
     .default(keychainSearchDefaultValues.offset)
     .catch(keychainSearchDefaultValues.offset),
-  type: supportedKeychainTab
+  type: keychainType
     .default(keychainSearchDefaultValues.type)
     .catch(keychainSearchDefaultValues.type),
 });
@@ -57,4 +57,20 @@ export const knodeApiKeychainDetailsSearchSchema = z.object({
   tab: knodeApiKeychainDetailsTab
     .default(knodeApiKeychainDetailsSearchDefaultValues.tab)
     .catch(knodeApiKeychainDetailsSearchDefaultValues.tab),
+});
+
+export const producerKeychainDetailsSearchDefaultValues = {
+  offset: 0,
+  tab: "public-keys" satisfies ProducerKeychainDetailsTab,
+} as const;
+
+export const producerKeychainDetailsSearchSchema = z.object({
+  offset: z
+    .number()
+    .min(0)
+    .default(producerKeychainDetailsSearchDefaultValues.offset)
+    .catch(producerKeychainDetailsSearchDefaultValues.offset),
+  tab: producerKeychainDetailsTab
+    .default(producerKeychainDetailsSearchDefaultValues.tab)
+    .catch(producerKeychainDetailsSearchDefaultValues.tab),
 });

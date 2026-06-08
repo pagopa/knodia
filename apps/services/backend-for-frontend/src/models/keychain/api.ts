@@ -21,21 +21,13 @@ import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
 
-export const API_ConsumerKeychainSeed = z
+export const API_KeychainSeed = z
   .strictObject({
     description: API_KeychainLocalizedDescription.optional(),
     name: API_KeychainLocalizedName,
   })
-  .meta({ id: "ConsumerKeychainSeed" });
-export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
-
-export const API_KnodeApiKeychainSeed = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.optional(),
-    name: API_KeychainLocalizedName,
-  })
-  .meta({ id: "KnodeApiKeychainSeed" });
-export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+  .meta({ id: "KeychainSeed" });
+export type API_KeychainSeed = z.infer<typeof API_KeychainSeed>;
 
 export const API_KnodeApiKeychainsQueryParams = API_PaginationQueryParams;
 export type API_KnodeApiKeychainsQueryParams = z.infer<
@@ -70,6 +62,11 @@ export const API_KeychainDetails = z
   })
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
+
+export const API_ProducerKeychainsQueryParams = API_PaginationQueryParams;
+export type API_ProducerKeychainsQueryParams = z.infer<
+  typeof API_ProducerKeychainsQueryParams
+>;
 
 export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({

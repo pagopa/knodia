@@ -3,7 +3,7 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { SupportedKeychain } from "../models/commons";
+import type { KeychainWithKeyMemberOps } from "../models/commons";
 
 import { useUploadKeychainKey } from "../hooks/useKeychainMutations";
 import {
@@ -16,7 +16,7 @@ interface Props {
   hasReachedMaxKeys: boolean;
   isKeychainMember: boolean;
   isOpen: boolean;
-  keychain: SupportedKeychain;
+  keychain: KeychainWithKeyMemberOps;
   onClose: () => void;
 }
 

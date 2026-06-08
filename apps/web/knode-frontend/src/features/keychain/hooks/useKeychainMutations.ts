@@ -9,7 +9,7 @@ import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
 
-import type { SupportedKeychain } from "../models/commons";
+import type { KeychainWithKeyMemberOps } from "../models/commons";
 
 import {
   consumerKeychainKeysQueryKey,
@@ -27,7 +27,7 @@ interface UploadKeyBody {
   name: { en: string };
 }
 
-export function useAddKeychainMember(keychain: SupportedKeychain) {
+export function useAddKeychainMember(keychain: KeychainWithKeyMemberOps) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (userId: UserId) =>
@@ -55,7 +55,7 @@ export function useAddKeychainMember(keychain: SupportedKeychain) {
   });
 }
 
-export function useRemoveKeychainKey(keychain: SupportedKeychain) {
+export function useRemoveKeychainKey(keychain: KeychainWithKeyMemberOps) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (keyId: string) =>
@@ -80,7 +80,7 @@ export function useRemoveKeychainKey(keychain: SupportedKeychain) {
   });
 }
 
-export function useRemoveKeychainMember(keychain: SupportedKeychain) {
+export function useRemoveKeychainMember(keychain: KeychainWithKeyMemberOps) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (userId: UserId) =>
@@ -106,7 +106,7 @@ export function useRemoveKeychainMember(keychain: SupportedKeychain) {
   });
 }
 
-export function useUploadKeychainKey(keychain: SupportedKeychain) {
+export function useUploadKeychainKey(keychain: KeychainWithKeyMemberOps) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: UploadKeyBody) =>
@@ -135,7 +135,7 @@ export function useUploadKeychainKey(keychain: SupportedKeychain) {
 
 function invalidateKeychainsList(
   queryClient: QueryClient,
-  keychain: SupportedKeychain,
+  keychain: KeychainWithKeyMemberOps,
 ) {
   queryClient.invalidateQueries({
     queryKey: match(keychain)
@@ -147,7 +147,7 @@ function invalidateKeychainsList(
 
 function invalidateKeysList(
   queryClient: QueryClient,
-  keychain: SupportedKeychain,
+  keychain: KeychainWithKeyMemberOps,
 ) {
   queryClient.invalidateQueries({
     queryKey: match(keychain)
@@ -163,7 +163,7 @@ function invalidateKeysList(
 
 function invalidateMembership(
   queryClient: QueryClient,
-  keychain: SupportedKeychain,
+  keychain: KeychainWithKeyMemberOps,
   userId: UserId,
 ) {
   queryClient.invalidateQueries({
@@ -180,7 +180,7 @@ function invalidateMembership(
 
 function invalidateMembersList(
   queryClient: QueryClient,
-  keychain: SupportedKeychain,
+  keychain: KeychainWithKeyMemberOps,
 ) {
   queryClient.invalidateQueries({
     queryKey: match(keychain)

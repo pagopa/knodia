@@ -1,0 +1,26 @@
+meta {
+  name: 4 - Get Producer Keychain Details after Update
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq {{producerKeychainId}}
+  res.body.name.en: eq {{updatedProducerKeychainName}}
+  res.body.description: isUndefined
+}

@@ -45,10 +45,10 @@ import {
   API_KeychainMemberSeed,
   API_KeychainPatch,
   API_Keychains,
+  API_KeychainSeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
   API_KnodeApiKeychainMembershipCheckResult,
-  API_KnodeApiKeychainSeed,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
 import {
@@ -129,7 +129,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_KnodeApiKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Knode API Keychain",
       operationId: "createKnodeApiKeychain",
       response: {

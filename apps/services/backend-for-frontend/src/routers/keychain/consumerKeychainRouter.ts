@@ -58,7 +58,6 @@ import {
   API_ConsumerKeychainOptions,
   API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
-  API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
   API_GetConsumerKeychainKeysQueryParams,
@@ -73,6 +72,7 @@ import {
   API_KeychainMemberSeed,
   API_KeychainPatch,
   API_Keychains,
+  API_KeychainSeed,
 } from "../../models/keychain/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
@@ -266,7 +266,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_ConsumerKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Consumer Keychain",
       operationId: "createConsumerKeychain",
       response: {
