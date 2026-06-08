@@ -18,13 +18,13 @@ import { DialogTrigger } from "react-aria-components";
 
 import { useHasRole } from "@/contexts/auth";
 
-import type { KeychainWithKeyMemberOps } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useRemoveKeychainMember } from "../hooks/useKeychainMutations";
 
 interface KeychainMembersTableProps {
   isLoading: boolean;
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   members: bffApi.User[];
 }
 
@@ -88,7 +88,7 @@ function RemoveFromKeychainAction({
   keychain,
   userId,
 }: {
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   userId: UserId;
 }) {
   const { isError, isPending, mutate } = useRemoveKeychainMember(keychain);

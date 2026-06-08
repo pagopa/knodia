@@ -1,48 +1,33 @@
-import {
-  type ConsumerKeychainId,
-  type KnodeApiKeychainId,
-  unsafeBrandUserId,
-} from "@knodia/common-models/ids";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { match } from "ts-pattern";
 
 import { useAuth } from "@/contexts/auth";
 
-import type { KeychainWithKeyMemberOps } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainMembershipQuery,
   knodeApiKeychainMembershipQuery,
+  producerKeychainMembershipQuery,
 } from "../services/queries";
 
-export function useIsCurrentUserKeychainMember(
-  keychain: KeychainWithKeyMemberOps,
-) {
-  const { userId } = useAuth();
-  const safeUserId = userId ?? unsafeBrandUserId("");
+export function useIsCurrentUserKeychainMember(keychain: SupportedKeychain) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const userId = useAuth().userId!;
 
-  const consumerQuery = useQuery({
-    ...consumerKeychainMembershipQuery(
-      keychain.keychainId as ConsumerKeychainId,
-      safeUserId,
-    ),
-    enabled: keychain.type === "consumption" && Boolean(userId),
-    initialData: { isMember: false },
-  });
+  const queryOpts = match(keychain)
+    .with({ type: "consumption" }, ({ keychainId }) =>
+      consumerKeychainMembershipQuery(keychainId, userId),
+    )
+    .with({ type: "api" }, ({ keychainId }) =>
+      knodeApiKeychainMembershipQuery(keychainId, userId),
+    )
+    .with({ type: "production" }, ({ keychainId }) =>
+      producerKeychainMembershipQuery(keychainId, userId),
+    )
+    .exhaustive() as ReturnType<typeof consumerKeychainMembershipQuery>;
 
-  const apiQuery = useQuery({
-    ...knodeApiKeychainMembershipQuery(
-      keychain.keychainId as KnodeApiKeychainId,
-      safeUserId,
-    ),
-    enabled: keychain.type === "api" && Boolean(userId),
-    initialData: { isMember: false },
-  });
+  const { data } = useSuspenseQuery(queryOpts);
 
-  if (!userId) return false;
-
-  return match(keychain.type)
-    .with("consumption", () => consumerQuery.data.isMember)
-    .with("api", () => apiQuery.data.isMember)
-    .exhaustive();
+  return data.isMember;
 }

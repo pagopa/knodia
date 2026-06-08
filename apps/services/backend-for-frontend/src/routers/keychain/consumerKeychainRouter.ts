@@ -54,22 +54,22 @@ import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
-  API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainOptions,
   API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
-  API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainOptionsQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
+  API_GetKeychainKeysQueryParams,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeys,
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainMembershipCheckResult,
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
@@ -178,7 +178,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       description: "Retrieve keys of a Consumer Keychain",
       operationId: "getConsumerKeychainKeys",
       params: API_ConsumerKeychainIdPathParam,
-      querystring: API_GetConsumerKeychainKeysQueryParams,
+      querystring: API_GetKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
           description: "Consumer Keychain Keys retrieved successfully",
@@ -661,14 +661,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getConsumerKeychainMembership",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
-        200: API_ConsumerKeychainMembershipCheckResult.meta({
+        200: API_KeychainMembershipCheckResult.meta({
           description:
             "Consumer Keychain membership check retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
       tags: [apiTags.consumerKeychain],
     },

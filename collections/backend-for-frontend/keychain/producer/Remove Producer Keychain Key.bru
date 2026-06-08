@@ -1,0 +1,19 @@
+meta {
+  name: Remove Producer Keychain Key
+  type: http
+}
+
+delete {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/keys/:keyId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+  keyId: {{keyId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

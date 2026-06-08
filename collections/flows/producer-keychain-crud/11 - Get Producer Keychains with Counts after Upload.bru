@@ -1,0 +1,34 @@
+meta {
+  name: 11 - Get Producer Keychains with Counts after Upload
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains?offset=0&limit=50
+  body: none
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("listed keychain reports membersCount 1 and keysCount 1", function () {
+    const id = bru.getVar("producerKeychainId");
+    const keychain = res.getBody().results.find((k) => k.id === id);
+    expect(keychain).to.not.be.undefined;
+    expect(keychain.membersCount).to.equal(1);
+    expect(keychain.keysCount).to.equal(1);
+  });
+}
