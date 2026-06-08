@@ -227,7 +227,9 @@ console.log(`Bruno env written to ${envPath}`);
 // dev UI as that org (the app reads the session token from localStorage on load).
 if (type === "ui-session" && args.org !== undefined) {
   console.log(`\nLog in to the dev UI as org ${args.org}:`);
-  console.log(`  1. Open the frontend login page (local: http://localhost:5001/ui/ for Orion, http://localhost:5002/ui/ for Lynx)`);
+  console.log(`  1. Open the frontend login page:`);
+  console.log(`       - single-knode infra: http://localhost:5175/ui/`);
+  console.log(`       - multinode infra:    http://localhost:5001/ui/ (Orion) or http://localhost:5002/ui/ (Lynx)`);
   console.log(`  2. Open the browser devtools console`);
   console.log(`  3. Paste and run:`);
   console.log(`     localStorage.setItem("knodia_auth_token", "${token}")`);
