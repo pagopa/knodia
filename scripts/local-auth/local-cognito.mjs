@@ -107,7 +107,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 21_600,
     UserLastModifiedDate: NOW_IN_SECONDS - 900,
     UserStatus: "CONFIRMED",
-    Username: "businessBookletLynx Admin",
+    Username: "Business Booklet Lynx Admin",
   },
   {
     Attributes: [
@@ -127,7 +127,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 21_600,
     UserLastModifiedDate: NOW_IN_SECONDS - 900,
     UserStatus: "CONFIRMED",
-    Username: "constructionCompaniesRegistryOrion Admin",
+    Username: "Construction Companies Registry Orion Admin",
   },
 ];
 
