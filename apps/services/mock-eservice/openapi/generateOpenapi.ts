@@ -2,6 +2,7 @@ import generateOpenapi from "@knodia/fastify-zod-api-commons/generateOpenapi";
 
 import {
   buildBearerAppFromConfig,
+  buildBearerCompaniesAppFromConfig,
   buildBearerSignalHubAppFromConfig,
   buildDpopAppFromConfig,
 } from "../src/app.ts";
@@ -16,5 +17,9 @@ await Promise.all([
   generateOpenapi(
     buildBearerSignalHubAppFromConfig(config),
     "openapi/openapi-bearer-signal-hub.yaml",
+  ),
+  generateOpenapi(
+    buildBearerCompaniesAppFromConfig(config),
+    "openapi/openapi-bearer-companies.yaml",
   ),
 ]);

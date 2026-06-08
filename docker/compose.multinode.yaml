@@ -118,6 +118,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-companies.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-companies.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root

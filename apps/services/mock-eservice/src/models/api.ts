@@ -136,3 +136,96 @@ export const API_Pseudonymization = z
     id: "Pseudonymization",
   });
 export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;
+
+// --- POC Use Case 02: legal entities and evidences (Cross-Border E-service 04) ---
+
+// `uid_company` identifying a legal entity in the path: an 11-digit Italian VAT
+// number (Partita IVA), e.g. "01229430085". A malformed value yields a 400.
+export const API_CompanyUid = z
+  .string()
+  .regex(/^[0-9]{11}$/)
+  .meta({
+    description:
+      "Legal-entity identifier in the path: 11-digit Italian VAT number (Partita IVA).",
+    example: "01229430085",
+    id: "CompanyUid",
+  });
+export type API_CompanyUid = z.infer<typeof API_CompanyUid>;
+
+const API_LegalIdentifier = z
+  .strictObject({
+    notation: API_CompanyUid,
+    schemeName: z.string(),
+    schemeURI: API_UriScheme,
+  })
+  .meta({
+    description:
+      "Unique identifier of a legal entity (Core Business Vocabulary 2.2.0)",
+    id: "LegalIdentifier",
+  });
+
+// NACE Rev. 2.1 economic-activity code (e.g. "43.21"). The full vocabulary is
+// large and externally maintained, so it is modelled as a free string rather
+// than an inline enum.
+const API_LegalEntityActivity = z.string().min(1).meta({
+  description:
+    "Economic activity of the legal entity, derived from NACE Rev. 2.1",
+  example: "43.21",
+  id: "LegalEntityActivity",
+});
+
+export const API_LegalEntity = z
+  .strictObject({
+    legalEntityActivity: API_LegalEntityActivity,
+    legalIdentifier: API_LegalIdentifier,
+    legalName: z.string(),
+    registrationDate: z.iso.date().optional(),
+  })
+  .meta({
+    description:
+      "Legal entity (company), modelled after Core Business Vocabulary 2.2.0",
+    id: "LegalEntity",
+  });
+export type API_LegalEntity = z.infer<typeof API_LegalEntity>;
+
+export const API_EvidenceType = z.enum([
+  "codeETC_001",
+  "codeETC_002",
+  "codeETC_003",
+  "codeETC_004",
+]);
+export type API_EvidenceType = z.infer<typeof API_EvidenceType>;
+
+const API_EvidenceTypeClassification = z
+  .strictObject({
+    evidenceTypeClassification: API_EvidenceType,
+    identifier: z.string(),
+  })
+  .meta({
+    description: "Type of evidence (CCCEV 2.1.0)",
+    id: "EvidenceTypeClassification",
+  });
+
+const API_PeriodOfTime = z
+  .strictObject({
+    endtime: z.iso.date().optional(),
+    starttime: z.iso.date(),
+  })
+  .meta({
+    description:
+      "Period of time during which an evidence is valid (CCCEV 2.1.0)",
+    id: "PeriodOfTime",
+  });
+
+export const API_Evidence = z
+  .strictObject({
+    isAbout: API_LegalEntity,
+    isConformantTo: API_EvidenceTypeClassification,
+    validityPeriod: API_PeriodOfTime,
+  })
+  .meta({
+    description:
+      "Evidence about a legal entity (CCCEV 2.1.0), returned by the Cross-Border E-service 04",
+    id: "Evidence",
+  });
+export type API_Evidence = z.infer<typeof API_Evidence>;
