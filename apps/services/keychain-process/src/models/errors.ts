@@ -125,7 +125,7 @@ export function keychainMemberNotFound(
 ) {
   return createApiError<ErrorCodes>({
     code: "KEYCHAIN_MEMBER_NOT_FOUND",
-    detail: `User ${userId} is not a member of keychain ${keychainId}`,
+    detail: `User ${userId} is not currently an active member of keychain ${keychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Keychain Member Not Found",
   });

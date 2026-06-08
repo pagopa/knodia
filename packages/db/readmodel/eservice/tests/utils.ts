@@ -3,6 +3,7 @@ import type { splitEserviceIntoObjectsSQL } from "../src/converters/splitters.ts
 export function createEserviceAggregatorInput({
   eserviceCategoriesSQL,
   eserviceInterfacesSQL,
+  eservicePurposeFormOptionSQL,
   eserviceSQL,
   eserviceVersionRequiredAttributesSQL,
   eserviceVersionsSQL,
@@ -18,6 +19,9 @@ export function createEserviceAggregatorInput({
     const eserviceCategories = eserviceCategoriesSQL.filter(
       (c) => c.eserviceId === eserviceSQL.id,
     );
+    const purposeFormOptions = eservicePurposeFormOptionSQL.filter(
+      (pfa) => pfa.eserviceId === eserviceSQL.id,
+    );
 
     const requiredAttributesOrNull = eserviceVersionRequiredAttributes.length
       ? eserviceVersionRequiredAttributes
@@ -28,16 +32,22 @@ export function createEserviceAggregatorInput({
     const categoriesOrNull = eserviceCategories.length
       ? eserviceCategories
       : [null];
+    const purposeFormOptionsOrNull = purposeFormOptions.length
+      ? purposeFormOptions
+      : [null];
 
     return categoriesOrNull.flatMap((categorySQL) =>
       requiredAttributesOrNull.flatMap((requiredAttributeSQL) =>
-        interfacesOrNull.map((interfaceSQL) => ({
-          category: categorySQL,
-          eservice: eserviceSQL,
-          interface: interfaceSQL,
-          requiredAttribute: requiredAttributeSQL,
-          version: eserviceVersionSQL,
-        })),
+        interfacesOrNull.flatMap((interfaceSQL) =>
+          purposeFormOptionsOrNull.map((eservicePurposeFormOptionSQL) => ({
+            category: categorySQL,
+            eservice: eserviceSQL,
+            interface: interfaceSQL,
+            purposeFormOptions: eservicePurposeFormOptionSQL,
+            requiredAttribute: requiredAttributeSQL,
+            version: eserviceVersionSQL,
+          })),
+        ),
       ),
     );
   });

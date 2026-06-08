@@ -9,7 +9,11 @@ import {
   toEserviceV1,
 } from "@knodia/eservice-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
-import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
+import {
+  getMockEservice,
+  getMockPurposeFormOption,
+  toExpectEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import { consumer, producer, readmodelDb, topicName } from "./setup.ts";
@@ -172,5 +176,41 @@ describe("E-service read model writer tests", async () => {
       data: toExpectEservice(eservice),
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Eservice>);
+  });
+
+  it("EserviceUpdatedV1 — preserves receiveDataConfig.purposeFormOptions", async () => {
+    const purposeFormOptions = [
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
+    ];
+    const eservice = getMockEservice({ purposeFormOptions });
+
+    const eventData = protobufBinaryCodec(
+      eserviceEvents.EserviceUpdatedV1,
+    ).encode({
+      eservice: toEserviceV1(eservice),
+    });
+
+    const metadataVersion = 0;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "EserviceUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: eservice.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedEservices = await getAllEservices(readmodelDb);
+
+    expect(retrievedEservices.length).toBe(1);
+    expect(
+      retrievedEservices[0]?.data.receiveDataConfig?.purposeFormOptions,
+    ).toHaveLength(purposeFormOptions.length);
+    expect(retrievedEservices[0]?.data.receiveDataConfig).toEqual({
+      purposeFormOptions: expect.arrayContaining(purposeFormOptions),
+    });
   });
 });

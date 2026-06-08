@@ -10,6 +10,7 @@ import type { TestToken } from "./auth.ts";
  */
 const allTestTokens: TestToken[] = [
   { type: "internal" },
+  { type: "ui-signup-session" },
   ...UserRole.options.map(
     (role): TestToken => ({ roles: [role], type: "ui-session" }),
   ),
@@ -32,6 +33,10 @@ const isAllowed = (token: TestToken, allowed: TestToken[]): boolean =>
       .with(
         [{ type: "external-ui-session" }, { type: "external-ui-session" }],
         ([t, a]) => t.scope === a.scope,
+      )
+      .with(
+        [{ type: "ui-signup-session" }, { type: "ui-signup-session" }],
+        () => true,
       )
       .otherwise(() => false),
   );

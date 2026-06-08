@@ -1,7 +1,11 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { type Eservice } from "@knodia/eservice-models";
-import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
+import {
+  getMockEservice,
+  getMockPurposeFormOption,
+  toExpectEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -75,5 +79,50 @@ describe("E-service Aggregators", () => {
         },
       ] satisfies WithMetadata<Eservice>[]),
     );
+  });
+
+  it("should preserve receiveDataConfig.purposeFormOptions in the split→aggregate roundtrip", () => {
+    const purposeFormOptions = [
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
+    ];
+    const eservice: WithMetadata<Eservice> = {
+      data: getMockEservice({ purposeFormOptions }),
+      metadata: { version: 1 },
+    };
+
+    const eserviceSQLObjects = splitEserviceIntoObjectsSQL(
+      eservice.data,
+      eservice.metadata.version,
+    );
+
+    const aggregatedEservice = aggregateEservice(
+      createEserviceAggregatorInput(eserviceSQLObjects),
+    );
+
+    expect(
+      aggregatedEservice?.data.receiveDataConfig?.purposeFormOptions,
+    ).toHaveLength(purposeFormOptions.length);
+    expect(aggregatedEservice?.data.receiveDataConfig).toEqual({
+      purposeFormOptions: expect.arrayContaining(purposeFormOptions),
+    });
+  });
+
+  it("should produce receiveDataConfig=undefined when no purposeFormOptions SQL rows are present", () => {
+    const eservice: WithMetadata<Eservice> = {
+      data: getMockEservice(),
+      metadata: { version: 1 },
+    };
+
+    const eserviceSQLObjects = splitEserviceIntoObjectsSQL(
+      eservice.data,
+      eservice.metadata.version,
+    );
+
+    const aggregatedEservice = aggregateEservice(
+      createEserviceAggregatorInput(eserviceSQLObjects),
+    );
+
+    expect(aggregatedEservice?.data.receiveDataConfig).toBeUndefined();
   });
 });

@@ -12,6 +12,7 @@
     "@bufbuild/protobuf": "catalog:",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
