@@ -17,7 +17,6 @@ export const CONSUMER_PRIVATE_KEY_PATH = resolve(
 // token is issued by the producer knode's authorization-server and the
 // e-service is served by the producer knode's mock. Override the base URLs for
 // non-local environments.
-export const KNODE_ID = "Lynx";
 export const AUTHORIZATION_SERVER_URL =
   process.env.POC_AUTHORIZATION_SERVER_URL ?? "http://localhost:3702";
 export const MOCK_ESERVICE_URL =
