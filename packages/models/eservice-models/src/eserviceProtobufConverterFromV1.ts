@@ -3,6 +3,10 @@ import type { AttributeGroup } from "@knodia/attribute-models";
 import { fromOptionalExternalResource } from "@knodia/common-models/externalResource";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
+import {
+  PurposeFormAnswers,
+  type PurposeFormSchemaVersion,
+} from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 
 import {
@@ -12,6 +16,8 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type PurposeFormOption,
+  type ReceiveDataConfig,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
@@ -21,6 +27,9 @@ import {
   type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   type EserviceVersionV1,
+  type PurposeFormOptionV1,
+  PurposeFormSchemaVersionV1,
+  type ReceiveDataConfigV1,
 } from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => {
@@ -35,11 +44,59 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => {
     mode: fromEserviceModeV1(input.mode),
     name: input.name,
     producerId: unsafeBrandId(input.producerId),
+    receiveDataConfig: input.receiveDataConfig
+      ? fromReceiveDataConfigV1(input.receiveDataConfig)
+      : undefined,
     template: fromOptionalExternalResource(input.template),
     updatedAt: new Date(input.updatedAt),
     versions: input.versions.map(fromEserviceVersionV1),
   };
 };
+
+const fromReceiveDataConfigV1 = (
+  input: ReceiveDataConfigV1,
+): ReceiveDataConfig => {
+  if (input.purposeFormOptions.length === 0) {
+    throw new Error(
+      "ReceiveDataConfigV1.purposeFormOptions must contain at least one element",
+    );
+  }
+  return {
+    ...input,
+    purposeFormOptions: input.purposeFormOptions.map(fromPurposeFormOptionV1),
+  };
+};
+
+const fromPurposeFormOptionV1 = (
+  input: PurposeFormOptionV1,
+): PurposeFormOption => {
+  assertRequired(input.name, "PurposeFormOption name is undefined");
+  assertRequired(
+    input.description,
+    "PurposeFormOption description is undefined",
+  );
+
+  return {
+    ...input,
+    description: input.description,
+    formAnswersJson: PurposeFormAnswers.parse(
+      JSON.parse(input.formAnswersJson),
+    ),
+    formSchemaVersion: fromPurposeFormSchemaVersionV1(input.formSchemaVersion),
+    id: unsafeBrandId(input.id),
+    name: input.name,
+  };
+};
+
+const fromPurposeFormSchemaVersionV1 = (
+  input: PurposeFormSchemaVersionV1,
+): PurposeFormSchemaVersion =>
+  match(input)
+    .with(PurposeFormSchemaVersionV1.V1_0, () => "1.0" as const)
+    .with(PurposeFormSchemaVersionV1.UNRECOGNIZED, () => {
+      throw new Error("Unrecognized PurposeFormSchemaVersionV1 value");
+    })
+    .exhaustive();
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)

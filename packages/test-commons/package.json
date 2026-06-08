@@ -48,6 +48,7 @@
     "./remoteResourceDb": "./src/remoteResourceDb.ts",
     "./signalHubDb": "./src/signalHubDb.ts",
     "./types": "./src/models/types.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./signupDb": "./src/signupDb.ts"
   }
 }

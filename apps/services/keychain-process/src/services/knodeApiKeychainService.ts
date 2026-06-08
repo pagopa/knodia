@@ -253,7 +253,6 @@ export function knodeApiKeychainServiceBuilder(
         authData,
         cognitoIdmClient,
         keychain: knodeApiKeychain.data,
-        keychainKind: "Knode API Keychain",
         userId,
       });
     },
@@ -278,16 +277,11 @@ export function knodeApiKeychainServiceBuilder(
         knodeApiKeychain,
       );
 
-      return {
-        results: await retrievePaginatedKeychainUsers({
-          cognitoIdmClient,
-          keychainId: knodeApiKeychainId,
-          keychainKind: "Knode API Keychain",
-          paginationParams: params,
-          users: knodeApiKeychain.users,
-        }),
-        totalCount: knodeApiKeychain.users.length,
-      };
+      return await retrievePaginatedKeychainUsers({
+        cognitoIdmClient,
+        paginationParams: params,
+        users: knodeApiKeychain.users,
+      });
     },
 
     async getKnodeApiKeychains(

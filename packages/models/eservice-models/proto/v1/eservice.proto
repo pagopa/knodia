@@ -15,6 +15,24 @@ message EserviceV1 {
   int64 createdAt = 10;
   int64 updatedAt = 11;
   optional EserviceTemplateV1 template = 12;
+  optional ReceiveDataConfigV1 receiveDataConfig = 13;
+}
+
+message ReceiveDataConfigV1 {
+  repeated PurposeFormOptionV1 purposeFormOptions = 1;
+}
+
+message PurposeFormOptionV1 {
+  string id = 1;
+  LocalizedTextV1 name = 2;
+  LocalizedTextV1 description = 3;
+  string formAnswersJson = 4;
+  PurposeFormSchemaVersionV1 formSchemaVersion = 5;
+}
+
+// TODO find a way to share this with purpose-models and make proto gen work
+enum PurposeFormSchemaVersionV1 {
+  V1_0 = 0;
 }
 
 message EserviceCategoryV1 {

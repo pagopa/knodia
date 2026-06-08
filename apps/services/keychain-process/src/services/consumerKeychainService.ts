@@ -271,7 +271,6 @@ export function consumerKeychainServiceBuilder(
         authData,
         cognitoIdmClient,
         keychain: consumerKeychain.data,
-        keychainKind: "Consumer Keychain",
         userId,
       });
     },
@@ -296,16 +295,11 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      return {
-        results: await retrievePaginatedKeychainUsers({
-          cognitoIdmClient,
-          keychainId: consumerKeychainId,
-          keychainKind: "Consumer Keychain",
-          paginationParams: params,
-          users: consumerKeychain.users,
-        }),
-        totalCount: consumerKeychain.users.length,
-      };
+      return await retrievePaginatedKeychainUsers({
+        cognitoIdmClient,
+        paginationParams: params,
+        users: consumerKeychain.users,
+      });
     },
 
     async getConsumerKeychainPurpose(

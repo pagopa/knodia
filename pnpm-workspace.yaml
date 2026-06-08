@@ -8,6 +8,7 @@ packages:
   - packages/db/readmodel/*
   - packages/db/remote-resource
   - packages/db/signal-hub
+  - packages/db/signup
   - packages/clients/*
   - tools/*
 
