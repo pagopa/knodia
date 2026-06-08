@@ -73,55 +73,28 @@ components:
         - status
         - title
       additionalProperties: false
-    UserId:
-      description: Unique identifier of the User
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
     KeyId:
       description: Unique identifier of the Key
       type: string
       format: base64url
       pattern: ^[A-Za-z0-9_-]*$
-    KeyAlgorithm:
-      description: Algorithm of the Key
-      type: string
-      enum:
-        - RS256
-    KeychainKeyLocalizedName:
-      description: Name of the Keychain Key
-      type: object
-      properties:
-        en:
-          type: string
-      required:
-        - en
-      additionalProperties: false
-    KeychainKey:
-      description: Keychain Key
+    PublicKey:
+      description: Public Key details
       type: object
       properties:
         algorithm:
-          $ref: "#/components/schemas/KeyAlgorithm"
-        createdAt:
           type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         encodedPem:
+          type: string
+        format:
           type: string
         kid:
           $ref: "#/components/schemas/KeyId"
-        name:
-          $ref: "#/components/schemas/KeychainKeyLocalizedName"
-        userId:
-          $ref: "#/components/schemas/UserId"
       required:
         - algorithm
-        - createdAt
         - encodedPem
+        - format
         - kid
-        - name
-        - userId
       additionalProperties: false
 paths:
   /status:
@@ -161,7 +134,7 @@ paths:
               schema:
                 description: Producer Public Key retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/KeychainKey"
+                  - $ref: "#/components/schemas/PublicKey"
         "400":
           description: Bad Request
           content:
