@@ -49,13 +49,13 @@ export function findEvidences(
   evidenceType?: API_EvidenceType,
 ): API_Evidence[] | undefined {
   const legalEntity = findLegalEntity(uid);
-  const cycle = ROTATING_EVIDENCES[uid];
-  if (!legalEntity || !cycle) {
+  if (!legalEntity) {
     return undefined;
   }
 
-  const periodId = computePeriodId(now, config);
-  const activeList = cycle.at(periodId % cycle.length) ?? [];
+  const cycle = ROTATING_EVIDENCES[uid];
+  const activeList =
+    cycle?.at(computePeriodId(now, config) % cycle.length) ?? [];
 
   return activeList
     .filter(
