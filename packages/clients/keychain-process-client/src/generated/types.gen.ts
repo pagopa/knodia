@@ -191,6 +191,12 @@ export type ProducerKeychainEservices = {
     results: Array<ProducerKeychainEservice>;
 };
 
+export type PublicKey = {
+    algorithm: KeyAlgorithm;
+    encodedPem: string;
+    kid: KeyId;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -2468,3 +2474,48 @@ export type GetProducerKeychainEserviceResponses = {
 };
 
 export type GetProducerKeychainEserviceResponse = GetProducerKeychainEserviceResponses[keyof GetProducerKeychainEserviceResponses];
+
+export type GetProducerKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: KeyId;
+    };
+    query?: never;
+    url: '/producerKeys/{keyId}';
+};
+
+export type GetProducerKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Public Key not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeyError = GetProducerKeyErrors[keyof GetProducerKeyErrors];
+
+export type GetProducerKeyResponses = {
+    /**
+     * Producer Public Key retrieved successfully
+     */
+    200: PublicKey;
+};
+
+export type GetProducerKeyResponse = GetProducerKeyResponses[keyof GetProducerKeyResponses];

@@ -39,11 +39,13 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_KeyIdPathParam,
   API_ProducerKeychainEservice,
   API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainMemberPathParams,
+  API_PublicKey,
   API_User,
 } from "../models/api.ts";
 import {
@@ -51,6 +53,7 @@ import {
   toAPI_Keychain,
   toAPI_KeychainKey,
   toAPI_ProducerKeychainEservice,
+  toAPI_PublicKey,
   toAPI_User,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -746,5 +749,38 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "knode-api" },
+      ]);
+
+      const producerKey = await producerKeychainService.getProducerKey(
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_PublicKey(producerKey));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Producer Public Key",
+      headers: KnodiaServiceHeaders,
+      operationId: "getProducerKey",
+      params: API_KeyIdPathParam,
+      response: {
+        200: API_PublicKey.meta({
+          description: "Producer Public Key retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Producer Public Key not found" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeys/:keyId",
   });
 };

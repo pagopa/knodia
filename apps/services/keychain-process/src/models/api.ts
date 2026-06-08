@@ -337,3 +337,17 @@ export const API_ProducerKeychainEservices = z
 export type API_ProducerKeychainEservices = z.infer<
   typeof API_ProducerKeychainEservices
 >;
+
+export const API_KeyIdPathParam = z.strictObject({
+  keyId: API_KeyId,
+});
+export type API_KeyIdPathParam = z.infer<typeof API_KeyIdPathParam>;
+
+export const API_PublicKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    encodedPem: z.string(),
+    kid: API_KeyId,
+  })
+  .meta({ id: "PublicKey" });
+export type API_PublicKey = z.infer<typeof API_PublicKey>;

@@ -15,6 +15,7 @@ import type {
   API_Keychain,
   API_KeychainKey,
   API_ProducerKeychainEservice,
+  API_PublicKey,
   API_User,
 } from "./api.ts";
 
@@ -63,4 +64,10 @@ export const toAPI_ProducerKeychainEservice = (
 ): API_ProducerKeychainEservice => ({
   ...producerKeychainEservice,
   linkedAt: producerKeychainEservice.linkedAt.toISOString(),
+});
+
+export const toAPI_PublicKey = (key: KeychainKey): API_PublicKey => ({
+  algorithm: key.algorithm,
+  encodedPem: key.encodedPem,
+  kid: key.kid,
 });

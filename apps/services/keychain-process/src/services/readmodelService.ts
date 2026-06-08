@@ -412,6 +412,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         };
       });
     },
+    async getProducerKeyByKid(kid: KeyId) {
+      return await producerKeychainReadmodelService.getProducerKeyByKid(kid);
+    },
     async getProducerKeychainById(producerKeychainId: ProducerKeychainId) {
       return await producerKeychainReadmodelService.getProducerKeychainById(
         producerKeychainId,

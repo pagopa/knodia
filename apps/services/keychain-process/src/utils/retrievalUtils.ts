@@ -30,6 +30,7 @@ import {
   knodeApiKeychainNotFound,
   producerKeychainEserviceNotFound,
   producerKeychainNotFound,
+  producerKeyNotFound,
 } from "../models/errors.ts";
 import {
   assertOrganizationIsKeychainOwner,
@@ -127,6 +128,19 @@ export const retrieveKeychainKey = (
 
   if (!key) {
     throw keyNotFoundInKeychain(kid, keychain.id);
+  }
+
+  return key;
+};
+
+export const retrieveProducerKey = async (
+  kid: KeyId,
+  readmodelService: ReadmodelService,
+) => {
+  const key = await readmodelService.getProducerKeyByKid(kid);
+
+  if (!key) {
+    throw producerKeyNotFound(kid);
   }
 
   return key;
