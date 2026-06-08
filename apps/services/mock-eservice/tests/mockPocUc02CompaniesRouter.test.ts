@@ -3,7 +3,7 @@ import {
   type EserviceVersionId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
@@ -26,6 +26,10 @@ const SAMPLE_VAT = "01229430085";
 const UNKNOWN_VAT = "00000000000";
 const INVALID_VAT = "not-a-vat";
 
+// setup.ts pins signalHubSeedStartDateMs=0, signalHubSeedExpireSeconds=30 so
+// wall-clock ms maps straight to periodId: T=15_000 ⇒ periodId 0, T=45_000 ⇒ 1.
+const PERIOD_MS = 30_000;
+
 async function signToken(
   overrides: {
     eserviceId?: EserviceId;
@@ -43,141 +47,202 @@ async function signToken(
   });
 }
 
-describe("mock-eservice companies router", () => {
-  describe("GET /legal-entities/:uidCompany/information", () => {
-    it("returns 200 with the legal entity for a known company", async () => {
-      const token = await signToken();
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/information`,
-      });
-      expect(res.statusCode).toBe(200);
-      const body = res.json();
-      expect(body.legalName).toBe("TUTTO - KLIMA SRL");
-      expect(body.legalEntityActivity).toBe("43.22.07");
-      expect(body.registrationDate).toBe("2012-07-09");
-      expect(body.legalIdentifier).toEqual({
-        notation: SAMPLE_VAT,
-        schemeName: "Partita Iva",
-        schemeURI: "http://memberstate.ms/VAT",
-      });
-    });
+beforeEach(() => {
+  // Only override Date so getRotatedSeed is deterministic; faking
+  // setTimeout/setInterval would hang fastify's internal scheduling.
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(PERIOD_MS * 0 + 1_000);
+});
 
-    it("returns 404 for an unknown company", async () => {
-      const token = await signToken();
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${UNKNOWN_VAT}/information`,
-      });
-      expect(res.statusCode).toBe(404);
-      expect(res.json().title).toBe("legal_entity_not_found");
-    });
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-    it("returns 400 for a malformed VAT", async () => {
-      const token = await signToken();
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${INVALID_VAT}/information`,
-      });
-      expect(res.statusCode).toBe(400);
+describe("GET /legal-entities/:uidCompany/information", () => {
+  it("returns 200 with the legal entity for a known company", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/information`,
     });
-
-    it("returns 401 for a token issued for a different mock e-service", async () => {
-      const token = await signToken({
-        eserviceId: OTHER_MOCK_ESERVICE_ID,
-        eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
-      });
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/information`,
-      });
-      expect(res.statusCode).toBe(401);
-    });
-
-    it("returns 401 when the Authorization header is missing", async () => {
-      const res = await getCtx().app.inject({
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/information`,
-      });
-      expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.legalName).toBe("TUTTO - KLIMA SRL");
+    expect(body.legalEntityActivity).toBe("43.22.07");
+    expect(body.registrationDate).toBe("2012-07-09");
+    expect(body.legalIdentifier).toEqual({
+      notation: SAMPLE_VAT,
+      schemeName: "Partita Iva",
+      schemeURI: "http://memberstate.ms/VAT",
     });
   });
 
-  describe("GET /legal-entities/:uidCompany/evidences", () => {
-    it("returns 200 with the evidences for a known company", async () => {
-      const token = await signToken();
+  it("returns 404 for an unknown company", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${UNKNOWN_VAT}/information`,
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.json().title).toBe("legal_entity_not_found");
+  });
+
+  it("returns 400 for a malformed VAT", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${INVALID_VAT}/information`,
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it("returns 401 for a token issued for a different mock e-service", async () => {
+    const token = await signToken({
+      eserviceId: OTHER_MOCK_ESERVICE_ID,
+      eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
+    });
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/information`,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the Authorization header is missing", async () => {
+    const res = await getCtx().app.inject({
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/information`,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+});
+
+describe("GET /legal-entities/:uidCompany/evidences", () => {
+  it("returns 200 with the evidences for a known company", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/evidences`,
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body)).toBe(true);
+    expect(body).toHaveLength(1);
+    const [evidence] = body;
+    expect(evidence.isAbout.legalName).toBe("TUTTO - KLIMA SRL");
+    expect(evidence.isConformantTo).toEqual({
+      evidenceTypeClassification: "codeETC_001",
+      identifier: "complianceLegalObligations",
+    });
+    expect(evidence.validityPeriod.starttime).toBe("2020-01-01");
+    expect(evidence.validityPeriod.endtime).toBe("2030-12-31");
+  });
+
+  it("filters by evidenceType", async () => {
+    const token = await signToken();
+    const matching = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/evidences?evidenceType=codeETC_001`,
+    });
+    expect(matching.statusCode).toBe(200);
+    expect(matching.json()).toHaveLength(1);
+
+    const nonMatching = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/evidences?evidenceType=codeETC_002`,
+    });
+    expect(nonMatching.statusCode).toBe(200);
+    expect(nonMatching.json()).toHaveLength(0);
+  });
+
+  it("returns 404 for an unknown company", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${UNKNOWN_VAT}/evidences`,
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.json().title).toBe("legal_entity_not_found");
+  });
+
+  it("returns 401 for a token issued for a different mock e-service", async () => {
+    const token = await signToken({
+      eserviceId: OTHER_MOCK_ESERVICE_ID,
+      eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
+    });
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/evidences`,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("returns 401 when the Authorization header is missing", async () => {
+    const res = await getCtx().app.inject({
+      method: "GET",
+      url: `/legal-entities/${SAMPLE_VAT}/evidences`,
+    });
+    expect(res.statusCode).toBe(401);
+  });
+});
+
+describe("GET /legal-entities/pseudonymization", () => {
+  it("returns 200 with the seed for the current period", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: "/legal-entities/pseudonymization",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.cryptoHashFunction).toBe("sha256");
+    expect(typeof body.seed).toBe("string");
+    expect(body.seed).toHaveLength(16);
+  });
+
+  it("yields distinct seeds across periods", async () => {
+    const token = await signToken();
+    const seeds: string[] = [];
+    for (const p of [0, 1, 2]) {
+      vi.setSystemTime(PERIOD_MS * p + 1_000);
       const res = await getCtx().app.inject({
         headers: { authorization: `Bearer ${token}` },
         method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences`,
+        url: "/legal-entities/pseudonymization",
       });
-      expect(res.statusCode).toBe(200);
-      const body = res.json();
-      expect(Array.isArray(body)).toBe(true);
-      expect(body).toHaveLength(1);
-      const [evidence] = body;
-      expect(evidence.isAbout.legalName).toBe("TUTTO - KLIMA SRL");
-      expect(evidence.isConformantTo).toEqual({
-        evidenceTypeClassification: "codeETC_001",
-        identifier: "complianceLegalObligations",
-      });
-      expect(evidence.validityPeriod.starttime).toBe("2020-01-01");
-      expect(evidence.validityPeriod.endtime).toBe("2030-12-31");
-    });
+      seeds.push(res.json().seed);
+    }
+    expect(new Set(seeds).size).toBe(3);
+  });
 
-    it("filters by evidenceType", async () => {
-      const token = await signToken();
-      const matching = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences?evidenceType=codeETC_001`,
-      });
-      expect(matching.statusCode).toBe(200);
-      expect(matching.json()).toHaveLength(1);
-
-      const nonMatching = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences?evidenceType=codeETC_002`,
-      });
-      expect(nonMatching.statusCode).toBe(200);
-      expect(nonMatching.json()).toHaveLength(0);
+  it("returns 401 for a token issued for a different mock e-service", async () => {
+    const token = await signToken({
+      eserviceId: OTHER_MOCK_ESERVICE_ID,
+      eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
     });
-
-    it("returns 404 for an unknown company", async () => {
-      const token = await signToken();
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${UNKNOWN_VAT}/evidences`,
-      });
-      expect(res.statusCode).toBe(404);
-      expect(res.json().title).toBe("legal_entity_not_found");
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: "/legal-entities/pseudonymization",
     });
+    expect(res.statusCode).toBe(401);
+  });
 
-    it("returns 401 for a token issued for a different mock e-service", async () => {
-      const token = await signToken({
-        eserviceId: OTHER_MOCK_ESERVICE_ID,
-        eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
-      });
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences`,
-      });
-      expect(res.statusCode).toBe(401);
+  it("returns 401 when the Authorization header is missing", async () => {
+    const res = await getCtx().app.inject({
+      method: "GET",
+      url: "/legal-entities/pseudonymization",
     });
-
-    it("returns 401 when the Authorization header is missing", async () => {
-      const res = await getCtx().app.inject({
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences`,
-      });
-      expect(res.statusCode).toBe(401);
-    });
+    expect(res.statusCode).toBe(401);
   });
 });

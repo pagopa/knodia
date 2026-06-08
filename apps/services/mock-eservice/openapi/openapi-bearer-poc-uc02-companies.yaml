@@ -80,6 +80,22 @@ components:
       enum:
         - http://memberstate.ms/PIdentifier
         - http://memberstate.ms/VAT
+    Pseudonymization:
+      description: Pseudonymization parameters used by the Producer to publish Signal
+        Hub signals for the residence addresses managed by this e-service
+      type: object
+      properties:
+        cryptoHashFunction:
+          type: string
+          enum:
+            - sha256
+        seed:
+          type: string
+          minLength: 1
+      required:
+        - cryptoHashFunction
+        - seed
+      additionalProperties: false
     CompanyUid:
       description: "Legal-entity identifier in the path: 11-digit Italian VAT number
         (Partita IVA)."
@@ -276,6 +292,31 @@ paths:
             application/problem+json:
               schema:
                 description: No legal entity found for the uid_company
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /legal-entities/pseudonymization:
+    get:
+      operationId: getCompaniesPseudonymization
+      summary: Get evidence pseudonymization
+      tags:
+        - legalEntity
+      description: Returns the pseudonymization parameters used by the Producer to
+        publish Signal Hub signals for the evidences managed by this e-service.
+      responses:
+        "200":
+          description: Pseudonymization parameters for this e-service
+          content:
+            application/json:
+              schema:
+                description: Pseudonymization parameters for this e-service
+                allOf:
+                  - $ref: "#/components/schemas/Pseudonymization"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
