@@ -48,7 +48,7 @@ Description: the Construction Companies Registry of the Orion domain receives a 
 Steps:
 
 1. **[narration]** A construction company (`companyLynx`) submits a registration request to the registry.
-2. **[script]** Run `retrieve-company-data --consumer-keychain-id <id> --purpose-id <id> --company-id <vat>` — the registry retrieves the company's information and evidence from Lynx.
+2. **[script]** Run `retrieve-company-data --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry retrieves the company's information and evidence from Lynx.
 3. **[narration]** The registry confirms the registration to the company; on failure it returns a nullification.
 
 ## Phase 4
@@ -60,7 +60,7 @@ Description: the Construction Companies Registry of the Orion domain monitors th
 Steps:
 
 1. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-key`. Note its id.
-2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --company-id <vat>` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
+2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
 3. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-key`. Note its id.
-4. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id <vat>` — the registry reads the new signal and re-retrieves the company's evidence from Lynx.
+4. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx.
 5. **[narration]** The registry updates the company's registration in Orion accordingly.
