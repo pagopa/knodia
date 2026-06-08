@@ -19,8 +19,8 @@ import {
 const CLIENT_ASSERTION_TYPE =
   "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
 
-// Signal object_id pseudonymization, matching the mock e-service emitter:
-// sha256(identifier + seed). Here the identifier is the uid_company.
+// Must match the mock e-service's object_id scheme so producer and consumer
+// derive the same id for a company's evidence.
 export function objectIdForCompany(companyId: string, seed: string): string {
   return createHash("sha256").update(companyId + seed).digest("hex");
 }
