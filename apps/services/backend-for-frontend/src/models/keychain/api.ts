@@ -93,7 +93,7 @@ export type API_ProducerKeychainMemberPathParams = z.infer<
 
 export const API_ProducerKeychainKeyPathParams = z
   .strictObject({
-    keyId: z.string(),
+    keyId: API_KeyId,
   })
   .extend(API_ProducerKeychainIdPathParam.shape);
 

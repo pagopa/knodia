@@ -5714,7 +5714,7 @@ paths:
       description: Download a Producer Keychain Key
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true
@@ -5774,7 +5774,7 @@ paths:
       description: Remove a key from a Producer Keychain
       parameters:
         - schema:
-            type: string
+            $ref: "#/components/schemas/KeyId"
           in: path
           name: keyId
           required: true

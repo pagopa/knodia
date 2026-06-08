@@ -3460,7 +3460,7 @@ export type UploadProducerKeychainKeyResponse = UploadProducerKeychainKeyRespons
 export type RemoveProducerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         producerKeychainId: string;
     };
     query?: never;
@@ -3500,7 +3500,7 @@ export type RemoveProducerKeychainKeyResponse = RemoveProducerKeychainKeyRespons
 export type DownloadProducerKeychainKeyData = {
     body?: never;
     path: {
-        keyId: string;
+        keyId: KeyId;
         producerKeychainId: string;
     };
     query?: never;
