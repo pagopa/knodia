@@ -97,10 +97,14 @@ export type AgreementSeed = {
 };
 
 /**
- * Unique identifier of the created Agreement resource along with the E-service Producer ID
+ * Unique identifier of the created Agreement resource along with the E-service Producer ID and owning Knode
  */
 export type CreatedAgreementResource = {
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     producerId: OrganizationId;
 };
 
@@ -163,15 +167,6 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-/**
- * Organization with only id, knodeId, and name
- */
-export type CompactOrganization = {
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
-
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     knodeId: KnodeId;
@@ -193,6 +188,10 @@ export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersionRequiredAttributes: Array<Array<Attribute>>;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
@@ -232,7 +231,6 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -259,6 +257,10 @@ export type EserviceDetails = {
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersion: EserviceVersionDetails;
     mode: EserviceMode;
     name: LocalizedName;
@@ -280,9 +282,16 @@ export type Eservice = {
     };
     categories: Array<EserviceCategory>;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: {
+        id: string;
+        name: string;
+    };
     updatedAt: string;
     version: EserviceVersion;
 };
@@ -295,6 +304,10 @@ export type Eservices = {
 export type Organization = {
     attributes: Array<Attribute>;
     id: string;
+    /**
+     * Knode ID of the Knode this Organization belongs to
+     */
+    knodeId: KnodeId;
     name: string;
 };
 

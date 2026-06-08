@@ -19,7 +19,7 @@ import {
   API_KnodeApiKeychainIdPathParam,
   API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
+import { API_CompactProducer } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeName,
   API_PurposeState,
@@ -202,8 +202,11 @@ export const API_ConsumerKeychainPurpose = z
   .strictObject({
     eservice: API_CompactEservice,
     id: API_PurposeId,
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     name: API_LocalizedPurposeName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     state: API_PurposeState,
   })
   .meta({ id: "ConsumerKeychainPurpose" });

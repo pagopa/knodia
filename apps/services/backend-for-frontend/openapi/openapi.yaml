@@ -243,6 +243,22 @@ components:
         - knodeId
         - name
       additionalProperties: false
+    CompactProducer:
+      description: Producer Organization with only id and name; its owning Knode is
+        exposed via the resource-level knodeId
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - name
+      additionalProperties: false
     Attribute:
       type: object
       properties:
@@ -761,6 +777,10 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -768,12 +788,13 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
       required:
         - categories
         - description
         - hasRequiredAttributes
         - id
+        - knodeId
         - latestVersionState
         - mode
         - name
@@ -801,8 +822,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -810,7 +829,6 @@ components:
       required:
         - email
         - id
-        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -929,6 +947,10 @@ components:
           $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
         isSignalHubEnabled:
           type: boolean
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersionId:
           description: Unique identifier of the latest E-service version
           type: string
@@ -964,6 +986,7 @@ components:
         - identificationRequired
         - interfaceDocument
         - isSignalHubEnabled
+        - knodeId
         - latestVersionId
         - latestVersionUpdatedAt
         - maxDailyCalls
@@ -1028,12 +1051,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         requiredAttributes:
           type: array
           items:
@@ -1049,6 +1076,7 @@ components:
         - consumerKeychains
         - hasRecentlyBeenUpdated
         - id
+        - knodeId
         - mode
         - name
         - producer
@@ -1091,12 +1119,17 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
       required:
         - agreement
         - consumer
         - eservice
+        - knodeId
         - producer
       additionalProperties: false
     AgreementSeed:
@@ -1163,10 +1196,14 @@ components:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestEserviceVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         suspendedByConsumerAt:
           nullable: true
           type: string
@@ -1183,6 +1220,7 @@ components:
         - id
         - state
         - updatedAt
+        - knodeId
         - latestEserviceVersionState
         - producer
         - suspendedByConsumerAt
@@ -1253,8 +1291,12 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         state:
           $ref: "#/components/schemas/AgreementState"
         updatedAt:
@@ -1264,6 +1306,7 @@ components:
       required:
         - eservice
         - id
+        - knodeId
         - producer
         - state
         - updatedAt
@@ -1316,12 +1359,17 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
       required:
         - eservice
         - hasRecentlyBeenUpdated
         - id
+        - knodeId
         - producer
       additionalProperties: false
     PendingConsumerAgreements:
@@ -1726,15 +1774,20 @@ components:
           $ref: "#/components/schemas/CompactEservice"
         id:
           $ref: "#/components/schemas/PurposeId"
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         state:
           $ref: "#/components/schemas/PurposeState"
       required:
         - eservice
         - id
+        - knodeId
         - name
         - producer
         - state
@@ -2073,10 +2126,14 @@ components:
           type: integer
           minimum: 0
           maximum: 9007199254740991
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         state:
           $ref: "#/components/schemas/PurposeState"
         updatedAt:
@@ -2089,6 +2146,7 @@ components:
         - hasRecentlyBeenUpdated
         - id
         - keychains
+        - knodeId
         - name
         - producer
         - state
@@ -2196,6 +2254,10 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         maxDailyCallsPerConsumer:
           format: int32
           type: integer
@@ -2204,7 +2266,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         state:
           $ref: "#/components/schemas/PurposeState"
         suspendedByConsumerAt:
@@ -2228,6 +2290,7 @@ components:
         - description
         - eservice
         - id
+        - knodeId
         - maxDailyCallsPerConsumer
         - name
         - producer

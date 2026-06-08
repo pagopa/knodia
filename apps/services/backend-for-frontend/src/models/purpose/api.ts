@@ -5,7 +5,10 @@ import {
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
+import {
+  API_CompactOrganization,
+  API_CompactProducer,
+} from "@knodia/organization-models/api";
 import {
   API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
@@ -87,8 +90,11 @@ export const API_ConsumerPurpose = z
       description: "Number of Consumer Keychains associated with this purpose",
       format: "int32",
     }),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     name: API_LocalizedPurposeName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     state: API_PurposeState,
     updatedAt: z.iso.datetime(),
   })
@@ -164,9 +170,12 @@ export const API_PurposeDetails = z
       latestVersionState: API_EserviceVersionState,
     }).meta({ id: "PurposeDetailsEservice" }),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     name: API_LocalizedPurposeName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     state: API_PurposeState,
     suspendedByConsumerAt: z.iso.datetime().nullable(),
     suspendedByProducerAt: z.iso.datetime().nullable(),

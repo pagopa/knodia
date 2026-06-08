@@ -21,3 +21,14 @@ export const API_CompactOrganization = z
     description: "Organization with only id, knodeId, and name",
     id: "CompactOrganization",
   });
+
+export const API_CompactProducer = z
+  .strictObject({
+    id: z.uuid(),
+    name: z.string().min(minOrganizationNameLength),
+  })
+  .meta({
+    description:
+      "Producer Organization with only id and name; its owning Knode is exposed via the resource-level knodeId",
+    id: "CompactProducer",
+  });

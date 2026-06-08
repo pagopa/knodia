@@ -118,7 +118,11 @@ export function eserviceServiceBuilder(
               ?.get(unsafeBrandExternalId(r.producerId)),
             `Producer Organization ${r.producerId} owned by Knode ${targetKnodeId} not found for E-service ${r.id}`,
           );
-          return toAPI_CatalogEserviceSearchResult(r, producer.name);
+          return toAPI_CatalogEserviceSearchResult(
+            r,
+            producer.name,
+            targetKnodeId,
+          );
         }),
       };
     },

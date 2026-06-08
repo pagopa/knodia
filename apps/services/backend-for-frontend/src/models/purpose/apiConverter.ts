@@ -31,10 +31,10 @@ export const toAPI_ConsumerPurpose = ({
   hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   keychains: consumerKeychainsCount,
+  knodeId: eserviceDetails.knodeId,
   name: purpose.name,
   producer: {
     id: eserviceDetails.producer.id,
-    knodeId: eserviceDetails.producer.knodeId,
     name: eserviceDetails.producer.name,
   },
   state: purpose.state,
@@ -98,12 +98,12 @@ export const toAPI_ConsumerPurposeDetails = ({
     name: eserviceDetails.name,
   },
   id: purpose.id,
+  knodeId: eserviceDetails.knodeId,
   maxDailyCallsPerConsumer:
     eserviceDetails.latestVersion.maxDailyCallsPerConsumer,
   name: purpose.name,
   producer: {
     id: eserviceDetails.producer.id,
-    knodeId: eserviceDetails.producer.knodeId,
     name: eserviceDetails.producer.name,
   },
   state: purpose.state,
@@ -146,11 +146,11 @@ export const toAPI_PurposeDetails = ({
     name: eservice.name,
   },
   id: purpose.id,
+  knodeId: producer.knodeId,
   maxDailyCallsPerConsumer,
   name: purpose.name,
   producer: {
     id: producer.id,
-    knodeId: producer.knodeId,
     name: producer.name,
   },
   state: purpose.state,

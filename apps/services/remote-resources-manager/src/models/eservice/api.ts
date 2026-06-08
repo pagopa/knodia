@@ -14,7 +14,6 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
 import { z } from "zod";
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
@@ -58,6 +57,9 @@ export const API_CatalogEserviceSearchResult = z
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     latestVersionRequiredAttributes: z.array(z.array(API_Attribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
@@ -125,7 +127,6 @@ const API_EserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeId: API_KnodeId,
     name: z.string(),
     notes: z.string(),
   })
@@ -157,6 +158,9 @@ export const API_EserviceDetails = z
     interfaceDocument: API_EserviceDetailsInterfaceDocument,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     latestVersion: API_EserviceVersionDetails,
     mode: API_EserviceMode,
     name: API_LocalizedName,
@@ -183,9 +187,15 @@ export const API_Eservice = z
     }),
     categories: z.array(API_EserviceCategory),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producer: API_CompactOrganization,
+    producer: z.strictObject({
+      id: z.uuid(),
+      name: z.string(),
+    }),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion,
   })
