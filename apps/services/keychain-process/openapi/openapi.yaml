@@ -423,11 +423,14 @@ components:
           $ref: "#/components/schemas/KeyAlgorithm"
         encodedPem:
           type: string
+        format:
+          type: string
         kid:
           $ref: "#/components/schemas/KeyId"
       required:
         - algorithm
         - encodedPem
+        - format
         - kid
       additionalProperties: false
 paths:

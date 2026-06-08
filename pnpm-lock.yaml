@@ -1011,6 +1011,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       fastify:
         specifier: 'catalog:'
         version: 5.8.5

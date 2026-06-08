@@ -81,7 +81,7 @@ beforeAll(async () => {
         "test-eservice-audience-2",
       ],
       generatedEserviceAccessTokenIssuer: "knodia.org",
-      generatedKnodeApiTokenAudience: "test-knode-api-audience",
+      generatedKnodeApiTokenAudiences: ["test-knode-api-audience"],
       generatedKnodeApiTokenIssuer: "knodia.org",
       host: "test_host",
       isProduction: false,

@@ -132,7 +132,7 @@ export function tokenServiceBuilder({
         );
 
       const token = await tokenGenerator.generateKnodeApiAccessToken({
-        audience: [config.generatedKnodeApiTokenAudience],
+        audience: config.generatedKnodeApiTokenAudiences,
         issuer: config.generatedKnodeApiTokenIssuer,
         keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
         kid: config.knodeApiTokenJwtKid,

@@ -27,7 +27,7 @@ const requestedKey = existingKeys[0]!;
 const VALID_KEY_ID = requestedKey.kid;
 const NON_EXISTENT_KEY_ID = "non-existent-key-id";
 
-const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 const getProducerKey = (
   keyId: string,

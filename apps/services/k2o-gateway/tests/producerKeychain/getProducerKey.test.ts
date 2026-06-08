@@ -5,6 +5,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getProducerKeyMock = vi.hoisted(() => vi.fn());
 
+vi.mock("@knodia/token-generator/refreshable", () => ({
+  refreshableInternalTokenGenerator: () => ({
+    get: vi.fn().mockResolvedValue({
+      serialized: "mock-internal-token",
+    }),
+  }),
+}));
+
 vi.mock("@knodia/keychain-process-client", async (importOriginal) => {
   const original =
     await importOriginal<typeof import("@knodia/keychain-process-client")>();
@@ -27,6 +35,7 @@ const mockKeychainKey: keychainProcessApi.PublicKey = getMockKeychainKey(0);
 const mockPublicKey: keychainProcessApi.PublicKey = {
   algorithm: mockKeychainKey.algorithm,
   encodedPem: mockKeychainKey.encodedPem,
+  format: mockKeychainKey.format,
   kid: mockKeychainKey.kid,
 };
 const VALID_KEY_ID = mockKeychainKey.kid;

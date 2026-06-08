@@ -194,6 +194,7 @@ export type ProducerKeychainEservices = {
 export type PublicKey = {
     algorithm: KeyAlgorithm;
     encodedPem: string;
+    format: string;
     kid: KeyId;
 };
 

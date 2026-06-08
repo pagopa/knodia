@@ -1,12 +1,11 @@
+import type { CorrelationId } from "@knodia/common-models/ids";
+import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  getKnodiaServiceHeaders,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
@@ -14,14 +13,19 @@ import {
 
 import { API_KeyIdPathParam, API_PublicKey } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface ProducerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const producerKeychainRouter: FastifyPluginAsyncZod<
   ProducerKeychainRouterOptions
-> = async (fastify, { keychainProcessClient }) => {
+> = async (fastify, { keychainProcessClient, tokenProvider }) => {
+  const getHeaders = async (correlationId: CorrelationId) =>
+    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
+
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
@@ -34,7 +38,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Public Key with KID ${req.params.keyId}`,
       );
 
-      const headers = getKnodiaServiceHeaders(req, correlationId);
+      const headers = await getHeaders(correlationId);
 
       const { data } = await keychainProcessApi.getProducerKey({
         client: keychainProcessClient,
