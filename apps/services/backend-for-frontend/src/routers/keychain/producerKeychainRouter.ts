@@ -20,7 +20,10 @@ import {
   getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_ProducerKeychainIdPathParam } from "@knodia/keychain-models/api";
+import {
+  API_ProducerKeychainEserviceLinkSeed,
+  API_ProducerKeychainIdPathParam,
+} from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
@@ -52,6 +55,7 @@ import {
   API_KeychainPatch,
   API_Keychains,
   API_KeychainSeed,
+  API_ProducerKeychainEservicePathParams,
   API_ProducerKeychainEservices,
   API_ProducerKeychainKeyPathParams,
   API_ProducerKeychainMemberPathParams,
@@ -169,7 +173,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: ownerId } = getUISessionAuthData(authData);
-      const { limit, offset } = req.query;
+      const { eserviceId, limit, offset } = req.query;
 
       logger.info(
         { ownerId, requestQuery: req.query },
@@ -205,7 +209,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       const { data } = await keychainProcessApi.getProducerKeychains({
         client: keychainProcessClient,
         headers,
-        query: { limit, offset, ownerId },
+        query: { eserviceId, limit, offset, ownerId },
       });
 
       res.send({
@@ -784,5 +788,98 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeychains/:producerKeychainId/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Linking E-service ${req.body.eserviceId} to Producer Keychain with ID ${req.params.producerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.linkEserviceToProducerKeychain({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { producerKeychainId: req.params.producerKeychainId },
+      });
+
+      await pollProducerKeychain(
+        response,
+        headers,
+        req.params.producerKeychainId,
+      );
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ProducerKeychainEserviceLinkSeed,
+      description: "Link an E-service to a Producer Keychain",
+      operationId: "linkEserviceToProducerKeychain",
+      params: API_ProducerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "E-service successfully linked to Producer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain or E-service not found",
+        }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { eserviceId, producerKeychainId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Unlinking E-service ${eserviceId} from Producer Keychain with ID ${producerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response =
+        await keychainProcessApi.unlinkEserviceFromProducerKeychain({
+          client: keychainProcessClient,
+          headers,
+          path: { eserviceId, producerKeychainId },
+        });
+
+      await pollProducerKeychain(response, headers, producerKeychainId);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink an E-service from a Producer Keychain",
+      operationId: "unlinkEserviceFromProducerKeychain",
+      params: API_ProducerKeychainEservicePathParams,
+      response: {
+        204: z.undefined().meta({
+          description: "E-service successfully unlinked from Producer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Producer Keychain or E-service link not found",
+        }),
+      },
+      tags: [apiTags.producerKeychain],
+    },
+    url: "/producerKeychains/:producerKeychainId/eservices/:eserviceId",
   });
 };
