@@ -152,7 +152,7 @@ describe("mock-eservice companies router", () => {
         url: `/legal-entities/${SAMPLE_VAT}/evidences`,
       });
       expect(res.statusCode).toBe(200);
-      expect(res.json()[0].validityPeriod.endtime).toBe("2035-12-31");
+      expect(res.json().at(0)?.validityPeriod.endtime).toBe("2035-12-31");
     });
 
     it("filters by evidenceType", async () => {

@@ -139,8 +139,6 @@ export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;
 
 // --- POC Use Case 02: legal entities and evidences (Cross-Border E-service 04) ---
 
-// `uid_company` identifying a legal entity in the path: an 11-digit Italian VAT
-// number (Partita IVA), e.g. "01229430085". A malformed value yields a 400.
 export const API_CompanyUid = z
   .string()
   .regex(/^[0-9]{11}$/)

@@ -41,8 +41,7 @@ const ROTATING_EVIDENCES = readJson(
   RotatingEvidencesFile,
 );
 
-// Returns undefined when the company is unknown (→ 404). An empty array means
-// the company exists but has no evidence matching the requested type (→ 200 []).
+// undefined = unknown company; empty array = known company, no evidence of that type.
 export function findEvidences(
   uid: API_CompanyUid,
   now: number,
