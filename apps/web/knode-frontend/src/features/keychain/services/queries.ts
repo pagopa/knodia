@@ -24,6 +24,7 @@ import {
   getKnodeApiKeychainMembersQueryKey,
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
+  getProducerKeychainsOptions,
 } from "@knodia/bff-client/tanstack-query";
 
 import { client } from "@/libs/axios";
@@ -41,6 +42,12 @@ export const consumerKeychainsQuery = (offset: number) =>
 
 export const knodeApiKeychainsQuery = (offset: number) =>
   getKnodeApiKeychainsOptions({
+    client,
+    query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
+  });
+
+export const producerKeychainsQuery = (offset: number) =>
+  getProducerKeychainsOptions({
     client,
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
   });

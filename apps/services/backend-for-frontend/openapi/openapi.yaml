@@ -1603,18 +1603,7 @@ components:
         - knodeId
         - purposeId
       additionalProperties: false
-    ConsumerKeychainSeed:
-      type: object
-      properties:
-        description:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
-      required:
-        - name
-      additionalProperties: false
-    KnodeApiKeychainSeed:
+    KeychainSeed:
       type: object
       properties:
         description:
@@ -3461,7 +3450,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       responses:
         "201":
           description: Consumer Keychain created successfully
@@ -4310,7 +4299,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/KnodeApiKeychainSeed"
+              $ref: "#/components/schemas/KeychainSeed"
       responses:
         "201":
           description: Knode API Keychain created successfully
@@ -5058,6 +5047,108 @@ paths:
             application/problem+json:
               schema:
                 description: Knode API Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producerKeychains:
+    post:
+      operationId: createProducerKeychain
+      tags:
+        - producerKeychain
+      description: Create a new Producer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainSeed"
+      responses:
+        "201":
+          description: Producer Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getProducerKeychains
+      tags:
+        - producerKeychain
+      description: Retrieve a paginated list of Producer Keychains owned by the
+        current user organization
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Producer Keychains retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Keychains retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychains"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /operators:
@@ -6935,6 +7026,8 @@ tags:
     name: consumerKeychain
   - description: Knode API Keychains routes
     name: knodeApiKeychain
+  - description: Producer Keychains routes
+    name: producerKeychain
   - description: Purpose routes
     name: purpose
   - description: Operator routes
