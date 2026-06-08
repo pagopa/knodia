@@ -92,7 +92,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
   0
 );
 
-INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_prefill" (
+INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
   id, eservice_id, name, description,
   form_answers_json, form_schema_version,
   metadata_version
@@ -111,7 +111,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_prefill" (
   form_answers_json = EXCLUDED.form_answers_json,
   form_schema_version = EXCLUDED.form_schema_version;
 
-INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_prefill" (
+INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
   id, eservice_id, name, description,
   form_answers_json, form_schema_version,
   metadata_version
