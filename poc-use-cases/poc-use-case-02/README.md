@@ -13,7 +13,7 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run a script
 
 Organization: `businessBookletLynx`
 Knode: `Lynx`
-Description: the Business Booklet of the Lynx domain publishes a cross-border e-service allowing Construction Company Registries of other domains to retrieve information and evidence about construction companies registered in Lynx.
+Description: the Business Booklet of Lynx publishes a cross-border e-service that lets other domains' Construction Company Registries retrieve information and evidence on companies registered in Lynx.
 
 Steps:
 
@@ -26,7 +26,7 @@ Steps:
 
 Organization: `constructionCompaniesRegistryOrion`
 Knode: `Orion`
-Description: the Construction Companies Registry of the Orion domain wants to implement the retrieval of information and evidence about construction companies registered in Lynx as part of its registration process, by consuming the cross-border e-service published by the Business Booklet of Lynx. In order to do so, it must first satisfy the consumption requirements of the e-service (Agreement, Purpose, Keychain, Keychain<>Purpose linking).
+Description: to use the Lynx e-service in its registration process, the Construction Companies Registry of Orion must first satisfy the e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking.
 
 Steps:
 
@@ -43,24 +43,24 @@ Steps:
 
 Organization: `constructionCompaniesRegistryOrion`
 Knode: `Orion`
-Description: the Construction Companies Registry of the Orion domain receives a registration request from a construction company of the Lynx domain, and is able to retrieve the company's information and evidence from Lynx by consuming the cross-border e-service published by the Business Booklet of Lynx, and answer with a registration confirmation.
+Description: on a registration request from a Lynx company, the Construction Companies Registry of Orion retrieves the company's information and evidence from Lynx via the cross-border e-service, then answers the company with the registration outcome.
 
 Steps:
 
 1. **[narration]** A construction company (`companyLynx`) submits a registration request to the registry.
 2. **[script]** Run `retrieve-company-data --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry retrieves the company's information and evidence from Lynx.
-3. **[narration]** The registry confirms the registration to the company; on failure it returns a nullification.
+3. **[narration]** The registry answers the company with the registration outcome: confirmed on success, rejected otherwise.
 
 ## Phase 4
 
 Organization: `constructionCompaniesRegistryOrion`
 Knode: `Orion`
-Description: the Construction Companies Registry of the Orion domain monitors the Lynx Signal-Hub signals related to the cross-border e-service published by the Business Booklet of Lynx. A new signal is related to one of the Lynx companies registered in Orion, the Construction Companies Registry of the Orion domain retrieves the company's updated information and evidence from Lynx by consuming the cross-border e-service published by the Business Booklet of Lynx, and updates the company's registration information in Orion accordingly.
+Description: the Construction Companies Registry of Orion monitors the Lynx Signal Hub for the e-service. When a signal concerns one of its registered Lynx companies, it re-retrieves that company's evidence from Lynx via the e-service and updates the company's registration in Orion accordingly.
 
 Steps:
 
-1. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-key`. Note its id.
+1. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
 2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
-3. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-key`. Note its id.
+3. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
 4. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx.
 5. **[narration]** The registry updates the company's registration in Orion accordingly.
