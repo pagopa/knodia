@@ -1,3 +1,5 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import {
   type EserviceId,
   type ProducerKeychainId,
@@ -35,46 +37,35 @@ export function LinkKeychainAction({
       >
         Link Keychain
       </Button>
-      <LinkKeychainModal
-        eserviceId={eserviceId}
-        isOpen={isOpen}
-        linkedKeychainIds={linkedKeychainIds}
-        onClose={() => setIsOpen(false)}
-      />
+      {isOpen && (
+        <LinkKeychainModal
+          eserviceId={eserviceId}
+          linkedKeychainIds={linkedKeychainIds}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 }
 
-function LinkKeychainModal({
+function LinkKeychainForm({
   eserviceId,
-  isOpen,
+  keychains,
   linkedKeychainIds,
   onClose,
 }: {
   eserviceId: EserviceId;
-  isOpen: boolean;
+  keychains: bffApi.Keychain[];
   linkedKeychainIds: string[];
   onClose: () => void;
 }) {
-  const navigate = useNavigate();
   const { isError, isPending, mutate } = useLinkKeychainToEservice(eserviceId);
-  const { data, isLoading } = useQuery({
-    ...producerKeychainOptionsQuery(),
-    enabled: isOpen,
-  });
+  const [alreadyLinked, setAlreadyLinked] = useState(false);
 
-  const ownedKeychains = data?.results ?? [];
-  const hasNoKeychains = !isLoading && ownedKeychains.length === 0;
-
-  const linkedIds = new Set(linkedKeychainIds);
-  const availableOptions = ownedKeychains
-    .filter((keychain) => !linkedIds.has(keychain.id))
-    .map((keychain) => ({ id: keychain.id, label: keychain.name.en }));
-
-  function handleClose() {
-    form.reset();
-    onClose();
-  }
+  const options = keychains.map((keychain) => ({
+    id: keychain.id,
+    label: keychain.name.en,
+  }));
 
   const form = useForm({
     defaultValues: {
@@ -82,8 +73,12 @@ function LinkKeychainModal({
     },
     onSubmit: ({ value }) => {
       if (!value.producerKeychainId) return;
+      if (linkedKeychainIds.includes(value.producerKeychainId)) {
+        setAlreadyLinked(true);
+        return;
+      }
       mutate(unsafeBrandId<ProducerKeychainId>(value.producerKeychainId), {
-        onSuccess: handleClose,
+        onSuccess: onClose,
       });
     },
     validationLogic: revalidateLogic(),
@@ -97,47 +92,16 @@ function LinkKeychainModal({
     },
   });
 
-  if (hasNoKeychains) {
-    return (
-      <Modal
-        actionLabel="Go to Keychains page"
-        cancelLabel="Cancel"
-        description="Keys in linked Keychains can be used to sign responses from the E-Service."
-        isOpen={isOpen}
-        onConfirm={() =>
-          void navigate({
-            search: { offset: 0, type: "production" },
-            to: "/keychains",
-          })
-        }
-        onOpenChange={(open) => {
-          if (!open) handleClose();
-        }}
-        title="Link Keychain"
-      >
-        <Banner
-          icon={<InfoIcon />}
-          kind="informative"
-          size="md"
-          title="You don't have any Production Keychain yet"
-        >
-          Create a Production Keychain on the Keychains page to link it to
-          E-Services.
-        </Banner>
-      </Modal>
-    );
-  }
-
   return (
     <Modal
       actionLabel="Link"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
       description="Keys in linked Keychains can be used to sign responses from the E-Service."
-      isOpen={isOpen}
+      isOpen
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
-        if (!open) handleClose();
+        if (!open) onClose();
       }}
       showErrorBanner={isError}
       title="Link Keychain"
@@ -160,11 +124,14 @@ function LinkKeychainModal({
               label="Production Keychains"
               name={field.name}
               onBlur={field.handleBlur}
-              onChange={(key) => field.handleChange((key as string) ?? null)}
+              onChange={(key) => {
+                setAlreadyLinked(false);
+                field.handleChange((key as string) ?? null);
+              }}
               placeholder="Select an option..."
               value={field.state.value}
             >
-              {availableOptions.map((option) => (
+              {options.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
@@ -173,6 +140,67 @@ function LinkKeychainModal({
           )}
         </form.Field>
       </form>
+      {alreadyLinked && (
+        <Banner kind="error">
+          This Keychain is already linked to this E-service.
+        </Banner>
+      )}
     </Modal>
+  );
+}
+
+function LinkKeychainModal({
+  eserviceId,
+  linkedKeychainIds,
+  onClose,
+}: {
+  eserviceId: EserviceId;
+  linkedKeychainIds: string[];
+  onClose: () => void;
+}) {
+  const navigate = useNavigate();
+  const { data, isLoading } = useQuery(producerKeychainOptionsQuery());
+
+  const ownedKeychains = data?.results ?? [];
+  const hasNoKeychains = !isLoading && ownedKeychains.length === 0;
+
+  if (hasNoKeychains) {
+    return (
+      <Modal
+        actionLabel="Go to Keychains page"
+        cancelLabel="Cancel"
+        description="Keys in linked Keychains can be used to sign responses from the E-Service."
+        isOpen
+        onConfirm={() =>
+          void navigate({
+            search: { offset: 0, type: "production" },
+            to: "/keychains",
+          })
+        }
+        onOpenChange={(open) => {
+          if (!open) onClose();
+        }}
+        title="Link Keychain"
+      >
+        <Banner
+          icon={<InfoIcon />}
+          kind="informative"
+          size="md"
+          title="You don't have any Production Keychain yet"
+        >
+          Create a Production Keychain on the Keychains page to link it to
+          E-Services.
+        </Banner>
+      </Modal>
+    );
+  }
+
+  return (
+    <LinkKeychainForm
+      eserviceId={eserviceId}
+      keychains={ownedKeychains}
+      linkedKeychainIds={linkedKeychainIds}
+      onClose={onClose}
+    />
   );
 }
