@@ -1,0 +1,23 @@
+meta {
+  name: Get Producer Keychain Eservices
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/eservices?offset=0&limit=5
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+params:query {
+  offset: 0
+  limit: 5
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
