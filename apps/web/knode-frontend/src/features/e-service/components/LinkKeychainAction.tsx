@@ -65,14 +65,16 @@ function LinkKeychainModal({
 
   const ownedKeychains = data?.results ?? [];
   const hasNoKeychains = !isLoading && ownedKeychains.length === 0;
+  const [alreadyLinked, setAlreadyLinked] = useState(false);
 
-  const linkedIds = new Set(linkedKeychainIds);
-  const availableOptions = ownedKeychains
-    .filter((keychain) => !linkedIds.has(keychain.id))
-    .map((keychain) => ({ id: keychain.id, label: keychain.name.en }));
+  const options = ownedKeychains.map((keychain) => ({
+    id: keychain.id,
+    label: keychain.name.en,
+  }));
 
   function handleClose() {
     form.reset();
+    setAlreadyLinked(false);
     onClose();
   }
 
@@ -82,6 +84,10 @@ function LinkKeychainModal({
     },
     onSubmit: ({ value }) => {
       if (!value.producerKeychainId) return;
+      if (linkedKeychainIds.includes(value.producerKeychainId)) {
+        setAlreadyLinked(true);
+        return;
+      }
       mutate(unsafeBrandId<ProducerKeychainId>(value.producerKeychainId), {
         onSuccess: handleClose,
       });
@@ -160,11 +166,14 @@ function LinkKeychainModal({
               label="Production Keychains"
               name={field.name}
               onBlur={field.handleBlur}
-              onChange={(key) => field.handleChange((key as string) ?? null)}
+              onChange={(key) => {
+                setAlreadyLinked(false);
+                field.handleChange((key as string) ?? null);
+              }}
               placeholder="Select an option..."
               value={field.state.value}
             >
-              {availableOptions.map((option) => (
+              {options.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
@@ -173,6 +182,11 @@ function LinkKeychainModal({
           )}
         </form.Field>
       </form>
+      {alreadyLinked && (
+        <Banner kind="error">
+          This Keychain is already linked to this E-service.
+        </Banner>
+      )}
     </Modal>
   );
 }
