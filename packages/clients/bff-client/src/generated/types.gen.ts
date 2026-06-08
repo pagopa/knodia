@@ -873,6 +873,20 @@ export type CreatedKeyResource = {
     kid: KeyId;
 };
 
+export type ProducerKeychainEservice = {
+    categories: Array<EserviceCategory>;
+    id: string;
+    linkedAt: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    state: EserviceVersionState;
+};
+
+export type ProducerKeychainEservices = {
+    pagination: Pagination;
+    results: Array<ProducerKeychainEservice>;
+};
+
 /**
  * Organization details for the current session, including attributes
  */
@@ -3522,6 +3536,54 @@ export type DownloadProducerKeychainKeyResponses = {
 };
 
 export type DownloadProducerKeychainKeyResponse = DownloadProducerKeychainKeyResponses[keyof DownloadProducerKeychainKeyResponses];
+
+export type GetProducerKeychainEservicesData = {
+    body?: never;
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/eservices';
+};
+
+export type GetProducerKeychainEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainEservicesError = GetProducerKeychainEservicesErrors[keyof GetProducerKeychainEservicesErrors];
+
+export type GetProducerKeychainEservicesResponses = {
+    /**
+     * E-services linked to the Producer Keychain retrieved successfully
+     */
+    200: ProducerKeychainEservices;
+};
+
+export type GetProducerKeychainEservicesResponse = GetProducerKeychainEservicesResponses[keyof GetProducerKeychainEservicesResponses];
 
 export type GetOperatorsData = {
     body?: never;
