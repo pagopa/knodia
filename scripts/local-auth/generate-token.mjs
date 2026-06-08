@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
@@ -40,11 +41,23 @@ import { TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
 
-const type = process.argv[2] ?? "ui-session";
-const targetEnv = process.argv[3] ?? "local";
+const { values: args } = parseArgs({
+  options: {
+    type: { type: "string", default: "ui-session" },
+    env: { type: "string", default: "local" },
+    // Optional: mint a ui-session for a specific org (e.g. a POC org seeded in scripts/seed/sql).
+    org: { type: "string" },
+  },
+});
+
+const type = args.type;
+const targetEnv = args.env;
+const orgId = args.org ?? ORG_ID;
 
 if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
-  console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}] [${TARGET_ENVIRONMENTS.join("|")}]`);
+  console.error(
+    `Usage: node generate-token.mjs [--type ${TOKEN_TYPES.join("|")}] [--env ${TARGET_ENVIRONMENTS.join("|")}] [--org <organizationId>]`,
+  );
   process.exit(1);
 }
 
@@ -59,12 +72,12 @@ function getAudience(targetEnv, type) {
     : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
 }
 
-function getClaims(targetEnv, type) {
+function getClaims(targetEnv, type, orgId) {
   const aud = getAudience(targetEnv, type);
 
   switch (type) {
     case "ui-session":
-      return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "Mario Rossi", type, aud };
+      return { sub: USER_ID, organizationId: orgId, roles: ROLES, username: "Mario Rossi", type, aud };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
     case "external-ui-session":
@@ -101,7 +114,7 @@ function getClaims(targetEnv, type) {
           id: KNODE_API_KEYCHAIN_ID,
           knode_id: KNODE_API_KEYCHAIN_KNODE_ID,
         },
-        organization: { id: ORG_ID, knode_id: KNODE_API_ORG_KNODE_ID },
+        organization: { id: orgId, knode_id: KNODE_API_ORG_KNODE_ID },
       };
     case "ui-signup-session":
       return {
@@ -142,7 +155,7 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
   return KeyMetadata.KeyId;
 }
 
-const claims = getClaims(targetEnv, type);
+const claims = getClaims(targetEnv, type, orgId);
 
 const kmsClient = new KMSClient(targetEnv === "local"
   ? { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
