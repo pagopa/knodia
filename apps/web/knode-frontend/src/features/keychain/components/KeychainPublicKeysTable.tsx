@@ -27,14 +27,14 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
-import type { KeychainWithKeyMemberOps } from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import { useRemoveKeychainKey } from "../hooks/useKeychainMutations";
 
 interface KeychainPublicKeysTableProps {
   canDownloadKey: boolean;
   isLoading: boolean;
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   keys: bffApi.KeychainKey[];
 }
 
@@ -126,7 +126,7 @@ function DownloadPublicKeyAction({
   keyId,
 }: {
   canDownloadKey: boolean;
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   keyId: string;
 }) {
   async function handleDownloadPublicKey() {
@@ -147,6 +147,15 @@ function DownloadPublicKeyAction({
             path: {
               keyId,
               knodeApiKeychainId: keychainId,
+            },
+          }),
+        )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.downloadProducerKeychainKey({
+            client,
+            path: {
+              keyId,
+              producerKeychainId: keychainId,
             },
           }),
         )
@@ -201,7 +210,7 @@ function RemoveFromKeychainAction({
   keychain,
   keyId,
 }: {
-  keychain: KeychainWithKeyMemberOps;
+  keychain: SupportedKeychain;
   keyId: string;
 }) {
   const { isError, isPending, mutate } = useRemoveKeychainKey(keychain);

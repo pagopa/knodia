@@ -2,6 +2,7 @@ import type { bffApi } from "@knodia/bff-client";
 import type {
   ConsumerKeychainId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
 } from "@knodia/common-models/ids";
 
 import {
@@ -17,7 +18,7 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
-import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -36,10 +37,7 @@ import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurpos
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 
-import type {
-  KeychainWithKeyMemberOps,
-  SupportedKeychain,
-} from "../models/commons";
+import type { SupportedKeychain } from "../models/commons";
 
 import {
   consumerKeychainKeysQuery,
@@ -47,6 +45,8 @@ import {
   consumerKeychainPurposesQuery,
   knodeApiKeychainKeysQuery,
   knodeApiKeychainMembersQuery,
+  producerKeychainKeysQuery,
+  producerKeychainMembersQuery,
 } from "../services/queries";
 
 type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
@@ -57,7 +57,12 @@ type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
   onTabChange: (tab: TTab) => void;
 };
 
-type KeychainWithKeyMemberOpsTabProps = KeychainWithKeyMemberOps & {
+type MembersTabProps = SupportedKeychain & {
+  offset: number;
+  onOffsetChange: (offset: number) => void;
+};
+
+type PublicKeysTabProps = SupportedKeychain & {
   offset: number;
   onOffsetChange: (offset: number) => void;
 };
@@ -130,13 +135,7 @@ export function KeychainDetailPage<TTab extends string>(
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
-            {match(props)
-              .with({ type: "production" }, () => (
-                <ProducerPublicKeysPlaceholder />
-              ))
-              .otherwise((p) => (
-                <PublicKeysTab {...p} />
-              ))}
+            <PublicKeysTab {...props} />
           </TabPanel>
           {match(props)
             .with({ type: "consumption" }, ({ keychainId }) => (
@@ -156,13 +155,7 @@ export function KeychainDetailPage<TTab extends string>(
             ))
             .exhaustive()}
           <TabPanel id="members" key="members">
-            {match(props)
-              .with({ type: "production" }, () => (
-                <ProducerMembersPlaceholder />
-              ))
-              .otherwise((p) => (
-                <MembersTab {...p} />
-              ))}
+            <MembersTab {...props} />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -203,7 +196,7 @@ function ConsumerPurposesTab({
   );
 }
 
-function MembersTab(props: KeychainWithKeyMemberOpsTabProps) {
+function MembersTab(props: MembersTabProps) {
   const { offset, onOffsetChange } = props;
 
   const consumerQuery = useQuery({
@@ -222,9 +215,18 @@ function MembersTab(props: KeychainWithKeyMemberOpsTabProps) {
     enabled: props.type === "api",
   });
 
+  const producerQuery = useQuery({
+    ...producerKeychainMembersQuery(
+      props.keychainId as ProducerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "production",
+  });
+
   const { data, isLoading } = match(props.type)
     .with("consumption", () => consumerQuery)
     .with("api", () => apiQuery)
+    .with("production", () => producerQuery)
     .exhaustive();
 
   return (
@@ -271,34 +273,7 @@ function ProducerEservicesTab() {
   );
 }
 
-// TODO(KN-673): replace with the real Members tab once Producer Keychain
-// member endpoints land.
-function ProducerMembersPlaceholder() {
-  return (
-    <Section
-      description="Only the Keychain members can upload public keys."
-      title="Members"
-    >
-      <Banner icon={<SelectionPlusIcon />} kind="neutral">
-        There are no members in this Keychain. Add the first one.
-      </Banner>
-    </Section>
-  );
-}
-
-// TODO(KN-673): replace with the real Public Keys tab once Producer Keychain
-// key endpoints land.
-function ProducerPublicKeysPlaceholder() {
-  return (
-    <Section title="Public Keys">
-      <Banner icon={<SelectionPlusIcon />} kind="neutral">
-        You don&apos;t have a public key yet. Upload your first one.
-      </Banner>
-    </Section>
-  );
-}
-
-function PublicKeysTab(props: KeychainWithKeyMemberOpsTabProps) {
+function PublicKeysTab(props: PublicKeysTabProps) {
   const { offset, onOffsetChange } = props;
   const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
 
@@ -318,9 +293,18 @@ function PublicKeysTab(props: KeychainWithKeyMemberOpsTabProps) {
     enabled: props.type === "api",
   });
 
+  const producerQuery = useQuery({
+    ...producerKeychainKeysQuery(
+      props.keychainId as ProducerKeychainId,
+      offset,
+    ),
+    enabled: props.type === "production",
+  });
+
   const { data, isLoading } = match(props.type)
     .with("consumption", () => consumerQuery)
     .with("api", () => apiQuery)
+    .with("production", () => producerQuery)
     .exhaustive();
 
   const hasReachedMaxKeys = data
@@ -328,6 +312,9 @@ function PublicKeysTab(props: KeychainWithKeyMemberOpsTabProps) {
     : false;
 
   const isKeychainMember = useIsCurrentUserKeychainMember(props);
+  // TODO(KN-458): currently the download-key authorization is only enforced
+  // in the frontend (admin OR member). Once the backend policy for non-member
+  // technical operators is finalized, mirror the same rule in keychain-process.
   const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (

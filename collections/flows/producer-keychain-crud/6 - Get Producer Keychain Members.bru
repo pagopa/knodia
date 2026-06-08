@@ -1,0 +1,30 @@
+meta {
+  name: 6 - Get Producer Keychain Members
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/members?offset=0&limit=50
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.pagination.total: eq 1
+  res.body.results[0].id: eq {{memberUserId}}
+}
