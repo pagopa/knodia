@@ -169,6 +169,7 @@ export function buildAppFromConfig(
       pollingService,
     });
     protectedApp.register(producerKeychainRouter, {
+      eserviceProcessClient: clients.eserviceProcessClient,
       keychainProcessClient: clients.keychainProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
       pollingService,
