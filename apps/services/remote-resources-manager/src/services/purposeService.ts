@@ -91,9 +91,6 @@ export function purposeServiceBuilder(
         eserviceId,
         name,
       };
-      // RRM exposes ProvideData/ReceiveData (CamelCase, from eservice-models),
-      // while the k2k-gateway API uses PROVIDE_DATA/RECEIVE_DATA (uppercase
-      // snake-case, its own public convention). Translate on the way down.
       const body = match(reqBody)
         .with({ eserviceMode: "ProvideData" }, (b) => ({
           ...baseBody,
