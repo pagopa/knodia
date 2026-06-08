@@ -222,3 +222,14 @@ const updated = pattern.test(existing)
 
 writeFileSync(envPath, updated);
 console.log(`Bruno env written to ${envPath}`);
+
+// When minting a ui-session for a specific org, print how to log into the local
+// dev UI as that org (the app reads the session token from localStorage on load).
+if (type === "ui-session" && args.org !== undefined) {
+  console.log(`\nLog in to the dev UI as org ${args.org}:`);
+  console.log(`  1. Open the frontend login page (local: http://localhost:5001/ui/ for Orion, http://localhost:5002/ui/ for Lynx)`);
+  console.log(`  2. Open the browser devtools console`);
+  console.log(`  3. Paste and run:`);
+  console.log(`     localStorage.setItem("knodia_auth_token", "${token}")`);
+  console.log(`  4. Refresh the page`);
+}
