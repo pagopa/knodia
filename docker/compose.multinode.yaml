@@ -467,6 +467,35 @@ services:
       minio:
         condition: service_healthy
 
+  k2o-gateway-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-k2o-gateway-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/k2o-gateway/Dockerfile
+    ports:
+      - 3901:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
+      READMODEL_DB_USER: local_orion_k2o_gateway_user
+      READMODEL_DB_PASSWORD: local_orion_k2o_gateway_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
+    depends_on:
+      keychain-process-orion:
+        condition: service_started
+
   agreement-process-orion:
     security_opt:
       - no-new-privileges:true
@@ -1175,6 +1204,35 @@ services:
         condition: service_started
       minio:
         condition: service_healthy
+
+  k2o-gateway-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-k2o-gateway-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/k2o-gateway/Dockerfile
+    ports:
+      - 3901:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
+      READMODEL_DB_USER: local_lynx_k2o_gateway_user
+      READMODEL_DB_PASSWORD: local_lynx_k2o_gateway_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
+    depends_on:
+      keychain-process-lynx:
+        condition: service_started
 
   agreement-process-lynx:
     security_opt:

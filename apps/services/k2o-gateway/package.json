@@ -1,0 +1,38 @@
+{
+  "name": "@knodia/k2o-gateway",
+  "type": "module",
+  "scripts": {
+    "start": "dotenvx run -- node --watch ./src/index.ts",
+    "typecheck:watch": "tsc --watch --pretty",
+    "dev": "concurrently -n tsc,run -c auto -k 'pnpm run typecheck:watch' 'pnpm run start'",
+    "typecheck": "tsc",
+    "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/spectral-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@stoplight/spectral-cli": "catalog:",
+    "@types/node": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@fastify/request-context": "catalog:",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-keychain": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/keychain-process-client": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
+    "pino-pretty": "catalog:",
+    "zod": "catalog:"
+  }
+}
