@@ -36,31 +36,6 @@ describe("Organization Aggregators", () => {
     } satisfies WithMetadata<Organization>);
   });
 
-  it("should preserve a set externalRequestId through the round-trip", () => {
-    const organization: Organization = {
-      ...getMockOrganization(),
-      externalRequestId: "11111111-1111-4111-8111-111111111111",
-    };
-    const metadataVersion = 1;
-
-    const { attributesSQL, organizationSQL } = splitOrganizationIntoObjectsSQL(
-      organization,
-      metadataVersion,
-    );
-
-    const aggregatedOrganization = aggregateOrganization(
-      attributesSQL.map((attribute) => ({
-        attribute,
-        organization: organizationSQL,
-      })),
-    );
-
-    expect(aggregatedOrganization).toEqual({
-      data: toExpectOrganization(organization),
-      metadata: { version: metadataVersion },
-    } satisfies WithMetadata<Organization>);
-  });
-
   it("should convert Organizations SQL objects into Organizations business objects", () => {
     const organization1 = getMockOrganization(0);
     const organization2 = getMockOrganization(1);

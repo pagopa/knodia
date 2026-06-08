@@ -8,7 +8,6 @@ message OrganizationV1 {
   repeated OrganizationAttributeV1 attributes = 3;
   int64 createdAt = 4;
   int64 updatedAt = 5;
-  string externalRequestId = 6;
 }
 
 message OrganizationAttributeV1 {

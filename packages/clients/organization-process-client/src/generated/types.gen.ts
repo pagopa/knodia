@@ -74,9 +74,9 @@ export type Operators = Array<Operator>;
 export type OrganizationSeed = {
     attributes: Array<Attribute>;
     /**
-     * Idempotency key. A repeated request with the same key returns the already-created Organization instead of a duplicate. Deduplication relies on the eventually-consistent readmodel, so a redelivery racing ahead of projection may still create a second Organization.
+     * Deterministic Organization id supplied by the caller (e.g. signup provisioning). When set it becomes the Organization id, making creation idempotent so a repeated request returns the existing Organization, and since the id is the event-store stream id a second creation on that stream is rejected. When omitted, a fresh id is generated.
      */
-    externalRequestId?: string;
+    externalOrganizationId?: string;
     name: string;
 };
 

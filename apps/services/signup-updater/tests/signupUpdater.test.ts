@@ -28,7 +28,7 @@ vi.mock("@knodia/organization-process-client", async (importOriginal) => {
 import type { SignupUpdaterDeps } from "../src/utils/utils.ts";
 
 import { handleSignupMessage } from "../src/services/consumerService.ts";
-import { organizationExternalRequestId } from "../src/utils/organizationExternalRequestId.ts";
+import { externalOrganizationId } from "../src/utils/externalOrganizationId.ts";
 
 const cognitoCreateUserMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
@@ -109,7 +109,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     const orionCall = createOrganizationMock.mock.calls.at(0)?.at(0);
     expect(orionCall?.body).toEqual({
       attributes: [{ code: "testing_organization", scheme: "knodia" }],
-      externalRequestId: organizationExternalRequestId(
+      externalOrganizationId: externalOrganizationId(
         user.signupUserId,
         "Orion",
       ),

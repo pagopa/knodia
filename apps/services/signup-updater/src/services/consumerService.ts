@@ -18,8 +18,8 @@ import { match } from "ts-pattern";
 
 import type { SignupUpdaterDeps } from "../utils/utils.ts";
 
+import { externalOrganizationId } from "../utils/externalOrganizationId.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
-import { organizationExternalRequestId } from "../utils/organizationExternalRequestId.ts";
 
 const TESTING_ORGANIZATION_ATTRIBUTE = {
   code: "testing_organization",
@@ -61,12 +61,12 @@ async function createTestingOrganization(
   orgClient: OrganizationProcessClient,
   headers: ReturnType<typeof getKnodiaServiceHeaders>,
   name: string,
-  externalRequestId: string,
+  organizationId: OrganizationId,
 ): Promise<OrganizationId> {
   const { data } = await organizationProcessApi.createOrganization({
     body: {
       attributes: [TESTING_ORGANIZATION_ATTRIBUTE],
-      externalRequestId,
+      externalOrganizationId: organizationId,
       name,
     },
     client: orgClient,
@@ -98,7 +98,7 @@ async function provisionKnode(
     orgClient,
     headers,
     entities.organizationName,
-    organizationExternalRequestId(user.signupUserId, knodeId),
+    externalOrganizationId(user.signupUserId, knodeId),
   );
 
   await cognitoClient.createOrganizationUser({

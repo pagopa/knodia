@@ -119,24 +119,23 @@ describe("POST /organizations (createOrganization)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should be idempotent on externalRequestId: returns the existing organization and emits no new event", async () => {
-    const externalRequestId = "11111111-1111-4111-8111-111111111111";
+  it("is idempotent on externalOrganizationId: returns the existing organization and emits no new event", async () => {
+    const externalOrganizationId = generateId<OrganizationId>();
     const existing: Organization = {
       ...getMockOrganization(0),
-      externalRequestId,
-      id: generateId<OrganizationId>(),
+      id: externalOrganizationId,
       name: "First Organization",
     };
     await organizationWriterService.upsertOrganization(existing, 0);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/organizations")
-      .body({ ...body, externalRequestId, name: "A Second Name" });
+      .body({ ...body, externalOrganizationId, name: "A Second Name" });
     expect(response.statusCode).toBe(201);
 
     const responseBody = response.json<API_Organization>();
-    // The repeated request returns the organization created by the first one
-    // (its id and name, not this request's name) without creating a new event.
+    // The deterministic id already exists, so the request returns the existing
+    // organization (its id and name, not this request's) and emits no new event.
     expect(responseBody.id).toBe(existing.id);
     expect(responseBody.name).toBe("First Organization");
     await expect(getAllOrganizationEvents()).resolves.toHaveLength(0);

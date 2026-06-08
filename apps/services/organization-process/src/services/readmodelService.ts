@@ -24,11 +24,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     organizationReadmodelServiceBuilder(readmodelDb);
 
   return {
-    async getOrganizationByExternalRequestId(externalRequestId: string) {
-      return await organizationReadmodelService.getOrganizationByExternalRequestId(
-        externalRequestId,
-      );
-    },
     async getOrganizationById(organizationId: OrganizationId) {
       return await organizationReadmodelService.getOrganizationById(
         organizationId,

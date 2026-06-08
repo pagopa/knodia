@@ -6,7 +6,6 @@ import {
   text,
   timestamp,
   unique,
-  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -22,7 +21,6 @@ export const readmodelOrganization = organizationSchema.table(
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
-    externalRequestId: uuid("external_request_id"),
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: text().notNull(),
@@ -35,9 +33,6 @@ export const readmodelOrganization = organizationSchema.table(
     unique("organization_id_metadata_v_unique").on(
       table.metadataVersion,
       table.id,
-    ),
-    uniqueIndex("organization_external_request_id_unique").on(
-      table.externalRequestId,
     ),
   ],
 );

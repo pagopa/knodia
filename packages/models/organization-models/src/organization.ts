@@ -5,7 +5,6 @@ import z from "zod";
 export const Organization = z.strictObject({
   attributes: z.array(AttributeId),
   createdAt: z.coerce.date(),
-  externalRequestId: z.uuid().optional(),
   id: OrganizationId,
   name: z.string(),
   updatedAt: z.coerce.date(),

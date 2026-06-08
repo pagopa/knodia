@@ -164,10 +164,7 @@ export function getMockKnodeApiKeychain(seed = 0): KnodeApiKeychain {
 }
 
 export function getMockOrganization(seed = 0): Organization {
-  return {
-    ...zocker(Organization).setSeed(seed).generate(),
-    externalRequestId: undefined,
-  };
+  return zocker(Organization).setSeed(seed).generate();
 }
 
 export function getMockPurposeFormOption(seed = 0): PurposeFormOption {
