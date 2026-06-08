@@ -1,6 +1,8 @@
+import { sql } from "drizzle-orm";
 import {
   bigint,
   bigserial,
+  check,
   pgSchema,
   text,
   timestamp,
@@ -21,8 +23,8 @@ export const signalHubSignal = signalHubSchema.table(
       .notNull(),
     eserviceId: uuid("eservice_id").notNull(),
     id: bigserial({ mode: "number" }).primaryKey().notNull(),
-    objectId: text("object_id").notNull(),
-    objectType: text("object_type").notNull(),
+    objectId: text("object_id"),
+    objectType: text("object_type"),
     signalId: bigint("signal_id", { mode: "number" }).notNull(),
     signalType: text("signal_type").notNull(),
   },
@@ -30,6 +32,10 @@ export const signalHubSignal = signalHubSchema.table(
     unique("signal_eservice_id_signal_id_key").on(
       table.eserviceId,
       table.signalId,
+    ),
+    check(
+      "signal_object_columns_match_signal_type",
+      sql`(${table.signalType} = 'SeedUpdate' AND ${table.objectId} IS NULL AND ${table.objectType} IS NULL) OR (${table.signalType} <> 'SeedUpdate' AND ${table.objectId} IS NOT NULL AND ${table.objectType} IS NOT NULL)`,
     ),
   ],
 );

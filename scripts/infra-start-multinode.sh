@@ -49,6 +49,9 @@ if [ "$failed" -ne 0 ]; then
   exit 1
 fi
 
+# Generate local dev tokens (ui-session + internal) for Bruno collections
+pnpm generate-all-tokens > /dev/null
+
 echo ""
 echo "==========================================="
 echo "  Knodia Multinode Infrastructure Ready"
