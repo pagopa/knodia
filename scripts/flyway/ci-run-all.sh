@@ -12,6 +12,7 @@ declare -A DB_MAP=(
   [read-model]=readmodel
   [remote-resource]=remote_resource
   [signal-hub]=signal_hub
+  [signup]=signup
 )
 
 run_flyway() {

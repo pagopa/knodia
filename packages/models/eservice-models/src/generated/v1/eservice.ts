@@ -9,6 +9,38 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "eservice.v1";
 
+/** TODO find a way to share this with purpose-models and make proto gen work */
+export const PurposeFormSchemaVersionV1 = { V1_0: 0, UNRECOGNIZED: -1 } as const;
+
+export type PurposeFormSchemaVersionV1 = typeof PurposeFormSchemaVersionV1[keyof typeof PurposeFormSchemaVersionV1];
+
+export namespace PurposeFormSchemaVersionV1 {
+  export type V1_0 = typeof PurposeFormSchemaVersionV1.V1_0;
+  export type UNRECOGNIZED = typeof PurposeFormSchemaVersionV1.UNRECOGNIZED;
+}
+
+export function purposeFormSchemaVersionV1FromJSON(object: any): PurposeFormSchemaVersionV1 {
+  switch (object) {
+    case 0:
+    case "V1_0":
+      return PurposeFormSchemaVersionV1.V1_0;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PurposeFormSchemaVersionV1.UNRECOGNIZED;
+  }
+}
+
+export function purposeFormSchemaVersionV1ToJSON(object: PurposeFormSchemaVersionV1): string {
+  switch (object) {
+    case PurposeFormSchemaVersionV1.V1_0:
+      return "V1_0";
+    case PurposeFormSchemaVersionV1.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export const EserviceModeV1 = { PROVIDE_DATA: 0, RECEIVE_DATA: 1, UNRECOGNIZED: -1 } as const;
 
 export type EserviceModeV1 = typeof EserviceModeV1[keyof typeof EserviceModeV1];
@@ -139,6 +171,19 @@ export interface EserviceV1 {
   createdAt: number;
   updatedAt: number;
   template?: EserviceTemplateV1 | undefined;
+  receiveDataConfig?: ReceiveDataConfigV1 | undefined;
+}
+
+export interface ReceiveDataConfigV1 {
+  purposeFormOptions: PurposeFormOptionV1[];
+}
+
+export interface PurposeFormOptionV1 {
+  id: string;
+  name: LocalizedTextV1 | undefined;
+  description: LocalizedTextV1 | undefined;
+  formAnswersJson: string;
+  formSchemaVersion: PurposeFormSchemaVersionV1;
 }
 
 export interface EserviceCategoryV1 {
@@ -206,6 +251,7 @@ function createBaseEserviceV1(): EserviceV1 {
     createdAt: 0,
     updatedAt: 0,
     template: undefined,
+    receiveDataConfig: undefined,
   };
 }
 
@@ -246,6 +292,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     }
     if (message.template !== undefined) {
       EserviceTemplateV1.encode(message.template, writer.uint32(98).fork()).join();
+    }
+    if (message.receiveDataConfig !== undefined) {
+      ReceiveDataConfigV1.encode(message.receiveDataConfig, writer.uint32(106).fork()).join();
     }
     return writer;
   },
@@ -353,6 +402,14 @@ export const EserviceV1: MessageFns<EserviceV1> = {
           message.template = EserviceTemplateV1.decode(reader, reader.uint32());
           continue;
         }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.receiveDataConfig = ReceiveDataConfigV1.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -382,6 +439,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
       template: isSet(object.template) ? EserviceTemplateV1.fromJSON(object.template) : undefined,
+      receiveDataConfig: isSet(object.receiveDataConfig)
+        ? ReceiveDataConfigV1.fromJSON(object.receiveDataConfig)
+        : undefined,
     };
   },
 
@@ -423,6 +483,9 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     if (message.template !== undefined) {
       obj.template = EserviceTemplateV1.toJSON(message.template);
     }
+    if (message.receiveDataConfig !== undefined) {
+      obj.receiveDataConfig = ReceiveDataConfigV1.toJSON(message.receiveDataConfig);
+    }
     return obj;
   },
 
@@ -449,6 +512,201 @@ export const EserviceV1: MessageFns<EserviceV1> = {
     message.template = (object.template !== undefined && object.template !== null)
       ? EserviceTemplateV1.fromPartial(object.template)
       : undefined;
+    message.receiveDataConfig = (object.receiveDataConfig !== undefined && object.receiveDataConfig !== null)
+      ? ReceiveDataConfigV1.fromPartial(object.receiveDataConfig)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseReceiveDataConfigV1(): ReceiveDataConfigV1 {
+  return { purposeFormOptions: [] };
+}
+
+export const ReceiveDataConfigV1: MessageFns<ReceiveDataConfigV1> = {
+  encode(message: ReceiveDataConfigV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.purposeFormOptions) {
+      PurposeFormOptionV1.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ReceiveDataConfigV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseReceiveDataConfigV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.purposeFormOptions.push(PurposeFormOptionV1.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ReceiveDataConfigV1 {
+    return {
+      purposeFormOptions: globalThis.Array.isArray(object?.purposeFormOptions)
+        ? object.purposeFormOptions.map((e: any) => PurposeFormOptionV1.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ReceiveDataConfigV1): unknown {
+    const obj: any = {};
+    if (message.purposeFormOptions?.length) {
+      obj.purposeFormOptions = message.purposeFormOptions.map((e) => PurposeFormOptionV1.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ReceiveDataConfigV1>, I>>(base?: I): ReceiveDataConfigV1 {
+    return ReceiveDataConfigV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ReceiveDataConfigV1>, I>>(object: I): ReceiveDataConfigV1 {
+    const message = createBaseReceiveDataConfigV1();
+    message.purposeFormOptions = object.purposeFormOptions?.map((e) => PurposeFormOptionV1.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBasePurposeFormOptionV1(): PurposeFormOptionV1 {
+  return { id: "", name: undefined, description: undefined, formAnswersJson: "", formSchemaVersion: 0 };
+}
+
+export const PurposeFormOptionV1: MessageFns<PurposeFormOptionV1> = {
+  encode(message: PurposeFormOptionV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== undefined) {
+      LocalizedTextV1.encode(message.name, writer.uint32(18).fork()).join();
+    }
+    if (message.description !== undefined) {
+      LocalizedTextV1.encode(message.description, writer.uint32(26).fork()).join();
+    }
+    if (message.formAnswersJson !== "") {
+      writer.uint32(34).string(message.formAnswersJson);
+    }
+    if (message.formSchemaVersion !== 0) {
+      writer.uint32(40).int32(message.formSchemaVersion);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PurposeFormOptionV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePurposeFormOptionV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = LocalizedTextV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = LocalizedTextV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.formAnswersJson = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.formSchemaVersion = reader.int32() as any;
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PurposeFormOptionV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? LocalizedTextV1.fromJSON(object.name) : undefined,
+      description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
+      formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
+      formSchemaVersion: isSet(object.formSchemaVersion)
+        ? purposeFormSchemaVersionV1FromJSON(object.formSchemaVersion)
+        : 0,
+    };
+  },
+
+  toJSON(message: PurposeFormOptionV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== undefined) {
+      obj.name = LocalizedTextV1.toJSON(message.name);
+    }
+    if (message.description !== undefined) {
+      obj.description = LocalizedTextV1.toJSON(message.description);
+    }
+    if (message.formAnswersJson !== "") {
+      obj.formAnswersJson = message.formAnswersJson;
+    }
+    if (message.formSchemaVersion !== 0) {
+      obj.formSchemaVersion = purposeFormSchemaVersionV1ToJSON(message.formSchemaVersion);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PurposeFormOptionV1>, I>>(base?: I): PurposeFormOptionV1 {
+    return PurposeFormOptionV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PurposeFormOptionV1>, I>>(object: I): PurposeFormOptionV1 {
+    const message = createBasePurposeFormOptionV1();
+    message.id = object.id ?? "";
+    message.name = (object.name !== undefined && object.name !== null)
+      ? LocalizedTextV1.fromPartial(object.name)
+      : undefined;
+    message.description = (object.description !== undefined && object.description !== null)
+      ? LocalizedTextV1.fromPartial(object.description)
+      : undefined;
+    message.formAnswersJson = object.formAnswersJson ?? "";
+    message.formSchemaVersion = object.formSchemaVersion ?? 0;
     return message;
   },
 };

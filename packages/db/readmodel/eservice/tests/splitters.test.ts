@@ -1,9 +1,13 @@
-import { getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockEservice,
+  getMockPurposeFormOption,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
+  EservicePurposeFormOptionSQL,
   EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
@@ -106,5 +110,47 @@ describe("E-service Splitters", () => {
     expect(eserviceVersionRequiredAttributesSQL).toEqual(
       expect.arrayContaining(expectedRequireAttributesSQL),
     );
+  });
+
+  it("should split a ReceiveData E-service with purposeFormOptions into SQL rows", () => {
+    const metadataVersion = 1;
+    const purposeFormOptions = [
+      getMockPurposeFormOption(0),
+      getMockPurposeFormOption(1),
+    ];
+    const eservice = getMockEservice({ purposeFormOptions });
+
+    const { eservicePurposeFormOptionSQL } = splitEserviceIntoObjectsSQL(
+      eservice,
+      metadataVersion,
+    );
+
+    const expectedPurposeFormOptionsSQL: EservicePurposeFormOptionSQL[] =
+      purposeFormOptions.map((purposeFormOption) => ({
+        description: purposeFormOption.description,
+        eserviceId: eservice.id,
+        formAnswersJson: purposeFormOption.formAnswersJson,
+        formSchemaVersion: purposeFormOption.formSchemaVersion,
+        id: purposeFormOption.id,
+        metadataVersion,
+        name: purposeFormOption.name,
+      }));
+
+    expect(eservicePurposeFormOptionSQL).toEqual(
+      expect.arrayContaining(expectedPurposeFormOptionsSQL),
+    );
+    expect(eservicePurposeFormOptionSQL).toHaveLength(2);
+  });
+
+  it("should produce an empty purposeFormOptions array for an E-service without receiveDataConfig", () => {
+    const metadataVersion = 1;
+    const eservice = getMockEservice();
+
+    const { eservicePurposeFormOptionSQL } = splitEserviceIntoObjectsSQL(
+      eservice,
+      metadataVersion,
+    );
+
+    expect(eservicePurposeFormOptionSQL).toEqual([]);
   });
 });
