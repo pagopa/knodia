@@ -33,6 +33,7 @@ services:
       - ../migration/read-model:/flyway/databases/readmodel:ro
       - ../migration/remote-resource:/flyway/databases/remote_resource:ro
       - ../migration/signal-hub:/flyway/databases/signal_hub:ro
+      - ../migration/signup:/flyway/databases/signup:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root

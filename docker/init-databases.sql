@@ -2,3 +2,4 @@ SELECT 'CREATE DATABASE event_store' WHERE NOT EXISTS (SELECT 1 FROM pg_database
 SELECT 'CREATE DATABASE readmodel' WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'readmodel')\gexec
 SELECT 'CREATE DATABASE remote_resource' WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'remote_resource')\gexec
 SELECT 'CREATE DATABASE signal_hub' WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'signal_hub')\gexec
+SELECT 'CREATE DATABASE signup' WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'signup')\gexec
