@@ -132,7 +132,7 @@ export const API_Pseudonymization = z
   })
   .meta({
     description:
-      "Pseudonymization parameters used by the Producer to publish Signal Hub signals for the residence addresses managed by this e-service",
+      "Pseudonymization parameters used by the Producer to publish Signal Hub signals for the resources managed by this e-service",
     id: "Pseudonymization",
   });
 export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;

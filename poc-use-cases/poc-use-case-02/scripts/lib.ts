@@ -1,8 +1,8 @@
 // Shared helpers for the POC UC02 Signal Hub demo scripts (Phase 4).
 //
-// All keychains in the demo (consumer keychain, producer/consumer Knode API
-// keychains) hold the same public key minted by generate-key, so every
-// assertion is signed with the single private key at CONSUMER_PRIVATE_KEY_PATH.
+// Two keypairs are used: the consumer e-service keychain key signs access-token
+// assertions, and the Knode API keychain key signs knode-api-token assertions
+// (see paths.ts for why they must differ).
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
