@@ -42,7 +42,7 @@ export const getPurposes = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Create Purpose
  *
- * Create a new Purpose for an E-service on behalf of a Consumer. The request body is a discriminated union on `eserviceMode`: `ProvideData` carries inline form answers, `ReceiveData` references a pre-filled `PurposeFormOption` published by the Producer.
+ * Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
  */
 export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
     responseType: 'json',

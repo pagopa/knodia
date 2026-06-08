@@ -82,17 +82,21 @@ type CallerIdentity =
       actor: typeof PurposeActor.enum.Producer;
       ctx: AuthorizedContext<UISessionAuthData>;
     };
+interface CreatePurposeForProvideDataInput extends CreatePurposeInputBase {
+  eserviceMode: typeof EserviceMode.enum.ProvideData;
+  formAnswersJson: PurposeFormAnswers;
+  formSchemaVersion: PurposeFormSchemaVersion;
+  template?: ExternalResource<PurposeTemplateId>;
+}
+
+interface CreatePurposeForReceiveDataInput extends CreatePurposeInputBase {
+  eserviceMode: typeof EserviceMode.enum.ReceiveData;
+  purposeFormOptionId: PurposeFormOptionId;
+}
+
 type CreatePurposeInput =
-  | (CreatePurposeInputBase & {
-      eserviceMode: typeof EserviceMode.enum.ProvideData;
-      formAnswersJson: PurposeFormAnswers;
-      formSchemaVersion: PurposeFormSchemaVersion;
-      template?: ExternalResource<PurposeTemplateId>;
-    })
-  | (CreatePurposeInputBase & {
-      eserviceMode: typeof EserviceMode.enum.ReceiveData;
-      purposeFormOptionId: PurposeFormOptionId;
-    });
+  | CreatePurposeForProvideDataInput
+  | CreatePurposeForReceiveDataInput;
 
 interface CreatePurposeInputBase {
   consumer: ExternalResource<OrganizationId>;
@@ -180,10 +184,10 @@ export function purposeServiceBuilder(
 
       // Form answers come from the request body in ProvideData mode and from
       // the Producer-published PurposeFormOption in ReceiveData mode. The
-      // schema validation runs after the snapshot is resolved: in ReceiveData
-      // mode it acts as a safety net against malformed prefills that may
-      // slip past Producer-side validation (cfr. PR #507 review).
-      const snapshot = match(seed)
+      // schema validation runs after the formData is resolved: in ReceiveData
+      // mode it acts as a safety net against malformed form options that may
+      // slip past Producer-side validation.
+      const formData = match(seed)
         .with({ eserviceMode: "ProvideData" }, (s) => ({
           formAnswersJson: s.formAnswersJson,
           formSchemaVersion: s.formSchemaVersion,
@@ -191,23 +195,23 @@ export function purposeServiceBuilder(
         }))
         .with({ eserviceMode: "ReceiveData" }, (s) => {
           assertReceiveDataConfigIsDefined(eservice);
-          const prefill = eservice.receiveDataConfig.purposeFormOptions.find(
+          const option = eservice.receiveDataConfig.purposeFormOptions.find(
             (p) => p.id === s.purposeFormOptionId,
           );
-          if (prefill === undefined) {
+          if (option === undefined) {
             throw purposeFormOptionNotFound(eservice.id, s.purposeFormOptionId);
           }
           return {
-            formAnswersJson: prefill.formAnswersJson,
-            formSchemaVersion: prefill.formSchemaVersion,
+            formAnswersJson: option.formAnswersJson,
+            formSchemaVersion: option.formSchemaVersion,
             template: undefined,
           };
         })
         .exhaustive();
 
       assertFormAnswersAreValid(
-        snapshot.formAnswersJson,
-        snapshot.formSchemaVersion,
+        formData.formAnswersJson,
+        formData.formSchemaVersion,
       );
 
       const now = new Date();
@@ -217,15 +221,15 @@ export function purposeServiceBuilder(
         dailyCalls: seed.dailyCalls,
         description: seed.description,
         eserviceId: seed.eserviceId,
-        formAnswersJson: snapshot.formAnswersJson,
-        formSchemaVersion: snapshot.formSchemaVersion,
+        formAnswersJson: formData.formAnswersJson,
+        formSchemaVersion: formData.formSchemaVersion,
         id: purposeId,
         name: seed.name,
         state: PurposeState.enum.Active,
         suspendedByConsumerAt: null,
         suspendedByProducerAt: null,
         // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
-        template: snapshot.template,
+        template: formData.template,
         updatedAt: now,
       };
 
