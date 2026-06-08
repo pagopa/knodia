@@ -13,11 +13,11 @@ import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
-import type { SupportedKeychain } from "../models/commons";
+import type { KeychainWithKeyMemberOps } from "../models/commons";
 
 import { useAddKeychainMember } from "../hooks/useKeychainMutations";
 
-type AddKeychainMemberActionProps = SupportedKeychain;
+type AddKeychainMemberActionProps = KeychainWithKeyMemberOps;
 
 export function AddKeychainMemberAction(
   keychain: AddKeychainMemberActionProps,
@@ -52,7 +52,7 @@ function AddKeychainMemberModal({
   onClose,
 }: {
   isOpen: boolean;
-  keychain: SupportedKeychain;
+  keychain: KeychainWithKeyMemberOps;
   onClose: () => void;
 }) {
   const { isError, isPending, mutate } = useAddKeychainMember(keychain);

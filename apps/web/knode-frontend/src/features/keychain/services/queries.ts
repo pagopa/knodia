@@ -1,6 +1,7 @@
 import type {
   ConsumerKeychainId,
   KnodeApiKeychainId,
+  ProducerKeychainId,
   UserId,
 } from "@knodia/common-models/ids";
 
@@ -24,7 +25,9 @@ import {
   getKnodeApiKeychainMembersQueryKey,
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
+  getProducerKeychainDetailsOptions,
   getProducerKeychainsOptions,
+  getProducerKeychainsQueryKey,
 } from "@knodia/bff-client/tanstack-query";
 
 import { client } from "@/libs/axios";
@@ -66,6 +69,14 @@ export const knodeApiKeychainDetailsQuery = (
   getKnodeApiKeychainDetailsOptions({
     client,
     path: { knodeApiKeychainId },
+  });
+
+export const producerKeychainDetailsQuery = (
+  producerKeychainId: ProducerKeychainId,
+) =>
+  getProducerKeychainDetailsOptions({
+    client,
+    path: { producerKeychainId },
   });
 
 export const consumerKeychainKeysQuery = (
@@ -145,6 +156,13 @@ export const consumerKeychainsQueryKey = () =>
 
 export const knodeApiKeychainsQueryKey = () =>
   getKnodeApiKeychainsQueryKey({
+    client,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
+  });
+
+export const producerKeychainsQueryKey = () =>
+  getProducerKeychainsQueryKey({
     client,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     query: undefined!,

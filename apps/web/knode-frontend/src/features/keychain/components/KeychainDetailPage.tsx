@@ -5,6 +5,7 @@ import type {
 } from "@knodia/common-models/ids";
 
 import {
+  Banner,
   Breadcrumb,
   Breadcrumbs,
   Button,
@@ -16,7 +17,9 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
+import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { match } from "ts-pattern";
 
@@ -33,7 +36,10 @@ import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurpos
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 
-import type { SupportedKeychain } from "../models/commons";
+import type {
+  KeychainWithKeyMemberOps,
+  SupportedKeychain,
+} from "../models/commons";
 
 import {
   consumerKeychainKeysQuery,
@@ -51,7 +57,7 @@ type KeychainDetailPageProps<TTab extends string> = SupportedKeychain & {
   onTabChange: (tab: TTab) => void;
 };
 
-type KeychainTabProps = SupportedKeychain & {
+type KeychainWithKeyMemberOpsTabProps = KeychainWithKeyMemberOps & {
   offset: number;
   onOffsetChange: (offset: number) => void;
 };
@@ -60,10 +66,12 @@ export function KeychainDetailPage<TTab extends string>(
   props: KeychainDetailPageProps<TTab>,
 ) {
   const { activeTab, keychain, offset, onOffsetChange, onTabChange } = props;
+  const canManageKeychain = useHasRole("administrative");
 
   const chipLabel = match(props.type)
     .with("consumption", () => "Consumption")
     .with("api", () => "Knode API")
+    .with("production", () => "Production")
     .exhaustive();
 
   return (
@@ -79,10 +87,12 @@ export function KeychainDetailPage<TTab extends string>(
 
       <PageHeader
         actions={
-          <>
-            <KeychainDeleteAction {...props} />
-            <KeychainEditAction {...props} />
-          </>
+          canManageKeychain && (
+            <>
+              <KeychainDeleteAction {...props} />
+              <KeychainEditAction {...props} />
+            </>
+          )
         }
         copyableId={keychain.id}
         description={keychain.description?.en}
@@ -108,6 +118,11 @@ export function KeychainDetailPage<TTab extends string>(
               </Tab>
             ))
             .with("api", () => null)
+            .with("production", () => (
+              <Tab id="e-services" key="e-services">
+                E-Services
+              </Tab>
+            ))
             .exhaustive()}
           <Tab id="members" key="members">
             Members
@@ -115,7 +130,13 @@ export function KeychainDetailPage<TTab extends string>(
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
-            <PublicKeysTab {...props} />
+            {match(props)
+              .with({ type: "production" }, () => (
+                <ProducerPublicKeysPlaceholder />
+              ))
+              .otherwise((p) => (
+                <PublicKeysTab {...p} />
+              ))}
           </TabPanel>
           {match(props)
             .with({ type: "consumption" }, ({ keychainId }) => (
@@ -128,9 +149,20 @@ export function KeychainDetailPage<TTab extends string>(
               </TabPanel>
             ))
             .with({ type: "api" }, () => null)
+            .with({ type: "production" }, () => (
+              <TabPanel id="e-services" key="e-services">
+                <ProducerEservicesTab />
+              </TabPanel>
+            ))
             .exhaustive()}
           <TabPanel id="members" key="members">
-            <MembersTab {...props} />
+            {match(props)
+              .with({ type: "production" }, () => (
+                <ProducerMembersPlaceholder />
+              ))
+              .otherwise((p) => (
+                <MembersTab {...p} />
+              ))}
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -171,7 +203,7 @@ function ConsumerPurposesTab({
   );
 }
 
-function MembersTab(props: KeychainTabProps) {
+function MembersTab(props: KeychainWithKeyMemberOpsTabProps) {
   const { offset, onOffsetChange } = props;
 
   const consumerQuery = useQuery({
@@ -217,7 +249,56 @@ function MembersTab(props: KeychainTabProps) {
   );
 }
 
-function PublicKeysTab(props: KeychainTabProps) {
+function ProducerEservicesTab() {
+  const navigate = useNavigate();
+
+  return (
+    <Section
+      description="You can link an E-Service to the Keychain on the E-Service page."
+      title="E-Services"
+    >
+      <Banner
+        action={{
+          label: "Go to E-Services list",
+          onPress: () => navigate({ to: "/production/e-services" }),
+        }}
+        icon={<SelectionIcon />}
+        kind="neutral"
+      >
+        There are no E-Services linked to this Keychain yet.
+      </Banner>
+    </Section>
+  );
+}
+
+// TODO(KN-673): replace with the real Members tab once Producer Keychain
+// member endpoints land.
+function ProducerMembersPlaceholder() {
+  return (
+    <Section
+      description="Only the Keychain members can upload public keys."
+      title="Members"
+    >
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
+        There are no members in this Keychain. Add the first one.
+      </Banner>
+    </Section>
+  );
+}
+
+// TODO(KN-673): replace with the real Public Keys tab once Producer Keychain
+// key endpoints land.
+function ProducerPublicKeysPlaceholder() {
+  return (
+    <Section title="Public Keys">
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
+        You don&apos;t have a public key yet. Upload your first one.
+      </Banner>
+    </Section>
+  );
+}
+
+function PublicKeysTab(props: KeychainWithKeyMemberOpsTabProps) {
   const { offset, onOffsetChange } = props;
   const [isUploadKeyModalOpen, setIsUploadKeyModalOpen] = useState(false);
 
