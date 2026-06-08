@@ -150,6 +150,15 @@ function DownloadPublicKeyAction({
             },
           }),
         )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.downloadProducerKeychainKey({
+            client,
+            path: {
+              keyId,
+              producerKeychainId: keychainId,
+            },
+          }),
+        )
         .exhaustive();
 
       downloadResponseAsFile(

@@ -10,6 +10,7 @@ import type { SupportedKeychain } from "../models/commons";
 import {
   consumerKeychainsQueryKey,
   knodeApiKeychainsQueryKey,
+  producerKeychainsQueryKey,
 } from "../services/queries";
 
 export function useDeleteKeychain(keychain: SupportedKeychain) {
@@ -31,12 +32,19 @@ export function useDeleteKeychain(keychain: SupportedKeychain) {
             path: { knodeApiKeychainId: keychainId },
           }),
         )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.deleteProducerKeychain({
+            client,
+            path: { producerKeychainId: keychainId },
+          }),
+        )
         .exhaustive(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: match(keychain)
           .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
           .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+          .with({ type: "production" }, () => producerKeychainsQueryKey())
           .exhaustive(),
       });
       navigate({

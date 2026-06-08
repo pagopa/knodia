@@ -10,6 +10,7 @@ import {
   getEserviceTemplatesOptions,
   getProducerEserviceDetailsOptions,
   getProducerEservicesOptions,
+  getProducerKeychainsOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { queryOptions } from "@tanstack/react-query";
 
@@ -89,6 +90,17 @@ export const producerEserviceOptionsQuery = () =>
 // TODO(KN-473): replace hardcoded limit with pagination when the number of keychains linked to an e-service grows
 export const eserviceLinkedConsumerKeychainsQuery = (eserviceId: EserviceId) =>
   getConsumerKeychainsOptions({
+    client,
+    query: {
+      eserviceId,
+      limit: ESERVICE_LINKED_KEYCHAINS_SECTION_LIMIT,
+      offset: 0,
+    },
+  });
+
+// TODO(KN-473): replace hardcoded limit with pagination when the number of keychains linked to an e-service grows
+export const eserviceLinkedProducerKeychainsQuery = (eserviceId: EserviceId) =>
+  getProducerKeychainsOptions({
     client,
     query: {
       eserviceId,

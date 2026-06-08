@@ -136,6 +136,26 @@ describe("GET /signals/:eserviceId (pullSignal)", () => {
     expect(response.json<API_PullResponse>()).toEqual(expectedResponse);
   });
 
+  it("should return a SeedUpdate signal without object fields", async () => {
+    await seedData();
+
+    const seedUpdate: API_Signal = {
+      eserviceId: eservice.id,
+      signalId: 1,
+      signalType: "SEEDUPDATE",
+    };
+    await pushSignal(seedUpdate);
+
+    const response = await pullSignal();
+
+    const expectedResponse: API_PullResponse = {
+      lastSignalId: seedUpdate.signalId,
+      signals: [seedUpdate],
+    };
+    expect(response.statusCode).toBe(200);
+    expect(response.json<API_PullResponse>()).toEqual(expectedResponse);
+  });
+
   it("should return 206 when there are more signals to pull", async () => {
     await seedData();
 
