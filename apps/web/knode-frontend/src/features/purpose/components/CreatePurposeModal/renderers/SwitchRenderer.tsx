@@ -4,6 +4,7 @@ interface Props {
   checkedLabel?: string | undefined;
   description?: string | undefined;
   error?: string | undefined;
+  isReadOnly?: boolean | undefined;
   label?: string | undefined;
   onChange: (value: string) => void;
   value: string;
@@ -13,6 +14,7 @@ export function SwitchRenderer({
   checkedLabel,
   description,
   error,
+  isReadOnly,
   label,
   onChange,
   value,
@@ -35,6 +37,7 @@ export function SwitchRenderer({
       <Checkbox
         className="first:mt-0 mt-3"
         isInvalid={!!error}
+        {...(isReadOnly && { isDisabled: true })}
         isSelected={isChecked}
         onChange={(checked) => onChange(checked ? "true" : "false")}
       >

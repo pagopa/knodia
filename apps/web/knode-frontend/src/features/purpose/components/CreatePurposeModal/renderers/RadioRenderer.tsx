@@ -3,6 +3,7 @@ import { Radio, RadioGroup } from "@knodia/ui-kit/ui";
 interface Props {
   description?: string | undefined;
   error?: string | undefined;
+  isReadOnly?: boolean | undefined;
   label?: string | undefined;
   onChange: (value: string) => void;
   options: { label: string; value: string }[];
@@ -12,6 +13,7 @@ interface Props {
 export function RadioRenderer({
   description,
   error,
+  isReadOnly,
   label,
   onChange,
   options,
@@ -22,6 +24,7 @@ export function RadioRenderer({
       description={description}
       errorMessage={error}
       isInvalid={!!error}
+      {...(isReadOnly && { isDisabled: true })}
       label={label}
       onChange={onChange}
       orientation="vertical"

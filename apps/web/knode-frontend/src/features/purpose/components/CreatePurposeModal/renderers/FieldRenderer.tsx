@@ -26,6 +26,7 @@ interface Props {
   allValues: FormValues;
   control: ControlElement;
   error?: string | undefined;
+  isReadOnly?: boolean | undefined;
   jsonSchema: JsonSchema;
   onChange: (value: string | string[]) => void;
   texts: Record<string, string>;
@@ -36,6 +37,7 @@ export function FieldRenderer({
   allValues,
   control,
   error,
+  isReadOnly,
   jsonSchema,
   onChange,
   texts,
@@ -75,6 +77,7 @@ export function FieldRenderer({
       <RadioRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -85,6 +88,7 @@ export function FieldRenderer({
       <TextRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         maxLength={maxLength}
         onChange={(v) => onChange(v)}
@@ -96,6 +100,7 @@ export function FieldRenderer({
       <CheckboxRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -106,6 +111,7 @@ export function FieldRenderer({
       <SelectRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -117,6 +123,7 @@ export function FieldRenderer({
         checkedLabel={optionLabels["true"]}
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         value={value as string}

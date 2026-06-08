@@ -20,7 +20,7 @@ import { FullPageModal } from "@/layouts/FullPageModal";
 import { client } from "@/libs/axios";
 
 import { DetailsAndLawfulnessStep } from "./steps/DetailsAndLawfulnessStep";
-import { ReadOnlyAnswersStep } from "./steps/ReadOnlyAnswersStep";
+import { ReadOnlyGroupStep } from "./steps/ReadOnlyGroupStep";
 
 interface Props {
   eservice: ConsumptionEserviceDetail;
@@ -84,11 +84,27 @@ export function CreatePurposeReceiveDataModal({
   const steps: StepConfig[] = [
     {
       content: <DetailsAndLawfulnessStep onCancel={handleShowLeaveConfirm} />,
-      label: "Details & Lawfulness",
+      label: "Purpose Details",
     },
     {
-      content: <ReadOnlyAnswersStep />,
-      label: "Risk analysis",
+      content: (
+        <ReadOnlyGroupStep
+          groupIndex={0}
+          isLastStep={false}
+          title="Lawfulness of Processing"
+        />
+      ),
+      label: "Lawfulness of Processing",
+    },
+    {
+      content: (
+        <ReadOnlyGroupStep
+          groupIndex={1}
+          isLastStep={true}
+          title="Risk Analysis"
+        />
+      ),
+      label: "Risk Analysis",
     },
   ];
 
