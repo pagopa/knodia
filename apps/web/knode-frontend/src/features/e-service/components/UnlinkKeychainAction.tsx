@@ -43,20 +43,21 @@ export function UnlinkKeychainAction({
         actionLabel="Unlink anyway"
         cancelLabel="Cancel"
         confirmButtonProps={{ isPending }}
+        description={
+          <>
+            If you unlink it, you must not use its keys to sign responses from
+            this E-Service. Are you sure you want to unlink this Keychain?
+            <br />
+            You will be able to link it again later.
+          </>
+        }
         isOpen={isOpen}
         kind="destructive"
         onConfirm={handleUnlink}
         onOpenChange={setIsOpen}
         showErrorBanner={isError}
         title="Unlink Keychain"
-      >
-        <span className="body-md">
-          If you unlink it, you must not use its keys to sign responses from
-          this E-Service. Are you sure you want to unlink this Keychain?
-          <br />
-          You will be able to link it again later.
-        </span>
-      </Modal>
+      />
     </>
   );
 }
