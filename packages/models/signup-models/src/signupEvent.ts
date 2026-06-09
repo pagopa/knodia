@@ -4,8 +4,13 @@ import { z } from "zod";
 export const SignupEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: z.strictObject({
+      occurredAt: z.iso.datetime(),
       oneIdNonce: z.string(),
       signupUserId: SignupUserId,
+      // Onboarding-only: future action variants (suspension, deletion) carry
+      // occurredAt + oneIdNonce + signupUserId but not the T&C consent fields.
+      termsAcceptanceDigest: z.string().regex(/^[0-9a-f]{64}$/),
+      termsAcceptanceVersion: z.string(),
     }),
     type: z.literal("OnboardingCompletedV1"),
   }),
