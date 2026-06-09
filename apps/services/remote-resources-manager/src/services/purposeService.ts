@@ -21,6 +21,7 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { multiKnodeListingNotSupported } from "../models/errors.ts";
 import { toK2KAPI_KnodeId } from "../models/knode/apiConverter.ts";
 import {
   toAPI_Purpose,
@@ -165,52 +166,39 @@ export function purposeServiceBuilder(
       const { eserviceId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      // TODO: when eserviceId is provided, query only the knode that produces
-      // that e-service instead of iterating over all knodes
+      // Provisional (KN-589/KN-444): cross-knode listings assume a single
+      // remote knode, so offset/limit/total/ordering are the node's own and
+      // therefore correct. Fail fast if the assumption is violated.
       const knodesWithPurposes =
         await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
-
-      let totalCount = 0;
-      let dynamicLimit = limit;
-      let dynamicOffset = offset;
-      let results: API_Purpose[] = [];
-
-      for (const targetKnodeId of knodesWithPurposes) {
-        logger.info(
-          `Getting Purposes from Knode ${targetKnodeId} for consumer ${consumerId}`,
-        );
-
-        const { data } = await k2kGatewayApi.getPurposes({
-          client: getK2K2GatewayApiClient(targetKnodeId),
-          query: {
-            consumerId,
-            eserviceId,
-            limit: dynamicLimit,
-            offset: dynamicOffset,
-            state: state?.map(toK2KAPI_PurposeState),
-          },
-        });
-
-        if (results.length < limit) {
-          results = results.concat(
-            data.results.map((purpose) =>
-              toAPI_Purpose(purpose, targetKnodeId),
-            ),
-          );
-          dynamicLimit = limit - results.length;
-          dynamicOffset = 0;
-        }
-
-        totalCount += data.pagination.total;
+      if (knodesWithPurposes.length > 1) {
+        throw multiKnodeListingNotSupported(knodesWithPurposes);
+      }
+      const [targetKnodeId] = knodesWithPurposes;
+      if (targetKnodeId === undefined) {
+        return { pagination: { limit, offset, total: 0 }, results: [] };
       }
 
-      return {
-        pagination: {
+      logger.info(
+        `Getting Purposes from Knode ${targetKnodeId} for consumer ${consumerId}`,
+      );
+
+      const { data } = await k2kGatewayApi.getPurposes({
+        client: getK2K2GatewayApiClient(targetKnodeId),
+        query: {
+          consumerId,
+          eserviceId,
           limit,
           offset,
-          total: totalCount,
+          state: state?.map(toK2KAPI_PurposeState),
         },
-        results,
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map((purpose) =>
+          toAPI_Purpose(purpose, targetKnodeId),
+        ),
       };
     },
 

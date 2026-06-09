@@ -153,6 +153,49 @@ describe("GET /purposes (getPurposes)", () => {
     );
   });
 
+  it("forwards offset/limit unchanged to the single knode (no per-node reset)", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 5, offset: 5, total: 12 },
+        results: [k2kResult],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ limit: "5", offset: "5" });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ limit: 5, offset: 5 }),
+      }),
+    );
+    expect(response.json().pagination).toEqual({
+      limit: 5,
+      offset: 5,
+      total: 12,
+    });
+  });
+
+  it("returns 501 when the consumer has purposes on more than one knode", async () => {
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+    await remoteResourceDbService.insertPurpose({
+      consumerId: TEST_ORGANIZATION_ID,
+      eserviceId: zocker(API_Purpose).generate().eserviceId,
+      knodeId: otherKnodeId,
+      purposeId: zocker(API_Purpose).generate().id,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(501);
+    expect(getPurposesMock).not.toHaveBeenCalled();
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

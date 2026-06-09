@@ -572,6 +572,10 @@ export type GetEservicesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
@@ -659,6 +663,10 @@ export type GetAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
@@ -1016,6 +1024,10 @@ export type GetPurposesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];

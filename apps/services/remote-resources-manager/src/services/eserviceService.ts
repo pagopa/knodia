@@ -18,7 +18,6 @@ import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
   API_CatalogEserviceSearchResults,
-  API_Eservice,
   API_EserviceDetails,
   API_Eservices,
   API_GetCatalogEserviceSearchParams,
@@ -27,6 +26,7 @@ import type {
 } from "../models/eservice/api.ts";
 
 import { toK2KAPI_AgreementState } from "../models/agreement/apiConverter.ts";
+import { multiKnodeListingNotSupported } from "../models/errors.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
   toAPI_Eservice,
@@ -193,127 +193,117 @@ export function eserviceServiceBuilder(
       const { agreementState, limit, offset } = reqQuery;
       const k2kAgreementStates = agreementState?.map(toK2KAPI_AgreementState);
 
-      let totalCount = 0;
-      let dynamicLimit = limit;
-      let dynamicOffset = offset;
-      let results: API_Eservice[] = [];
+      // Provisional (KN-589/KN-444): cross-knode listings assume a single
+      // remote knode, so offset/limit/total/ordering are the node's own and
+      // therefore correct. Fail fast if the assumption is violated.
       const knodesWithAgreements =
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
         );
-      for (const targetKnodeId of knodesWithAgreements) {
-        logger.info(
-          `Getting E-services from Knode ${targetKnodeId} for Consumer Organization ${authData.organizationId}`,
-        );
-
-        const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
-
-        const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
-          client: k2kGatewayClient,
-          query: {
-            consumerId: authData.organizationId,
-            limit: dynamicLimit,
-            offset: dynamicOffset,
-            state: k2kAgreementStates,
-          },
-        });
-
-        if (results.length < limit) {
-          const [producersMap, eservicesMap, eserviceVersionsMap] =
-            await Promise.all([
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  k2kGatewayApi
-                    .getOrganizations({
-                      client: k2kGatewayClient,
-                      query: {
-                        limit: entityIds.length,
-                        offset: 0,
-                        organizationId: entityIds,
-                      },
-                    })
-                    .then((res) => res.data.results),
-                getEntityId: (agreement) => agreement.producerId,
-                getKnodeId: targetKnodeId,
-                items: consumerAgreements.results,
-              }),
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  k2kGatewayApi
-                    .getEservices({
-                      client: k2kGatewayClient,
-                      query: {
-                        eserviceId: entityIds,
-                        limit: entityIds.length,
-                        offset: 0,
-                      },
-                    })
-                    .then((res) => res.data.results),
-                getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: targetKnodeId,
-                items: consumerAgreements.results,
-              }),
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((eserviceId) =>
-                      k2kGatewayApi.getEserviceLatestVersion({
-                        client: k2kGatewayClient,
-                        path: { eserviceId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
-                getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: targetKnodeId,
-                items: consumerAgreements.results,
-              }),
-            ]);
-
-          results = results.concat(
-            await Promise.all(
-              consumerAgreements.results.map(async (agreement) =>
-                toAPI_Eservice({
-                  agreement,
-                  eservice: assertEntityExists(
-                    eservicesMap
-                      .get(targetKnodeId)
-                      ?.get(unsafeBrandExternalId(agreement.eserviceId)),
-                    `E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
-                  ),
-                  eserviceVersion: assertEntityExists(
-                    eserviceVersionsMap
-                      .get(targetKnodeId)
-                      ?.get(unsafeBrandExternalId(agreement.eserviceVersionId)),
-                    `E-service version for E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
-                  ),
-                  producer: {
-                    ...assertEntityExists(
-                      producersMap
-                        .get(targetKnodeId)
-                        ?.get(unsafeBrandExternalId(agreement.producerId)),
-                      `Producer Organization ${agreement.producerId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
-                    ),
-                    knodeId: targetKnodeId,
-                  },
-                }),
-              ),
-            ),
-          );
-
-          dynamicLimit = limit - results.length;
-          dynamicOffset = 0;
-        }
-
-        totalCount += consumerAgreements.pagination.total;
+      if (knodesWithAgreements.length > 1) {
+        throw multiKnodeListingNotSupported(knodesWithAgreements);
+      }
+      const [targetKnodeId] = knodesWithAgreements;
+      if (targetKnodeId === undefined) {
+        return { pagination: { limit, offset, total: 0 }, results: [] };
       }
 
-      return {
-        pagination: {
+      logger.info(
+        `Getting E-services from Knode ${targetKnodeId} for Consumer Organization ${authData.organizationId}`,
+      );
+
+      const k2kGatewayClient = getK2K2GatewayApiClient(targetKnodeId);
+
+      const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
+        client: k2kGatewayClient,
+        query: {
+          consumerId: authData.organizationId,
           limit,
           offset,
-          total: totalCount,
+          state: k2kAgreementStates,
         },
-        results,
+      });
+
+      const [producersMap, eservicesMap, eserviceVersionsMap] =
+        await Promise.all([
+          getExternalEntitiesMap({
+            fetchFn: ({ entityIds }) =>
+              k2kGatewayApi
+                .getOrganizations({
+                  client: k2kGatewayClient,
+                  query: {
+                    limit: entityIds.length,
+                    offset: 0,
+                    organizationId: entityIds,
+                  },
+                })
+                .then((res) => res.data.results),
+            getEntityId: (agreement) => agreement.producerId,
+            getKnodeId: targetKnodeId,
+            items: consumerAgreements.results,
+          }),
+          getExternalEntitiesMap({
+            fetchFn: ({ entityIds }) =>
+              k2kGatewayApi
+                .getEservices({
+                  client: k2kGatewayClient,
+                  query: {
+                    eserviceId: entityIds,
+                    limit: entityIds.length,
+                    offset: 0,
+                  },
+                })
+                .then((res) => res.data.results),
+            getEntityId: (agreement) => agreement.eserviceId,
+            getKnodeId: targetKnodeId,
+            items: consumerAgreements.results,
+          }),
+          getExternalEntitiesMap({
+            fetchFn: ({ entityIds }) =>
+              Promise.all(
+                entityIds.map((eserviceId) =>
+                  k2kGatewayApi.getEserviceLatestVersion({
+                    client: k2kGatewayClient,
+                    path: { eserviceId },
+                  }),
+                ),
+              ).then((responses) => responses.map((res) => res.data)),
+            getEntityId: (agreement) => agreement.eserviceId,
+            getKnodeId: targetKnodeId,
+            items: consumerAgreements.results,
+          }),
+        ]);
+
+      return {
+        pagination: consumerAgreements.pagination,
+        results: await Promise.all(
+          consumerAgreements.results.map(async (agreement) =>
+            toAPI_Eservice({
+              agreement,
+              eservice: assertEntityExists(
+                eservicesMap
+                  .get(targetKnodeId)
+                  ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+                `E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
+              ),
+              eserviceVersion: assertEntityExists(
+                eserviceVersionsMap
+                  .get(targetKnodeId)
+                  ?.get(unsafeBrandExternalId(agreement.eserviceVersionId)),
+                `E-service version for E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
+              ),
+              producer: {
+                ...assertEntityExists(
+                  producersMap
+                    .get(targetKnodeId)
+                    ?.get(unsafeBrandExternalId(agreement.producerId)),
+                  `Producer Organization ${agreement.producerId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
+                ),
+                knodeId: targetKnodeId,
+              },
+            }),
+          ),
+        ),
       };
     },
   };

@@ -1181,6 +1181,14 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/interface:
     get:
       operationId: downloadEserviceLatestVersionInterface
@@ -1368,6 +1376,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /agreements/{agreementId}/reactivate:
@@ -1914,6 +1930,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/current:

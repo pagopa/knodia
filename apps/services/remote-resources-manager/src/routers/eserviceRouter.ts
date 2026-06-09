@@ -126,6 +126,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get E-services",
       tags: [apiTags.eservice],
