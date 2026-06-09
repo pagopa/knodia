@@ -9,13 +9,21 @@ import {
   type API_EvidenceType,
   API_LegalEntity,
 } from "../models/api.ts";
+import { legalEntityActivities } from "../models/legalEntityActivities.ts";
 
 const VAT_SCHEME = {
   schemeName: "Partita Iva",
   schemeURI: "http://memberstate.ms/VAT",
 } as const;
 
-const LegalEntityRow = API_LegalEntity.omit({ legalIdentifier: true });
+// The API models legalEntityActivity as a plain string; here we additionally
+// validate it against the known ATECO 2025 codes when loading the dataset.
+const LegalEntityActivityCode = z.enum(
+  Object.keys(legalEntityActivities) as [string, ...string[]],
+);
+const LegalEntityRow = API_LegalEntity.omit({ legalIdentifier: true }).extend({
+  legalEntityActivity: LegalEntityActivityCode,
+});
 const EvidenceRow = API_Evidence.omit({ isAbout: true });
 
 const LegalEntitiesFile = z.record(API_CompanyUid, LegalEntityRow);

@@ -1,7 +1,5 @@
 import z from "zod";
 
-import { legalEntityActivities } from "./legalEntityActivities.ts";
-
 const CODICE_FISCALE_REGEX =
   /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/;
 
@@ -162,14 +160,15 @@ const API_LegalIdentifier = z
     id: "LegalIdentifier",
   });
 
-const API_LegalEntityActivity = z
-  .enum(Object.keys(legalEntityActivities) as [string, ...string[]])
-  .meta({
-    description:
-      "Economic activity of the legal entity — ATECO 2025 classification code (6-digit category level, with NACE Rev. 2.1 correspondence)",
-    example: "43.22.07",
-    id: "LegalEntityActivity",
-  });
+// Modelled as a string in the API: the value is an ATECO 2025 category code,
+// validated at load time against the known codes in data/legalEntities.ts (the
+// full code list would bloat the OpenAPI enum to no benefit for consumers).
+const API_LegalEntityActivity = z.string().meta({
+  description:
+    "Economic activity of the legal entity — ATECO 2025 classification code (6-digit category level, with NACE Rev. 2.1 correspondence)",
+  example: "43.22.07",
+  id: "LegalEntityActivity",
+});
 
 export const API_LegalEntity = z
   .strictObject({
