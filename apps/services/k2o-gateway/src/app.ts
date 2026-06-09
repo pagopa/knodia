@@ -35,7 +35,8 @@ export function buildApp({
       openapi: {
         components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
-          description: "API for communicating with another Knode Organization",
+          description:
+            "API that Organizations from any Knode can use to communicate with this Knode",
           title: "Knode to Organization API",
           version: "1.0.0",
         },
