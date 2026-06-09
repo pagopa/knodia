@@ -28,6 +28,7 @@
     "@knodia/organization-process-client": "workspace:*",
     "@knodia/signup-models": "workspace:*",
     "@knodia/token-generator": "workspace:*",
+    "axios": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",

@@ -16,7 +16,7 @@ import { SignupEventV1 } from "@knodia/signup-models";
 import { handleSignupMessage } from "../services/consumerService.ts";
 
 export interface SignupUpdaterDeps {
-  nodeClients: Record<
+  knodeClients: Record<
     KnodeId,
     {
       cognitoClient: CognitoIdmClient;

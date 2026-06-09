@@ -14,7 +14,7 @@ const logger = createLogger({ config });
 
 const { db, pool } = makeSignupDrizzleConnection(config);
 
-const buildNodeClient = (knodeId: KnodeId) => ({
+const buildKnodeClient = (knodeId: KnodeId) => ({
   cognitoClient: buildCognitoIdmClient({
     cognitoUserPoolId: config.cognitoUserPoolIds[knodeId],
   }),
@@ -27,9 +27,9 @@ const buildNodeClient = (knodeId: KnodeId) => ({
 });
 
 const deps: SignupUpdaterDeps = {
-  nodeClients: {
-    Lynx: buildNodeClient(KnodeId.enum.Lynx),
-    Orion: buildNodeClient(KnodeId.enum.Orion),
+  knodeClients: {
+    Lynx: buildKnodeClient(KnodeId.enum.Lynx),
+    Orion: buildKnodeClient(KnodeId.enum.Orion),
   },
   signupDbService: signupDbServiceBuilder(db),
 };

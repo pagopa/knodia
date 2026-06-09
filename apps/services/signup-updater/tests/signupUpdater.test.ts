@@ -34,7 +34,7 @@ const cognitoCreateUserMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
-const logger = { info: vi.fn() } as unknown as Logger;
+const logger = { error: vi.fn(), info: vi.fn() } as unknown as Logger;
 
 function buildDeps(): SignupUpdaterDeps {
   const node = {
@@ -45,7 +45,7 @@ function buildDeps(): SignupUpdaterDeps {
     orgClient: {},
   };
   return {
-    nodeClients: { Lynx: node, Orion: node },
+    knodeClients: { Lynx: node, Orion: node },
     signupDbService: { getSignupUserById: getSignupUserByIdMock },
   } as unknown as SignupUpdaterDeps;
 }
@@ -86,6 +86,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     createOrganizationMock.mockReset();
     cognitoCreateUserMock.mockReset();
     getSignupUserByIdMock.mockReset();
+    vi.mocked(logger.error).mockReset();
   });
 
   it("creates an org (with the testing_organization attribute) and a Cognito user on both nodes", async () => {
@@ -132,7 +133,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     });
   });
 
-  it("throws on a 409 (name collision with a different org) so the message is redelivered", async () => {
+  it("skips the node and logs on a 409 (name taken by another org) instead of throwing, so the partition isn't blocked", async () => {
     getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
     createOrganizationMock.mockRejectedValue(conflict);
 
@@ -143,12 +144,15 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
         correlationId,
         logger,
       ),
-    ).rejects.toBeDefined();
+    ).resolves.toBeUndefined();
 
+    // No Cognito user is created without an org, and both nodes are skipped
+    // (the offset commits) rather than blocking the partition.
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(2);
   });
 
-  it("throws if a node returns a 409 even after another node was provisioned", async () => {
+  it("skips only the node that returns a 409 and still provisions the others", async () => {
     getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
     createOrganizationMock
       .mockResolvedValueOnce({ data: { id: generateId<OrganizationId>() } })
@@ -161,11 +165,12 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
         correlationId,
         logger,
       ),
-    ).rejects.toBeDefined();
+    ).resolves.toBeUndefined();
 
-    // Orion is fully provisioned before Lynx's 409 aborts the loop.
+    // Orion is fully provisioned; Lynx's 409 is skipped without aborting.
     expect(createOrganizationMock).toHaveBeenCalledTimes(2);
     expect(cognitoCreateUserMock).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 
   it("rethrows a non-409 error so the message is redelivered", async () => {

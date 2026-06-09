@@ -36,9 +36,9 @@ export function assertDataExistsInEvent<
 }
 
 /**
- * Decodes a plain-JSON Kafka message (not an event-store CDC envelope) and
- * validates it against the provided Zod schema. Used by consumers of
- * non-event-sourced topics (e.g. signup events).
+ * Decodes a plain-JSON Kafka message (not an event-store Debezium envelope with
+ * Protobuf data) and validates it against the provided Zod schema. Used by
+ * consumers of non-event-sourced topics (e.g. signup events).
  *
  * @param {KafkaMessage} message - The Kafka message to decode.
  * @throws {Error} - If the value is missing or fails schema validation.
