@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ConsumerKeychain } from "@knodia/keychain-models";
+import type { API_KeychainKey } from "@knodia/keychain-models/api";
 
 import {
   type ConsumerKeychainId,
@@ -16,8 +17,6 @@ import {
   getMockKeychainKey,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-
-import type { API_KeychainKey } from "../../src/models/api.ts";
 
 import { toAPI_KeychainKey } from "../../src/models/apiConverter.ts";
 import { injectAppRequest, seedConsumerKeychain } from "../utils.ts";

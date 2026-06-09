@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ProducerKeychain } from "@knodia/keychain-models";
+import type { API_PublicKey } from "@knodia/keychain-models/api";
 
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
@@ -7,8 +8,6 @@ import {
   getMockProducerKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-
-import type { API_PublicKey } from "../../src/models/api.ts";
 
 import { toAPI_PublicKey } from "../../src/models/apiConverter.ts";
 import { injectAppRequest, seedProducerKeychain } from "../utils.ts";
