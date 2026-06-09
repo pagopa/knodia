@@ -1627,6 +1627,11 @@ components:
     Keychain:
       type: object
       properties:
+        eservicesCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         id:
           type: string
           format: uuid
@@ -1643,6 +1648,11 @@ components:
           maximum: 9007199254740991
         name:
           $ref: "#/components/schemas/KeychainLocalizedName"
+        purposesCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
       required:
         - id
         - keysCount

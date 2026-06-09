@@ -51,6 +51,22 @@ export function KeychainTable({
     );
   }
 
+  // Consumer Keychains link Purposes, Producer Keychains link E-services;
+  // Knode API Keychains have no linked-resource counter.
+  const linkedColumn = match(type)
+    .with("consumption", () => ({
+      getCount: (keychain: bffApi.Keychain) => keychain.purposesCount,
+      id: "purposes" as const,
+      label: "Purposes",
+    }))
+    .with("production", () => ({
+      getCount: (keychain: bffApi.Keychain) => keychain.eservicesCount,
+      id: "eservices" as const,
+      label: "E-services",
+    }))
+    .with("api", () => null)
+    .exhaustive();
+
   return (
     <Table aria-label="Keychains table">
       <TableHeader>
@@ -59,6 +75,9 @@ export function KeychainTable({
         </Column>
         <Column id="keys">Keys</Column>
         <Column id="members">Members</Column>
+        {linkedColumn && (
+          <Column id={linkedColumn.id}>{linkedColumn.label}</Column>
+        )}
         <Column id="actions">
           <span className="sr-only">Actions</span>
         </Column>
@@ -71,6 +90,9 @@ export function KeychainTable({
             </Cell>
             <Cell>{keychain.keysCount}</Cell>
             <Cell>{keychain.membersCount}</Cell>
+            {linkedColumn && (
+              <Cell>{linkedColumn.getCount(keychain) ?? 0}</Cell>
+            )}
             <Cell>
               <div className="flex justify-end">
                 <ButtonLinkWithPreload

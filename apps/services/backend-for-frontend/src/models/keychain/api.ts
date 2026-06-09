@@ -43,10 +43,17 @@ export type API_KnodeApiKeychainsQueryParams = z.infer<
 
 export const API_Keychain = z
   .strictObject({
+    eservicesCount: z
+      .number()
+      .int()
+      .min(0)
+      .meta({ format: "int32" })
+      .optional(),
     id: z.uuid(),
     keysCount: z.number().int().min(0).meta({ format: "int32" }),
     membersCount: z.number().int().min(0).meta({ format: "int32" }),
     name: API_KeychainLocalizedName,
+    purposesCount: z.number().int().min(0).meta({ format: "int32" }).optional(),
   })
   .meta({ id: "Keychain" });
 export type API_Keychain = z.infer<typeof API_Keychain>;

@@ -778,10 +778,12 @@ export type KeychainSeed = {
 };
 
 export type Keychain = {
+    eservicesCount?: number;
     id: string;
     keysCount: number;
     membersCount: number;
     name: KeychainLocalizedName;
+    purposesCount?: number;
 };
 
 export type Keychains = {
