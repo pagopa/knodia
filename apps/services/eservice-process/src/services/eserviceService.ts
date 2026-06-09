@@ -25,7 +25,6 @@ import {
   type EserviceInterface,
   type EserviceVersion,
   EserviceVersionState,
-  findEserviceLatestVersion,
 } from "@knodia/eservice-models";
 import { getEserviceTemplate } from "@knodia/eservice-template-models";
 
@@ -41,7 +40,6 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   duplicateInterfaceId,
   eserviceTemplateNotFound,
-  eserviceVersionNotFound,
   inconsistentDailyCalls,
   invalidAttribute,
 } from "../models/errors.ts";
@@ -57,7 +55,10 @@ import {
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
-import { updateEserviceVersionState } from "../utils/utils.ts";
+import {
+  retrieveEserviceLatestVersionFromEservice,
+  updateEserviceVersionState,
+} from "../utils/utils.ts";
 import {
   assertCategoriesCanBeUpdated,
   assertEserviceVersionIsActive,
@@ -93,10 +94,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(
-        eservice,
-        eserviceVersionNotFound,
-      );
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -281,10 +279,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(
-        eservice,
-        eserviceVersionNotFound,
-      );
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -319,10 +314,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(
-        eservice,
-        eserviceVersionNotFound,
-      );
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsActive(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
