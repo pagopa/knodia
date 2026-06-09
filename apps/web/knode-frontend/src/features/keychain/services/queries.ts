@@ -26,6 +26,7 @@ import {
   getKnodeApiKeychainsOptions,
   getKnodeApiKeychainsQueryKey,
   getProducerKeychainDetailsOptions,
+  getProducerKeychainEservicesOptions,
   getProducerKeychainKeysOptions,
   getProducerKeychainKeysQueryKey,
   getProducerKeychainMembershipOptions,
@@ -42,6 +43,7 @@ const KEYCHAINS_PAGE_LIMIT = 10;
 const KEYS_PAGE_LIMIT = 50;
 const MEMBERS_PAGE_LIMIT = 50;
 const PURPOSES_PAGE_LIMIT = 10;
+const ESERVICES_PAGE_LIMIT = 5;
 
 export const consumerKeychainsQuery = (offset: number) =>
   getConsumerKeychainsOptions({
@@ -59,6 +61,15 @@ export const producerKeychainsQuery = (offset: number) =>
   getProducerKeychainsOptions({
     client,
     query: { limit: KEYCHAINS_PAGE_LIMIT, offset },
+  });
+
+// TODO(KN-473): replace hardcoded limit with pagination when the number of producer keychains grows
+const PRODUCER_KEYCHAIN_OPTIONS_LIMIT = 50;
+
+export const producerKeychainOptionsQuery = () =>
+  getProducerKeychainsOptions({
+    client,
+    query: { limit: PRODUCER_KEYCHAIN_OPTIONS_LIMIT, offset: 0 },
   });
 
 export const consumerKeychainDetailsQuery = (
@@ -180,6 +191,16 @@ export const consumerKeychainPurposesQuery = (
     client,
     path: { consumerKeychainId },
     query: { limit: PURPOSES_PAGE_LIMIT, offset },
+  });
+
+export const producerKeychainEservicesQuery = (
+  producerKeychainId: ProducerKeychainId,
+  offset: number,
+) =>
+  getProducerKeychainEservicesOptions({
+    client,
+    path: { producerKeychainId },
+    query: { limit: ESERVICES_PAGE_LIMIT, offset },
   });
 
 export const consumerKeychainsQueryKey = () =>

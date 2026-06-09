@@ -6,6 +6,12 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
+  API_EserviceCategory,
+  API_EserviceMode,
+  API_EserviceVersionState,
+  API_LocalizedName,
+} from "@knodia/eservice-models/api";
+import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
@@ -64,7 +70,13 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
-export const API_ProducerKeychainsQueryParams = API_PaginationQueryParams;
+export const API_ProducerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Returns Producer Keychains linked to the given E-service.",
+    }),
+  });
 export type API_ProducerKeychainsQueryParams = z.infer<
   typeof API_ProducerKeychainsQueryParams
 >;
@@ -93,6 +105,16 @@ export const API_ProducerKeychainKeyPathParams = z
 
 export type API_ProducerKeychainKeyPathParams = z.infer<
   typeof API_ProducerKeychainKeyPathParams
+>;
+
+export const API_ProducerKeychainEservicePathParams = z
+  .strictObject({
+    eserviceId: z.uuid(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainEservicePathParams = z.infer<
+  typeof API_ProducerKeychainEservicePathParams
 >;
 
 export const API_ConsumerKeychainsQueryParams =
@@ -331,3 +353,33 @@ export const API_CreatedKeyResource = z
   });
 
 export type API_CreatedKeyResource = z.infer<typeof API_CreatedKeyResource>;
+
+export const API_GetProducerKeychainEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainEservicesQueryParams = z.infer<
+  typeof API_GetProducerKeychainEservicesQueryParams
+>;
+
+export const API_ProducerKeychainEservice = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    id: z.uuid(),
+    linkedAt: z.iso.datetime(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ProducerKeychainEservice" });
+export type API_ProducerKeychainEservice = z.infer<
+  typeof API_ProducerKeychainEservice
+>;
+
+export const API_ProducerKeychainEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ProducerKeychainEservice),
+  })
+  .meta({ id: "ProducerKeychainEservices" });
+export type API_ProducerKeychainEservices = z.infer<
+  typeof API_ProducerKeychainEservices
+>;

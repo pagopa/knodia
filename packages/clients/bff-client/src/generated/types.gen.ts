@@ -768,6 +768,10 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
+export type ProducerKeychainEserviceLinkSeed = {
+    eserviceId: string;
+};
+
 export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
@@ -871,6 +875,20 @@ export type KeychainMembers = {
  */
 export type CreatedKeyResource = {
     kid: KeyId;
+};
+
+export type ProducerKeychainEservice = {
+    categories: Array<EserviceCategory>;
+    id: string;
+    linkedAt: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    state: EserviceVersionState;
+};
+
+export type ProducerKeychainEservices = {
+    pagination: Pagination;
+    results: Array<ProducerKeychainEservice>;
 };
 
 /**
@@ -3005,6 +3023,10 @@ export type GetProducerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID. Returns Producer Keychains linked to the given E-service.
+         */
+        eserviceId?: string;
     };
     url: '/producerKeychains';
 };
@@ -3522,6 +3544,137 @@ export type DownloadProducerKeychainKeyResponses = {
 };
 
 export type DownloadProducerKeychainKeyResponse = DownloadProducerKeychainKeyResponses[keyof DownloadProducerKeychainKeyResponses];
+
+export type GetProducerKeychainEservicesData = {
+    body?: never;
+    path: {
+        producerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producerKeychains/{producerKeychainId}/eservices';
+};
+
+export type GetProducerKeychainEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeychainEservicesError = GetProducerKeychainEservicesErrors[keyof GetProducerKeychainEservicesErrors];
+
+export type GetProducerKeychainEservicesResponses = {
+    /**
+     * E-services linked to the Producer Keychain retrieved successfully
+     */
+    200: ProducerKeychainEservices;
+};
+
+export type GetProducerKeychainEservicesResponse = GetProducerKeychainEservicesResponses[keyof GetProducerKeychainEservicesResponses];
+
+export type LinkEserviceToProducerKeychainData = {
+    body: ProducerKeychainEserviceLinkSeed;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/eservices';
+};
+
+export type LinkEserviceToProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type LinkEserviceToProducerKeychainError = LinkEserviceToProducerKeychainErrors[keyof LinkEserviceToProducerKeychainErrors];
+
+export type LinkEserviceToProducerKeychainResponses = {
+    /**
+     * E-service successfully linked to Producer Keychain
+     */
+    204: void;
+};
+
+export type LinkEserviceToProducerKeychainResponse = LinkEserviceToProducerKeychainResponses[keyof LinkEserviceToProducerKeychainResponses];
+
+export type UnlinkEserviceFromProducerKeychainData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/eservices/{eserviceId}';
+};
+
+export type UnlinkEserviceFromProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or E-service link not found
+     */
+    404: Problem;
+};
+
+export type UnlinkEserviceFromProducerKeychainError = UnlinkEserviceFromProducerKeychainErrors[keyof UnlinkEserviceFromProducerKeychainErrors];
+
+export type UnlinkEserviceFromProducerKeychainResponses = {
+    /**
+     * E-service successfully unlinked from Producer Keychain
+     */
+    204: void;
+};
+
+export type UnlinkEserviceFromProducerKeychainResponse = UnlinkEserviceFromProducerKeychainResponses[keyof UnlinkEserviceFromProducerKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;

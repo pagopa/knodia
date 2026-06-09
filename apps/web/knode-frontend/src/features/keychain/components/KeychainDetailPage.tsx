@@ -6,7 +6,6 @@ import type {
 } from "@knodia/common-models/ids";
 
 import {
-  Banner,
   Breadcrumb,
   Breadcrumbs,
   Button,
@@ -18,9 +17,7 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
-import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { match } from "ts-pattern";
 
@@ -33,6 +30,7 @@ import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDel
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
 import { KeychainPublicKeysTable } from "@/features/keychain/components/KeychainPublicKeysTable";
+import { LinkedEservicesList } from "@/features/keychain/components/LinkedEservicesList";
 import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurposesTable";
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
@@ -45,6 +43,7 @@ import {
   consumerKeychainPurposesQuery,
   knodeApiKeychainKeysQuery,
   knodeApiKeychainMembersQuery,
+  producerKeychainEservicesQuery,
   producerKeychainKeysQuery,
   producerKeychainMembersQuery,
 } from "../services/queries";
@@ -148,9 +147,13 @@ export function KeychainDetailPage<TTab extends string>(
               </TabPanel>
             ))
             .with({ type: "api" }, () => null)
-            .with({ type: "production" }, () => (
+            .with({ type: "production" }, ({ keychainId }) => (
               <TabPanel id="e-services" key="e-services">
-                <ProducerEservicesTab />
+                <ProducerEservicesTab
+                  keychainId={keychainId}
+                  offset={offset}
+                  onOffsetChange={onOffsetChange}
+                />
               </TabPanel>
             ))
             .exhaustive()}
@@ -251,24 +254,35 @@ function MembersTab(props: MembersTabProps) {
   );
 }
 
-function ProducerEservicesTab() {
-  const navigate = useNavigate();
+function ProducerEservicesTab({
+  keychainId,
+  offset,
+  onOffsetChange,
+}: {
+  keychainId: ProducerKeychainId;
+  offset: number;
+  onOffsetChange: (offset: number) => void;
+}) {
+  const { data, isLoading } = useQuery(
+    producerKeychainEservicesQuery(keychainId, offset),
+  );
 
   return (
     <Section
       description="You can link an E-Service to the Keychain on the E-Service page."
       title="E-Services"
     >
-      <Banner
-        action={{
-          label: "Go to E-Services list",
-          onPress: () => navigate({ to: "/production/e-services" }),
-        }}
-        icon={<SelectionIcon />}
-        kind="neutral"
-      >
-        There are no E-Services linked to this Keychain yet.
-      </Banner>
+      <LinkedEservicesList
+        eservices={data?.results ?? []}
+        isLoading={isLoading}
+      />
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={offset}
+        onOffsetChange={onOffsetChange}
+        totalItems={data?.pagination.total ?? 0}
+      />
     </Section>
   );
 }
@@ -312,9 +326,6 @@ function PublicKeysTab(props: PublicKeysTabProps) {
     : false;
 
   const isKeychainMember = useIsCurrentUserKeychainMember(props);
-  // TODO(KN-458): currently the download-key authorization is only enforced
-  // in the frontend (admin OR member). Once the backend policy for non-member
-  // technical operators is finalized, mirror the same rule in keychain-process.
   const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (
