@@ -70,7 +70,13 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
-export const API_ProducerKeychainsQueryParams = API_PaginationQueryParams;
+export const API_ProducerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Returns Producer Keychains linked to the given E-service.",
+    }),
+  });
 export type API_ProducerKeychainsQueryParams = z.infer<
   typeof API_ProducerKeychainsQueryParams
 >;
@@ -99,6 +105,16 @@ export const API_ProducerKeychainKeyPathParams = z
 
 export type API_ProducerKeychainKeyPathParams = z.infer<
   typeof API_ProducerKeychainKeyPathParams
+>;
+
+export const API_ProducerKeychainEservicePathParams = z
+  .strictObject({
+    eserviceId: z.uuid(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainEservicePathParams = z.infer<
+  typeof API_ProducerKeychainEservicePathParams
 >;
 
 export const API_ConsumerKeychainsQueryParams =
