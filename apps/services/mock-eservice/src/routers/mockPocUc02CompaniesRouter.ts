@@ -6,11 +6,6 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-import {
-  COMPANIES_MOCK_ESERVICE_ID,
-  COMPANIES_MOCK_ESERVICE_VERSION_ID,
-  COMPANIES_MOCK_PRODUCER_ID,
-} from "../companies/mockup.ts";
 import { findEvidences, findLegalEntity } from "../data/legalEntities.ts";
 import {
   API_CompanyUid,
@@ -20,25 +15,28 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { legalEntityNotFound } from "../models/errors.ts";
-import { type SignalHubSeedConfig } from "../signalHub/rotation.ts";
+import {
+  POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+  POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+  POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+} from "../pocUc02Companies/mockup.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockCompaniesRouterOptions {
   knodeId: KnodeId;
-  seedConfig: SignalHubSeedConfig;
 }
 
-export const mockCompaniesRouter: FastifyPluginAsyncZod<
+export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   MockCompaniesRouterOptions
-> = async (fastify, { knodeId, seedConfig }) => {
+> = async (fastify, { knodeId }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
-        COMPANIES_MOCK_ESERVICE_ID,
-        COMPANIES_MOCK_ESERVICE_VERSION_ID,
-        COMPANIES_MOCK_PRODUCER_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
         knodeId,
       );
 
@@ -56,7 +54,7 @@ export const mockCompaniesRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the registry information of a legal entity (company) identified by its uid_company (Cross-Border E-service 04, Bearer-protected).",
+        "Returns the registry information of a legal entity (company) identified by its uid_company (Bearer-protected).",
       operationId: "getCompanyInformation",
       params: z.strictObject({ uidCompany: API_CompanyUid }),
       response: {
@@ -70,7 +68,7 @@ export const mockCompaniesRouter: FastifyPluginAsyncZod<
         }),
       },
       summary: "Get company information",
-      tags: [apiTags.legalEntity],
+      tags: [apiTags.pocUc02Companies],
     },
     url: "/legal-entities/:uidCompany/information",
   });
@@ -80,20 +78,15 @@ export const mockCompaniesRouter: FastifyPluginAsyncZod<
       const { logger } = getContextValues(requestContext);
 
       assertTokenClaimsAreValidForEservice(
-        COMPANIES_MOCK_ESERVICE_ID,
-        COMPANIES_MOCK_ESERVICE_VERSION_ID,
-        COMPANIES_MOCK_PRODUCER_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
         knodeId,
       );
 
       const { uidCompany } = req.params;
       const { evidenceType } = req.query;
-      const evidences = findEvidences(
-        uidCompany,
-        Date.now(),
-        seedConfig,
-        evidenceType,
-      );
+      const evidences = findEvidences(uidCompany, evidenceType);
       if (!evidences) {
         throw legalEntityNotFound(uidCompany);
       }
@@ -106,7 +99,7 @@ export const mockCompaniesRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the evidences held about a legal entity (company), optionally filtered by evidence type (Cross-Border E-service 04, Bearer-protected).",
+        "Returns the evidences held about a legal entity (company), optionally filtered by evidence type (Bearer-protected).",
       operationId: "getEvidences",
       params: z.strictObject({ uidCompany: API_CompanyUid }),
       querystring: z.strictObject({
@@ -123,7 +116,7 @@ export const mockCompaniesRouter: FastifyPluginAsyncZod<
         }),
       },
       summary: "Get evidences",
-      tags: [apiTags.legalEntity],
+      tags: [apiTags.pocUc02Companies],
     },
     url: "/legal-entities/:uidCompany/evidences",
   });

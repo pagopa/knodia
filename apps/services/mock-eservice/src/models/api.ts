@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { legalEntityActivities } from "./legalEntityActivities.ts";
+
 const CODICE_FISCALE_REGEX =
   /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/;
 
@@ -137,8 +139,6 @@ export const API_Pseudonymization = z
   });
 export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;
 
-// --- POC Use Case 02: legal entities and evidences (Cross-Border E-service 04) ---
-
 export const API_CompanyUid = z
   .string()
   .regex(/^[0-9]{11}$/)
@@ -162,15 +162,14 @@ const API_LegalIdentifier = z
     id: "LegalIdentifier",
   });
 
-// NACE Rev. 2.1 economic-activity code (e.g. "43.21"). The full vocabulary is
-// large and externally maintained, so it is modelled as a free string rather
-// than an inline enum.
-const API_LegalEntityActivity = z.string().min(1).meta({
-  description:
-    "Economic activity of the legal entity, derived from NACE Rev. 2.1",
-  example: "43.21",
-  id: "LegalEntityActivity",
-});
+const API_LegalEntityActivity = z
+  .enum(Object.keys(legalEntityActivities) as [string, ...string[]])
+  .meta({
+    description:
+      "Economic activity of the legal entity — ATECO 2025 classification code (6-digit category level, with NACE Rev. 2.1 correspondence)",
+    example: "43.22.07",
+    id: "LegalEntityActivity",
+  });
 
 export const API_LegalEntity = z
   .strictObject({
@@ -222,8 +221,7 @@ export const API_Evidence = z
     validityPeriod: API_PeriodOfTime,
   })
   .meta({
-    description:
-      "Evidence about a legal entity (CCCEV 2.1.0), returned by the Cross-Border E-service 04",
+    description: "Evidence about a legal entity (CCCEV 2.1.0)",
     id: "Evidence",
   });
 export type API_Evidence = z.infer<typeof API_Evidence>;

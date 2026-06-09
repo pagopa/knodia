@@ -9,10 +9,6 @@ import {
   type API_EvidenceType,
   API_LegalEntity,
 } from "../models/api.ts";
-import {
-  computePeriodId,
-  type SignalHubSeedConfig,
-} from "../signalHub/rotation.ts";
 
 const VAT_SCHEME = {
   schemeName: "Partita Iva",
@@ -23,29 +19,18 @@ const LegalEntityRow = API_LegalEntity.omit({ legalIdentifier: true });
 const EvidenceRow = API_Evidence.omit({ isAbout: true });
 
 const LegalEntitiesFile = z.record(API_CompanyUid, LegalEntityRow);
-// Each company maps to a non-empty rotation cycle of evidence lists; the active
-// list rotates per Signal Hub period so WI-5 can demonstrate an evidence update
-// without the mock auto-emitting anything.
-const RotatingEvidencesFile = z.record(
-  API_CompanyUid,
-  z.array(z.array(EvidenceRow)).min(1),
-);
+const EvidencesFile = z.record(API_CompanyUid, z.array(EvidenceRow));
 
 const dataDir = dirname(fileURLToPath(import.meta.url));
 const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
   schema.parse(JSON.parse(readFileSync(join(dataDir, file), "utf8")));
 
 const LEGAL_ENTITIES = readJson("legalEntities.json", LegalEntitiesFile);
-const ROTATING_EVIDENCES = readJson(
-  "rotatingEvidences.json",
-  RotatingEvidencesFile,
-);
+const EVIDENCES = readJson("evidences.json", EvidencesFile);
 
 // undefined = unknown company; empty array = known company, no evidence of that type.
 export function findEvidences(
   uid: API_CompanyUid,
-  now: number,
-  config: SignalHubSeedConfig,
   evidenceType?: API_EvidenceType,
 ): API_Evidence[] | undefined {
   const legalEntity = findLegalEntity(uid);
@@ -53,11 +38,7 @@ export function findEvidences(
     return undefined;
   }
 
-  const cycle = ROTATING_EVIDENCES[uid];
-  const activeList =
-    cycle?.at(computePeriodId(now, config) % cycle.length) ?? [];
-
-  return activeList
+  return (EVIDENCES[uid] ?? [])
     .filter(
       (evidence) =>
         !evidenceType ||

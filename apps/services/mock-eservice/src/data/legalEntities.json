@@ -1,7 +1,462 @@
 {
   "01229430085": {
-    "legalEntityActivity": "43.21",
+    "legalEntityActivity": "43.22.07",
     "legalName": "TUTTO - KLIMA SRL",
     "registrationDate": "2012-07-09"
+  },
+  "12345678901": {
+    "legalEntityActivity": "01.11.00",
+    "legalName": "Alfa Industria Srl",
+    "registrationDate": "1954-03-12"
+  },
+  "98765432109": {
+    "legalEntityActivity": "08.12.00",
+    "legalName": "Beta Costruzioni Spa",
+    "registrationDate": "1999-11-28"
+  },
+  "56473829100": {
+    "legalEntityActivity": "10.31.00",
+    "legalName": "Orion Food Group",
+    "registrationDate": "1923-07-03"
+  },
+  "01928374655": {
+    "legalEntityActivity": "23.45.00",
+    "legalName": "Linea Ceramiche Srl",
+    "registrationDate": "1977-05-19"
+  },
+  "55667788990": {
+    "legalEntityActivity": "46.22.00",
+    "legalName": "FlorPlant Distribuzione",
+    "registrationDate": "2008-02-01"
+  },
+  "11223344556": {
+    "legalEntityActivity": "62.10.00",
+    "legalName": "SoftWave Technologies",
+    "registrationDate": "2015-09-14"
+  },
+  "99887766554": {
+    "legalEntityActivity": "01.24.00",
+    "legalName": "FruttaViva Agricola",
+    "registrationDate": "1931-10-22"
+  },
+  "44332211009": {
+    "legalEntityActivity": "35.12.00",
+    "legalName": "GreenPower Renewables",
+    "registrationDate": "2002-04-07"
+  },
+  "66778899001": {
+    "legalEntityActivity": "47.75.00",
+    "legalName": "Profumi d’Italia",
+    "registrationDate": "1988-01-30"
+  },
+  "33445566778": {
+    "legalEntityActivity": "20.14.00",
+    "legalName": "ChemCore Industries",
+    "registrationDate": "1945-06-11"
+  },
+  "12398745632": {
+    "legalEntityActivity": "01.21.00",
+    "legalName": "VignaRossa Azienda Agricola",
+    "registrationDate": "1912-03-09"
+  },
+  "55664433221": {
+    "legalEntityActivity": "29.10.00",
+    "legalName": "AutoMech Motors",
+    "registrationDate": "1970-12-17"
+  },
+  "77889900112": {
+    "legalEntityActivity": "31.00.20",
+    "legalName": "Cucine Moderne Spa",
+    "registrationDate": "1995-08-25"
+  },
+  "99001122334": {
+    "legalEntityActivity": "52.31.00",
+    "legalName": "LogiTrans Broker",
+    "registrationDate": "2011-11-04"
+  },
+  "22113344556": {
+    "legalEntityActivity": "10.52.00",
+    "legalName": "IceDream Gelati",
+    "registrationDate": "1964-07-18"
+  },
+  "33446677889": {
+    "legalEntityActivity": "03.11.00",
+    "legalName": "MareBlu Pesca",
+    "registrationDate": "1928-05-02"
+  },
+  "44557788990": {
+    "legalEntityActivity": "68.12.00",
+    "legalName": "Progetti Immobiliari Italia",
+    "registrationDate": "1983-09-29"
+  },
+  "55668899001": {
+    "legalEntityActivity": "81.21.00",
+    "legalName": "Pulito&Co Servizi",
+    "registrationDate": "1979-01-10"
+  },
+  "66779900112": {
+    "legalEntityActivity": "90.12.00",
+    "legalName": "Studio Arti Visive",
+    "registrationDate": "2017-06-06"
+  },
+  "77880011223": {
+    "legalEntityActivity": "01.47.00",
+    "legalName": "Pollaio Moderno",
+    "registrationDate": "1949-04-21"
+  },
+  "11220033445": {
+    "legalEntityActivity": "08.11.00",
+    "legalName": "StoneArt Marmi",
+    "registrationDate": "1962-03-03"
+  },
+  "99880077665": {
+    "legalEntityActivity": "10.72.00",
+    "legalName": "DolciForni Biscotti",
+    "registrationDate": "1981-10-14"
+  },
+  "55660011229": {
+    "legalEntityActivity": "11.05.00",
+    "legalName": "Birra Alpina",
+    "registrationDate": "1937-08-22"
+  },
+  "33440099887": {
+    "legalEntityActivity": "13.20.00",
+    "legalName": "TexWeave Tessiture",
+    "registrationDate": "1959-01-09"
+  },
+  "22119988776": {
+    "legalEntityActivity": "14.22.00",
+    "legalName": "IntimoLuxe",
+    "registrationDate": "2005-04-17"
+  },
+  "77881122334": {
+    "legalEntityActivity": "15.12.00",
+    "legalName": "PelleViva Pelletteria",
+    "registrationDate": "1941-06-30"
+  },
+  "66770011223": {
+    "legalEntityActivity": "16.25.00",
+    "legalName": "LegnoFinestra Srl",
+    "registrationDate": "1974-11-11"
+  },
+  "55663322119": {
+    "legalEntityActivity": "17.12.00",
+    "legalName": "CartaPlus Cartiere",
+    "registrationDate": "1920-02-05"
+  },
+  "44558899001": {
+    "legalEntityActivity": "18.12.00",
+    "legalName": "PrintMaster Grafica",
+    "registrationDate": "1990-09-28"
+  },
+  "33447788990": {
+    "legalEntityActivity": "19.10.00",
+    "legalName": "CokeEnergy Italia",
+    "registrationDate": "1967-12-12"
+  },
+  "22334455667": {
+    "legalEntityActivity": "20.42.00",
+    "legalName": "Cosmetica Aurora",
+    "registrationDate": "1985-07-07"
+  },
+  "11224466889": {
+    "legalEntityActivity": "21.10.00",
+    "legalName": "PharmaBase Research",
+    "registrationDate": "1972-03-19"
+  },
+  "99882233445": {
+    "legalEntityActivity": "22.22.00",
+    "legalName": "PlastiPack Imballaggi",
+    "registrationDate": "2001-01-01"
+  },
+  "88776655443": {
+    "legalEntityActivity": "23.11.00",
+    "legalName": "VetroPiano Italia",
+    "registrationDate": "1948-05-16"
+  },
+  "77665544332": {
+    "legalEntityActivity": "24.10.00",
+    "legalName": "SteelForge Acciai",
+    "registrationDate": "1934-09-03"
+  },
+  "66554433221": {
+    "legalEntityActivity": "25.11.00",
+    "legalName": "MetalStruct Engineering",
+    "registrationDate": "1976-10-27"
+  },
+  "55443322110": {
+    "legalEntityActivity": "26.11.00",
+    "legalName": "ElectroChip Components",
+    "registrationDate": "2014-04-08"
+  },
+  "44332211008": {
+    "legalEntityActivity": "27.20.00",
+    "legalName": "PowerCell Batteries",
+    "registrationDate": "1982-02-22"
+  },
+  "33221100987": {
+    "legalEntityActivity": "28.14.00",
+    "legalName": "ValveTech Solutions",
+    "registrationDate": "1951-06-10"
+  },
+  "22110099876": {
+    "legalEntityActivity": "29.32.00",
+    "legalName": "AutoParts Italia",
+    "registrationDate": "1998-07-04"
+  },
+  "11009988765": {
+    "legalEntityActivity": "30.12.00",
+    "legalName": "NauticaSport",
+    "registrationDate": "1969-01-18"
+  },
+  "00998877654": {
+    "legalEntityActivity": "31.00.33",
+    "legalName": "Sedie&Design",
+    "registrationDate": "1987-03-23"
+  },
+  "88770066554": {
+    "legalEntityActivity": "32.20.00",
+    "legalName": "MusicArt Strumenti",
+    "registrationDate": "1933-11-29"
+  },
+  "77668855443": {
+    "legalEntityActivity": "33.14.00",
+    "legalName": "ElettroFix Service",
+    "registrationDate": "2009-08-12"
+  },
+  "66557744332": {
+    "legalEntityActivity": "35.21.00",
+    "legalName": "GasItalia Produzione",
+    "registrationDate": "1956-04-06"
+  },
+  "55446633221": {
+    "legalEntityActivity": "36.00.00",
+    "legalName": "AquaServ Trattamenti",
+    "registrationDate": "1971-10-15"
+  },
+  "44335522110": {
+    "legalEntityActivity": "38.11.00",
+    "legalName": "EcoRaccolta",
+    "registrationDate": "1993-12-01"
+  },
+  "33224411009": {
+    "legalEntityActivity": "41.00.00",
+    "legalName": "EdilHouse Costruzioni",
+    "registrationDate": "2006-09-09"
+  },
+  "22113300988": {
+    "legalEntityActivity": "43.23.00",
+    "legalName": "Isolamenti Italia",
+    "registrationDate": "1944-02-14"
+  },
+  "11002299877": {
+    "legalEntityActivity": "46.39.00",
+    "legalName": "FoodTrade Distribuzione",
+    "registrationDate": "1980-07-27"
+  },
+  "00991188766": {
+    "legalEntityActivity": "47.23.00",
+    "legalName": "Pescheria MareAzzurro",
+    "registrationDate": "2018-05-03"
+  },
+  "88776677655": {
+    "legalEntityActivity": "49.41.00",
+    "legalName": "StradaExpress Trasporti",
+    "registrationDate": "1953-06-20"
+  },
+  "77665566544": {
+    "legalEntityActivity": "50.20.00",
+    "legalName": "CargoMarittimo",
+    "registrationDate": "1991-11-11"
+  },
+  "66554455433": {
+    "legalEntityActivity": "52.23.00",
+    "legalName": "AeroSupport Italia",
+    "registrationDate": "1975-08-08"
+  },
+  "55443344322": {
+    "legalEntityActivity": "53.20.00",
+    "legalName": "CorriereFlash",
+    "registrationDate": "2003-04-02"
+  },
+  "44332233211": {
+    "legalEntityActivity": "55.10.00",
+    "legalName": "Hotel Panorama",
+    "registrationDate": "1926-10-17"
+  },
+  "33221122100": {
+    "legalEntityActivity": "56.40.00",
+    "legalName": "RistoBroker",
+    "registrationDate": "2012-01-28"
+  },
+  "22110011009": {
+    "legalEntityActivity": "58.11.00",
+    "legalName": "LibroEdita",
+    "registrationDate": "1989-09-05"
+  },
+  "11009900988": {
+    "legalEntityActivity": "59.11.00",
+    "legalName": "CinemaVision",
+    "registrationDate": "1973-03-13"
+  },
+  "00998899877": {
+    "legalEntityActivity": "60.10.00",
+    "legalName": "RadioItalia Network",
+    "registrationDate": "2007-07-22"
+  },
+  "88776688766": {
+    "legalEntityActivity": "61.20.00",
+    "legalName": "TelecomReseller",
+    "registrationDate": "1940-06-30"
+  },
+  "77665577655": {
+    "legalEntityActivity": "62.10.00",
+    "legalName": "CodeFactory",
+    "registrationDate": "2016-11-19"
+  },
+  "66554466544": {
+    "legalEntityActivity": "63.91.00",
+    "legalName": "WebSearch Hub",
+    "registrationDate": "1994-03-01"
+  },
+  "55443355433": {
+    "legalEntityActivity": "64.21.00",
+    "legalName": "HoldingGroup Italia",
+    "registrationDate": "1983-08-08"
+  },
+  "44332244322": {
+    "legalEntityActivity": "65.11.00",
+    "legalName": "VitaAssicurazioni",
+    "registrationDate": "1958-12-12"
+  },
+  "33221133211": {
+    "legalEntityActivity": "66.22.00",
+    "legalName": "AssiBroker",
+    "registrationDate": "2004-04-04"
+  },
+  "22110022100": {
+    "legalEntityActivity": "68.11.00",
+    "legalName": "ImmobiliareCentro",
+    "registrationDate": "1978-01-29"
+  },
+  "11009911009": {
+    "legalEntityActivity": "70.10.00",
+    "legalName": "Headquarters Italia",
+    "registrationDate": "1936-05-16"
+  },
+  "00998811008": {
+    "legalEntityActivity": "73.20.00",
+    "legalName": "MarketInsight",
+    "registrationDate": "2019-02-21"
+  },
+  "88776600987": {
+    "legalEntityActivity": "74.30.00",
+    "legalName": "LinguaPro Traduzioni",
+    "registrationDate": "1960-10-10"
+  },
+  "77665599876": {
+    "legalEntityActivity": "75.00.00",
+    "legalName": "VetCare Clinica",
+    "registrationDate": "1986-07-07"
+  },
+  "66554488765": {
+    "legalEntityActivity": "77.11.00",
+    "legalName": "AutoRent Italia",
+    "registrationDate": "1997-03-03"
+  },
+  "55443377654": {
+    "legalEntityActivity": "78.10.00",
+    "legalName": "JobFinder Agenzia",
+    "registrationDate": "1950-09-12"
+  },
+  "44332266543": {
+    "legalEntityActivity": "79.11.00",
+    "legalName": "ViaggiaConNoi",
+    "registrationDate": "2014-06-18"
+  },
+  "33221155432": {
+    "legalEntityActivity": "81.10.00",
+    "legalName": "CleanBuilding",
+    "registrationDate": "1939-04-25"
+  },
+  "22110044321": {
+    "legalEntityActivity": "82.20.00",
+    "legalName": "CallCenterPlus",
+    "registrationDate": "2001-11-09"
+  },
+  "11009933210": {
+    "legalEntityActivity": "84.25.00",
+    "legalName": "FireRescue",
+    "registrationDate": "1922-08-14"
+  },
+  "00998822109": {
+    "legalEntityActivity": "85.53.00",
+    "legalName": "ScuolaGuida Roma",
+    "registrationDate": "1996-12-30"
+  },
+  "88776633298": {
+    "legalEntityActivity": "86.23.00",
+    "legalName": "Studio OdontoSmile",
+    "registrationDate": "2010-06-06"
+  },
+  "77665544387": {
+    "legalEntityActivity": "87.30.00",
+    "legalName": "Residenza Serenità",
+    "registrationDate": "1955-04-11"
+  },
+  "66554411276": {
+    "legalEntityActivity": "88.91.00",
+    "legalName": "BabyCare Centro",
+    "registrationDate": "1984-02-02"
+  },
+  "55443388765": {
+    "legalEntityActivity": "90.31.00",
+    "legalName": "ArteSpazio",
+    "registrationDate": "2009-09-19"
+  },
+  "44332277654": {
+    "legalEntityActivity": "91.21.00",
+    "legalName": "MuseoStorico",
+    "registrationDate": "1932-03-08"
+  },
+  "33221166543": {
+    "legalEntityActivity": "92.00.09",
+    "legalName": "LuckyBet",
+    "registrationDate": "2018-07-27"
+  },
+  "22110055432": {
+    "legalEntityActivity": "93.12.00",
+    "legalName": "SportClub Italia",
+    "registrationDate": "1973-01-15"
+  },
+  "11009944321": {
+    "legalEntityActivity": "94.20.00",
+    "legalName": "SindacatoLavoratori",
+    "registrationDate": "1966-04-04"
+  },
+  "00998833210": {
+    "legalEntityActivity": "95.25.00",
+    "legalName": "Orologi&Co Riparazioni",
+    "registrationDate": "2005-10-22"
+  },
+  "88776622109": {
+    "legalEntityActivity": "96.21.00",
+    "legalName": "Parrucchieri Glam",
+    "registrationDate": "1947-03-13"
+  },
+  "77665511008": {
+    "legalEntityActivity": "97.00.10",
+    "legalName": "Condominio Roma Centro",
+    "registrationDate": "1991-01-01"
+  },
+  "66554400987": {
+    "legalEntityActivity": "98.20.00",
+    "legalName": "ServiziFamiglia",
+    "registrationDate": "1935-08-28"
+  },
+  "55443399876": {
+    "legalEntityActivity": "99.00.00",
+    "legalName": "Organismo Internazionale",
+    "registrationDate": "1974-06-17"
   }
 }

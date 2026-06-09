@@ -3,13 +3,13 @@ import {
   type EserviceVersionId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
-  COMPANIES_MOCK_ESERVICE_ID,
-  COMPANIES_MOCK_ESERVICE_VERSION_ID,
-  COMPANIES_MOCK_PRODUCER_ID,
-} from "../src/companies/mockup.ts";
+  POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+  POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+  POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+} from "../src/pocUc02Companies/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 
@@ -26,10 +26,6 @@ const SAMPLE_VAT = "01229430085";
 const UNKNOWN_VAT = "00000000000";
 const INVALID_VAT = "not-a-vat";
 
-// setup.ts pins signalHubSeedStartDateMs=0, signalHubSeedExpireSeconds=30 so
-// wall-clock ms maps straight to periodId: T=15_000 ⇒ periodId 0, T=45_000 ⇒ 1.
-const PERIOD_MS = 30_000;
-
 async function signToken(
   overrides: {
     eserviceId?: EserviceId;
@@ -37,27 +33,17 @@ async function signToken(
   } = {},
 ) {
   return signEserviceAccessToken({
-    eserviceId: overrides.eserviceId ?? COMPANIES_MOCK_ESERVICE_ID,
+    eserviceId: overrides.eserviceId ?? POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
     eserviceVersionId:
-      overrides.eserviceVersionId ?? COMPANIES_MOCK_ESERVICE_VERSION_ID,
+      overrides.eserviceVersionId ??
+      POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
     knodeId: TEST_KNODE_ID,
-    producerId: COMPANIES_MOCK_PRODUCER_ID,
+    producerId: POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
     tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
   });
 }
 
 describe("mock-eservice companies router", () => {
-  beforeEach(() => {
-    // Only override Date so computePeriodId is deterministic; faking
-    // setTimeout/setInterval would hang fastify's internal scheduling.
-    vi.useFakeTimers({ toFake: ["Date"] });
-    vi.setSystemTime(PERIOD_MS * 0 + 1_000);
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe("GET /legal-entities/:uidCompany/information", () => {
     it("returns 200 with the legal entity for a known company", async () => {
       const token = await signToken();
@@ -69,7 +55,7 @@ describe("mock-eservice companies router", () => {
       expect(res.statusCode).toBe(200);
       const body = res.json();
       expect(body.legalName).toBe("TUTTO - KLIMA SRL");
-      expect(body.legalEntityActivity).toBe("43.21");
+      expect(body.legalEntityActivity).toBe("43.22.07");
       expect(body.registrationDate).toBe("2012-07-09");
       expect(body.legalIdentifier).toEqual({
         notation: SAMPLE_VAT,
@@ -141,18 +127,6 @@ describe("mock-eservice companies router", () => {
       });
       expect(evidence.validityPeriod.starttime).toBe("2020-01-01");
       expect(evidence.validityPeriod.endtime).toBe("2030-12-31");
-    });
-
-    it("rotates the evidence content across periods", async () => {
-      const token = await signToken();
-      vi.setSystemTime(PERIOD_MS * 1 + 1_000);
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: `/legal-entities/${SAMPLE_VAT}/evidences`,
-      });
-      expect(res.statusCode).toBe(200);
-      expect(res.json().at(0)?.validityPeriod.endtime).toBe("2035-12-31");
     });
 
     it("filters by evidenceType", async () => {

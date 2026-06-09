@@ -54,11 +54,11 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'f26b46b5-b440-45f2-a774-e6e218f92c61',
   '16895bc2-deb0-427c-8c25-336207b2d0a1',
   '4b559dea-4af9-4ec1-ac2e-0a59449dfdfc',
-  '69ee37b2546de148b25e7f0eff2bed91a34bebeeea222941cedfddae6f2283bc',
+  'ff244681bfa21119a917ab58750bdb8b26f3c94fc33e21550b26a348fe4a66d2',
   'application/yaml',
-  'mock-bearer-companies-eservice.yaml',
-  'f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-companies-eservice.yaml',
-  '{"en": "mock-bearer-companies-eservice.yaml"}'::jsonb,
+  'mock-bearer-poc-uc02-companies-eservice.yaml',
+  'f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-poc-uc02-companies-eservice.yaml',
+  '{"en": "mock-bearer-poc-uc02-companies-eservice.yaml"}'::jsonb,
   0, now(), now()
 ) ON CONFLICT (id) DO UPDATE SET
   eservice_id = EXCLUDED.eservice_id,

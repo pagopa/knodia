@@ -23,8 +23,8 @@ import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
-import { mockCompaniesRouter } from "./routers/mockCompaniesRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
@@ -43,10 +43,10 @@ const signalHubAppTag: OpenAPIV3.TagObject = {
     "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-service 03, Bearer-protected)",
   name: apiTags.residence,
 };
-const companiesAppTag: OpenAPIV3.TagObject = {
+const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
   description:
-    "Legal-entity information + evidences lookup by uid_company (Cross-Border E-service 04, Bearer-protected)",
-  name: apiTags.legalEntity,
+    "Legal-entity information + evidences lookup by uid_company (Bearer-protected)",
+  name: apiTags.pocUc02Companies,
 };
 
 export function buildApp({
@@ -89,7 +89,7 @@ export function buildApp({
       bearerAppTag,
       dpopAppTag,
       signalHubAppTag,
-      companiesAppTag,
+      pocUc02CompaniesAppTag,
     ],
   );
 
@@ -105,7 +105,7 @@ export function buildApp({
     });
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
-    protectedApp.register(mockCompaniesRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -139,8 +139,10 @@ export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   });
 }
 
-export function buildBearerCompaniesAppFromConfig(config: MockEserviceConfig) {
-  return buildBearerCompaniesApp({
+export function buildBearerPocUc02CompaniesAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc02CompaniesApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -194,7 +196,7 @@ function buildBearerApp({
   return app;
 }
 
-function buildBearerCompaniesApp({
+function buildBearerPocUc02CompaniesApp({
   config,
   jwksResolvers,
 }: {
@@ -202,8 +204,6 @@ function buildBearerCompaniesApp({
   jwksResolvers: JWTVerifyGetKey[];
 }) {
   const { acceptedAudiences, expectedIssuer, knodeId } = config;
-
-  const seedConfig = toSignalHubSeedConfig(config);
 
   const app = createMockFastifyApp(
     config,
@@ -215,7 +215,7 @@ function buildBearerCompaniesApp({
       title: "Knodia Mock E-service API (Companies)",
       version: "1.0.0",
     },
-    [companiesAppTag],
+    [pocUc02CompaniesAppTag],
   );
 
   // No health router: this app is only used for OpenAPI generation, where we don't want /status.
@@ -225,7 +225,7 @@ function buildBearerCompaniesApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockCompaniesRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   return app;
