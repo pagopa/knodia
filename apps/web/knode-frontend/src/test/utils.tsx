@@ -1,5 +1,4 @@
 import type { UserRole } from "@knodia/common-models/auth";
-import type { ReactElement, ReactNode } from "react";
 
 import { generateUserId } from "@knodia/common-models/ids";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +11,7 @@ import {
 } from "@tanstack/react-router";
 import { render, type RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { type ReactElement, type ReactNode, Suspense } from "react";
 import { I18nProvider } from "react-aria-components";
 
 import { AuthContext } from "@/contexts/auth";
@@ -107,7 +107,7 @@ function createTestWrapper(options: WrapperOptions = {}) {
             }}
           >
             <RouterContextProvider router={router}>
-              {children}
+              <Suspense fallback={null}>{children}</Suspense>
             </RouterContextProvider>
           </AuthContext.Provider>
         </QueryClientProvider>

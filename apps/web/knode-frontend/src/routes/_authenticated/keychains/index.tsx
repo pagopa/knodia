@@ -16,14 +16,15 @@ import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CreateKeychainModal } from "@/features/keychain/components/CreateKeychainModal";
 import { KeychainTable } from "@/features/keychain/components/KeychainTable";
+import { keychainType } from "@/features/keychain/models/commons";
 import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
-  supportedKeychainTab,
 } from "@/features/keychain/models/search-params";
 import {
   consumerKeychainsQuery,
   knodeApiKeychainsQuery,
+  producerKeychainsQuery,
 } from "@/features/keychain/services/queries";
 
 export const Route = createFileRoute("/_authenticated/keychains/")({
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/_authenticated/keychains/")({
     const query = match(type)
       .with("api", () => knodeApiKeychainsQuery(offset))
       .with("consumption", () => consumerKeychainsQuery(offset))
+      .with("production", () => producerKeychainsQuery(offset))
       .exhaustive();
     queryClient.prefetchQuery(query);
   },
@@ -66,9 +68,16 @@ function RouteComponent() {
     placeholderData: keepPreviousData,
   });
 
+  const { data: producerData, isLoading: isProducerLoading } = useQuery({
+    ...producerKeychainsQuery(offset),
+    enabled: selectedTab === "production",
+    placeholderData: keepPreviousData,
+  });
+
   const activeData = match(selectedTab)
     .with("api", () => apiData)
     .with("consumption", () => consumerData)
+    .with("production", () => producerData)
     .exhaustive();
 
   function handleSearchChange(values: Partial<typeof search>) {
@@ -103,7 +112,7 @@ function RouteComponent() {
       <Tabs
         kind="hug"
         onSelectionChange={(key) => {
-          const parsed = supportedKeychainTab.safeParse(key);
+          const parsed = keychainType.safeParse(key);
           if (parsed.success) {
             handleSearchChange({ offset: 0, type: parsed.data });
           }
@@ -111,23 +120,29 @@ function RouteComponent() {
         selectedKey={selectedTab}
       >
         <TabList aria-label="Tabs">
-          <Tab id="production" isDisabled key="production">
-            Production
-          </Tab>
           <Tab id="consumption" key="consumption">
             Consumption
           </Tab>
+          <Tab id="production" key="production">
+            Production
+          </Tab>
           <Tab id="api" key="api">
-            API
+            Knode API
           </Tab>
         </TabList>
         <TabPanels>
-          <TabPanel id="production" key="production"></TabPanel>
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isConsumerLoading}
               keychains={consumerData?.results ?? []}
               type="consumption"
+            />
+          </TabPanel>
+          <TabPanel id="production" key="production">
+            <KeychainTable
+              isLoading={isProducerLoading}
+              keychains={producerData?.results ?? []}
+              type="production"
             />
           </TabPanel>
           <TabPanel id="api" key="api">
@@ -141,6 +156,7 @@ function RouteComponent() {
       </Tabs>
 
       <CreateKeychainModal
+        defaultType={selectedTab}
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />

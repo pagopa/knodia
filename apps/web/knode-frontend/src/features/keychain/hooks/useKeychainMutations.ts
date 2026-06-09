@@ -20,6 +20,10 @@ import {
   knodeApiKeychainMembershipQueryKey,
   knodeApiKeychainMembersQueryKey,
   knodeApiKeychainsQueryKey,
+  producerKeychainKeysQueryKey,
+  producerKeychainMembershipQueryKey,
+  producerKeychainMembersQueryKey,
+  producerKeychainsQueryKey,
 } from "../services/queries";
 
 interface UploadKeyBody {
@@ -44,6 +48,13 @@ export function useAddKeychainMember(keychain: SupportedKeychain) {
             body: { userId },
             client,
             path: { knodeApiKeychainId: keychainId },
+          }),
+        )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.addProducerKeychainMember({
+            body: { userId },
+            client,
+            path: { producerKeychainId: keychainId },
           }),
         )
         .exhaustive(),
@@ -72,6 +83,12 @@ export function useRemoveKeychainKey(keychain: SupportedKeychain) {
             path: { keyId, knodeApiKeychainId: keychainId },
           }),
         )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.removeProducerKeychainKey({
+            client,
+            path: { keyId, producerKeychainId: keychainId },
+          }),
+        )
         .exhaustive(),
     onSuccess: () => {
       invalidateKeysList(queryClient, keychain);
@@ -95,6 +112,12 @@ export function useRemoveKeychainMember(keychain: SupportedKeychain) {
           bffApi.removeKnodeApiKeychainMember({
             client,
             path: { knodeApiKeychainId: keychainId, userId },
+          }),
+        )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.removeProducerKeychainMember({
+            client,
+            path: { producerKeychainId: keychainId, userId },
           }),
         )
         .exhaustive(),
@@ -125,6 +148,13 @@ export function useUploadKeychainKey(keychain: SupportedKeychain) {
             path: { knodeApiKeychainId: keychainId },
           }),
         )
+        .with({ type: "production" }, ({ keychainId }) =>
+          bffApi.uploadProducerKeychainKey({
+            body,
+            client,
+            path: { producerKeychainId: keychainId },
+          }),
+        )
         .exhaustive(),
     onSuccess: () => {
       invalidateKeysList(queryClient, keychain);
@@ -141,6 +171,7 @@ function invalidateKeychainsList(
     queryKey: match(keychain)
       .with({ type: "consumption" }, () => consumerKeychainsQueryKey())
       .with({ type: "api" }, () => knodeApiKeychainsQueryKey())
+      .with({ type: "production" }, () => producerKeychainsQueryKey())
       .exhaustive(),
   });
 }
@@ -156,6 +187,9 @@ function invalidateKeysList(
       )
       .with({ type: "api" }, ({ keychainId }) =>
         knodeApiKeychainKeysQueryKey(keychainId),
+      )
+      .with({ type: "production" }, ({ keychainId }) =>
+        producerKeychainKeysQueryKey(keychainId),
       )
       .exhaustive(),
   });
@@ -174,6 +208,9 @@ function invalidateMembership(
       .with({ type: "api" }, ({ keychainId }) =>
         knodeApiKeychainMembershipQueryKey(keychainId, userId),
       )
+      .with({ type: "production" }, ({ keychainId }) =>
+        producerKeychainMembershipQueryKey(keychainId, userId),
+      )
       .exhaustive(),
   });
 }
@@ -189,6 +226,9 @@ function invalidateMembersList(
       )
       .with({ type: "api" }, ({ keychainId }) =>
         knodeApiKeychainMembersQueryKey(keychainId),
+      )
+      .with({ type: "production" }, ({ keychainId }) =>
+        producerKeychainMembersQueryKey(keychainId),
       )
       .exhaustive(),
   });

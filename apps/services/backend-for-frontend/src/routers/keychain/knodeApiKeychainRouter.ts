@@ -35,7 +35,7 @@ import { z } from "zod";
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedKeyResource,
-  API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKeychainKeysQueryParams,
   API_GetKnodeApiKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
@@ -43,12 +43,12 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainMembershipCheckResult,
   API_KeychainPatch,
   API_Keychains,
+  API_KeychainSeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
-  API_KnodeApiKeychainMembershipCheckResult,
-  API_KnodeApiKeychainSeed,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
 import {
@@ -129,7 +129,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_KnodeApiKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Knode API Keychain",
       operationId: "createKnodeApiKeychain",
       response: {
@@ -374,7 +374,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       description: "Retrieve keys of a Knode API Keychain",
       operationId: "getKnodeApiKeychainKeys",
       params: API_KnodeApiKeychainIdPathParam,
-      querystring: API_GetKnodeApiKeychainKeysQueryParams,
+      querystring: API_GetKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
           description: "Knode API Keychain Keys retrieved successfully",
@@ -686,14 +686,13 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getKnodeApiKeychainMembership",
       params: API_KnodeApiKeychainMemberPathParams,
       response: {
-        200: API_KnodeApiKeychainMembershipCheckResult.meta({
+        200: API_KeychainMembershipCheckResult.meta({
           description:
             "Knode API Keychain membership check retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Knode API Keychain not found" }),
       },
       tags: [apiTags.knodeApiKeychain],
     },

@@ -39,6 +39,7 @@ import {
   aggregateFlatProducerKeychains,
   toConsumerKeychainPurpose,
   toKeychainKey,
+  toProducerKeychainEservice,
 } from "@knodia/db-readmodel-keychain/converters";
 import {
   consumerKeychainReadmodelServiceBuilder,
@@ -53,6 +54,7 @@ import type {
   API_GetConsumerKeychainsQueryParams,
   API_GetKnodeApiKeychainKeysQueryParams,
   API_GetKnodeApiKeychainsQueryParams,
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainsQueryParams,
 } from "../models/api.ts";
@@ -430,6 +432,49 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           ),
         ),
       );
+    },
+    async getProducerKeychainEservices(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainEservicesQueryParams,
+    ): Promise<ListResult<ProducerKeychainEservice>> {
+      const { limit, offset } = params;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "linkedAt",
+          sortOrder: "desc",
+          table: readmodelProducerKeychainEservice,
+        });
+
+        const createFilterQuery = () =>
+          tx
+            .select()
+            .from(readmodelProducerKeychainEservice)
+            .where(
+              eq(
+                readmodelProducerKeychainEservice.producerKeychainId,
+                producerKeychainId,
+              ),
+            )
+            .$dynamic();
+
+        const [queryRes, totalCount] = await Promise.all([
+          createFilterQuery()
+            .orderBy(...orderByFilters)
+            .limit(limit)
+            .offset(offset),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const producerKeychainEservices = queryRes.map(
+          toProducerKeychainEservice,
+        );
+
+        return {
+          results: producerKeychainEservices.map((e) => e.data),
+          totalCount,
+        };
+      });
     },
     async getProducerKeychainKeys(
       producerKeychainId: ProducerKeychainId,

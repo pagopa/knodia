@@ -15,12 +15,15 @@ vi.mock("axios", async (importOriginal) => {
     post: mockAxiosPost,
   };
 });
-vi.mock("jose", () => ({
-  createRemoteJWKSet: vi.fn(() => "mock-jwks"),
-  jwtVerify: mockJwtVerify,
-}));
+vi.mock("jose", async (importOriginal) => {
+  const original = await importOriginal<typeof import("jose")>();
 
-import { OIDC_SESSION_COOKIE_NAME } from "../src/routers/signupRouter.ts";
+  return {
+    ...original,
+    createRemoteJWKSet: vi.fn(() => "mock-jwks"),
+    jwtVerify: mockJwtVerify,
+  };
+});
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
@@ -30,6 +33,7 @@ vi.mock("@knodia/token-generator", () => ({
   }),
 }));
 
+import { OIDC_SESSION_COOKIE_NAME } from "../src/models/api.ts";
 import { app } from "./setup.ts";
 
 function expectOIDCSessionCookieCleared(response: {

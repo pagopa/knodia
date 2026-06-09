@@ -6,6 +6,7 @@ import type {
   FlatKnodeApiKeychain,
   FlatProducerKeychain,
   KeychainKey,
+  ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
@@ -13,6 +14,7 @@ import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
   API_KeychainKey,
+  API_ProducerKeychainEservice,
   API_User,
 } from "./api.ts";
 
@@ -54,4 +56,11 @@ export const toAPI_CreatedMemberResource = (
   userId: UserId,
 ): API_CreatedMemberResource => ({
   userId,
+});
+
+export const toAPI_ProducerKeychainEservice = (
+  producerKeychainEservice: ProducerKeychainEservice,
+): API_ProducerKeychainEservice => ({
+  ...producerKeychainEservice,
+  linkedAt: producerKeychainEservice.linkedAt.toISOString(),
 });
