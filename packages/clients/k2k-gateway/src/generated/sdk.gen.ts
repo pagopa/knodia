@@ -86,7 +86,7 @@ export const getEservice = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Get PurposeFormOptions for an E-service
  *
- * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service. Returns an empty list when the E-service has no receiveDataConfig.
+ * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.
  */
 export const getEservicePurposeFormOptions = <ThrowOnError extends boolean = true>(options: Options<GetEservicePurposeFormOptionsData, ThrowOnError>) => (options.client ?? client).get<GetEservicePurposeFormOptionsResponses, GetEservicePurposeFormOptionsErrors, ThrowOnError>({
     responseType: 'json',

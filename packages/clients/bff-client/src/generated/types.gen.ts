@@ -779,7 +779,7 @@ export type PurposeSeedForReceiveData = {
 };
 
 /**
- * Seed data to create a new Purpose. The shape depends on the target E-service mode: in ProvideData the Consumer authors `formAnswersJson` against the current schema, in ReceiveData the Consumer picks one of the `PurposeFormOption` entries published by the Producer by `purposeFormOptionId`.
+ * Seed data to create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
  */
 export type PurposeSeed = ({
     eserviceMode: 'ProvideData';
@@ -3870,6 +3870,10 @@ export type GetConsumerEservicePurposeFormOptionsErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
 };
 
 export type GetConsumerEservicePurposeFormOptionsError = GetConsumerEservicePurposeFormOptionsErrors[keyof GetConsumerEservicePurposeFormOptionsErrors];

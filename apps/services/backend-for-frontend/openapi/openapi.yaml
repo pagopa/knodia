@@ -1643,11 +1643,11 @@ components:
         - purposeFormOptionId
       additionalProperties: false
     PurposeSeed:
-      description: "Seed data to create a new Purpose. The shape depends on the target
-        E-service mode: in ProvideData the Consumer authors `formAnswersJson`
-        against the current schema, in ReceiveData the Consumer picks one of the
-        `PurposeFormOption` entries published by the Producer by
-        `purposeFormOptionId`."
+      description: Seed data to create a new Purpose for an E-service on behalf of a
+        Consumer. The request body can be either PurposeSeedForProvideData or
+        PurposeSeedForReceiveData based on the Eservice mode. The first one
+        carries inline form answers compiled by the Consumer, while the second
+        one references a pre-filled PurposeFormOption compiled by the Producer.
       discriminator:
         mapping:
           ProvideData: "#/components/schemas/PurposeSeedForProvideData"
@@ -6316,7 +6316,8 @@ paths:
       description: Retrieve the list of PurposeFormOption entries published by the
         Producer on a ReceiveData E-service, enriched with the corresponding
         form schema, UI schema, legal texts and UI texts. Returns an empty list
-        when the E-service has no receiveDataConfig.
+        when the E-service has no receiveDataConfig, and 409 if the E-service is
+        not in ReceiveData mode.
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -6369,6 +6370,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/eservices/{eserviceId}/interface:
@@ -7059,10 +7068,11 @@ paths:
       summary: Create a consumer Purpose
       tags:
         - purpose
-      description: "Create a new Purpose for an E-service. The body is a discriminated
-        union on `eserviceMode`: ProvideData carries `formAnswersJson` +
-        `formSchemaVersion`, ReceiveData carries `purposeFormOptionId`
-        referencing one of the Producer's pre-filled options."
+      description: Create a new Purpose for an E-service on behalf of a Consumer. The
+        request body can be either PurposeSeedForProvideData or
+        PurposeSeedForReceiveData based on the Eservice mode. The first one
+        carries inline form answers compiled by the Consumer, while the second
+        one references a pre-filled PurposeFormOption compiled by the Producer.
       requestBody:
         required: true
         content:

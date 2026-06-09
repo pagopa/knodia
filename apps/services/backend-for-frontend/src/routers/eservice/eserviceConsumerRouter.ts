@@ -49,6 +49,7 @@ import {
   API_ConsumerPurposeFormOptions,
   API_GetConsumerEservicePurposeFormOptionsQueryParams,
 } from "../../models/purpose/api.ts";
+import { toAPI_ConsumerPurposeFormOption } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceConsumerRouterOptions {
@@ -224,38 +225,39 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         "Getting PurposeFormOptions enriched with form schemas",
       );
 
-      const [{ data: options }, { data: schemas }] = await Promise.all([
-        remoteResourcesManagerApi.getEservicePurposeFormOptions({
+      const { data: options } =
+        await remoteResourcesManagerApi.getEservicePurposeFormOptions({
           client: remoteResourcesManagerClient,
           headers,
           path: { eserviceId: req.params.eserviceId },
           query: { knodeId: req.query.knodeId },
-        }),
-        remoteResourcesManagerApi.getCurrentPurposeFormSchemas({
+        });
+
+      if (options.items.length === 0) {
+        res.send({ items: [] });
+        return;
+      }
+
+      // TODO: fetch the form schemas matching each option's
+      // formSchemaVersion instead of always pulling the current one.
+      // Works today because only one schema version exists.
+      const { data: schemas } =
+        await remoteResourcesManagerApi.getCurrentPurposeFormSchemas({
           client: remoteResourcesManagerClient,
           headers,
           query: { knodeId: req.query.knodeId },
-        }),
-      ]);
+        });
 
       res.send({
-        items: options.items.map((option) => ({
-          description: option.description,
-          formAnswersJson: option.formAnswersJson,
-          id: option.id,
-          name: option.name,
-          schema: schemas.schema,
-          texts: schemas.texts,
-          uiSchema: schemas.uiSchema,
-          uiTexts: schemas.uiTexts,
-          version: schemas.version,
-        })),
+        items: options.items.map((option) =>
+          toAPI_ConsumerPurposeFormOption({ option, schemas }),
+        ),
       });
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig.",
+        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.",
       operationId: "getConsumerEservicePurposeFormOptions",
       params: API_EserviceIdPathParam,
       querystring: API_GetConsumerEservicePurposeFormOptionsQueryParams,
@@ -267,6 +269,9 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({
+          description: "E-service mode is not ReceiveData",
+        }),
       },
       summary: "Get Consumer PurposeFormOptions",
       tags: [apiTags.eservice],

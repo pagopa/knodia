@@ -124,7 +124,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service hosted on a remote Knode. Returns an empty list when the E-service has no receiveDataConfig.",
+        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service hosted on a remote Knode. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.",
       operationId: "getEservicePurposeFormOptions",
       params: API_EserviceIdPathParam,
       querystring: API_GetEservicePurposeFormOptionsQueryParams,
@@ -136,6 +136,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({
+          description: "E-service mode is not ReceiveData",
+        }),
       },
       summary: "Get PurposeFormOptions for an E-service",
       tags: [apiTags.eservice],

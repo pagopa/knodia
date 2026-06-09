@@ -1242,7 +1242,8 @@ paths:
         - eservice
       description: Retrieve the list of PurposeFormOption entries published by the
         Producer on a ReceiveData E-service. Returns an empty list when the
-        E-service has no receiveDataConfig.
+        E-service has no receiveDataConfig, and 409 if the E-service is not in
+        ReceiveData mode.
       parameters:
         - schema:
             $ref: "#/components/schemas/EserviceId"
@@ -1272,6 +1273,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/versions/latest:

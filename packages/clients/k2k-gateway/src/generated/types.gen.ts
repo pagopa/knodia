@@ -774,6 +774,10 @@ export type GetEservicePurposeFormOptionsErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
 };
 
 export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];

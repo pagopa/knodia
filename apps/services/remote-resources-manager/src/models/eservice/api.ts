@@ -117,11 +117,11 @@ const API_PurposeFormOptionAnswers = z.record(z.string(), z.unknown()).meta({
 
 const API_PurposeFormOption = z
   .strictObject({
-    description: z.strictObject({ en: z.string() }),
+    description: API_LocalizedDescription,
     formAnswersJson: API_PurposeFormOptionAnswers,
     formSchemaVersion: API_PurposeFormSchemaVersionRef,
     id: z.uuid(),
-    name: z.strictObject({ en: z.string() }),
+    name: API_LocalizedName,
   })
   .meta({ id: "PurposeFormOption" });
 type API_PurposeFormOption = z.infer<typeof API_PurposeFormOption>;

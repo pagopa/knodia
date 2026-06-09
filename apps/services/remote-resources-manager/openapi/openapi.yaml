@@ -461,13 +461,7 @@ components:
       type: object
       properties:
         description:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedDescription"
         formAnswersJson:
           description: Key-value pairs of answers to the Purpose form
           type: object
@@ -481,13 +475,7 @@ components:
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedName"
       required:
         - description
         - formAnswersJson
@@ -1210,7 +1198,8 @@ paths:
         - eservice
       description: Retrieve the list of PurposeFormOption entries published by the
         Producer on a ReceiveData E-service hosted on a remote Knode. Returns an
-        empty list when the E-service has no receiveDataConfig.
+        empty list when the E-service has no receiveDataConfig, and 409 if the
+        E-service is not in ReceiveData mode.
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1261,6 +1250,14 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices:

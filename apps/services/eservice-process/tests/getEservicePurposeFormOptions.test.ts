@@ -15,11 +15,7 @@ import type {
 
 import { injectAppRequest, seedEservice } from "./utils.ts";
 
-const allowedTestTokens: TestToken[] = [
-  { type: "internal" },
-  { roles: ["administrative"], type: "ui-session" },
-  { roles: ["technical"], type: "ui-session" },
-];
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 const getOptions = (
   eserviceId: string,
@@ -28,7 +24,7 @@ const getOptions = (
 
 describe("GET /eservices/:eserviceId/purposeFormOptions", () => {
   it.each(allowedTestTokens)(
-    "should return the options published on the ReceiveData e-service ($type, $roles)",
+    "should return the options published on the ReceiveData e-service ($type)",
     async (token) => {
       const purposeFormOptions = [
         getMockPurposeFormOption(0),
@@ -63,16 +59,33 @@ describe("GET /eservices/:eserviceId/purposeFormOptions", () => {
     },
   );
 
-  it("should return an empty list for an e-service without receiveDataConfig", async () => {
-    const eservice = getMockEservice({
-      latestVersionState: "Active",
-      seed: 101,
-    });
+  it("should return an empty list for a ReceiveData e-service without receiveDataConfig", async () => {
+    const eservice = {
+      ...getMockEservice({
+        latestVersionState: "Active",
+        seed: 101,
+      }),
+      mode: EserviceMode.enum.ReceiveData,
+    };
     await seedEservice(eservice);
 
     const response = await getOptions(eservice.id);
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({ items: [] });
+  });
+
+  it("should return 409 if the e-service is not in ReceiveData mode", async () => {
+    const eservice = {
+      ...getMockEservice({
+        latestVersionState: "Active",
+        seed: 102,
+      }),
+      mode: EserviceMode.enum.ProvideData,
+    };
+    await seedEservice(eservice);
+
+    const response = await getOptions(eservice.id);
+    expect(response.statusCode).toBe(409);
   });
 
   it("should return 404 if the e-service does not exist", async () => {

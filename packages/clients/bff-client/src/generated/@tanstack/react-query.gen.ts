@@ -1639,7 +1639,7 @@ export const getConsumerEservicePurposeFormOptionsQueryKey = (options: Options<G
 /**
  * Get Consumer PurposeFormOptions
  *
- * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig.
+ * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.
  */
 export const getConsumerEservicePurposeFormOptionsOptions = (options: Options<GetConsumerEservicePurposeFormOptionsData>) => queryOptions<GetConsumerEservicePurposeFormOptionsResponse, AxiosError<GetConsumerEservicePurposeFormOptionsError>, GetConsumerEservicePurposeFormOptionsResponse, ReturnType<typeof getConsumerEservicePurposeFormOptionsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -1972,7 +1972,7 @@ export const getConsumerPurposesInfiniteOptions = (options: Options<GetConsumerP
 /**
  * Create a consumer Purpose
  *
- * Create a new Purpose for an E-service. The body is a discriminated union on `eserviceMode`: ProvideData carries `formAnswersJson` + `formSchemaVersion`, ReceiveData carries `purposeFormOptionId` referencing one of the Producer's pre-filled options.
+ * Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
  */
 export const createConsumerPurposeMutation = (options?: Partial<Options<CreateConsumerPurposeData>>): UseMutationOptions<CreateConsumerPurposeResponse, AxiosError<CreateConsumerPurposeError>, Options<CreateConsumerPurposeData>> => {
     const mutationOptions: UseMutationOptions<CreateConsumerPurposeResponse, AxiosError<CreateConsumerPurposeError>, Options<CreateConsumerPurposeData>> = {

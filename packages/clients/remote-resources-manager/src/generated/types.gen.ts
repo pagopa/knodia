@@ -212,9 +212,7 @@ export type CatalogEserviceSearchResults = {
 export type EserviceId = string;
 
 export type PurposeFormOption = {
-    description: {
-        en: string;
-    };
+    description: LocalizedDescription;
     /**
      * Key-value pairs of answers to the Purpose form
      */
@@ -226,9 +224,7 @@ export type PurposeFormOption = {
      */
     formSchemaVersion: string;
     id: string;
-    name: {
-        en: string;
-    };
+    name: LocalizedName;
 };
 
 export type PurposeFormOptions = {
@@ -597,6 +593,10 @@ export type GetEservicePurposeFormOptionsErrors = {
      * E-service not found
      */
     404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
 };
 
 export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];

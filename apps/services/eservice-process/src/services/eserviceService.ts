@@ -23,6 +23,7 @@ import {
 import {
   type Eservice,
   type EserviceInterface,
+  EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
   type PurposeFormOption,
@@ -40,6 +41,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   duplicateInterfaceId,
+  eserviceModeNotAllowed,
   eserviceTemplateNotFound,
   inconsistentDailyCalls,
   invalidAttribute,
@@ -269,6 +271,14 @@ export function eserviceServiceBuilder(
         eserviceId,
         readmodelService,
       );
+
+      if (eservice.mode !== EserviceMode.enum.ReceiveData) {
+        throw eserviceModeNotAllowed(
+          eserviceId,
+          eservice.mode,
+          EserviceMode.enum.ReceiveData,
+        );
+      }
 
       return eservice.receiveDataConfig?.purposeFormOptions ?? [];
     },

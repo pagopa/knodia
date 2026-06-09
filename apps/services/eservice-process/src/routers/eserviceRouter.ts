@@ -204,7 +204,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
       const options = await eserviceService.getEservicePurposeFormOptions(
@@ -219,7 +218,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     method: "GET",
     schema: {
       description:
-        "Retrieve the list of PurposeFormOption entries (pre-filled form answers published by the Producer) for a ReceiveData E-service. Returns an empty list for E-services without receiveDataConfig.",
+        "Retrieve the list of PurposeFormOption entries (pre-filled form answers published by the Producer) for a ReceiveData E-service. Returns an empty list for ReceiveData E-services without receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.",
       headers: KnodiaServiceHeaders,
       operationId: "getEservicePurposeFormOptions",
       params: API_EserviceIdPathParam,
@@ -231,6 +230,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({
+          description: "E-service mode is not ReceiveData",
+        }),
       },
       tags: [apiTags.eservice],
     },

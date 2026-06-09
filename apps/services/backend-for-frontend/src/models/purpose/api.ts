@@ -57,7 +57,7 @@ export const API_PurposeSeed = z
   ])
   .meta({
     description:
-      "Seed data to create a new Purpose. The shape depends on the target E-service mode: in ProvideData the Consumer authors `formAnswersJson` against the current schema, in ReceiveData the Consumer picks one of the `PurposeFormOption` entries published by the Producer by `purposeFormOptionId`.",
+      "Seed data to create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.",
     discriminator: {
       mapping: {
         ProvideData: "#/components/schemas/PurposeSeedForProvideData",
@@ -77,7 +77,7 @@ export type API_GetConsumerEservicePurposeFormOptionsQueryParams = z.infer<
   typeof API_GetConsumerEservicePurposeFormOptionsQueryParams
 >;
 
-const API_ConsumerPurposeFormOption = z
+export const API_ConsumerPurposeFormOption = z
   .strictObject({
     description: API_LocalizedPurposeDescription,
     formAnswersJson: API_PurposeFormAnswers,
@@ -94,7 +94,7 @@ const API_ConsumerPurposeFormOption = z
       "Pre-filled PurposeFormOption enriched at runtime with the corresponding form schema, UI schema, legal texts and UI texts fetched from the Producer's purpose-process by formSchemaVersion",
     id: "ConsumerPurposeFormOption",
   });
-type API_ConsumerPurposeFormOption = z.infer<
+export type API_ConsumerPurposeFormOption = z.infer<
   typeof API_ConsumerPurposeFormOption
 >;
 

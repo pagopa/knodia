@@ -767,7 +767,7 @@ export const getConsumerEserviceDetails = <ThrowOnError extends boolean = true>(
 /**
  * Get Consumer PurposeFormOptions
  *
- * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig.
+ * Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service, enriched with the corresponding form schema, UI schema, legal texts and UI texts. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.
  */
 export const getConsumerEservicePurposeFormOptions = <ThrowOnError extends boolean = true>(options: Options<GetConsumerEservicePurposeFormOptionsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerEservicePurposeFormOptionsResponses, GetConsumerEservicePurposeFormOptionsErrors, ThrowOnError>({
     responseType: 'json',
@@ -900,7 +900,7 @@ export const getConsumerPurposes = <ThrowOnError extends boolean = true>(options
 /**
  * Create a consumer Purpose
  *
- * Create a new Purpose for an E-service. The body is a discriminated union on `eserviceMode`: ProvideData carries `formAnswersJson` + `formSchemaVersion`, ReceiveData carries `purposeFormOptionId` referencing one of the Producer's pre-filled options.
+ * Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
  */
 export const createConsumerPurpose = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerPurposeData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerPurposeResponses, CreateConsumerPurposeErrors, ThrowOnError>({
     responseType: 'json',
