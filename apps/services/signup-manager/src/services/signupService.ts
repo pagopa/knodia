@@ -82,6 +82,7 @@ export function signupServiceBuilder(
       }
 
       await signupEventProducer.publishOnboardingCompletedV1Event({
+        oneIdNonce: authData.oneIdNonce,
         signupUserId,
       });
     },

@@ -3,7 +3,10 @@ import { z } from "zod";
 
 export const SignupEventV1 = z.discriminatedUnion("type", [
   z.object({
-    data: z.strictObject({ signupUserId: SignupUserId }),
+    data: z.strictObject({
+      oneIdNonce: z.string(),
+      signupUserId: SignupUserId,
+    }),
     type: z.literal("OnboardingCompletedV1"),
   }),
 ]);
