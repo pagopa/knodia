@@ -226,7 +226,7 @@ components:
         - knodeId
       additionalProperties: false
     CompactOrganization:
-      description: Organization with only id, knodeId, and name
+      description: Organization with id, knodeId, and name
       type: object
       properties:
         id:
@@ -244,8 +244,7 @@ components:
         - name
       additionalProperties: false
     CompactProducer:
-      description: Producer Organization with only id and name; its owning Knode is
-        exposed via the resource-level knodeId
+      description: Producer Organization with id and name
       type: object
       properties:
         id:
@@ -259,6 +258,10 @@ components:
         - id
         - name
       additionalProperties: false
+    CompactConsumer:
+      description: Consumer Organization with id, knodeId, and name
+      allOf:
+        - $ref: "#/components/schemas/CompactOrganization"
     Attribute:
       type: object
       properties:
@@ -1116,7 +1119,7 @@ components:
         agreement:
           $ref: "#/components/schemas/CompactAgreement"
         consumer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactConsumer"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         knodeId:
@@ -1155,7 +1158,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactConsumer"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         hasRecentlyBeenUpdated:
@@ -1183,7 +1186,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactConsumer"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         id:
@@ -2169,7 +2172,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactConsumer"
         dailyCalls:
           format: int32
           type: integer
@@ -2240,7 +2243,7 @@ components:
         agreement:
           $ref: "#/components/schemas/CompactAgreement"
         consumer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactConsumer"
         dailyCalls:
           format: int32
           type: integer

@@ -6,7 +6,7 @@ import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
-  API_CompactOrganization,
+  API_CompactConsumer,
   API_CompactProducer,
 } from "@knodia/organization-models/api";
 import {
@@ -137,7 +137,7 @@ export type API_GetProducerPurposesQueryParams = z.infer<
 
 export const API_ProducerPurpose = z
   .strictObject({
-    consumer: API_CompactOrganization,
+    consumer: API_CompactConsumer,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
@@ -163,7 +163,7 @@ export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
-    consumer: API_CompactOrganization,
+    consumer: API_CompactConsumer,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice.extend({

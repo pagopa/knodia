@@ -123,7 +123,7 @@ export type EserviceTemplateReference = {
 };
 
 /**
- * Organization with only id, knodeId, and name
+ * Organization with id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
@@ -132,12 +132,17 @@ export type CompactOrganization = {
 };
 
 /**
- * Producer Organization with only id and name; its owning Knode is exposed via the resource-level knodeId
+ * Producer Organization with id and name
  */
 export type CompactProducer = {
     id: string;
     name: string;
 };
+
+/**
+ * Consumer Organization with id, knodeId, and name
+ */
+export type CompactConsumer = CompactOrganization;
 
 export type Attribute = {
     code: string;
@@ -557,7 +562,7 @@ export type CompactAgreement = {
 
 export type AgreementActivationDetails = {
     agreement: CompactAgreement;
-    consumer: CompactOrganization;
+    consumer: CompactConsumer;
     eservice: CompactEservice;
     /**
      * Knode ID of the producer's Knode that owns this Agreement
@@ -576,7 +581,7 @@ export type AgreementSeed = {
 };
 
 export type ProducerAgreement = {
-    consumer: CompactOrganization;
+    consumer: CompactConsumer;
     eservice: CompactEservice;
     /**
      * Indicates whether the Agreement has been recently updated
@@ -588,7 +593,7 @@ export type ProducerAgreement = {
 };
 
 export type ProducerAgreementDetails = {
-    consumer: CompactOrganization;
+    consumer: CompactConsumer;
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
@@ -1016,7 +1021,7 @@ export type ConsumerPurposes = {
 };
 
 export type ProducerPurpose = {
-    consumer: CompactOrganization;
+    consumer: CompactConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: CompactEservice;
@@ -1043,7 +1048,7 @@ export type PurposeDetailsEservice = {
 
 export type PurposeDetails = {
     agreement: CompactAgreement;
-    consumer: CompactOrganization;
+    consumer: CompactConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: PurposeDetailsEservice;

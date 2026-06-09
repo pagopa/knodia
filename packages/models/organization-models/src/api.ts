@@ -11,24 +11,27 @@ export type API_OrganizationIdPathParam = z.infer<
   typeof API_OrganizationIdPathParam
 >;
 
-export const API_CompactOrganization = z
+const API_CompactOrganization = z
   .strictObject({
     id: z.uuid(),
     knodeId: API_KnodeId,
     name: z.string().min(minOrganizationNameLength),
   })
   .meta({
-    description: "Organization with only id, knodeId, and name",
+    description: "Organization with id, knodeId, and name",
     id: "CompactOrganization",
   });
 
-export const API_CompactProducer = z
-  .strictObject({
-    id: z.uuid(),
-    name: z.string().min(minOrganizationNameLength),
-  })
-  .meta({
-    description:
-      "Producer Organization with only id and name; its owning Knode is exposed via the resource-level knodeId",
-    id: "CompactProducer",
-  });
+// knodeId omitted: already exposed at the resource level.
+export const API_CompactProducer = API_CompactOrganization.omit({
+  knodeId: true,
+}).meta({
+  description: "Producer Organization with id and name",
+  id: "CompactProducer",
+});
+
+// Same shape as API_CompactOrganization, renamed to make the consumer role explicit.
+export const API_CompactConsumer = API_CompactOrganization.meta({
+  description: "Consumer Organization with id, knodeId, and name",
+  id: "CompactConsumer",
+});
