@@ -1,10 +1,14 @@
-import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
+import {
+  type EserviceAccessTokenClaims,
+  type KnodeApiAccessTokenClaims,
+} from "@knodia/common-models/auth";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
   type EserviceId,
   type EserviceVersionId,
   generateId,
+  type KnodeApiKeychainId,
   KnodeId,
   type OrganizationId,
   type PurposeId,
@@ -24,6 +28,17 @@ interface SignAccessTokenInput {
   knodeId: KnodeId;
   payload?: Record<string, unknown>;
   producerId: OrganizationId;
+  tokenPrivateKey: CryptoKey;
+  typ?: string;
+}
+
+interface SignKnodeApiTokenInput {
+  audience?: string | string[];
+  expiresIn?: string;
+  issuer?: string;
+  knodeId: KnodeId;
+  organizationId: OrganizationId;
+  payload?: Record<string, unknown>;
   tokenPrivateKey: CryptoKey;
   typ?: string;
 }
@@ -68,6 +83,41 @@ export async function signEserviceAccessToken({
     .setSubject(randomUUID())
     .setIssuer(issuer ?? EXPECTED_ISSUER)
     .setAudience(audience ?? ACCEPTED_AUDIENCES)
+    .setJti(randomUUID())
+    .setIssuedAt(now)
+    .setExpirationTime(expiresIn)
+    .sign(tokenPrivateKey);
+}
+
+// Builds a signed Knode API token, the credential the producer uses to publish
+// Signal Hub signals and (in the POC UC02 demo) to authorize the evidence-update
+// route. Negative-case tests override `issuer` or `organizationId` to break a
+// specific claim.
+export async function signKnodeApiAccessToken({
+  audience = "signalhub.test.knodia.org",
+  expiresIn = "5m",
+  issuer,
+  knodeId,
+  organizationId,
+  payload,
+  tokenPrivateKey,
+  typ = "at+jwt",
+}: SignKnodeApiTokenInput): Promise<string> {
+  const now = dateToSeconds(new Date());
+  const keychainId = generateId<KnodeApiKeychainId>();
+  const defaultPayload: Partial<KnodeApiAccessTokenClaims> = {
+    client_id: keychainId,
+    keychain: { id: keychainId, knode_id: knodeId },
+    nbf: now,
+    organization: { id: organizationId, knode_id: knodeId },
+    type: "knode-api",
+  };
+
+  return new SignJWT({ ...defaultPayload, ...payload })
+    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ })
+    .setSubject(keychainId)
+    .setIssuer(issuer ?? EXPECTED_ISSUER)
+    .setAudience(audience)
     .setJti(randomUUID())
     .setIssuedAt(now)
     .setExpirationTime(expiresIn)

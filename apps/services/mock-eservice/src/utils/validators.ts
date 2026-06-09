@@ -6,7 +6,10 @@ import type {
 } from "@knodia/common-models/ids";
 
 import { requestContext } from "@fastify/request-context";
-import { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
+import {
+  EserviceAccessTokenClaims,
+  KnodeApiAccessTokenClaims,
+} from "@knodia/common-models/auth";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type JWTVerifyGetKey } from "jose";
@@ -116,6 +119,33 @@ export async function verifyEserviceAccessToken(
         "Bearer access tokens must not contain DPoP thumbprint claim (cnf.jkt)",
       );
     }
+  }
+
+  return parsed.data;
+}
+
+export async function verifyKnodeApiAccessToken(
+  token: string,
+  opts: { expectedIssuer: string; jwksResolvers: JWTVerifyGetKey[] },
+): Promise<KnodeApiAccessTokenClaims> {
+  // No audience check: the producer's Knode API token's audience is not this
+  // mock e-service. Skipping the audience check is acceptable here because this
+  // is a prototype-only mock and this route exists purely for the demo: verifying
+  // the signature and issuer against the trusted JWKS, that it is a well-formed
+  // knode-api token, and (in the route) that the organization is this e-service's
+  // producer is enough.
+  const rawPayload = await verifyAgainstJwksSets({
+    issuer: opts.expectedIssuer,
+    jwksSets: opts.jwksResolvers,
+    propagateReasons: true,
+    token,
+  });
+
+  const parsed = KnodeApiAccessTokenClaims.safeParse(rawPayload);
+  if (!parsed.success) {
+    throw unauthorizedError(
+      `Invalid knode-api token claims:\n${prettifyError(parsed.error)}`,
+    );
   }
 
   return parsed.data;

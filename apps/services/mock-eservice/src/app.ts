@@ -24,6 +24,7 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
@@ -95,6 +96,14 @@ export function buildApp({
 
   // Public routes (no auth required)
   app.register(healthRouter);
+  // Demo-only route for the POC UC02 evidence-change signal (never in any
+  // published spec). It self-authenticates the producer's Knode API token in
+  // the handler, so it is registered here rather than under a bearer plugin.
+  app.register(mockPocUc02CompaniesEvidenceUpdateRouter, {
+    expectedIssuer,
+    jwksResolvers,
+    knodeId,
+  });
 
   // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
   app.register(async (protectedApp) => {

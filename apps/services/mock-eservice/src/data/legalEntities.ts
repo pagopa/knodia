@@ -36,6 +36,19 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 const LEGAL_ENTITIES = readJson("legalEntities.json", LegalEntitiesFile);
 const EVIDENCES = readJson("evidences.json", EvidencesFile);
 
+// Demo-only, in-memory: the producer's manual "evidence update" (POC UC02
+// Phase 4, via the internal evidence-update route) bumps a per-company
+// revision, and findEvidences reflects it by extending the evidence validity
+// end year. This lets the Signal Hub recover step show a genuinely changed
+// evidence without a stateful datastore. Resets on process restart.
+const evidenceRevisions = new Map<API_CompanyUid, number>();
+
+export function bumpEvidenceRevision(uid: API_CompanyUid): number {
+  const next = (evidenceRevisions.get(uid) ?? 0) + 1;
+  evidenceRevisions.set(uid, next);
+  return next;
+}
+
 // undefined = unknown company; empty array = known company, no evidence of that type.
 export function findEvidences(
   uid: API_CompanyUid,
@@ -46,13 +59,24 @@ export function findEvidences(
     return undefined;
   }
 
+  const revision = evidenceRevisions.get(uid) ?? 0;
   return (EVIDENCES[uid] ?? [])
     .filter(
       (evidence) =>
         !evidenceType ||
         evidence.isConformantTo.evidenceTypeClassification === evidenceType,
     )
-    .map((evidence) => ({ ...evidence, isAbout: legalEntity }));
+    .map((evidence) => {
+      const { endtime } = evidence.validityPeriod;
+      const validityPeriod =
+        revision === 0 || endtime === undefined
+          ? evidence.validityPeriod
+          : {
+              ...evidence.validityPeriod,
+              endtime: bumpYear(endtime, revision),
+            };
+      return { ...evidence, isAbout: legalEntity, validityPeriod };
+    });
 }
 
 export function findLegalEntity(
@@ -63,4 +87,13 @@ export function findLegalEntity(
     return undefined;
   }
   return { ...row, legalIdentifier: { ...VAT_SCHEME, notation: uid } };
+}
+
+export function resetEvidenceRevisions(): void {
+  evidenceRevisions.clear();
+}
+
+function bumpYear(date: string, by: number): string {
+  const [year, ...rest] = date.split("-");
+  return [Number(year) + by, ...rest].join("-");
 }
