@@ -2,12 +2,10 @@ import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
-import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
-  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -40,22 +38,23 @@ export async function handleSignupMessage(
       const user = await deps.signupDbService.getSignupUserById(
         e.data.signupUserId,
       );
-      assertSignupUserExists(user, e.data.signupUserId);
+
+      // A missing user means it was deleted. Read-replica lag can only make a
+      // deleted user appear present (stale read), never make a live user appear
+      // absent, so a "not found" is authoritative and permanent: the event is
+      // obsolete with no recovery path, so we skip rather than block the partition.
+      if (user === undefined) {
+        logger.warn(
+          `Skipping OnboardingCompletedV1 for signup user ${e.data.signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,
+        );
+        return;
+      }
 
       for (const knodeId of KnodeId.options) {
         await provisionKnode(knodeId, user, deps, correlationId, logger);
       }
     })
     .exhaustive();
-}
-
-function assertSignupUserExists(
-  user: SignupUser | undefined,
-  signupUserId: SignupUserId,
-): asserts user is SignupUser {
-  if (user === undefined) {
-    throw genericInternalError(`Signup user not found: ${signupUserId}`);
-  }
 }
 
 async function createTestingOrganization(
