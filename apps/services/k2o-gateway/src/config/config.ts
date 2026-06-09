@@ -1,4 +1,3 @@
-import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -9,7 +8,6 @@ import z from "zod";
 
 const K2OGatewayConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
-  .and(ReadmodelKeychainConfig)
   .and(TokenGeneratorConfig)
   .and(
     z

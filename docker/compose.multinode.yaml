@@ -492,13 +492,6 @@ services:
       INTERNAL_JWT_SECONDS_DURATION: "3600"
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
-      READMODEL_DB_USER: local_orion_k2o_gateway_user
-      READMODEL_DB_PASSWORD: local_orion_k2o_gateway_user
-      READMODEL_DB_HOST: postgres
-      READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: orion_readmodel
-      READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1241,13 +1234,6 @@ services:
       INTERNAL_JWT_SECONDS_DURATION: "3600"
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
-      READMODEL_DB_USER: local_lynx_k2o_gateway_user
-      READMODEL_DB_PASSWORD: local_lynx_k2o_gateway_user
-      READMODEL_DB_HOST: postgres
-      READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: lynx_readmodel
-      READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
