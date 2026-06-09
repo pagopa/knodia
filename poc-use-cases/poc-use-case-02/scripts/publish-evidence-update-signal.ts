@@ -19,6 +19,7 @@ import {
   mintAccessToken,
   mintKnodeApiToken,
   objectIdForCompany,
+  triggerEvidenceUpdate,
 } from "./lib.ts";
 import {
   AUTHORIZATION_SERVER_URL,
@@ -71,6 +72,11 @@ const knodeApiToken = await mintKnodeApiToken(
   "Lynx",
 );
 
+// Change the evidence first, then announce it: the consumer's recover step
+// re-fetches the evidence after reading the signal and must see the new value.
+// Gated by the same producer Knode API token used to publish the signal.
+const evidenceRevision = await triggerEvidenceUpdate(companyId, knodeApiToken);
+
 // Signal ids must be strictly increasing per e-service; seconds-since-epoch is
 // monotonic across manual runs and stays well above any seeded value.
 async function pushSignal(signalId: number): Promise<Response> {
@@ -116,6 +122,7 @@ for (let attempt = 0; ; attempt++) {
   }
 }
 
+console.log(`Updated evidence for ${companyId} (revision ${evidenceRevision}).`);
 console.log("Published evidence-update signal:");
 console.log(
   JSON.stringify(

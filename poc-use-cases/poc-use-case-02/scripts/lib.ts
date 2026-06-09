@@ -26,12 +26,13 @@ export function objectIdForCompany(companyId: string, seed: string): string {
 }
 
 export function assertPrivateKeysExist(): void {
-  for (const keyPath of [
-    CONSUMER_PRIVATE_KEY_PATH,
-    KNODE_API_PRIVATE_KEY_PATH,
-  ]) {
-    if (!existsSync(keyPath)) {
-      console.error(`Private key not found at ${keyPath}. Run generate-key first.`);
+  const keys = [
+    { path: CONSUMER_PRIVATE_KEY_PATH, script: "generate-consumer-key" },
+    { path: KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
+  ];
+  for (const { path, script } of keys) {
+    if (!existsSync(path)) {
+      console.error(`Private key not found at ${path}. Run ${script} first.`);
       process.exit(1);
     }
   }
@@ -119,6 +120,32 @@ export function mintKnodeApiToken(
     assertion,
     knodeApiKeychainId,
   );
+}
+
+// Producer-side demo action: marks the company's evidence as changed on the
+// mock e-service so the consumer's recover step sees an updated evidence. The
+// route is not in the published spec and is gated by the producer's Knode API
+// token — the same token used to publish the Signal Hub signal. Returns the new
+// evidence revision.
+export async function triggerEvidenceUpdate(
+  companyId: string,
+  knodeApiToken: string,
+): Promise<number> {
+  const response = await fetch(
+    `${MOCK_ESERVICE_URL}/legal-entities/${companyId}/evidence-update`,
+    {
+      headers: { authorization: `Bearer ${knodeApiToken}` },
+      method: "POST",
+    },
+  );
+  if (!response.ok) {
+    console.error(
+      `Evidence update failed (${response.status}): ${await response.text()}`,
+    );
+    process.exit(1);
+  }
+  return ((await response.json()) as { evidenceRevision: number })
+    .evidenceRevision;
 }
 
 export async function getPseudonymizationSeed(

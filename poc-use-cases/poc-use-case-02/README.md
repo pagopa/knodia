@@ -35,8 +35,8 @@ Steps:
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.
 5. **[UI]** Create a Purpose for the Agreement.
-6. **[script]** Run `generate-key` — it prints a public key and saves the private key to a fixed path in this folder, which the later scripts read automatically (no key path to pass around).
-7. **[UI]** In the Keychains section, create a Consumer Keychain, add a member, upload the public key printed by `generate-key`, and link the Purpose to it.
+6. **[script]** Run `generate-consumer-key` — it prints the public key for the consumer e-service keychain and saves the private key to a fixed path in this folder, read automatically by the later scripts (no key path to pass around).
+7. **[UI]** In the Keychains section, create a Consumer Keychain, add a member, upload the public key printed by `generate-consumer-key`, and link the Purpose to it.
 8. Note the Consumer Keychain id and the Purpose id — they are params for the scripts.
 
 ## Phase 3
@@ -59,8 +59,9 @@ Description: the Construction Companies Registry of Orion monitors the Lynx Sign
 
 Steps:
 
-1. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
-2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub. The consumer keychain/purpose are needed only to read the e-service's pseudonymization seed.
-3. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
-4. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx; the script prints the retrieved signal and the evidence (the e-service response).
-5. **[narration]** The registry updates the company's registration in Orion accordingly.
+1. **[script]** Run `generate-knode-api-key` — it prints the public key for the Knode API keychains and saves the private key to a fixed path read by the later scripts. The same key is uploaded to both Knode API keychains below (they live on different knodes, so the same key can be reused).
+2. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-knode-api-key`. Note the keychain id.
+3. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub. The consumer keychain/purpose are needed only to read the e-service's pseudonymization seed.
+4. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-knode-api-key`. Note the keychain id.
+5. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx; the script prints the retrieved signal and the evidence (the e-service response).
+6. **[narration]** The registry updates the company's registration in Orion accordingly.

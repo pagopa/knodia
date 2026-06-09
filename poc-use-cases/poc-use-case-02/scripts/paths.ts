@@ -6,13 +6,13 @@ const here = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(here, "../../..");
 
 // UC02 companies e-service identity, seeded on Lynx
-// (scripts/seed/sql/lynx/mock-companies-eservice.sql) and pinned in
-// apps/services/mock-eservice/src/companies/mockup.ts.
+// (scripts/seed/sql/lynx/mock-poc-uc02-companies-eservice.sql) and pinned in
+// apps/services/mock-eservice/src/pocUc02Companies/mockup.ts.
 export const COMPANIES_ESERVICE_ID = "16895bc2-deb0-427c-8c25-336207b2d0a1";
 
-// Fixed path shared between generate-key (writes) and the retrieval scripts
-// (read): the demo deliberately has no --key parameter, so the location is the
-// contract between the steps. Gitignored via poc-use-case-02/.gitignore.
+// Fixed path shared between generate-consumer-key (writes) and the retrieval
+// scripts (read): the demo deliberately has no --key parameter, so the location
+// is the contract between the steps. Gitignored via poc-use-case-02/.gitignore.
 export const CONSUMER_PRIVATE_KEY_PATH = resolve(
   here,
   "../.local/consumer-private-key.pem",

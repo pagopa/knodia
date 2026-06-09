@@ -8,7 +8,7 @@
 //   node retrieve-company-data.ts \
 //     --consumer-keychain-id <uuid> --purpose-id <uuid> --company-id <vat>
 //
-// Run generate-key first (Phase 2) and upload its public key to the consumer
+// Run generate-consumer-key first (Phase 2) and upload its public key to the consumer
 // keychain, otherwise the access token cannot be minted.
 
 import { spawnSync } from "node:child_process";
@@ -45,7 +45,7 @@ if (!consumerKeychainId || !purposeId || !companyId) {
 
 if (!existsSync(CONSUMER_PRIVATE_KEY_PATH)) {
   console.error(
-    `Private key not found at ${CONSUMER_PRIVATE_KEY_PATH}. Run generate-key first.`,
+    `Private key not found at ${CONSUMER_PRIVATE_KEY_PATH}. Run generate-consumer-key first.`,
   );
   process.exit(1);
 }
