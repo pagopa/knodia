@@ -124,16 +124,14 @@ export async function verifyEserviceAccessToken(
   return parsed.data;
 }
 
+// Demo-only: verifies the producer's Knode API token for the UC02 evidence-update
+// route. No audience check — the token is audienced to the Signal Hub, not this
+// mock; for a prototype mock a valid knode-api token from the trusted issuer
+// (plus the route's producer-org check) is enough.
 export async function verifyKnodeApiAccessToken(
   token: string,
   opts: { expectedIssuer: string; jwksResolvers: JWTVerifyGetKey[] },
 ): Promise<KnodeApiAccessTokenClaims> {
-  // No audience check: the producer's Knode API token's audience is not this
-  // mock e-service. Skipping the audience check is acceptable here because this
-  // is a prototype-only mock and this route exists purely for the demo: verifying
-  // the signature and issuer against the trusted JWKS, that it is a well-formed
-  // knode-api token, and (in the route) that the organization is this e-service's
-  // producer is enough.
   const rawPayload = await verifyAgainstJwksSets({
     issuer: opts.expectedIssuer,
     jwksSets: opts.jwksResolvers,

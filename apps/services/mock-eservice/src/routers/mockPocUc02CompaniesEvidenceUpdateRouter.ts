@@ -24,17 +24,10 @@ interface MockCompaniesEvidenceUpdateRouterOptions {
   knodeId: KnodeId;
 }
 
-// POC UC02 Phase 4, producer side: lets the producer mark a company's evidence
-// as changed so the Signal Hub recover step sees an updated evidence.
-//
-// It is gated by the producer's Knode API token — the very same token the
-// producer uses to publish the evidence-change signal to the Signal Hub — so
-// only the producer that owns this e-service can mutate the served data,
-// mirroring the real trust boundary instead of inventing a separate credential.
-//
-// It is registered only on the runtime app (buildApp), never on the
-// spec-generation apps: changing the served data is demo plumbing, not a real
-// e-service operation, so it must not appear in any published OpenAPI spec.
+// Demo-only (POC UC02 Phase 4): lets the producer mark a company's evidence as
+// changed so the recover step sees an update. Gated by the producer's Knode API
+// token (the one it uses to publish the signal). Registered only on the runtime
+// app, never on the spec-generation apps, so it stays out of the published spec.
 export const mockPocUc02CompaniesEvidenceUpdateRouter: FastifyPluginAsyncZod<
   MockCompaniesEvidenceUpdateRouterOptions
 > = async (fastify, { expectedIssuer, jwksResolvers, knodeId }) => {

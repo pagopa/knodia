@@ -8,6 +8,7 @@ import {
   API_Evidence,
   type API_EvidenceType,
   API_LegalEntity,
+  type API_PeriodOfTime,
 } from "../models/api.ts";
 import { legalEntityActivities } from "../models/legalEntityActivities.ts";
 
@@ -36,11 +37,9 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 const LEGAL_ENTITIES = readJson("legalEntities.json", LegalEntitiesFile);
 const EVIDENCES = readJson("evidences.json", EvidencesFile);
 
-// Demo-only, in-memory: the producer's manual "evidence update" (POC UC02
-// Phase 4, via the internal evidence-update route) bumps a per-company
-// revision, and findEvidences reflects it by extending the evidence validity
-// end year. This lets the Signal Hub recover step show a genuinely changed
-// evidence without a stateful datastore. Resets on process restart.
+// Demo-only: the evidence-update route bumps a per-company revision that
+// findEvidences turns into an extended validity end year, so the recover step
+// sees a changed evidence. In-memory, resets on restart.
 const evidenceRevisions = new Map<API_CompanyUid, number>();
 
 export function bumpEvidenceRevision(uid: API_CompanyUid): number {
@@ -66,17 +65,11 @@ export function findEvidences(
         !evidenceType ||
         evidence.isConformantTo.evidenceTypeClassification === evidenceType,
     )
-    .map((evidence) => {
-      const { endtime } = evidence.validityPeriod;
-      const validityPeriod =
-        revision === 0 || endtime === undefined
-          ? evidence.validityPeriod
-          : {
-              ...evidence.validityPeriod,
-              endtime: bumpYear(endtime, revision),
-            };
-      return { ...evidence, isAbout: legalEntity, validityPeriod };
-    });
+    .map((evidence) => ({
+      ...evidence,
+      isAbout: legalEntity,
+      validityPeriod: revisedValidity(evidence.validityPeriod, revision),
+    }));
 }
 
 export function findLegalEntity(
@@ -93,7 +86,13 @@ export function resetEvidenceRevisions(): void {
   evidenceRevisions.clear();
 }
 
-function bumpYear(date: string, by: number): string {
-  const [year, ...rest] = date.split("-");
-  return [Number(year) + by, ...rest].join("-");
+function revisedValidity(
+  period: API_PeriodOfTime,
+  revision: number,
+): API_PeriodOfTime {
+  if (!revision || !period.endtime) {
+    return period;
+  }
+  const [year, month, day] = period.endtime.split("-");
+  return { ...period, endtime: `${Number(year) + revision}-${month}-${day}` };
 }

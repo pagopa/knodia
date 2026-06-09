@@ -21,20 +21,19 @@ import {
   POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
   POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
 } from "../pocUc02Companies/mockup.ts";
-import {
-  getRotatedSeed,
-  type SignalHubSeedConfig,
-} from "../signalHub/rotation.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockCompaniesRouterOptions {
   knodeId: KnodeId;
-  seedConfig: SignalHubSeedConfig;
 }
+
+// Static seed: unlike the signal-hub mock, this demo's object_id need not rotate,
+// so publish and recover stay consistent without a period constraint.
+const PSEUDONYMIZATION_SEED = "0123456789abcdef";
 
 export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   MockCompaniesRouterOptions
-> = async (fastify, { knodeId, seedConfig }) => {
+> = async (fastify, { knodeId }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
@@ -135,16 +134,12 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      const seed = getRotatedSeed(
-        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
-        Date.now(),
-        seedConfig,
-      );
-
       logger.info(
-        "Mock e-service /legal-entities/pseudonymization returned current seed",
+        "Mock e-service /legal-entities/pseudonymization returned the seed",
       );
-      res.status(200).send({ cryptoHashFunction: "sha256", seed });
+      res
+        .status(200)
+        .send({ cryptoHashFunction: "sha256", seed: PSEUDONYMIZATION_SEED });
     },
     method: "GET",
     schema: {

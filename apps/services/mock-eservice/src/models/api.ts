@@ -202,7 +202,7 @@ const API_EvidenceTypeClassification = z
     id: "EvidenceTypeClassification",
   });
 
-const API_PeriodOfTime = z
+export const API_PeriodOfTime = z
   .strictObject({
     endtime: z.iso.date().optional(),
     starttime: z.iso.date(),
@@ -212,6 +212,7 @@ const API_PeriodOfTime = z
       "Period of time during which an evidence is valid (CCCEV 2.1.0)",
     id: "PeriodOfTime",
   });
+export type API_PeriodOfTime = z.infer<typeof API_PeriodOfTime>;
 
 export const API_Evidence = z
   .strictObject({

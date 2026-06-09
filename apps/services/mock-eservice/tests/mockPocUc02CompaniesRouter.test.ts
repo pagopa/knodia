@@ -4,7 +4,7 @@ import {
   type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { resetEvidenceRevisions } from "../src/data/legalEntities.ts";
 import {
@@ -28,10 +28,6 @@ const SAMPLE_VAT = "01229430085";
 const UNKNOWN_VAT = "00000000000";
 const INVALID_VAT = "not-a-vat";
 
-// setup.ts pins signalHubSeedStartDateMs=0, signalHubSeedExpireSeconds=30 so
-// wall-clock ms maps straight to periodId: T=15_000 ⇒ periodId 0, T=45_000 ⇒ 1.
-const PERIOD_MS = 30_000;
-
 async function signToken(
   overrides: {
     eserviceId?: EserviceId;
@@ -49,20 +45,9 @@ async function signToken(
   });
 }
 
-beforeEach(() => {
-  // Only override Date so getRotatedSeed is deterministic; faking
-  // setTimeout/setInterval would hang fastify's internal scheduling.
-  vi.useFakeTimers({ toFake: ["Date"] });
-  vi.setSystemTime(PERIOD_MS * 0 + 1_000);
-  // The evidence revision is in-memory and process-wide; reset so each test
-  // starts from the unmodified dataset.
-  resetEvidenceRevisions();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-  resetEvidenceRevisions();
-});
+// The evidence revision is in-memory and process-wide; reset around each test.
+beforeEach(resetEvidenceRevisions);
+afterEach(resetEvidenceRevisions);
 
 describe("GET /legal-entities/:uidCompany/information", () => {
   it("returns 200 with the legal entity for a known company", async () => {
@@ -202,7 +187,7 @@ describe("GET /legal-entities/:uidCompany/evidences", () => {
 });
 
 describe("GET /legal-entities/pseudonymization", () => {
-  it("returns 200 with the seed for the current period", async () => {
+  it("returns 200 with the static seed", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
@@ -210,25 +195,10 @@ describe("GET /legal-entities/pseudonymization", () => {
       url: "/legal-entities/pseudonymization",
     });
     expect(res.statusCode).toBe(200);
-    const body = res.json();
-    expect(body.cryptoHashFunction).toBe("sha256");
-    expect(typeof body.seed).toBe("string");
-    expect(body.seed).toHaveLength(16);
-  });
-
-  it("yields distinct seeds across periods", async () => {
-    const token = await signToken();
-    const seeds: string[] = [];
-    for (const p of [0, 1, 2]) {
-      vi.setSystemTime(PERIOD_MS * p + 1_000);
-      const res = await getCtx().app.inject({
-        headers: { authorization: `Bearer ${token}` },
-        method: "GET",
-        url: "/legal-entities/pseudonymization",
-      });
-      seeds.push(res.json().seed);
-    }
-    expect(new Set(seeds).size).toBe(3);
+    expect(res.json()).toEqual({
+      cryptoHashFunction: "sha256",
+      seed: "0123456789abcdef",
+    });
   });
 
   it("returns 401 for a token issued for a different mock e-service", async () => {

@@ -96,9 +96,8 @@ export function buildApp({
 
   // Public routes (no auth required)
   app.register(healthRouter);
-  // Demo-only route for the POC UC02 evidence-change signal (never in any
-  // published spec). It self-authenticates the producer's Knode API token in
-  // the handler, so it is registered here rather than under a bearer plugin.
+  // Demo-only evidence-change route (out of spec); self-authenticates the
+  // producer's Knode API token, so it sits outside the bearer plugin.
   app.register(mockPocUc02CompaniesEvidenceUpdateRouter, {
     expectedIssuer,
     jwksResolvers,
@@ -114,7 +113,7 @@ export function buildApp({
     });
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
-    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -214,8 +213,6 @@ function buildBearerPocUc02CompaniesApp({
 }) {
   const { acceptedAudiences, expectedIssuer, knodeId } = config;
 
-  const seedConfig = toSignalHubSeedConfig(config);
-
   const app = createMockFastifyApp(
     config,
     bearerAuthSecurityScheme,
@@ -236,7 +233,7 @@ function buildBearerPocUc02CompaniesApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   return app;
