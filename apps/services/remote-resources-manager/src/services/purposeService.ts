@@ -166,9 +166,7 @@ export function purposeServiceBuilder(
       const { eserviceId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      // Provisional (KN-589/KN-444): cross-knode listings assume a single
-      // remote knode, so offset/limit/total/ordering are the node's own and
-      // therefore correct. Fail fast if the assumption is violated.
+      // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
       const knodesWithPurposes =
         await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
       if (knodesWithPurposes.length > 1) {

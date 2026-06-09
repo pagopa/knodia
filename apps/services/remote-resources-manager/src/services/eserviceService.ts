@@ -193,9 +193,7 @@ export function eserviceServiceBuilder(
       const { agreementState, limit, offset } = reqQuery;
       const k2kAgreementStates = agreementState?.map(toK2KAPI_AgreementState);
 
-      // Provisional (KN-589/KN-444): cross-knode listings assume a single
-      // remote knode, so offset/limit/total/ordering are the node's own and
-      // therefore correct. Fail fast if the assumption is violated.
+      // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
       const knodesWithAgreements =
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,

@@ -62,10 +62,7 @@ export function agreementNotFound(agreementId: ExternalId<AgreementId>) {
   });
 }
 
-// Provisional (KN-589/KN-444): cross-knode listings assume a single remote
-// knode. Real multi-node support will land via a local cache of remote state
-// populated through cross-knode event propagation. Until then we fail fast so
-// the limitation is explicit instead of silently returning wrong pages.
+// Provisional (KN-589): cross-knode listings are single-knode until cross-knode event propagation lands.
 export function multiKnodeListingNotSupported(knodes: KnodeId[]) {
   return createApiError<ErrorCodes>({
     code: "MULTI_KNODE_LISTING_NOT_SUPPORTED",
