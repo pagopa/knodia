@@ -1,8 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
-import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  type ConsumerKeychainId,
+  generateId,
+  generateUserId,
+} from "@knodia/common-models/ids";
+import {
+  forbiddenTestTokens,
+  TEST_USER_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
   getMockKeychainKey,
@@ -22,6 +30,8 @@ const existingKeys = [
 const consumerKeychain: ConsumerKeychain = {
   ...getMockConsumerKeychain(),
   keys: existingKeys,
+  // TEST_USER_ID is a member, so the download check (admin OR member) passes.
+  users: [{ addedAt: new Date(), userId: TEST_USER_ID }],
 };
 
 const requestedKey = existingKeys[0]!;
@@ -47,7 +57,7 @@ const getConsumerKeychainKey = (
 
 describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKeychainKey)", () => {
   it.each(allowedTestTokens)(
-    "should return the consumer keychain key with correct shape ($type, $roles)",
+    "should return the consumer keychain key for an internal, member or admin caller ($type, $roles)",
     async (token) => {
       await seedConsumerKeychain(consumerKeychain);
 
@@ -89,6 +99,50 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
     const body = response.json<API_KeychainKey>();
 
     expect(body).toEqual(expectedItem!);
+  });
+
+  it("should allow an internal (k2k) caller regardless of membership", async () => {
+    const keychainWithoutCaller: ConsumerKeychain = {
+      ...consumerKeychain,
+      users: [{ addedAt: new Date(), userId: generateUserId() }],
+    };
+    await seedConsumerKeychain(keychainWithoutCaller);
+
+    const response = await getConsumerKeychainKey(
+      keychainWithoutCaller.id,
+      VALID_KEY_ID,
+      { type: "internal" },
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("should allow an administrative caller that is not a keychain member", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const response = await getConsumerKeychainKey(
+      VALID_CONSUMER_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      {
+        roles: ["administrative"],
+        type: "ui-session",
+        userId: generateUserId(),
+      },
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("should return 403 for a technical caller that is not a keychain member", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const response = await getConsumerKeychainKey(
+      VALID_CONSUMER_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      { roles: ["technical"], type: "ui-session", userId: generateUserId() },
+    );
+
+    expect(response.statusCode).toBe(403);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

@@ -1,10 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  createConsumerKeychainMutation,
-  createKnodeApiKeychainMutation,
-} from "@knodia/bff-client/tanstack-query";
-import {
   Modal,
   Select,
   SelectItem,
@@ -12,13 +8,12 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
+import type { KeychainType } from "../models/commons";
+
+import { useCreateKeychain } from "../hooks/useCreateKeychain";
 import {
   createKeychainFormDefaultValues,
   createKeychainFormSchema,
@@ -26,68 +21,37 @@ import {
   keychainTypeOptions,
 } from "../models/keychain-forms";
 
+interface CreateKeychainFormProps {
+  defaultType: KeychainType;
+  onClose: () => void;
+}
+
 interface Props {
+  defaultType: KeychainType;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function CreateKeychainModal({ isOpen, onClose }: Props) {
-  const navigate = useNavigate();
+export function CreateKeychainModal({ defaultType, isOpen, onClose }: Props) {
+  return isOpen ? (
+    <CreateKeychainForm defaultType={defaultType} onClose={onClose} />
+  ) : null;
+}
 
-  const {
-    isError: isConsumerError,
-    isPending: isConsumerPending,
-    mutate: createConsumerKeychain,
-  } = useMutation({
-    ...createConsumerKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/consumption/$id" });
-    },
-  });
-
-  const {
-    isError: isApiError,
-    isPending: isApiPending,
-    mutate: createKnodeApiKeychain,
-  } = useMutation({
-    ...createKnodeApiKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/api/$id" });
-    },
-  });
-
-  const isError = isConsumerError || isApiError;
-  const isPending = isConsumerPending || isApiPending;
+function CreateKeychainForm({ defaultType, onClose }: CreateKeychainFormProps) {
+  const { isError, isPending, mutate: createKeychain } = useCreateKeychain();
 
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
     const body = {
       description: seed.description ? { en: seed.description } : undefined,
       name: { en: seed.name },
-    };
+    } satisfies bffApi.KeychainSeed;
 
-    match(seed.type)
-      .with("consumption", () =>
-        createConsumerKeychain({
-          body: body satisfies bffApi.ConsumerKeychainSeed,
-        }),
-      )
-      .with("production", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () =>
-        createKnodeApiKeychain({
-          body: body satisfies bffApi.KnodeApiKeychainSeed,
-        }),
-      )
-      .exhaustive();
+    createKeychain({ body, type: seed.type });
   }
 
   const form = useForm({
-    defaultValues: createKeychainFormDefaultValues,
+    defaultValues: { ...createKeychainFormDefaultValues, type: defaultType },
     onSubmit: async ({ value }) => {
       handleCreateKeychain(value);
     },
@@ -102,12 +66,11 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
       actionLabel="Create"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
-      isOpen={isOpen}
+      isOpen
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
         if (!open) {
-          form.reset();
           onClose();
         }
       }}
@@ -173,11 +136,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
               value={field.state.value}
             >
               {keychainTypeOptions.map((option) => (
-                <SelectItem
-                  id={option.id}
-                  isDisabled={option.id === "production"}
-                  key={option.id}
-                >
+                <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
               ))}
