@@ -238,7 +238,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         return;
       }
 
-      // TODO: fetch the form schemas matching each option's
+      // TODO(KN-732): fetch the form schemas matching each option's
       // formSchemaVersion instead of always pulling the current one.
       // Works today because only one schema version exists.
       const { data: schemas } =
