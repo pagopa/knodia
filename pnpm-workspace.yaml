@@ -118,7 +118,7 @@ catalog:
   vite: npm:rolldown-vite@7.2.5
   vitest: 4.1.0
   zocker: 3.0.0
-  zod: 4.2.0
+  zod: 4.4.3
   zod-validation-error: 5.0.0
 
 catalogMode: strict
