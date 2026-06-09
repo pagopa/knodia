@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
@@ -194,6 +195,33 @@ describe("GET /purposes (getPurposes)", () => {
 
     expect(response.statusCode).toBe(501);
     expect(getPurposesMock).not.toHaveBeenCalled();
+  });
+
+  it("does not 501 when eserviceId scopes a multi-knode consumer to a single knode", async () => {
+    getPurposesMock.mockResolvedValue({ data: mockK2KResponse });
+
+    // Consumer also has purposes on another knode, but for a different e-service.
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+    await remoteResourceDbService.insertPurpose({
+      consumerId: TEST_ORGANIZATION_ID,
+      eserviceId: zocker(API_Purpose).generate().eserviceId,
+      knodeId: otherKnodeId,
+      purposeId: zocker(API_Purpose).generate().id,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, eserviceId: expectedApiResult.eserviceId });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          eserviceId: expectedApiResult.eserviceId,
+        }),
+      }),
+    );
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

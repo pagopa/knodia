@@ -1,15 +1,17 @@
 /* eslint-disable max-lines-per-function */
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  KnodeId,
-  OrganizationId,
-  PurposeId,
-} from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
+import {
+  type EserviceId,
+  type KnodeId,
+  type OrganizationId,
+  type PurposeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
@@ -168,7 +170,12 @@ export function purposeServiceBuilder(
 
       // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
       const knodesWithPurposes =
-        await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
+        await remoteResourceDbService.getPurposesDistinctKnodes(
+          consumerId,
+          eserviceId === undefined
+            ? undefined
+            : unsafeBrandId<EserviceId>(eserviceId),
+        );
       if (knodesWithPurposes.length > 1) {
         throw multiKnodeListingNotSupported(knodesWithPurposes);
       }
