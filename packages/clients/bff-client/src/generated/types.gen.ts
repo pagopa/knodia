@@ -768,6 +768,10 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
+export type ProducerKeychainEserviceLinkSeed = {
+    eserviceId: string;
+};
+
 export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
@@ -3019,6 +3023,10 @@ export type GetProducerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID. Returns Producer Keychains linked to the given E-service.
+         */
+        eserviceId?: string;
     };
     url: '/producerKeychains';
 };
@@ -3584,6 +3592,89 @@ export type GetProducerKeychainEservicesResponses = {
 };
 
 export type GetProducerKeychainEservicesResponse = GetProducerKeychainEservicesResponses[keyof GetProducerKeychainEservicesResponses];
+
+export type LinkEserviceToProducerKeychainData = {
+    body: ProducerKeychainEserviceLinkSeed;
+    path: {
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/eservices';
+};
+
+export type LinkEserviceToProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type LinkEserviceToProducerKeychainError = LinkEserviceToProducerKeychainErrors[keyof LinkEserviceToProducerKeychainErrors];
+
+export type LinkEserviceToProducerKeychainResponses = {
+    /**
+     * E-service successfully linked to Producer Keychain
+     */
+    204: void;
+};
+
+export type LinkEserviceToProducerKeychainResponse = LinkEserviceToProducerKeychainResponses[keyof LinkEserviceToProducerKeychainResponses];
+
+export type UnlinkEserviceFromProducerKeychainData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+        producerKeychainId: string;
+    };
+    query?: never;
+    url: '/producerKeychains/{producerKeychainId}/eservices/{eserviceId}';
+};
+
+export type UnlinkEserviceFromProducerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Keychain or E-service link not found
+     */
+    404: Problem;
+};
+
+export type UnlinkEserviceFromProducerKeychainError = UnlinkEserviceFromProducerKeychainErrors[keyof UnlinkEserviceFromProducerKeychainErrors];
+
+export type UnlinkEserviceFromProducerKeychainResponses = {
+    /**
+     * E-service successfully unlinked from Producer Keychain
+     */
+    204: void;
+};
+
+export type UnlinkEserviceFromProducerKeychainResponse = UnlinkEserviceFromProducerKeychainResponses[keyof UnlinkEserviceFromProducerKeychainResponses];
 
 export type GetOperatorsData = {
     body?: never;

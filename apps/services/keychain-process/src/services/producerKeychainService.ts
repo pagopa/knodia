@@ -65,6 +65,7 @@ import {
   assertEserviceIsNotLinkedToProducerKeychain,
   assertOrganizationIsEserviceProducer,
   assertOrganizationIsKeychainOwner,
+  assertUserIsAllowedToDownloadKey,
 } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -219,7 +220,7 @@ export function producerKeychainServiceBuilder(
     async getProducerKeychainKey(
       producerKeychainId: ProducerKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Producer Keychain with ID ${producerKeychainId}`,
@@ -228,6 +229,12 @@ export function producerKeychainServiceBuilder(
       const producerKeychain = await retrieveProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+
+      assertUserIsAllowedToDownloadKey(
+        authData,
+        producerKeychainId,
+        producerKeychain.data.users,
       );
 
       return retrieveKeychainKey(producerKeychain.data, kid);

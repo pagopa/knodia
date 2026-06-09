@@ -18,6 +18,13 @@ export function ArchiveAgreementModal({
       actionLabel="Archive"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
+      description={
+        <>
+          Are you sure you want to archive this Agreement?
+          <br />
+          This action cannot be undone.
+        </>
+      }
       isDismissable
       isOpen={isOpen}
       kind="destructive"
@@ -25,12 +32,6 @@ export function ArchiveAgreementModal({
       onOpenChange={onOpenChange}
       showErrorBanner={isError}
       title="Archive Agreement"
-    >
-      <p className="body-md">
-        Are you sure you want to archive this Agreement?
-        <br />
-        This action cannot be undone.
-      </p>
-    </Modal>
+    />
   );
 }

@@ -18,6 +18,13 @@ export function ArchivePurposeModal({
       actionLabel="Archive"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
+      description={
+        <>
+          Are you sure you want to archive this Purpose?
+          <br />
+          This action cannot be undone.
+        </>
+      }
       isDismissable
       isOpen={isOpen}
       kind="destructive"
@@ -25,12 +32,6 @@ export function ArchivePurposeModal({
       onOpenChange={onOpenChange}
       showErrorBanner={isError}
       title="Archive Purpose"
-    >
-      <p className="body-md">
-        Are you sure you want to archive this Purpose?
-        <br />
-        This action cannot be undone.
-      </p>
-    </Modal>
+    />
   );
 }
