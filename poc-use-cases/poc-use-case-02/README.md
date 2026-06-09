@@ -60,7 +60,7 @@ Description: the Construction Companies Registry of Orion monitors the Lynx Sign
 Steps:
 
 1. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
-2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
+2. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub. The consumer keychain/purpose are needed only to read the e-service's pseudonymization seed.
 3. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the public key printed by `generate-key`. Note the keychain id.
 4. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx; the script prints the retrieved signal and the evidence (the e-service response).
 5. **[narration]** The registry updates the company's registration in Orion accordingly.
