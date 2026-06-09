@@ -122,6 +122,14 @@ export function assertUserHasTechnicalRole(user: IdmUser): void {
   }
 }
 
+export function assertUserIsAllowedToDownloadKey(
+  authData: UISessionAuthData,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
+  members: KeychainUser[],
+): void {
+  assertUserIsAdminOrKeychainMember(authData, keychainId, members);
+}
+
 export function assertUserIsAllowedToPerformKeychainOperation(
   userId: UserId,
   keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
@@ -138,13 +146,7 @@ export function assertUserIsAllowedToRemoveKey(
   keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
   members: KeychainUser[],
 ): void {
-  const { userId, userRoles } = authData;
-
-  if (userRoles.includes(UserRole.enum.administrative)) {
-    return;
-  }
-
-  assertUserIsAllowedToPerformKeychainOperation(userId, keychainId, members);
+  assertUserIsAdminOrKeychainMember(authData, keychainId, members);
 }
 
 export function assertUserIsMemberOfKeychain(
@@ -156,6 +158,20 @@ export function assertUserIsMemberOfKeychain(
   if (!isMember) {
     throw keychainMemberNotFound(keychainId, userId);
   }
+}
+
+function assertUserIsAdminOrKeychainMember(
+  authData: UISessionAuthData,
+  keychainId: ConsumerKeychainId | KnodeApiKeychainId | ProducerKeychainId,
+  members: KeychainUser[],
+): void {
+  const { userId, userRoles } = authData;
+
+  if (userRoles.includes(UserRole.enum.administrative)) {
+    return;
+  }
+
+  assertUserIsAllowedToPerformKeychainOperation(userId, keychainId, members);
 }
 
 export const assertKeychainKeysCountIsBelowThreshold = (
