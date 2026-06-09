@@ -23,7 +23,6 @@
   },
   "exports": {
     ".": "./src/tokenGenerator.ts",
-    "./config": "./src/config/config.ts",
     "./models": "./src/models.ts",
     "./refreshable": "./src/refreshableInternalTokenGenerator.ts"
   }

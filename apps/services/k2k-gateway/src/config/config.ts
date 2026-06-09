@@ -2,12 +2,10 @@ import { KnodeId } from "@knodia/common-models/ids";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { PollingConfig } from "@knodia/polling/config";
-import { TokenGeneratorConfig } from "@knodia/token-generator/config";
 import { z } from "zod";
 
 const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
   .and(PollingConfig)
-  .and(TokenGeneratorConfig)
   .and(
     z
       .object({
@@ -27,6 +25,15 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
           .string()
           .default("/ui/agreement-activation"),
         FRONTEND_BASE_URL: z.url(),
+        INTERNAL_JWT_AUDIENCE: z.string(),
+        INTERNAL_JWT_ISSUER: z.string(),
+        INTERNAL_JWT_KID: z.string(),
+        INTERNAL_JWT_SECONDS_DURATION: z.coerce
+          .number()
+          .int()
+          .positive()
+          .default(3600),
+        INTERNAL_JWT_SUBJECT: z.string(),
         KEYCHAIN_PROCESS_URL: z.url(),
         ORGANIZATION_PROCESS_URL: z.url(),
         PURPOSE_PROCESS_URL: z.url(),
@@ -36,6 +43,13 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
         callerKnodeId: c.CALLER_KNODE_ID,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        internalJwt: {
+          audience: c.INTERNAL_JWT_AUDIENCE,
+          issuer: c.INTERNAL_JWT_ISSUER,
+          kid: c.INTERNAL_JWT_KID,
+          secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
+          subject: c.INTERNAL_JWT_SUBJECT,
+        },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         magicLinkConfig: {
           audience: c.EXTERNAL_UI_SESSION_MAGIC_LINK_JWT_AUDIENCE,
