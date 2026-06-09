@@ -24,6 +24,7 @@ import {
 import {
   AUTHORIZATION_SERVER_URL,
   COMPANIES_ESERVICE_ID,
+  PRODUCER_KNODE_API_PRIVATE_KEY_PATH,
   SIGNAL_HUB_URL,
 } from "./paths.ts";
 
@@ -70,11 +71,10 @@ const knodeApiToken = await mintKnodeApiToken(
   AUTHORIZATION_SERVER_URL,
   producerKnodeApiKeychainId,
   "Lynx",
+  PRODUCER_KNODE_API_PRIVATE_KEY_PATH,
 );
 
-// Change the evidence first, then announce it: the consumer's recover step
-// re-fetches the evidence after reading the signal and must see the new value.
-// Gated by the same producer Knode API token used to publish the signal.
+// Change the evidence before announcing it, so recover sees the new value.
 const evidenceRevision = await triggerEvidenceUpdate(companyId, knodeApiToken);
 
 // Signal ids must be strictly increasing per e-service; seconds-since-epoch is

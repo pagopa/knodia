@@ -1,6 +1,5 @@
-// Shared key generation for the POC UC02 demo: wraps
-// scripts/local-auth/generate-keypair.ts, saves the private key to a fixed path
-// the other scripts read, and prints the public key to paste into a keychain.
+// Generates a keypair (via scripts/local-auth/generate-keypair.ts), saves the
+// private key to a fixed path the demo scripts read, and prints the public key.
 
 import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdirSync, readFileSync } from "node:fs";

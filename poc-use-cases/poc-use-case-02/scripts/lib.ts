@@ -1,8 +1,4 @@
 // Shared helpers for the POC UC02 Signal Hub demo scripts (Phase 4).
-//
-// Two keypairs are used: the consumer e-service keychain key signs access-token
-// assertions, and the Knode API keychain key signs knode-api-token assertions
-// (see paths.ts for why they must differ).
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -10,17 +6,18 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 import {
+  CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   CONSUMER_PRIVATE_KEY_PATH,
-  KNODE_API_PRIVATE_KEY_PATH,
   MOCK_ESERVICE_URL,
+  PRODUCER_KNODE_API_PRIVATE_KEY_PATH,
   REPO_ROOT,
 } from "./paths.ts";
 
 const CLIENT_ASSERTION_TYPE =
   "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
 
-// Must match the mock e-service's object_id scheme so producer and consumer
-// derive the same id for a company's evidence.
+// Matches the mock e-service's object_id scheme so producer and consumer derive
+// the same id for a company's evidence.
 export function objectIdForCompany(companyId: string, seed: string): string {
   return createHash("sha256").update(companyId + seed).digest("hex");
 }
@@ -28,7 +25,8 @@ export function objectIdForCompany(companyId: string, seed: string): string {
 export function assertPrivateKeysExist(): void {
   const keys = [
     { path: CONSUMER_PRIVATE_KEY_PATH, script: "generate-consumer-key" },
-    { path: KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
+    { path: PRODUCER_KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
+    { path: CONSUMER_KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
   ];
   for (const { path, script } of keys) {
     if (!existsSync(path)) {
@@ -108,9 +106,10 @@ export function mintKnodeApiToken(
   authorizationServerUrl: string,
   knodeApiKeychainId: string,
   knodeId: string,
+  privateKeyPath: string,
 ): Promise<string> {
   const assertion = signClientAssertion(
-    KNODE_API_PRIVATE_KEY_PATH,
+    privateKeyPath,
     ["--knodeId", knodeId],
     knodeApiKeychainId,
   );
@@ -122,11 +121,9 @@ export function mintKnodeApiToken(
   );
 }
 
-// Producer-side demo action: marks the company's evidence as changed on the
-// mock e-service so the consumer's recover step sees an updated evidence. The
-// route is not in the published spec and is gated by the producer's Knode API
-// token — the same token used to publish the Signal Hub signal. Returns the new
-// evidence revision.
+// Marks the company's evidence as changed on the mock e-service (out-of-spec
+// route, gated by the producer's Knode API token) so the recover step sees an
+// update. Returns the new evidence revision.
 export async function triggerEvidenceUpdate(
   companyId: string,
   knodeApiToken: string,

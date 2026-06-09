@@ -21,6 +21,7 @@ import {
   AUTHORIZATION_SERVER_URL,
   COMPANIES_ESERVICE_ID,
   CONSUMER_AUTHORIZATION_SERVER_URL,
+  CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   MOCK_ESERVICE_URL,
   SIGNAL_HUB_URL,
 } from "./paths.ts";
@@ -65,6 +66,7 @@ const knodeApiToken = await mintKnodeApiToken(
   CONSUMER_AUTHORIZATION_SERVER_URL,
   consumerKnodeApiKeychainId,
   "Orion",
+  CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
 );
 
 const pullResponse = await fetch(

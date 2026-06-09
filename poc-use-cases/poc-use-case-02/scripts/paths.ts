@@ -10,20 +10,20 @@ export const REPO_ROOT = resolve(here, "../../..");
 // apps/services/mock-eservice/src/pocUc02Companies/mockup.ts.
 export const COMPANIES_ESERVICE_ID = "16895bc2-deb0-427c-8c25-336207b2d0a1";
 
-// Fixed path shared between generate-consumer-key (writes) and the retrieval
-// scripts (read): the demo deliberately has no --key parameter, so the location
-// is the contract between the steps. Gitignored via poc-use-case-02/.gitignore.
+// Fixed key paths (no --key flag): the contract between the generate-* scripts
+// (write) and the demo scripts (read). Gitignored via poc-use-case-02/.gitignore.
 export const CONSUMER_PRIVATE_KEY_PATH = resolve(
   here,
   "../.local/consumer-private-key.pem",
 );
-
-// A separate keypair for the Knode API keychains: on a given knode a public key
-// (kid) can live in only one keychain, so the consumer's e-service keychain and
-// its Knode API keychain — both on Orion — must hold distinct keys.
-export const KNODE_API_PRIVATE_KEY_PATH = resolve(
+// Distinct keys for the producer's and consumer's Knode API keychains.
+export const PRODUCER_KNODE_API_PRIVATE_KEY_PATH = resolve(
   here,
-  "../.local/knode-api-private-key.pem",
+  "../.local/producer-knode-api-private-key.pem",
+);
+export const CONSUMER_KNODE_API_PRIVATE_KEY_PATH = resolve(
+  here,
+  "../.local/consumer-knode-api-private-key.pem",
 );
 
 // UC02 e-service is published on Lynx (scripts/seed/sql/lynx/*). The access

@@ -1,12 +1,12 @@
-// POC UC02 — Phase 4 helper.
-//
-// Generates the keypair for the Knode API keychains: saves the private key to
-// the fixed path the publish/recover scripts read, and prints the public key to
-// paste into the keychain in the UI. The same key is uploaded to both the
-// producer's (Lynx) and the consumer's (Orion) Knode API keychain — they live
-// on different knodes, so the same public key (kid) can be reused.
+// POC UC02 — Phase 4 helper. Generates the two Knode API keychain keys (one for
+// the producer on Lynx, one for the consumer on Orion) and prints their public
+// keys to paste into the respective keychains.
 
 import { generateAndSaveKeypair } from "./keys.ts";
-import { KNODE_API_PRIVATE_KEY_PATH } from "./paths.ts";
+import {
+  CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
+  PRODUCER_KNODE_API_PRIVATE_KEY_PATH,
+} from "./paths.ts";
 
-generateAndSaveKeypair("Knode API", KNODE_API_PRIVATE_KEY_PATH);
+generateAndSaveKeypair("Producer Knode API", PRODUCER_KNODE_API_PRIVATE_KEY_PATH);
+generateAndSaveKeypair("Consumer Knode API", CONSUMER_KNODE_API_PRIVATE_KEY_PATH);
