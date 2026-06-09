@@ -2,3 +2,11 @@
 rules:
   # Mock e-services impersonate external producers; their public contract does not expose /status.
   paths-status: off
+overrides:
+  # The evidences endpoint mirrors an external Cross-Border e-service whose
+  # contract returns a top-level array of evidences; the mock impersonates that
+  # producer, so the Knodia "objects, not arrays" response guideline does not apply.
+  - files:
+      - "openapi/openapi-bearer-poc-uc02-companies.yaml#/paths/~1legal-entities~1%7BuidCompany%7D~1evidences"
+    rules:
+      response-with-json-object: off
