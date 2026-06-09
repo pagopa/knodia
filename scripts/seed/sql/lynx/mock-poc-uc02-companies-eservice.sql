@@ -1,4 +1,4 @@
--- POC UC02 mock companies e-service for the lynx knode (Cross-Border E-service 04).
+-- POC UC02 mock companies e-service for the lynx knode.
 -- Producer is businessBookletLynx (scripts/seed/sql/lynx/poc-use-case-02.sql).
 -- ${NAMESPACE} and ${ENVIRONMENT} are substituted at runtime by seed.sh via sed.
 
@@ -9,7 +9,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   '16895bc2-deb0-427c-8c25-336207b2d0a1',
   '00000000-0000-4000-8000-000000000101',
-  '{"en": "Mockup 04 Companies (Provide-Data Bearer) - Lynx"}'::jsonb,
+  '{"en": "Company Information & Evidence - Lynx"}'::jsonb,
   '{"en": "Cross-Border E-Service that returns the registry information and the evidences of a legal entity (construction company) identified by its uid_company, with Bearer-token access and Signal Hub change notifications."}'::jsonb,
   'ProvideData',
   true, true,
