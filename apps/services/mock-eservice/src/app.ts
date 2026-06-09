@@ -105,7 +105,7 @@ export function buildApp({
     });
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
-    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId, seedConfig });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -205,6 +205,8 @@ function buildBearerPocUc02CompaniesApp({
 }) {
   const { acceptedAudiences, expectedIssuer, knodeId } = config;
 
+  const seedConfig = toSignalHubSeedConfig(config);
+
   const app = createMockFastifyApp(
     config,
     bearerAuthSecurityScheme,
@@ -225,7 +227,7 @@ function buildBearerPocUc02CompaniesApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId, seedConfig });
   });
 
   return app;

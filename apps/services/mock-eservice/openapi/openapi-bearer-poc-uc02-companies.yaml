@@ -299,7 +299,7 @@ paths:
       operationId: getCompaniesPseudonymization
       summary: Get evidence pseudonymization
       tags:
-        - legalEntity
+        - pocUc02Companies
       description: Returns the pseudonymization parameters used by the Producer to
         publish Signal Hub signals for the evidences managed by this e-service.
       responses:
