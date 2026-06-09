@@ -39,7 +39,7 @@ const getProducerKey = ({
 
 describe("GET /producerKeys/:keyId (getProducerKey)", () => {
   it.each(allowedTestTokens)(
-    "should return the producer public key with correct shape ($type, $roles)",
+    "should return the producer key with correct shape ($type, $roles)",
     async (token) => {
       await seedProducerKeychain(producerKeychain);
 

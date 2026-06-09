@@ -54,9 +54,9 @@ beforeEach(() => {
   getProducerKeyMock.mockReset();
 });
 
-describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
+describe("GET /producerKeys/:keyId (getProducerKey)", () => {
   it.each(allowedTestTokens)(
-    "should return producer public key ($type, $roles)",
+    "should return producer key ($type, $roles)",
     async (token) => {
       getProducerKeyMock.mockResolvedValue({ data: mockPublicKey });
 
@@ -90,7 +90,7 @@ describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
 
   it("should return 404 for non-existent key id", async () => {
     getProducerKeyMock.mockRejectedValue(
-      makeAxiosError(404, "Producer Public Key not found"),
+      makeAxiosError(404, "Producer Key not found"),
     );
 
     const response = await getProducerKey({ keyId: NON_EXISTENT_KEY_ID });

@@ -2476,7 +2476,7 @@ export type GetProducerKeychainEserviceResponses = {
 
 export type GetProducerKeychainEserviceResponse = GetProducerKeychainEserviceResponses[keyof GetProducerKeychainEserviceResponses];
 
-export type GetProducerPublicKeyData = {
+export type GetProducerKeyData = {
     body?: never;
     headers: {
         /**
@@ -2491,7 +2491,7 @@ export type GetProducerPublicKeyData = {
     url: '/producerKeys/{keyId}';
 };
 
-export type GetProducerPublicKeyErrors = {
+export type GetProducerKeyErrors = {
     /**
      * Bad Request
      */
@@ -2505,18 +2505,18 @@ export type GetProducerPublicKeyErrors = {
      */
     403: Problem;
     /**
-     * Producer Public Key not found
+     * Producer Key not found
      */
     404: Problem;
 };
 
-export type GetProducerPublicKeyError = GetProducerPublicKeyErrors[keyof GetProducerPublicKeyErrors];
+export type GetProducerKeyError = GetProducerKeyErrors[keyof GetProducerKeyErrors];
 
-export type GetProducerPublicKeyResponses = {
+export type GetProducerKeyResponses = {
     /**
-     * Producer Public Key retrieved successfully
+     * Producer Key retrieved successfully
      */
     200: PublicKey;
 };
 
-export type GetProducerPublicKeyResponse = GetProducerPublicKeyResponses[keyof GetProducerPublicKeyResponses];
+export type GetProducerKeyResponse = GetProducerKeyResponses[keyof GetProducerKeyResponses];

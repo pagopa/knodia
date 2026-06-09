@@ -3810,10 +3810,10 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producerKeys/{keyId}:
     get:
-      operationId: getProducerPublicKey
+      operationId: getProducerKey
       tags:
         - producerKeychain
-      description: Retrieve a Producer Public Key
+      description: Retrieve a Producer Key
       parameters:
         - schema:
             $ref: "#/components/schemas/KeyId"
@@ -3829,11 +3829,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Producer Public Key retrieved successfully
+          description: Producer Key retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer Public Key retrieved successfully
+                description: Producer Key retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/PublicKey"
         "400":
@@ -3861,11 +3861,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Producer Public Key not found
+          description: Producer Key not found
           content:
             application/problem+json:
               schema:
-                description: Producer Public Key not found
+                description: Producer Key not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

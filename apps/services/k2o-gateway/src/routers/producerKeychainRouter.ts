@@ -35,12 +35,12 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Getting Public Key with KID ${req.params.keyId}`,
+        `Getting Producer Key with KID ${req.params.keyId}`,
       );
 
       const headers = await getHeaders(correlationId);
 
-      const { data } = await keychainProcessApi.getProducerPublicKey({
+      const { data } = await keychainProcessApi.getProducerKey({
         client: keychainProcessClient,
         headers,
         path: { keyId: req.params.keyId },
@@ -50,19 +50,19 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Producer Public Key",
-      operationId: "getProducerPublicKey",
+      description: "Retrieve a Producer Key",
+      operationId: "getProducerKey",
       params: API_KeyIdPathParam,
       response: {
         200: API_PublicKey.meta({
-          description: "Producer Public Key retrieved successfully",
+          description: "Producer Key retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Producer Public Key not found" }),
+        404: API_Problem.meta({ description: "Producer Key not found" }),
       },
-      summary: "Get Producer Public Key",
+      summary: "Get Producer Key",
       tags: [apiTags.producerKeychain],
     },
     url: "/producerKeys/:keyId",

@@ -766,18 +766,18 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Producer Public Key",
+      description: "Retrieve a Producer Key",
       headers: KnodiaServiceHeaders,
-      operationId: "getProducerPublicKey",
+      operationId: "getProducerKey",
       params: API_KeyIdPathParam,
       response: {
         200: API_PublicKey.meta({
-          description: "Producer Public Key retrieved successfully",
+          description: "Producer Key retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Producer Public Key not found" }),
+        404: API_Problem.meta({ description: "Producer Key not found" }),
       },
       tags: [apiTags.producerKeychain],
     },
