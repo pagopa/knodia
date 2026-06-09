@@ -12,8 +12,10 @@ import {
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import { findLegalEntity } from "../data/legalEntities.ts";
 import { API_Ack, API_SendDigitalContactRequest } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { legalEntityNotFound } from "../models/errors.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 // Identity of this mock e-service. Hardcoded on purpose.
@@ -48,6 +50,15 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
 
       const { contactPoint, legalEntity } = req.body;
 
+      // The legal entity submitted by the Consumer must exist in the
+      // Producer's registry — otherwise the submission has nothing to
+      // attach the digital contact point to. We reuse the same lookup
+      // (and 404 error) that the read-side companies e-service uses.
+      const uidCompany = legalEntity.legalIdentifier.notation;
+      if (!findLegalEntity(uidCompany)) {
+        throw legalEntityNotFound(uidCompany);
+      }
+
       // This is a Receive-data mock: the Producer does not persist anything.
       // It just acknowledges receipt with a correlation id and a timestamp,
       // mirroring the `ACK = sendDigitalContact(legal_entity, contact_point)`
@@ -58,7 +69,7 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
       } as const;
 
       logger.info(
-        { contactPoint, legalEntity: legalEntity.identifier },
+        { contactPoint, uidCompany },
         `Mock e-service /digital-contacts received submission, ack ${ack.correlationId}`,
       );
       res.status(202).send(ack);
@@ -67,7 +78,7 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_SendDigitalContactRequest,
       description:
-        "Receives the digital contact point of a legal entity from the Consumer and returns an acknowledgment (Cross-Border E-service 04, Bearer-protected, Receive-data mode).",
+        "Receives the digital contact point of a legal entity from the Consumer and returns an acknowledgment (Cross-Border E-service 04, Bearer-protected, Receive-data mode). Returns 404 if the legal entity is not known to the Producer.",
       operationId: "sendDigitalContact",
       response: {
         202: API_Ack.meta({
@@ -75,6 +86,9 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Invalid submission body" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        404: API_Problem.meta({
+          description: "No legal entity found for the submitted uid_company",
+        }),
       },
       summary: "Send digital contact",
       tags: [apiTags.companyDigitalDomicile],

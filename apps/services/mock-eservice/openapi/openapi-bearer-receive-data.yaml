@@ -74,33 +74,12 @@ components:
         - status
         - title
       additionalProperties: false
-    Notation:
-      description: Italian Codice Fiscale, uppercase only. Acts as the natural-person
-        identifier in the path.
-      example: RMNLNR03H12H501Z
-      type: string
-      pattern: ^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$
     UriScheme:
       description: Identifier scheme URI accepted by Knodia mock e-services
       type: string
       enum:
         - http://memberstate.ms/PIdentifier
         - http://memberstate.ms/VAT
-    Identifier:
-      description: Globally unique identifier of an entity (Core Person Vocabulary 2.1.1)
-      type: object
-      properties:
-        notation:
-          $ref: "#/components/schemas/Notation"
-        schemeName:
-          type: string
-        schemeURI:
-          $ref: "#/components/schemas/UriScheme"
-      required:
-        - notation
-        - schemeName
-        - schemeURI
-      additionalProperties: false
     ContactPoint:
       description: Digital contact point of a natural person (Core Person Vocabulary 2.1.1)
       type: object
@@ -112,17 +91,49 @@ components:
         hasTelephone:
           type: string
       additionalProperties: false
-    LegalEntity:
-      description: Legal entity, modelled after Core Business Vocabulary 2.2.0 (subset)
+    CompanyUid:
+      description: "Legal-entity identifier in the path: 11-digit Italian VAT number
+        (Partita IVA)."
+      example: "01229430085"
+      type: string
+      pattern: ^[0-9]{11}$
+    LegalIdentifier:
+      description: Unique identifier of a legal entity (Core Business Vocabulary 2.2.0)
       type: object
       properties:
-        identifier:
-          $ref: "#/components/schemas/Identifier"
+        notation:
+          $ref: "#/components/schemas/CompanyUid"
+        schemeName:
+          type: string
+        schemeURI:
+          $ref: "#/components/schemas/UriScheme"
+      required:
+        - notation
+        - schemeName
+        - schemeURI
+      additionalProperties: false
+    LegalEntityActivity:
+      description: Economic activity of the legal entity — ATECO 2025 classification
+        code (6-digit category level, with NACE Rev. 2.1 correspondence)
+      example: 43.22.07
+      type: string
+    LegalEntity:
+      description: Legal entity (company), modelled after Core Business Vocabulary 2.2.0
+      type: object
+      properties:
+        legalEntityActivity:
+          $ref: "#/components/schemas/LegalEntityActivity"
+        legalIdentifier:
+          $ref: "#/components/schemas/LegalIdentifier"
         legalName:
           type: string
-          minLength: 1
+        registrationDate:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
       required:
-        - identifier
+        - legalEntityActivity
+        - legalIdentifier
         - legalName
       additionalProperties: false
     SendDigitalContactRequest:
@@ -164,7 +175,8 @@ paths:
         - companyDigitalDomicile
       description: Receives the digital contact point of a legal entity from the
         Consumer and returns an acknowledgment (Cross-Border E-service 04,
-        Bearer-protected, Receive-data mode).
+        Bearer-protected, Receive-data mode). Returns 404 if the legal entity is
+        not known to the Producer.
       requestBody:
         required: true
         content:
@@ -194,6 +206,14 @@ paths:
             application/problem+json:
               schema:
                 description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: No legal entity found for the submitted uid_company
+          content:
+            application/problem+json:
+              schema:
+                description: No legal entity found for the submitted uid_company
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
