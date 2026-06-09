@@ -29,7 +29,6 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/keychain-process-client": "workspace:*",
     "@knodia/logger": "workspace:*",
-    "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",

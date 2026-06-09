@@ -6,7 +6,7 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
-  InternalAuthData,
+  KnodeApiAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -179,7 +179,7 @@ export function producerKeychainServiceBuilder(
     },
     async getProducerKey(
       kid: KeyId,
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<KnodeApiAuthData>,
     ): Promise<KeychainKey> {
       logger.info(`Getting Producer Key with KID ${kid}`);
 

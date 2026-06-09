@@ -15,13 +15,6 @@ beforeAll(async () => {
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
-    internalJwt: {
-      audience: "test-audience",
-      issuer: "test-issuer",
-      kid: "test-kid",
-      secondsDuration: 3600,
-      subject: "test-subject",
-    },
     keychainProcessUrl: "http://localhost:0",
   });
 

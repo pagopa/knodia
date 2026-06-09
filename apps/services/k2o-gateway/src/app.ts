@@ -11,8 +11,6 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
-import { tokenGeneratorBuilder } from "@knodia/token-generator";
-import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2OGatewayConfig } from "./config/config.ts";
 
@@ -23,22 +21,14 @@ import { producerKeychainRouter } from "./routers/producerKeychainRouter.ts";
 
 export function buildApp({
   config,
-  internalJwt,
   keychainProcessUrl,
 }: {
   config: AuthConfig & LoggerConfig;
-  internalJwt: K2OGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
 }) {
   const clients = getKnodiaClients({
     keychainProcessUrl,
   });
-
-  const tokenGenerator = tokenGeneratorBuilder();
-  const internalTokenProvider = refreshableInternalTokenGenerator(
-    internalJwt,
-    tokenGenerator,
-  );
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -73,7 +63,6 @@ export function buildApp({
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(producerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
-      tokenProvider: internalTokenProvider,
     });
   });
 
@@ -83,7 +72,6 @@ export function buildApp({
 export function buildAppFromConfig(config: K2OGatewayConfig) {
   const app = buildApp({
     config,
-    internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
   });
 

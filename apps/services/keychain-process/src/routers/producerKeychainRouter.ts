@@ -754,7 +754,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "knode-api" },
       ]);
 
       const producerKey = await producerKeychainService.getProducerKey(

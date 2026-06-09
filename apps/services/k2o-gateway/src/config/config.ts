@@ -3,12 +3,10 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { TokenGeneratorConfig } from "@knodia/token-generator/config";
 import z from "zod";
 
 const K2OGatewayConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
-  .and(TokenGeneratorConfig)
   .and(
     z
       .object({
