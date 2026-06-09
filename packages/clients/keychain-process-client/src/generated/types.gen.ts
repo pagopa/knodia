@@ -105,6 +105,23 @@ export type CreatedMemberResource = {
     userId: UserId;
 };
 
+export type KeychainKey = {
+    algorithm: KeyAlgorithm;
+    createdAt: string;
+    encodedPem: string;
+    format: KeyFormat;
+    kid: KeyId;
+    name: KeychainKeyLocalizedName;
+    userId: UserId;
+};
+
+export type PublicKey = {
+    algorithm: KeyAlgorithm;
+    encodedPem: string;
+    format: KeyFormat;
+    kid: KeyId;
+};
+
 export type Keychain = {
     createdAt: string;
     description?: KeychainLocalizedDescription;
@@ -132,16 +149,6 @@ export type KeychainPatch = {
 export type KeychainKeySeed = {
     encodedPem: string;
     name: KeychainKeyLocalizedName;
-};
-
-export type KeychainKey = {
-    algorithm: KeyAlgorithm;
-    createdAt: string;
-    encodedPem: string;
-    format: KeyFormat;
-    kid: KeyId;
-    name: KeychainKeyLocalizedName;
-    userId: UserId;
 };
 
 export type KeychainKeys = {
@@ -189,13 +196,6 @@ export type ProducerKeychainEservice = {
 export type ProducerKeychainEservices = {
     pagination: Pagination;
     results: Array<ProducerKeychainEservice>;
-};
-
-export type PublicKey = {
-    algorithm: KeyAlgorithm;
-    encodedPem: string;
-    format: KeyFormat;
-    kid: KeyId;
 };
 
 export type GetStatusData = {

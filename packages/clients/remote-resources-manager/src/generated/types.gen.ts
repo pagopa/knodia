@@ -1052,7 +1052,9 @@ export type CreatePurposeResponses = {
     /**
      * Purpose created successfully
      */
-    201: CreatedPurposeResource;
+    201: CreatedPurposeResource & {
+        id: string;
+    };
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
