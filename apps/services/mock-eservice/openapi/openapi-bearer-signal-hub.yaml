@@ -259,7 +259,7 @@ paths:
                   address found for that person
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /pseudonymization:
+  /natural-persons/pseudonymization:
     get:
       operationId: getPseudonymization
       summary: Get pseudonymization

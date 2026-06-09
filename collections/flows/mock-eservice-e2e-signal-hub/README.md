@@ -43,7 +43,7 @@ by setting `KNODE_API_JWT` in `collections/.env` or with
 ## Fetch data and observe rotation
 
 3. **2 - Get Residence (Signal Hub Bearer)** — `GET /natural-persons/RMNLNR03H12H501Z/residence`.
-4. **3 - Get Pseudonymization (Signal Hub Bearer)** — `GET /pseudonymization`.
+4. **3 - Get Residence Pseudonymization (Signal Hub Bearer)** — `GET /natural-persons/pseudonymization`.
 5. **4 - Pull Signals (Signal Hub)** — `GET {{host-signal-hub}}/signals/{{eserviceId}}` (authenticated with `knode-api-token`). Re-run until the signals for the current period appear.
 6. Compute `sha256(<fiscalCode> + <seed from step 4>)` and observe it matches the `object_id` of a `CREATE`/`UPDATE`/`DELETE` signal from step 5. Repeat from step 3 for the next period.
 
