@@ -768,7 +768,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Retrieve a Producer Public Key",
       headers: KnodiaServiceHeaders,
-      operationId: "getProducerKey",
+      operationId: "getProducerPublicKey",
       params: API_KeyIdPathParam,
       response: {
         200: API_PublicKey.meta({

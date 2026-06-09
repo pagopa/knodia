@@ -45,7 +45,7 @@ export function buildApp({
       openapi: {
         components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
-          description: "API for communicating with another Knode organization",
+          description: "API for communicating with another Knode Organization",
           title: "Knode to Organization API",
           version: "1.0.0",
         },
@@ -54,7 +54,7 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "Router related to Keychains",
+            description: "Router related to Producer Keychains",
             name: apiTags.producerKeychain,
           },
         ],

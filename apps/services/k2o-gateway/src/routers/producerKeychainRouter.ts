@@ -40,7 +40,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
 
       const headers = await getHeaders(correlationId);
 
-      const { data } = await keychainProcessApi.getProducerKey({
+      const { data } = await keychainProcessApi.getProducerPublicKey({
         client: keychainProcessClient,
         headers,
         path: { keyId: req.params.keyId },

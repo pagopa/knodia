@@ -424,7 +424,7 @@ components:
         encodedPem:
           type: string
         format:
-          type: string
+          $ref: "#/components/schemas/KeyFormat"
         kid:
           $ref: "#/components/schemas/KeyId"
       required:
@@ -3810,7 +3810,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producerKeys/{keyId}:
     get:
-      operationId: getProducerKey
+      operationId: getProducerPublicKey
       tags:
         - producerKeychain
       description: Retrieve a Producer Public Key

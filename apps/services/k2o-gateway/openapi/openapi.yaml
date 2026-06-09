@@ -3,7 +3,7 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for communicating with another Knode organization
+  description: API for communicating with another Knode Organization
   title: Knode to Organization API
   version: 1.0.0
 components:
@@ -175,5 +175,5 @@ security:
 tags:
   - description: Health check routes
     name: health
-  - description: Router related to Keychains
+  - description: Router related to Producer Keychains
     name: producerKeychain

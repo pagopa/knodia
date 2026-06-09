@@ -42,10 +42,13 @@ const VALID_KEY_ID = mockKeychainKey.kid;
 
 const allowedTestTokens: TestToken[] = [{ type: "knode-api" }];
 
-const getProducerKey = (
-  keyId: string,
-  token: TestToken = allowedTestTokens[0]!,
-) => injectAppRequest(token).get(`/producerKeys/${keyId}`);
+const getProducerKey = ({
+  keyId = VALID_KEY_ID,
+  token = allowedTestTokens[0]!,
+}: {
+  keyId?: string;
+  token?: TestToken;
+} = {}) => injectAppRequest(token).get(`/producerKeys/${keyId}`);
 
 beforeEach(() => {
   getProducerKeyMock.mockReset();
@@ -57,7 +60,7 @@ describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
     async (token) => {
       getProducerKeyMock.mockResolvedValue({ data: mockPublicKey });
 
-      const response = await getProducerKey(VALID_KEY_ID, token);
+      const response = await getProducerKey({ token });
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(mockPublicKey);
@@ -67,7 +70,7 @@ describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
   it("should call keychain-process with correct path params", async () => {
     getProducerKeyMock.mockResolvedValue({ data: mockPublicKey });
 
-    await getProducerKey(VALID_KEY_ID);
+    await getProducerKey();
 
     expect(getProducerKeyMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -79,7 +82,7 @@ describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await getProducerKey(VALID_KEY_ID, token);
+      const response = await getProducerKey({ token });
 
       expect(response.statusCode).toBe(403);
     },
@@ -90,7 +93,7 @@ describe("GET /producerKeys/:keyId (getProducerPublicKey)", () => {
       makeAxiosError(404, "Producer Public Key not found"),
     );
 
-    const response = await getProducerKey(NON_EXISTENT_KEY_ID);
+    const response = await getProducerKey({ keyId: NON_EXISTENT_KEY_ID });
 
     expect(response.statusCode).toBe(404);
   });

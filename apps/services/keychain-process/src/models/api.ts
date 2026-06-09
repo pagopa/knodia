@@ -347,7 +347,7 @@ export const API_PublicKey = z
   .strictObject({
     algorithm: API_KeyAlgorithm,
     encodedPem: z.string(),
-    format: z.string(),
+    format: API_KeyFormat,
     kid: API_KeyId,
   })
   .meta({ id: "PublicKey" });

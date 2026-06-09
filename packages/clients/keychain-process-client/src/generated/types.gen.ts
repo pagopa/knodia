@@ -194,7 +194,7 @@ export type ProducerKeychainEservices = {
 export type PublicKey = {
     algorithm: KeyAlgorithm;
     encodedPem: string;
-    format: string;
+    format: KeyFormat;
     kid: KeyId;
 };
 
@@ -2476,7 +2476,7 @@ export type GetProducerKeychainEserviceResponses = {
 
 export type GetProducerKeychainEserviceResponse = GetProducerKeychainEserviceResponses[keyof GetProducerKeychainEserviceResponses];
 
-export type GetProducerKeyData = {
+export type GetProducerPublicKeyData = {
     body?: never;
     headers: {
         /**
@@ -2491,7 +2491,7 @@ export type GetProducerKeyData = {
     url: '/producerKeys/{keyId}';
 };
 
-export type GetProducerKeyErrors = {
+export type GetProducerPublicKeyErrors = {
     /**
      * Bad Request
      */
@@ -2510,13 +2510,13 @@ export type GetProducerKeyErrors = {
     404: Problem;
 };
 
-export type GetProducerKeyError = GetProducerKeyErrors[keyof GetProducerKeyErrors];
+export type GetProducerPublicKeyError = GetProducerPublicKeyErrors[keyof GetProducerPublicKeyErrors];
 
-export type GetProducerKeyResponses = {
+export type GetProducerPublicKeyResponses = {
     /**
      * Producer Public Key retrieved successfully
      */
     200: PublicKey;
 };
 
-export type GetProducerKeyResponse = GetProducerKeyResponses[keyof GetProducerKeyResponses];
+export type GetProducerPublicKeyResponse = GetProducerPublicKeyResponses[keyof GetProducerPublicKeyResponses];

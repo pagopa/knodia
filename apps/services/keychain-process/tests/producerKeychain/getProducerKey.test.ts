@@ -29,10 +29,13 @@ const NON_EXISTENT_KEY_ID = "non-existent-key-id";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
-const getProducerKey = (
-  keyId: string,
-  token: TestToken = allowedTestTokens[0]!,
-) => injectAppRequest(token).get(`/producerKeys/${keyId}`);
+const getProducerKey = ({
+  keyId = VALID_KEY_ID,
+  token = allowedTestTokens[0]!,
+}: {
+  keyId?: string;
+  token?: TestToken;
+} = {}) => injectAppRequest(token).get(`/producerKeys/${keyId}`);
 
 describe("GET /producerKeys/:keyId (getProducerKey)", () => {
   it.each(allowedTestTokens)(
@@ -40,7 +43,7 @@ describe("GET /producerKeys/:keyId (getProducerKey)", () => {
     async (token) => {
       await seedProducerKeychain(producerKeychain);
 
-      const response = await getProducerKey(VALID_KEY_ID, token);
+      const response = await getProducerKey({ token });
 
       expect(response.statusCode).toBe(200);
 
@@ -52,14 +55,14 @@ describe("GET /producerKeys/:keyId (getProducerKey)", () => {
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await getProducerKey(VALID_KEY_ID, token);
+      const response = await getProducerKey({ token });
 
       expect(response.statusCode).toBe(403);
     },
   );
 
   it("should return 404 for non-existent key id", async () => {
-    const response = await getProducerKey(NON_EXISTENT_KEY_ID);
+    const response = await getProducerKey({ keyId: NON_EXISTENT_KEY_ID });
 
     expect(response.statusCode).toBe(404);
   });

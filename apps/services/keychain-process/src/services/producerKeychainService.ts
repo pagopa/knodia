@@ -180,7 +180,7 @@ export function producerKeychainServiceBuilder(
       kid: KeyId,
       { logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<KeychainKey> {
-      logger.info(`Getting Producer Key with ID ${kid}`);
+      logger.info(`Getting Producer Key with KID ${kid}`);
 
       return await retrieveProducerKey(kid, readmodelService);
     },
