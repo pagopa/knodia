@@ -326,9 +326,6 @@ function PublicKeysTab(props: PublicKeysTabProps) {
     : false;
 
   const isKeychainMember = useIsCurrentUserKeychainMember(props);
-  // TODO(KN-458): currently the download-key authorization is only enforced
-  // in the frontend (admin OR member). Once the backend policy for non-member
-  // technical operators is finalized, mirror the same rule in keychain-process.
   const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (
