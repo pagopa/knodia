@@ -1,4 +1,3 @@
-import type { FastifyInstance } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -33,61 +32,18 @@ interface MockCompaniesRouterOptions {
   seedConfig: SignalHubSeedConfig;
 }
 
-function assertPocUc02CompaniesEserviceToken(knodeId: KnodeId): void {
-  assertTokenClaimsAreValidForEservice(
-    POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
-    POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
-    POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
-    knodeId,
-  );
-}
-
-function registerPseudonymizationRoute(
-  fastify: FastifyInstance,
-  knodeId: KnodeId,
-  seedConfig: SignalHubSeedConfig,
-): void {
-  fastify.route({
-    handler: async (_req, res) => {
-      const { logger } = getContextValues(requestContext);
-      assertPocUc02CompaniesEserviceToken(knodeId);
-
-      const seed = getRotatedSeed(
-        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
-        Date.now(),
-        seedConfig,
-      );
-
-      logger.info(
-        "Mock e-service /legal-entities/pseudonymization returned current seed",
-      );
-      res.status(200).send({ cryptoHashFunction: "sha256", seed });
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Returns the pseudonymization parameters used by the Producer to publish Signal Hub signals for the evidences managed by this e-service.",
-      operationId: "getCompaniesPseudonymization",
-      response: {
-        200: API_Pseudonymization.meta({
-          description: "Pseudonymization parameters for this e-service",
-        }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-      },
-      summary: "Get evidence pseudonymization",
-      tags: [apiTags.pocUc02Companies],
-    },
-    url: "/legal-entities/pseudonymization",
-  });
-}
-
 export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   MockCompaniesRouterOptions
 > = async (fastify, { knodeId, seedConfig }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-      assertPocUc02CompaniesEserviceToken(knodeId);
+      assertTokenClaimsAreValidForEservice(
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+        knodeId,
+      );
 
       const { uidCompany } = req.params;
       const legalEntity = findLegalEntity(uidCompany);
@@ -125,7 +81,12 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-      assertPocUc02CompaniesEserviceToken(knodeId);
+      assertTokenClaimsAreValidForEservice(
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+        knodeId,
+      );
 
       const { uidCompany } = req.params;
       const { evidenceType } = req.query;
@@ -164,5 +125,41 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
     url: "/legal-entities/:uidCompany/evidences",
   });
 
-  registerPseudonymizationRoute(fastify, knodeId, seedConfig);
+  fastify.route({
+    handler: async (_req, res) => {
+      const { logger } = getContextValues(requestContext);
+      assertTokenClaimsAreValidForEservice(
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+        knodeId,
+      );
+
+      const seed = getRotatedSeed(
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        Date.now(),
+        seedConfig,
+      );
+
+      logger.info(
+        "Mock e-service /legal-entities/pseudonymization returned current seed",
+      );
+      res.status(200).send({ cryptoHashFunction: "sha256", seed });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Returns the pseudonymization parameters used by the Producer to publish Signal Hub signals for the evidences managed by this e-service.",
+      operationId: "getCompaniesPseudonymization",
+      response: {
+        200: API_Pseudonymization.meta({
+          description: "Pseudonymization parameters for this e-service",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      summary: "Get evidence pseudonymization",
+      tags: [apiTags.pocUc02Companies],
+    },
+    url: "/legal-entities/pseudonymization",
+  });
 };
