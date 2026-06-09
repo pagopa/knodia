@@ -14,6 +14,7 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
+import { API_CompactProducer } from "@knodia/organization-models/api";
 import { z } from "zod";
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
@@ -45,13 +46,6 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
-const API_CatalogEserviceSearchResultProducer = z
-  .strictObject({
-    id: z.uuid(),
-    name: z.string(),
-  })
-  .meta({ id: "CatalogEserviceSearchResultProducer" });
-
 export const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -64,7 +58,7 @@ export const API_CatalogEserviceSearchResult = z
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producer: API_CatalogEserviceSearchResultProducer,
+    producer: API_CompactProducer,
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
@@ -192,10 +186,7 @@ export const API_Eservice = z
     }),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producer: z.strictObject({
-      id: z.uuid(),
-      name: z.string(),
-    }),
+    producer: API_CompactProducer,
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion,
   })

@@ -167,6 +167,14 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
+/**
+ * Producer Organization with id and name
+ */
+export type CompactProducer = {
+    id: string;
+    name: string;
+};
+
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     knodeId: KnodeId;
@@ -177,11 +185,6 @@ export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     keywords: string;
     knodeId: KnodeId;
-};
-
-export type CatalogEserviceSearchResultProducer = {
-    id: string;
-    name: string;
 };
 
 export type CatalogEserviceSearchResult = {
@@ -196,7 +199,7 @@ export type CatalogEserviceSearchResult = {
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CatalogEserviceSearchResultProducer;
+    producer: CompactProducer;
     updatedAt: string;
 };
 
@@ -288,10 +291,7 @@ export type Eservice = {
     knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: {
-        id: string;
-        name: string;
-    };
+    producer: CompactProducer;
     updatedAt: string;
     version: EserviceVersion;
 };

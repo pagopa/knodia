@@ -334,6 +334,21 @@ components:
       enum:
         - Bearer
         - DPoP
+    CompactProducer:
+      description: Producer Organization with id and name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - name
+      additionalProperties: false
     GetCatalogEserviceSearchParams:
       anyOf:
         - type: object
@@ -371,19 +386,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    CatalogEserviceSearchResultProducer:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          type: string
-      required:
-        - id
-        - name
-      additionalProperties: false
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -414,7 +416,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CatalogEserviceSearchResultProducer"
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
@@ -675,18 +677,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            name:
-              type: string
-          required:
-            - id
-            - name
-          additionalProperties: false
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
