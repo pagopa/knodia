@@ -17,13 +17,17 @@ import {
   generateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { getEserviceInterfaceFileType } from "@knodia/eservice-models";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
+import {
+  sanitizeFileName,
+  sendFileDownload,
+} from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -44,6 +48,7 @@ import z from "zod";
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { invalidInterfaceFileName } from "../../models/errors.ts";
 import {
   API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
@@ -129,9 +134,16 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       const {
-        interfaceDocument: { content, name, ...interfaceDocumentRest },
+        interfaceDocument: { content, name: rawName, ...interfaceDocumentRest },
         ...rest
       } = req.body;
+
+      // Sanitize the user-provided file name before it reaches the S3 key.
+      const name = sanitizeFileName(rawName);
+
+      if (getEserviceInterfaceFileType(name) === undefined) {
+        throw invalidInterfaceFileName(name);
+      }
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
