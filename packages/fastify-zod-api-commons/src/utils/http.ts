@@ -35,7 +35,7 @@ export function parseContentDispositionFileName(
  */
 export function sanitizeFileName(fileName: string): string {
   const baseName = fileName.split(/[/\\]/).pop() ?? "";
-  // Drop control characters (incl. CR/LF) and double quotes that would break the header.
+  // Prevent Content-Disposition header injection.
   const cleaned = baseName.replace(CONTROL_AND_QUOTE, "").trim();
   return cleaned === "" || /^\.+$/.test(cleaned) ? FALLBACK_FILE_NAME : cleaned;
 }
