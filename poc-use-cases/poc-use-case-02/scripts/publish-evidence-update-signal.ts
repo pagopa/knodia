@@ -60,17 +60,19 @@ const knodeApiToken = await mintKnodeApiToken(
 // Change the evidence before announcing it, so recover sees the new value.
 const evidenceRevision = await triggerEvidenceUpdate(companyId, knodeApiToken);
 
-// Signal ids must be strictly increasing per e-service; seconds-since-epoch is
-// monotonic across manual runs and stays well above any seeded value.
+function buildSignal(signalId: number) {
+  return {
+    eserviceId: COMPANIES_ESERVICE_ID,
+    objectId,
+    objectType: OBJECT_TYPE,
+    signalId,
+    signalType: "UPDATE",
+  };
+}
+
 async function pushSignal(signalId: number): Promise<Response> {
   return fetch(`${SIGNAL_HUB_URL}/signals`, {
-    body: JSON.stringify({
-      eserviceId: COMPANIES_ESERVICE_ID,
-      objectId,
-      objectType: OBJECT_TYPE,
-      signalId,
-      signalType: "UPDATE",
-    }),
+    body: JSON.stringify(buildSignal(signalId)),
     headers: {
       authorization: `Bearer ${knodeApiToken}`,
       "content-type": "application/json",
@@ -107,16 +109,4 @@ for (let attempt = 0; ; attempt++) {
 
 console.log(`Updated evidence for ${companyId} (revision ${evidenceRevision}).`);
 console.log("Published evidence-update signal:");
-console.log(
-  JSON.stringify(
-    {
-      eserviceId: COMPANIES_ESERVICE_ID,
-      objectId,
-      objectType: OBJECT_TYPE,
-      signalId,
-      signalType: "UPDATE",
-    },
-    null,
-    2,
-  ),
-);
+console.log(JSON.stringify(buildSignal(signalId), null, 2));

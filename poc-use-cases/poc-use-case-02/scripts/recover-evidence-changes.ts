@@ -73,17 +73,28 @@ const knodeApiToken = await mintKnodeApiToken(
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
 );
 
-const pullResponse = await fetch(
-  `${SIGNAL_HUB_URL}/signals/${COMPANIES_ESERVICE_ID}?lastSignalId=0&size=100`,
-  { headers: { authorization: `Bearer ${knodeApiToken}` } },
-);
-if (!pullResponse.ok) {
-  console.error(
-    `Signal pull failed (${pullResponse.status}): ${await pullResponse.text()}`,
+// Page through all signals (cursor = last id of each page) so the latest update
+// is found regardless of count.
+const PAGE_SIZE = 100;
+const signals: Signal[] = [];
+let cursor = 0;
+for (;;) {
+  const pullResponse = await fetch(
+    `${SIGNAL_HUB_URL}/signals/${COMPANIES_ESERVICE_ID}?lastSignalId=${cursor}&size=${PAGE_SIZE}`,
+    { headers: { authorization: `Bearer ${knodeApiToken}` } },
   );
-  process.exit(1);
+  if (!pullResponse.ok) {
+    console.error(
+      `Signal pull failed (${pullResponse.status}): ${await pullResponse.text()}`,
+    );
+    process.exit(1);
+  }
+  const page = ((await pullResponse.json()) as { signals: Signal[] }).signals;
+  signals.push(...page);
+  const last = page.at(-1);
+  if (!last || page.length < PAGE_SIZE) break;
+  cursor = last.signalId;
 }
-const { signals } = (await pullResponse.json()) as { signals: Signal[] };
 
 const accessToken = await mintAccessToken(
   AUTHORIZATION_SERVER_URL,
@@ -94,9 +105,11 @@ const seed = await getPseudonymizationSeed(accessToken);
 const objectId = objectIdForCompany(companyId, seed);
 
 // Every UPDATE for a company shares the same object_id (static seed), so take
-// the latest matching signal (highest signalId), not the first.
+// the latest matching UPDATE (highest signalId), not the first.
 const matchingSignal = signals
-  .filter((signal) => signal.objectId === objectId)
+  .filter(
+    (signal) => signal.objectId === objectId && signal.signalType === "UPDATE",
+  )
   .sort((a, b) => b.signalId - a.signalId)
   .at(0);
 
