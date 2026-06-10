@@ -168,7 +168,7 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Producer Organization with id and name
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
  */
 export type CompactProducer = {
     id: string;

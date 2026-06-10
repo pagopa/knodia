@@ -335,7 +335,8 @@ components:
         - Bearer
         - DPoP
     CompactProducer:
-      description: Producer Organization with id and name
+      description: Producer Organization with id and name; omits knodeId since it is
+        always known from the resource this is embedded in
       type: object
       properties:
         id:
