@@ -1,0 +1,38 @@
+meta {
+  name: 3 - Update Producer Keychain
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId
+  body: json
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+headers {
+  Content-Type: application/merge-patch+json
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{updatedProducerKeychainName}}"
+    },
+    "description": null
+  }
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("updatedProducerKeychainName", `Updated Producer Keychain ${random}`)
+}

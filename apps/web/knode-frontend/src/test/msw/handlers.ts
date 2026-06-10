@@ -135,4 +135,32 @@ export const handlers = [
       results: [],
     });
   }),
+
+  http.get(
+    `${BASE_URL}/producerKeychains/:producerKeychainId/membership/:userId`,
+    () => HttpResponse.json({ isMember: false }),
+  ),
+
+  http.get(
+    `${BASE_URL}/consumerKeychains/:consumerKeychainId/membership/:userId`,
+    () => HttpResponse.json({ isMember: false }),
+  ),
+
+  http.get(
+    `${BASE_URL}/knodeApiKeychains/:knodeApiKeychainId/membership/:userId`,
+    () => HttpResponse.json({ isMember: false }),
+  ),
+
+  http.get(
+    `${BASE_URL}/producerKeychains/:producerKeychainId/keys`,
+    ({ request }) => {
+      const url = new URL(request.url);
+      const limit = Number(url.searchParams.get("limit") ?? 50);
+      const offset = Number(url.searchParams.get("offset") ?? 0);
+      return HttpResponse.json({
+        pagination: { limit, offset, total: 0 },
+        results: [],
+      });
+    },
+  ),
 ];

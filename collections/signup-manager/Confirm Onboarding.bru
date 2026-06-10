@@ -1,0 +1,21 @@
+meta {
+  name: Confirm Onboarding
+  type: http
+}
+
+post {
+  url: {{host-signup-manager}}/onboarding/confirm
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-signup-session-jwt}}
+}
+
+body:json {
+  {
+    "email": "test@example.com"
+  }
+}

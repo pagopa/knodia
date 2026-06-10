@@ -1,7 +1,9 @@
+import { SignupDbConfig } from "@knodia/db-signup/config";
 import {
   AuthConfig,
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
+import { KafkaConfig, SignupTopicConfig } from "@knodia/kafka-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
@@ -40,7 +42,10 @@ export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;
 
 const SignupManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
-  .and(OneIdentityConfig);
+  .and(OneIdentityConfig)
+  .and(SignupDbConfig)
+  .and(KafkaConfig)
+  .and(SignupTopicConfig);
 export type SignupManagerConfig = z.infer<typeof SignupManagerConfig>;
 
 export const config = SignupManagerConfig.parse(process.env);
