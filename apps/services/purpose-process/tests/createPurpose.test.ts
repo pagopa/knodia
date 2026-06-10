@@ -201,6 +201,51 @@ describe("POST /purposes (createPurpose)", () => {
     expect(response.statusCode).toBe(404);
   });
 
+  it("should return 400 when dailyCalls exceed the e-service per-consumer limit", async () => {
+    const limitedEservice = {
+      ...getMockEservice({
+        latestVersionState: EserviceVersionState.enum.Active,
+        seed: 70,
+      }),
+      mode: EserviceMode.enum.ProvideData,
+    };
+    const limitedVersion = limitedEservice.versions[0]!;
+    await eserviceWriterService.upsertEservice(
+      {
+        ...limitedEservice,
+        versions: [
+          {
+            ...limitedVersion,
+            maxDailyCallsPerConsumer: 100,
+            maxDailyCallsPerKnode: 1000,
+          },
+        ],
+      },
+      1,
+    );
+    await agreementWriterService.upsertAgreement(
+      {
+        ...getMockAgreement({ seed: 70 }),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        eserviceId: limitedEservice.id,
+        eserviceVersionId: limitedVersion.id,
+        producerId: limitedEservice.producerId,
+        state: AgreementState.enum.Active,
+      },
+      1,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        dailyCalls: 101,
+        eserviceId: limitedEservice.id,
+      } satisfies API_PurposeSeedProvideData);
+
+    expect(response.statusCode).toBe(400);
+  });
+
   const allowedEserviceVersionStates: EserviceVersionState[] = [
     "Active",
     "Suspended",

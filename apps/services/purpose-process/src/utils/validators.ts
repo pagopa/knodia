@@ -22,6 +22,7 @@ import { match } from "ts-pattern";
 
 import {
   agreementNotInExpectedStates,
+  dailyCallsExceedLimit,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
@@ -30,6 +31,7 @@ import {
   purposeNotInSuspendableState,
   receiveDataConfigMissing,
 } from "../models/errors.ts";
+import { retrieveEserviceLatestVersion } from "./utils.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
@@ -67,6 +69,21 @@ export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
     throw eserviceVersionNotInExpectedStates(
       eservice.id,
       purposeCreationAllowedEserviceVersionStates,
+    );
+  }
+};
+
+export const assertDailyCallsAreWithinLimit = (
+  eservice: Eservice,
+  dailyCalls: number,
+) => {
+  const latestVersion = retrieveEserviceLatestVersion(eservice);
+
+  if (dailyCalls > latestVersion.maxDailyCallsPerConsumer) {
+    throw dailyCallsExceedLimit(
+      eservice.id,
+      dailyCalls,
+      latestVersion.maxDailyCallsPerConsumer,
     );
   }
 };
