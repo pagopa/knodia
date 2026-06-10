@@ -9,9 +9,7 @@ export function getAuthToken(): null | string {
   return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
-export function redirectToLogin(): void {
-  window.location.assign("/login");
-}
+export const LOGIN_URL = "/login";
 
 export function setAuthToken(token: string): void {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
