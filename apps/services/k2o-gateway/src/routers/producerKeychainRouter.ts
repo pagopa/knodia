@@ -7,12 +7,12 @@ import {
   API_Problem,
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_KeyIdPathParam, API_PublicKey } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 
+import { API_KeyIdPathParam, API_PublicKey } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface ProducerKeychainRouterOptions {

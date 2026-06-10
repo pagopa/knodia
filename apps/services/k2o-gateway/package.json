@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
-    "@knodia/keychain-models": "workspace:*",
+    "@knodia/common-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/keychain-process-client": "workspace:*",
     "@knodia/logger": "workspace:*",

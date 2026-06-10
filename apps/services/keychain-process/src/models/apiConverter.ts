@@ -8,16 +8,14 @@ import type {
   KeychainKey,
   ProducerKeychainEservice,
 } from "@knodia/keychain-models";
-import type {
-  API_CreatedMemberResource,
-  API_KeychainKey,
-  API_PublicKey,
-} from "@knodia/keychain-models/api";
+import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
 
 import type {
   API_ConsumerKeychainPurpose,
   API_Keychain,
+  API_KeychainKey,
   API_ProducerKeychainEservice,
+  API_PublicKey,
   API_User,
 } from "./api.ts";
 

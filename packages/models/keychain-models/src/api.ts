@@ -1,4 +1,4 @@
-import { API_KeyId, API_UserId } from "@knodia/common-models/api";
+import { API_UserId } from "@knodia/common-models/api";
 import { ExternalId } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
@@ -65,13 +65,13 @@ export type API_KeychainLocalizedDescription = z.infer<
   typeof API_KeychainLocalizedDescription
 >;
 
-const API_KeyFormat = z
+export const API_KeyFormat = z
   .enum(["PublicKey", "X509Certificate"])
   .meta({ id: "KeyFormat" });
-type API_KeyFormat = z.infer<typeof API_KeyFormat>;
+export type API_KeyFormat = z.infer<typeof API_KeyFormat>;
 
-const API_KeyAlgorithm = z.enum(["RS256"]).meta({ id: "KeyAlgorithm" });
-type API_KeyAlgorithm = z.infer<typeof API_KeyAlgorithm>;
+export const API_KeyAlgorithm = z.enum(["RS256"]).meta({ id: "KeyAlgorithm" });
+export type API_KeyAlgorithm = z.infer<typeof API_KeyAlgorithm>;
 
 export const API_ConsumerKeychainPurposeLinkSeed = z
   .strictObject({
@@ -125,29 +125,3 @@ export const API_CreatedMemberResource = z
 export type API_CreatedMemberResource = z.infer<
   typeof API_CreatedMemberResource
 >;
-
-export const API_KeychainKey = z
-  .strictObject({
-    algorithm: API_KeyAlgorithm,
-    createdAt: z.iso.datetime(),
-    encodedPem: z.string(),
-    format: API_KeyFormat,
-    kid: API_KeyId,
-    name: API_KeychainKeyLocalizedName,
-    userId: API_UserId,
-  })
-  .meta({ id: "KeychainKey" });
-export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
-
-export const API_KeyIdPathParam = z.strictObject({
-  keyId: API_KeyId,
-});
-export type API_KeyIdPathParam = z.infer<typeof API_KeyIdPathParam>;
-
-export const API_PublicKey = API_KeychainKey.pick({
-  algorithm: true,
-  encodedPem: true,
-  format: true,
-  kid: true,
-}).meta({ id: "PublicKey" });
-export type API_PublicKey = z.infer<typeof API_PublicKey>;

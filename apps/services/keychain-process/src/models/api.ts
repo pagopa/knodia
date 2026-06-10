@@ -10,11 +10,12 @@ import { type PurposeId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeyAlgorithm,
   API_KeychainId,
-  API_KeychainKey,
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
+  API_KeyFormat,
   API_KnodeApiKeychainIdPathParam,
   API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
@@ -98,6 +99,19 @@ export const API_KeychainKeySeed = z
   })
   .meta({ id: "KeychainKeySeed" });
 export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
+
+export const API_KeychainKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    createdAt: z.iso.datetime(),
+    encodedPem: z.string(),
+    format: API_KeyFormat,
+    kid: API_KeyId,
+    name: API_KeychainKeyLocalizedName,
+    userId: API_UserId,
+  })
+  .meta({ id: "KeychainKey" });
+export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
 
 export const API_KeychainKeys = z
   .strictObject({
@@ -323,3 +337,18 @@ export const API_ProducerKeychainEservices = z
 export type API_ProducerKeychainEservices = z.infer<
   typeof API_ProducerKeychainEservices
 >;
+
+export const API_KeyIdPathParam = z.strictObject({
+  keyId: API_KeyId,
+});
+export type API_KeyIdPathParam = z.infer<typeof API_KeyIdPathParam>;
+
+export const API_PublicKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    encodedPem: z.string(),
+    format: API_KeyFormat,
+    kid: API_KeyId,
+  })
+  .meta({ id: "PublicKey" });
+export type API_PublicKey = z.infer<typeof API_PublicKey>;

@@ -22,7 +22,6 @@ import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
   API_CreatedMemberResource,
-  API_KeychainKey,
   API_UnlinkConsumerKeychainIdPathParams,
   API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
@@ -42,6 +41,7 @@ import {
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
+  API_KeychainKey,
   API_KeychainKeys,
   API_KeychainKeySeed,
   API_KeychainMembers,

@@ -999,9 +999,6 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
-      '@knodia/keychain-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/keychain-models
       '@knodia/keychain-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/keychain-process-client

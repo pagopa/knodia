@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { KnodeApiKeychain } from "@knodia/keychain-models";
-import type { API_KeychainKey } from "@knodia/keychain-models/api";
 
 import {
   generateId,
@@ -19,6 +18,8 @@ import {
   getMockKnodeApiKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
+
+import type { API_KeychainKey } from "../../src/models/api.ts";
 
 import { toAPI_KeychainKey } from "../../src/models/apiConverter.ts";
 import { injectAppRequest, seedKnodeApiKeychain } from "../utils.ts";
