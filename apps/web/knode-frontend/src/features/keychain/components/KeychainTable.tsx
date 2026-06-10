@@ -51,8 +51,6 @@ export function KeychainTable({
     );
   }
 
-  // Consumer Keychains link Purposes, Producer Keychains link E-services;
-  // Knode API Keychains have no linked-resource counter.
   const linkedColumn = match(type)
     .with("consumption", () => ({
       getCount: (keychain: bffApi.Keychain) => keychain.purposesCount,
