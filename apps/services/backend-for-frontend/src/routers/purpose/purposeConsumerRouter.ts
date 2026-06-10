@@ -189,7 +189,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerPurposesQueryParams,
       response: {
         200: API_ConsumerPurposes.meta({
-          description: "Consumer Purposes retrieved successfully",
+          description:
+            "Consumer Purposes retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

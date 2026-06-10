@@ -1142,11 +1142,13 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: E-services retrieved (sorted by most recently updated agreement
+            first)
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: E-services retrieved (sorted by most recently updated agreement
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/Eservices"
         "400":
@@ -1347,11 +1349,11 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: Agreements retrieved successfully
+          description: Agreements retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Agreements retrieved successfully
+                description: Agreements retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Agreements"
         "400":
@@ -1901,11 +1903,11 @@ paths:
           description: Filter by Purpose State
       responses:
         "200":
-          description: Purposes retrieved successfully
+          description: Purposes retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Purposes retrieved successfully
+                description: Purposes retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Purposes"
         "400":
