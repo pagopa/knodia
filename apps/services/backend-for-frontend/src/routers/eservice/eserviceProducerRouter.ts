@@ -138,7 +138,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         ...rest
       } = req.body;
 
-      // Sanitize the user-provided file name before it reaches the S3 key.
+      // Prevent path traversal into the S3 key.
       const name = sanitizeFileName(rawName);
 
       if (getEserviceInterfaceFileType(name) === undefined) {
