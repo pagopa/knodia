@@ -7,20 +7,6 @@ export const Route = createFileRoute("/login/")({
     if (context.auth.isAuthenticated) {
       throw redirect({ to: "/home" });
     }
+    window.location.assign(config.oidcSessionFlowStartUrl);
   },
-  component: LoginPage,
 });
-
-function LoginPage() {
-  return (
-    <main>
-      <button
-        onClick={() => {
-          window.location.assign(config.oidcSessionFlowStartUrl);
-        }}
-      >
-        Login
-      </button>
-    </main>
-  );
-}
