@@ -78,16 +78,25 @@ components:
       type: string
       format: base64url
       pattern: ^[A-Za-z0-9_-]*$
+    KeyFormat:
+      type: string
+      enum:
+        - PublicKey
+        - X509Certificate
+    KeyAlgorithm:
+      type: string
+      enum:
+        - RS256
     PublicKey:
       description: Public Key details
       type: object
       properties:
         algorithm:
-          type: string
+          $ref: "#/components/schemas/KeyAlgorithm"
         encodedPem:
           type: string
         format:
-          type: string
+          $ref: "#/components/schemas/KeyFormat"
         kid:
           $ref: "#/components/schemas/KeyId"
       required:

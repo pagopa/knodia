@@ -194,6 +194,24 @@ components:
       required:
         - userId
       additionalProperties: false
+    PublicKey:
+      description: Public Key details
+      type: object
+      properties:
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+        encodedPem:
+          type: string
+        format:
+          $ref: "#/components/schemas/KeyFormat"
+        kid:
+          $ref: "#/components/schemas/KeyId"
+      required:
+        - algorithm
+        - encodedPem
+        - format
+        - kid
+      additionalProperties: false
     Keychain:
       type: object
       properties:
@@ -415,23 +433,6 @@ components:
       required:
         - pagination
         - results
-      additionalProperties: false
-    PublicKey:
-      type: object
-      properties:
-        algorithm:
-          $ref: "#/components/schemas/KeyAlgorithm"
-        encodedPem:
-          type: string
-        format:
-          $ref: "#/components/schemas/KeyFormat"
-        kid:
-          $ref: "#/components/schemas/KeyId"
-      required:
-        - algorithm
-        - encodedPem
-        - format
-        - kid
       additionalProperties: false
 paths:
   /status:
