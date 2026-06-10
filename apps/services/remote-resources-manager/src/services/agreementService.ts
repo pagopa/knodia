@@ -26,8 +26,11 @@ import {
   toAPI_Agreement,
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
-import { multiKnodeListingNotSupported } from "../models/errors.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import {
+  emptyListingPage,
+  resolveSingleListingKnode,
+} from "../utils/singleKnodeListing.ts";
 import {
   assertAgreementExists,
   assertOrganizationIsAgreementConsumer,
@@ -160,17 +163,13 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreements> {
       const { limit, offset, state } = requestQuery;
 
-      // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
-      const knodesWithAgreements =
+      const targetKnodeId = resolveSingleListingKnode(
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
-        );
-      if (knodesWithAgreements.length > 1) {
-        throw multiKnodeListingNotSupported(knodesWithAgreements);
-      }
-      const [targetKnodeId] = knodesWithAgreements;
+        ),
+      );
       if (targetKnodeId === undefined) {
-        return { pagination: { limit, offset, total: 0 }, results: [] };
+        return emptyListingPage(limit, offset);
       }
 
       logger.info(

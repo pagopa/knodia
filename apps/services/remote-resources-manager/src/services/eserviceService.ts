@@ -26,12 +26,15 @@ import type {
 } from "../models/eservice/api.ts";
 
 import { toK2KAPI_AgreementState } from "../models/agreement/apiConverter.ts";
-import { multiKnodeListingNotSupported } from "../models/errors.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
   toAPI_Eservice,
   toAPI_EserviceDetails,
 } from "../models/eservice/apiConverter.ts";
+import {
+  emptyListingPage,
+  resolveSingleListingKnode,
+} from "../utils/singleKnodeListing.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -193,17 +196,13 @@ export function eserviceServiceBuilder(
       const { agreementState, limit, offset } = reqQuery;
       const k2kAgreementStates = agreementState?.map(toK2KAPI_AgreementState);
 
-      // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
-      const knodesWithAgreements =
+      const targetKnodeId = resolveSingleListingKnode(
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
-        );
-      if (knodesWithAgreements.length > 1) {
-        throw multiKnodeListingNotSupported(knodesWithAgreements);
-      }
-      const [targetKnodeId] = knodesWithAgreements;
+        ),
+      );
       if (targetKnodeId === undefined) {
-        return { pagination: { limit, offset, total: 0 }, results: [] };
+        return emptyListingPage(limit, offset);
       }
 
       logger.info(

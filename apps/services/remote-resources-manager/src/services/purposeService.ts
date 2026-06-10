@@ -23,13 +23,16 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { multiKnodeListingNotSupported } from "../models/errors.ts";
 import { toK2KAPI_KnodeId } from "../models/knode/apiConverter.ts";
 import {
   toAPI_Purpose,
   toK2KAPI_PurposeState,
 } from "../models/purpose/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import {
+  emptyListingPage,
+  resolveSingleListingKnode,
+} from "../utils/singleKnodeListing.ts";
 import {
   assertOrganizationIsPurposeConsumer,
   assertPurposeExists,
@@ -168,20 +171,16 @@ export function purposeServiceBuilder(
       const { eserviceId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      // Provisional (KN-589): single-knode listing — fail fast if more than one knode appears.
-      const knodesWithPurposes =
+      const targetKnodeId = resolveSingleListingKnode(
         await remoteResourceDbService.getPurposesDistinctKnodes(
           consumerId,
           eserviceId === undefined
             ? undefined
             : unsafeBrandId<EserviceId>(eserviceId),
-        );
-      if (knodesWithPurposes.length > 1) {
-        throw multiKnodeListingNotSupported(knodesWithPurposes);
-      }
-      const [targetKnodeId] = knodesWithPurposes;
+        ),
+      );
       if (targetKnodeId === undefined) {
-        return { pagination: { limit, offset, total: 0 }, results: [] };
+        return emptyListingPage(limit, offset);
       }
 
       logger.info(
