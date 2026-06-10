@@ -31,7 +31,11 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           .transform((value) => value.split(",").map((a) => a.trim()))
           .pipe(z.string().array()),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.string(),
-        GENERATED_KNODE_API_TOKEN_AUDIENCE: z.string().min(1),
+        GENERATED_KNODE_API_TOKEN_AUDIENCES: z
+          .string()
+          .min(1)
+          .transform((value) => value.split(",").map((a) => a.trim()))
+          .pipe(z.string().array()),
         GENERATED_KNODE_API_TOKEN_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z
@@ -54,7 +58,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           c.ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
-        generatedKnodeApiTokenAudience: c.GENERATED_KNODE_API_TOKEN_AUDIENCE,
+        generatedKnodeApiTokenAudiences: c.GENERATED_KNODE_API_TOKEN_AUDIENCES,
         generatedKnodeApiTokenIssuer: c.GENERATED_KNODE_API_TOKEN_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
         knodeApiClientAssertionAcceptedAudiences:

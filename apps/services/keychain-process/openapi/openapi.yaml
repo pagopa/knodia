@@ -194,6 +194,24 @@ components:
       required:
         - userId
       additionalProperties: false
+    PublicKey:
+      description: Public Key details
+      type: object
+      properties:
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+        encodedPem:
+          type: string
+        format:
+          $ref: "#/components/schemas/KeyFormat"
+        kid:
+          $ref: "#/components/schemas/KeyId"
+      required:
+        - algorithm
+        - encodedPem
+        - format
+        - kid
+      additionalProperties: false
     Keychain:
       type: object
       properties:
@@ -3789,6 +3807,66 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producerKeys/{keyId}:
+    get:
+      operationId: getProducerKey
+      tags:
+        - producerKeychain
+      description: Retrieve a Producer Key
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KeyId"
+          in: path
+          name: keyId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Producer Key retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Key retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PublicKey"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Producer Key not found
+          content:
+            application/problem+json:
+              schema:
+                description: Producer Key not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

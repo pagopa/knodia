@@ -5,7 +5,10 @@ import type {
   ListResult,
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  KnodeApiAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   FlatProducerKeychain,
@@ -51,6 +54,7 @@ import {
   retrieveKeychainKey,
   retrieveKeychainMember,
   retrievePaginatedKeychainUsers,
+  retrieveProducerKey,
   retrieveProducerKeychain,
   retrieveProducerKeychainEservice,
 } from "../utils/retrievalUtils.ts";
@@ -172,6 +176,14 @@ export function producerKeychainServiceBuilder(
           producerKeychain.metadata.version,
         ),
       );
+    },
+    async getProducerKey(
+      kid: KeyId,
+      { logger }: AuthorizedContext<KnodeApiAuthData>,
+    ): Promise<KeychainKey> {
+      logger.info(`Getting Producer Key with KID ${kid}`);
+
+      return await retrieveProducerKey(kid, readmodelService);
     },
     async getProducerKeychain(
       producerKeychainId: ProducerKeychainId,
