@@ -93,7 +93,12 @@ const accessToken = await mintAccessToken(
 const seed = await getPseudonymizationSeed(accessToken);
 const objectId = objectIdForCompany(companyId, seed);
 
-const matchingSignal = signals.find((signal) => signal.objectId === objectId);
+// Every UPDATE for a company shares the same object_id (static seed), so take
+// the latest matching signal (highest signalId), not the first.
+const matchingSignal = signals
+  .filter((signal) => signal.objectId === objectId)
+  .sort((a, b) => b.signalId - a.signalId)
+  .at(0);
 
 if (!matchingSignal) {
   console.log(
