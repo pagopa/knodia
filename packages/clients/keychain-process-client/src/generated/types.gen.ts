@@ -105,16 +105,9 @@ export type CreatedMemberResource = {
     userId: UserId;
 };
 
-export type KeychainKey = {
-    algorithm: KeyAlgorithm;
-    createdAt: string;
-    encodedPem: string;
-    format: KeyFormat;
-    kid: KeyId;
-    name: KeychainKeyLocalizedName;
-    userId: UserId;
-};
-
+/**
+ * Public Key details
+ */
 export type PublicKey = {
     algorithm: KeyAlgorithm;
     encodedPem: string;
@@ -149,6 +142,16 @@ export type KeychainPatch = {
 export type KeychainKeySeed = {
     encodedPem: string;
     name: KeychainKeyLocalizedName;
+};
+
+export type KeychainKey = {
+    algorithm: KeyAlgorithm;
+    createdAt: string;
+    encodedPem: string;
+    format: KeyFormat;
+    kid: KeyId;
+    name: KeychainKeyLocalizedName;
+    userId: UserId;
 };
 
 export type KeychainKeys = {

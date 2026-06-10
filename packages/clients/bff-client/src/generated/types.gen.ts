@@ -772,13 +772,6 @@ export type ProducerKeychainEserviceLinkSeed = {
     eserviceId: string;
 };
 
-export type KeychainKey = {
-    createdAt: string;
-    kid: KeyId;
-    name: KeychainKeyLocalizedName;
-    uploaderUsername?: string;
-};
-
 export type KeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
@@ -844,6 +837,13 @@ export type KeychainMembershipCheckResult = {
 export type KeychainKeySeed = {
     encodedPem: string;
     name: KeychainKeyLocalizedName;
+};
+
+export type KeychainKey = {
+    createdAt: string;
+    kid: KeyId;
+    name: KeychainKeyLocalizedName;
+    uploaderUsername?: string;
 };
 
 export type KeychainKeys = {
