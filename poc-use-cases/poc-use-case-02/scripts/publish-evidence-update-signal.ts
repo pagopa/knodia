@@ -9,6 +9,7 @@
 import { parseArgs } from "node:util";
 
 import {
+  assertOk,
   assertPrivateKeysExist,
   mintKnodeApiToken,
   objectIdForCompany,
@@ -94,12 +95,7 @@ async function nextSignalId(): Promise<number> {
 
 const signal = buildSignal(await nextSignalId());
 const response = await pushSignal(signal);
-if (!response.ok) {
-  console.error(
-    `Signal publication failed (${response.status}): ${await response.text()}`,
-  );
-  process.exit(1);
-}
+await assertOk(response, "Signal publication");
 
 console.log(`Updated evidence for ${companyId} (revision ${evidenceRevision}).`);
 console.log("Published evidence-update signal:");

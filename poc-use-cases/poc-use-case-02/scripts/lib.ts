@@ -22,6 +22,16 @@ export function objectIdForCompany(companyId: string, seed: string): string {
   return createHash("sha256").update(companyId + seed).digest("hex");
 }
 
+// Exit with a clear message on any non-OK HTTP response (demo scripts fail fast).
+export async function assertOk(response: Response, label: string): Promise<void> {
+  if (!response.ok) {
+    console.error(
+      `${label} failed (${response.status}): ${await response.text()}`,
+    );
+    process.exit(1);
+  }
+}
+
 const KEY_GENERATOR: Record<string, string> = {
   [CONSUMER_PRIVATE_KEY_PATH]: "generate-consumer-key",
   [PRODUCER_KNODE_API_PRIVATE_KEY_PATH]: "generate-knode-api-key",
@@ -78,12 +88,7 @@ async function requestToken(
     }),
     method: "POST",
   });
-  if (!response.ok) {
-    console.error(
-      `Token request to ${path} failed (${response.status}): ${await response.text()}`,
-    );
-    process.exit(1);
-  }
+  await assertOk(response, `Token request to ${path}`);
   return ((await response.json()) as { access_token: string }).access_token;
 }
 
@@ -138,12 +143,7 @@ export async function triggerEvidenceUpdate(
       method: "POST",
     },
   );
-  if (!response.ok) {
-    console.error(
-      `Evidence update failed (${response.status}): ${await response.text()}`,
-    );
-    process.exit(1);
-  }
+  await assertOk(response, "Evidence update");
   return ((await response.json()) as { evidenceRevision: number })
     .evidenceRevision;
 }
@@ -156,12 +156,7 @@ export async function getMockJson(
   const response = await fetch(`${MOCK_ESERVICE_URL}${path}`, {
     headers: { authorization: `Bearer ${accessToken}` },
   });
-  if (!response.ok) {
-    console.error(
-      `GET ${path} failed (${response.status}): ${await response.text()}`,
-    );
-    process.exit(1);
-  }
+  await assertOk(response, `GET ${path}`);
   return response.json();
 }
 

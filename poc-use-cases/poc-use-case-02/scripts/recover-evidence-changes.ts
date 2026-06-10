@@ -11,6 +11,7 @@
 import { parseArgs } from "node:util";
 
 import {
+  assertOk,
   assertPrivateKeysExist,
   getMockJson,
   getPseudonymizationSeed,
@@ -83,12 +84,7 @@ for (;;) {
     `${SIGNAL_HUB_URL}/signals/${COMPANIES_ESERVICE_ID}?lastSignalId=${cursor}&size=${PAGE_SIZE}`,
     { headers: { authorization: `Bearer ${knodeApiToken}` } },
   );
-  if (!pullResponse.ok) {
-    console.error(
-      `Signal pull failed (${pullResponse.status}): ${await pullResponse.text()}`,
-    );
-    process.exit(1);
-  }
+  await assertOk(pullResponse, "Signal pull");
   const page = ((await pullResponse.json()) as { signals: Signal[] }).signals;
   signals.push(...page);
   const last = page.at(-1);
