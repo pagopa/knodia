@@ -34,7 +34,11 @@ const cognitoCreateUserMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
-const logger = { error: vi.fn(), info: vi.fn() } as unknown as Logger;
+const logger = {
+  error: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+} as unknown as Logger;
 
 function buildDeps(): SignupUpdaterDeps {
   const node = {
@@ -87,6 +91,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     cognitoCreateUserMock.mockReset();
     getSignupUserByIdMock.mockReset();
     vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.warn).mockReset();
   });
 
   it("creates an org (with the testing_organization attribute) and a Cognito user on both nodes", async () => {
@@ -192,7 +197,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
   });
 
-  it("throws when the signup user is not found", async () => {
+  it("skips (without throwing) when the signup user is not found, provisioning nothing", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
 
     await expect(
@@ -202,8 +207,12 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
         correlationId,
         logger,
       ),
-    ).rejects.toBeDefined();
+    ).resolves.toBeUndefined();
 
+    // A missing user is obsolete and unrecoverable, so the event is skipped
+    // (the offset commits) with a warning rather than blocking the partition.
     expect(createOrganizationMock).not.toHaveBeenCalled();
+    expect(cognitoCreateUserMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 });

@@ -39,10 +39,8 @@ export async function handleSignupMessage(
         e.data.signupUserId,
       );
 
-      // A missing user means it was deleted. Read-replica lag can only make a
-      // deleted user appear present (stale read), never make a live user appear
-      // absent, so a "not found" is authoritative and permanent: the event is
-      // obsolete with no recovery path, so we skip rather than block the partition.
+      // For now we assume a missing user was deleted: nothing to provision, so we
+      // skip the event (committing the offset) rather than blocking the partition.
       if (user === undefined) {
         logger.warn(
           `Skipping OnboardingCompletedV1 for signup user ${e.data.signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,

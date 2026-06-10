@@ -15,7 +15,11 @@ import {
 } from "../src/models/api.ts";
 import { toAPI_Organization } from "../src/models/apiConverter.ts";
 import { organizationWriterService } from "./setup.ts";
-import { getAllOrganizationEvents, injectAppRequest } from "./utils.ts";
+import {
+  getAllOrganizationEvents,
+  injectAppRequest,
+  seedOrganizationEvent,
+} from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
 
@@ -139,6 +143,26 @@ describe("POST /organizations (createOrganization)", () => {
     expect(responseBody.id).toBe(existing.id);
     expect(responseBody.name).toBe("First Organization");
     await expect(getAllOrganizationEvents()).resolves.toHaveLength(0);
+  });
+
+  it("rejects a second creation on the same externalOrganizationId when the readmodel hasn't converged, without emitting a new event", async () => {
+    const externalOrganizationId = generateId<OrganizationId>();
+    // Seed only the create event, not the readmodel: this is a redelivery that
+    // arrives before the readmodel has converged, so the idempotency lookup
+    // misses and the request reaches the event store.
+    await seedOrganizationEvent({
+      ...getMockOrganization(0),
+      id: externalOrganizationId,
+      name: "First Organization",
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({ ...body, externalOrganizationId, name: "A Second Name" });
+    // The event store stream already exists at version 0, so the second
+    // creation is rejected and no new event is written.
+    expect(response.statusCode).toBe(500);
+    await expect(getAllOrganizationEvents()).resolves.toHaveLength(1);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
