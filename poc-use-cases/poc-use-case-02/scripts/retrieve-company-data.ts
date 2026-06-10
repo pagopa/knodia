@@ -12,12 +12,12 @@
 
 import { parseArgs } from "node:util";
 
-import { assertPrivateKeysExist, mintAccessToken } from "./lib.ts";
 import {
-  AUTHORIZATION_SERVER_URL,
-  CONSUMER_PRIVATE_KEY_PATH,
-  MOCK_ESERVICE_URL,
-} from "./paths.ts";
+  assertPrivateKeysExist,
+  getMockJson,
+  mintAccessToken,
+} from "./lib.ts";
+import { AUTHORIZATION_SERVER_URL, CONSUMER_PRIVATE_KEY_PATH } from "./paths.ts";
 
 const { values } = parseArgs({
   options: {
@@ -47,20 +47,14 @@ const accessToken = await mintAccessToken(
   purposeId,
 );
 
-async function getJson(path: string): Promise<unknown> {
-  const response = await fetch(`${MOCK_ESERVICE_URL}${path}`, {
-    headers: { authorization: `Bearer ${accessToken}` },
-  });
-  if (!response.ok) {
-    throw new Error(
-      `GET ${path} failed (${response.status}): ${await response.text()}`,
-    );
-  }
-  return response.json();
-}
-
-const information = await getJson(`/legal-entities/${companyId}/information`);
-const evidences = await getJson(`/legal-entities/${companyId}/evidences`);
+const information = await getMockJson(
+  `/legal-entities/${companyId}/information`,
+  accessToken,
+);
+const evidences = await getMockJson(
+  `/legal-entities/${companyId}/evidences`,
+  accessToken,
+);
 
 console.log("Company information:");
 console.log(JSON.stringify(information, null, 2));

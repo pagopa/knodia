@@ -148,18 +148,29 @@ export async function triggerEvidenceUpdate(
     .evidenceRevision;
 }
 
-export async function getPseudonymizationSeed(
+// GET a JSON resource from the mock e-service with a bearer access token.
+export async function getMockJson(
+  path: string,
   accessToken: string,
-): Promise<string> {
-  const response = await fetch(
-    `${MOCK_ESERVICE_URL}/legal-entities/pseudonymization`,
-    { headers: { authorization: `Bearer ${accessToken}` } },
-  );
+): Promise<unknown> {
+  const response = await fetch(`${MOCK_ESERVICE_URL}${path}`, {
+    headers: { authorization: `Bearer ${accessToken}` },
+  });
   if (!response.ok) {
     console.error(
-      `Pseudonymization request failed (${response.status}): ${await response.text()}`,
+      `GET ${path} failed (${response.status}): ${await response.text()}`,
     );
     process.exit(1);
   }
-  return ((await response.json()) as { seed: string }).seed;
+  return response.json();
+}
+
+export async function getPseudonymizationSeed(
+  accessToken: string,
+): Promise<string> {
+  const body = (await getMockJson(
+    "/legal-entities/pseudonymization",
+    accessToken,
+  )) as { seed: string };
+  return body.seed;
 }

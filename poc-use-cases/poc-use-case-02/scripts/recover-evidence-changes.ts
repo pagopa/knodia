@@ -12,6 +12,7 @@ import { parseArgs } from "node:util";
 
 import {
   assertPrivateKeysExist,
+  getMockJson,
   getPseudonymizationSeed,
   mintAccessToken,
   mintKnodeApiToken,
@@ -23,7 +24,6 @@ import {
   CONSUMER_AUTHORIZATION_SERVER_URL,
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   CONSUMER_PRIVATE_KEY_PATH,
-  MOCK_ESERVICE_URL,
   SIGNAL_HUB_URL,
 } from "./paths.ts";
 
@@ -104,14 +104,10 @@ const accessToken = await mintAccessToken(
 const seed = await getPseudonymizationSeed(accessToken);
 const objectId = objectIdForCompany(companyId, seed);
 
-// Every UPDATE for a company shares the same object_id (static seed), so take
-// the latest matching UPDATE (highest signalId), not the first.
-const matchingSignal = signals
-  .filter(
-    (signal) => signal.objectId === objectId && signal.signalType === "UPDATE",
-  )
-  .sort((a, b) => b.signalId - a.signalId)
-  .at(0);
+// Signals are pulled ascending, so the last matching UPDATE is the latest one.
+const matchingSignal = signals.findLast(
+  (signal) => signal.objectId === objectId && signal.signalType === "UPDATE",
+);
 
 if (!matchingSignal) {
   console.log(
@@ -120,18 +116,12 @@ if (!matchingSignal) {
   process.exit(0);
 }
 
-const evidencesResponse = await fetch(
-  `${MOCK_ESERVICE_URL}/legal-entities/${companyId}/evidences`,
-  { headers: { authorization: `Bearer ${accessToken}` } },
+const evidences = await getMockJson(
+  `/legal-entities/${companyId}/evidences`,
+  accessToken,
 );
-if (!evidencesResponse.ok) {
-  console.error(
-    `Evidences request failed (${evidencesResponse.status}): ${await evidencesResponse.text()}`,
-  );
-  process.exit(1);
-}
 
 console.log("Matched evidence-change signal:");
 console.log(JSON.stringify(matchingSignal, null, 2));
 console.log("\nUpdated evidences:");
-console.log(JSON.stringify(await evidencesResponse.json(), null, 2));
+console.log(JSON.stringify(evidences, null, 2));

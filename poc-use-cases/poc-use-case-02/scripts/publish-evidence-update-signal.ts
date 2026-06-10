@@ -70,9 +70,11 @@ function buildSignal(signalId: number) {
   };
 }
 
-async function pushSignal(signalId: number): Promise<Response> {
+async function pushSignal(
+  signal: ReturnType<typeof buildSignal>,
+): Promise<Response> {
   return fetch(`${SIGNAL_HUB_URL}/signals`, {
-    body: JSON.stringify(buildSignal(signalId)),
+    body: JSON.stringify(signal),
     headers: {
       authorization: `Bearer ${knodeApiToken}`,
       "content-type": "application/json",
@@ -85,13 +87,13 @@ async function pushSignal(signalId: number): Promise<Response> {
 // the hub: pushing an id above the max is rejected with "last pushed signal id N"
 // (push N+1); with none pushed yet there's no match, so start at 1.
 async function nextSignalId(): Promise<number> {
-  const probe = await pushSignal(Number.MAX_SAFE_INTEGER);
+  const probe = await pushSignal(buildSignal(Number.MAX_SAFE_INTEGER));
   const lastId = /last pushed signal id (\d+)/.exec(await probe.text())?.[1];
   return lastId ? Number(lastId) + 1 : 1;
 }
 
-const signalId = await nextSignalId();
-const response = await pushSignal(signalId);
+const signal = buildSignal(await nextSignalId());
+const response = await pushSignal(signal);
 if (!response.ok) {
   console.error(
     `Signal publication failed (${response.status}): ${await response.text()}`,
@@ -101,4 +103,4 @@ if (!response.ok) {
 
 console.log(`Updated evidence for ${companyId} (revision ${evidenceRevision}).`);
 console.log("Published evidence-update signal:");
-console.log(JSON.stringify(buildSignal(signalId), null, 2));
+console.log(JSON.stringify(signal, null, 2));
