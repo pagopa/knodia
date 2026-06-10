@@ -6,7 +6,9 @@ import {
   fromOptionalExternalResource,
 } from "@knodia/common-models/externalResource";
 import {
+  type EserviceId,
   type OrganizationId,
+  type PurposeFormOptionId,
   type PurposeTemplateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -20,6 +22,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { PurposeActor } from "@knodia/purpose-models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
+import { match } from "ts-pattern";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
@@ -49,24 +52,34 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
+      const seedBase = {
+        consumer: fromExternalResource<OrganizationId>(req.body.consumer),
+        dailyCalls: req.body.dailyCalls,
+        description: req.body.description,
+        eserviceId: unsafeBrandId<EserviceId>(req.body.eserviceId),
+        name: req.body.name,
+      };
+      const seed = match(req.body)
+        .with({ eserviceMode: "ProvideData" }, (b) => ({
+          ...seedBase,
+          eserviceMode: b.eserviceMode,
+          formAnswersJson: b.formAnswersJson,
+          formSchemaVersion: b.formSchemaVersion,
+          template: fromOptionalExternalResource<PurposeTemplateId>(b.template),
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (b) => ({
+          ...seedBase,
+          eserviceMode: b.eserviceMode,
+          purposeFormOptionId: unsafeBrandId<PurposeFormOptionId>(
+            b.purposeFormOptionId,
+          ),
+        }))
+        .exhaustive();
+
       const {
         data: purpose,
         metadata: { version },
-      } = await purposeService.createPurpose(
-        {
-          consumer: fromExternalResource<OrganizationId>(req.body.consumer),
-          dailyCalls: req.body.dailyCalls,
-          description: req.body.description,
-          eserviceId: unsafeBrandId(req.body.eserviceId),
-          formAnswersJson: req.body.formAnswersJson,
-          formSchemaVersion: req.body.formSchemaVersion,
-          name: req.body.name,
-          template: fromOptionalExternalResource<PurposeTemplateId>(
-            req.body.template,
-          ),
-        },
-        ctx,
-      );
+      } = await purposeService.createPurpose(seed, ctx);
 
       setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Purpose(purpose));
@@ -75,7 +88,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_PurposeSeed,
       description:
-        "Create a new Purpose for an E-service on behalf of a consumer",
+        "Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.",
       headers: KnodiaServiceHeaders,
       operationId: "createPurpose",
       response: {

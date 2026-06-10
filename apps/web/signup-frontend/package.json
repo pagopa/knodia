@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@tailwindcss/vite": "catalog:",
@@ -20,6 +21,7 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "axios": "catalog:",
+    "jose": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
