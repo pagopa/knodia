@@ -11,7 +11,7 @@ const ALLOWED_ORIGINS = (
 const CLIENT_ID = process.env.CLIENT_ID ?? "local-oi-client-id";
 const CLIENT_SECRET = process.env.CLIENT_SECRET ?? "local-oi-client-secret";
 const DEFAULT_REDIRECT_URI =
-  process.env.REDIRECT_URI ?? "https://localhost:5176/login/callback";
+  process.env.REDIRECT_URI ?? "http://localhost:5176/login/callback";
 const ID_TOKEN_SECONDS_DURATION = Number(
   process.env.ID_TOKEN_SECONDS_DURATION ?? "3600",
 );
