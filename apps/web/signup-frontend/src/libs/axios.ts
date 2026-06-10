@@ -3,7 +3,7 @@ import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 
-import { clearAuthToken, getAuthToken, redirectToLogin } from "./auth";
+import { clearAuthToken, getAuthToken, LOGIN_URL } from "./auth";
 
 const authUrls = ["/auth/oidc/token"];
 
@@ -26,7 +26,7 @@ async function handleUnauthorized(error: unknown): Promise<unknown> {
   }
 
   clearAuthToken();
-  redirectToLogin();
+  window.location.assign(LOGIN_URL);
 
   return Promise.reject(error);
 }
