@@ -12,8 +12,8 @@ import { buildFormAnswersValidator } from "../src/utils/formAnswersValidator.ts"
 // (see docker/compose.multinode.yaml). This test runs once for all Knodes,
 // so we hardcode the variant each Knode is expected to use.
 const purposeFormVariantByKnode = {
-  Lynx: "basic",
-  Orion: "withriskanalysis",
+  Lynx: "withriskanalysis",
+  Orion: "basic",
 } as const satisfies Record<KnodeId, PurposeFormVariant>;
 
 const validators: Record<
