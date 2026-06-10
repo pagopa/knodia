@@ -61,7 +61,7 @@ Steps:
 
 1. **[script]** Run `generate-knode-api-key` — it prints two public keys (one for the producer's, one for the consumer's Knode API keychain) and saves their private keys to fixed paths read by the later scripts.
 2. **[UI]** _(producer side, on Lynx)_ In the Keychains section, create a Knode API Keychain for `businessBookletLynx`, add a member, and upload the **producer** public key printed by `generate-knode-api-key`. Note the keychain id.
-3. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub. The consumer keychain/purpose are needed only to read the e-service's pseudonymization seed.
+3. **[script]** Run `publish-evidence-update-signal --producer-knode-api-keychain-id <id> --company-id 01229430085` — `businessBookletLynx` changes a company's evidence and publishes the signal to the Lynx Signal Hub.
 4. **[UI]** _(consumer side, on Orion)_ In the Keychains section, create a Knode API Keychain for `constructionCompaniesRegistryOrion`, add a member, and upload the **consumer** public key printed by `generate-knode-api-key`. Note the keychain id.
 5. **[script]** Run `recover-evidence-changes --consumer-knode-api-keychain-id <id> --consumer-keychain-id <id> --purpose-id <id> --company-id 01229430085` — the registry reads the new signal and re-retrieves the company's evidence from Lynx; the script prints the retrieved signal and the evidence (the e-service response).
 6. **[narration]** The registry updates the company's registration in Orion accordingly.

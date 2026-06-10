@@ -22,6 +22,7 @@ import {
   COMPANIES_ESERVICE_ID,
   CONSUMER_AUTHORIZATION_SERVER_URL,
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
+  CONSUMER_PRIVATE_KEY_PATH,
   MOCK_ESERVICE_URL,
   SIGNAL_HUB_URL,
 } from "./paths.ts";
@@ -60,7 +61,10 @@ if (
   process.exit(1);
 }
 
-assertPrivateKeysExist();
+assertPrivateKeysExist(
+  CONSUMER_PRIVATE_KEY_PATH,
+  CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
+);
 
 const knodeApiToken = await mintKnodeApiToken(
   CONSUMER_AUTHORIZATION_SERVER_URL,

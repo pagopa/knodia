@@ -22,15 +22,18 @@ export function objectIdForCompany(companyId: string, seed: string): string {
   return createHash("sha256").update(companyId + seed).digest("hex");
 }
 
-export function assertPrivateKeysExist(): void {
-  const keys = [
-    { path: CONSUMER_PRIVATE_KEY_PATH, script: "generate-consumer-key" },
-    { path: PRODUCER_KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
-    { path: CONSUMER_KNODE_API_PRIVATE_KEY_PATH, script: "generate-knode-api-key" },
-  ];
-  for (const { path, script } of keys) {
-    if (!existsSync(path)) {
-      console.error(`Private key not found at ${path}. Run ${script} first.`);
+const KEY_GENERATOR: Record<string, string> = {
+  [CONSUMER_PRIVATE_KEY_PATH]: "generate-consumer-key",
+  [PRODUCER_KNODE_API_PRIVATE_KEY_PATH]: "generate-knode-api-key",
+  [CONSUMER_KNODE_API_PRIVATE_KEY_PATH]: "generate-knode-api-key",
+};
+
+export function assertPrivateKeysExist(...keyPaths: string[]): void {
+  for (const keyPath of keyPaths) {
+    if (!existsSync(keyPath)) {
+      console.error(
+        `Private key not found at ${keyPath}. Run ${KEY_GENERATOR[keyPath]} first.`,
+      );
       process.exit(1);
     }
   }

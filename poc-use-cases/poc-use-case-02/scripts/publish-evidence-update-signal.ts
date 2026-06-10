@@ -4,19 +4,12 @@
 // knode (Lynx). The mock e-service does not auto-emit; this is the manual push.
 //
 //   node publish-evidence-update-signal.ts \
-//     --producer-knode-api-keychain-id <uuid> \
-//     --consumer-keychain-id <uuid> --purpose-id <uuid> --company-id <vat>
-//
-// The consumer keychain/purpose are needed only to read the e-service's
-// pseudonymization seed (access-token protected), which both producer and
-// consumer use to derive the same object_id = sha256(uid_company + seed).
+//     --producer-knode-api-keychain-id <uuid> --company-id <vat>
 
 import { parseArgs } from "node:util";
 
 import {
   assertPrivateKeysExist,
-  getPseudonymizationSeed,
-  mintAccessToken,
   mintKnodeApiToken,
   objectIdForCompany,
   triggerEvidenceUpdate,
@@ -33,39 +26,29 @@ const OBJECT_TYPE = "legal-entities/evidence";
 const { values } = parseArgs({
   options: {
     "company-id": { type: "string" },
-    "consumer-keychain-id": { type: "string" },
     "producer-knode-api-keychain-id": { type: "string" },
-    "purpose-id": { type: "string" },
   },
   strict: true,
 });
 
 const producerKnodeApiKeychainId = values["producer-knode-api-keychain-id"];
-const consumerKeychainId = values["consumer-keychain-id"];
-const purposeId = values["purpose-id"];
 const companyId = values["company-id"];
 
-if (
-  !producerKnodeApiKeychainId ||
-  !consumerKeychainId ||
-  !purposeId ||
-  !companyId
-) {
+if (!producerKnodeApiKeychainId || !companyId) {
   console.error(
-    "Usage: node publish-evidence-update-signal.ts --producer-knode-api-keychain-id <uuid> --consumer-keychain-id <uuid> --purpose-id <uuid> --company-id <vat>",
+    "Usage: node publish-evidence-update-signal.ts --producer-knode-api-keychain-id <uuid> --company-id <vat>",
   );
   process.exit(1);
 }
 
-assertPrivateKeysExist();
+assertPrivateKeysExist(PRODUCER_KNODE_API_PRIVATE_KEY_PATH);
 
-const accessToken = await mintAccessToken(
-  AUTHORIZATION_SERVER_URL,
-  consumerKeychainId,
-  purposeId,
-);
-const seed = await getPseudonymizationSeed(accessToken);
-const objectId = objectIdForCompany(companyId, seed);
+// The producer owns the pseudonymization seed, so it knows it directly instead of
+// reading the consumer-facing endpoint. Must match the mock e-service's static
+// seed (apps/services/mock-eservice/src/routers/mockPocUc02CompaniesRouter.ts);
+// the consumer reads the same value from /legal-entities/pseudonymization.
+const PSEUDONYMIZATION_SEED = "0123456789abcdef";
+const objectId = objectIdForCompany(companyId, PSEUDONYMIZATION_SEED);
 
 const knodeApiToken = await mintKnodeApiToken(
   AUTHORIZATION_SERVER_URL,
