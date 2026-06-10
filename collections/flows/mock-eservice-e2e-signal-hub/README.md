@@ -7,11 +7,11 @@ e-service.
 
 Fiscal codes `RMNLNR03H12H501Z`, `CNTLCC89E26L378K`, `RSSGRG65D48G702L`
 have a rotating response. The response to `GET /residence` and the seed
-exposed by `/pseudonymization` rotate in sync, and `mock-eservice` writes
+exposed by `/natural-persons/pseudonymization` rotate in sync, and `mock-eservice` writes
 the matching `CREATE` / `UPDATE` / `DELETE` signals to the Signal Hub DB
 each period from an in-process emitter.
 
-| periodId % 3 | `/residence`    | `/pseudonymization` | SignalHub signal |
+| periodId % 3 | `/residence`    | `/natural-persons/pseudonymization` | SignalHub signal |
 | ------------ | --------------- | ------------------- | ---------------- |
 | 0            | address A (200) | seed A              | CREATE           |
 | 1            | address B (200) | seed B              | UPDATE           |
