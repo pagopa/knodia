@@ -44,7 +44,7 @@ describe("sendFileDownload", () => {
   }
 
   function contentDispositionOf(writeHead: ReturnType<typeof vi.fn>): string {
-    return writeHead.mock.calls[0]?.[1]["Content-Disposition"];
+    return writeHead.mock.calls.at(0)?.[1]["Content-Disposition"];
   }
 
   it("emits an ASCII fallback plus an RFC 5987 filename* parameter", () => {
@@ -116,7 +116,7 @@ describe("parseContentDispositionFileName", () => {
     } as unknown as FastifyReply;
 
     sendFileDownload(res, "content", 'spec "v2".yaml', "application/yaml");
-    const header = writeHead.mock.calls[0]?.[1]["Content-Disposition"];
+    const header = writeHead.mock.calls.at(0)?.[1]["Content-Disposition"];
 
     expect(parseContentDispositionFileName(header)).toBe("spec v2.yaml");
   });
