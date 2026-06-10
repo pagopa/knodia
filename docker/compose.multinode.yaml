@@ -734,7 +734,7 @@ services:
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
       READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
@@ -1467,7 +1467,7 @@ services:
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
       READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
