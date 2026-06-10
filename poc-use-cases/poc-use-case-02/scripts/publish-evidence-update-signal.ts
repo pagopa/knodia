@@ -81,30 +81,22 @@ async function pushSignal(signalId: number): Promise<Response> {
   });
 }
 
-// Signal ids are strictly consecutive per e-service. Start at 1 and walk up to
-// the next free id, following whichever id the hub reports as already used or
-// expected next.
-let signalId = 1;
-for (let attempt = 0; ; attempt++) {
-  const response = await pushSignal(signalId);
-  if (response.ok) {
-    break;
-  }
-  const body = await response.text();
-  const alreadyExists = /id (\d+) already exists/.exec(body)?.[1];
-  const expected = /expected (\d+)/.exec(body)?.[1];
-  if (response.status === 400 && alreadyExists) {
-    signalId = Number(alreadyExists) + 1;
-  } else if (response.status === 400 && expected) {
-    signalId = Number(expected);
-  } else {
-    console.error(`Signal publication failed (${response.status}): ${body}`);
-    process.exit(1);
-  }
-  if (attempt >= 100) {
-    console.error("Could not find a free signal id after 100 attempts.");
-    process.exit(1);
-  }
+// The producer can't pull (that's a consumer read), so we learn the next id from
+// the hub: pushing an id above the max is rejected with "last pushed signal id N"
+// (push N+1); with none pushed yet there's no match, so start at 1.
+async function nextSignalId(): Promise<number> {
+  const probe = await pushSignal(Number.MAX_SAFE_INTEGER);
+  const lastId = /last pushed signal id (\d+)/.exec(await probe.text())?.[1];
+  return lastId ? Number(lastId) + 1 : 1;
+}
+
+const signalId = await nextSignalId();
+const response = await pushSignal(signalId);
+if (!response.ok) {
+  console.error(
+    `Signal publication failed (${response.status}): ${await response.text()}`,
+  );
+  process.exit(1);
 }
 
 console.log(`Updated evidence for ${companyId} (revision ${evidenceRevision}).`);
