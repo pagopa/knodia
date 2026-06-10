@@ -46,6 +46,9 @@ export function toProcessAPI_PurposeSeed(
     dailyCalls: purposeSeed.dailyCalls,
     description: purposeSeed.description,
     eserviceId: purposeSeed.eserviceId,
+    // The k2k-gateway PurposeSeed only carries ProvideData fields today;
+    // the ReceiveData branch is added in a downstream PR (KN-75 stack).
+    eserviceMode: "ProvideData",
     formAnswersJson: purposeSeed.formAnswersJson,
     // Cast to the enum type — the purpose-process validates this and
     // returns 400 if the version is not supported
