@@ -1,5 +1,6 @@
 import {
   composeRenderProps,
+  Label,
   ProgressBar,
   type ProgressBarProps,
 } from "react-aria-components";
@@ -17,7 +18,7 @@ interface LoaderProps extends ProgressBarProps {
 export function Loader({ label, size = 32, ...props }: LoaderProps) {
   return (
     <ProgressBar
-      aria-label={label ?? "Loading"}
+      {...(!label && { "aria-label": "Loading" })}
       isIndeterminate
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
@@ -41,9 +42,9 @@ export function Loader({ label, size = 32, ...props }: LoaderProps) {
         />
       </svg>
       {label && (
-        <span className="text-style-small text-neutral-medium-gray">
+        <Label className="text-style-small text-neutral-medium-gray">
           {label}
-        </span>
+        </Label>
       )}
     </ProgressBar>
   );
