@@ -8,7 +8,7 @@ export function Header() {
   const { isAuthenticated } = useAuthContext();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex h-(--header-height) items-center justify-between bg-neutral-white/40 px-(--header-inline-padding) py-4 backdrop-blur-[4px]">
+    <header className="absolute inset-x-0 top-0 z-40 flex h-(--header-height) items-center justify-between bg-neutral-white/40 px-(--header-inline-padding) py-4 backdrop-blur-[4px]">
       <Link to="/home">
         <img
           alt="Knodia"

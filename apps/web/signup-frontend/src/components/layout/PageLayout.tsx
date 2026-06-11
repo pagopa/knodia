@@ -5,7 +5,7 @@ import { Header } from "./Header";
 
 export function PageLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col">
       <Header />
       <main className="relative min-h-[800px] flex-1">
         <div aria-hidden className="pointer-events-none absolute inset-0">
