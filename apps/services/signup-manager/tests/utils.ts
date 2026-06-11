@@ -1,7 +1,15 @@
 import type { SignupUser } from "@knodia/signup-models";
 
-import { generateId, type SignupUserId } from "@knodia/common-models/ids";
-import { signupUser } from "@knodia/db-signup";
+import {
+  type EmailChangeRequestId,
+  generateId,
+  type SignupUserId,
+} from "@knodia/common-models/ids";
+import {
+  emailChangeRequest,
+  type NewEmailChangeRequest,
+  signupUser,
+} from "@knodia/db-signup";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import {
   getTestUISignupSessionTokenClaims,
@@ -15,8 +23,16 @@ export const validConfirmOnboardingBody = {
   email: "test.user@example.com",
 };
 
+export const validChangeEmailBody = {
+  email: "new.email@example.com",
+};
+
 export const validUISignupSessionTokenClaims =
   getTestUISignupSessionTokenClaims();
+
+export async function getAllEmailChangeRequests() {
+  return await signupDb.select().from(emailChangeRequest);
+}
 
 export async function getAllSignupUsers() {
   return await signupDb.select().from(signupUser);
@@ -26,6 +42,21 @@ export function injectSignupAppRequest(
   token: TestToken = { type: "ui-signup-session" },
 ) {
   return createInjectAppRequest(() => app)(token);
+}
+
+export function makeEmailChangeRequest(
+  overrides: Partial<NewEmailChangeRequest> = {},
+): NewEmailChangeRequest {
+  const signupUserId = overrides.signupUserId ?? generateId<SignupUserId>();
+
+  return {
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    email: `email-change-${signupUserId}@example.com`,
+    emailChangeRequestId:
+      overrides.emailChangeRequestId ?? generateId<EmailChangeRequestId>(),
+    signupUserId,
+    ...overrides,
+  };
 }
 
 export function makeSignupUser(
@@ -56,6 +87,10 @@ export function makeSignupUser(
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     ...overrides,
   };
+}
+
+export async function seedEmailChangeRequest(request: NewEmailChangeRequest) {
+  await signupDbServiceBuilder(signupDb).insertEmailChangeRequest(request);
 }
 
 export async function seedSignupUser(user: SignupUser) {

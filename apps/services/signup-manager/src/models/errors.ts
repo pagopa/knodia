@@ -9,6 +9,8 @@ const errorCodes = {
   SIGNUP_USER_EMAIL_ALREADY_ASSOCIATED: "0001",
   SIGNUP_USER_IDENTIFIER_ALREADY_ASSOCIATED: "0002",
   SIGNUP_USER_GENERATED_ENTITIES_ALREADY_EXIST: "0003",
+  SIGNUP_USER_ALREADY_HAS_PENDING_EMAIL_CHANGE_REQUEST: "0004",
+  SIGNUP_USER_NOT_ONBOARDED: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -17,6 +19,15 @@ type ErrorCodes = keyof typeof errorCodes;
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "signup-manager",
 });
+
+export function signupUserAlreadyHasPendingEmailChangeRequest() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_ALREADY_HAS_PENDING_EMAIL_CHANGE_REQUEST",
+    detail: "Signup user already has a pending email change request",
+    status: HTTP_STATUS_CONFLICT,
+    title: "Signup User Already Has Pending Email Change Request",
+  });
+}
 
 export function signupUserEmailAlreadyAssociated(email: string) {
   return createApiError<ErrorCodes>({
@@ -44,5 +55,14 @@ export function signupUserIdentifierAlreadyAssociated() {
       "At least one user identifier is already associated with an onboarded user",
     status: HTTP_STATUS_CONFLICT,
     title: "Signup User Identifier Already Associated",
+  });
+}
+
+export function signupUserNotOnboarded() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_NOT_ONBOARDED",
+    detail: "Signup user has not completed onboarding",
+    status: HTTP_STATUS_CONFLICT,
+    title: "Signup User Not Onboarded",
   });
 }

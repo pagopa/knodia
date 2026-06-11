@@ -3,20 +3,32 @@ import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/au
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { generateId, type SignupUserId } from "@knodia/common-models/ids";
+import {
+  type EmailChangeRequestId,
+  generateId,
+  type SignupUserId,
+} from "@knodia/common-models/ids";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
 
-import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
+import type {
+  API_ChangeEmailRequestBody,
+  API_ConfirmOnboardingRequestBody,
+} from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
-import { signupUserGeneratedEntitiesAlreadyExist } from "../models/errors.ts";
+import {
+  signupUserAlreadyHasPendingEmailChangeRequest,
+  signupUserEmailAlreadyAssociated,
+  signupUserGeneratedEntitiesAlreadyExist,
+} from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIdentifiersDoNotExist,
+  assertSignupUserIsOnboarded,
 } from "../utils/validators.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
@@ -26,6 +38,51 @@ export function signupServiceBuilder(
   signupEventProducer: SignupEventProducer,
 ) {
   return {
+    async changeEmail(
+      { email }: API_ChangeEmailRequestBody,
+      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+    ) {
+      const currentSignupUser =
+        await signupDbService.getSignupUserByIdentifiers({
+          fiscalNumber: authData.fiscalNumber,
+          personIdentifier: authData.personIdentifier,
+          spidCode: authData.spidCode,
+        });
+
+      assertSignupUserIsOnboarded(currentSignupUser);
+      await assertSignupUserEmailDoesNotExist(email, signupDbService);
+
+      const signupUserEmailChangeRequestAlreadyExists =
+        await signupDbService.checkSignupUserEmailChangeRequestExists(
+          currentSignupUser.signupUserId,
+        );
+
+      if (signupUserEmailChangeRequestAlreadyExists) {
+        throw signupUserAlreadyHasPendingEmailChangeRequest();
+      }
+
+      const emailChangeRequestId = generateId<EmailChangeRequestId>();
+
+      try {
+        await signupDbService.insertEmailChangeRequest({
+          createdAt: new Date(),
+          email,
+          emailChangeRequestId,
+          signupUserId: currentSignupUser.signupUserId,
+        });
+      } catch (error) {
+        if (isPgUniqueViolation(error)) {
+          throw signupUserEmailAlreadyAssociated(email);
+        }
+        throw error;
+      }
+
+      await signupEventProducer.publishEmailChangeRequestedV1Event({
+        emailChangeRequestId,
+        signupUserId: currentSignupUser.signupUserId,
+      });
+    },
+
     async confirmOnboarding(
       { email }: API_ConfirmOnboardingRequestBody,
       { authData }: AuthorizedContext<UISignupSessionAuthData>,

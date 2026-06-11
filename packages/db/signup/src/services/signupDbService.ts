@@ -6,12 +6,28 @@ import { genericInternalError } from "@knodia/common-models/errors";
 import { eq, or, type SQL } from "drizzle-orm";
 
 import { toSignupUser, toSignupUserSQL } from "../converters/converters.ts";
-import { signupUser } from "../signupUser.ts";
+import {
+  emailChangeRequest,
+  type NewEmailChangeRequest,
+  signupUser,
+} from "../signupUser.ts";
 
 export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
+    async checkEmailChangeRequestEmailExists(email: string): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.email, email))
+        .limit(1);
+
+      return result.length > 0;
+    },
+
     async checkSignupOrganizationNameAlreadyTaken(
       organizationName: string,
     ): Promise<boolean> {
@@ -25,6 +41,20 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
           ),
         )
         .limit(1);
+      return result.length > 0;
+    },
+
+    async checkSignupUserEmailChangeRequestExists(
+      signupUserId: SignupUserId,
+    ): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.signupUserId, signupUserId))
+        .limit(1);
+
       return result.length > 0;
     },
 
@@ -87,6 +117,12 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       const signupUserResult = result.at(0);
 
       return signupUserResult ? toSignupUser(signupUserResult) : undefined;
+    },
+
+    async insertEmailChangeRequest(
+      request: NewEmailChangeRequest,
+    ): Promise<void> {
+      await db.insert(emailChangeRequest).values(request);
     },
 
     async insertSignupUser(user: SignupUser): Promise<void> {
