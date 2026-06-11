@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { match } from "ts-pattern";
 
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
@@ -38,21 +39,20 @@ function RouteComponent() {
       to: "/consumption/e-services/$id",
     });
 
-  if (eservice.mode === "ReceiveData") {
-    return (
+  return match(eservice.mode)
+    .with("ReceiveData", () => (
       <CreatePurposeReceiveDataModal
         eservice={eservice}
         knodeId={knodeId}
         onClose={onClose}
       />
-    );
-  }
-
-  return (
-    <CreatePurposeModal
-      eservice={eservice}
-      knodeId={knodeId}
-      onClose={onClose}
-    />
-  );
+    ))
+    .with("ProvideData", () => (
+      <CreatePurposeModal
+        eservice={eservice}
+        knodeId={knodeId}
+        onClose={onClose}
+      />
+    ))
+    .exhaustive();
 }
