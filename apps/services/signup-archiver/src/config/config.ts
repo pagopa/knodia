@@ -1,4 +1,3 @@
-import { SignupDbConfig } from "@knodia/db-signup/config";
 import {
   KafkaConsumerConfig,
   SignupTopicConfig,
@@ -8,7 +7,6 @@ import { z } from "zod";
 
 const SignupArchiverConfig = LoggerConfig.and(KafkaConsumerConfig)
   .and(SignupTopicConfig)
-  .and(SignupDbConfig)
   .and(
     z
       .object({ SIGNUP_ARCHIVES_S3_BUCKET: z.string().min(1) })

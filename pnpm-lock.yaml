@@ -1843,9 +1843,6 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
-      '@knodia/db-signup':
-        specifier: workspace:*
-        version: link:../../../packages/db/signup
       '@knodia/file-manager':
         specifier: workspace:*
         version: link:../../../packages/file-manager

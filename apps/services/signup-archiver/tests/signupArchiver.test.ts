@@ -1,7 +1,6 @@
 import { SignupUserId } from "@knodia/common-models/ids";
-import { type SignupDbService } from "@knodia/db-signup/services";
 import { type FileManager } from "@knodia/file-manager";
-import { type SignupEventV1, type SignupUser } from "@knodia/signup-models";
+import { type SignupEventV1 } from "@knodia/signup-models";
 import { type Logger } from "pino";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -29,19 +28,8 @@ function makeEvent(
   };
 }
 
-function makeUser(overrides: Partial<SignupUser> = {}): SignupUser {
-  return {
-    fiscalNumber: undefined,
-    personIdentifier: "PERSON-1",
-    signupUserId,
-    spidCode: undefined,
-    ...overrides,
-  } as SignupUser;
-}
-
 describe("handleSignupMessage - OnboardingCompletedV1", () => {
   let storeBytesIfAbsent: ReturnType<typeof vi.fn>;
-  let getSignupUserById: ReturnType<typeof vi.fn>;
   let logger: Logger;
   let deps: SignupArchiverDeps;
 
@@ -49,12 +37,10 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
     storeBytesIfAbsent = vi
       .fn()
       .mockResolvedValue({ alreadyExists: false, key: "k" });
-    getSignupUserById = vi.fn().mockResolvedValue(makeUser());
     logger = { info: vi.fn(), warn: vi.fn() } as unknown as Logger;
     deps = {
       bucket: "test-bucket",
       fileManager: { storeBytesIfAbsent } as unknown as FileManager,
-      signupDbService: { getSignupUserById } as unknown as SignupDbService,
     };
   });
 
@@ -81,7 +67,6 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
       action: "Onboarding",
       date: "2026-06-09T10:00:00.000Z",
       nonce: "nonce-abc",
-      oneIdentityId: "PERSON-1",
       termsAcceptanceDigest: digest,
       termsAcceptanceVersion: "v1",
     });
@@ -90,42 +75,7 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
     );
   });
 
-  it("resolves oneIdentityId by precedence personIdentifier > spidCode > fiscalNumber", async () => {
-    getSignupUserById.mockResolvedValue(
-      makeUser({ personIdentifier: undefined, spidCode: "SPID-9" }),
-    );
-
-    await handleSignupMessage(makeEvent(), deps, logger);
-
-    const record = JSON.parse(firstStoreArg().content.toString());
-    expect(record.oneIdentityId).toBe("SPID-9");
-  });
-
-  it("throws when the signup user is not found", async () => {
-    getSignupUserById.mockResolvedValue(undefined);
-
-    await expect(
-      handleSignupMessage(makeEvent(), deps, logger),
-    ).rejects.toThrow(/not found/);
-    expect(storeBytesIfAbsent).not.toHaveBeenCalled();
-  });
-
-  it("throws when the user has no One Identity identifier", async () => {
-    getSignupUserById.mockResolvedValue(
-      makeUser({
-        fiscalNumber: undefined,
-        personIdentifier: undefined,
-        spidCode: undefined,
-      }),
-    );
-
-    await expect(
-      handleSignupMessage(makeEvent(), deps, logger),
-    ).rejects.toThrow();
-    expect(storeBytesIfAbsent).not.toHaveBeenCalled();
-  });
-
-  it("rejects an unsafe nonce before touching the DB or S3", async () => {
+  it("rejects an unsafe nonce before touching S3", async () => {
     await expect(
       handleSignupMessage(
         makeEvent({ oneIdNonce: "../etc/passwd" }),
@@ -133,7 +83,6 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
         logger,
       ),
     ).rejects.toThrow(/Unsafe oneIdNonce/);
-    expect(getSignupUserById).not.toHaveBeenCalled();
     expect(storeBytesIfAbsent).not.toHaveBeenCalled();
   });
 

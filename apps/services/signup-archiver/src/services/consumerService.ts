@@ -1,9 +1,8 @@
 import type { FileManager } from "@knodia/file-manager";
-import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
+import type { SignupEventV1 } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { type SignupDbService } from "@knodia/db-signup/services";
 import { createHash } from "node:crypto";
 import { match } from "ts-pattern";
 
@@ -12,7 +11,6 @@ import { SignupArchiveRecord } from "../models/signupArchiveRecord.ts";
 export interface SignupArchiverDeps {
   bucket: string;
   fileManager: FileManager;
-  signupDbService: SignupDbService;
 }
 
 // The nonce becomes a literal S3 path segment, so it must not contain slashes,
@@ -21,8 +19,8 @@ const SAFE_NONCE = /^[A-Za-z0-9._-]+$/;
 
 // PROTOTYPE LIMITATION: errors thrown here are treated by the consumer as
 // retryable (offsets commit only on success, see runConsumer), so a permanent
-// data fault — unsafe nonce, unknown user, missing identifier — becomes a
-// poison message that is retried forever and blocks its partition.
+// data fault — e.g. an unsafe nonce — becomes a poison message that is
+// retried forever and blocks its partition.
 // A real quarantine/DLQ for permanent failures needs to be implemented to handle these.
 export async function handleSignupMessage(
   event: SignupEventV1,
@@ -45,16 +43,10 @@ export async function handleSignupMessage(
         );
       }
 
-      const user = await deps.signupDbService.getSignupUserById(signupUserId);
-      if (!user) {
-        throw genericInternalError(`Signup user ${signupUserId} not found`);
-      }
-
       const record: SignupArchiveRecord = SignupArchiveRecord.parse({
         action: "Onboarding",
         date: occurredAt,
         nonce: oneIdNonce,
-        oneIdentityId: resolveOneIdentityId(user),
         termsAcceptanceDigest,
         termsAcceptanceVersion,
       });
@@ -86,18 +78,4 @@ export async function handleSignupMessage(
       }
     })
     .exhaustive();
-}
-
-// A user carries at least one IdP identifier (enforced by the SignupUser
-// model); we pick a single one by fixed precedence and reject empties
-// defensively (empty strings would slip past `??`).
-function resolveOneIdentityId(user: SignupUser): string {
-  const oneIdentityId =
-    user.personIdentifier || user.spidCode || user.fiscalNumber;
-  if (!oneIdentityId) {
-    throw genericInternalError(
-      `Signup user ${user.signupUserId} has no One Identity identifier`,
-    );
-  }
-  return oneIdentityId;
 }

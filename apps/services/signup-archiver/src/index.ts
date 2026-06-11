@@ -1,5 +1,3 @@
-import { signupDbServiceBuilder } from "@knodia/db-signup/services";
-import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
 import { initFileManager } from "@knodia/file-manager";
 import { runConsumer } from "@knodia/kafka-commons";
 import { createLogger } from "@knodia/logger";
@@ -12,12 +10,9 @@ const logger = createLogger({
   config,
 });
 
-const { db, pool } = makeSignupDrizzleConnection(config);
-
 const deps: SignupArchiverDeps = {
   bucket: config.signupArchivesS3Bucket,
   fileManager: initFileManager(),
-  signupDbService: signupDbServiceBuilder(db),
 };
 
 await runConsumer(
@@ -25,5 +20,4 @@ await runConsumer(
   createProcessMessage(deps, logger),
   config,
   logger,
-  () => pool.end(),
 );

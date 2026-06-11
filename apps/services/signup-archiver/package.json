@@ -22,7 +22,6 @@
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/common-models": "workspace:*",
-    "@knodia/db-signup": "workspace:*",
     "@knodia/file-manager": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
