@@ -38,6 +38,10 @@ export function RadioGroup({ children, label, ...props }: RadioGroupProps) {
   );
 }
 
+const radioStyles = tv({
+  base: "group flex w-full cursor-pointer items-center",
+});
+
 const radioCircleStyles = tv({
   base: "size-6 shrink-0 rounded-full border-2 border-neutral-medium-gray transition-all",
   extend: focusRing,
@@ -53,10 +57,8 @@ export function Radio({ children, ...props }: RACRadioProps) {
   return (
     <RACRadio
       {...props}
-      className={composeRenderProps(
-        props.className,
-        (className) =>
-          `group flex w-full cursor-pointer items-center ${className ?? ""}`,
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        radioStyles({ ...renderProps, className }),
       )}
     >
       {composeRenderProps(children, (children, renderProps) => (
