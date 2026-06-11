@@ -1,6 +1,3 @@
-import userEvent, {
-  PointerEventsCheckLevel,
-} from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import type {
@@ -54,13 +51,10 @@ describe("FieldRenderer — Declared by Producer tooltip", () => {
     expect(screen.getByLabelText("Declared by Producer")).toBeInTheDocument();
   });
 
-  it("shows the tooltip text on hover", async () => {
+  it("shows the tooltip text on focus", async () => {
     renderField({ isReadOnly: true });
-    const user = userEvent.setup({
-      pointerEventsCheck: PointerEventsCheckLevel.Never,
-    });
 
-    await user.hover(screen.getByLabelText("Declared by Producer"));
+    screen.getByLabelText("Declared by Producer").focus();
 
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
       "Declared by Producer",
