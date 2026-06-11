@@ -279,6 +279,33 @@ export type Eservices = {
 };
 
 /**
+ * Set of pre-filled form answers published by the Producer on a ReceiveData E-service
+ */
+export type PurposeFormOption = {
+    description: {
+        en: string;
+    };
+    /**
+     * Pre-filled key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: {
+        en: string;
+    };
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'ORION' | 'LYNX';
@@ -728,6 +755,41 @@ export type GetEserviceResponses = {
 };
 
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEserviceLatestVersionData = {
     body?: never;
