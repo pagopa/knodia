@@ -75,30 +75,6 @@ services:
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
-
-  # signup is a central subsystem shared by both knodes, so it migrates into a
-  # single non-namespaced database (schema local_signup) instead of per-knode.
-  # Chained after flyway-lynx so the three flyway runs don't race on the shared
-  # roles migration against the postgres database.
-  flyway-signup:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
-    container_name: knodia-multinode-flyway-signup
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-databases.sh"]
-    volumes:
-      - ../migration/signup:/flyway/databases/signup:ro
-      - ../scripts/flyway:/flyway/scripts:ro
-    environment:
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      flyway-lynx:
-        condition: service_completed_successfully
-
   seed:
     security_opt:
       - no-new-privileges:true
@@ -1786,6 +1762,91 @@ services:
     restart: unless-stopped
 
   # ============================================================
+  # Signup
+  # ============================================================
+
+  flyway-signup:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
+    container_name: knodia-multinode-flyway-signup
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-databases.sh"]
+    volumes:
+      - ../migration/signup:/flyway/databases/signup:ro
+      - ../scripts/flyway:/flyway/scripts:ro
+    environment:
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+    depends_on:
+      # Chained after flyway-lynx so the three flyway runs don't race on the shared
+      # roles migration against the postgres database.
+      flyway-lynx:
+        condition: service_completed_successfully
+
+  signup-updater:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signup-updater
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-updater/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-signup-updater
+      KAFKA_GROUP_ID: kafka-signup-updater
+      TOPIC_STARTING_OFFSET: earliest
+      SIGNUP_TOPIC: signup.events
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+      SIGNUP_DB_USER: local_signup_updater_user
+      SIGNUP_DB_PASSWORD: local_signup_updater_user
+      SIGNUP_DB_HOST: postgres
+      SIGNUP_DB_PORT: "5432"
+      SIGNUP_DB_NAME: signup
+      SIGNUP_DB_SCHEMA: local_signup
+      SIGNUP_DB_USE_SSL: "false"
+      ORGANIZATION_PROCESS_ORION_URL: "http://organization-process-orion:3000"
+      ORGANIZATION_PROCESS_LYNX_URL: "http://organization-process-lynx:3000"
+      COGNITO_USER_POOL_ID_ORION: "local-user-pool-id-for-tests"
+      COGNITO_USER_POOL_ID_LYNX: "local-user-pool-id-for-tests"
+      INTERNAL_JWT_AUDIENCE_ORION: "local.knodia.test/internal"
+      INTERNAL_JWT_AUDIENCE_LYNX: "local.knodia.test/internal"
+      INTERNAL_JWT_ISSUER_ORION: "local-knodia"
+      INTERNAL_JWT_ISSUER_LYNX: "local-knodia"
+      INTERNAL_JWT_KID_ORION: "alias/local-knodia-key"
+      INTERNAL_JWT_KID_LYNX: "alias/local-knodia-key"
+      INTERNAL_JWT_SECONDS_DURATION: "3600"
+      INTERNAL_JWT_SUBJECT: "signup-updater"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-setup:
+        condition: service_completed_successfully
+      flyway-signup:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+      local-cognito:
+        condition: service_started
+      organization-process-orion:
+        condition: service_started
+      organization-process-lynx:
+        condition: service_started
+
+  # ============================================================
   # Frontends
   # ============================================================
 
@@ -1937,6 +1998,26 @@ services:
       ISSUER: "http://localhost:4567"
       ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
     command: node scripts/local-auth/local-cognito.mjs
+
+  local-one-identity:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-multinode-local-one-identity
+    ports:
+      - 4568:3000
+    volumes:
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
+    working_dir: /app
+    environment:
+      ISSUER: "http://localhost:4568"
+      ALLOWED_ORIGINS: "https://localhost:5176,http://localhost:5176"
+      CLIENT_ID: local-oi-client-id
+      CLIENT_SECRET: local-oi-client-secret
+      REDIRECT_URI: "http://localhost:5176/login/callback"
+    command: node scripts/local-auth/local-one-identity.mjs
 
 volumes:
   multinode-postgres-data:

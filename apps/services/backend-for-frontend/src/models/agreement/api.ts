@@ -12,7 +12,7 @@ import {
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
-  API_CompactConsumer,
+  API_CompactOrganization,
   API_CompactProducer,
 } from "@knodia/organization-models/api";
 import z from "zod";
@@ -32,7 +32,7 @@ export const API_CompactAgreement = z
 export const API_AgreementActivationDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
-    consumer: API_CompactConsumer,
+    consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
     knodeId: API_KnodeId.meta({
       description: "Knode ID of the producer's Knode that owns this Agreement",
@@ -89,7 +89,7 @@ export type API_GetProducerAgreementsQueryParams = z.infer<
 
 export const API_ProducerAgreement = z
   .strictObject({
-    consumer: API_CompactConsumer,
+    consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
     hasRecentlyBeenUpdated: z.boolean().meta({
       description: "Indicates whether the Agreement has been recently updated",

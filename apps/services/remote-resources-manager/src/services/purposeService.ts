@@ -13,6 +13,7 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import { match } from "ts-pattern";
 
 import type {
   API_CreatedPurposeResource,
@@ -77,11 +78,8 @@ export function purposeServiceBuilder(
         dailyCalls,
         description,
         eserviceId,
-        formAnswersJson,
-        formSchemaVersion,
         knodeId: targetKnodeId,
         name,
-        template,
       } = reqBody;
       const { organizationId: consumerId } = authData;
 
@@ -92,19 +90,35 @@ export function purposeServiceBuilder(
 
       await retrieveOrganization(consumerId, readmodelService);
 
-      const { data } = await k2kGatewayApi.createPurpose({
-        body: {
-          consumerId,
-          dailyCalls,
-          description,
-          eserviceId,
-          formAnswersJson,
-          formSchemaVersion,
-          name,
-          template: template
-            ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
+      const baseBody = {
+        consumerId,
+        dailyCalls,
+        description,
+        eserviceId,
+        name,
+      };
+      const body = match(reqBody)
+        .with({ eserviceMode: "ProvideData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "PROVIDE_DATA" as const,
+          formAnswersJson: b.formAnswersJson,
+          formSchemaVersion: b.formSchemaVersion,
+          template: b.template
+            ? {
+                id: b.template.id,
+                knodeId: toK2KAPI_KnodeId(b.template.knodeId),
+              }
             : undefined,
-        },
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "RECEIVE_DATA" as const,
+          purposeFormOptionId: b.purposeFormOptionId,
+        }))
+        .exhaustive();
+
+      const { data } = await k2kGatewayApi.createPurpose({
+        body,
         client: getK2K2GatewayApiClient(targetKnodeId),
       });
 

@@ -132,17 +132,12 @@ export type CompactOrganization = {
 };
 
 /**
- * Producer Organization with id and name
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
  */
 export type CompactProducer = {
     id: string;
     name: string;
 };
-
-/**
- * Consumer Organization with id, knodeId, and name
- */
-export type CompactConsumer = CompactOrganization;
 
 export type Attribute = {
     code: string;
@@ -562,7 +557,7 @@ export type CompactAgreement = {
 
 export type AgreementActivationDetails = {
     agreement: CompactAgreement;
-    consumer: CompactConsumer;
+    consumer: CompactOrganization;
     eservice: CompactEservice;
     /**
      * Knode ID of the producer's Knode that owns this Agreement
@@ -581,7 +576,7 @@ export type AgreementSeed = {
 };
 
 export type ProducerAgreement = {
-    consumer: CompactConsumer;
+    consumer: CompactOrganization;
     eservice: CompactEservice;
     /**
      * Indicates whether the Agreement has been recently updated
@@ -593,7 +588,7 @@ export type ProducerAgreement = {
 };
 
 export type ProducerAgreementDetails = {
-    consumer: CompactConsumer;
+    consumer: CompactOrganization;
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
@@ -1021,7 +1016,7 @@ export type ConsumerPurposes = {
 };
 
 export type ProducerPurpose = {
-    consumer: CompactConsumer;
+    consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: CompactEservice;
@@ -1048,7 +1043,7 @@ export type PurposeDetailsEservice = {
 
 export type PurposeDetails = {
     agreement: CompactAgreement;
-    consumer: CompactConsumer;
+    consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: PurposeDetailsEservice;
