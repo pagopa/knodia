@@ -1,16 +1,11 @@
-interface IconProps {
-  className?: string;
-}
+import { type IconProps, MaterialSymbolIcon } from "./MaterialSymbolIcon";
 
 /** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
-export function DownloadIcon({ className = "size-6" }: IconProps) {
+export function DownloadIcon(props: IconProps) {
   return (
-    <svg
-      aria-hidden
-      className={`fill-current ${className}`}
-      viewBox="0 -960 960 960"
-    >
-      <path d="M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z" />
-    </svg>
+    <MaterialSymbolIcon
+      {...props}
+      d="M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z"
+    />
   );
 }
