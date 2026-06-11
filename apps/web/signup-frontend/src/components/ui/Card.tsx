@@ -3,6 +3,7 @@ interface CardProps {
   className?: string;
 }
 
+/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function Card({ children, className = "" }: CardProps) {
   return (
     <div
