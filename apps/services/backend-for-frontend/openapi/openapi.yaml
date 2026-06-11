@@ -3624,7 +3624,14 @@ paths:
           required: false
           description: Filter by E-service ID. Returns Consumer Keychains linked to any
             Active or Suspended Purpose belonging to the given E-service.
-            Mutually exclusive with `purpose`.
+            Requires `knodeId`. Mutually exclusive with `purpose`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID that owns the E-service. Required when `eserviceId` is set.
         - schema:
             type: string
           in: query
@@ -6892,7 +6899,14 @@ paths:
           in: query
           name: eserviceId
           required: false
-          description: Filter by E-service ID
+          description: Filter by E-service ID. Can only be used together with `knodeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID to list Purposes from. Required when `eserviceId` is set.
         - schema:
             type: array
             items:

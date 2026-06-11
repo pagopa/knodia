@@ -6,11 +6,9 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
 import {
-  type EserviceId,
   type KnodeId,
   type OrganizationId,
   type PurposeId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import { match } from "ts-pattern";
@@ -182,17 +180,14 @@ export function purposeServiceBuilder(
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { eserviceId, limit, offset, state } = requestQuery;
+      const { eserviceId, knodeId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      const targetKnodeId = resolveSingleListingKnode(
-        await remoteResourceDbService.getPurposesDistinctKnodes(
-          consumerId,
-          eserviceId === undefined
-            ? undefined
-            : unsafeBrandId<EserviceId>(eserviceId),
-        ),
-      );
+      const targetKnodeId =
+        knodeId ??
+        resolveSingleListingKnode(
+          await remoteResourceDbService.getPurposesDistinctKnodes(consumerId),
+        );
       if (targetKnodeId === undefined) {
         return emptyListingPage(limit, offset);
       }

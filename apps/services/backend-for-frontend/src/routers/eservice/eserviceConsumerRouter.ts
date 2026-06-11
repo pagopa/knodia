@@ -174,6 +174,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId: req.params.eserviceId,
+            knodeId: req.query.knodeId,
             limit: 1,
             offset: 0,
           },
@@ -320,6 +321,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 50,
                 offset: 0,
                 state: [API_PurposeState.enum.Active],
@@ -333,6 +335,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 1,
                 offset: 0,
               },

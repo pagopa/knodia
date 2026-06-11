@@ -1953,9 +1953,13 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purpose`.
          */
         eserviceId?: string;
+        /**
+         * Knode ID that owns the E-service. Required when `eserviceId` is set.
+         */
+        knodeId?: KnodeId;
         /**
          * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.
          */
@@ -4274,9 +4278,13 @@ export type GetConsumerPurposesData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID
+         * Filter by E-service ID. Can only be used together with `knodeId`.
          */
         eserviceId?: string;
+        /**
+         * Knode ID to list Purposes from. Required when `eserviceId` is set.
+         */
+        knodeId?: KnodeId;
         /**
          * Filter by Purpose State
          */

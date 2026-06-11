@@ -3,7 +3,6 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
   type AgreementId,
-  type EserviceId,
   KnodeId,
   type OrganizationId,
   type PurposeId,
@@ -68,22 +67,11 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result;
     },
-    async getPurposesDistinctKnodes(
-      consumerId: OrganizationId,
-      // eserviceId narrows the lookup to that e-service's knode (single-target).
-      eserviceId?: EserviceId,
-    ) {
+    async getPurposesDistinctKnodes(consumerId: OrganizationId) {
       const queryResult = await db
         .selectDistinctOn([remoteResourcePurpose.knodeId])
         .from(remoteResourcePurpose)
-        .where(
-          and(
-            eq(remoteResourcePurpose.consumerId, consumerId),
-            eserviceId
-              ? eq(remoteResourcePurpose.eserviceId, eserviceId)
-              : undefined,
-          ),
-        )
+        .where(eq(remoteResourcePurpose.consumerId, consumerId))
         .orderBy(remoteResourcePurpose.knodeId);
 
       return queryResult.map((r) => KnodeId.parse(r.knodeId));

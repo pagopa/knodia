@@ -197,10 +197,10 @@ describe("GET /purposes (getPurposes)", () => {
     expect(getPurposesMock).not.toHaveBeenCalled();
   });
 
-  it("does not 501 when eserviceId scopes a multi-knode consumer to a single knode", async () => {
+  it("does not 501 when knodeId scopes a multi-knode consumer to a single knode", async () => {
     getPurposesMock.mockResolvedValue({ data: mockK2KResponse });
 
-    // Consumer also has purposes on another knode, but for a different e-service.
+    // Consumer also has purposes on another knode.
     const otherKnodeId =
       expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
     await remoteResourceDbService.insertPurpose({
@@ -212,7 +212,11 @@ describe("GET /purposes (getPurposes)", () => {
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get("/purposes")
-      .query({ ...defaultQuery, eserviceId: expectedApiResult.eserviceId });
+      .query({
+        ...defaultQuery,
+        eserviceId: expectedApiResult.eserviceId,
+        knodeId: expectedApiResult.knodeId,
+      });
 
     expect(response.statusCode).toBe(200);
     expect(getPurposesMock).toHaveBeenCalledWith(
@@ -222,6 +226,31 @@ describe("GET /purposes (getPurposes)", () => {
         }),
       }),
     );
+  });
+
+  it("targets the requested knode even when the local readmodel has no purposes for it", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: { pagination: { ...parsedDefaultQuery, total: 0 }, results: [] },
+    });
+
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, knodeId: otherKnodeId });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should return 400 when eserviceId is passed without knodeId", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, eserviceId: expectedApiResult.eserviceId });
+
+    expect(response.statusCode).toBe(400);
+    expect(getPurposesMock).not.toHaveBeenCalled();
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
@@ -242,6 +271,7 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
+    { ...defaultQuery, knodeId: "InvalidKnodeId" },
     { ...defaultQuery, state: "InvalidState" },
     {
       ...defaultQuery,

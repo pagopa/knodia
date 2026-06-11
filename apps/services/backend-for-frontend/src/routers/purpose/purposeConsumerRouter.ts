@@ -89,6 +89,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         headers,
         query: {
           eserviceId: req.query.eserviceId,
+          knodeId: req.query.knodeId,
           limit,
           offset,
           state: req.query.state,

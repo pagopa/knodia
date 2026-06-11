@@ -1023,9 +1023,13 @@ export type GetPurposesData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID
+         * Filter by E-service ID. Can only be used together with `knodeId`.
          */
         eserviceId?: string;
+        /**
+         * Knode ID to list Purposes from. Required when `eserviceId` is set.
+         */
+        knodeId?: KnodeId;
         /**
          * Filter by Purpose State
          */
