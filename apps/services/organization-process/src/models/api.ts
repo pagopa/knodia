@@ -54,6 +54,10 @@ export type API_GetOrganizationsQueryParams = z.infer<
 export const API_OrganizationSeed = z
   .strictObject({
     attributes: z.array(API_Attribute),
+    externalOrganizationId: z.uuid().optional().meta({
+      description:
+        "Deterministic Organization id supplied by the caller (e.g. signup provisioning). When set it becomes the Organization id, making creation idempotent so a repeated request returns the existing Organization, and since the id is the event-store stream id a second creation on that stream is rejected. When omitted, a fresh id is generated.",
+    }),
     name: z.string().min(1),
   })
   .meta({ id: "OrganizationSeed" });
