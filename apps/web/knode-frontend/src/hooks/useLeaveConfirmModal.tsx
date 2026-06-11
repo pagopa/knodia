@@ -3,15 +3,15 @@ import { useState } from "react";
 import { LeaveConfirmModal } from "@/components/LeaveConfirmModal";
 
 interface Options {
-  isDirty?: boolean;
   skipWhenClean?: boolean;
 }
 
 export const useLeaveConfirmModal = (
   onClose: () => void,
-  { isDirty = false, skipWhenClean = false }: Options = {},
+  { skipWhenClean = false }: Options = {},
 ) => {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const onModalShow = () => {
     if (skipWhenClean && !isDirty) {
@@ -21,6 +21,8 @@ export const useLeaveConfirmModal = (
     setShowLeaveConfirm(true);
   };
 
+  const markDirty = () => setIsDirty(true);
+
   const handleConfirmLeave = () => {
     setShowLeaveConfirm(false);
     onClose();
@@ -29,6 +31,7 @@ export const useLeaveConfirmModal = (
   const handleCancelLeave = () => setShowLeaveConfirm(false);
 
   return {
+    markDirty,
     modal: (
       <LeaveConfirmModal
         isOpen={showLeaveConfirm}

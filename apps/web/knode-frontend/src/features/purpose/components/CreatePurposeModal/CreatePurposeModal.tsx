@@ -4,7 +4,7 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
 import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import { Fragment, useMemo, useRef } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -39,10 +39,11 @@ export function CreatePurposeModal({
   knodeId,
   onClose,
 }: Props) {
-  const [isDirty, setIsDirty] = useState(false);
-  const markDirty = useCallback(() => setIsDirty(true), []);
-  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
-    useLeaveConfirmModal(onClose, { isDirty, skipWhenClean: true });
+  const {
+    markDirty,
+    modal: leaveConfirmModal,
+    onModalShow: handleShowLeaveConfirm,
+  } = useLeaveConfirmModal(onClose, { skipWhenClean: true });
 
   const { data: schemasResponse, isError: isSchemasError } = useQuery(
     getConsumerCurrentPurposeFormSchemasOptions({
