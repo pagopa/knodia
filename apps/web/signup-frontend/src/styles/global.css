@@ -353,8 +353,10 @@
     --color-input-label: #555c70;
     --color-input-text: #0e0f13;
     --color-status-error: #d13333;
+    --radius-card: 24px;
     --radius-chip: 4px;
     --radius-modal: 16px;
+    --shadow-card: 0px 4px 8px rgba(14, 15, 19, 0.1);
 }
 
 @layer base {
