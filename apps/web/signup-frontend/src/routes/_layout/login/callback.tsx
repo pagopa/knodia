@@ -6,7 +6,7 @@ import { Loader } from "@/components/ui";
 import { setAuthToken } from "@/libs/auth";
 import { client } from "@/libs/axios";
 
-export const Route = createFileRoute("/login/callback")({
+export const Route = createFileRoute("/_layout/login/callback")({
   loaderDeps: ({ search }) => ({
     code: search.code,
     state: search.state,

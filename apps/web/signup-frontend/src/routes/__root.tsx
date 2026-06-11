@@ -8,7 +8,6 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { RouterProvider } from "react-aria-components";
 
-import { PageLayout } from "@/components/layout";
 import { type RouterContext } from "@/libs/router";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -28,9 +27,7 @@ function RootLayout() {
         return router.buildLocation(href).href;
       }}
     >
-      <PageLayout>
-        <Outlet />
-      </PageLayout>
+      <Outlet />
       <TanStackDevtools
         plugins={[
           {
