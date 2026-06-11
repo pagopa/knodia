@@ -76,10 +76,10 @@ describe("CreatePurposeModal", () => {
     const { onClose, user } = renderWizard();
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /close/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText("Name")).toBeInTheDocument();
     });
+
+    await user.type(screen.getByLabelText("Name"), "Valid Purpose Name");
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 
