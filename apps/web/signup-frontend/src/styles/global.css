@@ -359,6 +359,57 @@
     --shadow-card: 0px 4px 8px rgba(14, 15, 19, 0.1);
 }
 
+/* Text styles */
+@utility text-style-hero {
+    font-family: var(--font-heading);
+    font-size: var(--text-hero-lg);
+    line-height: var(--leading-hero-lg);
+    font-weight: 600;
+    letter-spacing: var(--tracking-hero-lg);
+}
+
+@utility text-style-section-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-heading-lg);
+    line-height: var(--leading-heading-lg);
+    font-weight: 400;
+}
+
+@utility text-style-subheading {
+    font-family: var(--font-heading);
+    font-size: var(--text-heading-md);
+    line-height: var(--leading-heading-md);
+    font-weight: 400;
+}
+
+@utility text-style-intro {
+    font-family: var(--font-heading);
+    font-size: var(--text-intro-lg);
+    line-height: var(--leading-intro-lg);
+    font-weight: 400;
+}
+
+@utility text-style-body {
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 400;
+}
+
+@utility text-style-small {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+}
+
+@utility text-style-caption {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
 @layer base {
     html {
         font-family: var(--font-body);

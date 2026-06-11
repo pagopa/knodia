@@ -29,7 +29,7 @@ export function RadioGroup({ children, label, ...props }: RadioGroupProps) {
       )}
     >
       {label && (
-        <Label className="font-body text-[18px] leading-[28px] font-normal text-neutral-medium-gray">
+        <Label className="text-style-body text-neutral-medium-gray">
           {label}
         </Label>
       )}
@@ -64,7 +64,7 @@ export function Radio({ children, ...props }: RACRadioProps) {
           <span className="flex items-center p-[9px]">
             <span aria-hidden className={radioCircleStyles(renderProps)} />
           </span>
-          <span className="min-w-0 flex-1 font-body text-[16px] leading-[24px] font-medium text-neutral-medium-gray">
+          <span className="text-style-small min-w-0 flex-1 text-neutral-medium-gray">
             {children}
           </span>
         </>

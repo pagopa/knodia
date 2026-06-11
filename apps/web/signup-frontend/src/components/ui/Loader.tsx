@@ -41,7 +41,7 @@ export function Loader({ label, size = 32, ...props }: LoaderProps) {
         />
       </svg>
       {label && (
-        <span className="font-body text-[16px] leading-[24px] text-neutral-medium-gray">
+        <span className="text-style-small text-neutral-medium-gray">
           {label}
         </span>
       )}

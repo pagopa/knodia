@@ -53,13 +53,13 @@ export function Modal({
         <AriaDialog className="flex w-full flex-col gap-8 outline-none">
           <div className="flex flex-col gap-2">
             <Heading
-              className="font-heading text-[28px] leading-[36px] font-normal text-neutral-graphite"
+              className="text-style-subheading text-neutral-graphite"
               slot="title"
             >
               {title}
             </Heading>
             {description && (
-              <p className="font-body text-[18px] leading-[28px] font-normal text-neutral-medium-gray">
+              <p className="text-style-body text-neutral-medium-gray">
                 {description}
               </p>
             )}
