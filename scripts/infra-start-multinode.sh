@@ -49,6 +49,9 @@ if [ "$failed" -ne 0 ]; then
   exit 1
 fi
 
+# Generate local dev tokens (ui-session + internal) for Bruno collections
+pnpm generate-all-tokens > /dev/null
+
 echo ""
 echo "==========================================="
 echo "  Knodia Multinode Infrastructure Ready"
@@ -91,4 +94,5 @@ echo "    DynamoDB Local:    http://localhost:8085"
 echo "    local-kms:         http://localhost:4566"
 echo "    local-jwks:        http://localhost:4500"
 echo "    local-cognito:     http://localhost:4567"
+echo "    local-one-identity: http://localhost:4568"
 echo "==========================================="

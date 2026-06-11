@@ -81,6 +81,32 @@ components:
       required:
         - uiSignupSessionToken
       additionalProperties: false
+    ConfirmOnboardingRequestBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+      required:
+        - email
+      additionalProperties: false
+    CurrentSignupUser:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+        onboardingStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - NOT_COMPLETED
+      required:
+        - onboardingStatus
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -102,7 +128,7 @@ paths:
     get:
       operationId: startOIDCSession
       tags:
-        - signup
+        - auth
       description: Initiate OIDC session
       security: []
       responses:
@@ -112,7 +138,7 @@ paths:
     get:
       operationId: exchangeOIDCCode
       tags:
-        - signup
+        - auth
       description: Handle OIDC callback and exchange authorization code for session token
       parameters:
         - schema:
@@ -158,6 +184,84 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /onboarding/confirm:
+    post:
+      operationId: confirmOnboarding
+      tags:
+        - signup
+      description: Confirm onboarding for the caller user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmOnboardingRequestBody"
+      responses:
+        "204":
+          description: Onboarding confirmed successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /me:
+    get:
+      operationId: getCurrentSignupUser
+      tags:
+        - signup
+      description: Get current signup user onboarding status
+      responses:
+        "200":
+          description: Current signup user onboarding status
+          content:
+            application/json:
+              schema:
+                description: Current signup user onboarding status
+                allOf:
+                  - $ref: "#/components/schemas/CurrentSignupUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Signup Manager API
     url: /
@@ -166,5 +270,7 @@ security:
 tags:
   - description: Health check routes
     name: health
+  - description: Authentication routes
+    name: auth
   - description: Signup routes
     name: signup

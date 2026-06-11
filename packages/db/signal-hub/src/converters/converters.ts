@@ -1,15 +1,15 @@
-import { unsafeBrandId } from "@knodia/common-models/ids";
-import { type Signal, SignalType } from "@knodia/signal-hub-models";
+import { Signal } from "@knodia/signal-hub-models";
 
 import type { SignalHubSignalSQL } from "../signalHub.ts";
 
 export function toSignal(signalSQL: SignalHubSignalSQL): Signal {
-  return {
+  // Omit the object columns when null so the SeedUpdate branch (which has none) parses.
+  return Signal.parse({
     createdAt: signalSQL.createdAt,
-    eserviceId: unsafeBrandId(signalSQL.eserviceId),
-    objectId: signalSQL.objectId,
-    objectType: signalSQL.objectType,
+    eserviceId: signalSQL.eserviceId,
     signalId: signalSQL.signalId,
-    signalType: SignalType.parse(signalSQL.signalType),
-  };
+    signalType: signalSQL.signalType,
+    ...(signalSQL.objectId !== null && { objectId: signalSQL.objectId }),
+    ...(signalSQL.objectType !== null && { objectType: signalSQL.objectType }),
+  });
 }

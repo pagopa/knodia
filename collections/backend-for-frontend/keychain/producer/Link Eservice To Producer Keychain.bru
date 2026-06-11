@@ -1,0 +1,24 @@
+meta {
+  name: Link Eservice To Producer Keychain
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/eservices
+  body: json
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{eserviceId}}"
+  }
+}
