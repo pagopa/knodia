@@ -15,7 +15,9 @@ export function useCreatePurposeAction({
 }: Params) {
   const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const isBlocked =
-    eserviceState === "Archived" || agreementState === "Archived";
+    eserviceState === "Archived" ||
+    agreementState === "Archived" ||
+    agreementState === "PendingConsumerOperatorIdentification";
 
   const onBlockedPress = () => {
     setIsBlockedModalOpen(true);
