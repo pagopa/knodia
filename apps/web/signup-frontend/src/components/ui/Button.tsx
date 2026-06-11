@@ -9,6 +9,9 @@ import { focusRing } from "./styles";
 
 const buttonStyles = tv({
   base: "box-border inline-flex h-(--button-height) items-center justify-center gap-(--button-gap) rounded-button px-(--button-padding-x) py-3 font-body text-button-md leading-button-md font-medium transition hover:cursor-pointer",
+  defaultVariants: {
+    variant: "primary",
+  },
   extend: focusRing,
   variants: {
     isDisabled: {
