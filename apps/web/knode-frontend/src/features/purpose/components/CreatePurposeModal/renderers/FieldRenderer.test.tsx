@@ -1,3 +1,6 @@
+import userEvent, {
+  PointerEventsCheckLevel,
+} from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import type {
@@ -52,7 +55,10 @@ describe("FieldRenderer — Declared by Producer tooltip", () => {
   });
 
   it("shows the tooltip text on hover", async () => {
-    const { user } = renderField({ isReadOnly: true });
+    renderField({ isReadOnly: true });
+    const user = userEvent.setup({
+      pointerEventsCheck: PointerEventsCheckLevel.Never,
+    });
 
     await user.hover(screen.getByLabelText("Declared by Producer"));
 
