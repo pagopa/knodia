@@ -92,6 +92,10 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
   0
 );
 
+-- Three pre-filled purpose-form options for E-service 04 (Confluence "Purpose
+-- Form mockup 04"). All three share purpose=INSTITUTIONAL, usesPersonalData=NO
+-- and isRequestOnBehalfOfThirdParties=NO; they differ on the third-party
+-- data usage profile.
 INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
   id, eservice_id, name, description,
   form_answers_json, form_schema_version,
@@ -99,9 +103,9 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'e4a7d3f6-ab5c-4094-9f4a-4d7e1e6f8f3b',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  '{"en": "Public interest task"}'::jsonb,
-  '{"en": "Pre-filled lawfulness for processing personal data in the exercise of a public interest task under Art. 6(1)(e) GDPR."}'::jsonb,
-  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Forwarding the digital domicile of legal entities to the Producer for cross-border communication.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["PUBLIC_INTEREST"],"legalBasisPublicInterest":"PUBLIC_INTEREST_TASK","publicInterestTaskText":"Public registry of company digital domiciles maintained for cross-border administrative communication, as mandated by national legislation.","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
+  '{"en": "Retrieve company contacts — with confidential third-party data"}'::jsonb,
+  '{"en": "Retrieve a company''s contacts for institutional communications, with access to confidential or strictly reserved third-party non-personal data."}'::jsonb,
+  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"YES","usesThirdPartyConfidentialData":"YES","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
@@ -118,9 +122,28 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'f5b8e4a7-bc6d-41a5-aa5b-5e8f2f7a9a4c',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  '{"en": "Legal obligation"}'::jsonb,
-  '{"en": "Pre-filled lawfulness for processing personal data to comply with a legal obligation under Art. 6(1)(c) GDPR."}'::jsonb,
-  '{"checkedExistenceMereCorrectnessInteropCatalogue":"true","confirmPrincipleIntegrityAndDiscretion":"true","dataDownload":"NO","declarationConfirmGDPR":"true","deliveryMethod":"CLEARTEXT","doneDpia":"NO","institutionalPurpose":"Forwarding the digital domicile of legal entities to comply with mandatory registry updates.","isRequestOnBehalfOfThirdParties":"NO","knowsDataQuantity":"NO","legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Italian Digital Administration Code, art. 6-bis D.Lgs. 82/2005 (registry of certified electronic addresses).","personalDataTypes":["WITH_IDENTIFYING_DATA"],"policyProvided":"YES","policyProvidedMedium":"PRINT","purpose":"INSTITUTIONAL","purposePursuit":"MERE_CORRECTNESS","usesPersonalData":"YES"}'::jsonb,
+  '{"en": "Retrieve company contacts — with non-confidential third-party data"}'::jsonb,
+  '{"en": "Retrieve a company''s contacts for institutional communications, with access to third-party non-personal data that is not confidential or strictly reserved."}'::jsonb,
+  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"YES","usesThirdPartyConfidentialData":"NO","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
+  '1.0',
+  0
+) ON CONFLICT (id) DO UPDATE SET
+  eservice_id = EXCLUDED.eservice_id,
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  form_answers_json = EXCLUDED.form_answers_json,
+  form_schema_version = EXCLUDED.form_schema_version;
+
+INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
+  id, eservice_id, name, description,
+  form_answers_json, form_schema_version,
+  metadata_version
+) VALUES (
+  'a6c9f5b8-cd7e-42b6-bb6c-6f9a3a8b0b5d',
+  'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
+  '{"en": "Retrieve company contacts — without third-party data"}'::jsonb,
+  '{"en": "Retrieve a company''s contacts for institutional communications, without access to any third-party non-personal data."}'::jsonb,
+  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"NO","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
