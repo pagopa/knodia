@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
 import { requestContext } from "@fastify/request-context";
+import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
 import { generateId } from "@knodia/common-models/ids";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { CORRELATION_ID_HEADER } from "../../src/models/headers.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
 import { requireCorrelationIdHeaderPlugin } from "../../src/utils/fastify.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";

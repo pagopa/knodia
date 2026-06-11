@@ -36,6 +36,28 @@ export function assertDataExistsInEvent<
 }
 
 /**
+ * Decodes a plain-JSON Kafka message (not an event-store Debezium envelope with
+ * Protobuf data) and validates it against the provided Zod schema. Used by
+ * consumers of non-event-sourced topics (e.g. signup events).
+ *
+ * @param {KafkaMessage} message - The Kafka message to decode.
+ * @throws {Error} - If the value is missing or fails schema validation.
+ */
+export function decodeKafkaJsonMessage<TSchema extends z.ZodType>(
+  message: KafkaMessage,
+  schema: TSchema,
+): z.infer<TSchema> {
+  try {
+    return schema.parse(JSON.parse(message.value?.toString() ?? ""));
+  } catch (error) {
+    throw new Error(
+      `Invalid Kafka JSON message: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
+  }
+}
+
+/**
  * Decodes a Kafka message using the provided event schema.
  *
  * @param {KafkaMessage} message - The Kafka message to decode.
