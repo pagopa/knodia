@@ -5,8 +5,8 @@ import logoPagopa from "@/assets/logo-pagopa.svg";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-deep-violet px-(--header-inline-padding) pt-[60px] pb-12">
-      <div className="flex w-full items-start justify-between">
+    <footer className="w-full bg-deep-violet pt-[60px] pb-12">
+      <div className="mx-auto flex w-full max-w-(--header-shell-max) items-start justify-between px-(--header-inline-padding)">
         <div className="flex h-[210px] flex-col justify-between">
           <img
             alt="Knodia"

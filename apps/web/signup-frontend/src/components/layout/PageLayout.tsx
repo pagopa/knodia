@@ -16,7 +16,7 @@ export function PageLayout({ children }: { children: React.ReactNode }) {
           />
           <div className="absolute inset-0 bg-neutral-white/60" />
         </div>
-        <div className="relative w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[197px] pb-20">
+        <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[197px] pb-20">
           {children}
         </div>
       </main>
