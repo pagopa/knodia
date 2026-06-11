@@ -14,6 +14,7 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
   const {
     data,
     eservice,
+    onDirty,
     purposeFormOptions,
     selectPurposeFormOption,
     updateDetailsStep,
@@ -24,6 +25,7 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
   const form = useDetailsStepForm({
     data,
     maxDailyCallsPerConsumer,
+    onDirty,
     onSubmitSuccess: () => undefined,
     updateDetailsStep,
   });

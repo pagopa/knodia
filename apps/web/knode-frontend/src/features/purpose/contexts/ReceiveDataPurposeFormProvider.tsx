@@ -37,27 +37,20 @@ export function ReceiveDataPurposeFormProvider({
   const [selectedPurposeFormOptionId, setSelectedPurposeFormOptionId] =
     useState<null | string>(null);
 
-  const updateDetailsStep = useCallback(
-    (stepData: DetailsStepData) => {
-      setData((prev) => ({ ...prev, ...stepData }));
-      onDirty?.();
-    },
-    [onDirty],
-  );
+  const updateDetailsStep = useCallback((stepData: DetailsStepData) => {
+    setData((prev) => ({ ...prev, ...stepData }));
+  }, []);
 
-  const selectPurposeFormOption = useCallback(
-    (id: string) => {
-      setSelectedPurposeFormOptionId(id);
-      onDirty?.();
-    },
-    [onDirty],
-  );
+  const selectPurposeFormOption = useCallback((id: string) => {
+    setSelectedPurposeFormOptionId(id);
+  }, []);
 
   const value = useMemo<ReceiveDataPurposeWizardContextValue>(
     () => ({
       data,
       eservice,
       knodeId,
+      onDirty,
       purposeFormOptions,
       selectedPurposeFormOptionId,
       selectPurposeFormOption,
@@ -67,6 +60,7 @@ export function ReceiveDataPurposeFormProvider({
       data,
       eservice,
       knodeId,
+      onDirty,
       purposeFormOptions,
       selectedPurposeFormOptionId,
       selectPurposeFormOption,

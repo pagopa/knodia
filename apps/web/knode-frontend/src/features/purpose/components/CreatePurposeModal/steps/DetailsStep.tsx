@@ -12,12 +12,18 @@ interface Props {
 }
 
 export function DetailsStep({ onCancel }: Props) {
-  const { data, eserviceName, maxDailyCallsPerConsumer, updateDetailsStep } =
-    usePurposeWizardContext();
+  const {
+    data,
+    eserviceName,
+    maxDailyCallsPerConsumer,
+    onDirty,
+    updateDetailsStep,
+  } = usePurposeWizardContext();
   const { nextStep } = useStepsContext();
   const form = useDetailsStepForm({
     data,
     maxDailyCallsPerConsumer,
+    onDirty,
     onSubmitSuccess: () => nextStep(),
     updateDetailsStep,
   });

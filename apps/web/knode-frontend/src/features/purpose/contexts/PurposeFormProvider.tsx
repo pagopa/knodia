@@ -41,21 +41,13 @@ export function PurposeFormProvider({
     () => (initialTemplate?.formAnswersJson ?? {}) as FormValues,
   );
 
-  const updateDetailsStep = useCallback(
-    (stepData: DetailsStepData) => {
-      setData((prev) => ({ ...prev, ...stepData }));
-      onDirty?.();
-    },
-    [onDirty],
-  );
+  const updateDetailsStep = useCallback((stepData: DetailsStepData) => {
+    setData((prev) => ({ ...prev, ...stepData }));
+  }, []);
 
-  const updateFormAnswers = useCallback(
-    (answers: FormValues) => {
-      setFormAnswers((prev) => ({ ...prev, ...answers }));
-      onDirty?.();
-    },
-    [onDirty],
-  );
+  const updateFormAnswers = useCallback((answers: FormValues) => {
+    setFormAnswers((prev) => ({ ...prev, ...answers }));
+  }, []);
 
   const selectedTemplate = useMemo(
     () => (initialTemplate ? { id: initialTemplate.id, knodeId } : undefined),
@@ -71,6 +63,7 @@ export function PurposeFormProvider({
       formSchemaVersion,
       knodeId,
       maxDailyCallsPerConsumer: eservice.maxDailyCalls.perConsumer,
+      onDirty,
       selectedTemplate,
       updateDetailsStep,
       updateFormAnswers,
@@ -81,6 +74,7 @@ export function PurposeFormProvider({
       formAnswers,
       formSchemaVersion,
       knodeId,
+      onDirty,
       selectedTemplate,
       updateDetailsStep,
       updateFormAnswers,

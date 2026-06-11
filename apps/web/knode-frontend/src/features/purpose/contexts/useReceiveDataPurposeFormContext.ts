@@ -13,6 +13,7 @@ export interface ReceiveDataPurposeWizardContextValue {
   data: PurposeFormDraftData;
   eservice: ConsumptionEserviceDetail;
   knodeId: KnodeId;
+  onDirty?: () => void;
   purposeFormOptions: bffApi.ConsumerPurposeFormOption[];
   selectedPurposeFormOptionId: null | string;
   selectPurposeFormOption: (id: string) => void;
