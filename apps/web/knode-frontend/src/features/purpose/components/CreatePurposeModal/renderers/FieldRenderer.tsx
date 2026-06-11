@@ -17,6 +17,7 @@ import {
 } from "@/features/purpose/engine/textsResolver";
 
 import { CheckboxRenderer } from "./CheckboxRenderer";
+import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
 import { RadioRenderer } from "./RadioRenderer";
 import { SelectRenderer } from "./SelectRenderer";
 import { SwitchRenderer } from "./SwitchRenderer";
@@ -72,7 +73,7 @@ export function FieldRenderer({
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
   }, [control, allValues, optionLabels, optionValues]);
 
-  return match(widget)
+  const rendered = match(widget)
     .with("radio", () => (
       <RadioRenderer
         description={description}
@@ -130,6 +131,15 @@ export function FieldRenderer({
       />
     ))
     .exhaustive();
+
+  if (!isReadOnly) return rendered;
+
+  return (
+    <div className="flex items-start gap-2">
+      <div className="flex-1">{rendered}</div>
+      <DeclaredByProducerTooltip />
+    </div>
+  );
 }
 
 function getOptionValues(
