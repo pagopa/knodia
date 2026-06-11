@@ -8,7 +8,7 @@ ENV TURBO_TELEMETRY_DISABLED=1
 WORKDIR /repo
 RUN corepack enable
 COPY . .
-RUN pnpm dlx turbo prune --scope=@knodia/${SERVICE_NAME} --docker --out-dir=/repo/out
+RUN pnpm dlx turbo@2.9.14 prune --scope=@knodia/${SERVICE_NAME} --docker --out-dir=/repo/out
 
 FROM ${NODE_REGISTRY}/node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS installer
 WORKDIR /repo
