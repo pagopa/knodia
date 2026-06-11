@@ -13,12 +13,12 @@ export function Footer() {
             className="h-(--header-logo-height) w-(--header-logo-width)"
             src={knodiaLogoWhite}
           />
-          <div className="flex items-center gap-6 text-[14px] leading-[20px] text-neutral-white">
-            <span className="font-body font-normal tracking-[0.35px] uppercase">
+          <div className="flex items-center gap-6 text-neutral-white">
+            <span className="font-body text-[14px] leading-[20px] font-normal tracking-[0.35px] uppercase">
               © 2026 Knodia
             </span>
             {/* TODO: turn these into links */}
-            <span className="font-body font-medium whitespace-pre">
+            <span className="text-style-caption whitespace-pre">
               {`Privacy Policy   ·   Legal Notes   ·   Company Details`}
             </span>
           </div>
@@ -42,7 +42,7 @@ export function Footer() {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            <span className="font-body text-[14px] leading-[20px] font-medium text-neutral-gray-40">
+            <span className="text-style-caption text-neutral-gray-40">
               PARTNERS
             </span>
             <div className="flex items-center justify-between">
