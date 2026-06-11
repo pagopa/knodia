@@ -5,6 +5,7 @@ import {
 } from "@knodia/common-models/api";
 import { PurposeId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { API_EserviceMode } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_LocalizedPurposeDescription,
@@ -21,18 +22,42 @@ import {
   API_PurposeTemplateReference,
 } from "@knodia/purpose-models/api";
 import z from "zod";
+
+const API_PurposeSeedBase = z.strictObject({
+  consumer: API_PurposeConsumer,
+  dailyCalls: API_PurposeDailyCalls,
+  description: API_LocalizedPurposeDescription,
+  eserviceId: z.uuid(),
+  name: API_LocalizedPurposeName,
+});
+
+const API_PurposeSeedForProvideData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ProvideData"]),
+  formAnswersJson: API_PurposeFormAnswers,
+  formSchemaVersion: API_PurposeFormSchemaVersion,
+  template: API_PurposeTemplateReference.optional(),
+}).meta({ id: "PurposeSeedForProvideData" });
+
+const API_PurposeSeedForReceiveData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ReceiveData"]),
+  purposeFormOptionId: z.uuid(),
+}).meta({ id: "PurposeSeedForReceiveData" });
+
 export const API_PurposeSeed = z
-  .strictObject({
-    consumer: API_PurposeConsumer,
-    dailyCalls: API_PurposeDailyCalls,
-    description: API_LocalizedPurposeDescription,
-    eserviceId: z.uuid(),
-    formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: API_PurposeFormSchemaVersion,
-    name: API_LocalizedPurposeName,
-    template: API_PurposeTemplateReference.optional(),
-  })
-  .meta({ id: "PurposeSeed" });
+  .discriminatedUnion("eserviceMode", [
+    API_PurposeSeedForProvideData,
+    API_PurposeSeedForReceiveData,
+  ])
+  .meta({
+    discriminator: {
+      mapping: {
+        ProvideData: "#/components/schemas/PurposeSeedForProvideData",
+        ReceiveData: "#/components/schemas/PurposeSeedForReceiveData",
+      },
+      propertyName: "eserviceMode",
+    },
+    id: "PurposeSeed",
+  });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
 export const API_Purpose = z

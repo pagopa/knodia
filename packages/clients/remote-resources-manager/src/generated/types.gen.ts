@@ -379,10 +379,7 @@ export type PurposeFormSchemasResponse = {
     version: string;
 };
 
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     /**
      * Expected number of daily API calls for this Purpose
      */
@@ -392,15 +389,41 @@ export type PurposeSeed = {
      * Identifier of the E-service this Purpose refers to
      */
     eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
     formAnswersJson: PurposeFormAnswers;
     /**
      * Version identifier for the Purpose form schema provided by the target Knode
      */
     formSchemaVersion: string;
-    knodeId: KnodeId;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
+
+export type PurposeSeedForReceiveData = {
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ReceiveData';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
 
 /**
  * Unique identifier of the created Purpose resource
