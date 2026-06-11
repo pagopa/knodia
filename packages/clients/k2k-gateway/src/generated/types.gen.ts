@@ -465,10 +465,7 @@ export type PurposeTemplateReference = {
     knodeId: KnodeId;
 };
 
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     /**
      * Identifier of the Consumer Organization creating the Purpose
      */
@@ -482,11 +479,40 @@ export type PurposeSeed = {
      * Identifier of the E-service this Purpose refers to
      */
     eserviceId: EserviceId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'PROVIDE_DATA';
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
+
+export type PurposeSeedForReceiveData = {
+    /**
+     * Identifier of the Consumer Organization creating the Purpose
+     */
+    consumerId: OrganizationId;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: EserviceId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'RECEIVE_DATA';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'PROVIDE_DATA';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'RECEIVE_DATA';
+} & PurposeSeedForReceiveData);
 
 /**
  * Unique identifier of the created Purpose resource
