@@ -31,6 +31,13 @@ export interface PurposeWizardContextValue {
   updateFormAnswers: (answers: FormValues) => void;
 }
 
+interface UseDetailsStepFormArgs {
+  data: PurposeFormDraftData;
+  maxDailyCallsPerConsumer: number;
+  onSubmitSuccess: (value: DetailsStepData) => void;
+  updateDetailsStep: (data: DetailsStepData) => void;
+}
+
 export const PurposeWizardContext =
   createContext<null | PurposeWizardContextValue>(null);
 
@@ -43,12 +50,14 @@ export const { useAppForm } = createFormHook({
   formContext,
 });
 
-export function useDetailsStepForm(
-  onSubmitSuccess: (value: DetailsStepData) => void,
-) {
-  const { data, maxDailyCallsPerConsumer, updateDetailsStep } =
-    usePurposeWizardContext();
+export type DetailsStepFormApi = ReturnType<typeof useDetailsStepForm>;
 
+export function useDetailsStepForm({
+  data,
+  maxDailyCallsPerConsumer,
+  onSubmitSuccess,
+  updateDetailsStep,
+}: UseDetailsStepFormArgs) {
   return useAppForm({
     defaultValues: {
       dailyCalls: data.dailyCalls ?? DETAILS_STEP_DEFAULTS.dailyCalls,
