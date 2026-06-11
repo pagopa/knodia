@@ -335,7 +335,8 @@ components:
         - Bearer
         - DPoP
     CompactProducer:
-      description: Producer Organization with id and name
+      description: Producer Organization with id and name; omits knodeId since it is
+        always known from the resource this is embedded in
       type: object
       properties:
         id:
@@ -848,8 +849,7 @@ components:
         - uiTexts
         - version
       additionalProperties: false
-    PurposeSeed:
-      description: Seed data to create a new Purpose
+    PurposeSeedForProvideData:
       type: object
       properties:
         dailyCalls:
@@ -865,16 +865,20 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ProvideData
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
           description: Version identifier for the Purpose form schema provided by the
             target Knode
           type: string
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
         template:
           allOf:
             - $ref: "#/components/schemas/PurposeTemplateReference"
@@ -882,11 +886,61 @@ components:
         - dailyCalls
         - description
         - eserviceId
-        - formAnswersJson
-        - formSchemaVersion
         - knodeId
         - name
+        - eserviceMode
+        - formAnswersJson
+        - formSchemaVersion
       additionalProperties: false
+    PurposeSeedForReceiveData:
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          description: Expected number of daily API calls for this Purpose
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          description: Identifier of the E-service this Purpose refers to
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ReceiveData
+        purposeFormOptionId:
+          description: Identifier of the PurposeFormOption (pre-filled set of form
+            answers) chosen by the Consumer among those published by the
+            Producer on the E-service
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - knodeId
+        - name
+        - eserviceMode
+        - purposeFormOptionId
+      additionalProperties: false
+    PurposeSeed:
+      discriminator:
+        mapping:
+          ProvideData: "#/components/schemas/PurposeSeedForProvideData"
+          ReceiveData: "#/components/schemas/PurposeSeedForReceiveData"
+        propertyName: eserviceMode
+      oneOf:
+        - $ref: "#/components/schemas/PurposeSeedForProvideData"
+        - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     CreatedPurposeResource:
       description: Unique identifier of the created Purpose resource
       allOf:
@@ -1805,7 +1859,11 @@ paths:
       summary: Create a Purpose
       tags:
         - purpose
-      description: Create a new Purpose
+      description: Create a new Purpose for an E-service on behalf of a Consumer. The
+        request body can be either PurposeSeedForProvideData or
+        PurposeSeedForReceiveData based on the Eservice mode. The first one
+        carries inline form answers compiled by the Consumer, while the second
+        one references a pre-filled PurposeFormOption compiled by the Producer.
       requestBody:
         required: true
         content:
@@ -1892,7 +1950,14 @@ paths:
           in: query
           name: eserviceId
           required: false
-          description: Filter by E-service ID
+          description: Filter by E-service ID. Can only be used together with `knodeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID to list Purposes from. Required when `eserviceId` is set.
         - schema:
             type: array
             items:

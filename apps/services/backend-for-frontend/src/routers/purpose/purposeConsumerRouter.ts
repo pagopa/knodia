@@ -89,6 +89,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         headers,
         query: {
           eserviceId: req.query.eserviceId,
+          knodeId: req.query.knodeId,
           limit,
           offset,
           state: req.query.state,
@@ -216,7 +217,9 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       );
 
       const { data } = await remoteResourcesManagerApi.createPurpose({
-        body: req.body,
+        // The BFF PurposeSeed only carries ProvideData fields today; the
+        // ReceiveData branch is added in a downstream PR (KN-75 stack).
+        body: { ...req.body, eserviceMode: "ProvideData" },
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });

@@ -23,7 +23,6 @@ const MOCK_USERS = [
       { Name: "email_verified", Value: "true" },
       { Name: "given_name", Value: "Mario" },
       { Name: "family_name", Value: "Rossi" },
-      { Name: "custom:organizationId", Value: ORG_ID },
       { Name: "custom:roles", Value: ROLES.join(",") },
     ],
     Enabled: true,
@@ -40,7 +39,6 @@ const MOCK_USERS = [
       { Name: "email_verified", Value: "true" },
       { Name: "given_name", Value: "Tecnico" },
       { Name: "family_name", Value: "Roma" },
-      { Name: "custom:organizationId", Value: ORG_ID },
       { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
@@ -57,7 +55,6 @@ const MOCK_USERS = [
       { Name: "email_verified", Value: "true" },
       { Name: "given_name", Value: "Giulia" },
       { Name: "family_name", Value: "Bianchi" },
-      { Name: "custom:organizationId", Value: ORG_ID },
       { Name: "custom:roles", Value: "administrative" },
     ],
     Enabled: true,
@@ -74,10 +71,6 @@ const MOCK_USERS = [
       { Name: "email_verified", Value: "true" },
       { Name: "given_name", Value: "Luca" },
       { Name: "family_name", Value: "Neri" },
-      {
-        Name: "custom:organizationId",
-        Value: "00000000-0000-4000-8000-000000000099",
-      },
       { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
@@ -286,6 +279,81 @@ function handleAdminListGroupsForUser(req, res, payload) {
   });
 }
 
+function handleCreateGroup(req, res, payload) {
+  console.log(
+    `[create-group] ${payload.GroupName} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {
+      Group: {
+        GroupName: payload.GroupName,
+        UserPoolId: payload.UserPoolId ?? DEFAULT_USER_POOL_ID,
+      },
+    },
+    { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+  );
+}
+
+function handleAdminCreateUser(req, res, payload) {
+  const existing = findUserByUsername(payload.Username);
+  if (existing) {
+    console.log(`[admin-create-user] ${payload.Username} already exists`);
+    writeJson(
+      res,
+      200,
+      { User: existing },
+      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+    );
+    return;
+  }
+
+  const attributes = payload.UserAttributes ?? [];
+  const user = {
+    Attributes: attributes.some((attribute) => attribute.Name === "sub")
+      ? attributes
+      : [...attributes, { Name: "sub", Value: randomUUID() }],
+    Enabled: true,
+    Groups: [],
+    UserCreateDate: NOW_IN_SECONDS,
+    UserLastModifiedDate: NOW_IN_SECONDS,
+    UserStatus: "CONFIRMED",
+    Username: payload.Username,
+  };
+  MOCK_USERS.push(user);
+
+  console.log(
+    `[admin-create-user] created ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    { User: user },
+    { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+  );
+}
+
+function handleAdminAddUserToGroup(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Groups = user.Groups ?? [];
+    if (!user.Groups.includes(payload.GroupName)) {
+      user.Groups.push(payload.GroupName);
+    }
+  }
+
+  console.log(
+    `[admin-add-user-to-group] ${payload.Username} -> ${payload.GroupName}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
@@ -354,6 +422,20 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.CreateGroup") {
+        handleCreateGroup(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminCreateUser") {
+        handleAdminCreateUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminAddUserToGroup") {
+        handleAdminAddUserToGroup(req, res, payload);
         return;
       }
     }

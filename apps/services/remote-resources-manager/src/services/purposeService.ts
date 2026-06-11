@@ -6,13 +6,12 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
 import {
-  type EserviceId,
   type KnodeId,
   type OrganizationId,
   type PurposeId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import { match } from "ts-pattern";
 
 import type {
   API_CreatedPurposeResource,
@@ -77,11 +76,8 @@ export function purposeServiceBuilder(
         dailyCalls,
         description,
         eserviceId,
-        formAnswersJson,
-        formSchemaVersion,
         knodeId: targetKnodeId,
         name,
-        template,
       } = reqBody;
       const { organizationId: consumerId } = authData;
 
@@ -92,19 +88,35 @@ export function purposeServiceBuilder(
 
       await retrieveOrganization(consumerId, readmodelService);
 
-      const { data } = await k2kGatewayApi.createPurpose({
-        body: {
-          consumerId,
-          dailyCalls,
-          description,
-          eserviceId,
-          formAnswersJson,
-          formSchemaVersion,
-          name,
-          template: template
-            ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
+      const baseBody = {
+        consumerId,
+        dailyCalls,
+        description,
+        eserviceId,
+        name,
+      };
+      const body = match(reqBody)
+        .with({ eserviceMode: "ProvideData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "PROVIDE_DATA" as const,
+          formAnswersJson: b.formAnswersJson,
+          formSchemaVersion: b.formSchemaVersion,
+          template: b.template
+            ? {
+                id: b.template.id,
+                knodeId: toK2KAPI_KnodeId(b.template.knodeId),
+              }
             : undefined,
-        },
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "RECEIVE_DATA" as const,
+          purposeFormOptionId: b.purposeFormOptionId,
+        }))
+        .exhaustive();
+
+      const { data } = await k2kGatewayApi.createPurpose({
+        body,
         client: getK2K2GatewayApiClient(targetKnodeId),
       });
 
@@ -168,17 +180,14 @@ export function purposeServiceBuilder(
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { eserviceId, limit, offset, state } = requestQuery;
+      const { eserviceId, knodeId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      const targetKnodeId = resolveSingleListingKnode(
-        await remoteResourceDbService.getPurposesDistinctKnodes(
-          consumerId,
-          eserviceId === undefined
-            ? undefined
-            : unsafeBrandId<EserviceId>(eserviceId),
-        ),
-      );
+      const targetKnodeId =
+        knodeId ??
+        resolveSingleListingKnode(
+          await remoteResourceDbService.getPurposesDistinctKnodes(consumerId),
+        );
       if (targetKnodeId === undefined) {
         return emptyListingPage(limit, offset);
       }

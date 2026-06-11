@@ -766,6 +766,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId,
+            knodeId: req.query.knodeId,
             limit: 50,
             offset: 0,
             state: [

@@ -367,6 +367,24 @@ services:
     working_dir: /app
     command: node scripts/local-auth/local-cognito.mjs
 
+  local-one-identity:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-local-one-identity
+    ports:
+      - 4568:3000
+    volumes:
+      - ../scripts/local-auth:/app/scripts/local-auth:ro
+    working_dir: /app
+    environment:
+      ISSUER: "http://localhost:4568"
+      ALLOWED_ORIGINS: "http://localhost:5176,http://localhost:5176"
+      CLIENT_ID: local-oi-client-id
+      CLIENT_SECRET: local-oi-client-secret
+      REDIRECT_URI: "http://localhost:5176/login/callback"
+    command: node scripts/local-auth/local-one-identity.mjs
+
 volumes:
   postgres-data:
   kafka-data:

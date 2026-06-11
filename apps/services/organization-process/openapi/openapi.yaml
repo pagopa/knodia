@@ -184,6 +184,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Attribute"
+        externalOrganizationId:
+          description: Deterministic Organization id supplied by the caller (e.g. signup
+            provisioning). When set it becomes the Organization id, making
+            creation idempotent so a repeated request returns the existing
+            Organization, and since the id is the event-store stream id a second
+            creation on that stream is rejected. When omitted, a fresh id is
+            generated.
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
           type: string
           minLength: 1

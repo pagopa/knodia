@@ -244,7 +244,8 @@ components:
         - name
       additionalProperties: false
     CompactProducer:
-      description: Producer Organization with id and name
+      description: Producer Organization with id and name; omits knodeId since it is
+        always known from the resource this is embedded in
       type: object
       properties:
         id:
@@ -258,10 +259,6 @@ components:
         - id
         - name
       additionalProperties: false
-    CompactConsumer:
-      description: Consumer Organization with id, knodeId, and name
-      allOf:
-        - $ref: "#/components/schemas/CompactOrganization"
     Attribute:
       type: object
       properties:
@@ -1119,7 +1116,7 @@ components:
         agreement:
           $ref: "#/components/schemas/CompactAgreement"
         consumer:
-          $ref: "#/components/schemas/CompactConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         knodeId:
@@ -1158,7 +1155,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         hasRecentlyBeenUpdated:
@@ -1186,7 +1183,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         id:
@@ -2172,7 +2169,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/CompactConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         dailyCalls:
           format: int32
           type: integer
@@ -2243,7 +2240,7 @@ components:
         agreement:
           $ref: "#/components/schemas/CompactAgreement"
         consumer:
-          $ref: "#/components/schemas/CompactConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         dailyCalls:
           format: int32
           type: integer
@@ -3627,7 +3624,14 @@ paths:
           required: false
           description: Filter by E-service ID. Returns Consumer Keychains linked to any
             Active or Suspended Purpose belonging to the given E-service.
-            Mutually exclusive with `purpose`.
+            Requires `knodeId`. Mutually exclusive with `purpose`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID that owns the E-service. Required when `eserviceId` is set.
         - schema:
             type: string
           in: query
@@ -6898,7 +6902,14 @@ paths:
           in: query
           name: eserviceId
           required: false
-          description: Filter by E-service ID
+          description: Filter by E-service ID. Can only be used together with `knodeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID to list Purposes from. Required when `eserviceId` is set.
         - schema:
             type: array
             items:

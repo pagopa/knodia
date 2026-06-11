@@ -6,7 +6,7 @@ import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
-  API_CompactConsumer,
+  API_CompactOrganization,
   API_CompactProducer,
 } from "@knodia/organization-models/api";
 import {
@@ -66,13 +66,19 @@ export const API_ArchiveConsumerPurposeQueryParams = z.strictObject({
 
 export const API_GetConsumerPurposesQueryParams =
   API_PaginationQueryParams.extend({
-    eserviceId: z
-      .uuid()
-      .optional()
-      .meta({ description: "Filter by E-service ID" }),
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Can only be used together with `knodeId`.",
+    }),
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Knode ID to list Purposes from. Required when `eserviceId` is set.",
+    }),
     state: arrayQueryParam(API_PurposeState)
       .optional()
       .meta({ description: "Filter by Purpose State" }),
+  }).refine((q) => !(q.eserviceId && !q.knodeId), {
+    message: "`eserviceId` can only be used together with `knodeId`",
   });
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
@@ -137,7 +143,7 @@ export type API_GetProducerPurposesQueryParams = z.infer<
 
 export const API_ProducerPurpose = z
   .strictObject({
-    consumer: API_CompactConsumer,
+    consumer: API_CompactOrganization,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
@@ -163,7 +169,7 @@ export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
-    consumer: API_CompactConsumer,
+    consumer: API_CompactOrganization,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice.extend({

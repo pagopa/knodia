@@ -19,10 +19,14 @@ export async function getAllOrganizationEvents() {
 export const injectAppRequest = createInjectAppRequest(() => app);
 
 export async function seedOrganization(organization: Organization) {
+  await seedOrganizationEvent(organization);
+  await organizationWriterService.upsertOrganization(organization, 0);
+}
+
+export async function seedOrganizationEvent(organization: Organization) {
   await organizationEventStoreWriterBuilder(eventStoreDb).insertEvent(
     createOrganizationCreatedV1Event(organization, generateId()),
   );
-  await organizationWriterService.upsertOrganization(organization, 0);
 }
 
 export const toExpectAPI_Organization = (org: Organization) => ({

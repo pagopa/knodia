@@ -121,7 +121,11 @@ export const API_ConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:
-        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.",
+        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purpose`.",
+    }),
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Knode ID that owns the E-service. Required when `eserviceId` is set.",
     }),
     purpose: z
       .string()
@@ -139,9 +143,13 @@ export const API_ConsumerKeychainsQueryParams =
         description:
           "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.",
       }),
-  }).refine((q) => !(q.purpose && q.eserviceId), {
-    message: "`purpose` and `eserviceId` are mutually exclusive",
-  });
+  })
+    .refine((q) => !(q.purpose && q.eserviceId), {
+      message: "`purpose` and `eserviceId` are mutually exclusive",
+    })
+    .refine((q) => !(q.eserviceId && !q.knodeId), {
+      message: "`eserviceId` can only be used together with `knodeId`",
+    });
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;

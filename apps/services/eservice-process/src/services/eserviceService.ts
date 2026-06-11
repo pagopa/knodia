@@ -56,7 +56,7 @@ import {
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
 import {
-  findEserviceLatestVersion,
+  retrieveEserviceLatestVersionFromEservice,
   updateEserviceVersionState,
 } from "../utils/utils.ts";
 import {
@@ -94,7 +94,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -279,7 +279,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -314,7 +314,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsActive(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(

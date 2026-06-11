@@ -23,7 +23,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
     ...createConsumerPurposeMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
-        consumerPurposesByEserviceQuery(eserviceId),
+        consumerPurposesByEserviceQuery(eserviceId, knodeId),
       );
 
       navigate({
