@@ -17,8 +17,12 @@ export function Header() {
             src={knodiaLogo}
           />
         </Link>
-        {/* TODO: implement logout */}
-        {isAuthenticated && <Button variant="text">Logout</Button>}
+        {/* TODO: implement logout and remove isDisabled */}
+        {isAuthenticated && (
+          <Button isDisabled variant="text">
+            Logout
+          </Button>
+        )}
       </div>
     </header>
   );
