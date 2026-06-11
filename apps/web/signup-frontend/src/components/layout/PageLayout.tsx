@@ -1,4 +1,4 @@
-import heroCanvas from "@/assets/hero-canvas.png";
+import heroCanvas from "@/assets/hero-canvas.webp";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
