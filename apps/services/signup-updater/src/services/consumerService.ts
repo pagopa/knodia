@@ -2,17 +2,21 @@ import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
 import { isAxiosError } from "axios";
+import { DrizzleQueryError } from "drizzle-orm";
+import { DatabaseError } from "pg";
 import { match } from "ts-pattern";
 
 import type { SignupUpdaterDeps } from "../utils/utils.ts";
@@ -33,17 +37,17 @@ export async function handleSignupMessage(
   correlationId: CorrelationId,
   logger: Logger,
 ): Promise<void> {
+  const signupUserId = event.data.signupUserId;
+
   return match(event)
-    .with({ type: "OnboardingCompletedV1" }, async (e) => {
-      const user = await deps.signupDbService.getSignupUserById(
-        e.data.signupUserId,
-      );
+    .with({ type: "OnboardingCompletedV1" }, async () => {
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
 
       // For now we assume a missing user was deleted: nothing to provision, so we
       // skip the event (committing the offset) rather than blocking the partition.
       if (user === undefined) {
         logger.warn(
-          `Skipping OnboardingCompletedV1 for signup user ${e.data.signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,
+          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,
         );
         return;
       }
@@ -52,8 +56,71 @@ export async function handleSignupMessage(
         await provisionKnode(knodeId, user, deps, correlationId, logger);
       }
     })
-    .with({ type: "EmailChangeRequestedV1" }, async () => {
-      throw new Error("EmailChangeRequestedV1 handling is not implemented");
+    .with({ type: "EmailChangeRequestedV1" }, async (e) => {
+      const emailChangeRequestId = e.data.emailChangeRequestId;
+      const request =
+        await deps.signupDbService.getEmailChangeRequestById(
+          emailChangeRequestId,
+        );
+
+      if (request === undefined) {
+        logger.info(
+          `Skipping EmailChangeRequestedV1 ${emailChangeRequestId}: email change request no longer exists. Treating the message as already processed.`,
+        );
+        return;
+      }
+
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
+
+      /**
+       * For now we assume a missing user was deleted: nothing to provision, so we
+       * skip the event (committing the offset) and delete the email change request
+       * rather than blocking the partition.
+       */
+      if (user === undefined) {
+        logger.warn(
+          `Skipping EmailChangeRequestedV1 for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+        );
+        await deps.signupDbService.deleteEmailChangeRequest(
+          emailChangeRequestId,
+        );
+        return;
+      }
+
+      try {
+        await deps.signupDbService.updateSignupUserEmail({
+          email: request.email,
+          signupUserId,
+        });
+      } catch (error) {
+        /**
+         * This should not happen during the normal flow: the email is checked before
+         * creating the change request.
+         *
+         * If it does happen, it means the target email was associated with another
+         * signup user before this event was processed. Keep the request pending and
+         * fail the message so the issue can be investigated and retried after the
+         * underlying data conflict is resolved.
+         */
+        if (isPgUniqueViolation(error)) {
+          logger.error(
+            `Failed to update email for signup user ${signupUserId}: requested email is already associated with another signup user. Keeping email change request ${emailChangeRequestId} pending for recovery.`,
+          );
+          throw genericInternalError(
+            `Cannot process EmailChangeRequestedV1 ${emailChangeRequestId}: requested email is already associated with another signup user`,
+          );
+        }
+        throw error;
+      }
+
+      for (const knodeId of KnodeId.options) {
+        await deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
+          email: request.email,
+          username: user.generatedEntities[knodeId].userName,
+        });
+      }
+
+      await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
     .exhaustive();
 }
@@ -90,6 +157,16 @@ async function createTestingOrganization(
 // for already-provisioned messages), so replaying earlier events is a no-op.
 function isDuplicateOrganizationNameConflict(error: unknown): boolean {
   return isAxiosError(error) && error.response?.status === HTTP_STATUS_CONFLICT;
+}
+
+function isPgUniqueViolation(
+  error: unknown,
+): error is DrizzleQueryError & { cause: DatabaseError } {
+  return (
+    error instanceof DrizzleQueryError &&
+    error.cause instanceof DatabaseError &&
+    error.cause?.code === PG_UNIQUE_VIOLATION
+  );
 }
 
 async function provisionKnode(
