@@ -1,4 +1,3 @@
-import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -15,6 +14,7 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import { type SignupEventV1, type SignupUser } from "@knodia/signup-models";
 import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -127,8 +127,12 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
-    .with({ type: "DeletionRequestedV1" }, async () => {
-      // TODO: implement deletion handling
+    .with({ type: "DeletionRequestedV1" }, ({ data }) => {
+      // No-op: deprovisioning and deletion completion are implemented in a
+      // follow-up task.
+      logger.info(
+        `Ignoring DeletionRequestedV1 for signup user ${data.signupUserId}: handling not implemented yet`,
+      );
     })
     .exhaustive();
 }
