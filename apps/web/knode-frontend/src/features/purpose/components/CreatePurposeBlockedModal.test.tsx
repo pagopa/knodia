@@ -70,6 +70,43 @@ describe("CreatePurposeBlockedModal", () => {
     expect(screen.queryByText("Create Purpose")).not.toBeInTheDocument();
   });
 
+  it("renders the agreement-pending banner when agreement is PendingConsumerOperatorIdentification", () => {
+    renderWithProviders(
+      <CreatePurposeBlockedModal
+        agreementState="PendingConsumerOperatorIdentification"
+        eserviceState="Active"
+        isOpen
+        onOpenChange={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("Create Purpose")).toBeInTheDocument();
+    expect(
+      screen.getByText("Your Agreement is pending confirmation"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "To create a Purpose, an authorized operator from your organization must first confirm this Agreement on the Producer Knode.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("prefers eservice-archived over agreement-pending when eservice is Archived and agreement is Pending", () => {
+    renderWithProviders(
+      <CreatePurposeBlockedModal
+        agreementState="PendingConsumerOperatorIdentification"
+        eserviceState="Archived"
+        isOpen
+        onOpenChange={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("This E-Service is Archived")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Your Agreement is pending confirmation"),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not render the modal when isOpen is false", () => {
     renderWithProviders(
       <CreatePurposeBlockedModal
