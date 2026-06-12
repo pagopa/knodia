@@ -458,6 +458,56 @@ components:
         - pagination
         - results
       additionalProperties: false
+    PurposeFormOption:
+      description: Set of pre-filled form answers published by the Producer on a
+        ReceiveData E-service
+      type: object
+      properties:
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        formAnswersJson:
+          description: Pre-filled key-value pairs of answers to the Purpose form
+          type: object
+          additionalProperties: {}
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema referenced by the
+            option (e.g., "1.0")
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PurposeFormOption"
+      required:
+        - items
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -1181,6 +1231,56 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getEservicePurposeFormOptions
+      summary: Get PurposeFormOptions for an E-service
+      tags:
+        - resource
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries published by the
+        Producer on a ReceiveData E-service. Returns an empty list when the
+        E-service has no receiveDataConfig, and 409 if the E-service is not in
+        ReceiveData mode.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: PurposeFormOption list retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: PurposeFormOption list retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/versions/latest:
