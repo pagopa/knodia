@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockAxiosPost = vi.hoisted(() => vi.fn());
+const mockGenerateUISignupSessionToken = vi.hoisted(() => vi.fn());
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 
 vi.mock("axios", async (importOriginal) => {
@@ -27,9 +28,7 @@ vi.mock("jose", async (importOriginal) => {
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
-    generateUISignupSessionToken: vi.fn().mockResolvedValue({
-      serialized: "mock-signup-session-token",
-    }),
+    generateUISignupSessionToken: mockGenerateUISignupSessionToken,
   }),
 }));
 
@@ -148,6 +147,10 @@ const oneIdentityIdTokenClaimsMock = {
 describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
   beforeEach(() => {
     mockAxiosPost.mockReset();
+    mockGenerateUISignupSessionToken.mockReset();
+    mockGenerateUISignupSessionToken.mockResolvedValue({
+      serialized: "mock-signup-session-token",
+    });
     mockJwtVerify.mockReset();
   });
 
@@ -187,6 +190,15 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
     expect(mockAxiosPost).toHaveBeenCalledOnce();
     expect(mockJwtVerify).toHaveBeenCalledOnce();
+    expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dateOfBirth: "2000-01-01",
+        familyName: "User",
+        name: "Test User",
+        PersonIdentifier: "test-person-identifier",
+        subject: "test-person-identifier",
+      }),
+    );
   });
 
   it('clears the "oidc-session" cookie on successful code exchange', async () => {
