@@ -127,6 +127,9 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
+    .with({ type: "DeletionRequestedV1" }, async () => {
+      // TODO: implement deletion handling
+    })
     .exhaustive();
 }
 

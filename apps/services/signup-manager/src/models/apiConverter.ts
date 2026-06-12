@@ -24,5 +24,9 @@ function toAPI_OnboardingStatus(
       SignupUserStatus.enum.Suspended,
       () => API_OnboardingStatus.enum.SUSPENDED,
     )
+    .with(
+      SignupUserStatus.enum.DeletionPending,
+      () => API_OnboardingStatus.enum.NOT_COMPLETED,
+    )
     .exhaustive();
 }

@@ -82,5 +82,8 @@ export async function handleSignupMessage(
         `Received EmailChangeRequestedV1 event; No archival action defined, skipping`,
       );
     })
+    .with({ type: "DeletionRequestedV1" }, async () => {
+      // TODO: implement archival of deletion
+    })
     .exhaustive();
 }
