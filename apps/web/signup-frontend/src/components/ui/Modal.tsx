@@ -16,7 +16,7 @@ const overlayStyles = tv({
 });
 
 const modalStyles = tv({
-  base: "max-h-full w-[688px] rounded-modal bg-neutral-white p-8",
+  base: "flex max-h-full w-[688px] flex-col rounded-modal bg-neutral-white p-8",
 });
 
 interface ModalProps extends AriaModalOverlayProps {
@@ -50,8 +50,8 @@ export function Modal({
       )}
     >
       <AriaModal className={modalStyles()}>
-        <AriaDialog className="flex w-full flex-col gap-8 outline-none">
-          <div className="flex flex-col gap-2">
+        <AriaDialog className="flex min-h-0 w-full flex-1 flex-col gap-8 outline-none">
+          <div className="flex shrink-0 flex-col gap-2">
             <Heading
               className="text-style-subheading text-neutral-graphite"
               slot="title"
@@ -64,8 +64,10 @@ export function Modal({
               </p>
             )}
           </div>
-          {children}
-          <div className="flex items-center justify-end gap-6">
+          {children && (
+            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+          )}
+          <div className="flex shrink-0 items-center justify-end gap-6">
             <Button onPress={onCancel} slot="close" variant="secondary">
               {cancelLabel}
             </Button>
