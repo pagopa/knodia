@@ -34,7 +34,8 @@ export function TextField({ errorMessage, label, ...props }: TextFieldProps) {
           className="peer h-full min-w-0 flex-1 bg-transparent font-caption text-[16px] leading-[22px] font-semibold text-input-text outline-none placeholder-transparent"
           placeholder=" "
         />
-        <Label className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 bg-neutral-white px-1 font-caption text-[16px] leading-[22px] font-semibold text-input-label transition-all peer-focus:top-0 peer-focus:text-[12px] peer-focus:leading-[18px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:text-[12px] peer-not-placeholder-shown:leading-[18px]">
+        {/* Hard-stop gradient: white only below the border line, transparent where the label overflows the input */}
+        <Label className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 bg-linear-to-b from-transparent from-[calc(50%-1px)] to-neutral-white to-[calc(50%-1px)] px-1 font-caption text-[16px] leading-[22px] font-semibold text-input-label transition-all peer-focus:top-0 peer-focus:text-[12px] peer-focus:leading-[18px] peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:text-[12px] peer-not-placeholder-shown:leading-[18px]">
           {label}
         </Label>
         <ReportIcon className="hidden size-6 shrink-0 text-status-error group-data-invalid:block" />
