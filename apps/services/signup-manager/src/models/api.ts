@@ -50,6 +50,7 @@ export type API_ChangeEmailRequestBody = z.infer<
 export const API_OnboardingStatus = z.enum([
   "ACTIVE",
   "SUSPENDED",
+  "DELETION_PENDING",
   "NOT_COMPLETED",
 ]);
 export type API_OnboardingStatus = z.infer<typeof API_OnboardingStatus>;

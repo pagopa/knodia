@@ -26,7 +26,7 @@ function toAPI_OnboardingStatus(
     )
     .with(
       SignupUserStatus.enum.DeletionPending,
-      () => API_OnboardingStatus.enum.NOT_COMPLETED,
+      () => API_OnboardingStatus.enum.DELETION_PENDING,
     )
     .exhaustive();
 }

@@ -21,6 +21,7 @@ import {
   signupUserAlreadyHasPendingEmailChangeRequest,
   signupUserEmailChangeRequestCreationConflict,
   signupUserGeneratedEntitiesAlreadyExist,
+  signupUserNotFound,
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
@@ -147,6 +148,34 @@ export function signupServiceBuilder(
         signupUserId,
         termsAcceptanceDigest,
         termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+      });
+    },
+    async deleteCurrentSignupUser({
+      authData,
+    }: AuthorizedContext<UISignupSessionAuthData>): Promise<void> {
+      const user = await signupDbService.getUniqueSignupUserByIdentifiers({
+        fiscalNumber: authData.fiscalNumber,
+        personIdentifier: authData.personIdentifier,
+        spidCode: authData.spidCode,
+      });
+
+      if (user === undefined) {
+        throw signupUserNotFound();
+      }
+
+      /**
+       * Mark the row DeletionPending BEFORE publishing: if the publish fails the
+       * row stays DeletionPending and a retried POST republishes (the mark is an
+       * idempotent no-op once pending). Retries differ only in occurredAt; the
+       * event identity (signupUserId + oneIdNonce) is stable and deduplication is
+       * downstream on the signupUserId Kafka key plus idempotent consumers.
+       */
+      await signupDbService.markSignupUserDeletionPending(user.signupUserId);
+
+      await signupEventProducer.publishDeletionRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        oneIdNonce: authData.oneIdNonce,
+        signupUserId: user.signupUserId,
       });
     },
     async getCurrentSignupUser({

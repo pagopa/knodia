@@ -24,7 +24,7 @@ export const EmailChangeRequestedV1 = z.object({
 });
 export type EmailChangeRequestedV1 = z.infer<typeof EmailChangeRequestedV1>;
 
-const DeletionRequestedV1 = z.object({
+export const DeletionRequestedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
     oneIdNonce: z.string(),
