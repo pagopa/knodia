@@ -211,6 +211,26 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
+export type PurposeFormOption = {
+    description: LocalizedDescription;
+    /**
+     * Key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: LocalizedName;
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
+
 export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
@@ -366,10 +386,7 @@ export type PurposeFormSchemasResponse = {
     version: string;
 };
 
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     /**
      * Expected number of daily API calls for this Purpose
      */
@@ -379,15 +396,41 @@ export type PurposeSeed = {
      * Identifier of the E-service this Purpose refers to
      */
     eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
     formAnswersJson: PurposeFormAnswers;
     /**
      * Version identifier for the Purpose form schema provided by the target Knode
      */
     formSchemaVersion: string;
-    knodeId: KnodeId;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
+
+export type PurposeSeedForReceiveData = {
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ReceiveData';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
 
 /**
  * Unique identifier of the created Purpose resource
@@ -521,6 +564,51 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEservicesData = {
     body?: never;

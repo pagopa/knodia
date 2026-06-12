@@ -73,6 +73,10 @@ export type Operators = Array<Operator>;
 
 export type OrganizationSeed = {
     attributes: Array<Attribute>;
+    /**
+     * Deterministic Organization id supplied by the caller (e.g. signup provisioning). When set it becomes the Organization id, making creation idempotent so a repeated request returns the existing Organization, and since the id is the event-store stream id a second creation on that stream is rejected. When omitted, a fresh id is generated.
+     */
+    externalOrganizationId?: string;
     name: string;
 };
 

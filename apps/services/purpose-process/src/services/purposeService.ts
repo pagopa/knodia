@@ -16,10 +16,11 @@ import {
   type EserviceId,
   generateId,
   type OrganizationId,
+  type PurposeFormOptionId,
   type PurposeId,
   type PurposeTemplateId,
 } from "@knodia/common-models/ids";
-import { EserviceMode } from "@knodia/eservice-models";
+import { type EserviceMode } from "@knodia/eservice-models";
 import {
   type LocalizedPurposeDescription,
   type LocalizedPurposeName,
@@ -29,6 +30,7 @@ import {
   type PurposeFormSchemaVersion,
   PurposeState,
 } from "@knodia/purpose-models";
+import { match } from "ts-pattern";
 
 import type {
   API_GetPurposesQueryParams,
@@ -36,6 +38,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { purposeFormOptionNotFound } from "../models/errors.ts";
 import {
   CURRENT_FORM_SCHEMA_VERSION,
   type GetFormSchemas,
@@ -56,12 +59,14 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertAgreementAllowsPurposeCreation,
+  assertDailyCallsAreWithinLimit,
   assertEserviceAllowsPurposeCreation,
   assertEserviceModeIs,
   assertOrganizationIsPurposeProducer,
   assertPurposeCanBeReactivatedBy,
   assertPurposeCanBeSuspendedBy,
   assertPurposeIsSuspended,
+  assertReceiveDataConfigIsDefined,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -78,6 +83,29 @@ type CallerIdentity =
       actor: typeof PurposeActor.enum.Producer;
       ctx: AuthorizedContext<UISessionAuthData>;
     };
+interface CreatePurposeForProvideDataInput extends CreatePurposeInputBase {
+  eserviceMode: typeof EserviceMode.enum.ProvideData;
+  formAnswersJson: PurposeFormAnswers;
+  formSchemaVersion: PurposeFormSchemaVersion;
+  template?: ExternalResource<PurposeTemplateId>;
+}
+
+interface CreatePurposeForReceiveDataInput extends CreatePurposeInputBase {
+  eserviceMode: typeof EserviceMode.enum.ReceiveData;
+  purposeFormOptionId: PurposeFormOptionId;
+}
+
+type CreatePurposeInput =
+  | CreatePurposeForProvideDataInput
+  | CreatePurposeForReceiveDataInput;
+
+interface CreatePurposeInputBase {
+  consumer: ExternalResource<OrganizationId>;
+  dailyCalls: number;
+  description: LocalizedPurposeDescription;
+  eserviceId: EserviceId;
+  name: LocalizedPurposeName;
+}
 
 export function purposeServiceBuilder(
   eventStoreWriter: PurposeEventStoreWriter,
@@ -119,68 +147,91 @@ export function purposeServiceBuilder(
       return { data: updatedPurpose, metadata: { version: newVersion } };
     },
     async createPurpose(
-      {
-        consumer,
-        dailyCalls,
-        description,
-        eserviceId,
-        formAnswersJson,
-        formSchemaVersion,
-        name,
-        template,
-      }: {
-        consumer: ExternalResource<OrganizationId>;
-        dailyCalls: number;
-        description: LocalizedPurposeDescription;
-        eserviceId: EserviceId;
-        formAnswersJson: PurposeFormAnswers;
-        formSchemaVersion: PurposeFormSchemaVersion;
-        name: LocalizedPurposeName;
-        template?: ExternalResource<PurposeTemplateId>;
-      },
+      seed: CreatePurposeInput,
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<WithMetadata<Purpose>> {
       const purposeId = generateId<PurposeId>();
       logger.info(
-        { requestBody: { consumer, eserviceId, name } },
+        {
+          requestBody: {
+            consumer: seed.consumer,
+            eserviceId: seed.eserviceId,
+            eserviceMode: seed.eserviceMode,
+            name: seed.name,
+          },
+        },
         `Creating Purpose ${purposeId}`,
       );
 
-      const eservice = await retrieveEservice(eserviceId, readmodelService);
-      assertEserviceModeIs(eservice, EserviceMode.enum.ProvideData);
+      const eservice = await retrieveEservice(
+        seed.eserviceId,
+        readmodelService,
+      );
+      assertEserviceModeIs(eservice, seed.eserviceMode);
       assertEserviceAllowsPurposeCreation(eservice);
+      assertDailyCallsAreWithinLimit(eservice, seed.dailyCalls);
 
       const agreements = await retrieveAgreements({
-        consumerId: consumer.id,
-        consumerKnodeId: consumer.knodeId,
-        eserviceId,
+        consumerId: seed.consumer.id,
+        consumerKnodeId: seed.consumer.knodeId,
+        eserviceId: seed.eserviceId,
         readmodelService,
       });
       assertAgreementAllowsPurposeCreation({
         agreements,
-        consumerId: consumer.id,
-        consumerKnodeId: consumer.knodeId,
-        eserviceId,
+        consumerId: seed.consumer.id,
+        consumerKnodeId: seed.consumer.knodeId,
+        eserviceId: seed.eserviceId,
       });
 
-      assertFormAnswersAreValid(formAnswersJson, formSchemaVersion);
+      // Form answers come from the request body in ProvideData mode and from
+      // the Producer-published PurposeFormOption in ReceiveData mode. The
+      // schema validation runs after the formData is resolved: in ReceiveData
+      // mode it acts as a safety net against malformed form options that may
+      // slip past Producer-side validation.
+      const formData = match(seed)
+        .with({ eserviceMode: "ProvideData" }, (s) => ({
+          formAnswersJson: s.formAnswersJson,
+          formSchemaVersion: s.formSchemaVersion,
+          template: s.template,
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (s) => {
+          assertReceiveDataConfigIsDefined(eservice);
+          const option = eservice.receiveDataConfig.purposeFormOptions.find(
+            (p) => p.id === s.purposeFormOptionId,
+          );
+          if (option === undefined) {
+            throw purposeFormOptionNotFound(eservice.id, s.purposeFormOptionId);
+          }
+          return {
+            formAnswersJson: option.formAnswersJson,
+            formSchemaVersion: option.formSchemaVersion,
+            template: undefined,
+          };
+        })
+        .exhaustive();
+
+      assertFormAnswersAreValid(
+        formData.formAnswersJson,
+        formData.formSchemaVersion,
+      );
 
       const now = new Date();
       const purpose: Purpose = {
-        consumer,
+        consumer: seed.consumer,
         createdAt: now,
-        dailyCalls,
-        description,
-        eserviceId,
-        formAnswersJson,
-        formSchemaVersion,
+        dailyCalls: seed.dailyCalls,
+        description: seed.description,
+        eserviceId: seed.eserviceId,
+        formAnswersJson: formData.formAnswersJson,
+        formSchemaVersion: formData.formSchemaVersion,
         id: purposeId,
-        name,
+        name: seed.name,
         state: PurposeState.enum.Active,
         suspendedByConsumerAt: null,
         suspendedByProducerAt: null,
         // Template existence is not validated: purpose templates are a hardcoded set (cfr. KN-561).
-        template,
+        template: formData.template,
         updatedAt: now,
       };
 

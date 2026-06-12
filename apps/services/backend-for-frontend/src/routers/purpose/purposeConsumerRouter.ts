@@ -225,7 +225,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_PurposeSeed,
-      description: "Create a new Purpose for an E-service",
+      description:
+        "Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.",
       operationId: "createConsumerPurpose",
       response: {
         201: API_CreatedResource.meta({
