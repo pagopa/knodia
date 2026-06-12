@@ -45,7 +45,7 @@ export function signupServiceBuilder(
       { authData }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
       const currentSignupUser =
-        await signupDbService.getSignupUserByIdentifiers({
+        await signupDbService.getUniqueSignupUserByIdentifiers({
           fiscalNumber: authData.fiscalNumber,
           personIdentifier: authData.personIdentifier,
           spidCode: authData.spidCode,
@@ -154,7 +154,7 @@ export function signupServiceBuilder(
     }: AuthorizedContext<UISignupSessionAuthData>): Promise<
       SignupUser | undefined
     > {
-      return await signupDbService.getSignupUserByIdentifiers({
+      return await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
         personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,

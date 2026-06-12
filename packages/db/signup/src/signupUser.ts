@@ -39,6 +39,10 @@ export const signupUser = schema.table(
       "signup_user_at_least_one_identifier",
       sql`${table.spidCode} IS NOT NULL OR ${table.fiscalNumber} IS NOT NULL OR ${table.personIdentifier} IS NOT NULL`,
     ),
+    check(
+      "signup_user_status_valid",
+      sql`${table.status} IN ('Active', 'Suspended', 'DeletionPending')`,
+    ),
   ],
 );
 
@@ -63,3 +67,20 @@ export type EmailChangeRequestSQL = typeof emailChangeRequest.$inferSelect;
 export type NewEmailChangeRequest = typeof emailChangeRequest.$inferInsert;
 export type NewSignupUser = typeof signupUser.$inferInsert;
 export type SignupUserSQL = typeof signupUser.$inferSelect;
+
+// Completed deletions: the signup_user row is hard-deleted and only its id
+// plus lifecycle timestamps survive here, so the deletion act stays provable
+// (idempotent replays, late-event skips) without retaining any PII.
+export const deletedSignupUser = schema.table("deleted_signup_user", {
+  deletedAt: timestamp("deleted_at", { withTimezone: true }).notNull(),
+  deletionRequestedAt: timestamp("deletion_requested_at", {
+    withTimezone: true,
+  }).notNull(),
+  signupCreatedAt: timestamp("signup_created_at", {
+    withTimezone: true,
+  }).notNull(),
+  signupUserId: uuid("signup_user_id").primaryKey(),
+});
+
+export type DeletedSignupUserSQL = typeof deletedSignupUser.$inferSelect;
+export type NewDeletedSignupUser = typeof deletedSignupUser.$inferInsert;
