@@ -12,6 +12,7 @@ import {
   type EmailChangeRequest,
   type EmailChangeRequestedV1,
   OnboardingCompletedV1,
+  SignupEventV1,
   SignupUser,
 } from "@knodia/signup-models";
 import { DrizzleQueryError } from "drizzle-orm";
@@ -44,9 +45,11 @@ const cognitoCreateUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
 const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
-const getSignupUserByIdMock = vi.fn();
 const updateSignupUserEmailMock = vi.fn();
+const cognitoDeleteUserMock = vi.fn();
+const getSignupUserByIdMock = vi.fn();
 const getSignupUserDeletionMock = vi.fn();
+const completeSignupUserDeletionMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
 const logger = {
@@ -59,6 +62,7 @@ function buildDeps(): SignupUpdaterDeps {
   const node = {
     cognitoClient: {
       createOrganizationUser: cognitoCreateUserMock,
+      deleteOrganizationUser: cognitoDeleteUserMock,
       updateUserEmail: cognitoUpdateUserEmailMock,
     },
     internalTokenProvider: {
@@ -69,6 +73,7 @@ function buildDeps(): SignupUpdaterDeps {
   return {
     knodeClients: { Lynx: node, Orion: node },
     signupDbService: {
+      completeSignupUserDeletion: completeSignupUserDeletionMock,
       deleteEmailChangeRequest: deleteEmailChangeRequestMock,
       getEmailChangeRequestById: getEmailChangeRequestByIdMock,
       getSignupUserById: getSignupUserByIdMock,
@@ -76,6 +81,12 @@ function buildDeps(): SignupUpdaterDeps {
       updateSignupUserEmail: updateSignupUserEmailMock,
     },
   } as unknown as SignupUpdaterDeps;
+}
+
+function deletionEvent(signupUserId: SignupUserId): SignupEventV1 {
+  // options[1] is the DeletionRequestedV1 variant of the event union.
+  const event = zocker(SignupEventV1.options[1]).setSeed(0).generate();
+  return { ...event, data: { ...event.data, signupUserId } };
 }
 
 function emailChangeRequestedEvent({
@@ -470,5 +481,95 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(1);
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSignupMessage — DeletionRequestedV1", () => {
+  beforeEach(() => {
+    cognitoDeleteUserMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    completeSignupUserDeletionMock.mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("deletes the Cognito user on both nodes (leaving the orgs), then completes the deletion", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    await handleSignupMessage(
+      deletionEvent(user.signupUserId),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoDeleteUserMock).toHaveBeenCalledTimes(2);
+    // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
+    expect(cognitoDeleteUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoDeleteUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledTimes(1);
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledWith(
+      user.signupUserId,
+    );
+  });
+
+  it("skips a replay after completion (deletion registry entry present)", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      signupUserId: generateId<SignupUserId>(),
+    });
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws (retry) when the user is not found and no deletion record exists", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toBeDefined();
+
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+  });
+
+  it("rethrows a Cognito user deletion error so the message is redelivered, without completing", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoDeleteUserMock.mockRejectedValue(new Error("Cognito unavailable"));
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toBeDefined();
+
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
   });
 });
