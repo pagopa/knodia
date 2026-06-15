@@ -11,7 +11,6 @@ export const categories = {
     "citizen.identity.marital_status": "Marital status",
     "citizen.residence.digital_domicile": "Citizen digital domicile",
     "citizen.residence.residence_place": "Residence place",
-    "citizen.statistics.survey_submission": "Citizen survey submission",
     "organization.private_company.address": "Company address",
     "organization.private_company.construction_activity":
       "Construction activity",
