@@ -26,6 +26,11 @@ import { describe, expect, it } from "vitest";
 
 import type { API_Purpose, API_PurposeSeed } from "../src/models/api.ts";
 
+type API_PurposeSeedProvideData = Extract<
+  API_PurposeSeed,
+  { eserviceMode: "ProvideData" }
+>;
+
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import {
   getAllPurposeEvents,
@@ -42,7 +47,7 @@ const eservice = {
 const consumerId = generateExternalId<OrganizationId>();
 const consumerKnodeId = KnodeId.parse("Orion");
 
-const body: API_PurposeSeed = {
+const body: API_PurposeSeedProvideData = {
   consumer: {
     id: consumerId,
     knodeId: consumerKnodeId,
@@ -50,6 +55,7 @@ const body: API_PurposeSeed = {
   dailyCalls: 1000,
   description: { en: "A test purpose description" },
   eserviceId: eservice.id,
+  eserviceMode: "ProvideData",
   formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
   formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
   name: { en: "Test Purpose" },
@@ -131,7 +137,7 @@ describe("POST /purposes (createPurpose)", () => {
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/purposes")
-      .body({ ...body, template } satisfies API_PurposeSeed);
+      .body({ ...body, template } satisfies API_PurposeSeedProvideData);
 
     expect(response.statusCode).toBe(201);
 
@@ -180,7 +186,7 @@ describe("POST /purposes (createPurpose)", () => {
         .body({
           ...body,
           eserviceId: testEservice.id,
-        } satisfies API_PurposeSeed);
+        } satisfies API_PurposeSeedProvideData);
       expect(response.statusCode).toBe(409);
     },
   );
@@ -191,8 +197,53 @@ describe("POST /purposes (createPurpose)", () => {
       .body({
         ...body,
         eserviceId: generateId(),
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 400 when dailyCalls exceed the e-service per-consumer limit", async () => {
+    const limitedEservice = {
+      ...getMockEservice({
+        latestVersionState: EserviceVersionState.enum.Active,
+        seed: 70,
+      }),
+      mode: EserviceMode.enum.ProvideData,
+    };
+    const limitedVersion = limitedEservice.versions[0]!;
+    await eserviceWriterService.upsertEservice(
+      {
+        ...limitedEservice,
+        versions: [
+          {
+            ...limitedVersion,
+            maxDailyCallsPerConsumer: 100,
+            maxDailyCallsPerKnode: 1000,
+          },
+        ],
+      },
+      1,
+    );
+    await agreementWriterService.upsertAgreement(
+      {
+        ...getMockAgreement({ seed: 70 }),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        eserviceId: limitedEservice.id,
+        eserviceVersionId: limitedVersion.id,
+        producerId: limitedEservice.producerId,
+        state: AgreementState.enum.Active,
+      },
+      1,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        dailyCalls: 101,
+        eserviceId: limitedEservice.id,
+      } satisfies API_PurposeSeedProvideData);
+
+    expect(response.statusCode).toBe(400);
   });
 
   const allowedEserviceVersionStates: EserviceVersionState[] = [
@@ -233,7 +284,7 @@ describe("POST /purposes (createPurpose)", () => {
         .body({
           ...body,
           eserviceId: testEservice.id,
-        } satisfies API_PurposeSeed);
+        } satisfies API_PurposeSeedProvideData);
       expect(response.statusCode).toBe(201);
     },
   );
@@ -255,7 +306,7 @@ describe("POST /purposes (createPurpose)", () => {
         .body({
           ...body,
           eserviceId: testEservice.id,
-        } satisfies API_PurposeSeed);
+        } satisfies API_PurposeSeedProvideData);
       expect(response.statusCode).toBe(409);
     },
   );
@@ -271,7 +322,7 @@ describe("POST /purposes (createPurpose)", () => {
           id: generateExternalId<OrganizationId>(),
           knodeId: consumerKnodeId,
         },
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(404);
   });
 
@@ -312,7 +363,7 @@ describe("POST /purposes (createPurpose)", () => {
           ...body,
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
-        } satisfies API_PurposeSeed);
+        } satisfies API_PurposeSeedProvideData);
       expect(response.statusCode).toBe(201);
     },
   );
@@ -349,7 +400,7 @@ describe("POST /purposes (createPurpose)", () => {
           ...body,
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
-        } satisfies API_PurposeSeed);
+        } satisfies API_PurposeSeedProvideData);
       expect(response.statusCode).toBe(409);
     },
   );
@@ -388,7 +439,7 @@ describe("POST /purposes (createPurpose)", () => {
       .body({
         ...body,
         formAnswersJson: {},
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(400);
   });
 
@@ -403,7 +454,7 @@ describe("POST /purposes (createPurpose)", () => {
           ...MOCK_PURPOSE_FORM_ANSWERS,
           purpose: "INVALID_VALUE",
         },
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(400);
   });
 
@@ -420,7 +471,7 @@ describe("POST /purposes (createPurpose)", () => {
           // which is not provided here
           legalBasis: ["PUBLIC_INTEREST"],
         },
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(400);
   });
 
@@ -437,7 +488,7 @@ describe("POST /purposes (createPurpose)", () => {
           // branch and is forbidden when usesPersonalData=YES
           usesThirdPartyNonPersonalData: "NO",
         },
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(400);
   });
 
@@ -457,7 +508,7 @@ describe("POST /purposes (createPurpose)", () => {
           personalDataTypes: ["GDPR_ART_9"],
           publicInterestTaskText: "Some reference",
         },
-      } satisfies API_PurposeSeed);
+      } satisfies API_PurposeSeedProvideData);
     expect(response.statusCode).toBe(400);
   });
 

@@ -12,6 +12,15 @@ const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
+
+// ui-session operator username shown in the UI; per POC org so `--org` logins
+// display the right operator (matches scripts/local-auth/local-cognito.mjs).
+const DEFAULT_USERNAME = "mario_rossi";
+const ORG_USERNAMES = {
+  "00000000-0000-4000-8000-000000000101": "business_booklet_lynx_admin",
+  "00000000-0000-4000-8000-000000000102":
+    "construction_companies_registry_orion_admin",
+};
 const INTERNAL_SUB = "local-internal-service";
 
 // Placeholder IDs for external-ui-session tokens (replace with real values for testing)
@@ -83,7 +92,14 @@ function getClaims(targetEnv, type, orgId, subjectId) {
 
   switch (type) {
     case "ui-session":
-      return { sub: subjectId, organizationId: orgId, roles: ROLES, username: "Mario Rossi", type, aud };
+      return {
+        sub: subjectId,
+        organizationId: orgId,
+        roles: ROLES,
+        username: ORG_USERNAMES[orgId] ?? DEFAULT_USERNAME,
+        type,
+        aud,
+      };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
     case "external-ui-session":

@@ -98,3 +98,31 @@ describe("hasAllRequiredAttributes", () => {
     expect(hasAllRequiredAttributes([], [[nuts1]])).toBe(false);
   });
 });
+
+describe("getAttribute", () => {
+  it("resolves the knodia/testing_organization attribute", () => {
+    expect(
+      getAttribute({ code: "testing_organization", scheme: "knodia" }),
+    ).toEqual({
+      id: { code: "testing_organization", scheme: "knodia" },
+      name: "Testing Organization",
+    });
+  });
+
+  it("resolves an existing vc_territorial_units attribute", () => {
+    expect(getAttribute(nuts1)).toEqual({
+      id: { code: "nuts1", scheme: "vc_territorial_units" },
+      name: "NUTS 1",
+    });
+  });
+
+  it("returns undefined for an unknown code in a known scheme", () => {
+    expect(getAttribute({ code: "nope", scheme: "knodia" })).toBeUndefined();
+  });
+
+  it("returns undefined for an unknown scheme", () => {
+    expect(
+      getAttribute({ code: "testing_organization", scheme: "nope" }),
+    ).toBeUndefined();
+  });
+});

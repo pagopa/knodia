@@ -4,16 +4,15 @@ import {
   type Eservice,
   type EserviceVersion,
   type EserviceVersionState,
+  findEserviceLatestVersion,
 } from "@knodia/eservice-models";
 
 import { eserviceVersionNotFound } from "../models/errors.ts";
 
-export const findEserviceLatestVersion = (
+export const retrieveEserviceLatestVersionFromEservice = (
   eservice: Eservice,
 ): EserviceVersion => {
-  const latestVersion = eservice.versions
-    .toSorted((a, b) => b.versionNumber - a.versionNumber)
-    .at(0);
+  const latestVersion = findEserviceLatestVersion(eservice);
 
   if (!latestVersion) {
     throw eserviceVersionNotFound(eservice.id);
