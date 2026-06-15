@@ -2,12 +2,14 @@ import {
   type Eservice,
   type EserviceInterface,
   type EserviceVersion,
+  type PurposeFormOption,
 } from "@knodia/eservice-models";
 
 import {
   type API_Eservice,
   type API_EserviceVersion,
   type API_EserviceVersionInterfaceDocument,
+  type API_PurposeFormOption,
 } from "./api.ts";
 
 export const toAPI_EserviceVersion = (
@@ -52,4 +54,14 @@ export const toAPI_EserviceVersionInterfaceDocument = (
   path: doc.path,
   prettyName: doc.prettyName,
   updatedAt: doc.updatedAt.toISOString(),
+});
+
+export const toAPI_PurposeFormOption = (
+  option: PurposeFormOption,
+): API_PurposeFormOption => ({
+  description: option.description,
+  formAnswersJson: option.formAnswersJson,
+  formSchemaVersion: option.formSchemaVersion,
+  id: option.id,
+  name: option.name,
 });
