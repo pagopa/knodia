@@ -265,7 +265,7 @@ const API_StudentIdentifier = z
     id: "StudentIdentifier",
   });
 
-export const API_EQFLevel = z
+const API_EQFLevel = z
   .enum([
     "level01",
     "level02",
@@ -280,7 +280,6 @@ export const API_EQFLevel = z
     description: "European Qualifications Framework level (8-level scale)",
     id: "EQFLevel",
   });
-export type API_EQFLevel = z.infer<typeof API_EQFLevel>;
 
 export const API_ISCEDFCode = z
   .enum(["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"])
