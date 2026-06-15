@@ -56,7 +56,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'd3f6c2e5-9a4b-4f83-be39-3c6d0d5e7e2a',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
   'c2e5b1d4-8f3a-4e72-9d28-2b5c9c4f6d19',
-  'a4b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7',
+  '43b4f456b7d662f2536449e317c5c11330811ff7f8ccdcb7c1a7dcfd07d6bda0',
   'application/yaml',
   'mock-receive-data-eservice.yaml',
   'd3f6c2e5-9a4b-4f83-be39-3c6d0d5e7e2a/mock-receive-data-eservice.yaml',
