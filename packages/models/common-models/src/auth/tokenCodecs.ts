@@ -82,6 +82,7 @@ export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
   familyName: z.string(),
   fiscalNumber: z.string().optional(),
   name: z.string(),
+  oneIdNonce: z.string(),
   personIdentifier: z.string().optional(),
   spidCode: z.string().optional(),
   type: z.literal("ui-signup-session"),

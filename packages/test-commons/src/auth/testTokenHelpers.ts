@@ -10,7 +10,7 @@ import type { TestToken } from "./auth.ts";
  */
 const allTestTokens: TestToken[] = [
   { type: "internal" },
-  { type: "ui-signup-session" },
+  { oneIdNonce: "test-nonce", type: "ui-signup-session" },
   ...UserRole.options.map(
     (role): TestToken => ({ roles: [role], type: "ui-session" }),
   ),
