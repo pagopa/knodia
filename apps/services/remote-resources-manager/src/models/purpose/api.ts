@@ -4,6 +4,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { API_EserviceMode } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ExternalPurposeFormSchemaVersion,
@@ -17,24 +18,47 @@ import {
 } from "@knodia/purpose-models/api";
 import { z } from "zod";
 
+const API_PurposeSeedBase = z.strictObject({
+  dailyCalls: API_PurposeDailyCalls.meta({
+    description: "Expected number of daily API calls for this Purpose",
+    format: "int32",
+  }),
+  description: API_LocalizedPurposeDescription,
+  eserviceId: z.uuid().meta({
+    description: "Identifier of the E-service this Purpose refers to",
+  }),
+  knodeId: API_KnodeId,
+  name: API_LocalizedPurposeName,
+});
+
+const API_PurposeSeedForProvideData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ProvideData"]),
+  formAnswersJson: API_PurposeFormAnswers,
+  formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
+  template: API_PurposeTemplateReference.optional(),
+}).meta({ id: "PurposeSeedForProvideData" });
+
+const API_PurposeSeedForReceiveData = API_PurposeSeedBase.extend({
+  eserviceMode: API_EserviceMode.extract(["ReceiveData"]),
+  purposeFormOptionId: z.uuid().meta({
+    description:
+      "Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service",
+  }),
+}).meta({ id: "PurposeSeedForReceiveData" });
+
 export const API_PurposeSeed = z
-  .strictObject({
-    dailyCalls: API_PurposeDailyCalls.meta({
-      description: "Expected number of daily API calls for this Purpose",
-      format: "int32",
-    }),
-    description: API_LocalizedPurposeDescription,
-    eserviceId: z.uuid().meta({
-      description: "Identifier of the E-service this Purpose refers to",
-    }),
-    formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
-    knodeId: API_KnodeId,
-    name: API_LocalizedPurposeName,
-    template: API_PurposeTemplateReference.optional(),
-  })
+  .discriminatedUnion("eserviceMode", [
+    API_PurposeSeedForProvideData,
+    API_PurposeSeedForReceiveData,
+  ])
   .meta({
-    description: "Seed data to create a new Purpose",
+    discriminator: {
+      mapping: {
+        ProvideData: "#/components/schemas/PurposeSeedForProvideData",
+        ReceiveData: "#/components/schemas/PurposeSeedForReceiveData",
+      },
+      propertyName: "eserviceMode",
+    },
     id: "PurposeSeed",
   });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
