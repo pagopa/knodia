@@ -13,6 +13,7 @@ import {
   generateId,
   type KnodeId,
   type OrganizationId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 
 import type {
@@ -41,7 +42,27 @@ export function organizationServiceBuilder(
       seed: API_OrganizationSeed,
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Organization> {
-      const organizationId = generateId<OrganizationId>();
+      const organizationId =
+        seed.externalOrganizationId !== undefined
+          ? unsafeBrandId<OrganizationId>(seed.externalOrganizationId)
+          : generateId<OrganizationId>();
+
+      // Idempotency: when the caller supplies a deterministic id (e.g. signup
+      // provisioning), a redelivery resolves to the existing organization
+      // instead of creating a duplicate. The readmodel is eventually
+      // consistent, so a too-fast redelivery can slip past this lookup; the
+      // event store is the hard guard, rejecting a second creation on the same
+      // stream (the id is the stream id).
+      if (seed.externalOrganizationId !== undefined) {
+        const existing =
+          await readmodelService.getOrganizationById(organizationId);
+        if (existing !== undefined) {
+          logger.info(
+            `Organization ${organizationId} already exists; returning it`,
+          );
+          return existing.data;
+        }
+      }
 
       logger.info(`Creating Organization ${organizationId}`);
 

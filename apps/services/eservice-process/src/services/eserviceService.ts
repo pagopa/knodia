@@ -23,8 +23,10 @@ import {
 import {
   type Eservice,
   type EserviceInterface,
+  EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type PurposeFormOption,
 } from "@knodia/eservice-models";
 import { getEserviceTemplate } from "@knodia/eservice-template-models";
 
@@ -39,6 +41,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   duplicateInterfaceId,
+  eserviceModeNotAllowed,
   eserviceTemplateNotFound,
   inconsistentDailyCalls,
   invalidAttribute,
@@ -56,7 +59,7 @@ import {
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
 import {
-  findEserviceLatestVersion,
+  retrieveEserviceLatestVersionFromEservice,
   updateEserviceVersionState,
 } from "../utils/utils.ts";
 import {
@@ -94,7 +97,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -256,6 +259,29 @@ export function eserviceServiceBuilder(
         readmodelService,
       );
     },
+    async getEservicePurposeFormOptions(
+      eserviceId: EserviceId,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<PurposeFormOption[]> {
+      logger.info(
+        `Getting purpose form options of E-service with ID ${eserviceId}`,
+      );
+
+      const { data: eservice } = await retrieveEservice(
+        eserviceId,
+        readmodelService,
+      );
+
+      if (eservice.mode !== EserviceMode.enum.ReceiveData) {
+        throw eserviceModeNotAllowed(
+          eserviceId,
+          eservice.mode,
+          EserviceMode.enum.ReceiveData,
+        );
+      }
+
+      return eservice.receiveDataConfig?.purposeFormOptions ?? [];
+    },
 
     async getEservices(
       params: API_GetEservicesQueryParams,
@@ -279,7 +305,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -314,7 +340,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findEserviceLatestVersion(eservice);
+      const latestVersion = retrieveEserviceLatestVersionFromEservice(eservice);
       assertEserviceVersionIsActive(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(

@@ -104,16 +104,33 @@ export type Pagination = {
  */
 export type OrganizationId = string;
 
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     consumer: PurposeConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: string;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
+
+export type PurposeSeedForReceiveData = {
+    consumer: PurposeConsumer;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ReceiveData';
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
 
 export type Purpose = {
     consumer: PurposeConsumer;
