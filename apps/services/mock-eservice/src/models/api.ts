@@ -192,6 +192,13 @@ export const API_EvidenceType = z.enum([
 ]);
 export type API_EvidenceType = z.infer<typeof API_EvidenceType>;
 
+export const evidenceTypeIdentifiers: Record<API_EvidenceType, string> = {
+  codeETC_001: "complianceLegalObligations",
+  codeETC_002: "liftControl",
+  codeETC_003: "competenceRequirements",
+  codeETC_004: "electricVehicleChargingEquipment",
+};
+
 const API_EvidenceTypeClassification = z
   .strictObject({
     evidenceTypeClassification: API_EvidenceType,
