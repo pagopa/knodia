@@ -197,13 +197,17 @@ export function knodeApiKeychainServiceBuilder(
 
       match(authData)
         .with({ tokenType: "internal" }, () => undefined)
-        .with({ tokenType: "ui-session" }, (uiAuthData) =>
+        .with({ tokenType: "ui-session" }, (uiAuthData) => {
+          assertOrganizationIsKeychainOwner(
+            uiAuthData.organizationId,
+            knodeApiKeychain.data,
+          );
           assertUserIsAllowedToDownloadKey(
             uiAuthData,
             knodeApiKeychainId,
             knodeApiKeychain.data.users,
-          ),
-        )
+          );
+        })
         .exhaustive();
 
       return retrieveKeychainKey(knodeApiKeychain.data, kid);
