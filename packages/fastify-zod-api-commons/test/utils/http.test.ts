@@ -71,16 +71,12 @@ describe("sendFileDownload", () => {
   it("neutralizes CRLF header injection", () => {
     const { res, writeHead } = mockReply();
 
-    // A raw CR/LF in a header value would make Node throw ERR_INVALID_CHAR;
-    // sanitization must remove it before the header is written.
-    expect(() =>
-      sendFileDownload(
-        res,
-        "content",
-        "evil\r\nSet-Cookie: pwned.yaml",
-        "application/yaml",
-      ),
-    ).not.toThrow();
+    sendFileDownload(
+      res,
+      "content",
+      "evil\r\nSet-Cookie: pwned.yaml",
+      "application/yaml",
+    );
 
     // The injection vector is a real CR/LF in the header value, not the literal
     // text: stripped of line breaks, the residual stays inside the quoted filename.
