@@ -81,13 +81,6 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -446,9 +439,15 @@ export type PurposeSeed = ({
 } & PurposeSeedForReceiveData);
 
 /**
- * Unique identifier of the created Purpose resource
+ * Unique identifier of the created Purpose resource along with the owning Knode
  */
-export type CreatedPurposeResource = CreatedResource;
+export type CreatedPurposeResource = {
+    id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+};
 
 export type Purpose = {
     consumer: PurposeConsumer;

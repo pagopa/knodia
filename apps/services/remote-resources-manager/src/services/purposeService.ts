@@ -123,7 +123,7 @@ export function purposeServiceBuilder(
         purposeId: data.id,
       });
 
-      return data;
+      return { ...data, knodeId: targetKnodeId };
     },
     async getCurrentPurposeFormSchemas(
       targetKnodeId: KnodeId,

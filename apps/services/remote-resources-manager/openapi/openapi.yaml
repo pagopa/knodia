@@ -159,17 +159,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -978,9 +967,22 @@ components:
         - $ref: "#/components/schemas/PurposeSeedForProvideData"
         - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     CreatedPurposeResource:
-      description: Unique identifier of the created Purpose resource
-      allOf:
-        - $ref: "#/components/schemas/CreatedResource"
+      description: Unique identifier of the created Purpose resource along with the
+        owning Knode
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     Purpose:
       type: object
       properties:
