@@ -60,9 +60,7 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
       }
 
       // This is a Receive-data mock: the Producer does not persist anything.
-      // It just acknowledges receipt with a correlation id and a timestamp,
-      // mirroring the `ACK = sendDigitalContact(legal_entity, contact_point)`
-      // signature defined for Cross-Border E-service 04.
+      // It just acknowledges receipt with a correlation id and a timestamp.
       const ack = {
         correlationId: generateId(),
         receivedAt: new Date().toISOString(),
