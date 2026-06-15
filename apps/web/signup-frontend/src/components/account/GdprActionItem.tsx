@@ -34,7 +34,7 @@ export function GdprActionItem({
       <span className="flex size-16 shrink-0 items-center justify-center rounded-feature bg-primary-light-violet">
         <Icon className="size-6 text-primary-violet" />
       </span>
-      <span className="font-body text-[18px] leading-[26px] font-bold text-primary-violet">
+      <span className="font-inter text-[18px] leading-[26px] font-bold text-primary-violet">
         {label}
       </span>
     </RACButton>
