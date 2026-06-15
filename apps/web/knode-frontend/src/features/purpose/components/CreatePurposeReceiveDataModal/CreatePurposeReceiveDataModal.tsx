@@ -15,6 +15,9 @@ import {
   useStepsContext,
 } from "@/contexts/steps";
 import { ReceiveDataPurposeFormProvider } from "@/features/purpose/contexts/ReceiveDataPurposeFormProvider";
+import { mergeTexts } from "@/features/purpose/engine/textsResolver";
+import { loadUiSchema } from "@/features/purpose/engine/types";
+import { collectSteps } from "@/features/purpose/engine/uischemaParser";
 import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
 import { client } from "@/libs/axios";
@@ -49,6 +52,30 @@ export function CreatePurposeReceiveDataModal({
 
   const purposeFormOptions = useMemo(() => response?.items ?? [], [response]);
 
+  // All options published for the same E-service share the same form schema
+  // (formSchemaVersion is fixed per Producer schema), so derive the dynamic
+  // groups from the first option — mirrors the dynamicSteps logic used by the
+  // provide-data wizard.
+  const firstOption = purposeFormOptions.at(0);
+
+  const uiSchema = useMemo(
+    () => (firstOption ? loadUiSchema(firstOption.uiSchema) : undefined),
+    [firstOption],
+  );
+
+  const texts = useMemo(
+    () =>
+      firstOption
+        ? mergeTexts(firstOption.texts.en, firstOption.uiTexts.en)
+        : undefined,
+    [firstOption],
+  );
+
+  const dynamicSteps = useMemo(
+    () => (uiSchema && texts ? collectSteps(uiSchema, texts) : []),
+    [uiSchema, texts],
+  );
+
   if (isError) {
     return (
       <FullPageModal
@@ -82,31 +109,28 @@ export function CreatePurposeReceiveDataModal({
     );
   }
 
-  const steps: StepConfig[] = [
+  const baseSteps: StepConfig[] = [
     {
       content: <DetailsAndLawfulnessStep onCancel={handleShowLeaveConfirm} />,
       label: "Purpose Details",
     },
-    {
-      content: (
-        <ReadOnlyGroupStep
-          groupIndex={0}
-          isLastStep={false}
-          title="Lawfulness of Processing"
-        />
-      ),
-      label: "Lawfulness of Processing",
-    },
-    {
-      content: (
-        <ReadOnlyGroupStep
-          groupIndex={1}
-          isLastStep={true}
-          title="Risk Analysis"
-        />
-      ),
-      label: "Risk Analysis",
-    },
+  ];
+
+  const steps: StepConfig[] = [
+    ...baseSteps,
+    ...dynamicSteps.map((step, index) => {
+      const label = step.label ?? `Step ${index + baseSteps.length + 1}`;
+      return {
+        content: (
+          <ReadOnlyGroupStep
+            groupIndex={index}
+            isLastStep={index === dynamicSteps.length - 1}
+            title={label}
+          />
+        ),
+        label,
+      };
+    }),
   ];
 
   return (
