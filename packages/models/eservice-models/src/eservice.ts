@@ -61,7 +61,7 @@ export const EserviceInterface = z.strictObject({
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
 
-// Knodia e-services are REST-only, so the interface document must be an OpenAPI spec.
+// Knodia e-service interface documents must be OpenAPI specs.
 export const EserviceInterfaceAllowedFileType = z.enum(["json", "yaml", "yml"]);
 export type EserviceInterfaceAllowedFileType = z.infer<
   typeof EserviceInterfaceAllowedFileType

@@ -43,7 +43,7 @@ export function invalidInterfaceFileName(
 ): ApiError<ErrorCodes> {
   return createApiError({
     code: "INVALID_INTERFACE_FILE_NAME",
-    detail: `Interface document "${fileName}" must be a REST OpenAPI spec with a .json, .yaml or .yml extension`,
+    detail: `Interface document "${fileName}" must be an OpenAPI spec with a .json, .yaml or .yml extension`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid interface document file name",
   });
