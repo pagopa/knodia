@@ -45,6 +45,7 @@ const SIGNUP_FAMILY_NAME = "Rossi";
 const SIGNUP_DATE_OF_BIRTH = "1980-01-01";
 const SIGNUP_FISCAL_NUMBER = "RSSMRA80A01H501U";
 const SIGNUP_SPID_CODE = "SPID-001";
+const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
 import { TOKEN_TYPES } from "./token-types.mjs";
 
@@ -148,6 +149,7 @@ function getClaims(targetEnv, type, orgId, subjectId) {
         dateOfBirth: SIGNUP_DATE_OF_BIRTH,
         fiscalNumber: SIGNUP_FISCAL_NUMBER,
         spidCode: SIGNUP_SPID_CODE,
+        oneIdNonce: SIGNUP_ONE_ID_NONCE,
       };
   }
 }

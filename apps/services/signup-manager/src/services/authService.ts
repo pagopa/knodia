@@ -56,6 +56,7 @@ export function authServiceBuilder(
         issuer: config.uiSignupSessionJwt.issuer,
         kid: config.uiSignupSessionJwt.kid,
         name: claims.name,
+        oneIdNonce: claims.nonce,
         PersonIdentifier: claims.PersonIdentifier,
         secondsDuration: config.uiSignupSessionJwt.secondsDuration,
         spidCode: claims.spidCode,

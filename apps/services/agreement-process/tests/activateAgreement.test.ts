@@ -109,7 +109,9 @@ describe("POST /agreements/:agreementId/activate", async () => {
 
   const claimMismatchCases: {
     field: string;
-    makeOverride: (agreement: Agreement) => Partial<TestToken>;
+    makeOverride: (
+      agreement: Agreement,
+    ) => Partial<Extract<TestToken, { type: "external-ui-session" }>>;
   }[] = [
     {
       field: "consumer.id",
