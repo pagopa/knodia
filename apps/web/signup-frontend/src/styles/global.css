@@ -68,8 +68,6 @@
     --header-logo-height: 56px;
     --color-header-mobile-divider: #d2d5ef;
 
-    /* Signup app additions — tokens used by the signup screens that are not in
-       the public-website source file (values from the Figma Signup page) */
     --color-input-border: #636b82;
     --color-input-label: #555c70;
     --color-input-text: #0e0f13;
