@@ -9,7 +9,7 @@ export function ChangeEmailModal({
   isOpen,
   onOpenChange,
 }: ChangeEmailModalProps) {
-  // TODO: enable and add validation once the change-email route is wired
+  // TODO(KN-750): enable and add validation once the change-email route is wired
   return (
     <Modal
       actionLabel="Change"

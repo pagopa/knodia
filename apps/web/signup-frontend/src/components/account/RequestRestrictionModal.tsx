@@ -38,7 +38,7 @@ export function RequestRestrictionModal({
 }: RequestRestrictionModalProps) {
   const [reason, setReason] = useState<string>(DEFAULT_REASON);
 
-  // TODO: enable once the restriction route is wired
+  // TODO(KN-750): enable once the restriction route is wired
   return (
     <Modal
       actionLabel="Request restriction"
