@@ -1,5 +1,7 @@
 import { TextArea, TextField } from "@knodia/ui-kit/ui";
 
+import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
+
 interface Props {
   description?: string | undefined;
   error?: string | undefined;
@@ -21,12 +23,33 @@ export function TextRenderer({
   value,
   widget,
 }: Props) {
-  const Component = widget === "textarea" ? TextArea : TextField;
+  if (widget === "textarea") {
+    return (
+      <div className="flex flex-col gap-1">
+        <TextArea
+          description={description}
+          errorMessage={error}
+          isInvalid={!!error}
+          {...(isReadOnly && { isReadOnly: true })}
+          label={label}
+          onChange={onChange}
+          value={value}
+          {...(maxLength !== undefined && { maxLength })}
+        />
+        {maxLength != null && !isReadOnly && (
+          <span className="text-xs text-primary-light-low-contrast self-end">
+            {value.length}/{maxLength}
+          </span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-1">
-      <Component
+      <TextField
         description={description}
+        {...(isReadOnly && { endIcon: <DeclaredByProducerTooltip /> })}
         errorMessage={error}
         isInvalid={!!error}
         {...(isReadOnly && { isReadOnly: true })}

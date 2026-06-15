@@ -60,4 +60,18 @@ describe("FieldRenderer — Declared by Producer tooltip", () => {
       "Declared by Producer",
     );
   });
+
+  it("renders the lock icon inside the read-only TextField, not next to it", () => {
+    renderField({ isReadOnly: true });
+
+    // The lock icon is positioned inside the TextField wrapper (which has
+    // a relative-positioned input + absolutely-positioned end-icon slot),
+    // not as a sibling of the field.
+    const icon = screen.getByLabelText("Declared by Producer");
+    expect(icon.tagName.toLowerCase()).toBe("svg");
+    // The input and the icon share an immediate parent (the TextField's
+    // relative wrapper). Walk up from the icon and look for an input sibling.
+    const wrapper = icon.closest("div");
+    expect(wrapper?.querySelector("input")).not.toBeNull();
+  });
 });

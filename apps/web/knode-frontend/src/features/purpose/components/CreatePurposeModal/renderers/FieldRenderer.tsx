@@ -73,70 +73,89 @@ export function FieldRenderer({
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
   }, [control, allValues, optionLabels, optionValues]);
 
-  const rendered = match(widget)
+  return match(widget)
     .with("radio", () => (
-      <RadioRenderer
-        description={description}
-        error={error}
-        isReadOnly={isReadOnly}
-        label={label}
-        onChange={(v) => onChange(v)}
-        options={options}
-        value={value as string}
-      />
+      <FieldWithTooltip isReadOnly={isReadOnly}>
+        <RadioRenderer
+          description={description}
+          error={error}
+          isReadOnly={isReadOnly}
+          label={label}
+          onChange={(v) => onChange(v)}
+          options={options}
+          value={value as string}
+        />
+      </FieldWithTooltip>
     ))
     .with("text", "textarea", (w) => (
-      <TextRenderer
-        description={description}
-        error={error}
-        isReadOnly={isReadOnly}
-        label={label}
-        maxLength={maxLength}
-        onChange={(v) => onChange(v)}
-        value={value as string}
-        widget={w}
-      />
+      // TextRenderer renders its own tooltip inside the field for "text"; for
+      // "textarea" we wrap externally below.
+      <FieldWithTooltip isReadOnly={isReadOnly && w === "textarea"}>
+        <TextRenderer
+          description={description}
+          error={error}
+          isReadOnly={isReadOnly}
+          label={label}
+          maxLength={maxLength}
+          onChange={(v) => onChange(v)}
+          value={value as string}
+          widget={w}
+        />
+      </FieldWithTooltip>
     ))
     .with("checkbox", () => (
-      <CheckboxRenderer
-        description={description}
-        error={error}
-        isReadOnly={isReadOnly}
-        label={label}
-        onChange={(v) => onChange(v)}
-        options={options}
-        value={value as string[]}
-      />
+      <FieldWithTooltip isReadOnly={isReadOnly}>
+        <CheckboxRenderer
+          description={description}
+          error={error}
+          isReadOnly={isReadOnly}
+          label={label}
+          onChange={(v) => onChange(v)}
+          options={options}
+          value={value as string[]}
+        />
+      </FieldWithTooltip>
     ))
     .with("select", () => (
-      <SelectRenderer
-        description={description}
-        error={error}
-        isReadOnly={isReadOnly}
-        label={label}
-        onChange={(v) => onChange(v)}
-        options={options}
-        value={value as string}
-      />
+      <FieldWithTooltip isReadOnly={isReadOnly}>
+        <SelectRenderer
+          description={description}
+          error={error}
+          isReadOnly={isReadOnly}
+          label={label}
+          onChange={(v) => onChange(v)}
+          options={options}
+          value={value as string}
+        />
+      </FieldWithTooltip>
     ))
     .with("switch", () => (
-      <SwitchRenderer
-        checkedLabel={optionLabels["true"]}
-        description={description}
-        error={error}
-        isReadOnly={isReadOnly}
-        label={label}
-        onChange={(v) => onChange(v)}
-        value={value as string}
-      />
+      <FieldWithTooltip isReadOnly={isReadOnly}>
+        <SwitchRenderer
+          checkedLabel={optionLabels["true"]}
+          description={description}
+          error={error}
+          isReadOnly={isReadOnly}
+          label={label}
+          onChange={(v) => onChange(v)}
+          value={value as string}
+        />
+      </FieldWithTooltip>
     ))
     .exhaustive();
+}
 
-  if (!isReadOnly) return rendered;
-
+function FieldWithTooltip({
+  children,
+  isReadOnly,
+}: {
+  children: React.ReactNode;
+  isReadOnly?: boolean | undefined;
+}) {
+  if (!isReadOnly) return children;
   return (
     <div className="flex items-start gap-2">
-      <div className="flex-1">{rendered}</div>
+      <div className="flex-1">{children}</div>
       <DeclaredByProducerTooltip />
     </div>
   );
