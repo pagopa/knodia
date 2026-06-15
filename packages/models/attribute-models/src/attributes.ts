@@ -4,6 +4,9 @@ export const attributes = {
   vc_poc_attributes: {
     companies_registries: "Companies Registries",
   },
+  knodia: {
+    testing_organization: "Testing Organization",
+  },
   vc_territorial_units: {
     nuts1: "NUTS 1",
     nuts2: "NUTS 2",

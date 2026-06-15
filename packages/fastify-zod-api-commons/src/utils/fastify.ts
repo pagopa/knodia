@@ -3,6 +3,7 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import fastifyRequestContext, {
   requestContext,
 } from "@fastify/request-context";
+import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
 import {
   type CorrelationId,
   generateId,
@@ -13,7 +14,6 @@ import Fastify, { type FastifyRegisterOptions } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 
 import { missingRequestHeader } from "../models/errors/errors.ts";
-import { CORRELATION_ID_HEADER } from "../models/headers.ts";
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";

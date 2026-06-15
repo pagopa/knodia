@@ -3,6 +3,7 @@ import { Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { setAuthToken } from "@/libs/auth";
 import { client } from "@/libs/axios";
 
 export const Route = createFileRoute("/login/callback")({
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/login/callback")({
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ deps }) => {
-    await signupManagerApi.exchangeOidcCode({
+    const response = await signupManagerApi.exchangeOidcCode({
       client,
       query: {
         code: deps.code,
@@ -20,7 +21,12 @@ export const Route = createFileRoute("/login/callback")({
       },
       withCredentials: true,
     });
-    return redirect({ to: "/success" });
+
+    setAuthToken(response.data.uiSignupSessionToken);
+    throw redirect({ replace: true, to: "/home" });
+  },
+  onError: () => {
+    throw redirect({ to: "/login" });
   },
   pendingComponent: () => (
     <div className="flex min-h-screen items-center justify-center">

@@ -7,7 +7,11 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import type {
+  Eservice,
+  EserviceMode,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -39,6 +43,7 @@ const errorCodes = {
   ESERVICE_TEMPLATE_NOT_FOUND: "0011",
   ESERVICE_TEMPLATE_INSTANCE_CANNOT_BE_UPDATED: "0012",
   ESERVICE_TOKEN_CLAIM_MISMATCH: "0013",
+  ESERVICE_MODE_NOT_ALLOWED: "0014",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -67,6 +72,19 @@ export function duplicateInterfaceId(interfaceId: EserviceInterfaceId) {
     detail: `An interface document with id ${interfaceId} already exists`,
     status: HTTP_STATUS_CONFLICT,
     title: "Duplicate Interface Document",
+  });
+}
+
+export function eserviceModeNotAllowed(
+  eserviceId: EserviceId,
+  actualMode: EserviceMode,
+  expectedMode: EserviceMode,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_MODE_NOT_ALLOWED",
+    detail: `E-service ${eserviceId} has mode ${actualMode}, expected ${expectedMode}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "E-service Mode Not Allowed",
   });
 }
 
