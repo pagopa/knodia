@@ -13,5 +13,5 @@ export function calculateIntegrityRest02Digest(body: unknown): string {
     payloadBytes = Buffer.from(json);
   }
 
-  return crypto.createHash("sha256").update(payloadBytes).digest("base64");
+  return `SHA-256=${crypto.createHash("sha256").update(payloadBytes).digest("base64")}`;
 }

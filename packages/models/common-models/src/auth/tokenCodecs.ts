@@ -1,3 +1,4 @@
+import { KnodiaJwtSignatureSignedHeaders } from "@knodia/integrity-rest-02/models";
 import z from "zod";
 
 import { ExternalId } from "../externalResource.ts";
@@ -54,6 +55,17 @@ export const EserviceAccessTokenClaims = BaseJwtClaims.extend({
 export type EserviceAccessTokenClaims = z.infer<
   typeof EserviceAccessTokenClaims
 >;
+
+export const KnodiaJwtSignatureClaims = BaseJwtClaims.pick({
+  exp: true,
+  iat: true,
+  iss: true,
+  jti: true,
+}).extend({
+  client_id: ConsumerKeychainId.optional(),
+  signed_headers: KnodiaJwtSignatureSignedHeaders,
+});
+export type KnodiaJwtSignatureClaims = z.infer<typeof KnodiaJwtSignatureClaims>;
 
 export const KnodeApiAccessTokenClaims = BaseJwtClaims.extend({
   client_id: KnodeApiKeychainId,
@@ -134,7 +146,6 @@ export type ExternalUISessionMagicLinkTokenClaims = z.infer<
 
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
-// TODO: include KnodeApiAccessTokenClaims once the signal-hub auth plugin
 // that consumes Knode API access tokens lands.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,

@@ -14,6 +14,7 @@ import {
   dpopAuthSecurity,
   dpopAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
 
 import type { MockEserviceConfig } from "./config/config.ts";
@@ -22,8 +23,10 @@ import { bearerAccessTokenAuthPlugin } from "./auth/bearerAccessTokenAuthPlugin.
 import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { integrityRest02Plugin } from "./plugins/integrityRest02Plugin.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockIntegrityRest02Router } from "./routers/mockIntegrityRest02Router.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
@@ -47,6 +50,11 @@ const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
   description:
     "Legal-entity information + evidences lookup by uid_company (Bearer-protected)",
   name: apiTags.pocUc02Companies,
+};
+const companyAddressAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Legal-entity address lookup by uid_company (Cross-Border E-service 03, Bearer-protected)",
+  name: apiTags.companyAddress,
 };
 
 export function buildApp({
@@ -75,6 +83,8 @@ export function buildApp({
     dynamoClient,
   );
 
+  const tokenGenerator = tokenGeneratorBuilder();
+
   const app = createMockFastifyApp(
     config,
     { ...bearerAuthSecurityScheme, ...dpopAuthSecurityScheme },
@@ -90,6 +100,7 @@ export function buildApp({
       dpopAppTag,
       signalHubAppTag,
       pocUc02CompaniesAppTag,
+      companyAddressAppTag,
     ],
   );
 
@@ -106,6 +117,13 @@ export function buildApp({
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+    protectedApp.register(async (integrityRest02App) => {
+      integrityRest02App.register(integrityRest02Plugin, {
+        integrityRest02Config: config,
+        tokenGenerator,
+      });
+      integrityRest02App.register(mockIntegrityRest02Router, { knodeId });
+    });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -134,6 +152,15 @@ export function buildAppFromConfig(config: MockEserviceConfig) {
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerIntegrityRest02AppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerIntegrityRest02App({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -191,6 +218,47 @@ function buildBearerApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerIntegrityRest02App({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const tokenGenerator = tokenGeneratorBuilder();
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service for Integrity Rest 02 (legal-entity address lookup)",
+      title: "Knodia Mock E-service API (Integrity Rest 02)",
+      version: "1.0.0",
+    },
+    [companyAddressAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(integrityRest02Plugin, {
+      integrityRest02Config: config,
+      tokenGenerator,
+    });
+    protectedApp.register(mockIntegrityRest02Router, { knodeId });
   });
 
   return app;

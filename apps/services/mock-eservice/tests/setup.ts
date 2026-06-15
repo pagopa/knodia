@@ -3,6 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { Algorithm } from "@knodia/common-models/crypto";
 import { KnodeId } from "@knodia/common-models/ids";
+import { calculateKid } from "@knodia/crypto";
 import { generateKeySet } from "@knodia/test-commons/utils";
 import {
   createLocalJWKSet,
@@ -19,6 +20,9 @@ export const ACCEPTED_AUDIENCES: [string, ...string[]] = ["test.audience"];
 export const EXPECTED_ISSUER = "knodia.org";
 export const TEST_KID = "test-mock-eservice-kid";
 export const TEST_KNODE_ID = KnodeId.enum.Orion;
+export let INTEGRITY_REST_02_SIGNATURE_KID: string;
+export let integrityRest02KeySet: ReturnType<typeof generateKeySet>;
+const INTEGRITY_REST_02_SIGNATURE_ISSUER = "test-integrity-issuer";
 
 let dynamoClient: DynamoDBClient;
 const dynamoDbDpopProofsTable = "knodia-mock-eservice-dpop-proofs";
@@ -38,6 +42,11 @@ interface TestContext {
 let ctx: TestContext;
 
 beforeAll(async () => {
+  integrityRest02KeySet = generateKeySet();
+  INTEGRITY_REST_02_SIGNATURE_KID = calculateKid(
+    integrityRest02KeySet.publicKeyJwk,
+  );
+
   const { privateKey, publicKey } = await generateKeyPair("RS256", {
     extractable: true,
   });
@@ -60,6 +69,9 @@ beforeAll(async () => {
       dynamoDbDpopProofsTable,
       expectedIssuer: EXPECTED_ISSUER,
       host: "test-host",
+      integrityRest02SignatureIssuer: INTEGRITY_REST_02_SIGNATURE_ISSUER,
+      integrityRest02SignatureKid: INTEGRITY_REST_02_SIGNATURE_KID,
+      integrityRest02SignatureSecondsDuration: 300,
       isProduction: false,
       jwtClockToleranceSeconds: 30,
       knodeId: TEST_KNODE_ID,

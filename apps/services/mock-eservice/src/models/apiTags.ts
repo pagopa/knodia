@@ -1,4 +1,5 @@
 export const apiTags = {
+  companyAddress: "companyAddress",
   digitalContact: "digitalContact",
   personalInformation: "personalInformation",
   pocUc02Companies: "pocUc02Companies",

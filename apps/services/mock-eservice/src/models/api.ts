@@ -224,3 +224,7 @@ export const API_Evidence = z
     id: "Evidence",
   });
 export type API_Evidence = z.infer<typeof API_Evidence>;
+
+export const API_CompanyUidPathParam = z.strictObject({
+  uidCompany: API_CompanyUid,
+});

@@ -285,6 +285,7 @@ services:
       KMS_REGION: eu-south-1
     volumes:
       - local-kms-data:/data
+      - ./init:/init:ro
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "8080"]
       interval: 5s

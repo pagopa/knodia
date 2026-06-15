@@ -5,6 +5,7 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
+  KnodiaJwtSignatureClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UISignupSessionTokenClaims,
@@ -31,6 +32,12 @@ import type z from "zod";
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
+import {
+  CONTENT_ENCODING_HEADER,
+  CONTENT_TYPE_HEADER,
+  DIGEST_HEADER,
+  KnodiaJwtSignatureSignedHeaders,
+} from "@knodia/integrity-rest-02/models";
 import { calculateJwkThumbprint } from "jose";
 import { randomUUID } from "node:crypto";
 
@@ -40,10 +47,14 @@ import type {
   ExternalUISessionToken,
   InternalToken,
   KnodeApiAccessToken,
+  KnodiaJwtSignature,
   UISessionRefreshToken,
   UISessionToken,
   UISignupSessionToken,
 } from "./models.ts";
+
+// TODO: fix import
+import { CORRELATION_ID_HEADER } from "../../fastify-zod-api-commons/src/models/headers.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";
@@ -88,6 +99,14 @@ interface KnodeApiAccessTokenInput extends TokenParams {
   audience: string[];
   keychain: { id: KnodeApiKeychainId; knodeId: KnodeId };
   organization: { id: OrganizationId; knodeId: KnodeId };
+}
+
+interface KnodiaJwtSignatureInput extends TokenParams {
+  clientId: ConsumerKeychainId | undefined;
+  contentEncoding: number | string | string[] | undefined;
+  contentType: number | string | string[] | undefined;
+  correlationId: string;
+  digest: string;
 }
 
 interface TokenParams {
@@ -158,6 +177,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | ExternalUISessionTokenClaims
       | InternalTokenClaims
       | KnodeApiAccessTokenClaims
+      | KnodiaJwtSignatureClaims
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims
       | UISignupSessionTokenClaims,
@@ -326,6 +346,39 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         payload: claims,
         serialized,
         type: "knode-api",
+      };
+    },
+
+    async generateKnodiaJwtSignature(
+      input: KnodiaJwtSignatureInput,
+    ): Promise<KnodiaJwtSignature> {
+      const signedHeaders = KnodiaJwtSignatureSignedHeaders.parse([
+        { [DIGEST_HEADER]: input.digest },
+        { [CORRELATION_ID_HEADER]: input.correlationId },
+        ...(input.contentType
+          ? [{ [CONTENT_TYPE_HEADER]: input.contentType }]
+          : []),
+        ...(input.contentEncoding
+          ? [{ [CONTENT_ENCODING_HEADER]: input.contentEncoding }]
+          : []),
+      ]);
+
+      const currentTimestamp = dateToSeconds(new Date());
+
+      const claims: KnodiaJwtSignatureClaims = {
+        exp: currentTimestamp + input.secondsDuration,
+        iat: currentTimestamp,
+        iss: input.issuer,
+        jti: randomUUID(),
+        signed_headers: signedHeaders,
+        ...(input.clientId ? { client_id: input.clientId } : {}),
+      };
+
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return {
+        header,
+        payload: claims,
+        serialized,
       };
     },
 
