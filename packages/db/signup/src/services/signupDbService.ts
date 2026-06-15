@@ -8,10 +8,8 @@ import { eq, or, type SQL } from "drizzle-orm";
 import { toSignupUser, toSignupUserSQL } from "../converters/converters.ts";
 import { signupUser } from "../signupUser.ts";
 
-/** @knipignore */
 export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
-/** @knipignore */
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
     async checkSignupOrganizationNameAlreadyTaken(

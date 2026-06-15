@@ -17,20 +17,40 @@ const OneIdentityTokenResponse = z.object({
 
 type OneIdentityTokenResponse = z.infer<typeof OneIdentityTokenResponse>;
 
-const OneIdentityIdTokenClaims = z.object({
+const OneIdentityCommonIdTokenClaims = z.object({
   aud: z.string(),
-  dateOfBirth: z.string(),
   exp: z.number().int(),
-  familyName: z.string(),
   fiscalNumber: z.string().optional(),
   iat: z.number().int(),
   iss: z.url(),
-  name: z.string(),
   nonce: z.string(),
   PersonIdentifier: z.string().optional(),
   spidCode: z.string().optional(),
   sub: z.string(),
 });
+
+const OneIdentitySpidOrCieProfileClaims = z.object({
+  dateOfBirth: z.string(),
+  familyName: z.string(),
+  name: z.string(),
+});
+
+const OneIdentityEidasProfileClaims = z
+  .object({
+    DateOfBirth: z.string(),
+    FamilyName: z.string(),
+    FirstName: z.string(),
+  })
+  .transform(({ DateOfBirth, FamilyName, FirstName }) => ({
+    dateOfBirth: DateOfBirth,
+    familyName: FamilyName,
+    name: FirstName,
+  }));
+
+const OneIdentityIdTokenClaims = z.intersection(
+  OneIdentityCommonIdTokenClaims,
+  z.union([OneIdentitySpidOrCieProfileClaims, OneIdentityEidasProfileClaims]),
+);
 
 type OneIdentityIdTokenClaims = z.infer<typeof OneIdentityIdTokenClaims>;
 

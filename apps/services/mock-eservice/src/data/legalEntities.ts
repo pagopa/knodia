@@ -9,6 +9,7 @@ import {
   type API_EvidenceType,
   API_LegalEntity,
   type API_PeriodOfTime,
+  evidenceTypeIdentifiers,
 } from "../models/api.ts";
 import { legalEntityActivities } from "../models/legalEntityActivities.ts";
 
@@ -25,7 +26,16 @@ const LegalEntityActivityCode = z.enum(
 const LegalEntityRow = API_LegalEntity.omit({ legalIdentifier: true }).extend({
   legalEntityActivity: LegalEntityActivityCode,
 });
-const EvidenceRow = API_Evidence.omit({ isAbout: true });
+// Validate at load that each evidence row's identifier matches the canonical
+// identifier for its type code (evidenceTypeIdentifiers is the source of truth).
+const EvidenceRow = API_Evidence.omit({ isAbout: true }).refine(
+  (row) =>
+    row.isConformantTo.identifier ===
+    evidenceTypeIdentifiers[row.isConformantTo.evidenceTypeClassification],
+  {
+    error: "Evidence identifier does not match its evidenceTypeClassification",
+  },
+);
 
 const LegalEntitiesFile = z.record(API_CompanyUid, LegalEntityRow);
 const EvidencesFile = z.record(API_CompanyUid, z.array(EvidenceRow));

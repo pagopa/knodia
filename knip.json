@@ -11,7 +11,8 @@
         "docker/multinode/env-*.js",
         "poc-use-cases/**",
         "scripts/local-auth/kms-setup.mjs",
-        "scripts/local-auth/local-cognito.mjs"
+        "scripts/local-auth/local-cognito.mjs",
+        "scripts/local-auth/local-one-identity.mjs"
       ]
     },
     "packages/clients/**/*": {
