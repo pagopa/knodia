@@ -41,7 +41,7 @@ import {
 } from "../models/errors.ts";
 import {
   retrieveEserviceLatestVersion,
-  retrieveEserviceVersionFromEservice,
+  retrieveEserviceVersion,
 } from "./utils.ts";
 
 const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
@@ -138,10 +138,7 @@ export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
 ): EserviceVersion => {
-  const eserviceVersion = retrieveEserviceVersionFromEservice(
-    eservice,
-    eserviceVersionId,
-  );
+  const eserviceVersion = retrieveEserviceVersion(eservice, eserviceVersionId);
 
   if (
     !agreementCreationAllowedEserviceVersionStates.includes(

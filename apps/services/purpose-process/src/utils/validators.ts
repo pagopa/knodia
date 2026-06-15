@@ -11,6 +11,7 @@ import {
   type Eservice,
   type EserviceMode,
   EserviceVersionState,
+  type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 import {
   type Purpose,
@@ -21,13 +22,16 @@ import { match } from "ts-pattern";
 
 import {
   agreementNotInExpectedStates,
+  dailyCallsExceedLimit,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
   purposeNotInExpectedStates,
   purposeNotInReactivatableState,
   purposeNotInSuspendableState,
+  receiveDataConfigMissing,
 } from "../models/errors.ts";
+import { retrieveEserviceLatestVersion } from "./utils.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
@@ -48,6 +52,14 @@ export const assertEserviceModeIs = (
   }
 };
 
+export function assertReceiveDataConfigIsDefined(
+  eservice: Eservice,
+): asserts eservice is Eservice & { receiveDataConfig: ReceiveDataConfig } {
+  if (eservice.receiveDataConfig === undefined) {
+    throw receiveDataConfigMissing(eservice.id);
+  }
+}
+
 export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
   const hasAllowedVersion = eservice.versions.some((v) =>
     purposeCreationAllowedEserviceVersionStates.includes(v.state),
@@ -57,6 +69,21 @@ export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
     throw eserviceVersionNotInExpectedStates(
       eservice.id,
       purposeCreationAllowedEserviceVersionStates,
+    );
+  }
+};
+
+export const assertDailyCallsAreWithinLimit = (
+  eservice: Eservice,
+  dailyCalls: number,
+) => {
+  const latestVersion = retrieveEserviceLatestVersion(eservice);
+
+  if (dailyCalls > latestVersion.maxDailyCallsPerConsumer) {
+    throw dailyCallsExceedLimit(
+      eservice.id,
+      dailyCalls,
+      latestVersion.maxDailyCallsPerConsumer,
     );
   }
 };

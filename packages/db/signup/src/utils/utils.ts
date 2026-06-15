@@ -3,7 +3,6 @@ import { Pool } from "pg";
 
 import type { SignupDbConfig } from "../config.ts";
 
-/** @knipignore */
 export const makeSignupDrizzleConnection = (
   config: SignupDbConfig,
 ): { db: NodePgDatabase; pool: Pool } => {

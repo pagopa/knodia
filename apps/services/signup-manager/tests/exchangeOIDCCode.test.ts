@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockAxiosPost = vi.hoisted(() => vi.fn());
+const mockGenerateUISignupSessionToken = vi.hoisted(() => vi.fn());
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 
 vi.mock("axios", async (importOriginal) => {
@@ -27,9 +28,7 @@ vi.mock("jose", async (importOriginal) => {
 
 vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
-    generateUISignupSessionToken: vi.fn().mockResolvedValue({
-      serialized: "mock-signup-session-token",
-    }),
+    generateUISignupSessionToken: mockGenerateUISignupSessionToken,
   }),
 }));
 
@@ -62,6 +61,28 @@ function getSetCookieHeader(response: {
   return setCookieHeaders.find((header) =>
     header.startsWith(`${OIDC_SESSION_COOKIE_NAME}=`),
   );
+}
+
+function setupSuccessfulEidasTokenExchange(nonce: string) {
+  mockAxiosPost.mockResolvedValueOnce({
+    data: oneIdentityResponseMock,
+  });
+
+  mockJwtVerify.mockResolvedValueOnce({
+    payload: {
+      aud: "test-one-identity-client-id",
+      DateOfBirth: "2000-01-01",
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      FamilyName: "User",
+      FirstName: "Test User",
+      iat: Math.floor(Date.now() / 1000),
+      iss: "https://test.one-identity.com",
+      nonce,
+      PersonIdentifier: "test-person-identifier",
+      sub: "user-123",
+    },
+    protectedHeader: { alg: "RS256" },
+  });
 }
 
 function setupSuccessfulTokenExchange(nonce: string) {
@@ -126,6 +147,10 @@ const oneIdentityIdTokenClaimsMock = {
 describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
   beforeEach(() => {
     mockAxiosPost.mockReset();
+    mockGenerateUISignupSessionToken.mockReset();
+    mockGenerateUISignupSessionToken.mockResolvedValue({
+      serialized: "mock-signup-session-token",
+    });
     mockJwtVerify.mockReset();
   });
 
@@ -146,6 +171,34 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
     expect(mockAxiosPost).toHaveBeenCalledOnce();
     expect(mockJwtVerify).toHaveBeenCalledOnce();
+  });
+
+  it("returns 200 with eIDAS profile claims", async () => {
+    const { cookie, nonce, state } = await startOIDCSession();
+
+    setupSuccessfulEidasTokenExchange(nonce);
+
+    const response = await app.inject({
+      cookies: {
+        [OIDC_SESSION_COOKIE_NAME]: cookie,
+      },
+      method: "GET",
+      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toHaveProperty("uiSignupSessionToken");
+    expect(mockAxiosPost).toHaveBeenCalledOnce();
+    expect(mockJwtVerify).toHaveBeenCalledOnce();
+    expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dateOfBirth: "2000-01-01",
+        familyName: "User",
+        name: "Test User",
+        PersonIdentifier: "test-person-identifier",
+        subject: "test-person-identifier",
+      }),
+    );
   });
 
   it('clears the "oidc-session" cookie on successful code exchange', async () => {
