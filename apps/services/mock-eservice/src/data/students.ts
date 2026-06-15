@@ -59,7 +59,7 @@ export function findQualifications(
   );
 }
 
-export function findStudent(uid: API_StudentUid): API_Student | undefined {
+function findStudent(uid: API_StudentUid): API_Student | undefined {
   const row = STUDENTS[uid];
   if (!row) {
     return undefined;
