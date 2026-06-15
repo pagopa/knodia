@@ -6583,11 +6583,13 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Pending Consumer Agreements retrieved successfully
+          description: Pending Consumer Agreements retrieved (sorted by most recently
+            updated first)
           content:
             application/json:
               schema:
-                description: Pending Consumer Agreements retrieved successfully
+                description: Pending Consumer Agreements retrieved (sorted by most recently
+                  updated first)
                 allOf:
                   - $ref: "#/components/schemas/PendingConsumerAgreements"
         "400":

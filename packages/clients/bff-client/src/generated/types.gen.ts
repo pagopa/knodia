@@ -4078,7 +4078,7 @@ export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErro
 
 export type GetPendingConsumerAgreementsResponses = {
     /**
-     * Pending Consumer Agreements retrieved successfully
+     * Pending Consumer Agreements retrieved (sorted by most recently updated first)
      */
     200: PendingConsumerAgreements;
 };
