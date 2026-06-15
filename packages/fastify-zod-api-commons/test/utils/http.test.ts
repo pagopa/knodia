@@ -78,11 +78,11 @@ describe("sendFileDownload", () => {
       "application/yaml",
     );
 
-    // The injection vector is a real CR/LF in the header value, not the literal
-    // text: stripped of line breaks, the residual stays inside the quoted filename.
-    const header = contentDispositionOf(writeHead);
-    expect(header).not.toContain("\r");
-    expect(header).not.toContain("\n");
+    // CR/LF are stripped, so the residual text stays inside the quoted filename
+    // and the header is a single safe line.
+    expect(contentDispositionOf(writeHead)).toBe(
+      "attachment; filename=\"evilSet-Cookie: pwned.yaml\"; filename*=UTF-8''evilSet-Cookie%3A%20pwned.yaml",
+    );
   });
 });
 
