@@ -56,7 +56,7 @@ describe("GET /eservices/:eserviceId/interface (downloadEserviceLatestVersionInt
 
     expect(response.headers["content-type"]).toBe(mockContentType);
     expect(response.headers["content-disposition"]).toBe(
-      `attachment; filename="${mockFileName}"`,
+      `attachment; filename="${mockFileName}"; filename*=UTF-8''${mockFileName}`,
     );
     expect(response.body).toBe(mockFileContent);
 

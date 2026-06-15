@@ -11,7 +11,7 @@ const DEFAULT_USER_POOL_ID =
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
-const USERNAME = "Mario Rossi";
+const USERNAME = "mario_rossi";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
@@ -30,7 +30,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 86_400,
     UserLastModifiedDate: NOW_IN_SECONDS - 3_600,
     UserStatus: "CONFIRMED",
-    Username: "Mario Rossi",
+    Username: USERNAME,
   },
   {
     Attributes: [
@@ -46,7 +46,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 64_800,
     UserLastModifiedDate: NOW_IN_SECONDS - 2_700,
     UserStatus: "CONFIRMED",
-    Username: "Tecnico Roma",
+    Username: "tecnico_roma",
   },
   {
     Attributes: [
@@ -62,7 +62,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 43_200,
     UserLastModifiedDate: NOW_IN_SECONDS - 1_800,
     UserStatus: "CONFIRMED",
-    Username: "Giulia Bianchi",
+    Username: "giulia_bianchi",
   },
   {
     Attributes: [
@@ -78,7 +78,49 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 21_600,
     UserLastModifiedDate: NOW_IN_SECONDS - 900,
     UserStatus: "CONFIRMED",
-    Username: "Luca Neri",
+    Username: "luca_neri",
+  },
+  // POC UC02 users — one per POC org (ids match scripts/seed/sql/{lynx,orion}
+  // and scripts/local-auth/generate-token.mjs). All roles, no role-based behaviour.
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000101" },
+      { Name: "email", Value: "admin@businessbookletlynx.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Business Booklet" },
+      { Name: "family_name", Value: "Lynx" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000101",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000101"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "business_booklet_lynx_admin",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000102" },
+      { Name: "email", Value: "admin@constructioncompaniesregistryorion.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Construction Companies Registry" },
+      { Name: "family_name", Value: "Orion" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000102",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000102"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "construction_companies_registry_orion_admin",
   },
 ];
 
