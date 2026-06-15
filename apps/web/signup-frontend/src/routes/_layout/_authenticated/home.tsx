@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_layout/_authenticated/home")({
   component: RouteComponent,
 });
 
-// Knode assignments are not yet exposed by the signup user API — mocked until the route lands.
+// TODO(KN-753): replace with real Knode assignments once the signup user API exposes them.
 const KNODES = [
   {
     knodeName: "Orion",
