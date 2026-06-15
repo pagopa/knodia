@@ -130,14 +130,8 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
           return;
         }
 
-        const [existing] = await tx
-          .select({ status: signupUser.status })
-          .from(signupUser)
-          .where(eq(signupUser.signupUserId, signupUserId))
-          .limit(1);
-
         throw genericInternalError(
-          `Cannot complete deletion of signup user ${signupUserId}: user ${existing ? `has status ${existing.status}` : "not found"}`,
+          `Cannot complete deletion of signup user ${signupUserId}: user not found`,
         );
       });
     },
