@@ -16,6 +16,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   INVALID_DPOP_THUMBPRINT: "0010",
   NATURAL_PERSON_NOT_FOUND: "0011",
   RESIDENCE_NOT_AVAILABLE: "0012",
+  LEGAL_ENTITY_NOT_FOUND: "0013",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -63,6 +64,15 @@ export function invalidDpopThumbprint(
     detail: `DPoP proof thumbprint does not match the expected one. Expected: ${expectedThumbprint}, Received: ${dpopProofThumbprint}`,
     status: 401,
     title: "invalid_dpop_proof",
+  });
+}
+
+export function legalEntityNotFound(uidCompany: string) {
+  return createApiError({
+    code: "LEGAL_ENTITY_NOT_FOUND",
+    detail: `No legal entity found for uid_company ${uidCompany}`,
+    status: 404,
+    title: "legal_entity_not_found",
   });
 }
 

@@ -57,16 +57,22 @@ const { values: args } = parseArgs({
     env: { type: "string", default: "local" },
     // Optional: mint a ui-session for a specific org (e.g. a POC org seeded in scripts/seed/sql).
     org: { type: "string" },
+    // Optional: override the subject (operator user id) of the ui-session.
+    user: { type: "string" },
   },
 });
 
 const type = args.type;
 const targetEnv = args.env;
 const orgId = args.org ?? ORG_ID;
+// A dedicated org (e.g. a POC org) is seeded with an operator whose id equals the
+// org id, so a ui-session for that org must carry that sub or keychain operations
+// won't authorize the caller. Override explicitly with --user when needed.
+const subjectId = args.user ?? (args.org !== undefined ? orgId : USER_ID);
 
 if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
   console.error(
-    `Usage: node generate-token.mjs [--type ${TOKEN_TYPES.join("|")}] [--env ${TARGET_ENVIRONMENTS.join("|")}] [--org <organizationId>]`,
+    `Usage: node generate-token.mjs [--type ${TOKEN_TYPES.join("|")}] [--env ${TARGET_ENVIRONMENTS.join("|")}] [--org <organizationId>] [--user <userId>]`,
   );
   process.exit(1);
 }
@@ -82,13 +88,13 @@ function getAudience(targetEnv, type) {
     : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
 }
 
-function getClaims(targetEnv, type, orgId) {
+function getClaims(targetEnv, type, orgId, subjectId) {
   const aud = getAudience(targetEnv, type);
 
   switch (type) {
     case "ui-session":
       return {
-        sub: USER_ID,
+        sub: subjectId,
         organizationId: orgId,
         roles: ROLES,
         username: ORG_USERNAMES[orgId] ?? DEFAULT_USERNAME,
@@ -173,7 +179,7 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
   return KeyMetadata.KeyId;
 }
 
-const claims = getClaims(targetEnv, type, orgId);
+const claims = getClaims(targetEnv, type, orgId, subjectId);
 
 const kmsClient = new KMSClient(targetEnv === "local"
   ? { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
