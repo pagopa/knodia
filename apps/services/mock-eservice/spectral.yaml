@@ -2,3 +2,7 @@
 rules:
   # Mock e-services impersonate external producers; their public contract does not expose /status.
   paths-status: off
+  # The evidences endpoint impersonates an external producer returning a bare
+  # collection (CCCEV evidences); Knodia's object-wrapping convention does not
+  # apply to these impersonated external contracts.
+  response-with-json-object: off
