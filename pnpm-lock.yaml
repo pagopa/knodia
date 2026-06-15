@@ -2207,6 +2207,9 @@ importers:
       '@fontsource-variable/instrument-sans':
         specifier: 'catalog:'
         version: 5.2.8
+      '@fontsource-variable/inter':
+        specifier: 'catalog:'
+        version: 5.2.8
       '@fontsource-variable/manrope':
         specifier: 'catalog:'
         version: 5.2.8
