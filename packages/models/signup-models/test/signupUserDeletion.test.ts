@@ -5,8 +5,6 @@ import { SignupUserDeletion } from "../src/signupUserDeletion.ts";
 
 const baseRecord = {
   deletedAt: new Date("2026-06-01T10:00:05Z"),
-  deletionRequestedAt: new Date("2026-06-01T10:00:00Z"),
-  signupCreatedAt: new Date("2026-05-28T10:00:00Z"),
   signupUserId: generateId<SignupUserId>(),
 };
 

@@ -29,7 +29,6 @@ import {
 
 export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
-// eslint-disable-next-line max-lines-per-function
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
     async checkEmailChangeRequestEmailExists(email: string): Promise<boolean> {
@@ -98,22 +97,14 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
               eq(signupUser.status, SignupUserStatus.enum.DeletionPending),
             ),
           )
-          .returning({
-            createdAt: signupUser.createdAt,
-            updatedAt: signupUser.updatedAt,
-          });
+          .returning({ signupUserId: signupUser.signupUserId });
 
         if (deleted) {
-          await tx.insert(deletedSignupUser).values(
-            toDeletedSignupUserSQL({
-              deletedAt: new Date(),
-              // updatedAt was last written by the DeletionPending mark, so it
-              // carries the time the user requested the deletion.
-              deletionRequestedAt: deleted.updatedAt,
-              signupCreatedAt: deleted.createdAt,
-              signupUserId,
-            }),
-          );
+          await tx
+            .insert(deletedSignupUser)
+            .values(
+              toDeletedSignupUserSQL({ deletedAt: new Date(), signupUserId }),
+            );
           return;
         }
 

@@ -60,7 +60,6 @@ describe("completeSignupUserDeletion", () => {
     const user = makeSignupUser();
     await seedSignupUser(user);
     await signupDbService().markSignupUserDeletionPending(user.signupUserId);
-    const pendingRow = await getRow(user.signupUserId);
 
     await signupDbService().completeSignupUserDeletion(user.signupUserId);
 
@@ -69,8 +68,6 @@ describe("completeSignupUserDeletion", () => {
       signupDbService().getSignupUserDeletion(user.signupUserId),
     ).resolves.toEqual({
       deletedAt: expect.any(Date),
-      deletionRequestedAt: pendingRow?.updatedAt,
-      signupCreatedAt: user.createdAt,
       signupUserId: user.signupUserId,
     });
   });

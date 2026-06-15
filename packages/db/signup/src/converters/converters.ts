@@ -18,8 +18,6 @@ export function toDeletedSignupUserSQL(
 ): NewDeletedSignupUser {
   return {
     deletedAt: deletion.deletedAt,
-    deletionRequestedAt: deletion.deletionRequestedAt,
-    signupCreatedAt: deletion.signupCreatedAt,
     signupUserId: deletion.signupUserId,
   };
 }
@@ -77,8 +75,6 @@ export function toSignupUserDeletion(
 ): SignupUserDeletion {
   return SignupUserDeletion.parse({
     deletedAt: sql.deletedAt,
-    deletionRequestedAt: sql.deletionRequestedAt,
-    signupCreatedAt: sql.signupCreatedAt,
     signupUserId: sql.signupUserId,
   });
 }
