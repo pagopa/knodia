@@ -71,8 +71,8 @@ function RouteComponent() {
       </section>
 
       <section className="bg-neutral-white">
-        <div className="mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[142.5px] pb-20">
-          <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-2 gap-[46px]">
+        <div className="mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[142.5px] pb-[222.5px]">
+          <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-start gap-[46px]">
             <DataWeCollectSection
               onChangeEmail={() => setOpenModal("changeEmail")}
               onDownload={() => user && downloadPersonalData(user)}
