@@ -32,7 +32,7 @@ export function DataWeCollectSection({
           ))}
         </ul>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Button
           className="gap-2 self-start"
           onPress={onChangeEmail}

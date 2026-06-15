@@ -4,6 +4,7 @@ import { useState } from "react";
 import heroCanvas from "@/assets/hero-canvas.webp";
 import {
   ChangeEmailModal,
+  CredentialsBanner,
   DataWeCollectSection,
   downloadPersonalData,
   GdprRightsCard,
@@ -51,8 +52,8 @@ function RouteComponent() {
           <div className="absolute inset-0 bg-neutral-white/60" />
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
-          <div className="flex min-h-[546px] flex-col gap-12">
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-[70px]">
+            <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
                 Your journey into Knodia starts here
               </h1>
@@ -60,19 +61,20 @@ function RouteComponent() {
                 Choose a Knode to enter the prototype and explore its
                 interaction flows.
               </p>
+              <div className="grid grid-cols-2 gap-12">
+                {KNODES.map((knode) => (
+                  <KnodeCard key={knode.knodeName} {...knode} />
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              {KNODES.map((knode) => (
-                <KnodeCard key={knode.knodeName} {...knode} />
-              ))}
-            </div>
+            <CredentialsBanner email={user?.email ?? "yourname@mail.com"} />
           </div>
         </div>
       </section>
 
       <section className="bg-neutral-white">
         <div className="mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[142.5px] pb-[222.5px]">
-          <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-start gap-[46px]">
+          <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-center gap-[46px]">
             <DataWeCollectSection
               onChangeEmail={() => setOpenModal("changeEmail")}
               onDownload={() => user && downloadPersonalData(user)}
