@@ -38,7 +38,7 @@ export function Sidebar({ children, className, ...props }: SidebarProps) {
 
 export function SidebarHeader({ children }: { children?: React.ReactNode }) {
   return (
-    <h2 className="title-lg-em text-on-primary-light-high-contrast">
+    <h2 className="title-lg-em text-on-primary-light-high-contrast break-words">
       {children}
     </h2>
   );
