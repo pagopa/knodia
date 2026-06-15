@@ -1,4 +1,3 @@
-import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import {
@@ -7,7 +6,9 @@ import {
   type OrganizationId,
   type SignupUserId,
 } from "@knodia/common-models/ids";
+import { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { zocker } from "zocker";
 
 const createOrganizationMock = vi.hoisted(() => vi.fn());
 
@@ -56,8 +57,7 @@ function buildDeps(): SignupUpdaterDeps {
 
 function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
   return {
-    createdAt: new Date("2026-05-28T10:00:00Z"),
-    dateOfBirth: "1990-01-01",
+    ...zocker(SignupUser).setSeed(0).generate(),
     email: "mario.rossi@example.org",
     familyName: "Rossi",
     generatedEntities: {
@@ -72,15 +72,13 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     },
     name: "Mario",
     signupUserId: generateId<SignupUserId>(),
-    spidCode: "SPID-123",
-    status: "Active",
-    updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };
 }
 
 function onboardingEvent(signupUserId: SignupUserId): SignupEventV1 {
-  return { data: { signupUserId }, type: "OnboardingCompletedV1" };
+  const event = zocker(SignupEventV1).setSeed(0).generate();
+  return { ...event, data: { ...event.data, signupUserId } };
 }
 
 const conflict = { isAxiosError: true, response: { status: 409 } };
