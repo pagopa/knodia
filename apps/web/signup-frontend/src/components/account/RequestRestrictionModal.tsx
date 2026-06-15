@@ -38,12 +38,13 @@ export function RequestRestrictionModal({
 }: RequestRestrictionModalProps) {
   const [reason, setReason] = useState<string>(DEFAULT_REASON);
 
+  // TODO: enable once the restriction route is wired
   return (
     <Modal
       actionLabel="Request restriction"
       description="If you confirm this request, your access to the prototype will be suspended while your request is being reviewed."
+      isActionDisabled
       isOpen={isOpen}
-      onConfirm={() => onOpenChange(false)}
       onOpenChange={onOpenChange}
       title="Request restriction of processing"
     >

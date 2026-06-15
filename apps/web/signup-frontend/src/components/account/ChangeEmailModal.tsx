@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Modal, TextField } from "@/components/ui";
 
 interface ChangeEmailModalProps {
@@ -7,36 +5,21 @@ interface ChangeEmailModalProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function ChangeEmailModal({
   isOpen,
   onOpenChange,
 }: ChangeEmailModalProps) {
-  const [email, setEmail] = useState("");
-  const isValid = EMAIL_REGEX.test(email);
-
-  const close = () => {
-    setEmail("");
-    onOpenChange(false);
-  };
-
+  // TODO: enable and add validation once the change-email route is wired
   return (
     <Modal
       actionLabel="Change"
       description="We will use this email address for operational communications related to your access to the prototype, such as password resets."
-      isActionDisabled={!isValid}
+      isActionDisabled
       isOpen={isOpen}
-      onConfirm={close}
-      onOpenChange={(open) => !open && close()}
+      onOpenChange={onOpenChange}
       title="Change email address"
     >
-      <TextField
-        label="New email address"
-        onChange={setEmail}
-        type="email"
-        value={email}
-      />
+      <TextField label="New email address" type="email" />
     </Modal>
   );
 }
