@@ -1,0 +1,76 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import z from "zod";
+
+import {
+  API_CompanyUid,
+  API_Evidence,
+  type API_EvidenceType,
+  API_LegalEntity,
+  evidenceTypeIdentifiers,
+} from "../models/api.ts";
+import { legalEntityActivities } from "../models/legalEntityActivities.ts";
+
+const VAT_SCHEME = {
+  schemeName: "Partita Iva",
+  schemeURI: "http://memberstate.ms/VAT",
+} as const;
+
+// The API models legalEntityActivity as a plain string; here we additionally
+// validate it against the known ATECO 2025 codes when loading the dataset.
+const LegalEntityActivityCode = z.enum(
+  Object.keys(legalEntityActivities) as [string, ...string[]],
+);
+const LegalEntityRow = API_LegalEntity.omit({ legalIdentifier: true }).extend({
+  legalEntityActivity: LegalEntityActivityCode,
+});
+// Validate at load that each evidence row's identifier matches the canonical
+// identifier for its type code (evidenceTypeIdentifiers is the source of truth).
+const EvidenceRow = API_Evidence.omit({ isAbout: true }).refine(
+  (row) =>
+    row.isConformantTo.identifier ===
+    evidenceTypeIdentifiers[row.isConformantTo.evidenceTypeClassification],
+  {
+    error: "Evidence identifier does not match its evidenceTypeClassification",
+  },
+);
+
+const LegalEntitiesFile = z.record(API_CompanyUid, LegalEntityRow);
+const EvidencesFile = z.record(API_CompanyUid, z.array(EvidenceRow));
+
+const dataDir = dirname(fileURLToPath(import.meta.url));
+const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
+  schema.parse(JSON.parse(readFileSync(join(dataDir, file), "utf8")));
+
+const LEGAL_ENTITIES = readJson("legalEntities.json", LegalEntitiesFile);
+const EVIDENCES = readJson("evidences.json", EvidencesFile);
+
+// undefined = unknown company; empty array = known company, no evidence of that type.
+export function findEvidences(
+  uid: API_CompanyUid,
+  evidenceType?: API_EvidenceType,
+): API_Evidence[] | undefined {
+  const legalEntity = findLegalEntity(uid);
+  if (!legalEntity) {
+    return undefined;
+  }
+
+  return (EVIDENCES[uid] ?? [])
+    .filter(
+      (evidence) =>
+        !evidenceType ||
+        evidence.isConformantTo.evidenceTypeClassification === evidenceType,
+    )
+    .map((evidence) => ({ ...evidence, isAbout: legalEntity }));
+}
+
+export function findLegalEntity(
+  uid: API_CompanyUid,
+): API_LegalEntity | undefined {
+  const row = LEGAL_ENTITIES[uid];
+  if (!row) {
+    return undefined;
+  }
+  return { ...row, legalIdentifier: { ...VAT_SCHEME, notation: uid } };
+}

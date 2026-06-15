@@ -71,6 +71,7 @@ export type TestToken =
       familyName?: string;
       fiscalNumber?: null | string;
       name?: string;
+      oneIdNonce: string;
       personIdentifier?: null | string;
       spidCode?: null | string;
       type: "ui-signup-session";
@@ -233,6 +234,7 @@ export function getTestUISignupSessionTokenClaims(
     familyName?: string;
     fiscalNumber?: null | string;
     name?: string;
+    oneIdNonce?: string;
     personIdentifier?: null | string;
     spidCode?: null | string;
     uniqueIdentifier?: string;
@@ -251,6 +253,7 @@ export function getTestUISignupSessionTokenClaims(
     iss: "test-issuer",
     jti: "test-jti",
     name: props.name ?? "Test",
+    oneIdNonce: props.oneIdNonce ?? "test-nonce",
     personIdentifier:
       props.personIdentifier === null ? undefined : props.personIdentifier,
     spidCode:

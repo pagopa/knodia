@@ -11,6 +11,32 @@ const nuts2 = { code: "nuts2", scheme: "vc_territorial_units" };
 const nuts3 = { code: "nuts3", scheme: "vc_territorial_units" };
 const other = { code: "other_code", scheme: "other_scheme" };
 
+describe("getAttribute", () => {
+  it("returns the attribute with its display name when scheme and code exist", () => {
+    expect(
+      getAttribute({
+        code: "companies_registries",
+        scheme: "vc_poc_attributes",
+      }),
+    ).toEqual({
+      id: { code: "companies_registries", scheme: "vc_poc_attributes" },
+      name: "Companies Registries",
+    });
+  });
+
+  it("returns undefined for an unknown code in a known scheme", () => {
+    expect(
+      getAttribute({ code: "unknown", scheme: "vc_poc_attributes" }),
+    ).toBeUndefined();
+  });
+
+  it("returns undefined for an unknown scheme", () => {
+    expect(
+      getAttribute({ code: "companies_registries", scheme: "unknown_scheme" }),
+    ).toBeUndefined();
+  });
+});
+
 describe("isAttributePossessed", () => {
   it("returns true when an owned attribute matches both code and scheme", () => {
     expect(isAttributePossessed([nuts1, nuts2], nuts1)).toBe(true);
