@@ -171,4 +171,12 @@ describe("handleSignupMessage - DeletionRequestedV1", () => {
     );
     expect(logger.info).not.toHaveBeenCalled();
   });
+
+  it("propagates non-412 S3 failures", async () => {
+    storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
+
+    await expect(
+      handleSignupMessage(makeDeletionEvent(), deps, logger),
+    ).rejects.toThrow(/AccessDenied/);
+  });
 });

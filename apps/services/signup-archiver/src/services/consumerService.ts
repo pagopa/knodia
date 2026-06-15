@@ -69,12 +69,14 @@ export async function handleSignupMessage(
   }
 }
 
-// The record content is fully derived from the (immutable) event, so a given
-// {signupUserId, action, nonce} always maps to identical bytes — which is why
-// the If-None-Match skip in storeBytesIfAbsent is safe (a Kafka reprocess
-// re-writes the same object instead of creating a new version). Legal
-// immutability of the written object is enforced by the bucket's Object Lock /
-// retention config (infra), not by this service.
+// storeBytesIfAbsent skips the write when {signupUserId, action, nonce} already
+// exists, so the first archived record wins. For Onboarding that key maps to
+// identical bytes (the event is published once). For Deletion a retried POST
+// republishes with a fresh occurredAt, so a later attempt carries a different
+// `date`: the skip keeps the earliest record as the canonical one, which is the
+// intended legal semantics (the erasure was requested at that first instant).
+// Legal immutability of the written object is enforced by the bucket's Object
+// Lock / retention config (infra), not by this service.
 async function archiveAction(
   record: SignupArchiveRecord,
   signupUserId: SignupUserId,
