@@ -1,0 +1,16 @@
+{
+  "00132423": [
+    {
+      "EQFLevel": "level04",
+      "ISCEDFCode": ["06"],
+      "publisher": {
+        "legalName": "Istituto Tecnico E. Pantaleo",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3165456",
+          "geographicName": "Torre del Greco"
+        }
+      },
+      "title": "high school diploma"
+    }
+  ]
+}

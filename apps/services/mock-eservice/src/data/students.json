@@ -1,0 +1,12 @@
+{
+  "00132423": {
+    "dateOfBirth": "1973-06-02",
+    "familyName": "Travascio",
+    "givenName": "Vincenzo",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3165456",
+      "geographicName": "Torre del Greco"
+    },
+    "sex": "MALE"
+  }
+}
