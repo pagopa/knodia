@@ -1,0 +1,15 @@
+meta {
+  name: Get Eservice PurposeFormOptions
+  type: http
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/{{eserviceId}}/purposeFormOptions
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}

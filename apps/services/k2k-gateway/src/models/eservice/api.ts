@@ -249,3 +249,34 @@ export const API_Eservices = z
   })
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
+
+const API_PurposeFormSchemaVersion = z.string().meta({
+  description:
+    'Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")',
+});
+
+const API_PurposeFormAnswers = z.record(z.string(), z.unknown()).meta({
+  description: "Pre-filled key-value pairs of answers to the Purpose form",
+});
+
+const API_PurposeFormOption = z
+  .strictObject({
+    description: API_LocalizedText,
+    formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
+    id: z.uuid(),
+    name: API_LocalizedText,
+  })
+  .meta({
+    description:
+      "Set of pre-filled form answers published by the Producer on a ReceiveData E-service",
+    id: "PurposeFormOption",
+  });
+type API_PurposeFormOption = z.infer<typeof API_PurposeFormOption>;
+
+export const API_PurposeFormOptions = z
+  .strictObject({
+    items: z.array(API_PurposeFormOption),
+  })
+  .meta({ id: "PurposeFormOptions" });
+export type API_PurposeFormOptions = z.infer<typeof API_PurposeFormOptions>;
