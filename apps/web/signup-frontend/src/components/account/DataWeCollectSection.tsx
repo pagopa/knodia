@@ -19,7 +19,7 @@ export function DataWeCollectSection({
 }: DataWeCollectSectionProps) {
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-style-subheading text-neutral-graphite">
+      <h2 className="text-style-section-title text-neutral-graphite">
         Data we collect
       </h2>
       <div className="flex flex-col gap-2">

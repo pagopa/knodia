@@ -14,7 +14,7 @@ export function GdprRightsCard({
 }: GdprRightsCardProps) {
   return (
     <Card className="flex flex-col gap-6">
-      <h3 className="text-style-subheading text-neutral-graphite">
+      <h3 className="font-heading text-[24px] leading-[32px] font-bold text-neutral-graphite">
         Manage your GDPR rights
       </h3>
       <div className="flex flex-col gap-4">
