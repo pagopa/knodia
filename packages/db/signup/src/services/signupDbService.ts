@@ -122,7 +122,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         }
 
         throw genericInternalError(
-          `Cannot complete deletion of signup user ${signupUserId}: user not found`,
+          `Cannot complete deletion of signup user ${signupUserId}: no DeletionPending row or deletion-registry entry found`,
         );
       });
     },
