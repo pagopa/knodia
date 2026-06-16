@@ -1,4 +1,3 @@
-import { SecurityIcon } from "@/components/icons";
 import { Card } from "@/components/ui";
 
 import { GdprActionItem } from "./GdprActionItem";
@@ -19,12 +18,10 @@ export function GdprRightsCard({
       </h3>
       <div className="flex flex-col gap-3">
         <GdprActionItem
-          icon={SecurityIcon}
           label="Request data erasure"
           onPress={onRequestErasure}
         />
         <GdprActionItem
-          icon={SecurityIcon}
           label="Request restriction of processing"
           onPress={onRequestRestriction}
         />

@@ -5,8 +5,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import type { IconProps } from "@/components/icons/MaterialSymbolIcon";
-
+import { SecurityIcon } from "@/components/icons";
 import { focusRing } from "@/components/ui/styles";
 
 const actionItemStyles = tv({
@@ -15,15 +14,10 @@ const actionItemStyles = tv({
 });
 
 interface GdprActionItemProps extends RACButtonProps {
-  icon: React.ComponentType<IconProps>;
   label: string;
 }
 
-export function GdprActionItem({
-  icon: Icon,
-  label,
-  ...props
-}: GdprActionItemProps) {
+export function GdprActionItem({ label, ...props }: GdprActionItemProps) {
   return (
     <RACButton
       {...props}
@@ -32,7 +26,7 @@ export function GdprActionItem({
       )}
     >
       <span className="flex size-16 shrink-0 items-center justify-center rounded-feature bg-primary-light-violet">
-        <Icon className="size-6 text-primary-violet" />
+        <SecurityIcon className="size-6 text-primary-violet" />
       </span>
       <span className="text-style-action text-primary-violet">{label}</span>
     </RACButton>
