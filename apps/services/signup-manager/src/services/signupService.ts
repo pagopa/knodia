@@ -21,7 +21,7 @@ import type { SignupEventProducer } from "./signupEventProducer.ts";
 
 import {
   signupUserAlreadyHasPendingEmailChangeRequest,
-  signupUserEmailAlreadyAssociated,
+  signupUserEmailChangeRequestCreationConflict,
   signupUserGeneratedEntitiesAlreadyExist,
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
@@ -76,7 +76,7 @@ export function signupServiceBuilder(
         });
       } catch (error) {
         if (isPgUniqueViolation(error)) {
-          throw signupUserEmailAlreadyAssociated(email);
+          throw signupUserEmailChangeRequestCreationConflict();
         }
         throw error;
       }

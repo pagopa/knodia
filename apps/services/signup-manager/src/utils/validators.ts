@@ -3,7 +3,7 @@ import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/au
 import type { SignupUser } from "@knodia/signup-models";
 
 import {
-  signupUserEmailAlreadyAssociated,
+  signupUserEmailAlreadyInUse,
   signupUserIdentifierAlreadyAssociated,
   signupUserNotOnboarded,
 } from "../models/errors.ts";
@@ -19,7 +19,7 @@ export async function assertSignupUserEmailDoesNotExist(
     ]);
 
   if (emailAlreadyAssociated || emailChangeRequestEmailAlreadyExists) {
-    throw signupUserEmailAlreadyAssociated(email);
+    throw signupUserEmailAlreadyInUse(email);
   }
 }
 

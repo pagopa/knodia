@@ -6,11 +6,12 @@ const { HTTP_STATUS_CONFLICT } = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
-  SIGNUP_USER_EMAIL_ALREADY_ASSOCIATED: "0001",
+  SIGNUP_USER_EMAIL_ALREADY_IN_USE: "0001",
   SIGNUP_USER_IDENTIFIER_ALREADY_ASSOCIATED: "0002",
   SIGNUP_USER_GENERATED_ENTITIES_ALREADY_EXIST: "0003",
   SIGNUP_USER_ALREADY_HAS_PENDING_EMAIL_CHANGE_REQUEST: "0004",
   SIGNUP_USER_NOT_ONBOARDED: "0005",
+  SIGNUP_USER_EMAIL_CHANGE_REQUEST_CREATION_CONFLICT: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -29,12 +30,22 @@ export function signupUserAlreadyHasPendingEmailChangeRequest() {
   });
 }
 
-export function signupUserEmailAlreadyAssociated(email: string) {
+export function signupUserEmailAlreadyInUse(email: string) {
   return createApiError<ErrorCodes>({
-    code: "SIGNUP_USER_EMAIL_ALREADY_ASSOCIATED",
-    detail: `Email ${email} is already associated with an onboarded user`,
+    code: "SIGNUP_USER_EMAIL_ALREADY_IN_USE",
+    detail: `Email ${email} is already in use with an onboarded user`,
     status: HTTP_STATUS_CONFLICT,
-    title: "Signup User Email Already Associated",
+    title: "Signup User Email Already In Use",
+  });
+}
+
+export function signupUserEmailChangeRequestCreationConflict() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_EMAIL_CHANGE_REQUEST_CREATION_CONFLICT",
+    detail:
+      "Email change request could not be created because related data changed concurrently. Please retry the email change request",
+    status: HTTP_STATUS_CONFLICT,
+    title: "Signup User Email Change Request Creation Conflict",
   });
 }
 
