@@ -22,6 +22,7 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
+  API_PurposeFormOptions,
 } from "../models/eservice/api.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
@@ -151,6 +152,48 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Getting purpose form options of E-service with ID ${req.params.eserviceId}`,
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await eserviceProcessApi.getEservicePurposeFormOptions({
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId: req.params.eserviceId },
+      });
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.",
+      operationId: "getEservicePurposeFormOptions",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_PurposeFormOptions.meta({
+          description: "PurposeFormOption list retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({
+          description: "E-service mode is not ReceiveData",
+        }),
+      },
+      summary: "Get PurposeFormOptions for an E-service",
+      tags: [apiTags.resource, apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/purposeFormOptions",
   });
 
   fastify.route({

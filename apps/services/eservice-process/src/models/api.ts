@@ -22,6 +22,10 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_PurposeFormAnswers,
+  API_PurposeFormSchemaVersion,
+} from "@knodia/purpose-models/api";
 import { z } from "zod";
 
 export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
@@ -106,6 +110,24 @@ export const API_Eservices = z
   })
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
+
+export const API_PurposeFormOption = z
+  .strictObject({
+    description: API_LocalizedDescription,
+    formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
+    id: z.uuid(),
+    name: API_LocalizedName,
+  })
+  .meta({ id: "PurposeFormOption" });
+export type API_PurposeFormOption = z.infer<typeof API_PurposeFormOption>;
+
+export const API_PurposeFormOptions = z
+  .strictObject({
+    items: z.array(API_PurposeFormOption),
+  })
+  .meta({ id: "PurposeFormOptions" });
+export type API_PurposeFormOptions = z.infer<typeof API_PurposeFormOptions>;
 
 export const API_EserviceVersion = z
   .strictObject({

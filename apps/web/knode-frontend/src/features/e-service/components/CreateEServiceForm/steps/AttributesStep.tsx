@@ -44,7 +44,7 @@ export function AttributesStep() {
     <>
       <div className="flex flex-col gap-10">
         <StepHeader
-          description="Choose which organization can request an Agreement for your E-Service."
+          description="Choose which organizations can request an Agreement for your E-Service."
           title="Attributes"
         >
           <Banner kind="informative">

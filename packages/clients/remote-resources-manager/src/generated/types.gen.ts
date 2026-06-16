@@ -81,13 +81,6 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -212,6 +205,26 @@ export type CatalogEserviceSearchResults = {
  * Unique identifier of the E-Service
  */
 export type EserviceId = string;
+
+export type PurposeFormOption = {
+    description: LocalizedDescription;
+    /**
+     * Key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: LocalizedName;
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
 
 export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
@@ -426,9 +439,15 @@ export type PurposeSeed = ({
 } & PurposeSeedForReceiveData);
 
 /**
- * Unique identifier of the created Purpose resource
+ * Unique identifier of the created Purpose resource along with the owning Knode
  */
-export type CreatedPurposeResource = CreatedResource;
+export type CreatedPurposeResource = {
+    id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+};
 
 export type Purpose = {
     consumer: PurposeConsumer;
@@ -557,6 +576,51 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEservicesData = {
     body?: never;

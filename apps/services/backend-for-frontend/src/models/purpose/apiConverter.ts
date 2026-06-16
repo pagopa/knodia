@@ -6,6 +6,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 import type { OrganizationWithKnode } from "../organization/types.ts";
 import type {
   API_ConsumerPurpose,
+  API_ConsumerPurposeFormOption,
   API_ProducerPurpose,
   API_PurposeDetails,
 } from "./api.ts";
@@ -157,4 +158,22 @@ export const toAPI_PurposeDetails = ({
   suspendedByConsumerAt: purpose.suspendedByConsumerAt,
   suspendedByProducerAt: purpose.suspendedByProducerAt,
   updatedAt: purpose.updatedAt,
+});
+
+export const toAPI_ConsumerPurposeFormOption = ({
+  option,
+  schemas,
+}: {
+  option: remoteResourcesManagerApi.PurposeFormOption;
+  schemas: remoteResourcesManagerApi.PurposeFormSchemasResponse;
+}): API_ConsumerPurposeFormOption => ({
+  description: option.description,
+  formAnswersJson: option.formAnswersJson,
+  id: option.id,
+  name: option.name,
+  schema: schemas.schema,
+  texts: schemas.texts,
+  uiSchema: schemas.uiSchema,
+  uiTexts: schemas.uiTexts,
+  version: schemas.version,
 });

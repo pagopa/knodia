@@ -16,7 +16,8 @@
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "zocker": "catalog:"
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
