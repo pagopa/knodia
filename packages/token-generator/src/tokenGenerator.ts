@@ -31,6 +31,7 @@ import type z from "zod";
 
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
+import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import {
   CONTENT_ENCODING_HEADER,
@@ -52,9 +53,6 @@ import type {
   UISessionToken,
   UISignupSessionToken,
 } from "./models.ts";
-
-// TODO: fix import
-import { CORRELATION_ID_HEADER } from "../../fastify-zod-api-commons/src/models/headers.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";

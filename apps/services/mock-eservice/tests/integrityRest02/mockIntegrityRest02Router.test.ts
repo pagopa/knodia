@@ -190,8 +190,8 @@ describe("mock-eservice integrity REST 02 router", () => {
 
     it("returns 401 for a token issued for a different mock e-service", async () => {
       const token = await signToken({
-        eserviceId: generateId(),
-        eserviceVersionId: generateId(),
+        eserviceId: generateId<EserviceId>(),
+        eserviceVersionId: generateId<EserviceVersionId>(),
       });
       const res = await getCompanyAddress({ token });
 
