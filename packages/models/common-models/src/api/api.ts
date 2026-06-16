@@ -24,6 +24,20 @@ export type API_PaginationQueryParams = z.infer<
   typeof API_PaginationQueryParams
 >;
 
+/**
+ * Refines a query-param schema so that `eserviceId` may only be passed
+ * together with `knodeId`: a remote resource ID is meaningless without the
+ * Knode that owns it, which acts as its scope/namespace.
+ */
+export const requireKnodeIdWithEserviceId = <
+  T extends z.ZodType<{ eserviceId?: unknown; knodeId?: unknown }>,
+>(
+  schema: T,
+) =>
+  schema.refine((q) => !(q.eserviceId && !q.knodeId), {
+    message: "`eserviceId` can only be used together with `knodeId`",
+  });
+
 export const API_FileDownload = z.string().meta({
   description: "Binary file content",
   format: "binary",

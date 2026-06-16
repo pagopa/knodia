@@ -3,6 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
+  requireKnodeIdWithEserviceId,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
@@ -117,7 +118,7 @@ export type API_ProducerKeychainEservicePathParams = z.infer<
   typeof API_ProducerKeychainEservicePathParams
 >;
 
-export const API_ConsumerKeychainsQueryParams =
+export const API_ConsumerKeychainsQueryParams = requireKnodeIdWithEserviceId(
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:
@@ -143,13 +144,10 @@ export const API_ConsumerKeychainsQueryParams =
         description:
           "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.",
       }),
-  })
-    .refine((q) => !(q.purpose && q.eserviceId), {
-      message: "`purpose` and `eserviceId` are mutually exclusive",
-    })
-    .refine((q) => !(q.eserviceId && !q.knodeId), {
-      message: "`eserviceId` can only be used together with `knodeId`",
-    });
+  }).refine((q) => !(q.purpose && q.eserviceId), {
+    message: "`purpose` and `eserviceId` are mutually exclusive",
+  }),
+);
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;
