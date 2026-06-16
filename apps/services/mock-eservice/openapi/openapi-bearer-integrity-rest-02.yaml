@@ -154,5 +154,5 @@ security:
   - bearerAuth: []
 tags:
   - description: Legal-entity address lookup by uid_company (Cross-Border E-service
-      03, Bearer-protected)
+      06, Bearer-protected)
     name: companyAddress
