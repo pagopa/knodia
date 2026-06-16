@@ -106,7 +106,9 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
         seedConfig,
       );
 
-      logger.info("Mock e-service /pseudonymization returned current seed");
+      logger.info(
+        "Mock e-service /natural-persons/pseudonymization returned current seed",
+      );
       res.status(200).send({ cryptoHashFunction: "sha256", seed });
     },
     method: "GET",
@@ -123,6 +125,6 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
       summary: "Get pseudonymization",
       tags: [apiTags.residence],
     },
-    url: "/pseudonymization",
+    url: "/natural-persons/pseudonymization",
   });
 };

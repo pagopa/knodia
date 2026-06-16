@@ -199,7 +199,7 @@ components:
       additionalProperties: false
     Pseudonymization:
       description: Pseudonymization parameters used by the Producer to publish Signal
-        Hub signals for the residence addresses managed by this e-service
+        Hub signals for the resources managed by this e-service
       type: object
       properties:
         cryptoHashFunction:
@@ -263,7 +263,7 @@ paths:
                   address found for that person
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /pseudonymization:
+  /natural-persons/pseudonymization:
     get:
       operationId: getPseudonymization
       summary: Get pseudonymization
