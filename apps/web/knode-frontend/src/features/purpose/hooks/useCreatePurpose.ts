@@ -41,6 +41,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
         dailyCalls: data.dailyCalls,
         description: { en: data.description },
         eserviceId,
+        eserviceMode: "ProvideData",
         formAnswersJson,
         formSchemaVersion,
         knodeId,
