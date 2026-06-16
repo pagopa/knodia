@@ -86,6 +86,9 @@ function buildDeps(): SignupUpdaterDeps {
 
 function deletionEvent(signupUserId: SignupUserId): DeletionRequestedV1 {
   const event = zocker(DeletionRequestedV1).setSeed(0).generate();
+  // Pin the discriminant so a schema/seed change can't silently hand us a
+  // different event variant than the one this helper is named for.
+  expect(event.type).toBe("DeletionRequestedV1");
   return { ...event, data: { ...event.data, signupUserId } };
 }
 
@@ -138,6 +141,9 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
 
 function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
   const event = zocker(OnboardingCompletedV1).setSeed(0).generate();
+  // Pin the discriminant so a schema/seed change can't silently hand us a
+  // different event variant than the one this helper is named for.
+  expect(event.type).toBe("OnboardingCompletedV1");
   return { ...event, data: { ...event.data, signupUserId } };
 }
 
