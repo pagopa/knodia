@@ -57,3 +57,12 @@ aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
 aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
   "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml" \
   "s3://$S3_BUCKET/ff8bebc1-5e1c-4f8d-8611-03e18354558f/mock-bearer-poc-uc01-set-qualification-eservice.yaml"
+
+# Lynx-only seed: matches scripts/seed/sql/lynx/mock-receive-data-eservice.sql.
+# Other tenants don't ship this mock yet, so we only upload when the SQL is
+# present in $SQL_DIR.
+if [ -f "$SQL_DIR/mock-receive-data-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml" \
+    "s3://$S3_BUCKET/d3f6c2e5-9a4b-4f83-be39-3c6d0d5e7e2a/mock-receive-data-eservice.yaml"
+fi

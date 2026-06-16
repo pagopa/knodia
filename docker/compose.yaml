@@ -61,6 +61,8 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
     environment:
       PGHOST: postgres
@@ -252,6 +254,8 @@ services:
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
+      mc mb --with-lock --ignore-existing local/knodia-signup-archives;
+      mc retention set --default GOVERNANCE 1d local/knodia-signup-archives;
       "
   # Web GUI for PostgreSQL
   pgadmin:

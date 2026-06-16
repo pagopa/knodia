@@ -30,9 +30,22 @@ const API_Identifier = z
     id: "Identifier",
   });
 
+// GeoNames place URI. Accepts the human-facing forms (geonames.org /
+// www.geonames.org) and the canonical Linked-Data form (sws.geonames.org/<id>/),
+// so a malformed or non-GeoNames URL is rejected at load. The numeric id is not
+// resolved against GeoNames — that would require a network call.
+const API_GeoNamesUri = z
+  .url()
+  .regex(/^https:\/\/(www\.|sws\.)?geonames\.org\/\d+\/?$/)
+  .meta({
+    description: "GeoNames place identifier URI",
+    example: "https://www.geonames.org/3165456",
+    id: "GeoNamesUri",
+  });
+
 const API_Location = z
   .strictObject({
-    geographicIdentifier: z.url(),
+    geographicIdentifier: API_GeoNamesUri,
     geographicName: z.string(),
   })
   .meta({
@@ -340,3 +353,29 @@ export const API_QualificationAck = z
     id: "QualificationAck",
   });
 export type API_QualificationAck = z.infer<typeof API_QualificationAck>;
+
+export const API_SendDigitalContactRequest = z
+  .strictObject({
+    contactPoint: API_ContactPoint,
+    legalEntity: API_LegalEntity,
+  })
+  .meta({
+    description:
+      "Submission of the digital contact point of a legal entity to the Producer (Cross-Border E-service 04, Receive data).",
+    id: "SendDigitalContactRequest",
+  });
+export type API_SendDigitalContactRequest = z.infer<
+  typeof API_SendDigitalContactRequest
+>;
+
+export const API_Ack = z
+  .strictObject({
+    correlationId: z.uuid(),
+    receivedAt: z.iso.datetime(),
+  })
+  .meta({
+    description:
+      "Acknowledgment returned by the Producer upon successful receipt of a digital-contact submission.",
+    id: "Ack",
+  });
+export type API_Ack = z.infer<typeof API_Ack>;

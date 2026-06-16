@@ -36,7 +36,7 @@ describe("GET /organizations/:organizationId (getOrganization)", () => {
   const organization = getMockOrganization();
   const k2kOrganization = toK2KOrganization(organization);
 
-  const expectedApiDetail = toAPI_Organization(organization);
+  const expectedApiDetail = toAPI_Organization(organization, knodeId);
 
   beforeEach(() => {
     getOrganizationMock.mockReset();
@@ -102,7 +102,10 @@ describe("GET /organizations/:organizationId (getOrganization)", () => {
       .query({ knodeId: KnodeId.enum.Lynx });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual(expectedApiDetail);
+    expect(response.json()).toEqual({
+      ...expectedApiDetail,
+      knodeId: KnodeId.enum.Lynx,
+    });
   });
 
   it("should return 403 for an external-ui-session token whose consumer.id does not match the path", async () => {

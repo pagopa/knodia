@@ -170,9 +170,9 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
           id: eserviceResp.data.id,
           name: eserviceResp.data.name,
         },
+        knodeId: config.knodeId,
         producer: {
           id: producerResp.data.id,
-          knodeId: config.knodeId,
           name: producerResp.data.name,
         },
       });

@@ -12,5 +12,157 @@
       },
       "title": "high school diploma"
     }
+  ],
+  "00148210": [
+    {
+      "EQFLevel": "level07",
+      "ISCEDFCode": ["09"],
+      "publisher": {
+        "legalName": "Sapienza Università di Roma",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3169070",
+          "geographicName": "Roma"
+        }
+      },
+      "title": "master's degree in medicine and surgery"
+    }
+  ],
+  "00219574": [
+    {
+      "EQFLevel": "level06",
+      "ISCEDFCode": ["06"],
+      "publisher": {
+        "legalName": "Politecnico di Milano",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3173435",
+          "geographicName": "Milano"
+        }
+      },
+      "title": "bachelor's degree in computer science"
+    },
+    {
+      "EQFLevel": "level07",
+      "ISCEDFCode": ["06", "07"],
+      "publisher": {
+        "legalName": "Politecnico di Milano",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3173435",
+          "geographicName": "Milano"
+        }
+      },
+      "title": "master's degree in computer engineering"
+    }
+  ],
+  "00305128": [
+    {
+      "EQFLevel": "level04",
+      "ISCEDFCode": ["02"],
+      "publisher": {
+        "legalName": "Liceo Classico Statale Giambattista Vico",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3172394",
+          "geographicName": "Napoli"
+        }
+      },
+      "title": "classical high school diploma"
+    }
+  ],
+  "00417963": [
+    {
+      "EQFLevel": "level08",
+      "ISCEDFCode": ["05"],
+      "publisher": {
+        "legalName": "Università degli Studi di Torino",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3165524",
+          "geographicName": "Torino"
+        }
+      },
+      "title": "PhD in physics"
+    }
+  ],
+  "00523840": [
+    {
+      "EQFLevel": "level07",
+      "ISCEDFCode": ["04"],
+      "publisher": {
+        "legalName": "Università di Bologna",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3181928",
+          "geographicName": "Bologna"
+        }
+      },
+      "title": "master's degree in law"
+    }
+  ],
+  "00638215": [
+    {
+      "EQFLevel": "level06",
+      "ISCEDFCode": ["07"],
+      "publisher": {
+        "legalName": "Università degli Studi di Palermo",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/2523920",
+          "geographicName": "Palermo"
+        }
+      },
+      "title": "bachelor's degree in civil engineering"
+    }
+  ],
+  "00742190": [
+    {
+      "EQFLevel": "level05",
+      "ISCEDFCode": ["03"],
+      "publisher": {
+        "legalName": "ITS Academy Firenze",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3176959",
+          "geographicName": "Firenze"
+        }
+      },
+      "title": "higher technical diploma in communication"
+    }
+  ],
+  "00856347": [
+    {
+      "EQFLevel": "level06",
+      "ISCEDFCode": ["10"],
+      "publisher": {
+        "legalName": "Università degli Studi di Genova",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3176219",
+          "geographicName": "Genova"
+        }
+      },
+      "title": "bachelor's degree in tourism sciences"
+    }
+  ],
+  "00961043": [
+    {
+      "EQFLevel": "level07",
+      "ISCEDFCode": ["01"],
+      "publisher": {
+        "legalName": "Università degli Studi di Padova",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3171728",
+          "geographicName": "Padova"
+        }
+      },
+      "title": "master's degree in primary education"
+    }
+  ],
+  "01074628": [
+    {
+      "EQFLevel": "level06",
+      "ISCEDFCode": ["08"],
+      "publisher": {
+        "legalName": "Università degli Studi di Bari Aldo Moro",
+        "location": {
+          "geographicIdentifier": "https://www.geonames.org/3182351",
+          "geographicName": "Bari"
+        }
+      },
+      "title": "bachelor's degree in agricultural sciences"
+    }
   ]
 }
