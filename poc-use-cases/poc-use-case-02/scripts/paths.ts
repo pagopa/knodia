@@ -3,8 +3,6 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const REPO_ROOT = resolve(here, "../../..");
-
 // UC02 companies e-service identity, seeded on Lynx
 // (scripts/seed/sql/lynx/mock-poc-uc02-companies-eservice.sql) and pinned in
 // apps/services/mock-eservice/src/pocUc02Companies/mockup.ts.

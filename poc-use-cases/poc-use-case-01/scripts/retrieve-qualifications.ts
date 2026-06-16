@@ -12,6 +12,7 @@
 
 import { parseArgs } from "node:util";
 
+import { getJson } from "../../_shared/eservice-client.ts";
 import { mintEserviceAccessToken } from "./accessToken.ts";
 import { MOCK_ESERVICE_URL } from "./paths.ts";
 
@@ -37,28 +38,22 @@ if (!consumerKeychainId || !purposeId || !studentId) {
   process.exit(1);
 }
 
-let accessToken: string;
+const query = iscedfCode
+  ? `?${new URLSearchParams({ iscedfCode }).toString()}`
+  : "";
+
+let qualifications: unknown;
 try {
-  accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+  const accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+  qualifications = await getJson(
+    MOCK_ESERVICE_URL,
+    `/students/${studentId}/qualifications${query}`,
+    accessToken,
+  );
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
 }
 
-const query = iscedfCode
-  ? `?${new URLSearchParams({ iscedfCode }).toString()}`
-  : "";
-const response = await fetch(
-  `${MOCK_ESERVICE_URL}/students/${studentId}/qualifications${query}`,
-  { headers: { authorization: `Bearer ${accessToken}` } },
-);
-
-if (!response.ok) {
-  console.error(
-    `getQualifications failed (${response.status}): ${await response.text()}`,
-  );
-  process.exit(1);
-}
-
 console.log(`Qualifications for student ${studentId}:`);
-console.log(JSON.stringify(await response.json(), null, 2));
+console.log(JSON.stringify(qualifications, null, 2));
