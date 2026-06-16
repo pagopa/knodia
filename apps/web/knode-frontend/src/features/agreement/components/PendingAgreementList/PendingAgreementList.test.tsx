@@ -16,7 +16,8 @@ const mockAgreement: bffApi.PendingConsumerAgreement = {
   },
   hasRecentlyBeenUpdated: false,
   id: crypto.randomUUID(),
-  producer: { id: crypto.randomUUID(), knodeId: "Orion", name: "Producer Org" },
+  knodeId: "Orion",
+  producer: { id: crypto.randomUUID(), name: "Producer Org" },
 };
 
 describe("PendingAgreementList", () => {

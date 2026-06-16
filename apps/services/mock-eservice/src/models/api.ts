@@ -136,3 +136,124 @@ export const API_Pseudonymization = z
     id: "Pseudonymization",
   });
 export type API_Pseudonymization = z.infer<typeof API_Pseudonymization>;
+
+export const API_CompanyUid = z
+  .string()
+  .regex(/^[0-9]{11}$/)
+  .meta({
+    description:
+      "Legal-entity identifier in the path: 11-digit Italian VAT number (Partita IVA).",
+    example: "01229430085",
+    id: "CompanyUid",
+  });
+export type API_CompanyUid = z.infer<typeof API_CompanyUid>;
+
+const API_LegalIdentifier = z
+  .strictObject({
+    notation: API_CompanyUid,
+    schemeName: z.string(),
+    schemeURI: API_UriScheme,
+  })
+  .meta({
+    description:
+      "Unique identifier of a legal entity (Core Business Vocabulary 2.2.0)",
+    id: "LegalIdentifier",
+  });
+
+// Modelled as a string in the API: the value is an ATECO 2025 category code,
+// validated at load time against the known codes in models/legalEntityActivities.ts
+// (the full code list would bloat the OpenAPI enum to no benefit for consumers).
+const API_LegalEntityActivity = z.string().meta({
+  description:
+    "Economic activity of the legal entity — ATECO 2025 classification code (6-digit category level, with NACE Rev. 2.1 correspondence)",
+  example: "43.22.07",
+  id: "LegalEntityActivity",
+});
+
+export const API_LegalEntity = z
+  .strictObject({
+    legalEntityActivity: API_LegalEntityActivity,
+    legalIdentifier: API_LegalIdentifier,
+    legalName: z.string(),
+    registrationDate: z.iso.date().optional(),
+  })
+  .meta({
+    description:
+      "Legal entity (company), modelled after Core Business Vocabulary 2.2.0",
+    id: "LegalEntity",
+  });
+export type API_LegalEntity = z.infer<typeof API_LegalEntity>;
+
+export const API_EvidenceType = z.enum([
+  "codeETC_001",
+  "codeETC_002",
+  "codeETC_003",
+  "codeETC_004",
+]);
+export type API_EvidenceType = z.infer<typeof API_EvidenceType>;
+
+export const evidenceTypeIdentifiers: Record<API_EvidenceType, string> = {
+  codeETC_001: "complianceLegalObligations",
+  codeETC_002: "liftControl",
+  codeETC_003: "competenceRequirements",
+  codeETC_004: "electricVehicleChargingEquipment",
+};
+
+const API_EvidenceTypeClassification = z
+  .strictObject({
+    evidenceTypeClassification: API_EvidenceType,
+    identifier: z.string(),
+  })
+  .meta({
+    description: "Type of evidence (CCCEV 2.1.0)",
+    id: "EvidenceTypeClassification",
+  });
+
+const API_PeriodOfTime = z
+  .strictObject({
+    endtime: z.iso.date().optional(),
+    starttime: z.iso.date(),
+  })
+  .meta({
+    description:
+      "Period of time during which an evidence is valid (CCCEV 2.1.0)",
+    id: "PeriodOfTime",
+  });
+
+export const API_Evidence = z
+  .strictObject({
+    isAbout: API_LegalEntity,
+    isConformantTo: API_EvidenceTypeClassification,
+    validityPeriod: API_PeriodOfTime,
+  })
+  .meta({
+    description: "Evidence about a legal entity (CCCEV 2.1.0)",
+    id: "Evidence",
+  });
+export type API_Evidence = z.infer<typeof API_Evidence>;
+
+export const API_SendDigitalContactRequest = z
+  .strictObject({
+    contactPoint: API_ContactPoint,
+    legalEntity: API_LegalEntity,
+  })
+  .meta({
+    description:
+      "Submission of the digital contact point of a legal entity to the Producer (Cross-Border E-service 04, Receive data).",
+    id: "SendDigitalContactRequest",
+  });
+export type API_SendDigitalContactRequest = z.infer<
+  typeof API_SendDigitalContactRequest
+>;
+
+export const API_Ack = z
+  .strictObject({
+    correlationId: z.uuid(),
+    receivedAt: z.iso.datetime(),
+  })
+  .meta({
+    description:
+      "Acknowledgment returned by the Producer upon successful receipt of a digital-contact submission.",
+    id: "Ack",
+  });
+export type API_Ack = z.infer<typeof API_Ack>;

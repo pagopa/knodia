@@ -32,3 +32,19 @@ ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;
 INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
 VALUES ('00000000-0000-4000-8000-000000000005', 'vc_territorial_units', 'nuts1', 0)
 ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;
+
+INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
+VALUES ('00000000-0000-4000-8000-000000000002', 'knodia', 'testing_organization', 0)
+ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;
+
+INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
+VALUES ('00000000-0000-4000-8000-000000000003', 'knodia', 'testing_organization', 0)
+ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;
+
+INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
+VALUES ('00000000-0000-4000-8000-000000000004', 'knodia', 'testing_organization', 0)
+ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;
+
+INSERT INTO ${NAMESPACE}_organization."organization_attribute" (organization_id, scheme, code, metadata_version)
+VALUES ('00000000-0000-4000-8000-000000000005', 'knodia', 'testing_organization', 0)
+ON CONFLICT ON CONSTRAINT organization_attribute_pk DO NOTHING;

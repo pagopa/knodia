@@ -49,9 +49,9 @@ const baseDetails: bffApi.AgreementActivationDetails = {
     id: "00000000-0000-0000-0000-000000000003",
     name: { en: "Requesting proof of registration of birth" },
   },
+  knodeId: "Lynx",
   producer: {
     id: "00000000-0000-0000-0000-000000000004",
-    knodeId: "Lynx",
     name: "Ursa",
   },
 };
