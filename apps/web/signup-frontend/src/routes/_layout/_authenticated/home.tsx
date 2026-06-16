@@ -11,7 +11,7 @@ import {
   KnodeCard,
   RequestErasureModal,
   RequestRestrictionModal,
-} from "@/components/account";
+} from "@/components/features";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_layout/_authenticated/home")({
