@@ -67,6 +67,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
 
     const response = await injectSignupAppRequest({
       fiscalNumber: null,
+      oneIdNonce: "test-nonce",
       personIdentifier,
       spidCode: null,
       type: "ui-signup-session",

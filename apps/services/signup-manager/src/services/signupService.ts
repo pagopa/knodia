@@ -26,6 +26,10 @@ import {
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
+  computeTermsAcceptanceDigest,
+  TERMS_AND_CONDITIONS_VERSION,
+} from "../utils/termsAcceptance.ts";
+import {
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIdentifiersDoNotExist,
   assertSignupUserIsOnboarded,
@@ -89,6 +93,7 @@ export function signupServiceBuilder(
     ) {
       const now = new Date();
       const signupUserId = generateId<SignupUserId>();
+      const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
 
       await assertSignupUserIdentifiersDoNotExist(authData, signupDbService);
       await assertSignupUserEmailDoesNotExist(email, signupDbService);
@@ -139,7 +144,11 @@ export function signupServiceBuilder(
       }
 
       await signupEventProducer.publishOnboardingCompletedV1Event({
+        occurredAt: now.toISOString(),
+        oneIdNonce: authData.oneIdNonce,
         signupUserId,
+        termsAcceptanceDigest,
+        termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
       });
     },
     async getCurrentSignupUser({

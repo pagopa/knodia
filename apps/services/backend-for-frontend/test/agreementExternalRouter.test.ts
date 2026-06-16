@@ -354,9 +354,9 @@ describe("GET /external/agreementActivation/details (getAgreementActivationDetai
         id: ESERVICE_ID,
         name: { en: "Test E-service" },
       },
+      knodeId: "Orion",
       producer: {
         id: PRODUCER_ID,
-        knodeId: "Orion",
         name: "Producer Org",
       },
     });
@@ -431,9 +431,9 @@ describe("GET /external/agreementActivation/details (getAgreementActivationDetai
         id: ESERVICE_ID,
         name: { en: "Test E-service" },
       },
+      knodeId: "Orion",
       producer: {
         id: PRODUCER_ID,
-        knodeId: "Orion",
         name: "Producer Org",
       },
     });

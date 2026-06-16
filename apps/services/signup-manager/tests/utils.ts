@@ -39,7 +39,7 @@ export async function getAllSignupUsers() {
 }
 
 export function injectSignupAppRequest(
-  token: TestToken = { type: "ui-signup-session" },
+  token: TestToken = { oneIdNonce: "test-nonce", type: "ui-signup-session" },
 ) {
   return createInjectAppRequest(() => app)(token);
 }

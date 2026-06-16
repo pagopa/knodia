@@ -25,7 +25,7 @@ export function ConsumptionEserviceCard({
           eservice.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
         }
         id={eservice.id}
-        search={{ knodeId: eservice.producer.knodeId }}
+        search={{ knodeId: eservice.knodeId }}
         title={eservice.name.en}
         to="/consumption/e-services/$id"
       />
@@ -44,7 +44,7 @@ export function ConsumptionEserviceCard({
         trailing={
           <KnodeAvatar
             className="bg-brand-dark text-white"
-            knodeId={eservice.producer.knodeId}
+            knodeId={eservice.knodeId}
             name={eservice.producer.name}
             size="sm"
           />

@@ -60,7 +60,7 @@ export function LinkedPurposesTable({
             <Cell>
               <KnodeAvatar
                 className="bg-brand-dark text-white"
-                knodeId={purpose.producer.knodeId}
+                knodeId={purpose.knodeId}
                 name={purpose.producer.name}
                 size="sm"
               />
@@ -74,7 +74,7 @@ export function LinkedPurposesTable({
                 hierarchy="neutral"
                 kind="outlined"
                 params={{ id: purpose.id }}
-                search={{ knodeId: purpose.producer.knodeId }}
+                search={{ knodeId: purpose.knodeId }}
                 size="icon-md"
                 to="/consumption/purposes/$id"
               >

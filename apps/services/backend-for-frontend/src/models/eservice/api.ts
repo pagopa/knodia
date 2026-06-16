@@ -22,7 +22,7 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
+import { API_CompactProducer } from "@knodia/organization-models/api";
 import { z } from "zod";
 
 const API_InterfaceDocumentSeed = z
@@ -368,10 +368,13 @@ const API_ConsumerCatalogEserviceSearchResult = z
     description: API_LocalizedDescription,
     hasRequiredAttributes: z.boolean(),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
   })
   .meta({ id: "ConsumerCatalogEserviceSearchResult" });
 export type API_ConsumerCatalogEserviceSearchResult = z.infer<
@@ -405,7 +408,6 @@ const API_ConsumerEserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeId: API_KnodeId,
     name: z.string(),
     notes: z.string(),
   })
@@ -454,6 +456,9 @@ export const API_ConsumerEserviceDetails = z
       })
       .meta({ id: "ConsumerEserviceDetailsInterfaceDocument" }),
     isSignalHubEnabled: z.boolean(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     latestVersionId: z.uuid().meta({
       description: "Unique identifier of the latest E-service version",
     }),
@@ -517,9 +522,12 @@ export const API_ConsumerEservice = z
         "Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated",
     }),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this E-service",
+    }),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
   })

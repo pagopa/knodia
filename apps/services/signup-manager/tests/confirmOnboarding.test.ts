@@ -1,6 +1,10 @@
 import { SignupEventV1 } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
+import {
+  computeTermsAcceptanceDigest,
+  TERMS_AND_CONDITIONS_VERSION,
+} from "../src/utils/termsAcceptance.ts";
 import { kafkaProducerMock } from "./setup.ts";
 import {
   getAllSignupUsers,
@@ -56,9 +60,21 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     const event = SignupEventV1.parse(JSON.parse(messageValue as string));
 
     expect(event).toEqual({
-      data: { signupUserId: signupUser?.signupUserId },
+      data: {
+        occurredAt: expect.any(String),
+        oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
+        signupUserId: signupUser?.signupUserId,
+        termsAcceptanceDigest: expect.any(String),
+        termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+      },
       type: "OnboardingCompletedV1",
     });
+
+    // The acceptance instant travels in the message (not the DB); the digest is
+    // derived from it, so it must match a recomputation over occurredAt.
+    expect(event.data.termsAcceptanceDigest).toBe(
+      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+    );
   });
 
   it.each([
@@ -143,6 +159,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
 
     const response = await injectSignupAppRequest({
       fiscalNumber: null,
+      oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
       personIdentifier,
       spidCode: null,
       type: "ui-signup-session",
@@ -158,6 +175,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   it("should return 500 when the ui-signup-session token has no supported user identifier", async () => {
     const response = await injectSignupAppRequest({
       fiscalNumber: null,
+      oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
       personIdentifier: null,
       spidCode: null,
       type: "ui-signup-session",
