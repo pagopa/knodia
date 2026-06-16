@@ -9,7 +9,7 @@ import {
   POC_UC01_SET_QUALIFICATION_MOCK_ESERVICE_ID,
   POC_UC01_SET_QUALIFICATION_MOCK_ESERVICE_VERSION_ID,
   POC_UC01_SET_QUALIFICATION_MOCK_PRODUCER_ID,
-} from "../src/pocUc01Qualifications/mockup.ts";
+} from "../src/pocUc01/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 

@@ -18,7 +18,7 @@ import {
   POC_UC01_QUALIFICATIONS_MOCK_ESERVICE_ID,
   POC_UC01_QUALIFICATIONS_MOCK_ESERVICE_VERSION_ID,
   POC_UC01_QUALIFICATIONS_MOCK_PRODUCER_ID,
-} from "../pocUc01Qualifications/mockup.ts";
+} from "../pocUc01/mockup.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockQualificationsRouterOptions {
