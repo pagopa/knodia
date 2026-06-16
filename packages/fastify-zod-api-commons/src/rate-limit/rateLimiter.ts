@@ -2,11 +2,14 @@ import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { KnodeId, OrganizationId } from "@knodia/common-models/ids";
 import type { FastifyBaseLogger } from "fastify";
 
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
 import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { createClient } from "redis";
 
 import type { HTTPServiceName } from "../models/errors/services.ts";
 import type { RateLimiterConfig } from "./config.ts";
+
+import { buildAwsIamCredentialsProvider } from "./awsIamAuthTokenProvider.ts";
 
 export interface RateLimiter {
   consume(
@@ -70,8 +73,18 @@ export function initRedisRateLimiter({
   // bounds the shutdown wait to the current pending timer.
   let allowReconnect = true;
 
+  const iamAuth = config.rateLimiterAwsIamAuth;
   const client = createClient({
     disableOfflineQueue: true,
+    // IAM-authenticated ElastiCache requires TLS; resolves a fresh 15-min
+    // SigV4 token per (re)connect via node-redis's async credentials provider.
+    // `defaultProvider()` walks env → SSO → web-identity (IRSA on EKS) → IMDS.
+    ...(iamAuth && {
+      credentialsProvider: buildAwsIamCredentialsProvider(
+        iamAuth,
+        defaultProvider(),
+      ),
+    }),
     socket: {
       connectTimeout: timeoutMs,
       host: config.rateLimiterRedisHost,
@@ -81,6 +94,7 @@ export function initRedisRateLimiter({
       // shutdown wait stays well under K8s's default 30s grace.
       reconnectStrategy: (retries: number) =>
         allowReconnect ? Math.min(Math.max(retries, 1) * 1_000, 5_000) : false,
+      ...(iamAuth && { tls: true }),
     },
   });
 
@@ -118,7 +132,7 @@ export function initRedisRateLimiter({
   return {
     async consume(rateLimitKey, logger): Promise<RateLimiterStatus> {
       try {
-        // Bound consume latency: node-redis v4 has no per-command timeout,
+        // Bound consume latency: node-redis has no per-command timeout,
         // so a stalled Redis (failover, slow Lua, cluster slot moved while
         // TCP stays up) would otherwise hang the request indefinitely.
         // The race timer is `.unref()`'d so it never on its own keeps the
@@ -161,17 +175,26 @@ export function initRedisRateLimiter({
         return failOpenStatus;
       }
     },
-    // QUIT if connected, DISCONNECT if mid-retry. Setting `allowReconnect`
-    // false makes the next `reconnectStrategy` call return `false`, so when
-    // the currently-pending (uncancellable) inner `setTimeout(retryIn)`
-    // fires, the background loop exits instead of scheduling another wait —
-    // bounding the shutdown delay to the current `retryIn` (≤ 5s).
+    // CLOSE (graceful) if connected, DESTROY (forced, sync) if mid-retry.
+    // Setting `allowReconnect` false makes the next `reconnectStrategy` call
+    // return `false`, so when the currently-pending (uncancellable) inner
+    // `setTimeout(retryIn)` fires, the background loop exits instead of
+    // scheduling another wait — bounding the shutdown delay to the current
+    // `retryIn` (≤ 5s).
     disconnect: async () => {
       allowReconnect = false;
       if (client.isReady) {
-        await client.quit().catch(() => undefined);
+        await client.close().catch(() => undefined);
       } else {
-        await client.disconnect().catch(() => undefined);
+        // `destroy()` throws ClientClosedError when the underlying socket
+        // isn't open (eager connect still racing / never succeeded / already
+        // destroyed). All three mean the client is already torn down, so
+        // swallow.
+        try {
+          client.destroy();
+        } catch {
+          // intentional
+        }
       }
     },
   };

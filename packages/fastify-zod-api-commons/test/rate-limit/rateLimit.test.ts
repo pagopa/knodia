@@ -58,6 +58,7 @@ function buildRateLimiterConfig(
   overrides: Partial<RateLimiterConfig> = {},
 ): RateLimiterConfig {
   return {
+    rateLimiterAwsIamAuth: undefined,
     rateLimiterMaxRequests: MAX_REQUESTS,
     rateLimiterRedisHost: process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
     rateLimiterRedisPort: Number(
