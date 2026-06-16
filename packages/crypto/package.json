@@ -7,9 +7,11 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/crypto.ts"
+    ".": "./src/crypto.ts",
+    "./utils": "./src/utils/jwtSignUtils.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "catalog:",
     "@knodia/common-models": "workspace:*"
   },
   "devDependencies": {

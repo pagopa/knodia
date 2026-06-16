@@ -4,7 +4,6 @@ import type {
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
-  KnodiaJwtSignatureClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UISignupSessionTokenClaims,
@@ -32,10 +31,6 @@ export interface InternalToken extends BaseToken {
 export interface KnodeApiAccessToken extends BaseToken {
   payload: KnodeApiAccessTokenClaims;
   type: "knode-api";
-}
-
-export interface KnodiaJwtSignature extends BaseToken {
-  payload: KnodiaJwtSignatureClaims;
 }
 
 export interface UISessionRefreshToken extends BaseToken {

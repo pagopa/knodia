@@ -26,7 +26,6 @@
     "./utils": "./src/utils.ts"
   },
   "dependencies": {
-    "@knodia/integrity-rest-02": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

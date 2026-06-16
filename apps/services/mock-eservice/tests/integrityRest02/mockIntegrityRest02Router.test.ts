@@ -17,12 +17,12 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-import { KnodiaJwtSignatureClaims } from "@knodia/common-models/auth";
 import {
   CONTENT_ENCODING_HEADER,
   CONTENT_TYPE_HEADER,
   DIGEST_HEADER,
   KNODIA_JWT_SIGNATURE_HEADER,
+  KnodiaJwtSignatureClaims,
 } from "@knodia/integrity-rest-02/models";
 import { calculateIntegrityRest02Digest } from "@knodia/integrity-rest-02/utils";
 import { decodeProtectedHeader, jwtVerify } from "jose";

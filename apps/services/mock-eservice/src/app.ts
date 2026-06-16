@@ -14,7 +14,7 @@ import {
   dpopAuthSecurity,
   dpopAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
-import { tokenGeneratorBuilder } from "@knodia/token-generator";
+import { integrityRest02GeneratorBuilder } from "@knodia/integrity-rest-02/generator";
 import { createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
 
 import type { MockEserviceConfig } from "./config/config.ts";
@@ -83,8 +83,6 @@ export function buildApp({
     dynamoClient,
   );
 
-  const tokenGenerator = tokenGeneratorBuilder();
-
   const app = createMockFastifyApp(
     config,
     { ...bearerAuthSecurityScheme, ...dpopAuthSecurityScheme },
@@ -120,7 +118,7 @@ export function buildApp({
     protectedApp.register(async (integrityRest02App) => {
       integrityRest02App.register(integrityRest02Plugin, {
         integrityRest02Config: config,
-        tokenGenerator,
+        integrityRest02Generator: integrityRest02GeneratorBuilder(),
       });
       integrityRest02App.register(mockIntegrityRest02Router, { knodeId });
     });
@@ -232,8 +230,6 @@ function buildBearerIntegrityRest02App({
 }) {
   const { acceptedAudiences, expectedIssuer, knodeId } = config;
 
-  const tokenGenerator = tokenGeneratorBuilder();
-
   const app = createMockFastifyApp(
     config,
     bearerAuthSecurityScheme,
@@ -256,7 +252,7 @@ function buildBearerIntegrityRest02App({
     });
     protectedApp.register(integrityRest02Plugin, {
       integrityRest02Config: config,
-      tokenGenerator,
+      integrityRest02Generator: integrityRest02GeneratorBuilder(),
     });
     protectedApp.register(mockIntegrityRest02Router, { knodeId });
   });

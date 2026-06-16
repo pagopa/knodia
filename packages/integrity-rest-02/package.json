@@ -8,10 +8,14 @@
   },
   "exports": {
     "./config": "./src/config/config.ts",
+    "./generator": "./src/integrityRest02Generator.ts",
     "./models": "./src/models/integrityRest02.ts",
     "./utils": "./src/utils/utils.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "catalog:",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/crypto": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

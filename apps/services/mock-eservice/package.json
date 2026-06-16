@@ -37,7 +37,6 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/dpop-validator": "workspace:*",
-    "@knodia/token-generator": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",

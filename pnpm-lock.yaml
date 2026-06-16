@@ -1263,9 +1263,6 @@ importers:
       '@knodia/signal-hub-models':
         specifier: workspace:*
         version: link:../../../packages/models/signal-hub-models
-      '@knodia/token-generator':
-        specifier: workspace:*
-        version: link:../../../packages/token-generator
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
@@ -2609,6 +2606,9 @@ importers:
 
   packages/crypto:
     dependencies:
+      '@aws-sdk/client-kms':
+        specifier: 'catalog:'
+        version: 3.1023.0
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
@@ -3547,6 +3547,15 @@ importers:
 
   packages/integrity-rest-02:
     dependencies:
+      '@aws-sdk/client-kms':
+        specifier: 'catalog:'
+        version: 3.1023.0
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../models/common-models
+      '@knodia/crypto':
+        specifier: workspace:*
+        version: link:../crypto
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -3748,9 +3757,6 @@ importers:
 
   packages/models/common-models:
     dependencies:
-      '@knodia/integrity-rest-02':
-        specifier: workspace:*
-        version: link:../../integrity-rest-02
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -4208,9 +4214,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
-      '@knodia/integrity-rest-02':
+      '@knodia/crypto':
         specifier: workspace:*
-        version: link:../integrity-rest-02
+        version: link:../crypto
       jose:
         specifier: 'catalog:'
         version: 6.1.3

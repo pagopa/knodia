@@ -1,7 +1,13 @@
+import { BaseJwtClaims } from "@knodia/common-models/auth";
+import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
+import { ConsumerKeychainId } from "@knodia/common-models/ids";
 import z from "zod";
 
-// TODO: duplicate
-const CORRELATION_ID_HEADER = "x-correlation-id";
+export interface KnodiaJwtSignature {
+  header: string; // base64url-encoded header
+  payload: KnodiaJwtSignatureClaims;
+  serialized: string; // full JWT string (header.payload.signature)
+}
 
 export const KNODIA_JWT_SIGNATURE_HEADER = "Knodia-JWT-Signature";
 export const DIGEST_HEADER = "Digest";
@@ -44,3 +50,9 @@ export const KnodiaJwtSignatureSignedHeaders = z.array(
 export type KnodiaJwtSignatureSignedHeaders = z.infer<
   typeof KnodiaJwtSignatureSignedHeaders
 >;
+
+export const KnodiaJwtSignatureClaims = BaseJwtClaims.extend({
+  client_id: ConsumerKeychainId.optional(),
+  signed_headers: KnodiaJwtSignatureSignedHeaders,
+});
+export type KnodiaJwtSignatureClaims = z.infer<typeof KnodiaJwtSignatureClaims>;
