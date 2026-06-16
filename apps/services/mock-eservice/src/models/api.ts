@@ -30,9 +30,22 @@ const API_Identifier = z
     id: "Identifier",
   });
 
+// GeoNames place URI. Accepts the human-facing forms (geonames.org /
+// www.geonames.org) and the canonical Linked-Data form (sws.geonames.org/<id>/),
+// so a malformed or non-GeoNames URL is rejected at load. The numeric id is not
+// resolved against GeoNames — that would require a network call.
+const API_GeoNamesUri = z
+  .url()
+  .regex(/^https:\/\/(www\.|sws\.)?geonames\.org\/\d+\/?$/)
+  .meta({
+    description: "GeoNames place identifier URI",
+    example: "https://www.geonames.org/3165456",
+    id: "GeoNamesUri",
+  });
+
 const API_Location = z
   .strictObject({
-    geographicIdentifier: z.url(),
+    geographicIdentifier: API_GeoNamesUri,
     geographicName: z.string(),
   })
   .meta({
