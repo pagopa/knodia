@@ -1,15 +1,11 @@
-import type { SignupUser } from "@knodia/signup-models";
+import type { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
 
 import {
   type EmailChangeRequestId,
   generateId,
   type SignupUserId,
 } from "@knodia/common-models/ids";
-import {
-  emailChangeRequest,
-  type NewEmailChangeRequest,
-  signupUser,
-} from "@knodia/db-signup";
+import { emailChangeRequest, signupUser } from "@knodia/db-signup";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import {
   getTestUISignupSessionTokenClaims,
@@ -45,8 +41,8 @@ export function injectSignupAppRequest(
 }
 
 export function makeEmailChangeRequest(
-  overrides: Partial<NewEmailChangeRequest> = {},
-): NewEmailChangeRequest {
+  overrides: Partial<EmailChangeRequest> = {},
+): EmailChangeRequest {
   const signupUserId = overrides.signupUserId ?? generateId<SignupUserId>();
 
   return {
@@ -89,7 +85,7 @@ export function makeSignupUser(
   };
 }
 
-export async function seedEmailChangeRequest(request: NewEmailChangeRequest) {
+export async function seedEmailChangeRequest(request: EmailChangeRequest) {
   await signupDbServiceBuilder(signupDb).insertEmailChangeRequest(request);
 }
 
