@@ -1,4 +1,4 @@
-import { SignupEventV1 } from "@knodia/signup-models";
+import { OnboardingCompletedV1 } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -57,9 +57,9 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     const messageValue = sendPayload?.messages[0]?.value;
     expect(messageValue).toBeDefined();
 
-    const event = SignupEventV1.parse(
+    const event = OnboardingCompletedV1.parse(
       JSON.parse(messageValue as string),
-    ) as SignupEventV1 & { type: "OnboardingCompletedV1" };
+    );
 
     expect(event).toEqual({
       data: {
