@@ -1,0 +1,14 @@
+meta {
+  name: Get Eservice PurposeFormOptions
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/eservices/{{eserviceId}}/purposeFormOptions
+  body: none
+  auth: none
+}
+
+headers {
+  ~Authorization:
+}

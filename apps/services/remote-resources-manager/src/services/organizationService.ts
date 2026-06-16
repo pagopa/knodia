@@ -49,7 +49,7 @@ export function organizationServiceBuilder(
         path: { organizationId },
       });
 
-      return toAPI_Organization(data);
+      return toAPI_Organization(data, targetKnodeId);
     },
     async getOrganizations(
       requestQuery: API_GetOrganizationsQueryParams,
@@ -68,7 +68,9 @@ export function organizationServiceBuilder(
 
       return {
         pagination: data.pagination,
-        results: data.results.map(toAPI_Organization),
+        results: data.results.map((organization) =>
+          toAPI_Organization(organization, targetKnodeId),
+        ),
       };
     },
   };

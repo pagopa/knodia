@@ -2,3 +2,10 @@
 rules:
   # Mock e-services impersonate external producers; their public contract does not expose /status.
   paths-status: off
+overrides:
+  # The evidences endpoint mirrors an external producer's contract (a top-level
+  # array per the POC spec), so the "objects, not arrays" rule does not apply.
+  - files:
+      - "openapi/openapi-bearer-poc-uc02-companies.yaml#/paths/~1legal-entities~1%7BuidCompany%7D~1evidences"
+    rules:
+      response-with-json-object: off

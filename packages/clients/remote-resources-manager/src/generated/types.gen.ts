@@ -81,13 +81,6 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -97,10 +90,14 @@ export type AgreementSeed = {
 };
 
 /**
- * Unique identifier of the created Agreement resource along with the E-service Producer ID
+ * Unique identifier of the created Agreement resource along with the E-service Producer ID and owning Knode
  */
 export type CreatedAgreementResource = {
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     producerId: OrganizationId;
 };
 
@@ -164,11 +161,10 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Organization with only id, knodeId, and name
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
  */
-export type CompactOrganization = {
+export type CompactProducer = {
     id: string;
-    knodeId: KnodeId;
     name: string;
 };
 
@@ -184,20 +180,19 @@ export type GetCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
-export type CatalogEserviceSearchResultProducer = {
-    id: string;
-    name: string;
-};
-
 export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersionRequiredAttributes: Array<Array<Attribute>>;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CatalogEserviceSearchResultProducer;
+    producer: CompactProducer;
     updatedAt: string;
 };
 
@@ -210,6 +205,26 @@ export type CatalogEserviceSearchResults = {
  * Unique identifier of the E-Service
  */
 export type EserviceId = string;
+
+export type PurposeFormOption = {
+    description: LocalizedDescription;
+    /**
+     * Key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: LocalizedName;
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
 
 export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
@@ -232,7 +247,6 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -259,6 +273,10 @@ export type EserviceDetails = {
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersion: EserviceVersionDetails;
     mode: EserviceMode;
     name: LocalizedName;
@@ -280,9 +298,13 @@ export type Eservice = {
     };
     categories: Array<EserviceCategory>;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     updatedAt: string;
     version: EserviceVersion;
 };
@@ -295,6 +317,10 @@ export type Eservices = {
 export type Organization = {
     attributes: Array<Attribute>;
     id: string;
+    /**
+     * Knode ID of the Knode this Organization belongs to
+     */
+    knodeId: KnodeId;
     name: string;
 };
 
@@ -366,10 +392,7 @@ export type PurposeFormSchemasResponse = {
     version: string;
 };
 
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     /**
      * Expected number of daily API calls for this Purpose
      */
@@ -379,20 +402,52 @@ export type PurposeSeed = {
      * Identifier of the E-service this Purpose refers to
      */
     eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
     formAnswersJson: PurposeFormAnswers;
     /**
      * Version identifier for the Purpose form schema provided by the target Knode
      */
     formSchemaVersion: string;
-    knodeId: KnodeId;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
 
+export type PurposeSeedForReceiveData = {
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ReceiveData';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
+
 /**
- * Unique identifier of the created Purpose resource
+ * Unique identifier of the created Purpose resource along with the owning Knode
  */
-export type CreatedPurposeResource = CreatedResource;
+export type CreatedPurposeResource = {
+    id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+};
 
 export type Purpose = {
     consumer: PurposeConsumer;
@@ -521,6 +576,51 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
 
 export type GetEservicesData = {
     body?: never;

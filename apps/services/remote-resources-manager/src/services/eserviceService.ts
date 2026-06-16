@@ -24,6 +24,7 @@ import type {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
+  API_PurposeFormOptions,
 } from "../models/eservice/api.ts";
 
 import { toK2KAPI_AgreementState } from "../models/agreement/apiConverter.ts";
@@ -118,7 +119,11 @@ export function eserviceServiceBuilder(
               ?.get(unsafeBrandExternalId(r.producerId)),
             `Producer Organization ${r.producerId} owned by Knode ${targetKnodeId} not found for E-service ${r.id}`,
           );
-          return toAPI_CatalogEserviceSearchResult(r, producer.name);
+          return toAPI_CatalogEserviceSearchResult(
+            r,
+            producer.name,
+            targetKnodeId,
+          );
         }),
       };
     },
@@ -175,6 +180,23 @@ export function eserviceServiceBuilder(
         { ...producer, knodeId: eserviceId.knodeId },
         agreement,
       );
+    },
+
+    async getEservicePurposeFormOptions(
+      eserviceId: ExternalResource<EserviceId>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_PurposeFormOptions> {
+      logger.info(
+        { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
+        `Getting PurposeFormOptions for E-service ${eserviceId.id} on Knode ${eserviceId.knodeId}`,
+      );
+
+      const { data } = await k2kGatewayApi.getEservicePurposeFormOptions({
+        client: getK2K2GatewayApiClient(eserviceId.knodeId),
+        path: { eserviceId: eserviceId.id },
+      });
+
+      return data;
     },
 
     async getEservices(

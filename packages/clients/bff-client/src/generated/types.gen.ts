@@ -123,11 +123,19 @@ export type EserviceTemplateReference = {
 };
 
 /**
- * Organization with only id, knodeId, and name
+ * Organization with id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
     knodeId: KnodeId;
+    name: string;
+};
+
+/**
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
+ */
+export type CompactProducer = {
+    id: string;
     name: string;
 };
 
@@ -409,10 +417,14 @@ export type ConsumerCatalogEserviceSearchResult = {
     description: LocalizedDescription;
     hasRequiredAttributes: boolean;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
@@ -423,7 +435,6 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -474,6 +485,10 @@ export type ConsumerEserviceDetails = {
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
     /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
+    /**
      * Unique identifier of the latest E-service version
      */
     latestVersionId: string;
@@ -516,9 +531,13 @@ export type ConsumerEservice = {
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
 };
@@ -540,7 +559,11 @@ export type AgreementActivationDetails = {
     agreement: CompactAgreement;
     consumer: CompactOrganization;
     eservice: CompactEservice;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
 };
 
 /**
@@ -570,8 +593,12 @@ export type ProducerAgreementDetails = {
     id: string;
     state: AgreementState;
     updatedAt: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     latestEserviceVersionState: EserviceVersionState;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
 };
@@ -604,7 +631,11 @@ export type ConsumerAgreement = {
         name: LocalizedName;
     };
     id: string;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
     state: AgreementState;
     updatedAt: string;
 };
@@ -627,7 +658,11 @@ export type PendingConsumerAgreement = {
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
 };
 
 export type PendingConsumerAgreements = {
@@ -712,6 +747,10 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
 export type PurposeFormTexts = {
     en: {
         [key: string]: string;
@@ -722,6 +761,10 @@ export type PurposeFormUiTexts = {
     en: {
         [key: string]: string;
     };
+};
+
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
 };
 
 /**
@@ -740,6 +783,138 @@ export type PurposeFormSchemasResponse = {
      * Version identifier for the Purpose form schema provided by the target Knode
      */
     version: string;
+};
+
+export type PurposeSeedForProvideData = {
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ProvideData';
+    formAnswersJson: PurposeFormAnswers;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
+    template?: PurposeTemplateReference;
+};
+
+export type PurposeSeedForReceiveData = {
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'ReceiveData';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+/**
+ * Seed data to create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
+ */
+export type PurposeSeed = ({
+    eserviceMode: 'ProvideData';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'ReceiveData';
+} & PurposeSeedForReceiveData);
+
+/**
+ * Pre-filled PurposeFormOption enriched at runtime with the corresponding form schema, UI schema, legal texts and UI texts fetched from the Producer's purpose-process by formSchemaVersion
+ */
+export type ConsumerPurposeFormOption = {
+    description: LocalizedPurposeDescription;
+    formAnswersJson: PurposeFormAnswers;
+    id: string;
+    name: LocalizedPurposeName;
+    schema: PurposeFormSchema;
+    texts: PurposeFormTexts;
+    uiSchema: PurposeFormUiSchema;
+    uiTexts: PurposeFormUiTexts;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
+};
+
+export type ConsumerPurposeFormOptions = {
+    items: Array<ConsumerPurposeFormOption>;
+};
+
+export type ConsumerPurpose = {
+    dailyCalls: number;
+    eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
+    id: string;
+    /**
+     * Number of Consumer Keychains associated with this purpose
+     */
+    keychains: number;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+    producer: CompactProducer;
+    state: PurposeState;
+    updatedAt: string;
+};
+
+export type ConsumerPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerPurpose>;
+};
+
+export type ProducerPurpose = {
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
+
+export type ProducerPurposes = {
+    pagination: Pagination;
+    results: Array<ProducerPurpose>;
+};
+
+export type PurposeDetailsEservice = {
+    id: string;
+    name: LocalizedName;
+    latestVersionState: EserviceVersionState;
+};
+
+export type PurposeDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: PurposeDetailsEservice;
+    id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+    maxDailyCallsPerConsumer: number;
+    name: LocalizedPurposeName;
+    producer: CompactProducer;
+    state: PurposeState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
+    updatedAt: string;
 };
 
 /**
@@ -815,8 +990,12 @@ export type PurposeId = string;
 export type ConsumerKeychainPurpose = {
     eservice: CompactEservice;
     id: PurposeId;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     name: LocalizedPurposeName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     state: PurposeState;
 };
 
@@ -931,88 +1110,6 @@ export type PurposeTemplateDetails = {
 };
 
 export type PurposeTemplates = Array<PurposeTemplate>;
-
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
-    dailyCalls: number;
-    description: LocalizedPurposeDescription;
-    eserviceId: string;
-    formAnswersJson: PurposeFormAnswers;
-    /**
-     * Version identifier for the Purpose form schema provided by the target Knode
-     */
-    formSchemaVersion: string;
-    knodeId: KnodeId;
-    name: LocalizedPurposeName;
-    template?: PurposeTemplateReference;
-};
-
-export type ConsumerPurpose = {
-    dailyCalls: number;
-    eservice: CompactEservice;
-    /**
-     * Indicates whether the Purpose has been recently updated
-     */
-    hasRecentlyBeenUpdated: boolean;
-    id: string;
-    /**
-     * Number of Consumer Keychains associated with this purpose
-     */
-    keychains: number;
-    name: LocalizedPurposeName;
-    producer: CompactOrganization;
-    state: PurposeState;
-    updatedAt: string;
-};
-
-export type ConsumerPurposes = {
-    pagination: Pagination;
-    results: Array<ConsumerPurpose>;
-};
-
-export type ProducerPurpose = {
-    consumer: CompactOrganization;
-    dailyCalls: number;
-    description: LocalizedPurposeDescription;
-    eservice: CompactEservice;
-    /**
-     * Indicates whether the Purpose has been recently updated
-     */
-    hasRecentlyBeenUpdated: boolean;
-    id: string;
-    name: LocalizedPurposeName;
-    state: PurposeState;
-    updatedAt: string;
-};
-
-export type ProducerPurposes = {
-    pagination: Pagination;
-    results: Array<ProducerPurpose>;
-};
-
-export type PurposeDetailsEservice = {
-    id: string;
-    name: LocalizedName;
-    latestVersionState: EserviceVersionState;
-};
-
-export type PurposeDetails = {
-    agreement: CompactAgreement;
-    consumer: CompactOrganization;
-    dailyCalls: number;
-    description: LocalizedPurposeDescription;
-    eservice: PurposeDetailsEservice;
-    id: string;
-    maxDailyCallsPerConsumer: number;
-    name: LocalizedPurposeName;
-    producer: CompactOrganization;
-    state: PurposeState;
-    suspendedByConsumerAt: string | null;
-    suspendedByProducerAt: string | null;
-    updatedAt: string;
-};
 
 export type GetStatusData = {
     body?: never;
@@ -3791,6 +3888,51 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetConsumerEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetConsumerEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetConsumerEservicePurposeFormOptionsError = GetConsumerEservicePurposeFormOptionsErrors[keyof GetConsumerEservicePurposeFormOptionsErrors];
+
+export type GetConsumerEservicePurposeFormOptionsResponses = {
+    /**
+     * Consumer PurposeFormOptions retrieved successfully
+     */
+    200: ConsumerPurposeFormOptions;
+};
+
+export type GetConsumerEservicePurposeFormOptionsResponse = GetConsumerEservicePurposeFormOptionsResponses[keyof GetConsumerEservicePurposeFormOptionsResponses];
 
 export type GetConsumerEserviceLatestVersionInterfaceData = {
     body?: never;

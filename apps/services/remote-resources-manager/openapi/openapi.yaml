@@ -159,17 +159,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -191,17 +180,22 @@ components:
       additionalProperties: false
     CreatedAgreementResource:
       description: Unique identifier of the created Agreement resource along with the
-        E-service Producer ID
+        E-service Producer ID and owning Knode
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         producerId:
           $ref: "#/components/schemas/OrganizationId"
       required:
         - id
+        - knodeId
         - producerId
       additionalProperties: false
     Agreement:
@@ -329,22 +323,20 @@ components:
       enum:
         - Bearer
         - DPoP
-    CompactOrganization:
-      description: Organization with only id, knodeId, and name
+    CompactProducer:
+      description: Producer Organization with id and name; omits knodeId since it is
+        always known from the resource this is embedded in
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
           minLength: 1
       required:
         - id
-        - knodeId
         - name
       additionalProperties: false
     GetCatalogEserviceSearchParams:
@@ -384,19 +376,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    CatalogEserviceSearchResultProducer:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          type: string
-      required:
-        - id
-        - name
-      additionalProperties: false
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -410,6 +389,10 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersionRequiredAttributes:
           type: array
           items:
@@ -423,7 +406,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CatalogEserviceSearchResultProducer"
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
@@ -432,6 +415,7 @@ components:
         - categories
         - description
         - id
+        - knodeId
         - latestVersionRequiredAttributes
         - latestVersionState
         - mode
@@ -457,6 +441,42 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    PurposeFormOption:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        formAnswersJson:
+          description: Key-value pairs of answers to the Purpose form
+          type: object
+          additionalProperties: {}
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema referenced by the
+            option (e.g., "1.0")
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PurposeFormOption"
+      required:
+        - items
+      additionalProperties: false
     EserviceVersionDetails:
       type: object
       properties:
@@ -531,8 +551,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -540,7 +558,6 @@ components:
       required:
         - email
         - id
-        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -598,6 +615,10 @@ components:
           type: boolean
         isSignalHubEnabled:
           type: boolean
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersion:
           $ref: "#/components/schemas/EserviceVersionDetails"
         mode:
@@ -617,6 +638,7 @@ components:
         - interfaceDocument
         - isConsumerOperatorIdentificationRequired
         - isSignalHubEnabled
+        - knodeId
         - latestVersion
         - mode
         - name
@@ -672,12 +694,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
@@ -688,6 +714,7 @@ components:
         - agreement
         - categories
         - id
+        - knodeId
         - mode
         - name
         - producer
@@ -718,11 +745,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the Knode this Organization belongs to
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         name:
           type: string
       required:
         - attributes
         - id
+        - knodeId
         - name
       additionalProperties: false
     Organizations:
@@ -842,8 +874,7 @@ components:
         - uiTexts
         - version
       additionalProperties: false
-    PurposeSeed:
-      description: Seed data to create a new Purpose
+    PurposeSeedForProvideData:
       type: object
       properties:
         dailyCalls:
@@ -859,16 +890,20 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ProvideData
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
           description: Version identifier for the Purpose form schema provided by the
             target Knode
           type: string
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
         template:
           allOf:
             - $ref: "#/components/schemas/PurposeTemplateReference"
@@ -876,15 +911,78 @@ components:
         - dailyCalls
         - description
         - eserviceId
-        - formAnswersJson
-        - formSchemaVersion
         - knodeId
         - name
+        - eserviceMode
+        - formAnswersJson
+        - formSchemaVersion
       additionalProperties: false
+    PurposeSeedForReceiveData:
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          description: Expected number of daily API calls for this Purpose
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          description: Identifier of the E-service this Purpose refers to
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - ReceiveData
+        purposeFormOptionId:
+          description: Identifier of the PurposeFormOption (pre-filled set of form
+            answers) chosen by the Consumer among those published by the
+            Producer on the E-service
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - knodeId
+        - name
+        - eserviceMode
+        - purposeFormOptionId
+      additionalProperties: false
+    PurposeSeed:
+      discriminator:
+        mapping:
+          ProvideData: "#/components/schemas/PurposeSeedForProvideData"
+          ReceiveData: "#/components/schemas/PurposeSeedForReceiveData"
+        propertyName: eserviceMode
+      oneOf:
+        - $ref: "#/components/schemas/PurposeSeedForProvideData"
+        - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     CreatedPurposeResource:
-      description: Unique identifier of the created Purpose resource
-      allOf:
-        - $ref: "#/components/schemas/CreatedResource"
+      description: Unique identifier of the created Purpose resource along with the
+        owning Knode
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     Purpose:
       type: object
       properties:
@@ -1099,6 +1197,76 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getEservicePurposeFormOptions
+      summary: Get PurposeFormOptions for an E-service
+      tags:
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries published by the
+        Producer on a ReceiveData E-service hosted on a remote Knode. Returns an
+        empty list when the E-service has no receiveDataConfig, and 409 if the
+        E-service is not in ReceiveData mode.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: PurposeFormOption list retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: PurposeFormOption list retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices:
@@ -1781,7 +1949,11 @@ paths:
       summary: Create a Purpose
       tags:
         - purpose
-      description: Create a new Purpose
+      description: Create a new Purpose for an E-service on behalf of a Consumer. The
+        request body can be either PurposeSeedForProvideData or
+        PurposeSeedForReceiveData based on the Eservice mode. The first one
+        carries inline form answers compiled by the Consumer, while the second
+        one references a pre-filled PurposeFormOption compiled by the Producer.
       requestBody:
         required: true
         content:
