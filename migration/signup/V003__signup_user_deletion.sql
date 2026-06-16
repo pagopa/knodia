@@ -13,8 +13,11 @@ CREATE TABLE ${NAMESPACE}_signup."deleted_signup_user" (
     "deleted_at" TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
--- signup-manager marks users DeletionPending
+-- signup-manager marks users DeletionPending; it also reads the deletion
+-- registry to keep that mark idempotent once a deletion has already completed
+-- (hasRecordedDeletion).
 GRANT UPDATE ON ${NAMESPACE}_signup."signup_user" TO ${NAMESPACE}_signup_manager_user;
+GRANT SELECT ON ${NAMESPACE}_signup."deleted_signup_user" TO ${NAMESPACE}_signup_manager_user;
 
 -- signup-updater completes deletions: hard-deletes the row and records it in
 -- the registry
