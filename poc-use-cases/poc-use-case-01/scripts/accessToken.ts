@@ -17,10 +17,9 @@ export async function mintEserviceAccessToken(
   purposeId: string,
 ): Promise<string> {
   if (!existsSync(CONSUMER_PRIVATE_KEY_PATH)) {
-    console.error(
+    throw new Error(
       `Private key not found at ${CONSUMER_PRIVATE_KEY_PATH}. Run generate-key first.`,
     );
-    process.exit(1);
   }
 
   const assertion = spawnSync(
@@ -39,9 +38,10 @@ export async function mintEserviceAccessToken(
 
   if (assertion.status !== 0) {
     // On a spawn failure (status === null) stderr/stdout are empty; surface the
-    // spawn error so the operator gets a message instead of a blank line.
-    console.error(assertion.stderr || assertion.stdout || assertion.error);
-    process.exit(1);
+    // spawn error so the caller gets a message instead of a blank line.
+    throw new Error(
+      `Client assertion generation failed: ${assertion.stderr || assertion.stdout || assertion.error?.message || "unknown error"}`,
+    );
   }
 
   const clientAssertion = assertion.stdout.trim();
@@ -58,10 +58,9 @@ export async function mintEserviceAccessToken(
   });
 
   if (!tokenResponse.ok) {
-    console.error(
+    throw new Error(
       `Access token request failed (${tokenResponse.status}): ${await tokenResponse.text()}`,
     );
-    process.exit(1);
   }
 
   const { access_token: accessToken } = (await tokenResponse.json()) as {

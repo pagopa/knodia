@@ -55,7 +55,13 @@ const qualification = {
   title: values.title,
 };
 
-const accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+let accessToken: string;
+try {
+  accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 
 const response = await fetch(
   `${MOCK_ESERVICE_URL}/students/${studentId}/qualifications`,

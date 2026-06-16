@@ -37,7 +37,13 @@ if (!consumerKeychainId || !purposeId || !studentId) {
   process.exit(1);
 }
 
-const accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+let accessToken: string;
+try {
+  accessToken = await mintEserviceAccessToken(consumerKeychainId, purposeId);
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 
 const query = iscedfCode
   ? `?${new URLSearchParams({ iscedfCode }).toString()}`
