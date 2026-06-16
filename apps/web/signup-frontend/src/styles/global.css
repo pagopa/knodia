@@ -133,6 +133,20 @@
     font-weight: 500;
 }
 
+@utility text-style-card-title {
+    font-family: var(--font-manrope);
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+}
+
+@utility text-style-action {
+    font-family: var(--font-inter);
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 700;
+}
+
 @layer base {
     html {
         font-family: var(--font-body);
