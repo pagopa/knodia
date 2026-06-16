@@ -72,7 +72,7 @@ export function ProducerPurposeDetail({
         <div className="grid grid-cols-2 gap-4">
           <OrganizationCard
             label="Producer"
-            organization={purpose.producer}
+            organization={{ ...purpose.producer, knodeId: purpose.knodeId }}
             showContact={false}
           />
           <OrganizationCard

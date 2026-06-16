@@ -24,10 +24,7 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  type API_AgreementSeed,
-  type API_CreatedAgreementResource,
-} from "../../src/models/agreement/api.ts";
+import { type API_AgreementSeed } from "../../src/models/agreement/api.ts";
 import { toK2KAgreement } from "../k2kConverters.ts";
 import { remoteResourceDbService } from "../setup.ts";
 import { injectAppRequest } from "../utils.ts";
@@ -71,7 +68,7 @@ describe("POST /agreements (createAgreement)", () => {
     eserviceId: unsafeBrandId(body.eserviceId),
     eserviceVersionId: unsafeBrandId(body.eserviceVersionId),
   };
-  const mockK2KResponse: API_CreatedAgreementResource = {
+  const mockK2KResponse = {
     id: agreement.id,
     producerId: agreement.producerId,
   };
@@ -106,7 +103,10 @@ describe("POST /agreements (createAgreement)", () => {
       }),
     );
 
-    expect(response.json()).toEqual(mockK2KResponse);
+    expect(response.json()).toEqual({
+      ...mockK2KResponse,
+      knodeId: body.knodeId,
+    });
 
     const remoteResourceAgreement =
       await remoteResourceDbService.getAgreementById(

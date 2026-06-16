@@ -38,7 +38,8 @@ function buildPendingAgreement(
     },
     hasRecentlyBeenUpdated: false,
     id: crypto.randomUUID(),
-    producer: { id: crypto.randomUUID(), knodeId: "Orion", name: "Producer X" },
+    knodeId: "Orion",
+    producer: { id: crypto.randomUUID(), name: "Producer X" },
     ...overrides,
   };
 }
