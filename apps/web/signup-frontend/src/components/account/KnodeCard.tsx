@@ -34,6 +34,7 @@ export function KnodeCard({
       </div>
       <Button
         className="gap-2 self-start"
+        isDisabled={!prototypeHref}
         onPress={() => prototypeHref && window.open(prototypeHref, "_blank")}
         variant="text"
       >
