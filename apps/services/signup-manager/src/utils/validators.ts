@@ -1,19 +1,25 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { SignupUser } from "@knodia/signup-models";
 
 import {
-  signupUserEmailAlreadyAssociated,
+  signupUserEmailAlreadyInUse,
   signupUserIdentifierAlreadyAssociated,
+  signupUserNotOnboarded,
 } from "../models/errors.ts";
 
 export async function assertSignupUserEmailDoesNotExist(
   email: string,
   signupDbService: SignupDbService,
 ): Promise<void> {
-  const existing = await signupDbService.checkSignupUserEmailExists(email);
+  const [emailAlreadyAssociated, emailChangeRequestEmailAlreadyExists] =
+    await Promise.all([
+      signupDbService.checkSignupUserEmailExists(email),
+      signupDbService.checkEmailChangeRequestEmailExists(email),
+    ]);
 
-  if (existing) {
-    throw signupUserEmailAlreadyAssociated(email);
+  if (emailAlreadyAssociated || emailChangeRequestEmailAlreadyExists) {
+    throw signupUserEmailAlreadyInUse(email);
   }
 }
 
@@ -29,5 +35,13 @@ export async function assertSignupUserIdentifiersDoNotExist(
 
   if (signupUser) {
     throw signupUserIdentifierAlreadyAssociated();
+  }
+}
+
+export function assertSignupUserIsOnboarded(
+  user: SignupUser | undefined,
+): asserts user is SignupUser {
+  if (!user) {
+    throw signupUserNotOnboarded();
   }
 }

@@ -9,9 +9,9 @@ import {
   validUISignupSessionTokenClaims,
 } from "./utils.ts";
 
-describe("GET /me (getCurrentSignupUser)", () => {
+describe("GET /user/me (getCurrentSignupUser)", () => {
   it("should return NOT_COMPLETED when the signup user does not exist", async () => {
-    const response = await injectSignupAppRequest().get("/me");
+    const response = await injectSignupAppRequest().get("/user/me");
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
@@ -28,7 +28,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
     });
     await seedSignupUser(signupUser);
 
-    const response = await injectSignupAppRequest().get("/me");
+    const response = await injectSignupAppRequest().get("/user/me");
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
@@ -46,7 +46,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
     });
     await seedSignupUser(signupUser);
 
-    const response = await injectSignupAppRequest().get("/me");
+    const response = await injectSignupAppRequest().get("/user/me");
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
@@ -71,7 +71,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
       personIdentifier,
       spidCode: null,
       type: "ui-signup-session",
-    }).get("/me");
+    }).get("/user/me");
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
@@ -84,7 +84,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
     const response = await app
       .inject()
       .headers({ "x-correlation-id": generateId() })
-      .get("/me");
+      .get("/user/me");
 
     expect(response.statusCode).toBe(401);
   });
@@ -93,7 +93,7 @@ describe("GET /me (getCurrentSignupUser)", () => {
     const response = await injectSignupAppRequest({
       roles: ["administrative"],
       type: "ui-session",
-    }).get("/me");
+    }).get("/user/me");
 
     expect(response.statusCode).toBe(403);
   });

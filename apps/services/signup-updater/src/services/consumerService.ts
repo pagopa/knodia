@@ -52,6 +52,9 @@ export async function handleSignupMessage(
         await provisionKnode(knodeId, user, deps, correlationId, logger);
       }
     })
+    .with({ type: "EmailChangeRequestedV1" }, async () => {
+      throw new Error("EmailChangeRequestedV1 handling is not implemented");
+    })
     .exhaustive();
 }
 
