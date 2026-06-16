@@ -52,7 +52,8 @@ function RouteComponent() {
           <div className="absolute inset-0 bg-neutral-white/60" />
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
-          <div className="flex flex-col gap-[70px]">
+          <div className="flex flex-col gap-20">
+            <CredentialsBanner email={user?.email ?? "yourname@mail.com"} />
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
                 Your journey into Knodia starts here
@@ -67,7 +68,6 @@ function RouteComponent() {
                 ))}
               </div>
             </div>
-            <CredentialsBanner email={user?.email ?? "yourname@mail.com"} />
           </div>
         </div>
       </section>
