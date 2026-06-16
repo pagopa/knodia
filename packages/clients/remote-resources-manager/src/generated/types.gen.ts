@@ -81,13 +81,6 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -97,10 +90,14 @@ export type AgreementSeed = {
 };
 
 /**
- * Unique identifier of the created Agreement resource along with the E-service Producer ID
+ * Unique identifier of the created Agreement resource along with the E-service Producer ID and owning Knode
  */
 export type CreatedAgreementResource = {
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     producerId: OrganizationId;
 };
 
@@ -164,11 +161,10 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Organization with only id, knodeId, and name
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
  */
-export type CompactOrganization = {
+export type CompactProducer = {
     id: string;
-    knodeId: KnodeId;
     name: string;
 };
 
@@ -184,20 +180,19 @@ export type GetCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
-export type CatalogEserviceSearchResultProducer = {
-    id: string;
-    name: string;
-};
-
 export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersionRequiredAttributes: Array<Array<Attribute>>;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CatalogEserviceSearchResultProducer;
+    producer: CompactProducer;
     updatedAt: string;
 };
 
@@ -252,7 +247,6 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -279,6 +273,10 @@ export type EserviceDetails = {
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersion: EserviceVersionDetails;
     mode: EserviceMode;
     name: LocalizedName;
@@ -300,9 +298,13 @@ export type Eservice = {
     };
     categories: Array<EserviceCategory>;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     updatedAt: string;
     version: EserviceVersion;
 };
@@ -315,6 +317,10 @@ export type Eservices = {
 export type Organization = {
     attributes: Array<Attribute>;
     id: string;
+    /**
+     * Knode ID of the Knode this Organization belongs to
+     */
+    knodeId: KnodeId;
     name: string;
 };
 
@@ -433,9 +439,15 @@ export type PurposeSeed = ({
 } & PurposeSeedForReceiveData);
 
 /**
- * Unique identifier of the created Purpose resource
+ * Unique identifier of the created Purpose resource along with the owning Knode
  */
-export type CreatedPurposeResource = CreatedResource;
+export type CreatedPurposeResource = {
+    id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
+};
 
 export type Purpose = {
     consumer: PurposeConsumer;
