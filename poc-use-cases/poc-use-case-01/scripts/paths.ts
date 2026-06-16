@@ -5,7 +5,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 // Fixed path shared between generate-key (writes) and the retrieval/registration
 // scripts (read): the demo deliberately has no --key parameter, so the location
-// is the contract between the steps. Gitignored via poc-use-case-01/.gitignore.
+// is the contract between the steps. Gitignored via poc-use-cases/.gitignore.
 export const CONSUMER_PRIVATE_KEY_PATH = resolve(
   here,
   "../.local/consumer-private-key.pem",

@@ -9,7 +9,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 export const COMPANIES_ESERVICE_ID = "16895bc2-deb0-427c-8c25-336207b2d0a1";
 
 // Fixed key paths (no --key flag): the contract between the generate-* scripts
-// (write) and the demo scripts (read). Gitignored via poc-use-case-02/.gitignore.
+// (write) and the demo scripts (read). Gitignored via poc-use-cases/.gitignore.
 export const CONSUMER_PRIVATE_KEY_PATH = resolve(
   here,
   "../.local/consumer-private-key.pem",

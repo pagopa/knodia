@@ -23,7 +23,9 @@ function generateKeypair(): { privateKeyPath: string; publicKeyPath: string } {
     { encoding: "utf-8" },
   );
   if (result.status !== 0) {
-    console.error(result.stderr || result.stdout || result.error);
+    console.error(
+      result.stderr || result.stdout || result.error?.message || "unknown error",
+    );
     process.exit(1);
   }
   const output = `${result.stdout}\n${result.stderr}`;
