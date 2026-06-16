@@ -2,12 +2,12 @@ import type { KnodeId } from "@knodia/common-models/ids";
 
 import { multiKnodeListingNotSupported } from "../models/errors.ts";
 
-export function emptyListingPage<T>(
+export function emptyListingPage(
   limit: number,
   offset: number,
 ): {
   pagination: { limit: number; offset: number; total: number };
-  results: T[];
+  results: never[];
 } {
   return { pagination: { limit, offset, total: 0 }, results: [] };
 }
