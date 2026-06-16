@@ -1,16 +1,31 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
-import { handleSignupMessage } from "../services/consumerService.ts";
+import { genericInternalError } from "@knodia/common-models/errors";
+import { SignupEventV1 } from "@knodia/signup-models";
 
-export const createProcessMessage = (logger: Logger) =>
+import {
+  handleSignupMessage,
+  type SignupArchiverDeps,
+} from "../services/consumerService.ts";
+
+export const createProcessMessage = (
+  deps: SignupArchiverDeps,
+  logger: Logger,
+) =>
   async function processMessage({
     message,
     partition,
   }: EachMessagePayload): Promise<void> {
-    await handleSignupMessage();
+    if (!message.value) {
+      throw genericInternalError("Empty Kafka message value");
+    }
+
+    const event = SignupEventV1.parse(JSON.parse(message.value.toString()));
+
+    await handleSignupMessage(event, deps, logger);
 
     logger.info(
-      `Signup message processed. Partition number: ${partition}. Offset: ${message.offset}`,
+      `Signup message processed. Type: ${event.type}. Partition number: ${partition}. Offset: ${message.offset}`,
     );
   };
