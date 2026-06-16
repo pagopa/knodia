@@ -123,6 +123,7 @@ export const toAPI_ConsumerEserviceDetails = (
     name: detail.interfaceDocument.prettyName.en,
   },
   isSignalHubEnabled: detail.isSignalHubEnabled,
+  knodeId: detail.knodeId,
   latestVersionId: detail.latestVersion.id,
   latestVersionUpdatedAt: detail.latestVersion.updatedAt,
   maxDailyCalls: {
@@ -163,6 +164,7 @@ export const toAPI_ConsumerEservice = ({
     (mostRecentPurpose !== undefined &&
       hasRecentlyBeenUpdated(mostRecentPurpose, recentUpdateDays)),
   id: eservice.id,
+  knodeId: eservice.knodeId,
   mode: eservice.mode,
   name: eservice.name,
   producer: eservice.producer,
@@ -179,12 +181,12 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
   description: catalogEserviceSearchResult.description,
   hasRequiredAttributes,
   id: catalogEserviceSearchResult.id,
+  knodeId,
   latestVersionState: catalogEserviceSearchResult.latestVersionState,
   mode: catalogEserviceSearchResult.mode,
   name: catalogEserviceSearchResult.name,
   producer: {
     id: catalogEserviceSearchResult.producer.id,
-    knodeId,
     name: catalogEserviceSearchResult.producer.name,
   },
 });

@@ -15,9 +15,9 @@ function createAgreement(
       name: { en: "Birth Certificate API" },
     },
     id: "agreement-1",
+    knodeId: "Lynx",
     producer: {
       id: "producer-1",
-      knodeId: "Lynx",
       name: "City Hall",
     },
     state: "Archived",

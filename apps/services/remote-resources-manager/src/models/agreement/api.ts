@@ -26,10 +26,13 @@ export const API_AgreementSeed = z
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
 export const API_CreatedAgreementResource = API_CreatedResource.extend({
+  knodeId: API_KnodeId.meta({
+    description: "Knode ID of the producer's Knode that owns this Agreement",
+  }),
   producerId: API_OrganizationId,
 }).meta({
   description:
-    "Unique identifier of the created Agreement resource along with the E-service Producer ID",
+    "Unique identifier of the created Agreement resource along with the E-service Producer ID and owning Knode",
   id: "CreatedAgreementResource",
 });
 export type API_CreatedAgreementResource = z.infer<
