@@ -202,8 +202,10 @@ async function createTestingOrganization(
 }
 
 // Organizations are intentionally not deleted on account deletion: per the
-// signup design, only the Cognito users are removed (orgs stay, identified by
-// their generated name).
+// signup design, only the Cognito users are removed. The orgs stay; once the
+// signup row is hard-deleted their generated names are no longer available, but
+// their ids remain recoverable by recomputing them from the signup user id (see
+// externalOrganizationId).
 async function deleteKnodeUser(
   knodeId: KnodeId,
   user: SignupUser,
