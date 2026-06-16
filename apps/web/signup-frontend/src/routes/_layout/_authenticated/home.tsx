@@ -39,7 +39,9 @@ function RouteComponent() {
   const user = useCurrentUser();
   const [openModal, setOpenModal] = useState<OpenModal>(null);
 
-  const closeModal = (open: boolean) => !open && setOpenModal(null);
+  const closeModal = (open: boolean) => {
+    if (!open) setOpenModal(null);
+  };
 
   return (
     <>
