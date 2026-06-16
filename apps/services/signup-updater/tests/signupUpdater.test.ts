@@ -9,11 +9,12 @@ import {
 } from "@knodia/common-models/ids";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import {
+  DeletionRequestedV1,
   type EmailChangeRequest,
   type EmailChangeRequestedV1,
   OnboardingCompletedV1,
-  SignupEventV1,
   SignupUser,
+  SignupUserStatus,
 } from "@knodia/signup-models";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
@@ -83,9 +84,8 @@ function buildDeps(): SignupUpdaterDeps {
   } as unknown as SignupUpdaterDeps;
 }
 
-function deletionEvent(signupUserId: SignupUserId): SignupEventV1 {
-  // options[1] is the DeletionRequestedV1 variant of the event union.
-  const event = zocker(SignupEventV1.options[1]).setSeed(0).generate();
+function deletionEvent(signupUserId: SignupUserId): DeletionRequestedV1 {
+  const event = zocker(DeletionRequestedV1).setSeed(0).generate();
   return { ...event, data: { ...event.data, signupUserId } };
 }
 
@@ -131,6 +131,7 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     },
     name: "Mario",
     signupUserId: generateId<SignupUserId>(),
+    status: SignupUserStatus.enum.Active,
     ...overrides,
   };
 }
@@ -490,11 +491,14 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     getSignupUserByIdMock.mockReset();
     getSignupUserDeletionMock.mockReset();
     completeSignupUserDeletionMock.mockReset();
+    vi.mocked(logger.error).mockReset();
     vi.mocked(logger.warn).mockReset();
   });
 
   it("deletes the Cognito user on both nodes (leaving the orgs), then completes the deletion", async () => {
-    const user = getMockSignupUser();
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
     getSignupUserByIdMock.mockResolvedValue(user);
 
     await handleSignupMessage(
@@ -519,6 +523,27 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     );
   });
 
+  it("skips (logs and commits) when the user is not in DeletionPending status, deleting nothing", async () => {
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.Active }),
+    );
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    // A user not marked for deletion must not have its Cognito users deleted;
+    // the event is skipped (offset commits) rather than looping on completion.
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
   it("skips a replay after completion (deletion registry entry present)", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
     getSignupUserDeletionMock.mockResolvedValue({
@@ -539,7 +564,7 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
-  it("throws (retry) when the user is not found and no deletion record exists", async () => {
+  it("logs and commits (without throwing) when the user is not found and no deletion record exists, so the partition isn't blocked", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
     getSignupUserDeletionMock.mockResolvedValue(undefined);
 
@@ -550,14 +575,20 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
         correlationId,
         logger,
       ),
-    ).rejects.toBeDefined();
+    ).resolves.toBeUndefined();
 
+    // A missing row with no deletion record is a terminal anomaly (no
+    // replication lag is possible), so it's logged at error and the offset
+    // commits rather than redelivering forever and stalling the partition.
     expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 
   it("rethrows a Cognito user deletion error so the message is redelivered, without completing", async () => {
-    const user = getMockSignupUser();
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
     getSignupUserByIdMock.mockResolvedValue(user);
     cognitoDeleteUserMock.mockRejectedValue(new Error("Cognito unavailable"));
 

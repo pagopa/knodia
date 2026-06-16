@@ -13,7 +13,11 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
-import { type SignupEventV1, type SignupUser } from "@knodia/signup-models";
+import {
+  type SignupEventV1,
+  type SignupUser,
+  SignupUserStatus,
+} from "@knodia/signup-models";
 import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -135,23 +139,37 @@ export async function handleSignupMessage(
         e.data.signupUserId,
       );
 
-      // The row is hard-deleted on completion, so a missing user is ambiguous:
-      // a deletion-registry entry means the saga already finished (skip the
-      // replay); its absence means the row isn't visible yet or the id is
-      // unknown — throw so the event is retried (matches "not found = retry").
+      // The row is hard-deleted on completion, so a missing user means the saga
+      // already finished (deletion-registry entry present) or the id never
+      // existed. Reads hit the same primary the producer wrote DeletionPending
+      // to before emitting the event, so a missing row isn't replication lag:
+      // both cases are terminal. Log and commit instead of throwing, which would
+      // redeliver forever and stall the whole partition.
       if (user === undefined) {
         const deletion = await deps.signupDbService.getSignupUserDeletion(
           e.data.signupUserId,
         );
-        if (deletion !== undefined) {
+        if (deletion === undefined) {
+          logger.error(
+            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+          );
+        } else {
           logger.warn(
             `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: deletion already completed`,
           );
-          return;
         }
-        throw genericInternalError(
-          `Cannot process DeletionRequestedV1 for signup user ${e.data.signupUserId}: signup user not found and no deletion record`,
+        return;
+      }
+
+      // The event is emitted only after the row is marked DeletionPending, so
+      // any other status is a stale or out-of-order event. Skip rather than
+      // delete the Cognito users of a user not marked for deletion and then
+      // loop forever when completion finds no DeletionPending row.
+      if (user.status !== SignupUserStatus.enum.DeletionPending) {
+        logger.error(
+          `Skipping DeletionRequestedV1 for signup user ${user.signupUserId}: unexpected status ${user.status} (expected DeletionPending). Committing the offset to avoid blocking the partition.`,
         );
+        return;
       }
 
       for (const knodeId of KnodeId.options) {

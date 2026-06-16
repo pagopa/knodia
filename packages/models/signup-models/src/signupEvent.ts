@@ -32,7 +32,7 @@ export const DeletionRequestedV1 = z.object({
   }),
   type: z.literal("DeletionRequestedV1"),
 });
-type DeletionRequestedV1 = z.infer<typeof DeletionRequestedV1>;
+export type DeletionRequestedV1 = z.infer<typeof DeletionRequestedV1>;
 
 export const SignupEventV1 = z.discriminatedUnion("type", [
   OnboardingCompletedV1,
