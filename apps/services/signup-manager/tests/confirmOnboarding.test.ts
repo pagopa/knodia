@@ -57,7 +57,9 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     const messageValue = sendPayload?.messages[0]?.value;
     expect(messageValue).toBeDefined();
 
-    const event = SignupEventV1.parse(JSON.parse(messageValue as string));
+    const event = SignupEventV1.parse(
+      JSON.parse(messageValue as string),
+    ) as SignupEventV1 & { type: "OnboardingCompletedV1" };
 
     expect(event).toEqual({
       data: {
