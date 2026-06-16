@@ -59,33 +59,22 @@ export async function handleSignupMessage(
     .exhaustive();
 
   if (record) {
-    await archiveAction(
-      record,
-      event.data.signupUserId,
-      record.nonce,
-      deps,
-      logger,
-    );
+    await archiveAction(record, event.data.signupUserId, deps, logger);
   }
 }
 
-// storeBytesIfAbsent skips the write when {signupUserId, action, nonce} already
-// exists, so the first archived record wins. For Onboarding that key maps to
-// identical bytes (the event is published once). For Deletion a retried POST
-// republishes with a fresh occurredAt, so a later attempt carries a different
-// `date`: the skip keeps the earliest record as the canonical one, which is the
-// intended legal semantics (the erasure was requested at that first instant).
-// Legal immutability of the written object is enforced by the bucket's Object
-// Lock / retention config (infra), not by this service.
+// First write wins is deliberate: a retried Deletion republishes with a fresh
+// occurredAt, but the earliest record stays canonical — the erasure was legally
+// requested at that first instant. Object immutability is enforced by the bucket's
+// Object Lock / retention config (infra), not by this service.
 async function archiveAction(
   record: SignupArchiveRecord,
   signupUserId: SignupUserId,
-  nonce: string,
   deps: SignupArchiverDeps,
   logger: Logger,
 ): Promise<void> {
   const content = Buffer.from(JSON.stringify(record), "utf8");
-  const key = `signup-actions/${signupUserId}/${record.action}/${nonce}.json`;
+  const key = `signup-actions/${signupUserId}/${record.action}/${record.nonce}.json`;
 
   const { alreadyExists } = await deps.fileManager.storeBytesIfAbsent({
     bucket: deps.bucket,
