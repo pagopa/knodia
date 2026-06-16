@@ -4,7 +4,7 @@ import { Button, Card } from "@/components/ui";
 interface KnodeCardProps {
   knodeName: string;
   organizationName: string;
-  // TODO(KN-753): wire to the real prototype URL (hosted outside the signup app).
+  // TODO(KN-753): wire to the real prototype URL.
   prototypeHref?: string;
   username: string;
 }
