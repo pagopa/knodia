@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -49,6 +48,7 @@ import {
   toAPI_ConsumerPurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 
 interface PurposeConsumerRouterOptions {
   config: BffProcessConfig;
@@ -96,12 +96,14 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      const [firstPurpose] = data.results;
-      if (!firstPurpose) {
+      const targetKnodeId = singleListingKnodeId(
+        data.results,
+        (purpose) => purpose.knodeId,
+      );
+      if (targetKnodeId === undefined) {
         res.send({ pagination: data.pagination, results: [] });
         return;
       }
-      const targetKnodeId = KnodeId.parse(firstPurpose.knodeId);
 
       const [eservicesMap, consumerKeychainsMap] = await Promise.all([
         getExternalEntitiesMap({

@@ -9,7 +9,6 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -43,6 +42,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 
 interface AgreementConsumerRouterOptions {
   config: BffProcessConfig;
@@ -177,12 +177,14 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      const [firstAgreement] = data.results;
-      if (!firstAgreement) {
+      const targetKnodeId = singleListingKnodeId(
+        data.results,
+        (agreement) => agreement.knodeId,
+      );
+      if (targetKnodeId === undefined) {
         res.status(200).send({ pagination: data.pagination, results: [] });
         return;
       }
-      const targetKnodeId = KnodeId.parse(firstAgreement.knodeId);
 
       const eservicesMap = await getExternalEntitiesMap({
         fetchFn: ({ entityIds, knodeId }) =>
