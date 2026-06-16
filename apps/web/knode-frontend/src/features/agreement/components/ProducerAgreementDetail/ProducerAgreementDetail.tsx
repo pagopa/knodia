@@ -76,7 +76,7 @@ export function ProducerAgreementDetail({
         <div className="grid grid-cols-2 gap-4">
           <OrganizationCard
             label="Producer"
-            organization={agreement.producer}
+            organization={{ ...agreement.producer, knodeId: agreement.knodeId }}
             showContact={false}
           />
           <OrganizationCard

@@ -20,10 +20,12 @@ import { toAPI_AgreementState } from "../agreement/apiConverter.ts";
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
   producerName: string,
+  knodeId: API_KnodeId,
 ): API_CatalogEserviceSearchResult => ({
   categories: catalogEservice.categories,
   description: catalogEservice.description,
   id: catalogEservice.id,
+  knodeId,
   latestVersionRequiredAttributes:
     catalogEservice.latestVersionRequiredAttributes,
   latestVersionState: toAPI_EserviceVersionState(
@@ -69,6 +71,7 @@ export const toAPI_EserviceDetails = (
   isConsumerOperatorIdentificationRequired:
     eservice.isConsumerOperatorIdentificationRequired,
   isSignalHubEnabled: eservice.isSignalHubEnabled,
+  knodeId: producer.knodeId,
   latestVersion: {
     accessTokenAudience: version.accessTokenAudience,
     accessTokenDuration: version.accessTokenDuration,
@@ -85,7 +88,6 @@ export const toAPI_EserviceDetails = (
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
     id: producer.id,
-    knodeId: producer.knodeId,
     name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
@@ -135,11 +137,11 @@ export const toAPI_Eservice = ({
   },
   categories: eservice.categories,
   id: eservice.id,
+  knodeId: producer.knodeId,
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
   producer: {
     id: producer.id,
-    knodeId: producer.knodeId,
     name: producer.name,
   },
   updatedAt: eservice.updatedAt,

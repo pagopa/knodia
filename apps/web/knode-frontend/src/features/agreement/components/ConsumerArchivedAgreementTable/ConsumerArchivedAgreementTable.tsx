@@ -62,7 +62,7 @@ export function ConsumerArchivedAgreementTable({
             <Cell className="body-md text-primary-light-mid-contrast">
               <RouterLink
                 params={{ id: agreement.eservice.id }}
-                search={{ knodeId: agreement.producer.knodeId }}
+                search={{ knodeId: agreement.knodeId }}
                 to="/consumption/e-services/$id"
                 variant="inline"
               >
@@ -70,7 +70,7 @@ export function ConsumerArchivedAgreementTable({
               </RouterLink>
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
-              {agreement.producer.knodeId} Knode
+              {agreement.knodeId} Knode
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
               {agreement.producer.name}
