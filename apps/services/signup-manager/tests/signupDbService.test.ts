@@ -46,6 +46,17 @@ describe("markSignupUserDeletionPending", () => {
     expect(afterSecond?.updatedAt).toEqual(afterFirst?.updatedAt);
   });
 
+  it("is idempotent: marking an already-completed deletion is a no-op", async () => {
+    const user = makeSignupUser();
+    await seedSignupUser(user);
+    await signupDbService().markSignupUserDeletionPending(user.signupUserId);
+    await signupDbService().completeSignupUserDeletion(user.signupUserId);
+
+    await expect(
+      signupDbService().markSignupUserDeletionPending(user.signupUserId),
+    ).resolves.toBeUndefined();
+  });
+
   it("throws when the user does not exist", async () => {
     await expect(
       signupDbService().markSignupUserDeletionPending(

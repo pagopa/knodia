@@ -15,7 +15,7 @@ import {
 // retry; the event identity (key + type + the rest of data) is what stays stable.
 function getPublishedEventIdentities() {
   return kafkaProducerMock.send.mock.calls.map(([payload]) => {
-    const message = payload?.messages[0];
+    const message = payload?.messages.at(0);
     const event = DeletionRequestedV1.parse(
       JSON.parse(message?.value as string),
     );
@@ -68,7 +68,7 @@ describe("POST /user/delete (deleteUser)", () => {
     });
 
     const event = DeletionRequestedV1.parse(
-      JSON.parse(sendPayload?.messages[0]?.value as string),
+      JSON.parse(sendPayload?.messages.at(0)?.value as string),
     );
     expect(event).toEqual({
       data: {

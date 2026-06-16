@@ -111,13 +111,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         // Idempotent under at-least-once consumption: a replay finds the row
         // gone but the registry entry present, anything else is an invalid
         // transition.
-        const [existingDeletion] = await tx
-          .select({ signupUserId: deletedSignupUser.signupUserId })
-          .from(deletedSignupUser)
-          .where(eq(deletedSignupUser.signupUserId, signupUserId))
-          .limit(1);
-
-        if (existingDeletion) {
+        if (await hasRecordedDeletion(tx, signupUserId)) {
           return;
         }
 
@@ -272,6 +266,16 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         return;
       }
 
+      /**
+       * The row may be gone because the deletion already completed: a retry
+       * landing after completeSignupUserDeletion finds no signup_user row but a
+       * registry entry. Mirror its idempotency and treat that as a no-op rather
+       * than a 500.
+       */
+      if (!existing && (await hasRecordedDeletion(db, signupUserId))) {
+        return;
+      }
+
       throw genericInternalError(
         `Cannot mark signup user ${signupUserId} as DeletionPending: user ${existing ? `has status ${existing.status}` : "not found"}`,
       );
@@ -289,4 +293,17 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
+}
+
+// Accepts a transaction too: a PgTransaction is assignable to NodePgDatabase.
+async function hasRecordedDeletion(
+  db: NodePgDatabase,
+  signupUserId: SignupUserId,
+): Promise<boolean> {
+  const [existing] = await db
+    .select({ signupUserId: deletedSignupUser.signupUserId })
+    .from(deletedSignupUser)
+    .where(eq(deletedSignupUser.signupUserId, signupUserId))
+    .limit(1);
+  return existing !== undefined;
 }
