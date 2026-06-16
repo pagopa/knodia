@@ -1,6 +1,5 @@
-import { Checkbox, TextField } from "@knodia/ui-kit/ui";
-
-import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
+import { Checkbox, Tooltip } from "@knodia/ui-kit/ui";
+import { Focusable, TooltipTrigger } from "react-aria-components";
 
 interface Props {
   checkedLabel?: string | undefined;
@@ -22,20 +21,6 @@ export function SwitchRenderer({
   value,
 }: Props) {
   const isChecked = value === "true";
-
-  if (isReadOnly) {
-    return (
-      <TextField
-        description={description}
-        endIcon={<DeclaredByProducerTooltip />}
-        isReadOnly
-        label={label}
-        onChange={onChange}
-        value={isChecked ? (checkedLabel ?? "Yes") : "No"}
-      />
-    );
-  }
-
   const switchLabel = checkedLabel ?? label ?? "";
 
   return (
@@ -50,14 +35,33 @@ export function SwitchRenderer({
           {description}
         </span>
       )}
-      <Checkbox
-        className="first:mt-0 mt-3"
-        isInvalid={!!error}
-        isSelected={isChecked}
-        onChange={(checked) => onChange(checked ? "true" : "false")}
-      >
-        {switchLabel}
-      </Checkbox>
+      {isReadOnly ? (
+        // Anchor the tooltip to the checkbox box (16×16) via a transparent
+        // overlay so the arrow appears centered above it on hover.
+        <div className="relative first:mt-0 mt-3">
+          <Checkbox isDisabled isSelected={isChecked}>
+            {switchLabel}
+          </Checkbox>
+          <TooltipTrigger delay={0}>
+            <Focusable>
+              <span
+                className="absolute top-0 left-0 size-4 cursor-default"
+                tabIndex={0}
+              />
+            </Focusable>
+            <Tooltip placement="top">Declared by Producer</Tooltip>
+          </TooltipTrigger>
+        </div>
+      ) : (
+        <Checkbox
+          className="first:mt-0 mt-3"
+          isInvalid={!!error}
+          isSelected={isChecked}
+          onChange={(checked) => onChange(checked ? "true" : "false")}
+        >
+          {switchLabel}
+        </Checkbox>
+      )}
       {error && (
         <span className="body-sm text-error-light-low-contrast mt-1">
           {error}
