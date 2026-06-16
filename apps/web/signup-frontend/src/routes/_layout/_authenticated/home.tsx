@@ -53,6 +53,7 @@ function RouteComponent() {
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
           <div className="flex flex-col gap-20">
+            {/* TODO(KN-765): drop the placeholder once the signup user API reliably returns the email */}
             <CredentialsBanner email={user?.email ?? "yourname@mail.com"} />
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
