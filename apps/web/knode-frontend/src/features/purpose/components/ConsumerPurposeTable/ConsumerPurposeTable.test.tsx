@@ -18,10 +18,10 @@ function createPurpose(
     hasRecentlyBeenUpdated: false,
     id: "purpose-1",
     keychains: 2,
+    knodeId: "Orion",
     name: { en: "Purpose Alpha" },
     producer: {
       id: "producer-1",
-      knodeId: "Orion",
       name: "Rigel Corp",
     },
     state: "Active",

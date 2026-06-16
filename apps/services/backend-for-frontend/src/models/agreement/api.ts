@@ -11,7 +11,10 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
+import {
+  API_CompactOrganization,
+  API_CompactProducer,
+} from "@knodia/organization-models/api";
 import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
@@ -31,7 +34,10 @@ export const API_AgreementActivationDetails = z
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
-    producer: API_CompactOrganization,
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
+    producer: API_CompactProducer,
   })
   .meta({ id: "AgreementActivationDetails" });
 export type API_AgreementActivationDetails = z.infer<
@@ -99,8 +105,11 @@ export const API_ProducerAgreementDetails = API_ProducerAgreement.omit({
   hasRecentlyBeenUpdated: true,
 })
   .extend({
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
     latestEserviceVersionState: API_EserviceVersionState,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     suspendedByConsumerAt: z.string().datetime().nullable(),
     suspendedByProducerAt: z.string().datetime().nullable(),
     updatedAt: z.iso.datetime(),
@@ -160,7 +169,10 @@ export const API_ConsumerAgreement = z
       name: API_LocalizedName,
     }),
     id: z.uuid(),
-    producer: API_CompactOrganization,
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
+    producer: API_CompactProducer,
     state: API_AgreementState,
     updatedAt: z.iso.datetime(),
   })
@@ -189,7 +201,10 @@ export const API_PendingConsumerAgreement = z
         "Indicates whether the Agreement or its E-service has been recently updated",
     }),
     id: z.uuid(),
-    producer: API_CompactOrganization,
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Agreement",
+    }),
+    producer: API_CompactProducer,
   })
   .meta({ id: "PendingConsumerAgreement" });
 export type API_PendingConsumerAgreement = z.infer<
