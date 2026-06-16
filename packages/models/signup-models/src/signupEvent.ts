@@ -15,14 +15,14 @@ export const OnboardingCompletedV1 = z.object({
 });
 export type OnboardingCompletedV1 = z.infer<typeof OnboardingCompletedV1>;
 
-export const EmailChangeRequestedV1 = z.object({
+const EmailChangeRequestedV1 = z.object({
   data: z.strictObject({
     emailChangeRequestId: EmailChangeRequestId,
     signupUserId: SignupUserId,
   }),
   type: z.literal("EmailChangeRequestedV1"),
 });
-export type EmailChangeRequestedV1 = z.infer<typeof EmailChangeRequestedV1>;
+type EmailChangeRequestedV1 = z.infer<typeof EmailChangeRequestedV1>;
 
 export const SignupEventV1 = z.discriminatedUnion("type", [
   OnboardingCompletedV1,
