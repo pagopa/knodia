@@ -24,6 +24,7 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
@@ -41,6 +42,11 @@ const signalHubAppTag: OpenAPIV3.TagObject = {
   description:
     "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-service 03, Bearer-protected)",
   name: apiTags.residence,
+};
+const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Legal-entity information + evidences lookup by uid_company (Bearer-protected)",
+  name: apiTags.pocUc02Companies,
 };
 
 export function buildApp({
@@ -78,7 +84,13 @@ export function buildApp({
       title: "Knodia Mock E-service API",
       version: "1.0.0",
     },
-    [healthRouterTag, bearerAppTag, dpopAppTag, signalHubAppTag],
+    [
+      healthRouterTag,
+      bearerAppTag,
+      dpopAppTag,
+      signalHubAppTag,
+      pocUc02CompaniesAppTag,
+    ],
   );
 
   // Public routes (no auth required)
@@ -93,6 +105,7 @@ export function buildApp({
     });
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -121,6 +134,15 @@ export function buildAppFromConfig(config: MockEserviceConfig) {
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerPocUc02CompaniesAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc02CompaniesApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -169,6 +191,41 @@ function buildBearerApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerPocUc02CompaniesApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC02 companies (legal-entity information + evidences)",
+      title: "Knodia Mock E-service API (Companies)",
+      version: "1.0.0",
+    },
+    [pocUc02CompaniesAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
   });
 
   return app;
