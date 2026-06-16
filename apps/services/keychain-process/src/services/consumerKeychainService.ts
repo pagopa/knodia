@@ -215,13 +215,17 @@ export function consumerKeychainServiceBuilder(
 
       match(authData)
         .with({ tokenType: "internal" }, () => undefined)
-        .with({ tokenType: "ui-session" }, (uiAuthData) =>
+        .with({ tokenType: "ui-session" }, (uiAuthData) => {
+          assertOrganizationIsKeychainOwner(
+            uiAuthData.organizationId,
+            consumerKeychain.data,
+          );
           assertUserIsAllowedToDownloadKey(
             uiAuthData,
             consumerKeychainId,
             consumerKeychain.data.users,
-          ),
-        )
+          );
+        })
         .exhaustive();
 
       return retrieveKeychainKey(consumerKeychain.data, kid);

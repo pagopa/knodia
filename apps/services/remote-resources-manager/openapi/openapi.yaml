@@ -159,17 +159,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -191,17 +180,22 @@ components:
       additionalProperties: false
     CreatedAgreementResource:
       description: Unique identifier of the created Agreement resource along with the
-        E-service Producer ID
+        E-service Producer ID and owning Knode
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Agreement
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         producerId:
           $ref: "#/components/schemas/OrganizationId"
       required:
         - id
+        - knodeId
         - producerId
       additionalProperties: false
     Agreement:
@@ -329,22 +323,20 @@ components:
       enum:
         - Bearer
         - DPoP
-    CompactOrganization:
-      description: Organization with only id, knodeId, and name
+    CompactProducer:
+      description: Producer Organization with id and name; omits knodeId since it is
+        always known from the resource this is embedded in
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
           minLength: 1
       required:
         - id
-        - knodeId
         - name
       additionalProperties: false
     GetCatalogEserviceSearchParams:
@@ -384,19 +376,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    CatalogEserviceSearchResultProducer:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          type: string
-      required:
-        - id
-        - name
-      additionalProperties: false
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -410,6 +389,10 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersionRequiredAttributes:
           type: array
           items:
@@ -423,7 +406,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CatalogEserviceSearchResultProducer"
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
@@ -432,6 +415,7 @@ components:
         - categories
         - description
         - id
+        - knodeId
         - latestVersionRequiredAttributes
         - latestVersionState
         - mode
@@ -567,8 +551,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -576,7 +558,6 @@ components:
       required:
         - email
         - id
-        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -634,6 +615,10 @@ components:
           type: boolean
         isSignalHubEnabled:
           type: boolean
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         latestVersion:
           $ref: "#/components/schemas/EserviceVersionDetails"
         mode:
@@ -653,6 +638,7 @@ components:
         - interfaceDocument
         - isConsumerOperatorIdentificationRequired
         - isSignalHubEnabled
+        - knodeId
         - latestVersion
         - mode
         - name
@@ -708,12 +694,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this E-service
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CompactOrganization"
+          $ref: "#/components/schemas/CompactProducer"
         updatedAt:
           type: string
           format: date-time
@@ -724,6 +714,7 @@ components:
         - agreement
         - categories
         - id
+        - knodeId
         - mode
         - name
         - producer
@@ -754,11 +745,16 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the Knode this Organization belongs to
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         name:
           type: string
       required:
         - attributes
         - id
+        - knodeId
         - name
       additionalProperties: false
     Organizations:
@@ -971,9 +967,22 @@ components:
         - $ref: "#/components/schemas/PurposeSeedForProvideData"
         - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     CreatedPurposeResource:
-      description: Unique identifier of the created Purpose resource
-      allOf:
-        - $ref: "#/components/schemas/CreatedResource"
+      description: Unique identifier of the created Purpose resource along with the
+        owning Knode
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     Purpose:
       type: object
       properties:
