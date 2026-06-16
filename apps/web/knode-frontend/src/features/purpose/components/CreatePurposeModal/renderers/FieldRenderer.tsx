@@ -17,7 +17,6 @@ import {
 } from "@/features/purpose/engine/textsResolver";
 
 import { CheckboxRenderer } from "./CheckboxRenderer";
-import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
 import { RadioRenderer } from "./RadioRenderer";
 import { SelectRenderer } from "./SelectRenderer";
 import { SwitchRenderer } from "./SwitchRenderer";
@@ -115,17 +114,15 @@ export function FieldRenderer({
       />
     ))
     .with("select", () => (
-      <FieldWithTooltip isReadOnly={isReadOnly}>
-        <SelectRenderer
-          description={description}
-          error={error}
-          isReadOnly={isReadOnly}
-          label={label}
-          onChange={(v) => onChange(v)}
-          options={options}
-          value={value as string}
-        />
-      </FieldWithTooltip>
+      <SelectRenderer
+        description={description}
+        error={error}
+        isReadOnly={isReadOnly}
+        label={label}
+        onChange={(v) => onChange(v)}
+        options={options}
+        value={value as string}
+      />
     ))
     .with("switch", () => (
       // SwitchRenderer renders its own hover-tooltip in read-only mode
@@ -141,22 +138,6 @@ export function FieldRenderer({
       />
     ))
     .exhaustive();
-}
-
-function FieldWithTooltip({
-  children,
-  isReadOnly,
-}: {
-  children: React.ReactNode;
-  isReadOnly?: boolean | undefined;
-}) {
-  if (!isReadOnly) return children;
-  return (
-    <div className="flex items-start gap-2">
-      <div className="flex-1">{children}</div>
-      <DeclaredByProducerTooltip />
-    </div>
-  );
 }
 
 function getOptionValues(

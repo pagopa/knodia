@@ -1,5 +1,6 @@
-import { Radio, RadioGroup, Tooltip } from "@knodia/ui-kit/ui";
-import { Focusable, TooltipTrigger } from "react-aria-components";
+import { Radio, RadioGroup, TextField } from "@knodia/ui-kit/ui";
+
+import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
 
 interface Props {
   description?: string | undefined;
@@ -20,39 +21,36 @@ export function RadioRenderer({
   options,
   value,
 }: Props) {
+  if (isReadOnly) {
+    const selectedLabel =
+      options.find((opt) => opt.value === value)?.label ?? value;
+    return (
+      <TextField
+        description={description}
+        endIcon={<DeclaredByProducerTooltip />}
+        isReadOnly
+        label={label}
+        onChange={onChange}
+        value={selectedLabel}
+      />
+    );
+  }
+
   return (
     <RadioGroup
       description={description}
       errorMessage={error}
       isInvalid={!!error}
-      {...(isReadOnly && { isDisabled: true })}
       label={label}
       onChange={onChange}
       orientation="vertical"
       value={value}
     >
-      {options.map((opt) => {
-        const radio = (
-          <Radio key={opt.value} value={opt.value}>
-            {opt.label}
-          </Radio>
-        );
-        if (!isReadOnly) return radio;
-        return (
-          <div className="relative" key={opt.value}>
-            {radio}
-            <TooltipTrigger delay={0}>
-              <Focusable>
-                <span
-                  className="absolute top-0 left-0 size-4 cursor-default"
-                  tabIndex={0}
-                />
-              </Focusable>
-              <Tooltip placement="top">Declared by Producer</Tooltip>
-            </TooltipTrigger>
-          </div>
-        );
-      })}
+      {options.map((opt) => (
+        <Radio key={opt.value} value={opt.value}>
+          {opt.label}
+        </Radio>
+      ))}
     </RadioGroup>
   );
 }

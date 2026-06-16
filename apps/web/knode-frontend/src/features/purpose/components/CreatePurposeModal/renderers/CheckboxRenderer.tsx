@@ -1,5 +1,6 @@
-import { Checkbox, CheckboxGroup, Tooltip } from "@knodia/ui-kit/ui";
-import { Focusable, TooltipTrigger } from "react-aria-components";
+import { Checkbox, CheckboxGroup, TextArea } from "@knodia/ui-kit/ui";
+
+import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
 
 interface Props {
   description?: string | undefined;
@@ -20,41 +21,41 @@ export function CheckboxRenderer({
   options,
   value,
 }: Props) {
+  if (isReadOnly) {
+    const selectedLabels = value
+      .map((v) => options.find((opt) => opt.value === v)?.label ?? v)
+      .join("; ");
+    return (
+      <div className="relative">
+        <TextArea
+          className="[&_textarea]:pr-12"
+          description={description}
+          isReadOnly
+          label={label}
+          onChange={() => undefined}
+          value={selectedLabels}
+        />
+        <span className="text-primary-light-low-contrast pointer-events-auto absolute top-1/2 right-3 -translate-y-1/2 [&>svg]:h-5 [&>svg]:w-5">
+          <DeclaredByProducerTooltip />
+        </span>
+      </div>
+    );
+  }
+
   return (
     <CheckboxGroup
       description={description}
       errorMessage={error}
       isInvalid={!!error}
-      {...(isReadOnly && { isDisabled: true })}
       label={label}
       onChange={onChange}
       value={value}
     >
-      {options.map((opt) => {
-        const checkbox = (
-          <Checkbox key={opt.value} value={opt.value}>
-            {opt.label}
-          </Checkbox>
-        );
-        if (!isReadOnly) return checkbox;
-        // In read-only mode, overlay a 16×16 transparent trigger on top of the
-        // checkbox box so the tooltip anchors to the box itself (not the whole
-        // row), which gives a centered arrow above the box.
-        return (
-          <div className="relative" key={opt.value}>
-            {checkbox}
-            <TooltipTrigger delay={0}>
-              <Focusable>
-                <span
-                  className="absolute top-0 left-0 size-4 cursor-default"
-                  tabIndex={0}
-                />
-              </Focusable>
-              <Tooltip placement="top">Declared by Producer</Tooltip>
-            </TooltipTrigger>
-          </div>
-        );
-      })}
+      {options.map((opt) => (
+        <Checkbox key={opt.value} value={opt.value}>
+          {opt.label}
+        </Checkbox>
+      ))}
     </CheckboxGroup>
   );
 }

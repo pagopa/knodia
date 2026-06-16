@@ -1,4 +1,6 @@
-import { Select, SelectItem } from "@knodia/ui-kit/ui";
+import { Select, SelectItem, TextField } from "@knodia/ui-kit/ui";
+
+import { DeclaredByProducerTooltip } from "./DeclaredByProducerTooltip";
 
 interface Props {
   description?: string | undefined;
@@ -19,12 +21,26 @@ export function SelectRenderer({
   options,
   value,
 }: Props) {
+  if (isReadOnly) {
+    const selectedLabel =
+      options.find((opt) => opt.value === value)?.label ?? value;
+    return (
+      <TextField
+        description={description}
+        endIcon={<DeclaredByProducerTooltip />}
+        isReadOnly
+        label={label}
+        onChange={onChange}
+        value={selectedLabel}
+      />
+    );
+  }
+
   return (
     <Select
       description={description}
       errorMessage={error}
       isInvalid={!!error}
-      {...(isReadOnly && { isDisabled: true })}
       label={label}
       onSelectionChange={(key) => onChange(key as string)}
       selectedKey={value}
