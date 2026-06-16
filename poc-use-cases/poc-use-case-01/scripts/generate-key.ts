@@ -22,7 +22,9 @@ const result = spawnSync(
 );
 
 if (result.status !== 0) {
-  console.error(result.stderr || result.stdout);
+  // On a spawn failure (status === null) stderr/stdout are empty; surface the
+  // spawn error so the operator gets a message instead of a blank line.
+  console.error(result.stderr || result.stdout || result.error);
   process.exit(1);
 }
 

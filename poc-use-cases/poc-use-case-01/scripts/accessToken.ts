@@ -38,7 +38,9 @@ export async function mintEserviceAccessToken(
   );
 
   if (assertion.status !== 0) {
-    console.error(assertion.stderr || assertion.stdout);
+    // On a spawn failure (status === null) stderr/stdout are empty; surface the
+    // spawn error so the operator gets a message instead of a blank line.
+    console.error(assertion.stderr || assertion.stdout || assertion.error);
     process.exit(1);
   }
 
