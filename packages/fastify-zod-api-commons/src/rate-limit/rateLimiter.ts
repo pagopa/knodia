@@ -31,6 +31,7 @@ export interface RateLimiterStatus {
 
 interface InitRedisRateLimiterOptions {
   config: RateLimiterConfig;
+  environment: string;
   knodeId: KnodeId;
   logger: FastifyBaseLogger;
   serviceName: HTTPServiceName;
@@ -55,12 +56,13 @@ export const noopRateLimiter: RateLimiter = {
 
 export function initRedisRateLimiter({
   config,
+  environment,
   knodeId,
   logger,
   serviceName,
 }: InitRedisRateLimiterOptions): RateLimiter {
   // Lowercase the knodeId so the key namespace is uniformly lower-case
-  const keyPrefix = `knodia-rate-limit:${knodeId.toLowerCase()}:${serviceName}`;
+  const keyPrefix = `knodia-rate-limit:${environment}:${knodeId.toLowerCase()}:${serviceName}`;
   const maxRequests = config.rateLimiterMaxRequests;
   const rateIntervalMs = config.rateLimiterTimeWindowSeconds * 1_000;
   const timeoutMs = config.rateLimiterTimeoutSeconds * 1_000;

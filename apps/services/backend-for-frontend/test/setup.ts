@@ -58,6 +58,7 @@ beforeAll(async () => {
       isProduction: false,
       keychainProcessUrl: "http://localhost:0",
       knodeId: "Orion",
+      knodiaEnvironment: "test",
       logLevel: "silent",
       nodeEnv: "test",
       organizationProcessUrl: "http://localhost:0",

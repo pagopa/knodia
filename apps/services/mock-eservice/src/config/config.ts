@@ -25,6 +25,13 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         EXPECTED_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_ID: KnodeId,
+        KNODIA_ENVIRONMENT: z
+          .string()
+          .min(1)
+          .regex(
+            /^[^:]+$/,
+            "must not contain ':' (used as rate-limit key separator)",
+          ),
         WELL_KNOWN_URLS: z
           .string()
           .min(1)
@@ -39,6 +46,7 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         expectedIssuer: c.EXPECTED_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
         knodeId: c.KNODE_ID,
+        knodiaEnvironment: c.KNODIA_ENVIRONMENT,
         wellKnownUrls: c.WELL_KNOWN_URLS,
       })),
   );

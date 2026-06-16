@@ -19,7 +19,21 @@ const SignalHubConfig = LoggerConfig.and(HTTPServerConfig)
   .and(SignalHubDbConfig)
   .and(RateLimiterConfig)
   .and(
-    z.object({ KNODE_ID: KnodeId }).transform((c) => ({ knodeId: c.KNODE_ID })),
+    z
+      .object({
+        KNODE_ID: KnodeId,
+        KNODIA_ENVIRONMENT: z
+          .string()
+          .min(1)
+          .regex(
+            /^[^:]+$/,
+            "must not contain ':' (used as rate-limit key separator)",
+          ),
+      })
+      .transform((c) => ({
+        knodeId: c.KNODE_ID,
+        knodiaEnvironment: c.KNODIA_ENVIRONMENT,
+      })),
   );
 export type SignalHubConfig = z.infer<typeof SignalHubConfig>;
 

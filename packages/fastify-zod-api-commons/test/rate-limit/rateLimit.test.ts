@@ -22,6 +22,7 @@ import { buildTestApp } from "../mock/buildTestApp.ts";
 const MAX_REQUESTS = 3;
 
 const SCOPE = {
+  environment: "test",
   knodeId: "Orion" as const,
   serviceName: "backend-for-frontend" as const,
 };
@@ -48,6 +49,7 @@ function buildRateLimiter(
 ): RateLimiter {
   return initRedisRateLimiter({
     config,
+    environment: SCOPE.environment,
     knodeId: SCOPE.knodeId,
     logger: testLogger,
     serviceName: SCOPE.serviceName,
