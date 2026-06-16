@@ -24,9 +24,9 @@ export const toAPI_ConsumerAgreement = ({
     name: eservice.name,
   },
   id: agreement.id,
+  knodeId: eservice.knodeId,
   producer: {
     id: eservice.producer.id,
-    knodeId: eservice.producer.knodeId,
     name: eservice.producer.name,
   },
   state: agreement.state,
@@ -51,6 +51,7 @@ export const toAPI_PendingConsumerAgreement = ({
     hasRecentlyBeenUpdated(eservice, recentUpdateDays) ||
     hasRecentlyBeenUpdated(eservice.agreement, recentUpdateDays),
   id: eservice.agreement.id,
+  knodeId: eservice.knodeId,
   producer: eservice.producer,
 });
 
@@ -103,10 +104,10 @@ export const toAPI_ProducerAgreementDetails = ({
     name: eservice.name,
   },
   id: agreement.id,
+  knodeId: producer.knodeId,
   latestEserviceVersionState,
   producer: {
     id: producer.id,
-    knodeId: producer.knodeId,
     name: producer.name,
   },
   state: agreement.state,
