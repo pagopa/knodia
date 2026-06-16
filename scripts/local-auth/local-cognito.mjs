@@ -122,48 +122,6 @@ const MOCK_USERS = [
     UserStatus: "CONFIRMED",
     Username: "construction_companies_registry_orion_admin",
   },
-  // POC UC02 users — one per POC org (ids match scripts/seed/sql/{lynx,orion}
-  // and scripts/local-auth/generate-token.mjs). All roles, no role-based behaviour.
-  {
-    Attributes: [
-      { Name: "sub", Value: "00000000-0000-4000-8000-000000000101" },
-      { Name: "email", Value: "admin@businessbookletlynx.example.com" },
-      { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Business Booklet" },
-      { Name: "family_name", Value: "Lynx" },
-      {
-        Name: "custom:organizationId",
-        Value: "00000000-0000-4000-8000-000000000101",
-      },
-      { Name: "custom:roles", Value: "administrative,technical" },
-    ],
-    Enabled: true,
-    Groups: ["org:00000000-0000-4000-8000-000000000101"],
-    UserCreateDate: NOW_IN_SECONDS - 21_600,
-    UserLastModifiedDate: NOW_IN_SECONDS - 900,
-    UserStatus: "CONFIRMED",
-    Username: "Business Booklet Lynx Admin",
-  },
-  {
-    Attributes: [
-      { Name: "sub", Value: "00000000-0000-4000-8000-000000000102" },
-      { Name: "email", Value: "admin@constructioncompaniesregistryorion.example.com" },
-      { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Construction Companies Registry" },
-      { Name: "family_name", Value: "Orion" },
-      {
-        Name: "custom:organizationId",
-        Value: "00000000-0000-4000-8000-000000000102",
-      },
-      { Name: "custom:roles", Value: "administrative,technical" },
-    ],
-    Enabled: true,
-    Groups: ["org:00000000-0000-4000-8000-000000000102"],
-    UserCreateDate: NOW_IN_SECONDS - 21_600,
-    UserLastModifiedDate: NOW_IN_SECONDS - 900,
-    UserStatus: "CONFIRMED",
-    Username: "Construction Companies Registry Orion Admin",
-  },
 ];
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
