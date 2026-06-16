@@ -4013,6 +4013,10 @@ export type GetConsumerEservicesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
@@ -4059,6 +4063,10 @@ export type GetConsumerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetConsumerAgreementsErrors];
@@ -4125,6 +4133,10 @@ export type GetConsumerAgreementCountersErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerAgreementCountersError = GetConsumerAgreementCountersErrors[keyof GetConsumerAgreementCountersErrors];
@@ -4167,6 +4179,10 @@ export type GetPendingConsumerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErrors[keyof GetPendingConsumerAgreementsErrors];
@@ -4405,6 +4421,10 @@ export type GetConsumerPurposesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];

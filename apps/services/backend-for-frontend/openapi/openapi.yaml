@@ -6586,6 +6586,14 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/agreements:
     post:
       operationId: createConsumerAgreement
@@ -6699,6 +6707,14 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/agreements/counters:
     get:
       operationId: getConsumerAgreementCounters
@@ -6736,6 +6752,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/pending:
@@ -6793,6 +6817,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/activationMagicLink:
@@ -7138,6 +7170,14 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     post:
