@@ -252,6 +252,8 @@ services:
       /bin/sh -c "
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-eservice-interfaces;
+      mc mb --with-lock --ignore-existing local/knodia-signup-archives;
+      mc retention set --default GOVERNANCE 1d local/knodia-signup-archives;
       "
   # Web GUI for PostgreSQL
   pgadmin:

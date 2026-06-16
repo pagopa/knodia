@@ -81,7 +81,7 @@ describe("GET /organizations (getOrganizations)", () => {
 
     expect(response.json()).toEqual({
       pagination: { ...parsedDefaultQuery, total: 1 },
-      results: [expectedApiResult],
+      results: [{ ...expectedApiResult, knodeId: defaultQuery.knodeId }],
     });
   });
 

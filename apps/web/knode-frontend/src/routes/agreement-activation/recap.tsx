@@ -123,7 +123,7 @@ function RecapCard({ details, isActivating, onActivate }: RecapCardProps) {
       <div className="grid grid-cols-2 gap-4">
         <OrganizationCard
           label="Producer"
-          organization={details.producer}
+          organization={{ ...details.producer, knodeId: details.knodeId }}
           showContact={false}
         />
         <OrganizationCard

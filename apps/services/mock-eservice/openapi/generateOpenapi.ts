@@ -4,6 +4,7 @@ import {
   buildBearerAppFromConfig,
   buildBearerPocUc01QualificationsAppFromConfig,
   buildBearerPocUc02CompaniesAppFromConfig,
+  buildBearerReceiveDataAppFromConfig,
   buildBearerSignalHubAppFromConfig,
   buildDpopAppFromConfig,
 } from "../src/app.ts";
@@ -26,5 +27,9 @@ await Promise.all([
   generateOpenapi(
     buildBearerPocUc01QualificationsAppFromConfig(config),
     "openapi/openapi-bearer-poc-uc01-qualifications.yaml",
+  ),
+  generateOpenapi(
+    buildBearerReceiveDataAppFromConfig(config),
+    "openapi/openapi-bearer-receive-data.yaml",
   ),
 ]);
