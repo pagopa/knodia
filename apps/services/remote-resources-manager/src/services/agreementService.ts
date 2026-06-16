@@ -126,7 +126,7 @@ export function agreementServiceBuilder(
         producerId: data.producerId,
       });
 
-      return data;
+      return { ...data, knodeId: targetKnodeId };
     },
 
     async getAgreement(
