@@ -170,9 +170,7 @@ function Section({
   if (isControl(element)) {
     const fieldName = scopeToFieldName(element.scope);
     if (!visibleFields.has(fieldName)) return null;
-    const value =
-      answers[fieldName] ??
-      (jsonSchema.properties[fieldName]?.type === "array" ? [] : "");
+    const value = answers[fieldName] ?? "";
     return (
       <FieldRenderer
         allValues={answers}

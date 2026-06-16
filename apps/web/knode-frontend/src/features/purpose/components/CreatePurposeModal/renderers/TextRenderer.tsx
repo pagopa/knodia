@@ -26,16 +26,24 @@ export function TextRenderer({
   if (widget === "textarea") {
     return (
       <div className="flex flex-col gap-1">
-        <TextArea
-          description={description}
-          errorMessage={error}
-          isInvalid={!!error}
-          {...(isReadOnly && { isReadOnly: true })}
-          label={label}
-          onChange={onChange}
-          value={value}
-          {...(maxLength !== undefined && { maxLength })}
-        />
+        <div className="relative">
+          <TextArea
+            description={description}
+            errorMessage={error}
+            isInvalid={!!error}
+            {...(isReadOnly && { isReadOnly: true })}
+            label={label}
+            onChange={onChange}
+            value={value}
+            {...(maxLength !== undefined && { maxLength })}
+            {...(isReadOnly && { className: "[&_textarea]:pr-12" })}
+          />
+          {isReadOnly && (
+            <span className="text-primary-light-low-contrast pointer-events-auto absolute top-1/2 right-3 -translate-y-1/2 [&>svg]:h-5 [&>svg]:w-5">
+              <DeclaredByProducerTooltip />
+            </span>
+          )}
+        </div>
         {maxLength != null && !isReadOnly && (
           <span className="text-xs text-primary-light-low-contrast self-end">
             {value.length}/{maxLength}

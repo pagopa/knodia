@@ -75,46 +75,44 @@ export function FieldRenderer({
 
   return match(widget)
     .with("radio", () => (
-      <FieldWithTooltip isReadOnly={isReadOnly}>
-        <RadioRenderer
-          description={description}
-          error={error}
-          isReadOnly={isReadOnly}
-          label={label}
-          onChange={(v) => onChange(v)}
-          options={options}
-          value={value as string}
-        />
-      </FieldWithTooltip>
+      // RadioRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above each radio on hover).
+      <RadioRenderer
+        description={description}
+        error={error}
+        isReadOnly={isReadOnly}
+        label={label}
+        onChange={(v) => onChange(v)}
+        options={options}
+        value={value as string}
+      />
     ))
     .with("text", "textarea", (w) => (
-      // TextRenderer renders its own tooltip inside the field for "text"; for
-      // "textarea" we wrap externally below.
-      <FieldWithTooltip isReadOnly={isReadOnly && w === "textarea"}>
-        <TextRenderer
-          description={description}
-          error={error}
-          isReadOnly={isReadOnly}
-          label={label}
-          maxLength={maxLength}
-          onChange={(v) => onChange(v)}
-          value={value as string}
-          widget={w}
-        />
-      </FieldWithTooltip>
+      // TextRenderer renders the lock icon inside the field in read-only mode
+      // for both "text" and "textarea" widgets — no external wrapper needed.
+      <TextRenderer
+        description={description}
+        error={error}
+        isReadOnly={isReadOnly}
+        label={label}
+        maxLength={maxLength}
+        onChange={(v) => onChange(v)}
+        value={value as string}
+        widget={w}
+      />
     ))
     .with("checkbox", () => (
-      <FieldWithTooltip isReadOnly={isReadOnly}>
-        <CheckboxRenderer
-          description={description}
-          error={error}
-          isReadOnly={isReadOnly}
-          label={label}
-          onChange={(v) => onChange(v)}
-          options={options}
-          value={value as string[]}
-        />
-      </FieldWithTooltip>
+      // CheckboxRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above the checkbox group on hover).
+      <CheckboxRenderer
+        description={description}
+        error={error}
+        isReadOnly={isReadOnly}
+        label={label}
+        onChange={(v) => onChange(v)}
+        options={options}
+        value={value as string[]}
+      />
     ))
     .with("select", () => (
       <FieldWithTooltip isReadOnly={isReadOnly}>
@@ -130,17 +128,17 @@ export function FieldRenderer({
       </FieldWithTooltip>
     ))
     .with("switch", () => (
-      <FieldWithTooltip isReadOnly={isReadOnly}>
-        <SwitchRenderer
-          checkedLabel={optionLabels["true"]}
-          description={description}
-          error={error}
-          isReadOnly={isReadOnly}
-          label={label}
-          onChange={(v) => onChange(v)}
-          value={value as string}
-        />
-      </FieldWithTooltip>
+      // SwitchRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above the checkbox on hover).
+      <SwitchRenderer
+        checkedLabel={optionLabels["true"]}
+        description={description}
+        error={error}
+        isReadOnly={isReadOnly}
+        label={label}
+        onChange={(v) => onChange(v)}
+        value={value as string}
+      />
     ))
     .exhaustive();
 }
