@@ -3,8 +3,6 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const REPO_ROOT = resolve(here, "../../..");
-
 // Fixed path shared between generate-key (writes) and the retrieval/registration
 // scripts (read): the demo deliberately has no --key parameter, so the location
 // is the contract between the steps. Gitignored via poc-use-case-01/.gitignore.
