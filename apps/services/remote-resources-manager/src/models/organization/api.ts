@@ -11,6 +11,9 @@ export const API_Organization = z
   .strictObject({
     attributes: z.array(API_Attribute),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the Knode this Organization belongs to",
+    }),
     name: z.string(),
   })
   .meta({ id: "Organization" });

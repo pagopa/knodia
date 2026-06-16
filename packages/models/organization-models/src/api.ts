@@ -18,6 +18,14 @@ export const API_CompactOrganization = z
     name: z.string().min(minOrganizationNameLength),
   })
   .meta({
-    description: "Organization with only id, knodeId, and name",
+    description: "Organization with id, knodeId, and name",
     id: "CompactOrganization",
   });
+
+export const API_CompactProducer = API_CompactOrganization.omit({
+  knodeId: true,
+}).meta({
+  description:
+    "Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in",
+  id: "CompactProducer",
+});

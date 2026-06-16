@@ -72,6 +72,7 @@ describe("POST /purposes (ReceiveData mode)", () => {
     purposeFormOptionId,
   } satisfies k2kGatewayApi.PurposeSeed;
 
+  // k2k gateway response — the owning knodeId is added by RRM, not returned here
   const mockK2KResponse = {
     id: purpose.id,
   };
@@ -97,7 +98,7 @@ describe("POST /purposes (ReceiveData mode)", () => {
       }),
     );
 
-    expect(response.json()).toEqual(mockK2KResponse);
+    expect(response.json()).toEqual({ ...mockK2KResponse, knodeId });
 
     const remoteResourcePurpose = await remoteResourceDbService.getPurposeById(
       unsafeBrandExternalId(purpose.id),
