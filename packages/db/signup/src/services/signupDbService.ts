@@ -84,8 +84,6 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
-    // Shipped ahead of its consumer: the signup-updater follow-up task
-    // deprovisions the knodes and then calls this to finalize the deletion.
     async completeSignupUserDeletion(
       signupUserId: SignupUserId,
     ): Promise<void> {
