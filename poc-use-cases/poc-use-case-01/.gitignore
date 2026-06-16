@@ -1,3 +1,0 @@
-# Local-only private key written by scripts/generate-key, read by the
-# retrieval/registration scripts. Never commit it.
-.local/
