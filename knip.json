@@ -10,7 +10,8 @@
       "ignore": [
         "docker/multinode/env-*.js",
         "scripts/local-auth/kms-setup.mjs",
-        "scripts/local-auth/local-cognito.mjs"
+        "scripts/local-auth/local-cognito.mjs",
+        "scripts/local-auth/local-one-identity.mjs"
       ]
     },
     "packages/clients/**/*": {

@@ -129,6 +129,7 @@ interface UISignupSessionTokenInput extends TokenParams {
   familyName: string;
   fiscalNumber: string | undefined;
   name: string;
+  oneIdNonce: string;
   PersonIdentifier: string | undefined;
   spidCode: string | undefined;
   subject: string;
@@ -423,6 +424,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         iss: input.issuer,
         jti: randomUUID(),
         name: input.name,
+        oneIdNonce: input.oneIdNonce,
         personIdentifier: input.PersonIdentifier,
         spidCode: input.spidCode,
         sub: input.subject,

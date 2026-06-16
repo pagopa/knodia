@@ -48,7 +48,7 @@ function PendingAgreementCard({
           agreement.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
         }
         id={agreement.eservice.id}
-        search={{ knodeId: agreement.producer.knodeId }}
+        search={{ knodeId: agreement.knodeId }}
         title={agreement.eservice.name.en}
         to="/consumption/e-services/$id"
       />
@@ -58,7 +58,7 @@ function PendingAgreementCard({
         trailing={
           <KnodeAvatar
             className="bg-brand-dark text-white"
-            knodeId={agreement.producer.knodeId}
+            knodeId={agreement.knodeId}
             name={agreement.producer.name}
             size="sm"
           />

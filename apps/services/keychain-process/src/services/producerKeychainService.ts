@@ -243,6 +243,11 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
 
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
       assertUserIsAllowedToDownloadKey(
         authData,
         producerKeychainId,

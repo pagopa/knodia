@@ -53,7 +53,7 @@ const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
 };
 const companyAddressAppTag: OpenAPIV3.TagObject = {
   description:
-    "Legal-entity address lookup by uid_company (Cross-Border E-service 03, Bearer-protected)",
+    "Legal-entity address lookup by uid_company (Cross-Border E-service 06, Bearer-protected)",
   name: apiTags.companyAddress,
 };
 

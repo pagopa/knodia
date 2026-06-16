@@ -48,6 +48,7 @@ describe("POST /purposes (createPurpose)", () => {
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,
     eserviceId: purpose.eserviceId,
+    eserviceMode: "ProvideData",
     formAnswersJson: purpose.formAnswersJson,
     formSchemaVersion: purpose.formSchemaVersion,
     knodeId,
@@ -59,11 +60,13 @@ describe("POST /purposes (createPurpose)", () => {
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,
     eserviceId: purpose.eserviceId,
+    eserviceMode: "PROVIDE_DATA",
     formAnswersJson: purpose.formAnswersJson,
     formSchemaVersion: purpose.formSchemaVersion,
     name: purpose.name,
   };
 
+  // k2k gateway response — the owning knodeId is added by RRM, not returned here
   const mockK2KResponse = {
     id: purpose.id,
   };
@@ -89,7 +92,7 @@ describe("POST /purposes (createPurpose)", () => {
       }),
     );
 
-    expect(response.json()).toEqual(mockK2KResponse);
+    expect(response.json()).toEqual({ ...mockK2KResponse, knodeId });
 
     const remoteResourcePurpose = await remoteResourceDbService.getPurposeById(
       unsafeBrandExternalId(purpose.id),

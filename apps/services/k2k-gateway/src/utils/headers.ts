@@ -4,7 +4,7 @@ import type { InternalToken } from "@knodia/token-generator/models";
 import {
   AUTHORIZATION_HEADER,
   CORRELATION_ID_HEADER,
-} from "@knodia/fastify-zod-api-commons/models";
+} from "@knodia/common-models/headers";
 
 export const getKnodiaServiceHeaders = (
   correlationId: CorrelationId,
