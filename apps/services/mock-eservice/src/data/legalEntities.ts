@@ -78,7 +78,7 @@ export function findEvidences(
     .map((evidence) => ({
       ...evidence,
       isAbout: legalEntity,
-      validityPeriod: revisedValidity(evidence.validityPeriod, revision),
+      validityPeriod: reviseValidity(evidence.validityPeriod, revision),
     }));
 }
 
@@ -96,7 +96,7 @@ export function resetEvidenceRevisions(): void {
   evidenceRevisions.clear();
 }
 
-function revisedValidity(
+function reviseValidity(
   period: API_PeriodOfTime,
   revision: number,
 ): API_PeriodOfTime {

@@ -4,7 +4,7 @@ import {
   type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { resetEvidenceRevisions } from "../src/data/legalEntities.ts";
 import {
@@ -45,9 +45,8 @@ async function signToken(
   });
 }
 
-// The evidence revision is in-memory and process-wide; reset around each test.
+// The evidence revision is in-memory and process-wide; reset before each test.
 beforeEach(resetEvidenceRevisions);
-afterEach(resetEvidenceRevisions);
 
 describe("GET /legal-entities/:uidCompany/information", () => {
   it("returns 200 with the legal entity for a known company", async () => {
