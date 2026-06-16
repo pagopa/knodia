@@ -5,9 +5,11 @@ import {
   type ConsumerKeychainId,
   generateId,
   generateUserId,
+  type OrganizationId,
 } from "@knodia/common-models/ids";
 import {
   forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
   TEST_USER_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
@@ -30,9 +32,13 @@ const existingKeys = [
 const consumerKeychain: ConsumerKeychain = {
   ...getMockConsumerKeychain(),
   keys: existingKeys,
-  // TEST_USER_ID is a member, so the download check (admin OR member) passes.
+  // Owner is the default token org, and TEST_USER_ID is a member — so the
+  // download check (owner-org admin OR member) passes for the default token.
+  ownerId: TEST_ORGANIZATION_ID,
   users: [{ addedAt: new Date(), userId: TEST_USER_ID }],
 };
+
+const OTHER_ORGANIZATION_ID = generateId<OrganizationId>();
 
 const requestedKey = existingKeys[0]!;
 const VALID_CONSUMER_KEYCHAIN_ID = consumerKeychain.id;
@@ -131,6 +137,23 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
     );
 
     expect(response.statusCode).toBe(200);
+  });
+
+  it("should return 403 for an administrative caller from a different organization", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const response = await getConsumerKeychainKey(
+      VALID_CONSUMER_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      {
+        organizationId: OTHER_ORGANIZATION_ID,
+        roles: ["administrative"],
+        type: "ui-session",
+        userId: generateUserId(),
+      },
+    );
+
+    expect(response.statusCode).toBe(403);
   });
 
   it("should return 403 for a technical caller that is not a keychain member", async () => {

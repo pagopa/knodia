@@ -112,7 +112,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
     expect(response.json()).toEqual({
       pagination: { limit: 10, offset: 0, total: 1 },
-      results: [expectedApiResult],
+      results: [{ ...expectedApiResult, knodeId: "Orion" }],
     });
   });
 
