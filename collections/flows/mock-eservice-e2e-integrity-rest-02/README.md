@@ -13,9 +13,9 @@ Exercises the full access-token flow against the seeded mock e-service.
 3. **Step 2 – Get Company Address (Bearer)** — calls
    `GET /legal-entities/12345678901/address` with the `access_token`
    captured by step 11 → expect `200` with `Knodia-JWT-Signature` and
-   `Digest` headers. Stores the decoded JWT as `integrity_signature_jwt`.
+   `Digest` headers. Stores the decoded JWT as `integrity_rest_02_signature_jwt`.
 4. **Step 3 – Get Producer Key (Integrity REST 02)** — reads the `kid`
-   from `integrity_signature_jwt`, calls
+   from `integrity_rest_02_signature_jwt`, calls
    `GET /producerKeys/:kid` on the keychain-process → expect `200`.
    Verifies that the `signed_headers` in the JWT payload match the
    `Digest`, `Content-Type`, and (if present) `Content-Encoding`

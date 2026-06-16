@@ -47,8 +47,10 @@ script:post-response {
   const [h, p] = knodiaJwtSignature.split(".")
   const decodedKnodiaJwtSignature = { header: decodeB64(h), payload: decodeB64(p) }
 
-  bru.setVar("integrity_signature_jwt", JSON.stringify(decodedKnodiaJwtSignature))
-  bru.setVar("integrity_digest_header", res.headers["digest"])
-  bru.setVar("integrity_content_type_header", res.headers["content-type"])
-  bru.setVar("integrity_content_encoding_header", res.headers["content-encoding"])
+  bru.setVar("integrity_rest_02_signature_jwt", JSON.stringify(decodedKnodiaJwtSignature))
+  bru.setVar("integrity_rest_02_signature_raw", knodiaJwtSignature)
+  bru.setVar("integrity_rest_02_signature_kid", decodedKnodiaJwtSignature.header.kid)
+  bru.setVar("integrity_rest_02_digest_header", res.headers["digest"])
+  bru.setVar("integrity_rest_02_content_type_header", res.headers["content-type"])
+  bru.setVar("integrity_rest_02_content_encoding_header", res.headers["content-encoding"])
 }
