@@ -23,9 +23,9 @@ const RESTRICTION_REASONS = [
       "I have objected to processing under Art. 21 and I am waiting verification – Art. 18.1.(d)",
     value: "18.1.d",
   },
-];
+] as const;
 
-const DEFAULT_REASON = "18.1.a";
+const DEFAULT_REASON = RESTRICTION_REASONS[0].value;
 
 interface RequestRestrictionModalProps {
   isOpen: boolean;
