@@ -24,23 +24,11 @@ export function Footer() {
           </div>
         </div>
         <div className="flex w-[219px] flex-col gap-[66px]">
-          <div className="flex items-center gap-3">
-            <img
-              alt="Flag of the European Union"
-              className="h-[42px] w-[63px] border border-neutral-white"
-              src={euFlag}
-            />
-            <div className="flex flex-col font-body text-neutral-white">
-              <span className="text-[12px] leading-[16px] font-medium">
-                Funded by
-                <br />
-                the European Union
-              </span>
-              <span className="text-[9px] leading-[14px] text-neutral-gray-40">
-                NextGenerationEU
-              </span>
-            </div>
-          </div>
+          <img
+            alt="Funded by the European Union – NextGenerationEU"
+            className="w-[219px]"
+            src={euFlag}
+          />
           <div className="flex flex-col gap-4">
             <span className="text-style-caption text-neutral-gray-40">
               PARTNERS
