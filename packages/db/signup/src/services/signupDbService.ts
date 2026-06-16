@@ -20,6 +20,18 @@ export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
+    async checkEmailChangeRequestEmailExists(email: string): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.email, email))
+        .limit(1);
+
+      return result.length > 0;
+    },
+
     async checkSignupOrganizationNameAlreadyTaken(
       organizationName: string,
     ): Promise<boolean> {
@@ -33,6 +45,20 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
           ),
         )
         .limit(1);
+      return result.length > 0;
+    },
+
+    async checkSignupUserEmailChangeRequestExists(
+      signupUserId: SignupUserId,
+    ): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.signupUserId, signupUserId))
+        .limit(1);
+
       return result.length > 0;
     },
 

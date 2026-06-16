@@ -4,8 +4,8 @@ import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanst
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { confirmOnboarding, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
-import type { ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
+import { changeEmail, confirmOnboarding, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
+import type { ChangeEmailData, ChangeEmailError, ChangeEmailResponse, ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -101,6 +101,23 @@ export const confirmOnboardingMutation = (options?: Partial<Options<ConfirmOnboa
     const mutationOptions: UseMutationOptions<ConfirmOnboardingResponse, AxiosError<ConfirmOnboardingError>, Options<ConfirmOnboardingData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await confirmOnboarding({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Request email change for the caller user
+ */
+export const changeEmailMutation = (options?: Partial<Options<ChangeEmailData>>): UseMutationOptions<ChangeEmailResponse, AxiosError<ChangeEmailError>, Options<ChangeEmailData>> => {
+    const mutationOptions: UseMutationOptions<ChangeEmailResponse, AxiosError<ChangeEmailError>, Options<ChangeEmailData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await changeEmail({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

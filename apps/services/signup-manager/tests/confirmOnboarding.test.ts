@@ -15,10 +15,10 @@ import {
   validUISignupSessionTokenClaims,
 } from "./utils.ts";
 
-describe("POST /onboarding/confirm (confirmOnboarding)", () => {
+describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   it("should return 204 on successful onboarding confirmation", async () => {
     const response = await injectSignupAppRequest()
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(204);
@@ -88,7 +88,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     ],
   ])("should return 400 when the %s", async (_label, body) => {
     const response = await injectSignupAppRequest()
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(body);
 
     expect(response.statusCode).toBe(400);
@@ -101,7 +101,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
       roles: ["administrative"],
       type: "ui-session",
     })
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(403);
@@ -116,7 +116,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     await seedSignupUser(existingUser);
 
     const response = await injectSignupAppRequest()
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(409);
@@ -131,7 +131,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     await seedSignupUser(existingUser);
 
     const response = await injectSignupAppRequest()
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(409);
@@ -146,7 +146,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
     await seedSignupUser(existingUser);
 
     const response = await injectSignupAppRequest()
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(409);
@@ -166,7 +166,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
       spidCode: null,
       type: "ui-signup-session",
     })
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(409);
@@ -182,7 +182,7 @@ describe("POST /onboarding/confirm (confirmOnboarding)", () => {
       spidCode: null,
       type: "ui-signup-session",
     })
-      .post("/onboarding/confirm")
+      .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(500);
