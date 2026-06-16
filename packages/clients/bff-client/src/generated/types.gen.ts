@@ -123,11 +123,19 @@ export type EserviceTemplateReference = {
 };
 
 /**
- * Organization with only id, knodeId, and name
+ * Organization with id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
     knodeId: KnodeId;
+    name: string;
+};
+
+/**
+ * Producer Organization with id and name; omits knodeId since it is always known from the resource this is embedded in
+ */
+export type CompactProducer = {
+    id: string;
     name: string;
 };
 
@@ -409,10 +417,14 @@ export type ConsumerCatalogEserviceSearchResult = {
     description: LocalizedDescription;
     hasRequiredAttributes: boolean;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
@@ -423,7 +435,6 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -474,6 +485,10 @@ export type ConsumerEserviceDetails = {
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
     /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
+    /**
      * Unique identifier of the latest E-service version
      */
     latestVersionId: string;
@@ -516,9 +531,13 @@ export type ConsumerEservice = {
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this E-service
+     */
+    knodeId: KnodeId;
     mode: EserviceMode;
     name: LocalizedName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
 };
@@ -540,7 +559,11 @@ export type AgreementActivationDetails = {
     agreement: CompactAgreement;
     consumer: CompactOrganization;
     eservice: CompactEservice;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
 };
 
 /**
@@ -570,8 +593,12 @@ export type ProducerAgreementDetails = {
     id: string;
     state: AgreementState;
     updatedAt: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
     latestEserviceVersionState: EserviceVersionState;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
 };
@@ -604,7 +631,11 @@ export type ConsumerAgreement = {
         name: LocalizedName;
     };
     id: string;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
     state: AgreementState;
     updatedAt: string;
 };
@@ -627,7 +658,11 @@ export type PendingConsumerAgreement = {
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
-    producer: CompactOrganization;
+    /**
+     * Knode ID of the producer's Knode that owns this Agreement
+     */
+    knodeId: KnodeId;
+    producer: CompactProducer;
 };
 
 export type PendingConsumerAgreements = {
@@ -821,8 +856,12 @@ export type ConsumerPurpose = {
      * Number of Consumer Keychains associated with this purpose
      */
     keychains: number;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     name: LocalizedPurposeName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     state: PurposeState;
     updatedAt: string;
 };
@@ -865,9 +904,13 @@ export type PurposeDetails = {
     description: LocalizedPurposeDescription;
     eservice: PurposeDetailsEservice;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     maxDailyCallsPerConsumer: number;
     name: LocalizedPurposeName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     state: PurposeState;
     suspendedByConsumerAt: string | null;
     suspendedByProducerAt: string | null;
@@ -949,8 +992,12 @@ export type PurposeId = string;
 export type ConsumerKeychainPurpose = {
     eservice: CompactEservice;
     id: PurposeId;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     name: LocalizedPurposeName;
-    producer: CompactOrganization;
+    producer: CompactProducer;
     state: PurposeState;
 };
 
