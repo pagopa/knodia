@@ -1,0 +1,88 @@
+meta {
+  name: 3 - Get Producer Key (Integrity REST 02)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host-keychain-process}}/producerKeys/:producerKeychainKeyId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainKeyId: {{integrity_signature_kid}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: Bearer {{knode-api-token}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const kid = bru.getVar("integrity_signature_kid")
+  if (!kid) {
+    throw new Error(
+      "integrity_signature_kid is not set. Run step 2 (Get Company Address) first — it extracts the kid from the Knodia-JWT-Signature header."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200) {
+    throw new Error(`Request failed with status ${res.status}: ${JSON.stringify(res.body)}`)
+  }
+
+  const { header, payload } = JSON.parse(bru.getVar("integrity_signature_jwt"))
+
+  const signedHeaders = payload.signed_headers
+  if (!Array.isArray(signedHeaders)) {
+    throw new Error(`signed_headers is not an array: ${JSON.stringify(payload)}`)
+  }
+
+  // --- Digest: signed_headers entry must match the Digest response header ---
+  const digestResponseHeader = bru.getVar("integrity_digest_header")
+  const signedDigestEntry = signedHeaders.find((h) => "Digest" in h)
+  if (!signedDigestEntry) {
+    throw new Error(`signed_headers does not contain a Digest entry. Got: ${JSON.stringify(signedHeaders)}`)
+  }
+  if (signedDigestEntry["Digest"] !== digestResponseHeader) {
+    throw new Error(
+      `signed_headers Digest mismatch.\n  signed: ${signedDigestEntry["Digest"]}\n  header: ${digestResponseHeader}`
+    )
+  }
+
+  // --- Content-Type: signed_headers entry must match the Content-Type response header ---
+  const responseContentType = bru.getVar("integrity_content_type_header")
+  const signedContentTypeEntry = signedHeaders.find((h) => "Content-Type" in h)
+  if (!signedContentTypeEntry) {
+    throw new Error(`signed_headers does not contain a Content-Type entry. Got: ${JSON.stringify(signedHeaders)}`)
+  }
+  if (signedContentTypeEntry["Content-Type"] !== responseContentType) {
+    throw new Error(
+      `signed_headers Content-Type mismatch.\n  signed: ${signedContentTypeEntry["Content-Type"]}\n  header: ${responseContentType}`
+    )
+  }
+
+  // --- Content-Encoding: only present in signed_headers when the response has it ---
+  const responseContentEncoding = bru.getVar("integrity_content_encoding_header")
+  const signedContentEncodingEntry = signedHeaders.find((h) => "Content-Encoding" in h)
+  if (responseContentEncoding) {
+    if (!signedContentEncodingEntry) {
+      throw new Error(`Response has Content-Encoding (${responseContentEncoding}) but it is missing from signed_headers`)
+    }
+    if (signedContentEncodingEntry["Content-Encoding"] !== responseContentEncoding) {
+      throw new Error(
+        `signed_headers Content-Encoding mismatch.\n  signed: ${signedContentEncodingEntry["Content-Encoding"]}\n  header: ${responseContentEncoding}`
+      )
+    }
+  } else if (signedContentEncodingEntry) {
+    throw new Error(`signed_headers contains a Content-Encoding entry but the response has none`)
+  }
+
+  console.log("All Knodia-JWT-Signature integrity checks passed for GET /producerKeys/:kid")
+}
