@@ -177,6 +177,13 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      const [firstAgreement] = data.results;
+      if (!firstAgreement) {
+        res.status(200).send({ pagination: data.pagination, results: [] });
+        return;
+      }
+      const targetKnodeId = KnodeId.parse(firstAgreement.knodeId);
+
       const eservicesMap = await getExternalEntitiesMap({
         fetchFn: ({ entityIds, knodeId }) =>
           Promise.all(
@@ -192,8 +199,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
             ),
           ),
         getEntityId: (agreement) => agreement.eserviceId,
-        getKnodeId: (agreement) => KnodeId.parse(agreement.knodeId),
         items: data.results,
+        knodeId: targetKnodeId,
       });
 
       res.status(200).send({
@@ -202,9 +209,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerAgreement({
             agreement,
             eservice: assertEntityExists(
-              eservicesMap
-                .get(KnodeId.parse(agreement.knodeId))
-                ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+              eservicesMap.get(unsafeBrandExternalId(agreement.eserviceId)),
               `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
             ),
           }),

@@ -2442,6 +2442,10 @@ export type GetConsumerKeychainPurposesErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];

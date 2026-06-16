@@ -96,10 +96,12 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      if (data.results.length === 0) {
+      const [firstPurpose] = data.results;
+      if (!firstPurpose) {
         res.send({ pagination: data.pagination, results: [] });
         return;
       }
+      const targetKnodeId = KnodeId.parse(firstPurpose.knodeId);
 
       const [eservicesMap, consumerKeychainsMap] = await Promise.all([
         getExternalEntitiesMap({
@@ -117,8 +119,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
               ),
             ),
           getEntityId: (purpose) => purpose.eserviceId,
-          getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
           items: data.results,
+          knodeId: targetKnodeId,
         }),
         Promise.all(
           data.results.map((purpose) =>
@@ -134,21 +136,12 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
           ),
         ).then((responses) => {
           const consumerKeychainsMap = new Map<
-            KnodeId,
-            Map<string, keychainProcessApi.Keychains>
+            string,
+            keychainProcessApi.Keychains
           >();
 
           data.results.forEach((purpose, index) => {
-            const consumerKeychainPurposesMap =
-              consumerKeychainsMap.get(purpose.knodeId) ??
-              new Map<string, keychainProcessApi.Keychains>();
-            if (!consumerKeychainsMap.has(purpose.knodeId)) {
-              consumerKeychainsMap.set(
-                purpose.knodeId,
-                consumerKeychainPurposesMap,
-              );
-            }
-            consumerKeychainPurposesMap.set(
+            consumerKeychainsMap.set(
               purpose.id,
               assertEntityExists(
                 responses[index],
@@ -163,13 +156,11 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       const results = data.results.map((purpose) =>
         toAPI_ConsumerPurpose({
           consumerKeychainsCount: assertEntityExists(
-            consumerKeychainsMap.get(purpose.knodeId)?.get(purpose.id),
+            consumerKeychainsMap.get(purpose.id),
             `Consumer keychains not found for Purpose ${purpose.id}`,
           ).pagination.total,
           eserviceDetails: assertEntityExists(
-            eservicesMap
-              .get(purpose.knodeId)
-              ?.get(unsafeBrandExternalId(purpose.eserviceId)),
+            eservicesMap.get(unsafeBrandExternalId(purpose.eserviceId)),
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,

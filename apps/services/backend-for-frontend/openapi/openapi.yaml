@@ -4316,6 +4316,14 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: linkPurposeToConsumerKeychain
       tags:

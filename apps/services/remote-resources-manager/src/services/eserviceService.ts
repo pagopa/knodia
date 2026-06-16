@@ -109,17 +109,15 @@ export function eserviceServiceBuilder(
             })
             .then((res) => res.data.results),
         getEntityId: (agreement) => agreement.producerId,
-        getKnodeId: targetKnodeId,
         items: data.results,
+        knodeId: targetKnodeId,
       });
 
       return {
         pagination: data.pagination,
         results: data.results.map((r) => {
           const producer = assertEntityExists(
-            producersMap
-              .get(targetKnodeId)
-              ?.get(unsafeBrandExternalId(r.producerId)),
+            producersMap.get(unsafeBrandExternalId(r.producerId)),
             `Producer Organization ${r.producerId} owned by Knode ${targetKnodeId} not found for E-service ${r.id}`,
           );
           return toAPI_CatalogEserviceSearchResult(
@@ -254,8 +252,8 @@ export function eserviceServiceBuilder(
                 })
                 .then((res) => res.data.results),
             getEntityId: (agreement) => agreement.producerId,
-            getKnodeId: targetKnodeId,
             items: consumerAgreements.results,
+            knodeId: targetKnodeId,
           }),
           getExternalEntitiesMap({
             fetchFn: ({ entityIds }) =>
@@ -270,8 +268,8 @@ export function eserviceServiceBuilder(
                 })
                 .then((res) => res.data.results),
             getEntityId: (agreement) => agreement.eserviceId,
-            getKnodeId: targetKnodeId,
             items: consumerAgreements.results,
+            knodeId: targetKnodeId,
           }),
           getExternalEntitiesMap({
             fetchFn: ({ entityIds }) =>
@@ -284,8 +282,8 @@ export function eserviceServiceBuilder(
                 ),
               ).then((responses) => responses.map((res) => res.data)),
             getEntityId: (agreement) => agreement.eserviceId,
-            getKnodeId: targetKnodeId,
             items: consumerAgreements.results,
+            knodeId: targetKnodeId,
           }),
         ]);
 
@@ -296,22 +294,18 @@ export function eserviceServiceBuilder(
             toAPI_Eservice({
               agreement,
               eservice: assertEntityExists(
-                eservicesMap
-                  .get(targetKnodeId)
-                  ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+                eservicesMap.get(unsafeBrandExternalId(agreement.eserviceId)),
                 `E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
               ),
               eserviceVersion: assertEntityExists(
-                eserviceVersionsMap
-                  .get(targetKnodeId)
-                  ?.get(unsafeBrandExternalId(agreement.eserviceVersionId)),
+                eserviceVersionsMap.get(
+                  unsafeBrandExternalId(agreement.eserviceVersionId),
+                ),
                 `E-service version for E-service ${agreement.eserviceId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
               ),
               producer: {
                 ...assertEntityExists(
-                  producersMap
-                    .get(targetKnodeId)
-                    ?.get(unsafeBrandExternalId(agreement.producerId)),
+                  producersMap.get(unsafeBrandExternalId(agreement.producerId)),
                   `Producer Organization ${agreement.producerId} owned by Knode ${targetKnodeId} not found for Agreement ${agreement.id}`,
                 ),
                 knodeId: targetKnodeId,
