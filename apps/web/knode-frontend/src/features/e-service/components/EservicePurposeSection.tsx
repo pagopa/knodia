@@ -116,7 +116,7 @@ function EservicePurposeTable({
                 hierarchy="neutral"
                 kind="outlined"
                 params={{ id: purpose.id }}
-                search={{ knodeId: purpose.producer.knodeId }}
+                search={{ knodeId: purpose.knodeId }}
                 size="icon-md"
                 to="/consumption/purposes/$id"
               >

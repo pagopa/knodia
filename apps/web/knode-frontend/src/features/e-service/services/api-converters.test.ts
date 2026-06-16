@@ -31,6 +31,7 @@ function createBffDetail(
       name: "API Specs",
     },
     isSignalHubEnabled: false,
+    knodeId: "Lynx",
     latestVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
     latestVersionUpdatedAt: "2026-04-30T10:00:00.000Z",
     maxDailyCalls: {
@@ -42,7 +43,6 @@ function createBffDetail(
     producer: {
       email: "info@ursa.com",
       id: "00000000-0000-4000-8000-000000000099",
-      knodeId: "Lynx",
       name: "Ursa Major",
       notes: "Open Mon-Fri",
     },

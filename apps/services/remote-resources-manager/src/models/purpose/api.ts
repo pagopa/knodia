@@ -70,8 +70,13 @@ export type API_GetPurposeFormSchemaQueryParams = z.infer<
   typeof API_GetPurposeFormSchemaQueryParams
 >;
 
-export const API_CreatedPurposeResource = API_CreatedResource.meta({
-  description: "Unique identifier of the created Purpose resource",
+export const API_CreatedPurposeResource = API_CreatedResource.extend({
+  knodeId: API_KnodeId.meta({
+    description: "Knode ID of the producer's Knode that owns this Purpose",
+  }),
+}).meta({
+  description:
+    "Unique identifier of the created Purpose resource along with the owning Knode",
   id: "CreatedPurposeResource",
 });
 export type API_CreatedPurposeResource = z.infer<
