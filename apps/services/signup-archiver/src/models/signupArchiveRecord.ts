@@ -17,5 +17,11 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
     date: z.iso.datetime(),
     nonce: z.string(),
   }),
+  z.strictObject({
+    action: z.literal("Suspension"),
+    date: z.iso.datetime(),
+    nonce: z.string(),
+    reason: z.string(),
+  }),
 ]);
 export type SignupArchiveRecord = z.infer<typeof SignupArchiveRecord>;
