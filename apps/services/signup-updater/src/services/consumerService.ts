@@ -2,10 +2,7 @@ import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
-import {
-  genericInternalError,
-  InternalError,
-} from "@knodia/common-models/errors";
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type CorrelationId,
   KnodeId,
