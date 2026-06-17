@@ -101,6 +101,19 @@ components:
       required:
         - email
       additionalProperties: false
+    SuspendUserRequestBody:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - AccuracyContested
+            - UnlawfulProcessing
+            - DataNeededForLegalClaims
+            - PendingObjectionVerification
+      required:
+        - reason
+      additionalProperties: false
     CurrentSignupUser:
       type: object
       properties:
@@ -351,6 +364,53 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /user/suspend:
+    post:
+      operationId: suspendUser
+      tags:
+        - signup
+      description: Request suspension for the caller user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspendUserRequestBody"
+      responses:
+        "204":
+          description: User suspension requested successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
