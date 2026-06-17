@@ -6,7 +6,7 @@ import {
   type OrganizationId,
   type SignupUserId,
 } from "@knodia/common-models/ids";
-import { SignupEventV1, SignupUser } from "@knodia/signup-models";
+import { OnboardingCompletedV1, SignupUser } from "@knodia/signup-models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
@@ -76,8 +76,8 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
   };
 }
 
-function onboardingEvent(signupUserId: SignupUserId): SignupEventV1 {
-  const event = zocker(SignupEventV1).setSeed(0).generate();
+function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
+  const event = zocker(OnboardingCompletedV1).setSeed(0).generate();
   return { ...event, data: { ...event.data, signupUserId } };
 }
 

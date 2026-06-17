@@ -4,6 +4,7 @@ export type IDS =
   | AgreementId
   | ConsumerKeychainId
   | CorrelationId
+  | EmailChangeRequestId
   | EserviceId
   | EserviceInterfaceId
   | EserviceTemplateId
@@ -57,6 +58,9 @@ export type ProducerKeychainId = z.infer<typeof ProducerKeychainId>;
 
 export const SignupUserId = z.uuid().brand<"SignupUserId">();
 export type SignupUserId = z.infer<typeof SignupUserId>;
+
+export const EmailChangeRequestId = z.uuid().brand<"EmailChangeRequestId">();
+export type EmailChangeRequestId = z.infer<typeof EmailChangeRequestId>;
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;

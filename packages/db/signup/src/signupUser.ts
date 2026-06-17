@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   check,
   date,
+  foreignKey,
   pgSchema,
   text,
   timestamp,
@@ -41,5 +42,24 @@ export const signupUser = schema.table(
   ],
 );
 
+export const emailChangeRequest = schema.table(
+  "email_change_request",
+  {
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+    email: text("email").notNull().unique(),
+    emailChangeRequestId: uuid("email_change_request_id").primaryKey(),
+    signupUserId: uuid("signup_user_id").notNull().unique(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.signupUserId],
+      foreignColumns: [signupUser.signupUserId],
+      name: "email_change_request_signup_user_id_fkey",
+    }).onDelete("cascade"),
+  ],
+);
+
+export type EmailChangeRequestSQL = typeof emailChangeRequest.$inferSelect;
+export type NewEmailChangeRequest = typeof emailChangeRequest.$inferInsert;
 export type NewSignupUser = typeof signupUser.$inferInsert;
 export type SignupUserSQL = typeof signupUser.$inferSelect;
