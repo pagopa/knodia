@@ -6,13 +6,12 @@ import {
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import {
-  POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
-  POC_UC03_RELAY_ORION_MOCK_ESERVICE_VERSION_ID,
-  POC_UC03_RELAY_ORION_MOCK_PRODUCER_ID,
-} from "../src/pocUc03Erds/mockup.ts";
+import { POC_UC03_RELAY_IDENTITY_BY_KNODE } from "../src/pocUc03Erds/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
+
+// TEST_KNODE_ID is Orion, so the relay served is the Orion SERC's e-service.
+const RELAY = POC_UC03_RELAY_IDENTITY_BY_KNODE[TEST_KNODE_ID];
 
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
@@ -57,11 +56,10 @@ async function signToken(
   } = {},
 ) {
   return signEserviceAccessToken({
-    eserviceId: overrides.eserviceId ?? POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
-    eserviceVersionId:
-      overrides.eserviceVersionId ?? POC_UC03_RELAY_ORION_MOCK_ESERVICE_VERSION_ID,
+    eserviceId: overrides.eserviceId ?? RELAY.eserviceId,
+    eserviceVersionId: overrides.eserviceVersionId ?? RELAY.eserviceVersionId,
     knodeId: TEST_KNODE_ID,
-    producerId: POC_UC03_RELAY_ORION_MOCK_PRODUCER_ID,
+    producerId: RELAY.producerId,
     tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
   });
 }
