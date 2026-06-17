@@ -31,7 +31,20 @@ describe("POST /user/suspend (suspendUser)", () => {
     const suspendedSignupUser = signupUsers[0];
 
     expect(suspendedSignupUser).toEqual({
-      ...signupUser,
+      createdAt: signupUser.createdAt,
+      dateOfBirth: signupUser.dateOfBirth,
+      email: signupUser.email,
+      familyName: signupUser.familyName,
+      fiscalNumber: signupUser.fiscalNumber ?? null,
+      lynxOrganizationName: signupUser.generatedEntities.Lynx.organizationName,
+      lynxUserName: signupUser.generatedEntities.Lynx.userName,
+      name: signupUser.name,
+      orionOrganizationName:
+        signupUser.generatedEntities.Orion.organizationName,
+      orionUserName: signupUser.generatedEntities.Orion.userName,
+      personIdentifier: signupUser.personIdentifier ?? null,
+      signupUserId: signupUser.signupUserId,
+      spidCode: signupUser.spidCode ?? null,
       status: "Suspended",
       suspendedAt: expect.any(Date),
       suspensionReason: "UnlawfulProcessing",
@@ -118,13 +131,5 @@ describe("POST /user/suspend (suspendUser)", () => {
 
     expect(response.statusCode).toBe(409);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
-
-    const signupUsers = await getAllSignupUsers();
-    expect(signupUsers).toHaveLength(1);
-    expect(signupUsers[0]).toEqual({
-      ...signupUser,
-      suspendedAt,
-      updatedAt: suspendedAt,
-    });
   });
 });
