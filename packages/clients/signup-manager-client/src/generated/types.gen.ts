@@ -41,6 +41,10 @@ export type ConfirmOnboardingRequestBody = {
     email: string;
 };
 
+export type ChangeEmailRequestBody = {
+    email: string;
+};
+
 export type CurrentSignupUser = {
     email?: string;
     onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'NOT_COMPLETED';
@@ -105,7 +109,7 @@ export type ConfirmOnboardingData = {
     body: ConfirmOnboardingRequestBody;
     path?: never;
     query?: never;
-    url: '/onboarding/confirm';
+    url: '/user/confirmOnboarding';
 };
 
 export type ConfirmOnboardingErrors = {
@@ -138,11 +142,48 @@ export type ConfirmOnboardingResponses = {
 
 export type ConfirmOnboardingResponse = ConfirmOnboardingResponses[keyof ConfirmOnboardingResponses];
 
+export type ChangeEmailData = {
+    body: ChangeEmailRequestBody;
+    path?: never;
+    query?: never;
+    url: '/user/changeEmail';
+};
+
+export type ChangeEmailErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ChangeEmailError = ChangeEmailErrors[keyof ChangeEmailErrors];
+
+export type ChangeEmailResponses = {
+    /**
+     * Email change requested successfully
+     */
+    204: void;
+};
+
+export type ChangeEmailResponse = ChangeEmailResponses[keyof ChangeEmailResponses];
+
 export type GetCurrentSignupUserData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/me';
+    url: '/user/me';
 };
 
 export type GetCurrentSignupUserErrors = {
