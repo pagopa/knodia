@@ -8,10 +8,8 @@ import {
   generateId,
   type SignupUserId,
 } from "@knodia/common-models/ids";
-import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import { isPgUniqueViolation } from "@knodia/common-models/utils";
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
-import { DrizzleQueryError } from "drizzle-orm";
-import { DatabaseError } from "pg";
 
 import type {
   API_ChangeEmailRequestBody,
@@ -197,15 +195,5 @@ async function generateUniqueOrganizationNames(
 
   throw genericInternalError(
     "Failed to generate unique organization names after multiple attempts",
-  );
-}
-
-function isPgUniqueViolation(
-  error: unknown,
-): error is DrizzleQueryError & { cause: DatabaseError } {
-  return (
-    error instanceof DrizzleQueryError &&
-    error.cause instanceof DatabaseError &&
-    error.cause?.code === PG_UNIQUE_VIOLATION
   );
 }

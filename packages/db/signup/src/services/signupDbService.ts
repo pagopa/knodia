@@ -72,6 +72,16 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
+    async deleteEmailChangeRequest(
+      emailChangeRequestId: EmailChangeRequestId,
+    ): Promise<void> {
+      await db
+        .delete(emailChangeRequest)
+        .where(
+          eq(emailChangeRequest.emailChangeRequestId, emailChangeRequestId),
+        );
+    },
+
     async getEmailChangeRequestById(
       emailChangeRequestId: EmailChangeRequestId,
     ): Promise<EmailChangeRequest | undefined> {
@@ -144,6 +154,19 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
 
     async insertSignupUser(user: SignupUser): Promise<void> {
       await db.insert(signupUser).values(toSignupUserSQL(user));
+    },
+
+    async updateSignupUserEmail({
+      email,
+      signupUserId,
+    }: {
+      email: string;
+      signupUserId: SignupUserId;
+    }): Promise<void> {
+      await db
+        .update(signupUser)
+        .set({ email, updatedAt: new Date() })
+        .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
 }

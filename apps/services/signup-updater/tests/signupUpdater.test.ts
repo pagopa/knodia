@@ -2,11 +2,20 @@ import type { Logger } from "pino";
 
 import {
   type CorrelationId,
+  type EmailChangeRequestId,
   generateId,
   type OrganizationId,
   type SignupUserId,
 } from "@knodia/common-models/ids";
-import { OnboardingCompletedV1, SignupUser } from "@knodia/signup-models";
+import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import {
+  type EmailChangeRequest,
+  type EmailChangeRequestedV1,
+  OnboardingCompletedV1,
+  SignupUser,
+} from "@knodia/signup-models";
+import { DrizzleQueryError } from "drizzle-orm";
+import { DatabaseError } from "pg";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
@@ -32,7 +41,11 @@ import { handleSignupMessage } from "../src/services/consumerService.ts";
 import { externalOrganizationId } from "../src/utils/externalOrganizationId.ts";
 
 const cognitoCreateUserMock = vi.fn();
+const cognitoUpdateUserEmailMock = vi.fn();
+const deleteEmailChangeRequestMock = vi.fn();
+const getEmailChangeRequestByIdMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
+const updateSignupUserEmailMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
 const logger = {
@@ -43,7 +56,10 @@ const logger = {
 
 function buildDeps(): SignupUpdaterDeps {
   const node = {
-    cognitoClient: { createOrganizationUser: cognitoCreateUserMock },
+    cognitoClient: {
+      createOrganizationUser: cognitoCreateUserMock,
+      updateUserEmail: cognitoUpdateUserEmailMock,
+    },
     internalTokenProvider: {
       get: vi.fn().mockResolvedValue({ serialized: "mock-internal-token" }),
     },
@@ -51,8 +67,38 @@ function buildDeps(): SignupUpdaterDeps {
   };
   return {
     knodeClients: { Lynx: node, Orion: node },
-    signupDbService: { getSignupUserById: getSignupUserByIdMock },
+    signupDbService: {
+      deleteEmailChangeRequest: deleteEmailChangeRequestMock,
+      getEmailChangeRequestById: getEmailChangeRequestByIdMock,
+      getSignupUserById: getSignupUserByIdMock,
+      updateSignupUserEmail: updateSignupUserEmailMock,
+    },
   } as unknown as SignupUpdaterDeps;
+}
+
+function emailChangeRequestedEvent({
+  emailChangeRequestId,
+  signupUserId,
+}: {
+  emailChangeRequestId: EmailChangeRequestId;
+  signupUserId: SignupUserId;
+}): EmailChangeRequestedV1 {
+  return {
+    data: { emailChangeRequestId, signupUserId },
+    type: "EmailChangeRequestedV1",
+  };
+}
+
+function getMockEmailChangeRequest(
+  overrides: Partial<EmailChangeRequest> = {},
+): EmailChangeRequest {
+  return {
+    createdAt: new Date("2026-05-28T10:00:00Z"),
+    email: "new.email@example.org",
+    emailChangeRequestId: generateId<EmailChangeRequestId>(),
+    signupUserId: generateId<SignupUserId>(),
+    ...overrides,
+  };
 }
 
 function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
@@ -81,14 +127,29 @@ function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
   return { ...event, data: { ...event.data, signupUserId } };
 }
 
+function pgUniqueViolation(): DrizzleQueryError {
+  const dbError = new DatabaseError(
+    "duplicate key value violates unique constraint",
+    0,
+    "error",
+  );
+  dbError.code = PG_UNIQUE_VIOLATION;
+  return new DrizzleQueryError("update signup_user", [], dbError);
+}
+
 const conflict = { isAxiosError: true, response: { status: 409 } };
 
 describe("handleSignupMessage — OnboardingCompletedV1", () => {
   beforeEach(() => {
     createOrganizationMock.mockReset();
     cognitoCreateUserMock.mockReset();
+    cognitoUpdateUserEmailMock.mockReset();
+    deleteEmailChangeRequestMock.mockReset();
+    getEmailChangeRequestByIdMock.mockReset();
     getSignupUserByIdMock.mockReset();
+    updateSignupUserEmailMock.mockReset();
     vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
     vi.mocked(logger.warn).mockReset();
   });
 
@@ -212,5 +273,176 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     expect(createOrganizationMock).not.toHaveBeenCalled();
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("handleSignupMessage — EmailChangeRequestedV1", () => {
+  beforeEach(() => {
+    createOrganizationMock.mockReset();
+    cognitoCreateUserMock.mockReset();
+    cognitoUpdateUserEmailMock.mockReset();
+    deleteEmailChangeRequestMock.mockReset();
+    getEmailChangeRequestByIdMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    updateSignupUserEmailMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("updates the signup user email, updates Cognito on both nodes, and deletes the request", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
+    updateSignupUserEmailMock.mockResolvedValue(undefined);
+    cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
+    deleteEmailChangeRequestMock.mockResolvedValue(undefined);
+
+    await handleSignupMessage(
+      emailChangeRequestedEvent({
+        emailChangeRequestId,
+        signupUserId: user.signupUserId,
+      }),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(getEmailChangeRequestByIdMock).toHaveBeenCalledWith(
+      emailChangeRequestId,
+    );
+    expect(updateSignupUserEmailMock).toHaveBeenCalledWith({
+      email: request.email,
+      signupUserId: user.signupUserId,
+    });
+    expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(2);
+    expect(cognitoUpdateUserEmailMock.mock.calls.at(0)?.at(0)).toEqual({
+      email: request.email,
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoUpdateUserEmailMock.mock.calls.at(1)?.at(0)).toEqual({
+      email: request.email,
+      username: "mario.rossi.lynx",
+    });
+    expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
+      emailChangeRequestId,
+    );
+  });
+
+  it("skips the event when the email change request no longer exists", async () => {
+    const signupUserId = generateId<SignupUserId>();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    getEmailChangeRequestByIdMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({ emailChangeRequestId, signupUserId }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(getSignupUserByIdMock).not.toHaveBeenCalled();
+    expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoUpdateUserEmailMock).not.toHaveBeenCalled();
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    expect(logger.info).toHaveBeenCalledTimes(1);
+  });
+
+  it("deletes the request and skips the event when the signup user no longer exists", async () => {
+    const signupUserId = generateId<SignupUserId>();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    deleteEmailChangeRequestMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({
+          emailChangeRequestId,
+          signupUserId,
+        }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoUpdateUserEmailMock).not.toHaveBeenCalled();
+    expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
+      emailChangeRequestId,
+    );
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws and keeps the request pending on a signup user email unique violation", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
+    updateSignupUserEmailMock.mockRejectedValue(pgUniqueViolation());
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({
+          emailChangeRequestId,
+          signupUserId: user.signupUserId,
+        }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toMatchObject({ code: "GENERIC_INTERNAL_ERROR" });
+
+    expect(cognitoUpdateUserEmailMock).not.toHaveBeenCalled();
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws and keeps the request pending when a Cognito email update fails", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
+    updateSignupUserEmailMock.mockResolvedValue(undefined);
+    cognitoUpdateUserEmailMock.mockRejectedValueOnce(new Error("boom"));
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({
+          emailChangeRequestId,
+          signupUserId: user.signupUserId,
+        }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+
+    expect(updateSignupUserEmailMock).toHaveBeenCalledWith({
+      email: request.email,
+      signupUserId: user.signupUserId,
+    });
+    expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(1);
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
   });
 });
