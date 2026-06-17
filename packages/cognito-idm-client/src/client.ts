@@ -5,6 +5,7 @@ import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminListGroupsForUserCommand,
+  AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
   ListUsersCommand,
@@ -135,6 +136,22 @@ export function buildCognitoIdmClient({
 
       const user = response.Users?.at(0);
       return user ? toIdmUser(user) : undefined;
+    },
+
+    async updateUserEmail(input: {
+      email: string;
+      username: string;
+    }): Promise<void> {
+      await client.send(
+        new AdminUpdateUserAttributesCommand({
+          UserAttributes: [
+            { Name: "email", Value: input.email },
+            { Name: "email_verified", Value: "true" },
+          ],
+          Username: input.username,
+          UserPoolId: cognitoUserPoolId,
+        }),
+      );
     },
   };
 }
