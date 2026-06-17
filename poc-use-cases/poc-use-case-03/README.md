@@ -12,26 +12,28 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 
 ## Phase 1
 
-Organizations: `supervisoryBodyOrion` (Orion), `systemSERCOrion` (Orion), `systemSERCLynx` (Lynx)
+Organizations: `supervisoryBodyOrion`, `systemSERCOrion`, `systemSERCLynx`
 
-Description: the three POC organizations publish the cross-border e-services that make the relay possible. The supervisory body of Orion publishes a **provide-data** e-service to look up which SERC serves a recipient and fetch that SERC's metadata; each SERC publishes a **receive-data** e-service to relay a dispatch (the sender's message, or the delivery evidences).
+Knodes: `Orion`, `Lynx`
+
+Description: the three POC producers publish the cross-border e-services that make the relay possible — the supervisory body of Orion a **provide-data** e-service to look up which SERC serves a recipient and fetch its metadata, and each SERC a **receive-data** e-service to relay a dispatch (the sender's message, or the delivery evidences).
 
 Steps:
 
 1. **[UI]** Log in to the Orion Knode as a User of the `supervisoryBodyOrion` Organization.
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create e-service" to show the e-service creation flow.
-4. **[UI]** That was only to show the creation flow — the e-services used by the demo were already created in advance. Open `ERDS Lookup & Metadata - Orion` (provide-data, `supervisoryBodyOrion`) and show its detail page.
-5. **[UI]** Log in to the Orion Knode as a User of the `systemSERCOrion` Organization and open its `ERDS Relay - Orion` e-service (receive-data); show its detail page.
-6. **[UI]** Log in to the Lynx Knode as a User of the `systemSERCLynx` Organization and open its `ERDS Relay - Lynx` e-service (receive-data); show its detail page.
+4. **[UI]** That was only to show the creation flow — the e-services used by the demo were already created in advance. Open `ERDS Lookup & Metadata - Orion` (provide-data) and show its detail page.
+5. **[UI]** _(as `systemSERCOrion`, on Orion)_ Log in as the `systemSERCOrion` Organization and open its `ERDS Relay - Orion` e-service (receive-data); show its detail page.
+6. **[UI]** _(as `systemSERCLynx`, on Lynx)_ Log in to the Lynx Knode as the `systemSERCLynx` Organization and open its `ERDS Relay - Lynx` e-service (receive-data); show its detail page.
 
 ## Phase 2
 
-Organizations: `systemSERCLynx` (Lynx) — and `systemSERCOrion` (Orion) for chain C
+Organization: `systemSERCLynx`
 
-Knode: `Lynx` — and `Orion` for chain C
+Knode: `Lynx`
 
-Description: to use each other's e-services, the SERCs must first satisfy each e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking. This is done once per consumption chain. The demo needs three: **A.** `systemSERCLynx` → `supervisoryBodyOrion` provide-data (look up the recipient's SERC); **B.** `systemSERCLynx` → `systemSERCOrion` relay (send the message); **C.** `systemSERCOrion` → `systemSERCLynx` relay (return the evidences).
+Description: to look up the recipient's SERC, `systemSERCLynx` must first satisfy the consumption requirements of the supervisory body's provide-data e-service: Agreement, Purpose, Keychain, and Keychain↔Purpose linking.
 
 Steps:
 
@@ -43,14 +45,35 @@ Steps:
 6. **[script]** Run `node generate-key.ts` — it prints a public key and saves the private key to a fixed path in this folder, which the later scripts read automatically (no key path to pass around).
 7. **[UI]** In the Keychains section, create a Consumer Keychain, add yourself as a member, upload the public key printed by `node generate-key.ts`, and link the Purpose to it.
 8. Note the Consumer Keychain id and the Purpose id — they are params for the scripts.
-9. **[UI]** For chain B, repeat steps 2–5 for the **relay** e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Comunicazione tra sistemi di notifica certificata").
-10. **[UI]** Link the Purpose to the same Consumer Keychain created in step 7.
-11. Note the Purpose id — the Consumer Keychain is the same as step 8.
-12. **[UI]** For chain C, log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–5 for the **relay** e-service (`ERDS Relay - Lynx`) — its activation link opens on the producer (Lynx) Knode, and select the same Purpose Form option for its Purpose.
-13. **[UI]** Create a Consumer Keychain for `systemSERCOrion`, add a member, upload the **same** public key from step 6 (no need to run `generate-key.ts` again), and link this Purpose to it.
-14. Note this Consumer Keychain id and the Purpose id.
 
 ## Phase 3
+
+Organization: `systemSERCLynx`
+
+Knode: `Lynx`
+
+Description: to relay the sender's message to the recipient's SERC, `systemSERCLynx` must also satisfy the consumption requirements of `systemSERCOrion`'s relay e-service. The setup is the same as Phase 2, reusing the same Consumer Keychain.
+
+Steps:
+
+1. **[UI]** Repeat steps 2–5 of Phase 2 for the **relay** e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Comunicazione tra sistemi di notifica certificata").
+2. **[UI]** Link the Purpose to the same Consumer Keychain created in Phase 2.
+3. Note the Purpose id — the Consumer Keychain is the same as Phase 2.
+
+## Phase 4
+
+Organization: `systemSERCOrion`
+
+Knode: `Orion`
+
+Description: to relay the delivery evidences back to the sender's SERC, `systemSERCOrion` must satisfy the consumption requirements of `systemSERCLynx`'s relay e-service. The setup is the same as Phase 2, for a different consuming organization.
+
+Steps:
+
+1. **[UI]** Log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–7 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`), skipping step 6 — its activation link opens on the producer (Lynx) Knode, select the same Purpose Form option for its Purpose, and upload the **same** public key from Phase 2 (no need to run `generate-key.ts` again).
+2. Note the Consumer Keychain id and the Purpose id.
+
+## Phase 5
 
 Organization: `systemSERCLynx`
 
@@ -61,20 +84,20 @@ Description: on a delivery request from one of its users (`senderLynx`), `system
 Steps:
 
 1. **[narration]** A citizen (`senderLynx`) asks `systemSERCLynx` to deliver a certified message to a recipient identified by `01229430085`.
-2. **[script]** Run `node lookup-and-send-message.ts --consumer-keychain-id <id> --lookup-purpose-id <id> --relay-purpose-id <id> --recipient-id 01229430085 --subject "Notifica" --body "Testo del messaggio inoltrato"`, using `systemSERCLynx`'s keychain and the two purposes from Phase 2 (chains A and B). The script: looks up the recipient's SERC (`lookupERDS` → `erdsIdentifier`), fetches that SERC's metadata (`getERDSMetadata` → `knodeId`/`eserviceId`), builds the `erd_dispatch` (`messageType=Dispatch`) and relays it to `systemSERCOrion`'s relay e-service; it prints the resolved metadata, the sent dispatch (including its `messageIdentifier.uuid`), and the ACK.
+2. **[script]** Run `node lookup-and-send-message.ts --consumer-keychain-id <id> --lookup-purpose-id <id> --relay-purpose-id <id> --recipient-id 01229430085 --subject "Notifica" --body "Testo del messaggio inoltrato"`, using `systemSERCLynx`'s Consumer Keychain and the Purpose ids from Phases 2 and 3 — the script looks up the recipient's SERC (`lookupERDS`), fetches its metadata (`getERDSMetadata`), builds the `erd_dispatch` (`messageType=Dispatch`) and relays it to `systemSERCOrion`; it prints the resolved metadata, the sent dispatch (with its `messageIdentifier.uuid`), and the ACK.
 3. **[narration]** `systemSERCOrion` receives the message and makes it available to the recipient (`recipientOrion`); that SERC↔recipient interaction is out of POC scope. Note the `messageIdentifier.uuid` printed by the script — it is a param for the next phase.
 
-## Phase 4
+## Phase 6
 
 Organization: `systemSERCOrion`
 
 Knode: `Orion`
 
-Description: for the message relayed in Phase 3, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) — `ContentConsignment` when the message is made available to the recipient, and `ContentHandover` when the recipient picks it up. This is OBJECTIVE_02.
+Description: for the message relayed in Phase 5, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) — `ContentConsignment` when the message is made available to the recipient, and `ContentHandover` when the recipient picks it up. This is OBJECTIVE_02.
 
 Steps:
 
 1. **[narration]** The recipient's message is made available to, then picked up by, `recipientOrion`.
-2. **[script]** Run `node send-handover-evidence.ts --consumer-keychain-id <id> --purpose-id <id> --message-id <uuid> --event ContentConsignment`, using `systemSERCOrion`'s keychain and purpose from Phase 2 (chain C) and the `messageIdentifier.uuid` printed in Phase 3. The script builds the `erd_dispatch` carrying the evidence (`messageType=Receipt`, `eventIdentifier=ContentConsignment`, `eventReason=MessageConsignedToRecipient`) and relays it to `systemSERCLynx`'s relay e-service; it prints the evidence and the ACK.
+2. **[script]** Run `node send-handover-evidence.ts --consumer-keychain-id <id> --purpose-id <id> --message-id <uuid> --event ContentConsignment`, using `systemSERCOrion`'s Consumer Keychain and Purpose from Phase 4 and the `messageIdentifier.uuid` from Phase 5 — the script builds the `erd_dispatch` carrying the evidence (`messageType=Receipt`, `eventReason=MessageConsignedToRecipient`) and relays it to `systemSERCLynx`; it prints the evidence and the ACK.
 3. **[script]** Run it again with `--event ContentHandover` — the same call carrying the handover evidence (`eventReason=MessageHandoverToRecipient`).
 4. **[narration]** `systemSERCLynx` receives the evidences and notifies the sender (`senderLynx`) of the delivery outcome; that SERC↔sender interaction is out of POC scope.
