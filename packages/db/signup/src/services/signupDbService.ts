@@ -1,17 +1,37 @@
-import type { SignupUserId } from "@knodia/common-models/ids";
-import type { SignupUser } from "@knodia/signup-models";
+import type {
+  EmailChangeRequestId,
+  SignupUserId,
+} from "@knodia/common-models/ids";
+import type { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { eq, or, type SQL } from "drizzle-orm";
 
-import { toSignupUser, toSignupUserSQL } from "../converters/converters.ts";
-import { signupUser } from "../signupUser.ts";
+import {
+  toEmailChangeRequest,
+  toEmailChangeRequestSQL,
+  toSignupUser,
+  toSignupUserSQL,
+} from "../converters/converters.ts";
+import { emailChangeRequest, signupUser } from "../signupUser.ts";
 
 export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
 export function signupDbServiceBuilder(db: NodePgDatabase) {
   return {
+    async checkEmailChangeRequestEmailExists(email: string): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.email, email))
+        .limit(1);
+
+      return result.length > 0;
+    },
+
     async checkSignupOrganizationNameAlreadyTaken(
       organizationName: string,
     ): Promise<boolean> {
@@ -28,6 +48,20 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
+    async checkSignupUserEmailChangeRequestExists(
+      signupUserId: SignupUserId,
+    ): Promise<boolean> {
+      const result = await db
+        .select({
+          emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+        })
+        .from(emailChangeRequest)
+        .where(eq(emailChangeRequest.signupUserId, signupUserId))
+        .limit(1);
+
+      return result.length > 0;
+    },
+
     async checkSignupUserEmailExists(email: string): Promise<boolean> {
       const result = await db
         .select({ signupUserId: signupUser.signupUserId })
@@ -36,6 +70,29 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
 
       return result.length > 0;
+    },
+
+    async deleteEmailChangeRequest(
+      emailChangeRequestId: EmailChangeRequestId,
+    ): Promise<void> {
+      await db
+        .delete(emailChangeRequest)
+        .where(
+          eq(emailChangeRequest.emailChangeRequestId, emailChangeRequestId),
+        );
+    },
+
+    async getEmailChangeRequestById(
+      emailChangeRequestId: EmailChangeRequestId,
+    ): Promise<EmailChangeRequest | undefined> {
+      const [result] = await db
+        .select()
+        .from(emailChangeRequest)
+        .where(
+          eq(emailChangeRequest.emailChangeRequestId, emailChangeRequestId),
+        )
+        .limit(1);
+      return result ? toEmailChangeRequest(result) : undefined;
     },
 
     async getSignupUserById(
@@ -89,8 +146,27 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return signupUserResult ? toSignupUser(signupUserResult) : undefined;
     },
 
+    async insertEmailChangeRequest(request: EmailChangeRequest): Promise<void> {
+      await db
+        .insert(emailChangeRequest)
+        .values(toEmailChangeRequestSQL(request));
+    },
+
     async insertSignupUser(user: SignupUser): Promise<void> {
       await db.insert(signupUser).values(toSignupUserSQL(user));
+    },
+
+    async updateSignupUserEmail({
+      email,
+      signupUserId,
+    }: {
+      email: string;
+      signupUserId: SignupUserId;
+    }): Promise<void> {
+      await db
+        .update(signupUser)
+        .set({ email, updatedAt: new Date() })
+        .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
 }

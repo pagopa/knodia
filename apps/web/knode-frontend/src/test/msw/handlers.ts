@@ -85,7 +85,7 @@ export const handlers = [
                 type: "Control",
               },
               {
-                options: { widget: "multiselect" },
+                options: { widget: "checkbox" },
                 scope: "#/properties/personalDataTypes",
                 type: "Control",
               },

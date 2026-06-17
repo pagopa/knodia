@@ -26,6 +26,7 @@ interface Props {
   allValues: FormValues;
   control: ControlElement;
   error?: string | undefined;
+  isReadOnly?: boolean | undefined;
   jsonSchema: JsonSchema;
   onChange: (value: string | string[]) => void;
   texts: Record<string, string>;
@@ -36,6 +37,7 @@ export function FieldRenderer({
   allValues,
   control,
   error,
+  isReadOnly,
   jsonSchema,
   onChange,
   texts,
@@ -72,9 +74,12 @@ export function FieldRenderer({
 
   return match(widget)
     .with("radio", () => (
+      // RadioRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above each radio on hover).
       <RadioRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -82,9 +87,12 @@ export function FieldRenderer({
       />
     ))
     .with("text", "textarea", (w) => (
+      // TextRenderer renders the lock icon inside the field in read-only mode
+      // for both "text" and "textarea" widgets — no external wrapper needed.
       <TextRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         maxLength={maxLength}
         onChange={(v) => onChange(v)}
@@ -93,9 +101,12 @@ export function FieldRenderer({
       />
     ))
     .with("checkbox", () => (
+      // CheckboxRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above the checkbox group on hover).
       <CheckboxRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -106,6 +117,7 @@ export function FieldRenderer({
       <SelectRenderer
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         options={options}
@@ -113,10 +125,13 @@ export function FieldRenderer({
       />
     ))
     .with("switch", () => (
+      // SwitchRenderer renders its own hover-tooltip in read-only mode
+      // (no lock icon — the tooltip appears above the checkbox on hover).
       <SwitchRenderer
         checkedLabel={optionLabels["true"]}
         description={description}
         error={error}
+        isReadOnly={isReadOnly}
         label={label}
         onChange={(v) => onChange(v)}
         value={value as string}

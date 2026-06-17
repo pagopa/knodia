@@ -53,7 +53,12 @@
     },
     "apps/web/*-frontend": {
       "ignore": ["src/routeTree.gen.ts", "public/**/*"],
-      "ignoreDependencies": ["babel-plugin-react-compiler", "@theme.css"]
+      "ignoreDependencies": [
+        "babel-plugin-react-compiler",
+        "@theme.css",
+        "@fontsource-variable/instrument-sans",
+        "@fontsource/titillium-web"
+      ]
     },
     "packages/ui-kit": {
       "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]

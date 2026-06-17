@@ -2,10 +2,26 @@ import { useState } from "react";
 
 import { LeaveConfirmModal } from "@/components/LeaveConfirmModal";
 
-export const useLeaveConfirmModal = (onClose: () => void) => {
-  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+interface Options {
+  skipWhenClean?: boolean;
+}
 
-  const onModalShow = () => setShowLeaveConfirm(true);
+export const useLeaveConfirmModal = (
+  onClose: () => void,
+  { skipWhenClean = false }: Options = {},
+) => {
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const onModalShow = () => {
+    if (skipWhenClean && !isDirty) {
+      onClose();
+      return;
+    }
+    setShowLeaveConfirm(true);
+  };
+
+  const markDirty = () => setIsDirty(true);
 
   const handleConfirmLeave = () => {
     setShowLeaveConfirm(false);
@@ -15,6 +31,7 @@ export const useLeaveConfirmModal = (onClose: () => void) => {
   const handleCancelLeave = () => setShowLeaveConfirm(false);
 
   return {
+    markDirty,
     modal: (
       <LeaveConfirmModal
         isOpen={showLeaveConfirm}

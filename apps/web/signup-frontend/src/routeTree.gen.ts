@@ -9,14 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
-import { Route as LoginCallbackRouteImport } from './routes/login/callback'
-import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_authenticated/route'
+import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
+import { Route as LayoutAuthenticatedHomeRouteImport } from './routes/_layout/_authenticated/home'
 
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const LayoutRoute = LayoutRouteImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -29,65 +30,71 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginCallbackRoute = LoginCallbackRouteImport.update({
+const LayoutAuthenticatedRouteRoute =
+  LayoutAuthenticatedRouteRouteImport.update({
+    id: '/_authenticated',
+    getParentRoute: () => LayoutRoute,
+  } as any)
+const LayoutLoginCallbackRoute = LayoutLoginCallbackRouteImport.update({
   id: '/login/callback',
   path: '/login/callback',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => LayoutRoute,
 } as any)
-const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+const LayoutAuthenticatedHomeRoute = LayoutAuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => LayoutAuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/login/callback': typeof LoginCallbackRoute
   '/login': typeof LoginIndexRoute
+  '/home': typeof LayoutAuthenticatedHomeRoute
+  '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/login/callback': typeof LoginCallbackRoute
   '/login': typeof LoginIndexRoute
+  '/home': typeof LayoutAuthenticatedHomeRoute
+  '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/login/callback': typeof LoginCallbackRoute
+  '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/_authenticated': typeof LayoutAuthenticatedRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
+  '/_layout/_authenticated/home': typeof LayoutAuthenticatedHomeRoute
+  '/_layout/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login/callback' | '/login'
+  fullPaths: '/' | '/login' | '/home' | '/login/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login/callback' | '/login'
+  to: '/' | '/login' | '/home' | '/login/callback'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
-    | '/_authenticated/home'
-    | '/login/callback'
+    | '/_layout'
+    | '/_layout/_authenticated'
     | '/login/'
+    | '/_layout/_authenticated/home'
+    | '/_layout/login/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  LoginCallbackRoute: typeof LoginCallbackRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
   LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_authenticated': {
-      id: '/_authenticated'
+    '/_layout': {
+      id: '/_layout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,38 +111,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login/callback': {
-      id: '/login/callback'
+    '/_layout/_authenticated': {
+      id: '/_layout/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LayoutAuthenticatedRouteRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/login/callback': {
+      id: '/_layout/login/callback'
       path: '/login/callback'
       fullPath: '/login/callback'
-      preLoaderRoute: typeof LoginCallbackRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof LayoutLoginCallbackRouteImport
+      parentRoute: typeof LayoutRoute
     }
-    '/_authenticated/home': {
-      id: '/_authenticated/home'
+    '/_layout/_authenticated/home': {
+      id: '/_layout/_authenticated/home'
       path: '/home'
       fullPath: '/home'
-      preLoaderRoute: typeof AuthenticatedHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof LayoutAuthenticatedHomeRouteImport
+      parentRoute: typeof LayoutAuthenticatedRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+interface LayoutAuthenticatedRouteRouteChildren {
+  LayoutAuthenticatedHomeRoute: typeof LayoutAuthenticatedHomeRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+const LayoutAuthenticatedRouteRouteChildren: LayoutAuthenticatedRouteRouteChildren =
+  {
+    LayoutAuthenticatedHomeRoute: LayoutAuthenticatedHomeRoute,
+  }
+
+const LayoutAuthenticatedRouteRouteWithChildren =
+  LayoutAuthenticatedRouteRoute._addFileChildren(
+    LayoutAuthenticatedRouteRouteChildren,
+  )
+
+interface LayoutRouteChildren {
+  LayoutAuthenticatedRouteRoute: typeof LayoutAuthenticatedRouteRouteWithChildren
+  LayoutLoginCallbackRoute: typeof LayoutLoginCallbackRoute
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutAuthenticatedRouteRoute: LayoutAuthenticatedRouteRouteWithChildren,
+  LayoutLoginCallbackRoute: LayoutLoginCallbackRoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  LoginCallbackRoute: LoginCallbackRoute,
+  LayoutRoute: LayoutRouteWithChildren,
   LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport

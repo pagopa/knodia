@@ -1,6 +1,7 @@
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -113,5 +114,36 @@ describe("createOrganizationUser", () => {
         username: "u",
       }),
     ).rejects.toThrow("boom");
+  });
+});
+
+describe("updateUserEmail", () => {
+  it("updates the user email and marks it as verified", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).updateUserEmail({
+      email: "new.email@example.org",
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledOnce();
+
+    const [updateCall] = send.mock.calls;
+    if (!updateCall) {
+      throw new Error("expected updateUserEmail to issue one command");
+    }
+
+    const updateUser = updateCall.at(0) as AdminUpdateUserAttributesCommand;
+    expect(updateUser).toBeInstanceOf(AdminUpdateUserAttributesCommand);
+    expect(updateUser.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+    expect(updateUser.input.UserAttributes).toEqual([
+      { Name: "email", Value: "new.email@example.org" },
+      { Name: "email_verified", Value: "true" },
+    ]);
   });
 });
