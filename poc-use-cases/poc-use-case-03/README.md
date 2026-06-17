@@ -42,8 +42,8 @@ Steps:
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Orion) Knode — and confirm the activation, so the Agreement becomes Active.
 5. **[UI]** Create a Purpose for the E-service.
-6. **[script]** Run `node generate-key.ts` — it prints two public keys (one for `systemSERCLynx`'s, one for `systemSERCOrion`'s Consumer Keychain) and saves their private keys to fixed paths in this folder, read automatically by the later scripts (no key path to pass around).
-7. **[UI]** In the Keychains section, create a Consumer Keychain, add yourself as a member, upload the **`systemSERCLynx`** public key printed by `node generate-key.ts`, and link the Purpose to it.
+6. **[script]** Run `node generate-lynx-key.ts` — it prints `systemSERCLynx`'s public key and saves its private key to a fixed path in this folder, read automatically by the later scripts (no key path to pass around).
+7. **[UI]** In the Keychains section, create a Consumer Keychain, add yourself as a member, upload the public key printed by `node generate-lynx-key.ts`, and link the Purpose to it.
 8. Note the Consumer Keychain id and the Purpose id — they are params for the scripts.
 
 ## Phase 3
@@ -70,7 +70,7 @@ Description: to relay the delivery evidences back to the sender's SERC, `systemS
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–5 and 7 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`) — its activation link opens on the producer (Lynx) Knode, select the same Purpose Form option for its Purpose, and in step 7 upload the **`systemSERCOrion`** public key already printed by `generate-key.ts` in Phase 2.
+1. **[UI]** Log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–7 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`) — its activation link opens on the producer (Lynx) Knode, select the same Purpose Form option for its Purpose, and at step 6 run `node generate-orion-key.ts` (which generates `systemSERCOrion`'s own consumer key) instead of `generate-lynx-key.ts`.
 2. Note the Consumer Keychain id and the Purpose id.
 
 ## Phase 5
