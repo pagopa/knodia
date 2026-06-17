@@ -60,9 +60,9 @@ Steps:
 
 ## Phase 4
 
-Organization: `constructionCompaniesRegistryOrion`
+Organizations: `constructionCompaniesRegistryOrion` (driving), `businessBookletLynx`
 
-Knode: `Orion`
+Knodes: `Orion`, `Lynx`
 
 Description: the Construction Companies Registry of Orion monitors the Lynx Signal Hub for the e-service. When a signal concerns one of its registered Lynx companies, it re-retrieves that company's evidence from Lynx via the e-service and updates the company's registration in Orion accordingly.
 
