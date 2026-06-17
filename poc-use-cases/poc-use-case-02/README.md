@@ -60,7 +60,7 @@ Steps:
 
 ## Phase 4
 
-Organizations: `constructionCompaniesRegistryOrion` (driving), `businessBookletLynx`
+Organizations: `constructionCompaniesRegistryOrion`, `businessBookletLynx`
 
 Knodes: `Orion`, `Lynx`
 
