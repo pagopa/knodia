@@ -1010,7 +1010,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: _XMqCl4p_3bkSBu_7Ek5dRwlhiqs5iUd_SVbjPkyH_M
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-orion:
@@ -1747,7 +1747,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: _XMqCl4p_3bkSBu_7Ek5dRwlhiqs5iUd_SVbjPkyH_M
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-lynx:
@@ -2004,7 +2004,6 @@ services:
       KMS_REGION: eu-south-1
     volumes:
       - multinode-local-kms-data:/data
-      - ./init:/init:ro
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "8080"]
       interval: 5s
@@ -2021,12 +2020,14 @@ services:
         condition: service_healthy
     volumes:
       - multinode-jwks-data:/jwks
+      - ./keys:/keys
       - ../scripts/local-auth:/app/scripts/local-auth:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
+      KEYS_OUTPUT_DIR: /keys/kms
     command: node scripts/local-auth/kms-setup.mjs
 
   local-jwks:
@@ -2056,6 +2057,7 @@ services:
     environment:
       ISSUER: "http://localhost:4567"
       ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
+      ORG_ID: "${ORG_ID:-00000000-0000-4000-8000-000000000002}"
     command: node scripts/local-auth/local-cognito.mjs
 
   local-one-identity:

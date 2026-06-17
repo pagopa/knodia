@@ -1,10 +1,12 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 
-import { KMSClient } from "@aws-sdk/client-kms";
+import { GetPublicKeyCommand, KMSClient } from "@aws-sdk/client-kms";
+import { genericInternalError } from "@knodia/common-models/errors";
 import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
 import { dateToSeconds } from "@knodia/common-models/utils";
+import { calculateKid } from "@knodia/crypto";
 import { buildAndSignJwt } from "@knodia/crypto/utils";
-import { randomUUID } from "crypto";
+import { createPublicKey, randomUUID } from "crypto";
 
 import {
   CONTENT_ENCODING_HEADER,
@@ -33,6 +35,30 @@ interface KnodiaJwtSignatureInput {
 export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
 
+  async function getKmsKid(kid: string): Promise<{
+    headerKid: string | undefined;
+    signingKid: string;
+  }> {
+    const { PublicKey } = await client.send(
+      new GetPublicKeyCommand({ KeyId: kid }),
+    );
+
+    if (!PublicKey) {
+      throw genericInternalError(
+        `Unable to get public key for KMS alias '${kid}'`,
+      );
+    }
+
+    const publicKey = createPublicKey({
+      format: "der",
+      key: Buffer.from(PublicKey),
+      type: "spki",
+    });
+    const jwk = publicKey.export({ format: "jwk" });
+
+    return { headerKid: calculateKid(jwk), signingKid: kid };
+  }
+
   return {
     async generateKnodiaJwtSignature(
       input: KnodiaJwtSignatureInput,
@@ -59,10 +85,13 @@ export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
         ...(input.clientId ? { client_id: input.clientId } : {}),
       };
 
+      const { headerKid, signingKid } = await getKmsKid(input.kid);
+
       const { header, serialized } = await buildAndSignJwt(
         client,
-        input.kid,
+        signingKid,
         claims,
+        headerKid,
       );
       return {
         header,

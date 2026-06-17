@@ -13,10 +13,11 @@ export async function buildAndSignJwt<T extends BaseJwtClaims>(
   kmsClient: KMSClient,
   kid: string,
   claims: T,
+  headerKid?: string,
 ): Promise<{ header: string; serialized: string }> {
   const typ =
     "type" in claims && claims.type === "refresh-ui-session" ? "JWT" : "at+jwt";
-  const header = buildHeader(kid, typ);
+  const header = buildHeader(headerKid ?? kid, typ);
   const payload = b64url(JSON.stringify(claims));
   const message = `${header}.${payload}`;
   const signature = await signWithKms(kmsClient, kid, message);
