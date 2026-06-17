@@ -737,24 +737,32 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
       ): Promise<API_Keychain> {
-        const [{ data: keys }, { data: members }] = await Promise.all([
-          keychainProcessApi.getConsumerKeychainKeys({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-          keychainProcessApi.getConsumerKeychainMembers({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-        ]);
+        const [{ data: keys }, { data: members }, { data: purposes }] =
+          await Promise.all([
+            keychainProcessApi.getConsumerKeychainKeys({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getConsumerKeychainMembers({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getConsumerKeychainPurposes({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+          ]);
 
         return toAPI_Keychain(keychain, {
           keysCount: keys.pagination.total,
           membersCount: members.pagination.total,
+          purposesCount: purposes.pagination.total,
         });
       }
 
