@@ -9,6 +9,7 @@ import z from "zod";
 import type { SignupService } from "../services/signupService.ts";
 
 import {
+  API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
   API_CurrentSignupUser,
 } from "../models/api.ts";
@@ -49,7 +50,36 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       },
       tags: [apiTags.signup],
     },
-    url: "/onboarding/confirm",
+    url: "/user/confirmOnboarding",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
+      await signupService.changeEmail(req.body, ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ChangeEmailRequestBody,
+      description: "Request email change for the caller user",
+      operationId: "changeEmail",
+      response: {
+        204: z.undefined().meta({
+          description: "Email change requested successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/user/changeEmail",
   });
 
   fastify.route({
@@ -75,6 +105,6 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       },
       tags: [apiTags.signup],
     },
-    url: "/me",
+    url: "/user/me",
   });
 };
