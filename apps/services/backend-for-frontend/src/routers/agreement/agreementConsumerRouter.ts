@@ -9,7 +9,6 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -43,6 +42,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 
 interface AgreementConsumerRouterOptions {
   config: BffProcessConfig;
@@ -145,6 +145,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       tags: [apiTags.agreement],
     },
@@ -174,6 +177,15 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      const targetKnodeId = singleListingKnodeId(
+        data.results,
+        (agreement) => agreement.knodeId,
+      );
+      if (targetKnodeId === undefined) {
+        res.status(200).send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
       const eservicesMap = await getExternalEntitiesMap({
         fetchFn: ({ entityIds, knodeId }) =>
           Promise.all(
@@ -189,8 +201,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
             ),
           ),
         getEntityId: (agreement) => agreement.eserviceId,
-        getKnodeId: (agreement) => KnodeId.parse(agreement.knodeId),
         items: data.results,
+        knodeId: targetKnodeId,
       });
 
       res.status(200).send({
@@ -199,9 +211,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerAgreement({
             agreement,
             eservice: assertEntityExists(
-              eservicesMap
-                .get(KnodeId.parse(agreement.knodeId))
-                ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+              eservicesMap.get(unsafeBrandExternalId(agreement.eserviceId)),
               `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
             ),
           }),
@@ -222,6 +232,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       tags: [apiTags.agreement],
     },
@@ -275,6 +288,9 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       tags: [apiTags.agreement],
     },

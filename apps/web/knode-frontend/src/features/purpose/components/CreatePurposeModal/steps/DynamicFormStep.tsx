@@ -46,7 +46,7 @@ export function DynamicFormStep({
   uischema,
 }: Props) {
   const { nextStep, prevStep } = useStepsContext();
-  const { eserviceId, formAnswers, knodeId, updateFormAnswers } =
+  const { eserviceId, formAnswers, knodeId, onDirty, updateFormAnswers } =
     usePurposeWizardContext();
   const { createPurpose, isError, isPending } = useCreatePurpose(
     eserviceId,
@@ -71,6 +71,7 @@ export function DynamicFormStep({
   const form = useDynamicStepForm({
     formAnswers,
     jsonSchema,
+    onDirty,
     onDynamic: ({ value }) => {
       const fieldErrors = validate(value, stepVisibleFields);
       if (Object.keys(fieldErrors).length === 0) return undefined;

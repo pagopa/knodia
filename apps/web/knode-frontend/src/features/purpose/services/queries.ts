@@ -133,9 +133,10 @@ export const purposeLinkedConsumerKeychainsQuery = (
   getConsumerKeychainsOptions({
     client,
     query: {
+      knodeId,
       limit: PURPOSES_LINKED_KEYCHAINS_LIMIT,
       offset,
-      purpose: `${knodeId}:${purposeId}`,
+      purposeId,
     },
   });
 

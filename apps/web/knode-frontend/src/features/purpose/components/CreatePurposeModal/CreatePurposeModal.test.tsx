@@ -76,10 +76,20 @@ describe("CreatePurposeModal", () => {
     const { onClose, user } = renderWizard();
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /close/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText("Name")).toBeInTheDocument();
     });
+
+    await user.type(screen.getByLabelText("Name"), "Valid Purpose Name");
+    await user.type(
+      screen.getByLabelText("Description"),
+      "A valid description for testing purposes",
+    );
+    const dailyCallsInput = screen.getByRole("textbox", {
+      name: "How many API calls do you plan to make per day?",
+    });
+    await user.clear(dailyCallsInput);
+    await user.type(dailyCallsInput, String(MAX_DAILY_CALLS_PER_CONSUMER));
+    await user.click(screen.getByRole("button", { name: "Next" }));
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 

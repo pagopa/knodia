@@ -2003,17 +2003,17 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purpose`.
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purposeId`.
          */
         eserviceId?: string;
         /**
-         * Knode ID that owns the E-service. Required when `eserviceId` is set.
+         * Producer Knode ID that owns the E-service and its Purposes. Required when `eserviceId` or `purposeId` is set.
          */
         knodeId?: KnodeId;
         /**
-         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.
+         * Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`. Mutually exclusive with `eserviceId`.
          */
-        purpose?: string;
+        purposeId?: string;
     };
     url: '/consumerKeychains';
 };
@@ -2442,6 +2442,10 @@ export type GetConsumerKeychainPurposesErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
@@ -4013,6 +4017,10 @@ export type GetConsumerEservicesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
@@ -4059,6 +4067,10 @@ export type GetConsumerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetConsumerAgreementsErrors];
@@ -4125,6 +4137,10 @@ export type GetConsumerAgreementCountersErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerAgreementCountersError = GetConsumerAgreementCountersErrors[keyof GetConsumerAgreementCountersErrors];
@@ -4167,6 +4183,10 @@ export type GetPendingConsumerAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErrors[keyof GetPendingConsumerAgreementsErrors];
@@ -4405,6 +4425,10 @@ export type GetConsumerPurposesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];

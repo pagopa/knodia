@@ -2,6 +2,7 @@ import {
   API_CreatedResource,
   API_Pagination,
   API_PaginationQueryParams,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceMode } from "@knodia/eservice-models/api";
@@ -116,21 +117,21 @@ export const API_Purpose = z
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
-export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
-  eserviceId: z.uuid().optional().meta({
-    description:
-      "Filter by E-service ID. Can only be used together with `knodeId`.",
+export const API_GetPurposesQueryParams = requireKnodeIdWith("eserviceId")(
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Can only be used together with `knodeId`.",
+    }),
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Knode ID to list Purposes from. Required when `eserviceId` is set.",
+    }),
+    state: arrayQueryParam(API_PurposeState).optional().meta({
+      description: "Filter by Purpose State",
+    }),
   }),
-  knodeId: API_KnodeId.optional().meta({
-    description:
-      "Knode ID to list Purposes from. Required when `eserviceId` is set.",
-  }),
-  state: arrayQueryParam(API_PurposeState).optional().meta({
-    description: "Filter by Purpose State",
-  }),
-}).refine((q) => !(q.eserviceId && !q.knodeId), {
-  message: "`eserviceId` can only be used together with `knodeId`",
-});
+);
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
 >;

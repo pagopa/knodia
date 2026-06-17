@@ -1,0 +1,22 @@
+meta {
+  name: Get Companies Pseudonymization
+  type: http
+}
+
+get {
+  url: {{host-mock-eservice}}/legal-entities/pseudonymization
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}

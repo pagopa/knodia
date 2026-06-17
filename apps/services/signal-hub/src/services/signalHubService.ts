@@ -5,10 +5,8 @@ import type { KnodeApiAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { toExternalResource } from "@knodia/common-models/externalResource";
-import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import { isPgUniqueViolation } from "@knodia/common-models/utils";
 import { type SignalSeed, SignalType } from "@knodia/signal-hub-models";
-import { DrizzleQueryError } from "drizzle-orm";
-import { DatabaseError } from "pg";
 import { match } from "ts-pattern";
 
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -110,11 +108,7 @@ export function signalHubServiceBuilder(
           { error },
           `Failed to insert signal ${signalId} for E-service ${eserviceId}`,
         );
-        if (
-          error instanceof DrizzleQueryError &&
-          error.cause instanceof DatabaseError &&
-          error.cause?.code === PG_UNIQUE_VIOLATION
-        ) {
+        if (isPgUniqueViolation(error)) {
           // Race condition: in case two concurrent signals pass the checks above, we get a PG unique constraint violation error, and we rethrow a meaningful error
           throw signalAlreadyExists(signalId, eserviceId);
         }
