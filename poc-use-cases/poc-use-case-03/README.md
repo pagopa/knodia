@@ -13,6 +13,7 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 ## Phase 1
 
 Organizations: `supervisoryBodyOrion` (Orion), `systemSERCOrion` (Orion), `systemSERCLynx` (Lynx)
+
 Description: the three POC organizations publish the cross-border e-services that make the relay possible. The supervisory body of Orion publishes a **provide-data** e-service to look up which SERC serves a recipient and fetch that SERC's metadata; each SERC publishes a **receive-data** e-service to relay a dispatch (the sender's message, or the delivery evidences).
 
 Steps:
@@ -26,8 +27,10 @@ Steps:
 
 ## Phase 2
 
-Organization: `systemSERCLynx` (Lynx) — and `systemSERCOrion` (Orion) for chain C
+Organizations: `systemSERCLynx` (Lynx) — and `systemSERCOrion` (Orion) for chain C
+
 Knode: `Lynx` — and `Orion` for chain C
+
 Description: to use each other's e-services, the SERCs must first satisfy each e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking. This is done once per consumption chain. The demo needs three: **A.** `systemSERCLynx` → `supervisoryBodyOrion` provide-data (look up the recipient's SERC); **B.** `systemSERCLynx` → `systemSERCOrion` relay (send the message); **C.** `systemSERCOrion` → `systemSERCLynx` relay (return the evidences).
 
 Steps:
@@ -50,7 +53,9 @@ Steps:
 ## Phase 3
 
 Organization: `systemSERCLynx`
+
 Knode: `Lynx`
+
 Description: on a delivery request from one of its users (`senderLynx`), `systemSERCLynx` discovers which SERC serves the recipient through `supervisoryBodyOrion`, then relays the sender's message to that SERC (`systemSERCOrion`). This is OBJECTIVE_01.
 
 Steps:
@@ -62,7 +67,9 @@ Steps:
 ## Phase 4
 
 Organization: `systemSERCOrion`
+
 Knode: `Orion`
+
 Description: for the message relayed in Phase 3, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) — `ContentConsignment` when the message is made available to the recipient, and `ContentHandover` when the recipient picks it up. This is OBJECTIVE_02.
 
 Steps:
