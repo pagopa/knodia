@@ -26,26 +26,32 @@ Steps:
 
 ## Phase 2
 
-Organizations: `systemSERCLynx` (Lynx), `systemSERCOrion` (Orion)
-Description: before they can call each other's e-services, the SERCs must satisfy each e-service's consumption requirements (Agreement, Purpose, Keychain, and Keychain↔Purpose linking). The demo needs three consumption chains:
-
-- **A.** `systemSERCLynx` → `supervisoryBodyOrion` provide-data (to look up the recipient's SERC)
-- **B.** `systemSERCLynx` → `systemSERCOrion` relay (to send the message)
-- **C.** `systemSERCOrion` → `systemSERCLynx` relay (to return the evidences)
+Organization: `systemSERCLynx` (Lynx) — and `systemSERCOrion` (Orion) for chain C
+Knode: `Lynx` — and `Orion` for chain C
+Description: to use each other's e-services, the SERCs must first satisfy each e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking. This is done once per consumption chain. The demo needs three: **A.** `systemSERCLynx` → `supervisoryBodyOrion` provide-data (look up the recipient's SERC); **B.** `systemSERCLynx` → `systemSERCOrion` relay (send the message); **C.** `systemSERCOrion` → `systemSERCLynx` relay (return the evidences).
 
 Steps:
 
-1. **[script]** Run `node generate-key.ts` — it prints a public key and saves the private key to a fixed path in this folder, read automatically by the later scripts (no key path to pass around). Run it once per consuming organization (`systemSERCLynx`, `systemSERCOrion`); each run overwrites that org's key file, so generate and use one org's chains before moving to the next, or keep the printed keys aside.
-2. **[UI]** _(chain A — on Lynx, as `systemSERCLynx`)_ In Consumption > E-services, search the catalog and open the Orion provide-data e-service (`ERDS Lookup & Metadata - Orion`). Request an Agreement, then follow the activation link (it opens on the producer, Orion) and confirm the activation so the Agreement becomes Active. Create a Purpose for it. In Keychains, create a Consumer Keychain, add a member, upload the public key from step 1, and link the Purpose to it.
-3. **[UI]** _(chain B — on Lynx, as `systemSERCLynx`)_ Repeat the agreement/purpose flow for the Orion relay e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Comunicazione tra sistemi di notifica certificata"). Link this Purpose to the **same** Consumer Keychain created in step 2.
-4. **[UI]** _(chain C — on Orion, as `systemSERCOrion`)_ Repeat the agreement/purpose flow for the Lynx relay e-service (`ERDS Relay - Lynx`), selecting the same Purpose Form option. Create a Consumer Keychain for `systemSERCOrion`, add a member, upload its public key from step 1, and link the Purpose to it.
-5. Note the Consumer Keychain ids and the Purpose ids — they are params for the scripts: for `systemSERCLynx` one keychain with two purposes (lookup, relay-to-Orion); for `systemSERCOrion` one keychain with one purpose (relay-to-Lynx).
+1. **[UI]** Log in to the Lynx Knode as a User of the `systemSERCLynx` Organization.
+2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the **provide-data** e-service (`ERDS Lookup & Metadata - Orion`).
+3. **[UI]** Request an Agreement for the e-service.
+4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Orion) Knode — and confirm the activation, so the Agreement becomes Active.
+5. **[UI]** Create a Purpose for the E-service.
+6. **[script]** Run `node generate-key.ts` — it prints a public key and saves the private key to a fixed path in this folder, which the later scripts read automatically (no key path to pass around).
+7. **[UI]** In the Keychains section, create a Consumer Keychain, add yourself as a member, upload the public key printed by `node generate-key.ts`, and link the Purpose to it.
+8. Note the Consumer Keychain id and the Purpose id — they are params for the scripts.
+9. **[UI]** For chain B, repeat steps 2–5 for the **relay** e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Comunicazione tra sistemi di notifica certificata").
+10. **[UI]** Link the Purpose to the same Consumer Keychain created in step 7.
+11. Note the Purpose id — the Consumer Keychain is the same as step 8.
+12. **[UI]** For chain C, log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–5 for the **relay** e-service (`ERDS Relay - Lynx`) — its activation link opens on the producer (Lynx) Knode, and select the same Purpose Form option for its Purpose.
+13. **[UI]** Create a Consumer Keychain for `systemSERCOrion`, add a member, upload the **same** public key from step 6 (no need to run `generate-key.ts` again), and link this Purpose to it.
+14. Note this Consumer Keychain id and the Purpose id.
 
 ## Phase 3
 
 Organization: `systemSERCLynx`
 Knode: `Lynx`
-Description: on a delivery request from one of its users (`senderLynx`), `systemSERCLynx` discovers which SERC serves the recipient through `supervisoryBodyOrion`, then relays the sender's message to that SERC (`systemSERCOrion`). This is OBJECTIVE_01. [narration] the sender↔SERC interaction is out of POC scope.
+Description: on a delivery request from one of its users (`senderLynx`), `systemSERCLynx` discovers which SERC serves the recipient through `supervisoryBodyOrion`, then relays the sender's message to that SERC (`systemSERCOrion`). This is OBJECTIVE_01.
 
 Steps:
 
