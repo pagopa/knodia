@@ -1,5 +1,6 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
 
 import {
@@ -39,16 +40,16 @@ export async function assertSignupUserIdentifiersDoNotExist(
   }
 }
 
+export function assertSignupUserIsActive(user: SignupUser): void {
+  if (user.status !== SignupUserStatus.enum.Active) {
+    throw signupUserNotActive();
+  }
+}
+
 export function assertSignupUserIsOnboarded(
   user: SignupUser | undefined,
 ): asserts user is SignupUser {
   if (!user) {
     throw signupUserNotOnboarded();
-  }
-}
-
-export function assertSignupUserIsActive(user: SignupUser): void {
-  if (user.status !== SignupUserStatus.enum.Active) {
-    throw signupUserNotActive();
   }
 }

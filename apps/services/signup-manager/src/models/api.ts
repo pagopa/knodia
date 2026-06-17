@@ -47,13 +47,13 @@ export type API_ChangeEmailRequestBody = z.infer<
   typeof API_ChangeEmailRequestBody
 >;
 
-export const API_SuspensionReason = z.enum([
+const API_SuspensionReason = z.enum([
   "AccuracyContested",
   "UnlawfulProcessing",
   "DataNeededForLegalClaims",
   "PendingObjectionVerification",
 ]);
-export type API_SuspensionReason = z.infer<typeof API_SuspensionReason>;
+type API_SuspensionReason = z.infer<typeof API_SuspensionReason>;
 
 export const API_SuspendUserRequestBody = z
   .strictObject({
