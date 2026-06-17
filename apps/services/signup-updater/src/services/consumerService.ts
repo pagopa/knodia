@@ -181,10 +181,14 @@ export async function handleSignupMessage(
       await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
     })
     .with({ type: "SuspensionRequestedV1" }, async () => {
-      // TODO: PIN-780
-      logger.info(
-        `Skipping SuspensionRequestedV1 for signup user ${signupUserId}: suspension is not yet implemented`,
-      );
+      const user = await retrieveSignupUserOrWarn(signupUserId);
+      if (user === undefined) return;
+
+      for (const knodeId of KnodeId.options) {
+        await deps.knodeClients[knodeId].cognitoClient.disableUser({
+          username: user.generatedEntities[knodeId].userName,
+        });
+      }
     })
     .exhaustive();
 }

@@ -13,6 +13,7 @@ import {
   type EmailChangeRequest,
   type EmailChangeRequestedV1,
   OnboardingCompletedV1,
+  type SignupEventV1,
   SignupUser,
   SignupUserStatus,
 } from "@knodia/signup-models";
@@ -45,6 +46,7 @@ import { handleSignupMessage } from "../src/services/consumerService.ts";
 import { externalOrganizationId } from "../src/utils/externalOrganizationId.ts";
 
 const cognitoCreateUserMock = vi.fn();
+const cognitoDisableUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
 const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
@@ -66,6 +68,7 @@ function buildDeps(): SignupUpdaterDeps {
     cognitoClient: {
       createOrganizationUser: cognitoCreateUserMock,
       deleteOrganizationUser: cognitoDeleteUserMock,
+      disableUser: cognitoDisableUserMock,
       updateUserEmail: cognitoUpdateUserEmailMock,
     },
     internalTokenProvider: {
@@ -173,12 +176,27 @@ function pgUniqueViolation(): DrizzleQueryError {
   return new DrizzleQueryError("update signup_user", [], dbError);
 }
 
+function suspensionRequestedEvent(
+  signupUserId: SignupUserId,
+): Extract<SignupEventV1, { type: "SuspensionRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-05-28T10:00:00.000Z",
+      oneIdNonce: "nonce-1",
+      signupUserId,
+      suspensionReason: "UnlawfulProcessing",
+    },
+    type: "SuspensionRequestedV1",
+  };
+}
+
 const conflict = { isAxiosError: true, response: { status: 409 } };
 
 describe("handleSignupMessage — OnboardingCompletedV1", () => {
   beforeEach(() => {
     createOrganizationMock.mockReset();
     cognitoCreateUserMock.mockReset();
+    cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
     deleteEmailChangeRequestMock.mockReset();
     getEmailChangeRequestByIdMock.mockReset();
@@ -340,6 +358,7 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
   beforeEach(() => {
     createOrganizationMock.mockReset();
     cognitoCreateUserMock.mockReset();
+    cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
     deleteEmailChangeRequestMock.mockReset();
     getEmailChangeRequestByIdMock.mockReset();
@@ -624,5 +643,75 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     ).rejects.toBeDefined();
 
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSignupMessage — SuspensionRequestedV1", () => {
+  beforeEach(() => {
+    createOrganizationMock.mockReset();
+    cognitoCreateUserMock.mockReset();
+    cognitoDisableUserMock.mockReset();
+    cognitoUpdateUserEmailMock.mockReset();
+    deleteEmailChangeRequestMock.mockReset();
+    getEmailChangeRequestByIdMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    updateSignupUserEmailMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("disables the Cognito user on both knodes", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    await handleSignupMessage(
+      suspensionRequestedEvent(user.signupUserId),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoDisableUserMock).toHaveBeenCalledTimes(2);
+    expect(cognitoDisableUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoDisableUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+  });
+
+  it("skips (without throwing) when the signup user is not found", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        suspensionRequestedEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoDisableUserMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws when disabling the user fails on one knode", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoDisableUserMock.mockRejectedValueOnce(new Error("boom"));
+
+    await expect(
+      handleSignupMessage(
+        suspensionRequestedEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+
+    expect(cognitoDisableUserMock).toHaveBeenCalledTimes(1);
   });
 });
