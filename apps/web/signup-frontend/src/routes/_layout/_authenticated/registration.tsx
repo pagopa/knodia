@@ -35,8 +35,12 @@ function RouteComponent() {
       setErrorMessage(confirmOnboardingErrorMessage(error));
     },
     onSuccess: async () => {
+      // refetchType "all": this page has no active observer of the query, so the
+      // default would skip the refetch and /home's guard would read a stale
+      // NOT_COMPLETED and bounce back here.
       await queryClient.invalidateQueries({
         queryKey: getCurrentSignupUserQuery().queryKey,
+        refetchType: "all",
       });
       await navigate({ to: "/home" });
     },

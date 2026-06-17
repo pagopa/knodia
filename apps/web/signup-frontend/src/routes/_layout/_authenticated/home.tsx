@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
@@ -13,8 +13,19 @@ import {
   RequestRestrictionModal,
 } from "@/components/features";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { resolveOnboardingRedirect } from "@/services/onboarding";
+import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export const Route = createFileRoute("/_layout/_authenticated/home")({
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const { onboardingStatus } = await queryClient.ensureQueryData(
+      getCurrentSignupUserQuery(),
+    );
+    const destination = resolveOnboardingRedirect(onboardingStatus);
+    if (destination !== "/home") {
+      throw redirect({ to: destination });
+    }
+  },
   component: RouteComponent,
 });
 
@@ -35,7 +46,6 @@ const KNODES = [
 type OpenModal = "changeEmail" | "erasure" | "restriction" | null;
 
 function RouteComponent() {
-  // TODO(KN-747): assumes onboardingStatus === "ACTIVE"; gating NOT_COMPLETED/SUSPENDED users belongs to the registration flow.
   const user = useCurrentUser();
   const [openModal, setOpenModal] = useState<OpenModal>(null);
 
