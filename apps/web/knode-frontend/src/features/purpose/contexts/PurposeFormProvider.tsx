@@ -23,6 +23,7 @@ interface Props {
   formSchemaVersion: string;
   initialTemplate?: bffApi.PurposeTemplateDetails;
   knodeId: KnodeId;
+  onDirty?: () => void;
 }
 
 export function PurposeFormProvider({
@@ -31,6 +32,7 @@ export function PurposeFormProvider({
   formSchemaVersion,
   initialTemplate,
   knodeId,
+  onDirty,
 }: Props) {
   const [data, setData] = useState<PurposeFormDraftData>(() =>
     buildInitialDraft(initialTemplate),
@@ -61,6 +63,7 @@ export function PurposeFormProvider({
       formSchemaVersion,
       knodeId,
       maxDailyCallsPerConsumer: eservice.maxDailyCalls.perConsumer,
+      onDirty,
       selectedTemplate,
       updateDetailsStep,
       updateFormAnswers,
@@ -71,6 +74,7 @@ export function PurposeFormProvider({
       formAnswers,
       formSchemaVersion,
       knodeId,
+      onDirty,
       selectedTemplate,
       updateDetailsStep,
       updateFormAnswers,
