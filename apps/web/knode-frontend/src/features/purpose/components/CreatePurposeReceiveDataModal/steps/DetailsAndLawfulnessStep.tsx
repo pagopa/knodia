@@ -51,10 +51,10 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
           <h3 className="title-md text-primary-light-high-contrast">
             Lawfulness of Processing declarations for this E-Service
           </h3>
-          <p className="body-sm text-primary-light-mid-contrast whitespace-pre-line">
+          <span className="body-md text-primary-dark">
             For receive-data E-Services, the Producer fills in the declaration.
             Choose the declaration that applies.
-          </p>
+          </span>
         </div>
 
         <form.Subscribe selector={(state) => state.canSubmit}>
