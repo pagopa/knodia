@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import z from "zod";
 
 const CODICE_FISCALE_REGEX =
@@ -258,3 +259,39 @@ export const API_Ack = z
     id: "Ack",
   });
 export type API_Ack = z.infer<typeof API_Ack>;
+
+// --- POC UC03 (ERDS relay) ---
+
+// The two SERCs of the POC, identified by name (ETSI EN 319 522-2 erdsIdentifier).
+export const API_ErdsIdentifier = z
+  .enum(["systemSERCLynx", "systemSERCOrion"])
+  .meta({
+    description:
+      "Identifier of an Electronic Registered Delivery Service (SERC) in the POC",
+    id: "ErdsIdentifier",
+  });
+export type API_ErdsIdentifier = z.infer<typeof API_ErdsIdentifier>;
+
+export const API_ErdsLookupResult = z
+  .strictObject({
+    erdsIdentifier: API_ErdsIdentifier,
+  })
+  .meta({
+    description: "The SERC that serves the looked-up recipient (lookupERDS).",
+    id: "ErdsLookupResult",
+  });
+export type API_ErdsLookupResult = z.infer<typeof API_ErdsLookupResult>;
+
+export const API_ErdsMetadata = z
+  .strictObject({
+    domainName: z.url(),
+    eserviceId: z.uuid(),
+    identifier: API_ErdsIdentifier,
+    knodeId: KnodeId,
+  })
+  .meta({
+    description:
+      "Metadata of an Electronic Registered Delivery Service (getERDSMetadata): the base URL of its relay endpoint and the knode/e-service that publish it.",
+    id: "ErdsMetadata",
+  });
+export type API_ErdsMetadata = z.infer<typeof API_ErdsMetadata>;

@@ -23,6 +23,12 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         EXPECTED_ISSUER: z.string(),
         JWT_CLOCK_TOLERANCE_SECONDS: z.coerce.number().int().positive(),
         KNODE_ID: KnodeId,
+        // POC UC03: relay base URL of each SERC, returned by getERDSMetadata. The
+        // relay runs in the producer's infra, reachable by the consumer's client
+        // (not on the Knode), so it is environment specific. Defaults target the
+        // local multinode mock host ports (Orion 9991, Lynx 9992).
+        POC_UC03_RELAY_BASE_URL_LYNX: z.url().default("http://localhost:9992"),
+        POC_UC03_RELAY_BASE_URL_ORION: z.url().default("http://localhost:9991"),
         WELL_KNOWN_URLS: z
           .string()
           .min(1)
@@ -37,6 +43,8 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
         expectedIssuer: c.EXPECTED_ISSUER,
         jwtClockToleranceSeconds: c.JWT_CLOCK_TOLERANCE_SECONDS,
         knodeId: c.KNODE_ID,
+        pocUc03RelayBaseUrlLynx: c.POC_UC03_RELAY_BASE_URL_LYNX,
+        pocUc03RelayBaseUrlOrion: c.POC_UC03_RELAY_BASE_URL_ORION,
         wellKnownUrls: c.WELL_KNOWN_URLS,
       })),
   );

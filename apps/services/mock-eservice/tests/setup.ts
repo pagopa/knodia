@@ -65,6 +65,8 @@ beforeAll(async () => {
       knodeId: TEST_KNODE_ID,
       logLevel: "silent",
       nodeEnv: "test",
+      pocUc03RelayBaseUrlLynx: "http://localhost:9992",
+      pocUc03RelayBaseUrlOrion: "http://localhost:9991",
       port: 0,
       signalHubDbHost: "localhost",
       signalHubDbName: "signal_hub",
