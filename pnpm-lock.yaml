@@ -48,7 +48,13 @@ catalogs:
     '@fastify/swagger-ui':
       specifier: 5.2.4
       version: 5.2.4
+    '@fontsource-variable/instrument-sans':
+      specifier: 5.2.8
+      version: 5.2.8
     '@fontsource-variable/inter':
+      specifier: 5.2.8
+      version: 5.2.8
+    '@fontsource-variable/manrope':
       specifier: 5.2.8
       version: 5.2.8
     '@fontsource-variable/petrona':
@@ -57,6 +63,9 @@ catalogs:
     '@fontsource-variable/source-serif-4':
       specifier: 5.2.9
       version: 5.2.9
+    '@fontsource/titillium-web':
+      specifier: 5.2.8
+      version: 5.2.8
     '@hey-api/openapi-ts':
       specifier: 0.89.2
       version: 0.89.2
@@ -2222,15 +2231,24 @@ importers:
 
   apps/web/signup-frontend:
     dependencies:
+      '@fontsource-variable/instrument-sans':
+        specifier: 'catalog:'
+        version: 5.2.8
+      '@fontsource-variable/inter':
+        specifier: 'catalog:'
+        version: 5.2.8
+      '@fontsource-variable/manrope':
+        specifier: 'catalog:'
+        version: 5.2.8
+      '@fontsource/titillium-web':
+        specifier: 'catalog:'
+        version: 5.2.8
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
       '@knodia/signup-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/signup-manager-client
-      '@knodia/ui-kit':
-        specifier: workspace:*
-        version: link:../../../packages/ui-kit
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -2267,6 +2285,12 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.0(react@19.2.0)
+      tailwind-variants:
+        specifier: 'catalog:'
+        version: 3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.1.18)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.1.18
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -2280,6 +2304,18 @@ importers:
       '@tanstack/router-plugin':
         specifier: 'catalog:'
         version: 1.145.2(@tanstack/react-router@1.144.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@testing-library/dom':
+        specifier: 'catalog:'
+        version: 10.4.1
+      '@testing-library/jest-dom':
+        specifier: 'catalog:'
+        version: 6.9.1
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.5))(@types/react@19.2.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@testing-library/user-event':
+        specifier: 'catalog:'
+        version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
@@ -2301,12 +2337,18 @@ importers:
       globals:
         specifier: 'catalog:'
         version: 16.5.0
+      jsdom:
+        specifier: 'catalog:'
+        version: 28.0.0(@noble/hashes@1.8.0)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
       vite:
         specifier: 'catalog:'
         version: rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.0(@types/node@25.0.0)(jsdom@28.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/clients/agreement-process-client:
     dependencies:
@@ -5262,14 +5304,23 @@ packages:
   '@fastify/swagger@9.7.0':
     resolution: {integrity: sha512-Vp1SC1GC2Hrkd3faFILv86BzUNyFz5N4/xdExqtCgkGASOzn/x+eMe4qXIGq7cdT6wif/P/oa6r1Ruqx19paZA==}
 
+  '@fontsource-variable/instrument-sans@5.2.8':
+    resolution: {integrity: sha512-mTCaukbdIjjoipj2E3Q5XoZM3ZxJWdzyHevf/LG/0PHlfF9Q85pxOM7B7A9MerFyxmRzz5kVlumgIvgDSG4CPg==}
+
   '@fontsource-variable/inter@5.2.8':
     resolution: {integrity: sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ==}
+
+  '@fontsource-variable/manrope@5.2.8':
+    resolution: {integrity: sha512-nc9lOuCRz73UHnovDE2bwXUdghE2SEOc7Aii0qGe3CLyE03W1a7VnY5Z6euRiapiKbCkGS+eXbY3s/kvWeGeSw==}
 
   '@fontsource-variable/petrona@5.2.8':
     resolution: {integrity: sha512-IujUZ5jSEz5Qv/evWgxsHTxvon4d0uAxl8yb2Xm4uWgkGYH++BvTSpGIBgp8i1YneuUsjrI3A33hgdZeyQX/Og==}
 
   '@fontsource-variable/source-serif-4@5.2.9':
     resolution: {integrity: sha512-PPcxjLFk/fS0WHg79pDM2YNvz61kC+oYZ5cWZZyCS0DHpJncmuYOuiZAsvj4tDxlWPBEvxxcRLQQNmSaRbPkqw==}
+
+  '@fontsource/titillium-web@5.2.8':
+    resolution: {integrity: sha512-DNhXS1ib/de+LwbJiEmKgB9WAGK6MZfG9qFbJbz1JoY1f4KCt9HDK7lSUtqJPxdK47D2o0vqdWcg5SD+yphWOw==}
 
   '@formatjs/ecma402-abstract@2.3.6':
     resolution: {integrity: sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==}
@@ -12070,11 +12121,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@fontsource-variable/instrument-sans@5.2.8': {}
+
   '@fontsource-variable/inter@5.2.8': {}
+
+  '@fontsource-variable/manrope@5.2.8': {}
 
   '@fontsource-variable/petrona@5.2.8': {}
 
   '@fontsource-variable/source-serif-4@5.2.9': {}
+
+  '@fontsource/titillium-web@5.2.8': {}
 
   '@formatjs/ecma402-abstract@2.3.6':
     dependencies:
