@@ -2,7 +2,7 @@ import {
   API_CreatedResource,
   API_Pagination,
   API_PaginationQueryParams,
-  requireKnodeIdWithEserviceId,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceMode } from "@knodia/eservice-models/api";
@@ -117,7 +117,7 @@ export const API_Purpose = z
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
-export const API_GetPurposesQueryParams = requireKnodeIdWithEserviceId(
+export const API_GetPurposesQueryParams = requireKnodeIdWith("eserviceId")(
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:

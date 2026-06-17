@@ -727,7 +727,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: ownerId } = getUISessionAuthData(authData);
-      const { eserviceId, limit, offset, purpose } = req.query;
+      const { eserviceId, knodeId, limit, offset, purposeId } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       logger.info(
@@ -767,7 +767,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId,
-            knodeId: req.query.knodeId,
+            knodeId,
             limit: 50,
             offset: 0,
             state: [
@@ -785,10 +785,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
               client: keychainProcessClient,
               headers,
               query: {
+                knodeId: p.knodeId,
                 limit: 50,
                 offset: 0,
                 ownerId,
-                purpose: `${p.knodeId}:${p.id}`,
+                purposeId: p.id,
               },
             }),
           ),
@@ -821,7 +822,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
         headers,
-        query: { limit, offset, ownerId, purpose },
+        query: { knodeId, limit, offset, ownerId, purposeId },
       });
 
       res.send({

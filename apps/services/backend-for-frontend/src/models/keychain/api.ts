@@ -3,7 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
-  requireKnodeIdWithEserviceId,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
@@ -118,34 +118,25 @@ export type API_ProducerKeychainEservicePathParams = z.infer<
   typeof API_ProducerKeychainEservicePathParams
 >;
 
-export const API_ConsumerKeychainsQueryParams = requireKnodeIdWithEserviceId(
+export const API_ConsumerKeychainsQueryParams = requireKnodeIdWith(
+  "eserviceId",
+  "purposeId",
+)(
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:
-        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purpose`.",
+        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purposeId`.",
     }),
     knodeId: API_KnodeId.optional().meta({
       description:
-        "Knode ID that owns the E-service. Required when `eserviceId` is set.",
+        "Producer Knode ID that owns the E-service and its Purposes. Required when `eserviceId` or `purposeId` is set.",
     }),
-    purpose: z
-      .string()
-      .refine((value) => {
-        const [knodeId, id, ...rest] = value.split(":");
-
-        return (
-          rest.length === 0 &&
-          API_KnodeId.safeParse(knodeId).success &&
-          z.uuid().safeParse(id).success
-        );
-      })
-      .optional()
-      .meta({
-        description:
-          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.",
-      }),
-  }).refine((q) => !(q.purpose && q.eserviceId), {
-    message: "`purpose` and `eserviceId` are mutually exclusive",
+    purposeId: z.uuid().optional().meta({
+      description:
+        "Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`. Mutually exclusive with `eserviceId`.",
+    }),
+  }).refine((q) => !(q.purposeId && q.eserviceId), {
+    message: "`purposeId` and `eserviceId` are mutually exclusive",
   }),
 );
 export type API_ConsumerKeychainsQueryParams = z.infer<

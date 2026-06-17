@@ -2003,17 +2003,17 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purpose`.
+         * Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purposeId`.
          */
         eserviceId?: string;
         /**
-         * Knode ID that owns the E-service. Required when `eserviceId` is set.
+         * Producer Knode ID that owns the E-service and its Purposes. Required when `eserviceId` or `purposeId` is set.
          */
         knodeId?: KnodeId;
         /**
-         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.
+         * Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`. Mutually exclusive with `eserviceId`.
          */
-        purpose?: string;
+        purposeId?: string;
     };
     url: '/consumerKeychains';
 };
