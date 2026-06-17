@@ -49,3 +49,7 @@ aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
 aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
   "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml" \
   "s3://$S3_BUCKET/f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-poc-uc02-companies-eservice.yaml"
+
+aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml" \
+  "s3://$S3_BUCKET/62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml"

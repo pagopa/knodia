@@ -8,7 +8,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mockup 06 Company Address - Lynx"}'::jsonb,
+  '{"en": "Mockup 06 Company Address (Integrity REST 02) - Lynx"}'::jsonb,
   '{"en": "Cross-Border E-Service that returns a legal entity address."}'::jsonb,
   'ProvideData',
   false, false,
@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '62708c81-8862-48bf-8140-49804d18c7e6',
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
-  '1522e511d90c87e5d764146dd79f962b87d4f01c649f628d91d20c1646bf2bd7',
+  '616674b4fb3456868c9016e325eaca41ce7023d796dc5a02d15d6526ec1cfbd5',
   'application/yaml',
   'mock-bearer-integrity-rest-02-eservice.yaml',
   '62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml',
@@ -74,7 +74,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
-  1, 'vc_territorial_units', 'nuts3',
+  1, 'vc_territorial_units', 'nuts1',
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 
@@ -97,8 +97,8 @@ INSERT INTO ${NAMESPACE}_keychain."producer_keychain" (
   metadata_version, created_at, updated_at
 ) VALUES (
   '4dc6f9d1-c305-45a3-88da-7e08f6148536',
-  '{"en": "Mockup 06 Company Address - Lynx"}'::jsonb,
-  '{"en": "Producer keychain for the Mockup 06 Company Address e-service."}'::jsonb,
+  '{"en": "Mockup 06 Company Address (Integrity REST 02) - Lynx"}'::jsonb,
+  '{"en": "Producer keychain for the Mockup 06 Company Address (Integrity REST 02) e-service."}'::jsonb,
   '00000000-0000-4000-8000-000000000004',
   0, now(), now()
 ) ON CONFLICT (id) DO UPDATE SET
