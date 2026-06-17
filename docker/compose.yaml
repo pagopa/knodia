@@ -275,7 +275,7 @@ services:
     depends_on:
       - postgres
 
-  # Mock AWS KMS for local development (no seed file — keys created via API)
+  # Mock AWS KMS for local development
   local-kms:
     security_opt:
       - no-new-privileges:true
