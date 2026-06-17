@@ -16,9 +16,9 @@ describe("confirmOnboardingErrorMessage", () => {
     );
   });
 
-  it("returns undefined for other errors", () => {
-    expect(
-      confirmOnboardingErrorMessage(axiosErrorWithStatus(500)),
-    ).toBeUndefined();
+  it("returns a generic message for other errors", () => {
+    expect(confirmOnboardingErrorMessage(axiosErrorWithStatus(500))).toBe(
+      "Something went wrong while creating your credentials. Please try again.",
+    );
   });
 });
