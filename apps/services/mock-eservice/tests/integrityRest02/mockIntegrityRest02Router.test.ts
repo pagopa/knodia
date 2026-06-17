@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   type EserviceId,
   type EserviceVersionId,
@@ -7,13 +8,18 @@ import {
 const mockKmsSend = vi.hoisted(() => vi.fn());
 
 vi.mock("@aws-sdk/client-kms", () => ({
+  GetPublicKeyCommand: function MockGetPublicKeyCommand(
+    input: Record<string, unknown>,
+  ): Record<string, unknown> {
+    return input;
+  },
   KMSClient: function MockKMSClient() {
     return { send: mockKmsSend };
   },
   SignCommand: function MockSignCommand(
     input: Record<string, unknown>,
   ): Record<string, unknown> {
-    return { ...input };
+    return input;
   },
 }));
 
@@ -88,15 +94,28 @@ async function signToken(
 
 describe("mock-eservice integrity REST 02 router", () => {
   beforeEach(() => {
-    mockKmsSend.mockImplementation((cmd: { Message: Uint8Array }) => {
-      const sign = createSign("SHA256");
-      sign.update(cmd.Message);
-      return Promise.resolve({
-        Signature: new Uint8Array(
-          sign.sign(integrityRest02KeySet.keySet.privateKey),
-        ),
-      });
-    });
+    mockKmsSend.mockImplementation(
+      (cmd: { KeyId?: string; Message?: Uint8Array }) => {
+        // Handle GetPublicKeyCommand — returns the public key in DER format
+        if (cmd.KeyId && !cmd.Message) {
+          return Promise.resolve({
+            PublicKey: integrityRest02KeySet.keySet.publicKey.export({
+              format: "der",
+              type: "spki",
+            }),
+          });
+        }
+
+        // Handle SignCommand — sign and return signature
+        const sign = createSign("SHA256");
+        sign.update(cmd.Message!);
+        return Promise.resolve({
+          Signature: new Uint8Array(
+            sign.sign(integrityRest02KeySet.keySet.privateKey),
+          ),
+        });
+      },
+    );
   });
 
   afterEach(() => {
