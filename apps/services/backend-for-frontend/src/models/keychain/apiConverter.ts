@@ -25,12 +25,23 @@ export const toAPI_KeychainDetails = (
 
 export const toAPI_Keychain = (
   keychain: keychainProcessApi.Keychain,
-  counters: { keysCount: number; membersCount: number },
+  counters: {
+    eservicesCount?: number;
+    keysCount: number;
+    membersCount: number;
+    purposesCount?: number;
+  },
 ): API_Keychain => ({
   id: keychain.id,
   keysCount: counters.keysCount,
   membersCount: counters.membersCount,
   name: keychain.name,
+  ...(counters.purposesCount !== undefined && {
+    purposesCount: counters.purposesCount,
+  }),
+  ...(counters.eservicesCount !== undefined && {
+    eservicesCount: counters.eservicesCount,
+  }),
 });
 
 export const toAPI_KeychainOption = (
