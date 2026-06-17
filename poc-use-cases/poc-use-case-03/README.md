@@ -52,7 +52,7 @@ Organization: `systemSERCLynx`
 
 Knode: `Lynx`
 
-Description: to relay the sender's message to the recipient's SERC, `systemSERCLynx` must also satisfy the consumption requirements of `systemSERCOrion`'s relay e-service. The setup is the same as Phase 2, reusing the same Consumer Keychain.
+Description: to relay the sender's message to the recipient's SERC, `systemSERCLynx` must also satisfy the consumption requirements of `systemSERCOrion`'s relay e-service. The setup is the same as Phase 2, but for a different e-service.
 
 Steps:
 
@@ -66,7 +66,7 @@ Organization: `systemSERCOrion`
 
 Knode: `Orion`
 
-Description: to relay the delivery evidences back to the sender's SERC, `systemSERCOrion` must satisfy the consumption requirements of `systemSERCLynx`'s relay e-service. The setup is the same as Phase 2, for a different consuming organization.
+Description: to relay the delivery evidences back to the sender's SERC, `systemSERCOrion` must satisfy the consumption requirements of `systemSERCLynx`'s relay e-service. The setup is the same as Phase 2, but for a different e-service and consumer organization.
 
 Steps:
 
@@ -79,7 +79,7 @@ Organization: `systemSERCLynx`
 
 Knode: `Lynx`
 
-Description: on a delivery request from one of its users (`senderLynx`), `systemSERCLynx` discovers which SERC serves the recipient through `supervisoryBodyOrion`, then relays the sender's message to that SERC (`systemSERCOrion`). This is OBJECTIVE_01.
+Description: on a delivery request from one of its users (`senderLynx`), `systemSERCLynx` discovers which SERC serves the recipient through `supervisoryBodyOrion`, then relays the sender's message to that SERC (`systemSERCOrion`).
 
 Steps:
 
@@ -93,7 +93,7 @@ Organization: `systemSERCOrion`
 
 Knode: `Orion`
 
-Description: for the message relayed in Phase 5, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) — `ContentConsignment` when the message is made available to the recipient, and `ContentHandover` when the recipient picks it up. This is OBJECTIVE_02.
+Description: for the message relayed in Phase 5, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) — `ContentConsignment` when the message is made available to the recipient, and `ContentHandover` when the recipient picks it up.
 
 Steps:
 
