@@ -12,7 +12,9 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 ## Phase 1
 
 Organization: `studentRegistryLynx`
+
 Knode: `Lynx`
+
 Description: the national Student Registry of Lynx publishes two cross-border e-services that let other domains' tertiary-education institutes retrieve a student's qualifications and register a newly conferred one.
 
 Steps:
@@ -25,7 +27,9 @@ Steps:
 ## Phase 2
 
 Organization: `academyOrion`
+
 Knode: `Orion`
+
 Description: to use the Lynx e-services, the Academy of Orion (holder of the `trainingInstitutes` attribute) must first satisfy each e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking. This is done once per e-service (provide-data and receive-data).
 
 Steps:
@@ -45,7 +49,9 @@ Steps:
 ## Phase 3
 
 Organization: `academyOrion`
+
 Knode: `Orion`
+
 Description: on an admission application from a student, the Academy of Orion retrieves the student's qualifications from Lynx via the provide-data e-service.
 
 Steps:
@@ -57,7 +63,9 @@ Steps:
 ## Phase 4
 
 Organization: `academyOrion`
+
 Knode: `Orion`
+
 Description: once the student completes a training programme at the Academy and is awarded a new qualification, the Academy registers it back in the Lynx student registry via the receive-data e-service.
 
 Steps:
