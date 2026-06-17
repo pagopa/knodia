@@ -39,8 +39,11 @@ export function CreatePurposeModal({
   knodeId,
   onClose,
 }: Props) {
-  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
-    useLeaveConfirmModal(onClose);
+  const {
+    markDirty,
+    modal: leaveConfirmModal,
+    onModalShow: handleShowLeaveConfirm,
+  } = useLeaveConfirmModal(onClose, { skipWhenClean: true });
 
   const { data: schemasResponse, isError: isSchemasError } = useQuery(
     getConsumerCurrentPurposeFormSchemasOptions({
@@ -131,6 +134,7 @@ export function CreatePurposeModal({
             formSchemaVersion={formSchemaVersion}
             initialTemplate={initialTemplate}
             knodeId={knodeId}
+            onDirty={markDirty}
           >
             <ModalContent />
           </PurposeFormProvider>
