@@ -34,11 +34,20 @@ interface KnodiaJwtSignatureInput {
 
 export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
+  const kmsKidCache = new Map<
+    string,
+    { headerKid: string | undefined; signingKid: string }
+  >();
 
   async function getKmsKid(kid: string): Promise<{
     headerKid: string | undefined;
     signingKid: string;
   }> {
+    const cached = kmsKidCache.get(kid);
+    if (cached) {
+      return cached;
+    }
+
     const { PublicKey } = await client.send(
       new GetPublicKeyCommand({ KeyId: kid }),
     );
@@ -56,7 +65,9 @@ export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
     });
     const jwk = publicKey.export({ format: "jwk" });
 
-    return { headerKid: calculateKid(jwk), signingKid: kid };
+    const result = { headerKid: calculateKid(jwk), signingKid: kid };
+    kmsKidCache.set(kid, result);
+    return result;
   }
 
   return {
