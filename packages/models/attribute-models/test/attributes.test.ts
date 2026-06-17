@@ -24,6 +24,15 @@ describe("getAttribute", () => {
     });
   });
 
+  it("resolves the vc_poc_attributes/erds_poc attribute", () => {
+    expect(
+      getAttribute({ code: "erds_poc", scheme: "vc_poc_attributes" }),
+    ).toEqual({
+      id: { code: "erds_poc", scheme: "vc_poc_attributes" },
+      name: "ERDS POC",
+    });
+  });
+
   it("returns undefined for an unknown code in a known scheme", () => {
     expect(
       getAttribute({ code: "unknown", scheme: "vc_poc_attributes" }),

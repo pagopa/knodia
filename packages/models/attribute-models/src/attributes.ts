@@ -6,6 +6,7 @@ export const attributes = {
   },
   vc_poc_attributes: {
     companies_registries: "Companies Registries",
+    erds_poc: "ERDS POC",
   },
   vc_territorial_units: {
     nuts1: "NUTS 1",

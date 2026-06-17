@@ -20,6 +20,9 @@ const ORG_USERNAMES = {
   "00000000-0000-4000-8000-000000000101": "business_booklet_lynx_admin",
   "00000000-0000-4000-8000-000000000102":
     "construction_companies_registry_orion_admin",
+  "00000000-0000-4000-8000-000000000105": "system_serc_lynx_admin",
+  "00000000-0000-4000-8000-000000000106": "system_serc_orion_admin",
+  "00000000-0000-4000-8000-000000000107": "supervisory_body_orion_admin",
 };
 const INTERNAL_SUB = "local-internal-service";
 
