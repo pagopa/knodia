@@ -87,6 +87,6 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
   eservice_id, scheme, code, metadata_version
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
-  'vc_example_eservice_categories', 'organization.private_company.digital_domicile',
+  'vc_example_eservice_categories', 'organization.private_company.address',
   0
 );
