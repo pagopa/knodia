@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";

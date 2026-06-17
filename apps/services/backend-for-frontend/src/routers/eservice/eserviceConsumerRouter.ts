@@ -275,6 +275,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         409: API_Problem.meta({
           description: "E-service mode is not ReceiveData",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get Consumer PurposeFormOptions",
       tags: [apiTags.eservice],
