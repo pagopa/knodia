@@ -5,8 +5,9 @@ import {
   createFormHook,
   createFormHookContexts,
   revalidateLogic,
+  useStore,
 } from "@tanstack/react-form";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 import type { FormValues, JsonSchema } from "@/features/purpose/engine/types";
 
@@ -26,9 +27,18 @@ export interface PurposeWizardContextValue {
   formSchemaVersion: string;
   knodeId: KnodeId;
   maxDailyCallsPerConsumer: number;
+  onDirty?: () => void;
   selectedTemplate?: bffApi.PurposeTemplateReference;
   updateDetailsStep: (data: DetailsStepData) => void;
   updateFormAnswers: (answers: FormValues) => void;
+}
+
+interface UseDetailsStepFormArgs {
+  data: PurposeFormDraftData;
+  maxDailyCallsPerConsumer: number;
+  onDirty?: () => void;
+  onSubmitSuccess: (value: DetailsStepData) => void;
+  updateDetailsStep: (data: DetailsStepData) => void;
 }
 
 export const PurposeWizardContext =
@@ -43,13 +53,16 @@ export const { useAppForm } = createFormHook({
   formContext,
 });
 
-export function useDetailsStepForm(
-  onSubmitSuccess: (value: DetailsStepData) => void,
-) {
-  const { data, maxDailyCallsPerConsumer, updateDetailsStep } =
-    usePurposeWizardContext();
+export type DetailsStepFormApi = ReturnType<typeof useDetailsStepForm>;
 
-  return useAppForm({
+export function useDetailsStepForm({
+  data,
+  maxDailyCallsPerConsumer,
+  onDirty,
+  onSubmitSuccess,
+  updateDetailsStep,
+}: UseDetailsStepFormArgs) {
+  const form = useAppForm({
     defaultValues: {
       dailyCalls: data.dailyCalls ?? DETAILS_STEP_DEFAULTS.dailyCalls,
       description: data.description ?? DETAILS_STEP_DEFAULTS.description,
@@ -64,17 +77,23 @@ export function useDetailsStepForm(
       onDynamic: detailsStepSchema(maxDailyCallsPerConsumer),
     },
   });
+  const isDirty = useStore(form.store, (state) => state.isDirty);
+  useEffect(() => {
+    if (isDirty) onDirty?.();
+  }, [isDirty, onDirty]);
+  return form;
 }
 
 export function useDynamicStepForm(opts: {
   formAnswers: FormValues;
   jsonSchema: JsonSchema;
+  onDirty?: () => void;
   onDynamic: (params: {
     value: FormValues;
   }) => undefined | { fields: Record<string, string> };
   onSubmitSuccess: (value: FormValues) => void;
 }) {
-  return useAppForm({
+  const form = useAppForm({
     defaultValues: {
       ...getDefaultValues(opts.jsonSchema),
       ...opts.formAnswers,
@@ -94,6 +113,12 @@ export function useDynamicStepForm(opts: {
       onDynamic: opts.onDynamic,
     },
   });
+  const { onDirty } = opts;
+  const isDirty = useStore(form.store, (state) => state.isDirty);
+  useEffect(() => {
+    if (isDirty) onDirty?.();
+  }, [isDirty, onDirty]);
+  return form;
 }
 
 export function usePurposeWizardContext() {
