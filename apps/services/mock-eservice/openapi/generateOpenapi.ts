@@ -3,6 +3,7 @@ import generateOpenapi from "@knodia/fastify-zod-api-commons/generateOpenapi";
 import {
   buildBearerAppFromConfig,
   buildBearerPocUc02CompaniesAppFromConfig,
+  buildBearerPocUc03RelayAppFromConfig,
   buildBearerPocUc03SupervisoryBodyAppFromConfig,
   buildBearerReceiveDataAppFromConfig,
   buildBearerSignalHubAppFromConfig,
@@ -31,5 +32,9 @@ await Promise.all([
   generateOpenapi(
     buildBearerPocUc03SupervisoryBodyAppFromConfig(config),
     "openapi/openapi-bearer-poc-uc03-supervisory-body.yaml",
+  ),
+  generateOpenapi(
+    buildBearerPocUc03RelayAppFromConfig(config),
+    "openapi/openapi-bearer-poc-uc03-relay.yaml",
   ),
 ]);
