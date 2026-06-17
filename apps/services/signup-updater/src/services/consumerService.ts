@@ -127,6 +127,13 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
+    .with({ type: "SuspensionRequestedV1" }, async () => {
+      // TODO: PIN-780
+      logger.info(
+        `Skipping SuspensionRequestedV1 for signup user ${signupUserId}: suspension is not yet implemented`,
+      );
+      return;
+    })
     .exhaustive();
 }
 

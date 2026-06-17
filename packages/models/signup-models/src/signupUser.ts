@@ -4,6 +4,14 @@ import { z } from "zod";
 export const SignupUserStatus = z.enum(["Active", "Suspended"]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
+export const SuspensionReason = z.enum([
+  "AccuracyContested",
+  "UnlawfulProcessing",
+  "DataNeededForLegalClaims",
+  "PendingObjectionVerification",
+]);
+export type SuspensionReason = z.infer<typeof SuspensionReason>;
+
 const SignupGeneratedEntitiesPerKnode = z.strictObject({
   organizationName: z.string(),
   userName: z.string(),
@@ -30,6 +38,8 @@ export const SignupUser = z
     signupUserId: SignupUserId,
     spidCode: z.string().optional(),
     status: SignupUserStatus,
+    suspendedAt: z.coerce.date().optional(),
+    suspensionReason: SuspensionReason.optional(),
     updatedAt: z.coerce.date(),
   })
   .refine(
@@ -41,6 +51,26 @@ export const SignupUser = z
       message:
         "at least one of spidCode / fiscalNumber / personIdentifier must be set",
       path: ["spidCode"],
+    },
+  )
+  .refine(
+    (u) =>
+      u.status !== "Suspended" ||
+      (u.suspendedAt !== undefined && u.suspensionReason !== undefined),
+    {
+      message:
+        "suspendedAt and suspensionReason must be set when status is Suspended",
+      path: ["suspendedAt"],
+    },
+  )
+  .refine(
+    (u) =>
+      u.status === "Suspended" ||
+      (u.suspendedAt === undefined && u.suspensionReason === undefined),
+    {
+      message:
+        "suspendedAt and suspensionReason must be unset when status is not Suspended",
+      path: ["suspendedAt"],
     },
   );
 export type SignupUser = z.infer<typeof SignupUser>;

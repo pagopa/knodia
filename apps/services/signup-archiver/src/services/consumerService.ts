@@ -82,5 +82,11 @@ export async function handleSignupMessage(
         `Received EmailChangeRequestedV1 event; No archival action defined, skipping`,
       );
     })
+    .with({ type: "SuspensionRequestedV1" }, async () => {
+      // TODO: PIN-781
+      logger.info(
+        `Received SuspensionRequestedV1 event; Not yet implemented, skipping archival action`,
+      );
+    })
     .exhaustive();
 }

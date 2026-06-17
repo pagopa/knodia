@@ -17,6 +17,15 @@ function validOnboardingData() {
   };
 }
 
+function validSuspensionData() {
+  return {
+    occurredAt: "2026-05-29T10:00:00.000Z",
+    oneIdNonce: generateId(),
+    reason: "UnlawfulProcessing" as const,
+    signupUserId: generateId<SignupUserId>(),
+  };
+}
+
 describe("SignupEventV1", () => {
   it("parses a valid OnboardingCompletedV1 event", () => {
     const event: SignupEventV1 = {
@@ -33,6 +42,15 @@ describe("SignupEventV1", () => {
     const event: SignupEventV1 = {
       data: { emailChangeRequestId, signupUserId },
       type: "EmailChangeRequestedV1",
+    };
+
+    expect(SignupEventV1.parse(event)).toEqual(event);
+  });
+
+  it("parses a valid SuspensionRequestedV1 event", () => {
+    const event: SignupEventV1 = {
+      data: validSuspensionData(),
+      type: "SuspensionRequestedV1",
     };
 
     expect(SignupEventV1.parse(event)).toEqual(event);
@@ -91,6 +109,15 @@ describe("SignupEventV1", () => {
           signupUserId: generateId<SignupUserId>(),
         },
         type: "EmailChangeRequestedV1",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an invalid suspension reason", () => {
+    expect(() =>
+      SignupEventV1.parse({
+        data: { ...validSuspensionData(), reason: "OTHER" },
+        type: "SuspensionRequestedV1",
       }),
     ).toThrow();
   });

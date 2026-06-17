@@ -36,6 +36,18 @@ describe("SignupUser — happy paths", () => {
     });
     expect(parsed.personIdentifier).toBe("FR/IT/12345");
   });
+
+  it("accepts a suspended user with reason and timestamp", () => {
+    const parsed = SignupUser.parse({
+      ...baseRecord,
+      status: "Suspended",
+      suspendedAt: new Date("2026-05-30T09:00:00Z"),
+      suspensionReason: "DataNeededForLegalClaims",
+    });
+
+    expect(parsed.status).toBe("Suspended");
+    expect(parsed.suspensionReason).toBe("DataNeededForLegalClaims");
+  });
 });
 
 describe("SignupUser — shape rejections", () => {
@@ -60,6 +72,26 @@ describe("SignupUser — shape rejections", () => {
   it("rejects extra unknown keys (strictObject)", () => {
     expect(() =>
       SignupUser.parse({ ...baseRecord, weirdExtraField: "x" }),
+    ).toThrow();
+  });
+
+  it("rejects suspended status without suspension fields", () => {
+    expect(() =>
+      SignupUser.parse({
+        ...baseRecord,
+        status: "Suspended",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects active status with suspension fields set", () => {
+    expect(() =>
+      SignupUser.parse({
+        ...baseRecord,
+        status: "Active",
+        suspendedAt: new Date("2026-05-30T09:00:00Z"),
+        suspensionReason: "AccuracyContested",
+      }),
     ).toThrow();
   });
 });

@@ -2,7 +2,11 @@ import type {
   EmailChangeRequestId,
   SignupUserId,
 } from "@knodia/common-models/ids";
-import type { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
+import type {
+  EmailChangeRequest,
+  SignupUser,
+  SuspensionReason,
+} from "@knodia/signup-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -166,6 +170,26 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       await db
         .update(signupUser)
         .set({ email, updatedAt: new Date() })
+        .where(eq(signupUser.signupUserId, signupUserId));
+    },
+
+    async updateSignupUserSuspension({
+      reason,
+      signupUserId,
+      suspendedAt,
+    }: {
+      reason: SuspensionReason;
+      signupUserId: SignupUserId;
+      suspendedAt: Date;
+    }): Promise<void> {
+      await db
+        .update(signupUser)
+        .set({
+          status: "Suspended",
+          suspendedAt,
+          suspensionReason: reason,
+          updatedAt: new Date(),
+        })
         .where(eq(signupUser.signupUserId, signupUserId));
     },
   };

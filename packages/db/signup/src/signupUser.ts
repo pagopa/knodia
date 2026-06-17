@@ -32,12 +32,18 @@ export const signupUser = schema.table(
     signupUserId: uuid("signup_user_id").primaryKey(),
     spidCode: text("spid_code").unique(),
     status: text("status").notNull(),
+    suspendedAt: timestamp("suspended_at", { withTimezone: true }),
+    suspensionReason: text("suspension_reason"),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
   },
   (table) => [
     check(
       "signup_user_at_least_one_identifier",
       sql`${table.spidCode} IS NOT NULL OR ${table.fiscalNumber} IS NOT NULL OR ${table.personIdentifier} IS NOT NULL`,
+    ),
+    check(
+      "signup_user_suspension_consistency",
+      sql`(${table.status} = 'Suspended' AND ${table.suspendedAt} IS NOT NULL AND ${table.suspensionReason} IS NOT NULL) OR (${table.status} <> 'Suspended' AND ${table.suspendedAt} IS NULL AND ${table.suspensionReason} IS NULL)`,
     ),
   ],
 );

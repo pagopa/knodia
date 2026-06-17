@@ -51,6 +51,8 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     signupUserId: sql.signupUserId,
     spidCode: sql.spidCode ?? undefined,
     status: sql.status,
+    suspendedAt: sql.suspendedAt ?? undefined,
+    suspensionReason: sql.suspensionReason ?? undefined,
     updatedAt: sql.updatedAt,
   });
 }
@@ -71,6 +73,8 @@ export function toSignupUserSQL(user: SignupUser): NewSignupUser {
     signupUserId: user.signupUserId,
     spidCode: user.spidCode,
     status: user.status,
+    suspendedAt: user.suspendedAt,
+    suspensionReason: user.suspensionReason,
     updatedAt: user.updatedAt,
   };
 }

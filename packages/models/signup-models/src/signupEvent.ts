@@ -1,6 +1,8 @@
 import { EmailChangeRequestId, SignupUserId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
+import { SuspensionReason } from "./signupUser.ts";
+
 export const OnboardingCompletedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
@@ -24,8 +26,20 @@ export const EmailChangeRequestedV1 = z.object({
 });
 export type EmailChangeRequestedV1 = z.infer<typeof EmailChangeRequestedV1>;
 
+const SuspensionRequestedV1 = z.object({
+  data: z.strictObject({
+    occurredAt: z.iso.datetime(),
+    oneIdNonce: z.string(),
+    reason: SuspensionReason,
+    signupUserId: SignupUserId,
+  }),
+  type: z.literal("SuspensionRequestedV1"),
+});
+type SuspensionRequestedV1 = z.infer<typeof SuspensionRequestedV1>;
+
 export const SignupEventV1 = z.discriminatedUnion("type", [
   OnboardingCompletedV1,
   EmailChangeRequestedV1,
+  SuspensionRequestedV1,
 ]);
 export type SignupEventV1 = z.infer<typeof SignupEventV1>;
