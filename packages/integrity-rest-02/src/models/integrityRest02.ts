@@ -9,10 +9,10 @@ export interface KnodiaJwtSignature {
   serialized: string; // full JWT string (header.payload.signature)
 }
 
-export const KNODIA_JWT_SIGNATURE_HEADER = "Knodia-JWT-Signature";
-export const DIGEST_HEADER = "Digest";
-export const CONTENT_TYPE_HEADER = "Content-Type";
-export const CONTENT_ENCODING_HEADER = "Content-Encoding";
+export const KNODIA_JWT_SIGNATURE_HEADER = "knodia-jwt-signature";
+export const DIGEST_HEADER = "digest";
+export const CONTENT_TYPE_HEADER = "content-type";
+export const CONTENT_ENCODING_HEADER = "content-encoding";
 
 const DigestHeader = z.strictObject({
   [DIGEST_HEADER]: z.string(),
