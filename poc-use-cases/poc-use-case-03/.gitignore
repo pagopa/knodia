@@ -1,0 +1,3 @@
+# Local-only private keys written by the generate-lynx-key / generate-orion-key
+# scripts, read by the demo scripts. Never commit them.
+.local/
