@@ -23,6 +23,7 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
+import { calculateKid } from "@knodia/crypto";
 import {
   CONTENT_ENCODING_HEADER,
   CONTENT_TYPE_HEADER,
@@ -49,12 +50,7 @@ import {
   INTEGRITY_REST_02_MOCK_PRODUCER_ID,
 } from "../../src/integrityRest02/mockup.ts";
 import { legalEntityAddressNotFound } from "../../src/models/errors.ts";
-import {
-  getCtx,
-  INTEGRITY_REST_02_SIGNATURE_KID,
-  integrityRest02KeySet,
-  TEST_KNODE_ID,
-} from "../setup.ts";
+import { getCtx, integrityRest02KeySet, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
 
 // A UID present in legalEntitiesAddresses.json.
@@ -139,7 +135,10 @@ describe("mock-eservice integrity REST 02 router", () => {
       // matching public key (by the KID found in the JWT header). In this test we use the local RSA public key that
       // the mock KMS used to sign (the "mock response" of that endpoint).
       const jwtHeader = decodeProtectedHeader(knodiaJwtSignature);
-      expect(jwtHeader.kid).toBe(INTEGRITY_REST_02_SIGNATURE_KID);
+      const expectedHeaderKid = calculateKid(
+        integrityRest02KeySet.publicKeyJwk,
+      );
+      expect(jwtHeader.kid).toBe(expectedHeaderKid);
 
       // --- Verify the JWT signature ---
       const { payload } = await jwtVerify(
