@@ -51,10 +51,10 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
           <h3 className="title-md text-primary-light-high-contrast">
             Lawfulness of Processing declarations for this E-Service
           </h3>
-          <span className="body-md text-primary-dark">
+          <p className="body-sm text-primary-light-mid-contrast whitespace-pre-line">
             For receive-data E-Services, the Producer fills in the declaration.
             Choose the declaration that applies.
-          </span>
+          </p>
         </div>
 
         <form.Subscribe selector={(state) => state.canSubmit}>
@@ -75,7 +75,7 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
                     type="button"
                   >
                     <div className="flex min-w-0 flex-col gap-1">
-                      <span className="body-lg-em">
+                      <span className="body-lg-em text-primary-light-high-contrast">
                         Lawfulness of {option.name.en}
                       </span>
                       <span className="body-md text-primary-light-low-contrast">
