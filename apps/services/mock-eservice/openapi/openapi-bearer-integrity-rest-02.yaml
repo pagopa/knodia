@@ -107,7 +107,7 @@ paths:
       tags:
         - companyAddress
       description: Returns the address of a company identified by its UID
-        (Cross-Border E-service 03, Bearer-protected).
+        (Cross-Border E-service 06, Bearer-protected).
       parameters:
         - schema:
             $ref: "#/components/schemas/CompanyUid"
@@ -140,11 +140,13 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: No legal entity found for the uid_company
+          description: No legal entity found for the uid_company, or no address is
+            available for it
           content:
             application/problem+json:
               schema:
-                description: No legal entity found for the uid_company
+                description: No legal entity found for the uid_company, or no address is
+                  available for it
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

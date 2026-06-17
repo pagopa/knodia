@@ -1,10 +1,10 @@
-# mock-eservice-e2e-bearer
+# mock-eservice-e2e-integrity-rest-02
 
 Exercises the full access-token flow against the seeded mock e-service.
 
 ## Run
 
-1. **Step 1 – Get Mock Eservice (Bearer)** — captures the seeded
+1. **Step 1 – Get Mock Eservice (Integrity REST 02 Bearer)** — captures the seeded
    `eserviceId` as a Bruno var.
 2. Run `bearer-token-flow` from **step 2** to **step 11** (skip
    step 1 — the eserviceId is already set). Between step 10 and

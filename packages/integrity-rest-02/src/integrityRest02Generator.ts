@@ -41,10 +41,10 @@ export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
         { [DIGEST_HEADER]: input.digest },
         { [CORRELATION_ID_HEADER]: input.correlationId },
         ...(input.contentType
-          ? [{ [CONTENT_TYPE_HEADER]: input.contentType }]
+          ? [{ [CONTENT_TYPE_HEADER]: String(input.contentType) }]
           : []),
         ...(input.contentEncoding
-          ? [{ [CONTENT_ENCODING_HEADER]: input.contentEncoding }]
+          ? [{ [CONTENT_ENCODING_HEADER]: String(input.contentEncoding) }]
           : []),
       ]);
 

@@ -48,7 +48,7 @@ export const mockIntegrityRest02Router: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Returns the address of a company identified by its UID (Cross-Border E-service 03, Bearer-protected).",
+        "Returns the address of a company identified by its UID (Cross-Border E-service 06, Bearer-protected).",
       operationId: "getCompanyAddress",
       params: API_CompanyUidPathParam,
       response: {
@@ -58,7 +58,8 @@ export const mockIntegrityRest02Router: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Invalid uid_company" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         404: API_Problem.meta({
-          description: "No legal entity found for the uid_company",
+          description:
+            "No legal entity found for the uid_company, or no address is available for it",
         }),
       },
       summary: "Get company address",
