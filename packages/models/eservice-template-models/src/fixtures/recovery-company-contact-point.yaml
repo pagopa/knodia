@@ -1,0 +1,96 @@
+openapi: 3.0.3
+
+info:
+  title: Recovery of the contact point of a private company
+  description: |
+    API for recovering the contact point of a private company
+  version: 1.0.0
+
+servers:
+  - url: https://api.example-erds.it/v1
+
+paths:
+  /getDigitalDomicile:
+    post:
+      description: |
+        Recovering the digital domicile of a private company from the unique national identifier
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Identifirer"
+      responses:
+        "200":
+          description: Digital domicile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DigitalDomicile"
+
+  /getAddress:
+    post:
+      description: |
+        Recovering the address of a private company from the unique national identifier
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Identifirer"
+      responses:
+        "200":
+          description: Address
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token (Voucher) issued by the Producer Knode.
+        The token is in JWS format and complies
+        with the security specifications and recommendations included in RFC8725.
+
+  schemas:
+    Identifirer:
+      type: object
+      properties:
+        identifierSchemeURI:
+          type: string
+        identifierNotation:
+          type: string
+      required:
+        - identifierSchemeURI
+        - identifierNotation
+
+    DigitalDomicile:
+      type: string
+      pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+    Address:
+      type: object
+      properties:
+        adminUnitL1:
+          type: string
+        adminUnitL2:
+          type: string
+        fullAddress:
+          type: string
+        postCode:
+          type: string
+        postName:
+          type: string
+      required:
+        - adminUnitL1
+        - adminUnitL2
+        - fullAddress
