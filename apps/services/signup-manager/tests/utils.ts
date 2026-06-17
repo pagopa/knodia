@@ -28,6 +28,10 @@ export const validChangeEmailBody = {
   email: "new.email@example.com",
 };
 
+export const validSuspendUserBody = {
+  reason: "UnlawfulProcessing",
+} as const;
+
 export const validUISignupSessionTokenClaims =
   getTestUISignupSessionTokenClaims();
 

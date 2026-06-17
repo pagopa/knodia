@@ -12,6 +12,7 @@ import {
   API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
   API_CurrentSignupUser,
+  API_SuspendUserRequestBody,
 } from "../models/api.ts";
 import { toAPI_CurrentSignupUser } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -133,5 +134,34 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       tags: [apiTags.signup],
     },
     url: "/user/me",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
+      await signupService.suspendUser(req.body, ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_SuspendUserRequestBody,
+      description: "Request suspension for the caller user",
+      operationId: "suspendUser",
+      response: {
+        204: z.undefined().meta({
+          description: "User suspension requested successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/user/suspend",
   });
 };

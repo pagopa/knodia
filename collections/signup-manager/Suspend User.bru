@@ -1,0 +1,21 @@
+meta {
+  name: Suspend User
+  type: http
+}
+
+post {
+  url: {{host-signup-manager}}/user/suspend
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-signup-session-jwt}}
+}
+
+body:json {
+  {
+    "reason": "UnlawfulProcessing"
+  }
+}
