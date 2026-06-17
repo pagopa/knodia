@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-export const Route = createFileRoute("/_authenticated/home")({
+export const Route = createFileRoute("/_layout/_authenticated/home")({
   component: RouteComponent,
 });
 

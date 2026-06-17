@@ -77,5 +77,10 @@ export async function handleSignupMessage(
         );
       }
     })
+    .with({ type: "EmailChangeRequestedV1" }, async () => {
+      logger.info(
+        `Received EmailChangeRequestedV1 event; No archival action defined, skipping`,
+      );
+    })
     .exhaustive();
 }

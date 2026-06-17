@@ -1,6 +1,33 @@
-import { SignupUser } from "@knodia/signup-models";
+import { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
 
-import type { NewSignupUser, SignupUserSQL } from "../signupUser.ts";
+import type {
+  EmailChangeRequestSQL,
+  NewEmailChangeRequest,
+  NewSignupUser,
+  SignupUserSQL,
+} from "../signupUser.ts";
+
+export function toEmailChangeRequest(
+  sql: EmailChangeRequestSQL,
+): EmailChangeRequest {
+  return EmailChangeRequest.parse({
+    createdAt: sql.createdAt,
+    email: sql.email,
+    emailChangeRequestId: sql.emailChangeRequestId,
+    signupUserId: sql.signupUserId,
+  });
+}
+
+export function toEmailChangeRequestSQL(
+  emailChangeRequest: EmailChangeRequest,
+): NewEmailChangeRequest {
+  return {
+    createdAt: emailChangeRequest.createdAt,
+    email: emailChangeRequest.email,
+    emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+    signupUserId: emailChangeRequest.signupUserId,
+  };
+}
 
 export function toSignupUser(sql: SignupUserSQL): SignupUser {
   return SignupUser.parse({

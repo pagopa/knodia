@@ -2,12 +2,15 @@ import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
+  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { isPgUniqueViolation } from "@knodia/common-models/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -33,24 +36,96 @@ export async function handleSignupMessage(
   correlationId: CorrelationId,
   logger: Logger,
 ): Promise<void> {
-  return match(event)
-    .with({ type: "OnboardingCompletedV1" }, async (e) => {
-      const user = await deps.signupDbService.getSignupUserById(
-        e.data.signupUserId,
-      );
+  const signupUserId = event.data.signupUserId;
 
-      // For now we assume a missing user was deleted: nothing to provision, so we
-      // skip the event (committing the offset) rather than blocking the partition.
-      if (user === undefined) {
-        logger.warn(
-          `Skipping OnboardingCompletedV1 for signup user ${e.data.signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,
-        );
-        return;
-      }
+  async function retrieveSignupUserOrWarn(
+    signupUserId: SignupUserId,
+  ): Promise<SignupUser | undefined> {
+    const user = await deps.signupDbService.getSignupUserById(signupUserId);
+
+    // For now we assume a missing user was deleted: nothing to provision, so we
+    // skip the event (committing the offset) rather than blocking the partition.
+    if (user === undefined) {
+      logger.warn(
+        `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+      );
+    }
+
+    return user;
+  }
+
+  return match(event)
+    .with({ type: "OnboardingCompletedV1" }, async () => {
+      const user = await retrieveSignupUserOrWarn(signupUserId);
+      if (user === undefined) return;
 
       for (const knodeId of KnodeId.options) {
         await provisionKnode(knodeId, user, deps, correlationId, logger);
       }
+    })
+    .with({ type: "EmailChangeRequestedV1" }, async (e) => {
+      const emailChangeRequestId = e.data.emailChangeRequestId;
+      const request =
+        await deps.signupDbService.getEmailChangeRequestById(
+          emailChangeRequestId,
+        );
+
+      if (request === undefined) {
+        logger.info(
+          `Skipping EmailChangeRequestedV1 ${emailChangeRequestId}: email change request no longer exists. Treating the message as already processed.`,
+        );
+        return;
+      }
+
+      if (request.signupUserId !== signupUserId) {
+        throw genericInternalError(
+          `EmailChangeRequestedV1 ${emailChangeRequestId} has mismatched signupUserId: expected ${request.signupUserId}, got ${signupUserId}. Treating the message as already processed.`,
+        );
+      }
+
+      const user = await retrieveSignupUserOrWarn(signupUserId);
+
+      if (user === undefined) {
+        await deps.signupDbService.deleteEmailChangeRequest(
+          emailChangeRequestId,
+        );
+        return;
+      }
+
+      try {
+        await deps.signupDbService.updateSignupUserEmail({
+          email: request.email,
+          signupUserId: request.signupUserId,
+        });
+      } catch (error) {
+        /**
+         * This should not happen during the normal flow: the email is checked before
+         * creating the change request.
+         *
+         * If it does happen, it means the target email was associated with another
+         * signup user before this event was processed. Keep the request pending and
+         * fail the message so the issue can be investigated and retried after the
+         * underlying data conflict is resolved.
+         */
+        if (isPgUniqueViolation(error)) {
+          logger.error(
+            `Failed to update email for signup user ${signupUserId}: requested email is already associated with another signup user. Keeping email change request ${emailChangeRequestId} pending for recovery.`,
+          );
+          throw genericInternalError(
+            `Cannot process EmailChangeRequestedV1 ${emailChangeRequestId}: requested email is already associated with another signup user`,
+          );
+        }
+        throw error;
+      }
+
+      for (const knodeId of KnodeId.options) {
+        await deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
+          email: request.email,
+          username: user.generatedEntities[knodeId].userName,
+        });
+      }
+
+      await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
     .exhaustive();
 }
