@@ -2,7 +2,7 @@
 
 Step-by-step instructions to run the POC Use Case 03 demo end-to-end. See [POC Use Case 03](https://pagopa.atlassian.net/wiki/spaces/IT/pages/2912092247/POC+Use+Case+03) for the scenario.
 
-Legend: **[UI]** — do it in the node frontend · **[script]** — run a script from this folder with `node <name>.ts` · **[narration]** — just explain it out loud, nothing to do.
+Legend: **[UI]** — do it in the node frontend · **[script]** — run from the `scripts/` folder with `node <name>.ts` · **[narration]** — just explain it out loud, nothing to do.
 
 ## Prerequisites
 
