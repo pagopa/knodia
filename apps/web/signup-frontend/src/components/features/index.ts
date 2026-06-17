@@ -1,4 +1,5 @@
 export { ChangeEmailModal } from "./ChangeEmailModal";
+export { CreatingCredentialsLoader } from "./CreatingCredentialsLoader";
 export { CredentialsBanner } from "./CredentialsBanner";
 export { DataWeCollectSection } from "./DataWeCollectSection";
 export { GdprRightsCard } from "./GdprRightsCard";

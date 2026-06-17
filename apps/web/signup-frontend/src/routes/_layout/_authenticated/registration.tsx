@@ -3,8 +3,10 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
-import { RegistrationForm } from "@/components/features";
-import { Loader } from "@/components/ui";
+import {
+  CreatingCredentialsLoader,
+  RegistrationForm,
+} from "@/components/features";
 import { resolveOnboardingRedirect } from "@/services/onboarding";
 import {
   confirmOnboardingMutationOptions,
@@ -57,11 +59,8 @@ function RouteComponent() {
         <div className="absolute inset-0 bg-neutral-white/60" />
       </div>
       {confirmOnboarding.isPending ? (
-        <div className="relative m-auto flex flex-col items-center gap-2">
-          <Loader label="Creating your credentials…" />
-          <p className="text-style-small text-neutral-medium-gray">
-            You will receive them by email.
-          </p>
+        <div className="relative m-auto">
+          <CreatingCredentialsLoader />
         </div>
       ) : (
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[109px]">
