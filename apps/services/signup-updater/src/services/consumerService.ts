@@ -2,21 +2,23 @@ import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
-import { genericInternalError } from "@knodia/common-models/errors";
+import {
+  genericInternalError,
+  InternalError,
+} from "@knodia/common-models/errors";
 import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
+  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import { isPgUniqueViolation } from "@knodia/common-models/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
 import { isAxiosError } from "axios";
-import { DrizzleQueryError } from "drizzle-orm";
-import { DatabaseError } from "pg";
 import { match } from "ts-pattern";
 
 import type { SignupUpdaterDeps } from "../utils/utils.ts";
@@ -39,18 +41,26 @@ export async function handleSignupMessage(
 ): Promise<void> {
   const signupUserId = event.data.signupUserId;
 
+  async function retrieveSignupUserOrWarn(
+    signupUserId: SignupUserId,
+  ): Promise<SignupUser | undefined> {
+    const user = await deps.signupDbService.getSignupUserById(signupUserId);
+
+    // For now we assume a missing user was deleted: nothing to provision, so we
+    // skip the event (committing the offset) rather than blocking the partition.
+    if (user === undefined) {
+      logger.warn(
+        `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+      );
+    }
+
+    return user;
+  }
+
   return match(event)
     .with({ type: "OnboardingCompletedV1" }, async () => {
-      const user = await deps.signupDbService.getSignupUserById(signupUserId);
-
-      // For now we assume a missing user was deleted: nothing to provision, so we
-      // skip the event (committing the offset) rather than blocking the partition.
-      if (user === undefined) {
-        logger.warn(
-          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user no longer exists (deleted). Committing the offset; the event is obsolete and has no recovery path.`,
-        );
-        return;
-      }
+      const user = await retrieveSignupUserOrWarn(signupUserId);
+      if (user === undefined) return;
 
       for (const knodeId of KnodeId.options) {
         await provisionKnode(knodeId, user, deps, correlationId, logger);
@@ -70,17 +80,15 @@ export async function handleSignupMessage(
         return;
       }
 
-      const user = await deps.signupDbService.getSignupUserById(signupUserId);
-
-      /**
-       * For now we assume a missing user was deleted: nothing to provision, so we
-       * skip the event (committing the offset) and delete the email change request
-       * rather than blocking the partition.
-       */
-      if (user === undefined) {
-        logger.warn(
-          `Skipping EmailChangeRequestedV1 for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+      if (request.signupUserId !== signupUserId) {
+        throw genericInternalError(
+          `EmailChangeRequestedV1 ${emailChangeRequestId} has mismatched signupUserId: expected ${request.signupUserId}, got ${signupUserId}. Treating the message as already processed.`,
         );
+      }
+
+      const user = await retrieveSignupUserOrWarn(signupUserId);
+
+      if (user === undefined) {
         await deps.signupDbService.deleteEmailChangeRequest(
           emailChangeRequestId,
         );
@@ -90,7 +98,7 @@ export async function handleSignupMessage(
       try {
         await deps.signupDbService.updateSignupUserEmail({
           email: request.email,
-          signupUserId,
+          signupUserId: request.signupUserId,
         });
       } catch (error) {
         /**
@@ -157,16 +165,6 @@ async function createTestingOrganization(
 // for already-provisioned messages), so replaying earlier events is a no-op.
 function isDuplicateOrganizationNameConflict(error: unknown): boolean {
   return isAxiosError(error) && error.response?.status === HTTP_STATUS_CONFLICT;
-}
-
-function isPgUniqueViolation(
-  error: unknown,
-): error is DrizzleQueryError & { cause: DatabaseError } {
-  return (
-    error instanceof DrizzleQueryError &&
-    error.cause instanceof DatabaseError &&
-    error.cause?.code === PG_UNIQUE_VIOLATION
-  );
 }
 
 async function provisionKnode(
