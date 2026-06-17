@@ -43,6 +43,8 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       signupUserId: expect.any(String),
       spidCode: validUISignupSessionTokenClaims.spidCode,
       status: "Active",
+      suspendedAt: null,
+      suspensionReason: null,
       updatedAt: expect.any(Date),
     });
 

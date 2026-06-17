@@ -59,9 +59,19 @@ export function makeSignupUser(
   overrides: Partial<SignupUser> = {},
 ): SignupUser {
   const seed = overrides.signupUserId ?? generateId<SignupUserId>();
+  const baseCreatedAt = new Date("2026-01-01T00:00:00.000Z");
+  const baseUpdatedAt = new Date("2026-01-01T00:00:00.000Z");
+
+  const status = overrides.status ?? "Active";
+  const suspendedAt =
+    overrides.suspendedAt ??
+    (status === "Suspended" ? baseUpdatedAt : undefined);
+  const suspensionReason =
+    overrides.suspensionReason ??
+    (status === "Suspended" ? "UnlawfulProcessing" : undefined);
 
   return {
-    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    createdAt: baseCreatedAt,
     dateOfBirth: "1990-01-01",
     email: `seed-${seed}@example.com`,
     familyName: "Seed",
@@ -79,8 +89,10 @@ export function makeSignupUser(
     name: "Seed",
     signupUserId: seed,
     spidCode: `SPID-${seed}`,
-    status: "Active",
-    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    status,
+    suspendedAt,
+    suspensionReason,
+    updatedAt: baseUpdatedAt,
     ...overrides,
   };
 }

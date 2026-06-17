@@ -38,11 +38,14 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
   });
 
   it("should return SUSPENDED with email when the signup user is suspended", async () => {
+    const suspendedAt = new Date("2026-01-01T00:00:00.000Z");
     const signupUser = makeSignupUser({
       email: "suspended.user@example.com",
       fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
       spidCode: validUISignupSessionTokenClaims.spidCode,
       status: "Suspended",
+      suspendedAt,
+      suspensionReason: "UnlawfulProcessing",
     });
     await seedSignupUser(signupUser);
 
