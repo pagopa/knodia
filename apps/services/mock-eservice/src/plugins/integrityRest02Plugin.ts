@@ -14,7 +14,7 @@ import { calculateIntegrityRest02Digest } from "@knodia/integrity-rest-02/utils"
 import fastifyPlugin from "fastify-plugin";
 
 // Augment @fastify/request-context so routers in this service can read the
-// verified access-token claims stashed by this plugin.
+// verified access-token claims stashed by the auth plugins.
 declare module "@fastify/request-context" {
   interface RequestContextData {
     accessTokenClaims?: EserviceAccessTokenClaims;
