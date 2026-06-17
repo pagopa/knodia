@@ -2,8 +2,6 @@
 
 Step-by-step instructions to run the POC Use Case 03 demo end-to-end. See [POC Use Case 03](https://pagopa.atlassian.net/wiki/spaces/IT/pages/2912092247/POC+Use+Case+03) for the scenario.
 
-The scenario relays a certified message between two cross-border Electronic Registered Delivery Services (ERDS): `systemSERCLynx` (the sender's SERC, on Lynx) delivers a message to a recipient served by `systemSERCOrion` (the recipient's SERC, on Orion), after discovering the recipient's SERC through `supervisoryBodyOrion` (the recipient's supervisory body, on Orion). The recipient's SERC then returns the delivery evidences to the sender's SERC.
-
 Legend: **[UI]** — do it in the node frontend · **[script]** — run a script from this folder with `node <name>.ts` · **[narration]** — just explain it out loud, nothing to do.
 
 ## Prerequisites
