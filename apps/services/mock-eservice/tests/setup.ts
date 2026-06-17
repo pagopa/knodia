@@ -21,7 +21,7 @@ export const TEST_KID = "test-mock-eservice-kid";
 export const TEST_KNODE_ID = KnodeId.enum.Orion;
 export const integrityRest02KeySet = generateKeySet();
 const INTEGRITY_REST_02_SIGNATURE_ISSUER = "test-integrity-issuer";
-export const INTEGRITY_REST_02_SIGNATURE_KID = "test-integrity-kid";
+const INTEGRITY_REST_02_SIGNATURE_KID = "test-integrity-kid";
 
 let dynamoClient: DynamoDBClient;
 const dynamoDbDpopProofsTable = "knodia-mock-eservice-dpop-proofs";
