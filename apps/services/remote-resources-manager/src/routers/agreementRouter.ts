@@ -190,7 +190,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
       querystring: API_GetAgreementsQueryParams,
       response: {
         200: API_Agreements.meta({
-          description: "Agreements retrieved successfully",
+          description:
+            "Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

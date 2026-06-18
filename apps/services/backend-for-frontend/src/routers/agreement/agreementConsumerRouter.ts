@@ -226,7 +226,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerAgreementsQueryParams,
       response: {
         200: API_ConsumerAgreements.meta({
-          description: "Consumer Agreements retrieved successfully",
+          description:
+            "Consumer Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -281,7 +282,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetPendingConsumerAgreementsQueryParams,
       response: {
         200: API_PendingConsumerAgreements.meta({
-          description: "Pending Consumer Agreements retrieved successfully",
+          description:
+            "Pending Consumer Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

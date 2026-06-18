@@ -4029,7 +4029,7 @@ export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetCons
 
 export type GetConsumerEservicesResponses = {
     /**
-     * E-services retrieved successfully
+     * E-services retrieved (sorted by most recently updated agreement first)
      */
     200: ConsumerEservices;
 };
@@ -4079,7 +4079,7 @@ export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetCo
 
 export type GetConsumerAgreementsResponses = {
     /**
-     * Consumer Agreements retrieved successfully
+     * Consumer Agreements retrieved (sorted by most recently updated first)
      */
     200: ConsumerAgreements;
 };
@@ -4195,7 +4195,7 @@ export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErro
 
 export type GetPendingConsumerAgreementsResponses = {
     /**
-     * Pending Consumer Agreements retrieved successfully
+     * Pending Consumer Agreements retrieved (sorted by most recently updated first)
      */
     200: PendingConsumerAgreements;
 };
@@ -4437,7 +4437,7 @@ export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsum
 
 export type GetConsumerPurposesResponses = {
     /**
-     * Consumer Purposes retrieved successfully
+     * Consumer Purposes retrieved (sorted by most recently updated first)
      */
     200: ConsumerPurposes;
 };

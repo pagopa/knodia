@@ -669,7 +669,7 @@ export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
 
 export type GetEservicesResponses = {
     /**
-     * E-services retrieved successfully
+     * E-services retrieved (sorted by most recently updated agreement first)
      */
     200: Eservices;
 };
@@ -760,7 +760,7 @@ export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
 
 export type GetAgreementsResponses = {
     /**
-     * Agreements retrieved successfully
+     * Agreements retrieved (sorted by most recently updated first)
      */
     200: Agreements;
 };
@@ -1125,7 +1125,7 @@ export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
 
 export type GetPurposesResponses = {
     /**
-     * Purposes retrieved successfully
+     * Purposes retrieved (sorted by most recently updated first)
      */
     200: Purposes;
 };
