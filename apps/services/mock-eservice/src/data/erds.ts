@@ -1,11 +1,11 @@
-import { type KnodeId } from "@knodia/common-models/ids";
+import { KnodeId } from "@knodia/common-models/ids";
 import z from "zod";
 
 import { API_ErdsIdentifier, type API_ErdsMetadata } from "../models/api.ts";
 import {
   POC_UC03_RELAY_LYNX_MOCK_ESERVICE_ID,
   POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
-} from "../pocUc03Erds/mockup.ts";
+} from "../pocUc03/mockup.ts";
 
 // Recipient identifier (notation, e.g. a VAT or fiscal code) -> the SERC that
 // serves it. Validated at load. The sample recipient 01229430085 is served by
@@ -25,11 +25,11 @@ interface ErdsStaticMetadata {
 const ERDS_METADATA: Record<API_ErdsIdentifier, ErdsStaticMetadata> = {
   systemSERCLynx: {
     eserviceId: POC_UC03_RELAY_LYNX_MOCK_ESERVICE_ID,
-    knodeId: "Lynx",
+    knodeId: KnodeId.enum.Lynx,
   },
   systemSERCOrion: {
     eserviceId: POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
-    knodeId: "Orion",
+    knodeId: KnodeId.enum.Orion,
   },
 };
 

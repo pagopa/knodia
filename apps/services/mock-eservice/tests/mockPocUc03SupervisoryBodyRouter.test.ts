@@ -11,7 +11,7 @@ import {
   POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_ID,
   POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_VERSION_ID,
   POC_UC03_SUPERVISORY_BODY_MOCK_PRODUCER_ID,
-} from "../src/pocUc03Erds/mockup.ts";
+} from "../src/pocUc03/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 

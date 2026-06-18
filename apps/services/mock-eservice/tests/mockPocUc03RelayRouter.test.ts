@@ -6,7 +6,7 @@ import {
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import { POC_UC03_RELAY_IDENTITY_BY_KNODE } from "../src/pocUc03Erds/mockup.ts";
+import { POC_UC03_RELAY_IDENTITY_BY_KNODE } from "../src/pocUc03/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 

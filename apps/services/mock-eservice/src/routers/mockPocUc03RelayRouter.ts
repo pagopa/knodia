@@ -7,7 +7,7 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { API_ErdDispatch, API_RelayAck } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { POC_UC03_RELAY_IDENTITY_BY_KNODE } from "../pocUc03Erds/mockup.ts";
+import { POC_UC03_RELAY_IDENTITY_BY_KNODE } from "../pocUc03/mockup.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockRelayRouterOptions {
