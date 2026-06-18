@@ -14,4 +14,8 @@ describe("resolveOnboardingRedirect", () => {
   it("throws for SUSPENDED users until suspension handling lands", () => {
     expect(() => resolveOnboardingRedirect("SUSPENDED")).toThrow();
   });
+
+  it("throws for DELETION_PENDING users until deletion handling lands", () => {
+    expect(() => resolveOnboardingRedirect("DELETION_PENDING")).toThrow();
+  });
 });
