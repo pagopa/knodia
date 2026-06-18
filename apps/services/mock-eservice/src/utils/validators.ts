@@ -5,6 +5,7 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import { requestContext } from "@fastify/request-context";
 import {
   EserviceAccessTokenClaims,
   KnodeApiAccessTokenClaims,
@@ -13,8 +14,6 @@ import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type JWTVerifyGetKey } from "jose";
 import { prettifyError } from "zod";
-
-import { retrieveAccessTokenClaims } from "./retrievalUtils.ts";
 
 interface VerifyOptions {
   acceptedAudiences: string[];
@@ -28,7 +27,10 @@ export function assertTokenClaimsAreValidForEservice(
   expectedProducerId: OrganizationId,
   knodeId: KnodeId,
 ) {
-  const claims = retrieveAccessTokenClaims();
+  const claims = requestContext.get("accessTokenClaims");
+  if (!claims) {
+    throw unauthorizedError("Missing access token claims");
+  }
 
   const { eservice, producer, purpose } = claims;
   const mismatches: string[] = [];

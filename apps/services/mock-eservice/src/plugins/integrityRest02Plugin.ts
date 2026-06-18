@@ -13,8 +13,6 @@ import {
 import { calculateIntegrityRest02Digest } from "@knodia/integrity-rest-02/utils";
 import fastifyPlugin from "fastify-plugin";
 
-import { retrieveAccessTokenClaims } from "../utils/retrievalUtils.ts";
-
 // Augment @fastify/request-context so routers in this service can read the
 // verified access-token claims stashed by the auth plugins.
 declare module "@fastify/request-context" {
@@ -32,20 +30,13 @@ export const integrityRest02Plugin =
   fastifyPlugin<IntegrityRest02PluginOptions>(
     async (fastify, { integrityRest02Config, integrityRest02Generator }) => {
       fastify.addHook("onSend", async (_request, response, payload) => {
-        // Do not sign error responses. This preserves original status codes
-        // (e.g. 401 from auth) and avoids requiring auth claims on failures.
-        if (response.statusCode >= 400) {
-          return payload;
-        }
-
-        const { correlationId } = getContextValues(requestContext);
-
-        const claims = retrieveAccessTokenClaims();
+        const { accessTokenClaims, correlationId } =
+          getContextValues(requestContext);
 
         const digest = calculateIntegrityRest02Digest(payload);
         const { serialized } =
           await integrityRest02Generator.generateKnodiaJwtSignature({
-            clientId: claims.client_id,
+            clientId: accessTokenClaims?.client_id,
             contentEncoding: response.getHeader(CONTENT_ENCODING_HEADER),
             contentType: response.getHeader(CONTENT_TYPE_HEADER),
             correlationId,
