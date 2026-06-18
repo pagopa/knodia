@@ -190,11 +190,15 @@ export const agreementRouter: FastifyPluginAsyncZod<
       querystring: API_GetAgreementsQueryParams,
       response: {
         200: API_Agreements.meta({
-          description: "Agreements retrieved successfully",
+          description:
+            "Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "List Agreements",
       tags: [apiTags.agreement],

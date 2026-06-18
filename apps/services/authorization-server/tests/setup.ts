@@ -24,6 +24,7 @@ import {
   type PurposeWriterService,
   purposeWriterServiceBuilder,
 } from "@knodia/db-readmodel-purpose/writer";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import {
   resetDynamoTable,
@@ -96,6 +97,16 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
+      rateLimiterAwsIamAuth: undefined,
+      rateLimiterEnvironment: "test",
+      rateLimiterMaxRequests: 100,
+      rateLimiterRedisHost:
+        process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+      rateLimiterRedisPort: Number(
+        process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+      ),
+      rateLimiterTimeoutSeconds: 2,
+      rateLimiterTimeWindowSeconds: 60,
       readmodelDbAgreementSchema: "test_agreement_schema",
       readmodelDbEserviceSchema: "test_eservice_schema",
       readmodelDbHost: "test_db_host",
@@ -112,6 +123,7 @@ beforeAll(async () => {
       },
     },
     dynamoClient,
+    rateLimiter: noopRateLimiter,
     readmodelDb,
   });
 
