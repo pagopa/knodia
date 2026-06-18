@@ -77,7 +77,10 @@ export function OrgConsumptionStatusSection({
                 eserviceState={eserviceState}
                 knodeId={knodeId}
               />
-              <EserviceConsumerKeychainsSection eserviceId={eserviceId} />
+              <EserviceConsumerKeychainsSection
+                eserviceId={eserviceId}
+                knodeId={knodeId}
+              />
             </>
           ))
           .otherwise(() => null)}

@@ -24,7 +24,9 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
+import { mockReceiveDataRouter } from "./routers/mockReceiveDataRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
@@ -47,6 +49,11 @@ const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
   description:
     "Legal-entity information + evidences lookup by uid_company (Bearer-protected)",
   name: apiTags.pocUc02Companies,
+};
+const receiveDataAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Submission of company digital domicile (Cross-Border E-service 04, Bearer-protected, Receive-data mode)",
+  name: apiTags.companyDigitalDomicile,
 };
 
 export function buildApp({
@@ -90,11 +97,19 @@ export function buildApp({
       dpopAppTag,
       signalHubAppTag,
       pocUc02CompaniesAppTag,
+      receiveDataAppTag,
     ],
   );
 
   // Public routes (no auth required)
   app.register(healthRouter);
+  // Demo-only evidence-change route (out of spec); self-authenticates the
+  // producer's Knode API token, so it sits outside the bearer plugin.
+  app.register(mockPocUc02CompaniesEvidenceUpdateRouter, {
+    expectedIssuer,
+    jwksResolvers,
+    knodeId,
+  });
 
   // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
   app.register(async (protectedApp) => {
@@ -106,6 +121,7 @@ export function buildApp({
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+    protectedApp.register(mockReceiveDataRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -143,6 +159,15 @@ export function buildBearerPocUc02CompaniesAppFromConfig(
   config: MockEserviceConfig,
 ) {
   return buildBearerPocUc02CompaniesApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerReceiveDataAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerReceiveDataApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -226,6 +251,41 @@ function buildBearerPocUc02CompaniesApp({
       jwksResolvers,
     });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerReceiveDataApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for cross-border company digital domicile submission (Receive data)",
+      title: "Knodia Mock E-service API (Receive Data)",
+      version: "1.0.0",
+    },
+    [receiveDataAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockReceiveDataRouter, { knodeId });
   });
 
   return app;

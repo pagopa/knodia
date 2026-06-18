@@ -51,6 +51,7 @@ import { type AxiosResponse } from "axios";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { multiKnodeListingNotSupported } from "../../models/errors.ts";
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
@@ -726,7 +727,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
       const { organizationId: ownerId } = getUISessionAuthData(authData);
-      const { eserviceId, limit, offset, purpose } = req.query;
+      const { eserviceId, knodeId, limit, offset, purposeId } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       logger.info(
@@ -737,24 +738,32 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
       ): Promise<API_Keychain> {
-        const [{ data: keys }, { data: members }] = await Promise.all([
-          keychainProcessApi.getConsumerKeychainKeys({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-          keychainProcessApi.getConsumerKeychainMembers({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-        ]);
+        const [{ data: keys }, { data: members }, { data: purposes }] =
+          await Promise.all([
+            keychainProcessApi.getConsumerKeychainKeys({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getConsumerKeychainMembers({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getConsumerKeychainPurposes({
+              client: keychainProcessClient,
+              headers,
+              path: { consumerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+          ]);
 
         return toAPI_Keychain(keychain, {
           keysCount: keys.pagination.total,
           membersCount: members.pagination.total,
+          purposesCount: purposes.pagination.total,
         });
       }
 
@@ -766,6 +775,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId,
+            knodeId,
             limit: 50,
             offset: 0,
             state: [
@@ -783,10 +793,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
               client: keychainProcessClient,
               headers,
               query: {
+                knodeId: p.knodeId,
                 limit: 50,
                 offset: 0,
                 ownerId,
-                purpose: `${p.knodeId}:${p.id}`,
+                purposeId: p.id,
               },
             }),
           ),
@@ -819,7 +830,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
         headers,
-        query: { limit, offset, ownerId, purpose },
+        query: { knodeId, limit, offset, ownerId, purposeId },
       });
 
       res.send({
@@ -870,6 +881,21 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         query: { limit, offset },
       });
 
+      // The linked purposes can in principle span more than one knode (no
+      // single-knode guard exists on the keychain-process path); fail fast like
+      // the RRM listings instead of silently resolving everything to one knode.
+      const targetKnodeIds = [
+        ...new Set(linkedPurposes.map((linked) => linked.purpose.knodeId)),
+      ].map((knodeId) => KnodeId.parse(knodeId));
+      if (targetKnodeIds.length > 1) {
+        throw multiKnodeListingNotSupported(targetKnodeIds);
+      }
+      const [targetKnodeId] = targetKnodeIds;
+      if (!targetKnodeId) {
+        res.send({ pagination, results: [] });
+        return;
+      }
+
       const purposesMap = await getExternalEntitiesMap({
         fetchFn: ({ entityIds, knodeId }) =>
           Promise.all(
@@ -885,8 +911,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
             ),
           ),
         getEntityId: ({ purpose }) => purpose.id,
-        getKnodeId: ({ purpose }) => KnodeId.parse(purpose.knodeId),
         items: linkedPurposes,
+        knodeId: targetKnodeId,
       });
 
       const eservicesMap = await getExternalEntitiesMap({
@@ -904,26 +930,20 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
             ),
           ),
         getEntityId: (purpose) => purpose.eserviceId,
-        getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
-        items: Array.from(purposesMap.values()).flatMap((p) =>
-          Array.from(p.values()),
-        ),
+        items: Array.from(purposesMap.values()),
+        knodeId: targetKnodeId,
       });
 
       function enrichLinkedPurpose(
         linkedPurpose: keychainProcessApi.ConsumerKeychainPurpose,
       ) {
         const purpose = assertEntityExists(
-          purposesMap
-            .get(linkedPurpose.purpose.knodeId)
-            ?.get(unsafeBrandExternalId(linkedPurpose.purpose.id)),
+          purposesMap.get(unsafeBrandExternalId(linkedPurpose.purpose.id)),
           `Purpose with ID ${linkedPurpose.purpose.id} not found`,
         );
 
         const eservice = assertEntityExists(
-          eservicesMap
-            .get(purpose.knodeId)
-            ?.get(unsafeBrandExternalId(purpose.eserviceId)),
+          eservicesMap.get(unsafeBrandExternalId(purpose.eserviceId)),
           `Eservice with ID ${purpose.eserviceId} not found`,
         );
 
@@ -950,6 +970,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       tags: [apiTags.consumerKeychain],
     },

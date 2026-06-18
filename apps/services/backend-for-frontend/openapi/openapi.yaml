@@ -2019,6 +2019,11 @@ components:
     Keychain:
       type: object
       properties:
+        eservicesCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         id:
           type: string
           format: uuid
@@ -2035,6 +2040,11 @@ components:
           maximum: 9007199254740991
         name:
           $ref: "#/components/schemas/KeychainLocalizedName"
+        purposesCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
       required:
         - id
         - keysCount
@@ -3735,15 +3745,25 @@ paths:
           required: false
           description: Filter by E-service ID. Returns Consumer Keychains linked to any
             Active or Suspended Purpose belonging to the given E-service.
-            Mutually exclusive with `purpose`.
+            Requires `knodeId`. Mutually exclusive with `purposeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Producer Knode ID that owns the E-service and its Purposes.
+            Required when `eserviceId` or `purposeId` is set.
         - schema:
             type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
           in: query
-          name: purpose
+          name: purposeId
           required: false
-          description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
-            (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually
-            exclusive with `eserviceId`."
+          description: Filter by Purpose ID. Returns Consumer Keychains linked to the
+            given Purpose. Requires `knodeId`. Mutually exclusive with
+            `eserviceId`.
       responses:
         "200":
           description: Consumer Keychains retrieved successfully
@@ -4307,6 +4327,14 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     post:
@@ -6540,11 +6568,13 @@ paths:
           required: false
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: E-services retrieved (sorted by most recently updated agreement
+            first)
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: E-services retrieved (sorted by most recently updated agreement
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerEservices"
         "400":
@@ -6577,6 +6607,14 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements:
@@ -6661,11 +6699,12 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: Consumer Agreements retrieved successfully
+          description: Consumer Agreements retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Consumer Agreements retrieved successfully
+                description: Consumer Agreements retrieved (sorted by most recently updated
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerAgreements"
         "400":
@@ -6690,6 +6729,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/counters:
@@ -6731,6 +6778,14 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/agreements/pending:
     get:
       operationId: getPendingConsumerAgreements
@@ -6757,11 +6812,13 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Pending Consumer Agreements retrieved successfully
+          description: Pending Consumer Agreements retrieved (sorted by most recently
+            updated first)
           content:
             application/json:
               schema:
-                description: Pending Consumer Agreements retrieved successfully
+                description: Pending Consumer Agreements retrieved (sorted by most recently
+                  updated first)
                 allOf:
                   - $ref: "#/components/schemas/PendingConsumerAgreements"
         "400":
@@ -6786,6 +6843,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/agreements/{agreementId}/activationMagicLink:
@@ -7076,7 +7141,14 @@ paths:
           in: query
           name: eserviceId
           required: false
-          description: Filter by E-service ID
+          description: Filter by E-service ID. Can only be used together with `knodeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID to list Purposes from. Required when `eserviceId` is set.
         - schema:
             type: array
             items:
@@ -7087,11 +7159,11 @@ paths:
           description: Filter by Purpose State
       responses:
         "200":
-          description: Consumer Purposes retrieved successfully
+          description: Consumer Purposes retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Consumer Purposes retrieved successfully
+                description: Consumer Purposes retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerPurposes"
         "400":
@@ -7124,6 +7196,14 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     post:
