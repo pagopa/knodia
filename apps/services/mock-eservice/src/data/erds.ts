@@ -33,10 +33,6 @@ const ERDS_METADATA: Record<API_ErdsIdentifier, ErdsStaticMetadata> = {
   },
 };
 
-export function lookupErds(notation: string): API_ErdsIdentifier | undefined {
-  return ERDS_LOOKUP[notation];
-}
-
 export function getErdsMetadata(
   identifier: API_ErdsIdentifier,
   relayBaseUrlByErds: Record<API_ErdsIdentifier, string>,
@@ -48,4 +44,8 @@ export function getErdsMetadata(
     identifier,
     knodeId: metadata.knodeId,
   };
+}
+
+export function lookupErds(notation: string): API_ErdsIdentifier | undefined {
+  return ERDS_LOOKUP[notation];
 }

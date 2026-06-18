@@ -36,6 +36,24 @@ export function dpopProofNotFound() {
   });
 }
 
+export function erdsNotFound(erdsIdentifier: string) {
+  return createApiError({
+    code: "ERDS_NOT_FOUND",
+    detail: `No ERDS found for identifier ${erdsIdentifier}`,
+    status: 404,
+    title: "erds_not_found",
+  });
+}
+
+export function erdsRecipientNotFound(notation: string) {
+  return createApiError({
+    code: "ERDS_RECIPIENT_NOT_FOUND",
+    detail: `No ERDS serves a recipient identified by ${notation}`,
+    status: 404,
+    title: "erds_recipient_not_found",
+  });
+}
+
 export function invalidDpopProofAth(
   dpopProofAth: string | undefined,
   expectedAth: string,
@@ -66,24 +84,6 @@ export function invalidDpopThumbprint(
     detail: `DPoP proof thumbprint does not match the expected one. Expected: ${expectedThumbprint}, Received: ${dpopProofThumbprint}`,
     status: 401,
     title: "invalid_dpop_proof",
-  });
-}
-
-export function erdsNotFound(erdsIdentifier: string) {
-  return createApiError({
-    code: "ERDS_NOT_FOUND",
-    detail: `No ERDS found for identifier ${erdsIdentifier}`,
-    status: 404,
-    title: "erds_not_found",
-  });
-}
-
-export function erdsRecipientNotFound(notation: string) {
-  return createApiError({
-    code: "ERDS_RECIPIENT_NOT_FOUND",
-    detail: `No ERDS serves a recipient identified by ${notation}`,
-    status: 404,
-    title: "erds_recipient_not_found",
   });
 }
 

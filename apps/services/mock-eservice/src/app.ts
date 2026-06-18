@@ -20,11 +20,11 @@ import type { MockEserviceConfig } from "./config/config.ts";
 
 import { bearerAccessTokenAuthPlugin } from "./auth/bearerAccessTokenAuthPlugin.ts";
 import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
+import { type API_ErdsIdentifier } from "./models/api.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
-import { type API_ErdsIdentifier } from "./models/api.ts";
 import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockPocUc03RelayRouter } from "./routers/mockPocUc03RelayRouter.ts";
@@ -68,17 +68,6 @@ const pocUc03RelayAppTag: OpenAPIV3.TagObject = {
     "ERD dispatch relay between SERCs (POC UC03 receive-data, Bearer-protected)",
   name: apiTags.pocUc03Relay,
 };
-
-// Relay base URL of each SERC, keyed by erdsIdentifier — what getERDSMetadata
-// returns as domainName (resolved per environment from config).
-function toRelayBaseUrlByErds(
-  config: MockEserviceConfig,
-): Record<API_ErdsIdentifier, string> {
-  return {
-    systemSERCLynx: config.pocUc03RelayBaseUrlLynx,
-    systemSERCOrion: config.pocUc03RelayBaseUrlOrion,
-  };
-}
 
 export function buildApp({
   config,
@@ -195,17 +184,19 @@ export function buildBearerPocUc02CompaniesAppFromConfig(
   });
 }
 
-export function buildBearerPocUc03SupervisoryBodyAppFromConfig(
+export function buildBearerPocUc03RelayAppFromConfig(
   config: MockEserviceConfig,
 ) {
-  return buildBearerPocUc03SupervisoryBodyApp({
+  return buildBearerPocUc03RelayApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
 }
 
-export function buildBearerPocUc03RelayAppFromConfig(config: MockEserviceConfig) {
-  return buildBearerPocUc03RelayApp({
+export function buildBearerPocUc03SupervisoryBodyAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc03SupervisoryBodyApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -303,6 +294,41 @@ function buildBearerPocUc02CompaniesApp({
   return app;
 }
 
+function buildBearerPocUc03RelayApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC03 relay (ERD dispatch relay between SERCs)",
+      title: "Knodia Mock E-service API (ERDS Relay)",
+      version: "1.0.0",
+    },
+    [pocUc03RelayAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
+  });
+
+  return app;
+}
+
 function buildBearerPocUc03SupervisoryBodyApp({
   config,
   jwksResolvers,
@@ -336,41 +362,6 @@ function buildBearerPocUc03SupervisoryBodyApp({
       knodeId,
       relayBaseUrlByErds: toRelayBaseUrlByErds(config),
     });
-  });
-
-  return app;
-}
-
-function buildBearerPocUc03RelayApp({
-  config,
-  jwksResolvers,
-}: {
-  config: MockEserviceConfig;
-  jwksResolvers: JWTVerifyGetKey[];
-}) {
-  const { acceptedAudiences, expectedIssuer, knodeId } = config;
-
-  const app = createMockFastifyApp(
-    config,
-    bearerAuthSecurityScheme,
-    bearerAuthSecurity,
-    {
-      description:
-        "Mock e-service API for POC UC03 relay (ERD dispatch relay between SERCs)",
-      title: "Knodia Mock E-service API (ERDS Relay)",
-      version: "1.0.0",
-    },
-    [pocUc03RelayAppTag],
-  );
-
-  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
-  app.register(async (protectedApp) => {
-    protectedApp.register(bearerAccessTokenAuthPlugin, {
-      acceptedAudiences,
-      expectedIssuer,
-      jwksResolvers,
-    });
-    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
   });
 
   return app;
@@ -526,4 +517,15 @@ function createMockFastifyApp(
 
 function resolveJwksResolvers(config: MockEserviceConfig): JWTVerifyGetKey[] {
   return config.wellKnownUrls.map((url) => createRemoteJWKSet(new URL(url)));
+}
+
+// Relay base URL of each SERC, keyed by erdsIdentifier — what getERDSMetadata
+// returns as domainName (resolved per environment from config).
+function toRelayBaseUrlByErds(
+  config: MockEserviceConfig,
+): Record<API_ErdsIdentifier, string> {
+  return {
+    systemSERCLynx: config.pocUc03RelayBaseUrlLynx,
+    systemSERCOrion: config.pocUc03RelayBaseUrlOrion,
+  };
 }
