@@ -28,6 +28,10 @@ import {
 } from "../models/agreement/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 import {
+  emptyListingPage,
+  resolveSingleListingKnode,
+} from "../utils/singleKnodeListing.ts";
+import {
   assertAgreementExists,
   assertOrganizationIsAgreementConsumer,
 } from "../utils/validators.ts";
@@ -159,51 +163,35 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreements> {
       const { limit, offset, state } = requestQuery;
 
-      let totalCount = 0;
-      let dynamicLimit = limit;
-      let dynamicOffset = offset;
-      let results: API_Agreement[] = [];
-      const knodesWithAgreements =
+      const targetKnodeId = resolveSingleListingKnode(
         await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
-        );
-      for (const targetKnodeId of knodesWithAgreements) {
-        logger.info(
-          { requestQuery },
-          `Getting Agreements from Knode ${targetKnodeId} with query params`,
-        );
-
-        const { data } = await k2kGatewayApi.getAgreements({
-          client: getK2K2GatewayApiClient(targetKnodeId),
-          query: {
-            consumerId: authData.organizationId,
-            limit: dynamicLimit,
-            offset: dynamicOffset,
-            state: state?.map(toK2KAPI_AgreementState),
-          },
-        });
-
-        if (results.length < limit) {
-          results = results.concat(
-            data.results.map((agreement) =>
-              toAPI_Agreement(agreement, targetKnodeId),
-            ),
-          );
-
-          dynamicLimit = limit - results.length;
-          dynamicOffset = 0;
-        }
-
-        totalCount += data.pagination.total;
+        ),
+      );
+      if (targetKnodeId === undefined) {
+        return emptyListingPage(limit, offset);
       }
 
-      return {
-        pagination: {
+      logger.info(
+        { requestQuery },
+        `Getting Agreements from Knode ${targetKnodeId} with query params`,
+      );
+
+      const { data } = await k2kGatewayApi.getAgreements({
+        client: getK2K2GatewayApiClient(targetKnodeId),
+        query: {
+          consumerId: authData.organizationId,
           limit,
           offset,
-          total: totalCount,
+          state: state?.map(toK2KAPI_AgreementState),
         },
-        results,
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map((agreement) =>
+          toAPI_Agreement(agreement, targetKnodeId),
+        ),
       };
     },
 

@@ -32,12 +32,12 @@ Description: to use the Lynx e-service in its registration process, the Construc
 Steps:
 
 1. **[UI]** Log in to the Orion Knode as a User of the `constructionCompaniesRegistryOrion` Organization.
-2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the Lynx cross-border e-service.
+2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the Lynx cross-border e-service (`Company Information & Evidence - Lynx`).
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.
-5. **[UI]** Create a Purpose for the Agreement.
+5. **[UI]** Create a Purpose for the E-service.
 6. **[script]** Run `node generate-consumer-key.ts` — it prints the public key for the consumer e-service keychain and saves the private key to a fixed path in this folder, read automatically by the later scripts (no key path to pass around).
-7. **[UI]** In the Keychains section, create a Consumer Keychain, add a member, upload the public key printed by `node generate-consumer-key.ts`, and link the Purpose to it.
+7. **[UI]** In the Keychains section, create a Consumer Keychain, add yourself as a member, upload the public key printed by `node generate-consumer-key.ts`, and link the Purpose to it.
 8. Note the Consumer Keychain id and the Purpose id — they are params for the scripts.
 
 ## Phase 3
