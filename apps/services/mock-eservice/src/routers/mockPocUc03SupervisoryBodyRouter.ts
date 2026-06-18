@@ -48,7 +48,9 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         throw erdsRecipientNotFound(identifier);
       }
 
-      logger.info(`Mock e-service lookupERDS(${identifier}) -> ${erdsIdentifier}`);
+      logger.info(
+        `Mock e-service lookupERDS(${identifier}) -> ${erdsIdentifier}`,
+      );
       res.status(200).send({ erdsIdentifier });
     },
     method: "GET",
@@ -57,10 +59,10 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         "Resolves the SERC (erdsIdentifier) that serves a recipient identified by the given notation (lookupERDS, Bearer-protected).",
       operationId: "lookupERDS",
       querystring: z.strictObject({
-        identifier: z
-          .string()
-          .min(1)
-          .meta({ description: "Recipient identifier notation", example: "01229430085" }),
+        identifier: z.string().min(1).meta({
+          description: "Recipient identifier notation",
+          example: "01229430085",
+        }),
       }),
       response: {
         200: API_ErdsLookupResult.meta({
@@ -113,9 +115,13 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
       }),
       response: {
         200: API_ErdsMetadata.meta({ description: "Metadata of the SERC" }),
-        400: API_Problem.meta({ description: "Missing or invalid erdsIdentifier" }),
+        400: API_Problem.meta({
+          description: "Missing or invalid erdsIdentifier",
+        }),
         401: API_Problem.meta({ description: "Unauthorized" }),
-        404: API_Problem.meta({ description: "No SERC found for the identifier" }),
+        404: API_Problem.meta({
+          description: "No SERC found for the identifier",
+        }),
       },
       summary: "Get ERDS metadata",
       tags: [apiTags.pocUc03SupervisoryBody],

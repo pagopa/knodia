@@ -32,7 +32,8 @@ async function signToken(
   } = {},
 ) {
   return signEserviceAccessToken({
-    eserviceId: overrides.eserviceId ?? POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_ID,
+    eserviceId:
+      overrides.eserviceId ?? POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_ID,
     eserviceVersionId:
       overrides.eserviceVersionId ??
       POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_VERSION_ID,
