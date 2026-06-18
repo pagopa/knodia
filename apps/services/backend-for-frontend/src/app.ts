@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
@@ -9,7 +8,6 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
-  initRedisRateLimiter,
   type RateLimiter,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
@@ -46,8 +44,8 @@ import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
+  rateLimiter: RateLimiter,
   injectedDynamoClient?: DynamoDBClient,
-  rateLimiterOverride?: RateLimiter,
 ) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
@@ -131,14 +129,6 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
-  const rateLimiter =
-    rateLimiterOverride ??
-    initRedisRateLimiter({
-      config,
-      knodeId: config.knodeId,
-      logger: app.log,
-      serviceName: "backend-for-frontend",
-    });
   const authService = authServiceBuilder({
     config,
     magicLinkTokenStore,

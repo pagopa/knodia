@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { resetDynamoTable } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
@@ -84,6 +85,7 @@ beforeAll(async () => {
         "http://localhost:4501/knodia/.well-known/jwks.json",
       ],
     },
+    noopRateLimiter,
     dynamoClient,
   );
 

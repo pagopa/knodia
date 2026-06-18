@@ -24,6 +24,7 @@ import {
   type PurposeWriterService,
   purposeWriterServiceBuilder,
 } from "@knodia/db-readmodel-purpose/writer";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import {
   resetDynamoTable,
@@ -120,6 +121,7 @@ beforeAll(async () => {
       },
     },
     dynamoClient,
+    rateLimiter: noopRateLimiter,
     readmodelDb,
   });
 

@@ -10,7 +10,6 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
-  initRedisRateLimiter,
   type RateLimiter,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
@@ -31,12 +30,12 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 export function buildApp({
   config,
   dynamoClient,
-  rateLimiter: rateLimiterOverride,
+  rateLimiter,
   readmodelDb,
 }: {
   config: AuthorizationServerConfig;
   dynamoClient?: DynamoDBClient;
-  rateLimiter?: RateLimiter;
+  rateLimiter: RateLimiter;
   readmodelDb: NodePgDatabase;
 }) {
   const tokenGenerator = tokenGeneratorBuilder();
@@ -77,15 +76,6 @@ export function buildApp({
     makeApiProblem,
   });
 
-  const rateLimiter =
-    rateLimiterOverride ??
-    initRedisRateLimiter({
-      config,
-      knodeId: config.knodeId,
-      logger: app.log,
-      serviceName: "authorization-server",
-    });
-
   app.removeAllContentTypeParsers();
   app.register(formBody);
   app.register(rateLimitResponseHeadersPlugin);
@@ -111,7 +101,7 @@ export function buildApp({
 
 export function buildAppFromConfig(
   config: AuthorizationServerConfig,
-  rateLimiter?: RateLimiter,
+  rateLimiter: RateLimiter,
 ) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);

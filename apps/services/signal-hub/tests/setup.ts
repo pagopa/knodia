@@ -17,6 +17,7 @@ import {
   purposeWriterServiceBuilder,
 } from "@knodia/db-readmodel-purpose/writer";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { setupSignalHubTestDatabase } from "@knodia/test-commons/signalHubDb";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
@@ -53,19 +54,11 @@ beforeAll(async () => {
     config: {
       acceptedAudiences: ["test-audience"],
       isProduction: false,
-      knodeId: "Orion",
       logLevel: "silent",
       nodeEnv: "test",
-      rateLimiterMaxRequests: 200,
-      rateLimiterRedisHost:
-        process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
-      rateLimiterRedisPort: Number(
-        process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
-      ),
-      rateLimiterTimeoutSeconds: 2,
-      rateLimiterTimeWindowSeconds: 60,
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
+    rateLimiter: noopRateLimiter,
     readmodelDb,
     signalHubDb,
   });

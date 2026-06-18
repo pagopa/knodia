@@ -10,7 +10,6 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
-  initRedisRateLimiter,
   type RateLimiter,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
@@ -79,10 +78,12 @@ export function buildApp({
   config,
   dynamoClient,
   jwksResolvers,
+  rateLimiter,
 }: {
   config: MockEserviceConfig;
   dynamoClient?: DynamoDBClient;
   jwksResolvers: JWTVerifyGetKey[];
+  rateLimiter: RateLimiter;
 }) {
   const {
     acceptedAudiences,
@@ -119,13 +120,6 @@ export function buildApp({
       receiveDataAppTag,
     ],
   );
-
-  const rateLimiter = initRedisRateLimiter({
-    config,
-    knodeId: config.knodeId,
-    logger: app.log,
-    serviceName: "mock-eservice",
-  });
 
   app.register(rateLimitResponseHeadersPlugin);
 
@@ -181,10 +175,14 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: MockEserviceConfig) {
+export function buildAppFromConfig(
+  config: MockEserviceConfig,
+  rateLimiter: RateLimiter,
+) {
   return buildApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
+    rateLimiter,
   });
 }
 

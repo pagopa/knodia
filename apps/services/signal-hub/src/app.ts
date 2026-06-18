@@ -1,4 +1,3 @@
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -13,9 +12,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
-  initRedisRateLimiter,
   type RateLimiter,
-  type RateLimiterConfig,
   rateLimitPlugin,
   rateLimitResponseHeadersPlugin,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
@@ -34,16 +31,12 @@ import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 
 export function buildApp({
   config,
-  rateLimiter: rateLimiterOverride,
+  rateLimiter,
   readmodelDb,
   signalHubDb,
 }: {
-  config: AuthConfig &
-    LoggerConfig &
-    RateLimiterConfig & {
-      knodeId: KnodeId;
-    };
-  rateLimiter?: RateLimiter;
+  config: AuthConfig & LoggerConfig;
+  rateLimiter: RateLimiter;
   readmodelDb: NodePgDatabase;
   signalHubDb: NodePgDatabase;
 }) {
@@ -70,15 +63,6 @@ export function buildApp({
     loggerConfig: config,
     makeApiProblem,
   });
-
-  const rateLimiter =
-    rateLimiterOverride ??
-    initRedisRateLimiter({
-      config,
-      knodeId: config.knodeId,
-      logger: app.log,
-      serviceName: "signal-hub",
-    });
 
   app.register(rateLimitResponseHeadersPlugin);
 
@@ -107,7 +91,7 @@ export function buildApp({
 
 export function buildAppFromConfig(
   config: SignalHubConfig,
-  rateLimiter?: RateLimiter,
+  rateLimiter: RateLimiter,
 ) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
