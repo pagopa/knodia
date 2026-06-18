@@ -53,6 +53,10 @@ describe("GET /erds (lookupERDS)", () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ erdsIdentifier: "systemSERCOrion" });
+    // The route is behind the rate-limit plugin; assert the limiter ran.
+    expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+    expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
   });
 
   it("resolves the sender's SERC", async () => {
