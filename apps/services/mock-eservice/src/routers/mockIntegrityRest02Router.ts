@@ -66,6 +66,7 @@ export const mockIntegrityRest02Router: FastifyPluginAsyncZod<
           description:
             "No legal entity found for the uid_company, or no address is available for it",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       responseHeaders: API_IntegrityRest02Headers,
       summary: "Get company address",

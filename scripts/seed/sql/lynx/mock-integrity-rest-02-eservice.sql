@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '62708c81-8862-48bf-8140-49804d18c7e6',
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
-  'dfd220e496c6e885479295b6d3265dfe096e9277236cd6700ef8a49c697c634b',
+  'f8fb082f938fa17855a329462b71849213ca3c5a12f22aad7ac05edee1d4ec41',
   'application/yaml',
   'mock-bearer-integrity-rest-02-eservice.yaml',
   '62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml',
