@@ -1,10 +1,18 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
+import { pollCurrentUserUntilEmail } from "@/services/changeEmail";
 import { server } from "@/test/msw/server";
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { ChangeEmailModal } from "./ChangeEmailModal";
+
+// Stub the poll (keeping the real error helper); its behavior is covered in
+// changeEmail.test.ts. Default: resolve "applied" so the success path closes.
+vi.mock("@/services/changeEmail", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/services/changeEmail")>()),
+  pollCurrentUserUntilEmail: vi.fn(() => Promise.resolve(true)),
+}));
 
 const CHANGE_EMAIL_URL = "http://localhost:3000/user/changeEmail";
 const NEW_EMAIL = "new.email@example.com";
@@ -60,10 +68,48 @@ describe("ChangeEmailModal", () => {
     expect(capturedBody).toEqual({ email: NEW_EMAIL });
   });
 
+  it("stays open with both buttons disabled until the change is applied", async () => {
+    let resolvePoll!: (applied: boolean) => void;
+    vi.mocked(pollCurrentUserUntilEmail).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePoll = resolve;
+      }),
+    );
+    server.use(
+      http.post(
+        CHANGE_EMAIL_URL,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    const onOpenChange = vi.fn();
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
+
+    await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);
+    await user.click(screen.getByRole("button", { name: "Change" }));
+
+    // While applying: both buttons disabled and the modal is not closed yet.
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Change" })).toBeDisabled();
+    });
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+
+    // The email landed: now the modal closes.
+    resolvePoll(true);
+    await waitFor(() => {
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+  });
+
   it("shows an inline error and stays open on a 409 conflict", async () => {
     server.use(
       http.post(CHANGE_EMAIL_URL, () =>
-        HttpResponse.json({ title: "Conflict" }, { status: 409 }),
+        HttpResponse.json(
+          { errors: [{ code: "011-0001", detail: "" }] },
+          { status: 409 },
+        ),
       ),
     );
     const onOpenChange = vi.fn();

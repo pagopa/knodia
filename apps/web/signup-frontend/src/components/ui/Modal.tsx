@@ -25,6 +25,7 @@ interface ModalProps extends AriaModalOverlayProps {
   children?: React.ReactNode;
   description?: string;
   isActionDisabled?: boolean;
+  isCancelDisabled?: boolean;
   onCancel?: (e: PressEvent) => void;
   onConfirm?: (e: PressEvent) => void;
   title: string;
@@ -36,6 +37,7 @@ export function Modal({
   children,
   description,
   isActionDisabled = false,
+  isCancelDisabled = false,
   onCancel,
   onConfirm,
   title,
@@ -69,7 +71,12 @@ export function Modal({
             </div>
           )}
           <div className="flex shrink-0 items-center justify-end gap-6">
-            <Button onPress={onCancel} slot="close" variant="secondary">
+            <Button
+              isDisabled={isCancelDisabled}
+              onPress={onCancel}
+              slot="close"
+              variant="secondary"
+            >
               {cancelLabel}
             </Button>
             <Button
