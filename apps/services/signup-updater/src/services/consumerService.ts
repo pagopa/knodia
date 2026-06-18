@@ -13,7 +13,11 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
-import { type SignupEventV1, type SignupUser } from "@knodia/signup-models";
+import {
+  type SignupEventV1,
+  type SignupUser,
+  SignupUserStatus,
+} from "@knodia/signup-models";
 import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -49,7 +53,7 @@ export async function handleSignupMessage(
         const deletion =
           await deps.signupDbService.getSignupUserDeletion(signupUserId);
         if (deletion === undefined) {
-          throw new Error(
+          throw genericInternalError(
             `Cannot handle OnboardingCompletedV1 for signup user ${signupUserId}: user not found and no deletion record`,
           );
         }
@@ -130,12 +134,51 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
-    .with({ type: "DeletionRequestedV1" }, ({ data }) => {
-      // No-op: deprovisioning and deletion completion are implemented in a
-      // follow-up task.
-      logger.info(
-        `Ignoring DeletionRequestedV1 for signup user ${data.signupUserId}: handling not implemented yet`,
+    .with({ type: "DeletionRequestedV1" }, async (e) => {
+      const user = await deps.signupDbService.getSignupUserById(
+        e.data.signupUserId,
       );
+
+      // The row is hard-deleted on completion, so a missing user means the saga
+      // already finished (deletion-registry entry present) or the id never
+      // existed. Reads hit the same primary the producer wrote DeletionPending
+      // to before emitting the event, so a missing row isn't replication lag:
+      // both cases are terminal. Log and commit instead of throwing, which would
+      // redeliver forever and stall the whole partition.
+      if (user === undefined) {
+        const deletion = await deps.signupDbService.getSignupUserDeletion(
+          e.data.signupUserId,
+        );
+        if (deletion === undefined) {
+          logger.error(
+            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+          );
+        } else {
+          logger.warn(
+            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: deletion already completed`,
+          );
+        }
+        return;
+      }
+
+      // The event is emitted only after the row is marked DeletionPending, so
+      // any other status is a stale or out-of-order event. Skip rather than
+      // delete the Cognito users of a user not marked for deletion and then
+      // loop forever when completion finds no DeletionPending row.
+      if (user.status !== SignupUserStatus.enum.DeletionPending) {
+        logger.error(
+          `Skipping DeletionRequestedV1 for signup user ${user.signupUserId}: unexpected status ${user.status} (expected DeletionPending). Committing the offset to avoid blocking the partition.`,
+        );
+        return;
+      }
+
+      for (const knodeId of KnodeId.options) {
+        await deleteKnodeUser(knodeId, user, deps, logger);
+      }
+
+      // Hard-deletes the row and writes the deletion-registry entry; idempotent
+      // under at-least-once, so a crash before the offset commits replays safely.
+      await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
     })
     .exhaustive();
 }
@@ -156,6 +199,29 @@ async function createTestingOrganization(
     headers,
   });
   return unsafeBrandId<OrganizationId>(data.id);
+}
+
+// Organizations are intentionally not deleted on account deletion: per the
+// signup design, only the Cognito users are removed. The orgs stay; once the
+// signup row is hard-deleted their generated names are no longer available, but
+// their ids remain recoverable by recomputing them from the signup user id (see
+// externalOrganizationId).
+async function deleteKnodeUser(
+  knodeId: KnodeId,
+  user: SignupUser,
+  deps: SignupUpdaterDeps,
+  logger: Logger,
+): Promise<void> {
+  const entities = user.generatedEntities[knodeId];
+  const { cognitoClient } = deps.knodeClients[knodeId];
+
+  logger.info(
+    `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
+  );
+
+  // Idempotent inside the client: a missing user (UserNotFoundException) is
+  // swallowed, so a replay after a partial deletion is safe.
+  await cognitoClient.deleteOrganizationUser({ username: entities.userName });
 }
 
 // A 409 here means the org name is already taken by a different organization.
