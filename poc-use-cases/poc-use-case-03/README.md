@@ -94,11 +94,11 @@ Organization: `systemSERCOrion`
 
 Knode: `Orion`
 
-Description: for the message relayed in Phase 5, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) over the relay — first the consignment-attempt result (`RelayAcceptance` on success, or `RelayRejection`/`RelayFailure` on error), then the handover result (`ContentHandover` when the recipient picks the message up, or `ContentHandoverFailure` on error). Only these events travel between SERCs; `SubmissionAcceptance` (sender↔SERC) and `ContentConsignment`/`ContentConsignmentFailure` (recipient↔SERC) are internal to the other boundaries and are not exchanged between SERCs.
+Description: for the message relayed in Phase 5, `systemSERCOrion` returns the ERDS evidences to the sender's SERC (`systemSERCLynx`) over the relay — the consignment-attempt result (`RelayAcceptance`) and then the handover result (`ContentHandover`).
 
 Steps:
 
-1. **[narration]** `systemSERCOrion` deposits the message in `recipientOrion`'s message container, then `recipientOrion` picks it up.
+1. **[narration]** The recipient's message is made available to, then picked up by, `recipientOrion`.
 2. **[script]** Run `node send-handover-evidence.ts --consumer-keychain-id <id> --purpose-id <id> --message-id <uuid> --event RelayAcceptance`, using `systemSERCOrion`'s Consumer Keychain and Purpose from Phase 4 and the `messageIdentifier.uuid` from Phase 5 — the script builds the `erd_dispatch` carrying the consignment-attempt evidence (`messageType=Receipt`, `eventReason=MessageSuccessfullyRelayed`) and relays it to `systemSERCLynx`; it prints the evidence and the ACK.
 3. **[script]** Run it again with `--event ContentHandover` — the same call carrying the handover evidence (`eventReason=MessageHandoverToRecipient`).
 4. **[script]** _(error cases)_ To demo a failed delivery, run with `--event RelayRejection` (`eventReason=MessageRejected`) or `--event RelayFailure` (`UnknownRecipient`) for a failed consignment attempt, or `--event ContentHandoverFailure` (`MessageTypeNotAcceptedByRecipient`) for a failed handover.
