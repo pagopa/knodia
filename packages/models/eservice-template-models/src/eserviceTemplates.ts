@@ -86,11 +86,6 @@ const interfaceDocument = (
   prettyName: { en: prettyName },
 });
 
-// Every template requires testing_organization as the gating attribute.
-// The Prototype's create-eservice flow mandates at least one required attribute
-// group, so we cannot mark a template as open to all. testing_organization is
-// owned by every onboarded organization, so it is effectively a no-op gate
-// while still satisfying the constraint.
 const testingOrganizationRequiredAttributes = [
   [mockedAttribute("knodia", "testing_organization")],
 ];
