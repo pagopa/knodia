@@ -22,6 +22,7 @@ describe("consumer purposes queries", () => {
   it("filters the per-eservice consumer list to Active and Suspended states", () => {
     const opts = consumerPurposesByEserviceQuery(
       "00000000-0000-4000-8000-000000000001" as EserviceId,
+      "Orion",
     );
 
     expect(opts.queryKey[0]).toMatchObject({
