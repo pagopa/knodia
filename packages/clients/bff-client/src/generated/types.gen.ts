@@ -3351,6 +3351,10 @@ export type GetProducerKeychainsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainsError = GetProducerKeychainsErrors[keyof GetProducerKeychainsErrors];
@@ -3384,6 +3388,10 @@ export type CreateProducerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];
@@ -3423,6 +3431,10 @@ export type DeleteProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DeleteProducerKeychainError = DeleteProducerKeychainErrors[keyof DeleteProducerKeychainErrors];
@@ -3462,6 +3474,10 @@ export type GetProducerKeychainDetailsErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainDetailsError = GetProducerKeychainDetailsErrors[keyof GetProducerKeychainDetailsErrors];
@@ -3501,6 +3517,10 @@ export type UpdateProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];
@@ -3549,6 +3569,10 @@ export type GetProducerKeychainMembersErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainMembersError = GetProducerKeychainMembersErrors[keyof GetProducerKeychainMembersErrors];
@@ -3592,6 +3616,10 @@ export type AddProducerKeychainMemberErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type AddProducerKeychainMemberError = AddProducerKeychainMemberErrors[keyof AddProducerKeychainMemberErrors];
@@ -3632,6 +3660,10 @@ export type RemoveProducerKeychainMemberErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveProducerKeychainMemberError = RemoveProducerKeychainMemberErrors[keyof RemoveProducerKeychainMemberErrors];
@@ -3668,6 +3700,10 @@ export type GetProducerKeychainMembershipErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainMembershipError = GetProducerKeychainMembershipErrors[keyof GetProducerKeychainMembershipErrors];
@@ -3716,6 +3752,10 @@ export type GetProducerKeychainKeysErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainKeysError = GetProducerKeychainKeysErrors[keyof GetProducerKeychainKeysErrors];
@@ -3759,6 +3799,10 @@ export type UploadProducerKeychainKeyErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UploadProducerKeychainKeyError = UploadProducerKeychainKeyErrors[keyof UploadProducerKeychainKeyErrors];
@@ -3799,6 +3843,10 @@ export type RemoveProducerKeychainKeyErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type RemoveProducerKeychainKeyError = RemoveProducerKeychainKeyErrors[keyof RemoveProducerKeychainKeyErrors];
@@ -3839,6 +3887,10 @@ export type DownloadProducerKeychainKeyErrors = {
      * Producer Keychain Key not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DownloadProducerKeychainKeyError = DownloadProducerKeychainKeyErrors[keyof DownloadProducerKeychainKeyErrors];
@@ -3887,6 +3939,10 @@ export type GetProducerKeychainEservicesErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetProducerKeychainEservicesError = GetProducerKeychainEservicesErrors[keyof GetProducerKeychainEservicesErrors];
@@ -3930,6 +3986,10 @@ export type LinkEserviceToProducerKeychainErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type LinkEserviceToProducerKeychainError = LinkEserviceToProducerKeychainErrors[keyof LinkEserviceToProducerKeychainErrors];
@@ -3970,6 +4030,10 @@ export type UnlinkEserviceFromProducerKeychainErrors = {
      * Producer Keychain or E-service link not found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type UnlinkEserviceFromProducerKeychainError = UnlinkEserviceFromProducerKeychainErrors[keyof UnlinkEserviceFromProducerKeychainErrors];
@@ -4143,6 +4207,10 @@ export type GetConsumerEservicePurposeFormOptionsErrors = {
      * E-service mode is not ReceiveData
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetConsumerEservicePurposeFormOptionsError = GetConsumerEservicePurposeFormOptionsErrors[keyof GetConsumerEservicePurposeFormOptionsErrors];
