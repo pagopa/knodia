@@ -87,6 +87,7 @@ export const mockReceiveDataRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No legal entity found for the submitted uid_company",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Send digital contact",
       tags: [apiTags.companyDigitalDomicile],

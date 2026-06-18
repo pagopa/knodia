@@ -18,6 +18,7 @@ const {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_TOO_MANY_REQUESTS,
   HTTP_STATUS_UNAUTHORIZED,
 } = constants;
 
@@ -30,6 +31,7 @@ export const commonErrorCodes = {
   FASTIFY_ERROR: "9995",
   UNAUTHORIZED: "9996",
   FORBIDDEN: "9997",
+  TOO_MANY_REQUESTS: "9998",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -103,6 +105,15 @@ export function responseSerializationError(
     errors,
     status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
+  });
+}
+
+export function tooManyRequestsError(): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: "TOO_MANY_REQUESTS",
+    detail: "Rate limit exceeded",
+    status: HTTP_STATUS_TOO_MANY_REQUESTS,
+    title: "Too Many Requests",
   });
 }
 

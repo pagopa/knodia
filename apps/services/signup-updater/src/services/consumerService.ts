@@ -1,4 +1,3 @@
-import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -7,7 +6,6 @@ import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
-  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
@@ -15,6 +13,11 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import {
+  type SignupEventV1,
+  type SignupUser,
+  SignupUserStatus,
+} from "@knodia/signup-models";
 import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -38,26 +41,27 @@ export async function handleSignupMessage(
 ): Promise<void> {
   const signupUserId = event.data.signupUserId;
 
-  async function retrieveSignupUserOrWarn(
-    signupUserId: SignupUserId,
-  ): Promise<SignupUser | undefined> {
-    const user = await deps.signupDbService.getSignupUserById(signupUserId);
-
-    // For now we assume a missing user was deleted: nothing to provision, so we
-    // skip the event (committing the offset) rather than blocking the partition.
-    if (user === undefined) {
-      logger.warn(
-        `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
-      );
-    }
-
-    return user;
-  }
-
   return match(event)
     .with({ type: "OnboardingCompletedV1" }, async () => {
-      const user = await retrieveSignupUserOrWarn(signupUserId);
-      if (user === undefined) return;
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
+      if (user === undefined) {
+        // The row is gone. Only skip if the deletion registry confirms it was a
+        // completed deletion: a missing user with no deletion record is an
+        // unexpected invariant violation (e.g. a stale read on an eventually
+        // consistent replica), so we throw and let the partition redeliver
+        // rather than silently dropping a provisioning event.
+        const deletion =
+          await deps.signupDbService.getSignupUserDeletion(signupUserId);
+        if (deletion === undefined) {
+          throw genericInternalError(
+            `Cannot handle OnboardingCompletedV1 for signup user ${signupUserId}: user not found and no deletion record`,
+          );
+        }
+        logger.warn(
+          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user deleted at ${deletion.deletedAt.toISOString()}. Committing the offset; the event is obsolete and has no recovery path.`,
+        );
+        return;
+      }
 
       for (const knodeId of KnodeId.options) {
         await provisionKnode(knodeId, user, deps, correlationId, logger);
@@ -83,9 +87,12 @@ export async function handleSignupMessage(
         );
       }
 
-      const user = await retrieveSignupUserOrWarn(signupUserId);
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
 
       if (user === undefined) {
+        logger.warn(
+          `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+        );
         await deps.signupDbService.deleteEmailChangeRequest(
           emailChangeRequestId,
         );
@@ -127,6 +134,52 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
+    .with({ type: "DeletionRequestedV1" }, async (e) => {
+      const user = await deps.signupDbService.getSignupUserById(
+        e.data.signupUserId,
+      );
+
+      // The row is hard-deleted on completion, so a missing user means the saga
+      // already finished (deletion-registry entry present) or the id never
+      // existed. Reads hit the same primary the producer wrote DeletionPending
+      // to before emitting the event, so a missing row isn't replication lag:
+      // both cases are terminal. Log and commit instead of throwing, which would
+      // redeliver forever and stall the whole partition.
+      if (user === undefined) {
+        const deletion = await deps.signupDbService.getSignupUserDeletion(
+          e.data.signupUserId,
+        );
+        if (deletion === undefined) {
+          logger.error(
+            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+          );
+        } else {
+          logger.warn(
+            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: deletion already completed`,
+          );
+        }
+        return;
+      }
+
+      // The event is emitted only after the row is marked DeletionPending, so
+      // any other status is a stale or out-of-order event. Skip rather than
+      // delete the Cognito users of a user not marked for deletion and then
+      // loop forever when completion finds no DeletionPending row.
+      if (user.status !== SignupUserStatus.enum.DeletionPending) {
+        logger.error(
+          `Skipping DeletionRequestedV1 for signup user ${user.signupUserId}: unexpected status ${user.status} (expected DeletionPending). Committing the offset to avoid blocking the partition.`,
+        );
+        return;
+      }
+
+      for (const knodeId of KnodeId.options) {
+        await deleteKnodeUser(knodeId, user, deps, logger);
+      }
+
+      // Hard-deletes the row and writes the deletion-registry entry; idempotent
+      // under at-least-once, so a crash before the offset commits replays safely.
+      await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
+    })
     .exhaustive();
 }
 
@@ -146,6 +199,29 @@ async function createTestingOrganization(
     headers,
   });
   return unsafeBrandId<OrganizationId>(data.id);
+}
+
+// Organizations are intentionally not deleted on account deletion: per the
+// signup design, only the Cognito users are removed. The orgs stay; once the
+// signup row is hard-deleted their generated names are no longer available, but
+// their ids remain recoverable by recomputing them from the signup user id (see
+// externalOrganizationId).
+async function deleteKnodeUser(
+  knodeId: KnodeId,
+  user: SignupUser,
+  deps: SignupUpdaterDeps,
+  logger: Logger,
+): Promise<void> {
+  const entities = user.generatedEntities[knodeId];
+  const { cognitoClient } = deps.knodeClients[knodeId];
+
+  logger.info(
+    `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
+  );
+
+  // Idempotent inside the client: a missing user (UserNotFoundException) is
+  // swallowed, so a replay after a partial deletion is safe.
+  await cognitoClient.deleteOrganizationUser({ username: entities.userName });
 }
 
 // A 409 here means the org name is already taken by a different organization.

@@ -8,6 +8,7 @@ import { genericInternalError } from "@knodia/common-models/errors";
 import { type FastifyBaseLogger } from "fastify";
 
 import type { AuthData } from "../auth/authData.ts";
+import type { RateLimiterStatus } from "../rate-limit/rateLimiter.ts";
 
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {
@@ -15,6 +16,7 @@ declare module "@fastify/request-context" {
     authData?: AuthData;
     correlationId: CorrelationId;
     logger: FastifyBaseLogger;
+    rateLimitStatus?: RateLimiterStatus;
   }
 }
 

@@ -3,7 +3,6 @@ import type {
   KnodiaAuthTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
   EserviceId,
@@ -15,6 +14,7 @@ import type {
 } from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
+import { type ExternalId } from "@knodia/common-models/externalResource";
 import { match } from "ts-pattern";
 
 export type AuthData =
@@ -79,6 +79,25 @@ export interface UISignupSessionAuthData {
   spidCode: string | undefined;
   tokenType: "ui-signup-session";
   uniqueIdentifier: string;
+}
+
+// Caller organization id carried by the token: organization (UI session,
+// knode-api), consumer's home-knode organization (external UI session), or
+// undefined for internal service-to-service tokens, which have no organization.
+export function callerOrganizationIdFromAuthData(
+  authData: AuthData,
+): ExternalId<OrganizationId> | OrganizationId | undefined {
+  return match(authData)
+    .with({ tokenType: "ui-session" }, (a) => a.organizationId)
+    .with({ tokenType: "external-ui-session" }, (a) => a.consumer.id)
+    .with({ tokenType: "knode-api" }, (a) => a.organization.id)
+    .with(
+      { tokenType: "ui-signup-session" },
+      // TODO: This will be handled when we add rate-limiting to signup
+      () => undefined,
+    )
+    .with({ tokenType: "internal" }, () => undefined)
+    .exhaustive();
 }
 
 export function extractAuthDataFromToken(

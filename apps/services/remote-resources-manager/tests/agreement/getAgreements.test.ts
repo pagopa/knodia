@@ -139,6 +139,63 @@ describe("GET /agreements (getAgreements)", () => {
     );
   });
 
+  it("forwards offset/limit unchanged to the single knode (no per-node reset)", async () => {
+    getAgreementsMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 5, offset: 5, total: 12 },
+        results: [k2kResult],
+      },
+    });
+
+    await remoteResourceDbService.insertAgreement(remoteAgreement);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/agreements")
+      .query({ limit: "5", offset: "5" });
+
+    expect(response.statusCode).toBe(200);
+    expect(getAgreementsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ limit: 5, offset: 5 }),
+      }),
+    );
+    expect(response.json().pagination).toEqual({
+      limit: 5,
+      offset: 5,
+      total: 12,
+    });
+  });
+
+  it("returns an empty page when the consumer has no remote agreements", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/agreements")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      pagination: { ...parsedDefaultQuery, total: 0 },
+      results: [],
+    });
+    expect(getAgreementsMock).not.toHaveBeenCalled();
+  });
+
+  it("returns 501 when the consumer has agreements on more than one knode", async () => {
+    const otherKnodeAgreement: RemoteResourceAgreementSQL = {
+      ...remoteAgreement,
+      agreementId: zocker(API_Agreement).generate().id,
+      knodeId: "Lynx",
+    };
+    await remoteResourceDbService.insertAgreement(remoteAgreement);
+    await remoteResourceDbService.insertAgreement(otherKnodeAgreement);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/agreements")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(501);
+    expect(getAgreementsMock).not.toHaveBeenCalled();
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

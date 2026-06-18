@@ -166,6 +166,35 @@ components:
         - correlationId
         - receivedAt
       additionalProperties: false
+  headers:
+    RateLimitLimit:
+      description: Total requests allowed in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRemaining:
+      description: Requests remaining in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitReset:
+      description: Seconds before the current window resets.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRetryAfter:
+      description: Seconds the client should wait before retrying.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
 paths:
   /digital-contacts:
     post:
@@ -192,6 +221,13 @@ paths:
                 description: Submission accepted by the Producer
                 allOf:
                   - $ref: "#/components/schemas/Ack"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Invalid submission body
           content:
@@ -200,6 +236,13 @@ paths:
                 description: Invalid submission body
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -208,6 +251,13 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: No legal entity found for the submitted uid_company
           content:
@@ -216,6 +266,30 @@ paths:
                 description: No legal entity found for the submitted uid_company
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "429":
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                description: Too Many Requests
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+            Retry-After:
+              $ref: "#/components/headers/RateLimitRetryAfter"
 servers:
   - description: Mock E-service API
     url: /
