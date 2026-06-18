@@ -20,11 +20,11 @@ import type { MockEserviceConfig } from "./config/config.ts";
 
 import { bearerAccessTokenAuthPlugin } from "./auth/bearerAccessTokenAuthPlugin.ts";
 import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
+import { type API_ErdsIdentifier } from "./models/api.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
-import { type API_ErdsIdentifier } from "./models/api.ts";
 import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockPocUc03SupervisoryBodyRouter } from "./routers/mockPocUc03SupervisoryBodyRouter.ts";
@@ -62,17 +62,6 @@ const pocUc03SupervisoryBodyAppTag: OpenAPIV3.TagObject = {
     "ERDS lookup + metadata for the supervisory body (POC UC03 provide-data, Bearer-protected)",
   name: apiTags.pocUc03SupervisoryBody,
 };
-
-// Relay base URL of each SERC, keyed by erdsIdentifier — what getERDSMetadata
-// returns as domainName (resolved per environment from config).
-function toRelayBaseUrlByErds(
-  config: MockEserviceConfig,
-): Record<API_ErdsIdentifier, string> {
-  return {
-    systemSERCLynx: config.pocUc03RelayBaseUrlLynx,
-    systemSERCOrion: config.pocUc03RelayBaseUrlOrion,
-  };
-}
 
 export function buildApp({
   config,
@@ -476,4 +465,15 @@ function createMockFastifyApp(
 
 function resolveJwksResolvers(config: MockEserviceConfig): JWTVerifyGetKey[] {
   return config.wellKnownUrls.map((url) => createRemoteJWKSet(new URL(url)));
+}
+
+// Relay base URL of each SERC, keyed by erdsIdentifier — what getERDSMetadata
+// returns as domainName (resolved per environment from config).
+function toRelayBaseUrlByErds(
+  config: MockEserviceConfig,
+): Record<API_ErdsIdentifier, string> {
+  return {
+    systemSERCLynx: config.pocUc03RelayBaseUrlLynx,
+    systemSERCOrion: config.pocUc03RelayBaseUrlOrion,
+  };
 }
