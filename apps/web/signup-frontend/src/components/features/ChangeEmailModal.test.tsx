@@ -1,24 +1,84 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
+
+import { server } from "@/test/msw/server";
+import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { ChangeEmailModal } from "./ChangeEmailModal";
 
-describe("ChangeEmailModal", () => {
-  it("renders the email field and keeps the Change action disabled", () => {
-    render(<ChangeEmailModal isOpen onOpenChange={vi.fn()} />);
+const CHANGE_EMAIL_URL = "http://localhost:3000/user/changeEmail";
+const NEW_EMAIL = "new.email@example.com";
 
-    expect(screen.getByLabelText("New email address")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Change" })).toBeDisabled();
+describe("ChangeEmailModal", () => {
+  it("enables Change only once a valid email is entered", async () => {
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={vi.fn()} />,
+    );
+
+    const field = screen.getByLabelText("New email address");
+    const changeButton = screen.getByRole("button", { name: "Change" });
+    expect(changeButton).toBeDisabled();
+
+    await user.type(field, "not-an-email");
+    expect(changeButton).toBeDisabled();
+
+    await user.clear(field);
+    await user.type(field, NEW_EMAIL);
+    expect(changeButton).toBeEnabled();
   });
 
   it("closes via the cancel button", async () => {
-    const user = userEvent.setup();
     const onOpenChange = vi.fn();
-    render(<ChangeEmailModal isOpen onOpenChange={onOpenChange} />);
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("submits the new email and closes on success", async () => {
+    let capturedBody: unknown;
+    server.use(
+      http.post(CHANGE_EMAIL_URL, async ({ request }) => {
+        capturedBody = await request.json();
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+    const onOpenChange = vi.fn();
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
+
+    await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);
+    await user.click(screen.getByRole("button", { name: "Change" }));
+
+    await waitFor(() => {
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+    expect(capturedBody).toEqual({ email: NEW_EMAIL });
+  });
+
+  it("shows an inline error and stays open on a 409 conflict", async () => {
+    server.use(
+      http.post(CHANGE_EMAIL_URL, () =>
+        HttpResponse.json({ title: "Conflict" }, { status: 409 }),
+      ),
+    );
+    const onOpenChange = vi.fn();
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
+
+    await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);
+    await user.click(screen.getByRole("button", { name: "Change" }));
+
+    expect(
+      await screen.findByText(
+        "This email address is already in use. Please choose a different one.",
+      ),
+    ).toBeVisible();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });
