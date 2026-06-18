@@ -56,7 +56,8 @@ export function initRedisRateLimiter({
   logger,
   serviceName,
 }: InitRedisRateLimiterOptions): RateLimiter {
-  const keyPrefix = `knodia-rate-limit:${knodeId}:${serviceName}`;
+  // Lowercase the knodeId so the key namespace is uniformly lower-case
+  const keyPrefix = `knodia-rate-limit:${knodeId.toLowerCase()}:${serviceName}`;
   const maxRequests = config.rateLimiterMaxRequests;
   const rateIntervalMs = config.rateLimiterTimeWindowSeconds * 1_000;
   const timeoutMs = config.rateLimiterTimeoutSeconds * 1_000;
