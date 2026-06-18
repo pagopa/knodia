@@ -57,38 +57,38 @@ script:post-response {
 
   // --- Digest: signed_headers entry must match the Digest response header ---
   const digestResponseHeader = bru.getVar("integrity_rest_02_digest_header")
-  const signedDigestEntry = signedHeaders.find((h) => "Digest" in h)
+  const signedDigestEntry = signedHeaders.find((h) => "digest" in h)
   if (!signedDigestEntry) {
     throw new Error(`signed_headers does not contain a Digest entry. Got: ${JSON.stringify(signedHeaders)}`)
   }
-  if (signedDigestEntry["Digest"] !== digestResponseHeader) {
+  if (signedDigestEntry["digest"] !== digestResponseHeader) {
     throw new Error(
-      `signed_headers Digest mismatch.\n  signed: ${signedDigestEntry["Digest"]}\n  header: ${digestResponseHeader}`
+      `signed_headers Digest mismatch.\n  signed: ${signedDigestEntry["digest"]}\n  header: ${digestResponseHeader}`
     )
   }
 
   // --- Content-Type: signed_headers entry must match the Content-Type response header ---
   const responseContentType = bru.getVar("integrity_rest_02_content_type_header")
-  const signedContentTypeEntry = signedHeaders.find((h) => "Content-Type" in h)
+  const signedContentTypeEntry = signedHeaders.find((h) => "content-type" in h)
   if (!signedContentTypeEntry) {
     throw new Error(`signed_headers does not contain a Content-Type entry. Got: ${JSON.stringify(signedHeaders)}`)
   }
-  if (signedContentTypeEntry["Content-Type"] !== responseContentType) {
+  if (signedContentTypeEntry["content-type"] !== responseContentType) {
     throw new Error(
-      `signed_headers Content-Type mismatch.\n  signed: ${signedContentTypeEntry["Content-Type"]}\n  header: ${responseContentType}`
+      `signed_headers Content-Type mismatch.\n  signed: ${signedContentTypeEntry["content-type"]}\n  header: ${responseContentType}`
     )
   }
 
   // --- Content-Encoding: only present in signed_headers when the response has it ---
   const responseContentEncoding = bru.getVar("integrity_rest_02_content_encoding_header")
-  const signedContentEncodingEntry = signedHeaders.find((h) => "Content-Encoding" in h)
+  const signedContentEncodingEntry = signedHeaders.find((h) => "content-encoding" in h)
   if (responseContentEncoding) {
     if (!signedContentEncodingEntry) {
       throw new Error(`Response has Content-Encoding (${responseContentEncoding}) but it is missing from signed_headers`)
     }
-    if (signedContentEncodingEntry["Content-Encoding"] !== responseContentEncoding) {
+    if (signedContentEncodingEntry["content-encoding"] !== responseContentEncoding) {
       throw new Error(
-        `signed_headers Content-Encoding mismatch.\n  signed: ${signedContentEncodingEntry["Content-Encoding"]}\n  header: ${responseContentEncoding}`
+        `signed_headers Content-Encoding mismatch.\n  signed: ${signedContentEncodingEntry["content-encoding"]}\n  header: ${responseContentEncoding}`
       )
     }
   } else if (signedContentEncodingEntry) {
