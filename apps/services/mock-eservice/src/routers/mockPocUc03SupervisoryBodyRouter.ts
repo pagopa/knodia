@@ -18,7 +18,7 @@ import {
   POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_ID,
   POC_UC03_SUPERVISORY_BODY_MOCK_ESERVICE_VERSION_ID,
   POC_UC03_SUPERVISORY_BODY_MOCK_PRODUCER_ID,
-} from "../pocUc03Erds/mockup.ts";
+} from "../pocUc03/mockup.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockSupervisoryBodyRouterOptions {
