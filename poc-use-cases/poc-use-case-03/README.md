@@ -101,5 +101,7 @@ Steps:
 1. **[narration]** The recipient's message is made available to, then picked up by, `recipientOrion`.
 2. **[script]** Run `node send-handover-evidence.ts --consumer-keychain-id <id> --purpose-id <id> --message-id <uuid> --event RelayAcceptance`, using `systemSERCOrion`'s Consumer Keychain and Purpose from Phase 4 and the `messageIdentifier.uuid` from Phase 5 — the script builds the `erd_dispatch` carrying the consignment-attempt evidence (`messageType=Receipt`, `eventReason=MessageSuccessfullyRelayed`) and relays it to `systemSERCLynx`; it prints the evidence and the ACK.
 3. **[script]** Run it again with `--event ContentHandover` — the same call carrying the handover evidence (`eventReason=MessageHandoverToRecipient`).
-4. **[script]** _(error cases)_ To demo a failed delivery, run with `--event RelayRejection` (`eventReason=MessageRejected`) or `--event RelayFailure` (`UnknownRecipient`) for a failed consignment attempt, or `--event ContentHandoverFailure` (`MessageTypeNotAcceptedByRecipient`) for a failed handover.
+4. **[script]** _(error cases)_ The same script relays the failure evidences too, covering the significant inter-SERC protocol outcomes:
+   - consignment problems — `--event RelayRejection` (`eventReason=MessageRejected`) or `--event RelayFailure` (`UnknownRecipient`);
+   - handover problem — `--event ContentHandoverFailure` (`MessageTypeNotAcceptedByRecipient`).
 5. **[narration]** `systemSERCLynx` receives the evidences and notifies the sender (`senderLynx`) of the delivery outcome; that SERC↔sender interaction is out of POC scope.
