@@ -56,7 +56,7 @@ Description: to relay the sender's message to the recipient's SERC, `systemSERCL
 
 Steps:
 
-1. **[UI]** Repeat steps 2–5 of Phase 2 for the **relay** e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Comunicazione tra sistemi di notifica certificata").
+1. **[UI]** Repeat steps 2–5 of Phase 2 for the **relay** e-service (`ERDS Relay - Orion`). When creating its Purpose, select the e-service's predefined Purpose Form option ("Communication between certified electronic delivery systems").
 2. **[UI]** Link the Purpose to the same Consumer Keychain created in Phase 2.
 3. Note the Purpose id — the Consumer Keychain is the same as Phase 2.
 
@@ -85,7 +85,7 @@ Steps:
 
 1. **[narration]** A citizen (`senderLynx`) asks `systemSERCLynx` to deliver a certified message to a recipient identified by `01229430085`.
 2. **[script]** Run `node lookup-recipient-serc.ts --consumer-keychain-id <id> --purpose-id <id> --recipient-id 01229430085`, using `systemSERCLynx`'s Consumer Keychain and the Purpose id from Phase 2 — the script calls `lookupERDS` then `getERDSMetadata` on `supervisoryBodyOrion` and prints the recipient's `erdsIdentifier` and its relay endpoint URL.
-3. **[script]** Run `node send-message.ts --consumer-keychain-id <id> --purpose-id <id> --recipient-serc <erdsIdentifier from step 2> --relay-url <URL from step 2> --recipient-id 01229430085 --subject "Notifica" --body "Testo del messaggio inoltrato"`, using `systemSERCLynx`'s Consumer Keychain and the Purpose id from Phase 3 — the script builds the `erd_dispatch` (`messageType=Dispatch`) and POSTs it directly to the relay URL; it prints the sent dispatch (with its `messageIdentifier.uuid`) and the ACK.
+3. **[script]** Run `node send-message.ts --consumer-keychain-id <id> --purpose-id <id> --recipient-serc <erdsIdentifier from step 2> --relay-url <URL from step 2> --recipient-id 01229430085 --subject "Notification" --body "Forwarded message body"`, using `systemSERCLynx`'s Consumer Keychain and the Purpose id from Phase 3 — the script builds the `erd_dispatch` (`messageType=Dispatch`) and POSTs it directly to the relay URL; it prints the sent dispatch (with its `messageIdentifier.uuid`) and the ACK.
 4. **[narration]** `systemSERCOrion` receives the message and makes it available to the recipient (`recipientOrion`); that SERC↔recipient interaction is out of POC scope. Note the `messageIdentifier.uuid` printed by `send-message.ts` — it is a param for the next phase.
 
 ## Phase 6
