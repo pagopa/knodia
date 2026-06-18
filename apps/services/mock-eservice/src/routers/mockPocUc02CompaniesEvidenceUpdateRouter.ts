@@ -7,6 +7,10 @@ import {
   API_Problem,
   unauthorizedError,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  enforceRateLimit,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import z from "zod";
 
 import {
@@ -22,6 +26,7 @@ interface MockCompaniesEvidenceUpdateRouterOptions {
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
   knodeId: KnodeId;
+  rateLimiter: RateLimiter;
 }
 
 // Demo-only (POC UC02 Phase 4): lets the producer mark a company's evidence as
@@ -30,7 +35,7 @@ interface MockCompaniesEvidenceUpdateRouterOptions {
 // app, never on the spec-generation apps, so it stays out of the published spec.
 export const mockPocUc02CompaniesEvidenceUpdateRouter: FastifyPluginAsyncZod<
   MockCompaniesEvidenceUpdateRouterOptions
-> = async (fastify, { expectedIssuer, jwksResolvers, knodeId }) => {
+> = async (fastify, { expectedIssuer, jwksResolvers, knodeId, rateLimiter }) => {
   fastify.route({
     handler: async (req, res) => {
       const token = parseAuthHeaderToken(req.headers.authorization);
@@ -46,6 +51,11 @@ export const mockPocUc02CompaniesEvidenceUpdateRouter: FastifyPluginAsyncZod<
           "Only the producer of this e-service can update its evidence",
         );
       }
+
+      // This route sits outside the bearer/DPoP rate-limit scope (it self-auths
+      // a Knode API token, not a consumer access token), so enforce inline —
+      // keyed on the producer org, mirroring authorization-server's approach.
+      await enforceRateLimit(rateLimiter, claims.organization.id, req.log);
 
       const { uidCompany } = req.params;
       if (!findLegalEntity(uidCompany)) {
@@ -69,6 +79,7 @@ export const mockPocUc02CompaniesEvidenceUpdateRouter: FastifyPluginAsyncZod<
         400: API_Problem,
         401: API_Problem,
         404: API_Problem,
+        429: API_Problem,
       },
     },
     url: "/legal-entities/:uidCompany/evidence-update",

@@ -138,6 +138,7 @@ export function buildApp({
     expectedIssuer,
     jwksResolvers,
     knodeId,
+    rateLimiter,
   });
 
   // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
