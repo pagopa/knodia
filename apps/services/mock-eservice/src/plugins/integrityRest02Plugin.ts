@@ -13,6 +13,8 @@ import {
 import { calculateIntegrityRest02Digest } from "@knodia/integrity-rest-02/utils";
 import fastifyPlugin from "fastify-plugin";
 
+import { retrieveAccessTokenClaims } from "../utils/retrievalUtils.ts";
+
 // Augment @fastify/request-context so routers in this service can read the
 // verified access-token claims stashed by the auth plugins.
 declare module "@fastify/request-context" {
@@ -30,13 +32,14 @@ export const integrityRest02Plugin =
   fastifyPlugin<IntegrityRest02PluginOptions>(
     async (fastify, { integrityRest02Config, integrityRest02Generator }) => {
       fastify.addHook("onSend", async (_request, response, payload) => {
-        const { accessTokenClaims, correlationId } =
-          getContextValues(requestContext);
+        const { correlationId } = getContextValues(requestContext);
+
+        const claims = retrieveAccessTokenClaims();
 
         const digest = calculateIntegrityRest02Digest(payload);
         const { serialized } =
           await integrityRest02Generator.generateKnodiaJwtSignature({
-            clientId: accessTokenClaims?.client_id,
+            clientId: claims.client_id,
             contentEncoding: response.getHeader(CONTENT_ENCODING_HEADER),
             contentType: response.getHeader(CONTENT_TYPE_HEADER),
             correlationId,
