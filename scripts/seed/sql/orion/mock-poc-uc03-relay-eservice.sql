@@ -11,7 +11,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   'c5f3e0a2-3d4e-4f5a-ab62-000000000321',
   '00000000-0000-4000-8000-000000000106',
   '{"en": "ERDS Relay - Orion"}'::jsonb,
-  '{"en": "Cross-Border receive-data E-Service published by the SERC: relays an ERD dispatch — the sender''s message or the delivery evidences — from another SERC and acknowledges it. The Producer publishes a pre-filled lawfulness-of-processing form for the Consumer to choose from when creating a Purpose."}'::jsonb,
+  '{"en": "Cross-Border receive-data E-Service published by a SERC: relays an ERD dispatch (the sender''s message or the delivery evidences) from another SERC and returns an acknowledgement."}'::jsonb,
   'ReceiveData',
   true, false,
   0, now(), now()
