@@ -33,6 +33,18 @@ describe("getAttribute", () => {
     });
   });
 
+  it("resolves the training_institutes POC attribute", () => {
+    expect(
+      getAttribute({
+        code: "training_institutes",
+        scheme: "vc_poc_attributes",
+      }),
+    ).toEqual({
+      id: { code: "training_institutes", scheme: "vc_poc_attributes" },
+      name: "Training Institutes",
+    });
+  });
+
   it("returns undefined for an unknown code in a known scheme", () => {
     expect(
       getAttribute({ code: "unknown", scheme: "vc_poc_attributes" }),
