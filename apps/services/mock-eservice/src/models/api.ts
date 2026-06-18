@@ -12,7 +12,7 @@ export const API_Notation = z.string().regex(CODICE_FISCALE_REGEX).meta({
 });
 export type API_Notation = z.infer<typeof API_Notation>;
 
-export const API_UriScheme = z
+const API_UriScheme = z
   .enum(["http://memberstate.ms/PIdentifier", "http://memberstate.ms/VAT"])
   .meta({
     description: "Identifier scheme URI accepted by Knodia mock e-services",
@@ -325,13 +325,13 @@ const API_ErdsRefIdentifier = z
     id: "ErdsRefIdentifier",
   });
 
-export const API_ErdMessageType = z.enum(["Dispatch", "Receipt"]).meta({
+const API_ErdMessageType = z.enum(["Dispatch", "Receipt"]).meta({
   description: "Whether an ERD dispatch carries a message or its receipt",
   id: "ErdMessageType",
 });
-export type API_ErdMessageType = z.infer<typeof API_ErdMessageType>;
+type API_ErdMessageType = z.infer<typeof API_ErdMessageType>;
 
-export const API_EventIdentifier = z
+const API_EventIdentifier = z
   .enum([
     "SubmissionAcceptance",
     "RelayAcceptance",
@@ -343,9 +343,9 @@ export const API_EventIdentifier = z
     "ContentHandoverFailure",
   ])
   .meta({ description: "ERDS evidence event", id: "EventIdentifier" });
-export type API_EventIdentifier = z.infer<typeof API_EventIdentifier>;
+type API_EventIdentifier = z.infer<typeof API_EventIdentifier>;
 
-export const API_EventReason = z
+const API_EventReason = z
   .enum([
     "MessageAccepted",
     "MessageSuccessfullyRelayed",
@@ -357,10 +357,10 @@ export const API_EventReason = z
     "MessageTypeNotAcceptedByRecipient",
   ])
   .meta({ description: "Reason of an ERDS evidence event", id: "EventReason" });
-export type API_EventReason = z.infer<typeof API_EventReason>;
+type API_EventReason = z.infer<typeof API_EventReason>;
 
 // The eventReason is determined by the eventIdentifier (def page constraint).
-export const erdEventReasons: Record<API_EventIdentifier, API_EventReason> = {
+const erdEventReasons: Record<API_EventIdentifier, API_EventReason> = {
   ContentConsignment: "MessageConsignedToRecipient",
   ContentConsignmentFailure: "MessageNotConsignedForQuota",
   ContentHandover: "MessageHandoverToRecipient",

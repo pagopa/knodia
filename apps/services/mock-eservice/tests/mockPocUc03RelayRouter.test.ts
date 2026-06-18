@@ -26,11 +26,17 @@ function dispatchPayload() {
       eventIdentifier: "SubmissionAcceptance",
       eventReason: "MessageAccepted",
       eventTime: "2026-05-21T12:11:00Z",
-      evidenceIdentifier: { erdsIdentifier: "systemSERCOrion", uuid: randomUUID() },
+      evidenceIdentifier: {
+        erdsIdentifier: "systemSERCOrion",
+        uuid: randomUUID(),
+      },
       version: "KNODIAUSECASE",
     },
     relayMetadata: {
-      messageIdentifier: { erdsIdentifier: "systemSERCOrion", uuid: randomUUID() },
+      messageIdentifier: {
+        erdsIdentifier: "systemSERCOrion",
+        uuid: randomUUID(),
+      },
       messageType: "Dispatch",
       recipientIdentifier: {
         notation: "01229430085",

@@ -54,7 +54,9 @@ export const mockPocUc03RelayRouter: FastifyPluginAsyncZod<
         "Receives an ERD dispatch (the sender's message or the delivery evidences) from another SERC and acknowledges it (ETSI EN 319 522-2 relay, Bearer-protected, Receive-data mode).",
       operationId: "relay",
       response: {
-        200: API_RelayAck.meta({ description: "Dispatch accepted by the SERC" }),
+        200: API_RelayAck.meta({
+          description: "Dispatch accepted by the SERC",
+        }),
         400: API_Problem.meta({ description: "Invalid erd_dispatch body" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },

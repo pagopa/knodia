@@ -184,17 +184,19 @@ export function buildBearerPocUc02CompaniesAppFromConfig(
   });
 }
 
-export function buildBearerPocUc03SupervisoryBodyAppFromConfig(
+export function buildBearerPocUc03RelayAppFromConfig(
   config: MockEserviceConfig,
 ) {
-  return buildBearerPocUc03SupervisoryBodyApp({
+  return buildBearerPocUc03RelayApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
 }
 
-export function buildBearerPocUc03RelayAppFromConfig(config: MockEserviceConfig) {
-  return buildBearerPocUc03RelayApp({
+export function buildBearerPocUc03SupervisoryBodyAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc03SupervisoryBodyApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -292,6 +294,41 @@ function buildBearerPocUc02CompaniesApp({
   return app;
 }
 
+function buildBearerPocUc03RelayApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC03 relay (ERD dispatch relay between SERCs)",
+      title: "Knodia Mock E-service API (ERDS Relay)",
+      version: "1.0.0",
+    },
+    [pocUc03RelayAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
+  });
+
+  return app;
+}
+
 function buildBearerPocUc03SupervisoryBodyApp({
   config,
   jwksResolvers,
@@ -325,41 +362,6 @@ function buildBearerPocUc03SupervisoryBodyApp({
       knodeId,
       relayBaseUrlByErds: toRelayBaseUrlByErds(config),
     });
-  });
-
-  return app;
-}
-
-function buildBearerPocUc03RelayApp({
-  config,
-  jwksResolvers,
-}: {
-  config: MockEserviceConfig;
-  jwksResolvers: JWTVerifyGetKey[];
-}) {
-  const { acceptedAudiences, expectedIssuer, knodeId } = config;
-
-  const app = createMockFastifyApp(
-    config,
-    bearerAuthSecurityScheme,
-    bearerAuthSecurity,
-    {
-      description:
-        "Mock e-service API for POC UC03 relay (ERD dispatch relay between SERCs)",
-      title: "Knodia Mock E-service API (ERDS Relay)",
-      version: "1.0.0",
-    },
-    [pocUc03RelayAppTag],
-  );
-
-  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
-  app.register(async (protectedApp) => {
-    protectedApp.register(bearerAccessTokenAuthPlugin, {
-      acceptedAudiences,
-      expectedIssuer,
-      jwksResolvers,
-    });
-    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
   });
 
   return app;
