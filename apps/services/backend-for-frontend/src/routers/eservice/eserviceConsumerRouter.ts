@@ -179,6 +179,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId: req.params.eserviceId,
+            knodeId: req.query.knodeId,
             limit: 1,
             offset: 0,
           },
@@ -389,6 +390,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 50,
                 offset: 0,
                 state: [API_PurposeState.enum.Active],
@@ -402,6 +404,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 1,
                 offset: 0,
               },
@@ -416,10 +419,11 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 client: keychainProcessClient,
                 headers,
                 query: {
+                  knodeId: purpose.knodeId,
                   limit: 50,
                   offset: 0,
                   ownerId: organizationId,
-                  purpose: `${purpose.knodeId}:${purpose.id}`,
+                  purposeId: purpose.id,
                 },
               }),
             ),
@@ -460,6 +464,9 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get E-services",
       tags: [apiTags.eservice],

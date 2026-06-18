@@ -61,11 +61,15 @@ export const consumerArchivedPurposesQuery = (offset: number) =>
   });
 
 // TODO: replace hardcoded limit with pagination when the number of purposes per e-service grows
-export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
+export const consumerPurposesByEserviceQuery = (
+  eserviceId: EserviceId,
+  knodeId: KnodeId,
+) =>
   getConsumerPurposesOptions({
     client,
     query: {
       eserviceId,
+      knodeId,
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
       state: VISIBLE_PURPOSE_STATES,
@@ -129,9 +133,10 @@ export const purposeLinkedConsumerKeychainsQuery = (
   getConsumerKeychainsOptions({
     client,
     query: {
+      knodeId,
       limit: PURPOSES_LINKED_KEYCHAINS_LIMIT,
       offset,
-      purpose: `${knodeId}:${purposeId}`,
+      purposeId,
     },
   });
 
