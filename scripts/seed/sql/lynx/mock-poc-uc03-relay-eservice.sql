@@ -100,9 +100,9 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'b4e2d9f1-2c3d-4e4f-9a51-000000000314',
   'b4e2d9f1-2c3d-4e4f-9a51-000000000311',
-  '{"en": "Comunicazione tra sistemi di notifica certificata"}'::jsonb,
-  '{"en": "Comunicazione tra fornitori di sistemi di notifica certificate qualificati nello stato membro ai sensi del Regolamento UE n. 910/2014"}'::jsonb,
-  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Inoltro messaggio da sistema di notifica certificato eIDAS","usesPersonalData":"YES","personalDataTypes":["WITH_IDENTIFYING_DATA"],"legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Articolo 3, punto 36 del Regolamento UE n. 910/2014","declarationConfirmGDPR":"true"}'::jsonb,
+  '{"en": "Communication between certified electronic delivery systems"}'::jsonb,
+  '{"en": "Communication between providers of qualified certified electronic delivery systems in the member state pursuant to EU Regulation No. 910/2014"}'::jsonb,
+  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Forwarding a message from an eIDAS certified electronic delivery system","usesPersonalData":"YES","personalDataTypes":["WITH_IDENTIFYING_DATA"],"legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Article 3, point 36 of EU Regulation No. 910/2014","declarationConfirmGDPR":"true"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
