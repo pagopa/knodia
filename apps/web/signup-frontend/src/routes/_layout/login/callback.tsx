@@ -1,12 +1,12 @@
 import { signupManagerApi } from "@knodia/signup-manager-client";
-import { Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { Loader } from "@/components/ui";
 import { setAuthToken } from "@/libs/auth";
 import { client } from "@/libs/axios";
 
-export const Route = createFileRoute("/login/callback")({
+export const Route = createFileRoute("/_layout/login/callback")({
   loaderDeps: ({ search }) => ({
     code: search.code,
     state: search.state,
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/login/callback")({
     throw redirect({ to: "/login" });
   },
   pendingComponent: () => (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-[400px] items-center justify-center">
       <Loader label="Signing in..." />
     </div>
   ),
