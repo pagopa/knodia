@@ -139,7 +139,6 @@ export type ExternalUISessionMagicLinkTokenClaims = z.infer<
 
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
-// that consumes Knode API access tokens lands.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
