@@ -6,7 +6,7 @@ export const RateLimiterConfig = z
     RATE_LIMITER_AWS_IAM_REGION: z.string().min(1).optional(),
     RATE_LIMITER_AWS_IAM_SERVERLESS: z.stringbool().default(false),
     RATE_LIMITER_AWS_IAM_USER_ID: z.string().min(1).optional(),
-    RATE_LIMITER_DISABLE_AWS_IAM_AUTH: z.stringbool().default(true),
+    RATE_LIMITER_DISABLE_AWS_IAM_AUTH: z.stringbool().default(false),
     RATE_LIMITER_MAX_REQUESTS: z.coerce.number().int().min(1),
     RATE_LIMITER_REDIS_HOST: z.string().min(1),
     RATE_LIMITER_REDIS_PORT: z.coerce.number().int().min(1).max(65535),
