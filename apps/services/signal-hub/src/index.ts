@@ -7,7 +7,6 @@ import { config } from "./config/config.ts";
 
 const rateLimiter = initRedisRateLimiter({
   config,
-  environment: config.knodiaEnvironment,
   knodeId: config.knodeId,
   logger: createLogger({ config }),
   serviceName: "signal-hub",

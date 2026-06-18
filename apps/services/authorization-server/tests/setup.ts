@@ -94,11 +94,11 @@ beforeAll(async () => {
       knodeApiTokenDurationSeconds: 3600,
       knodeApiTokenJwtKid: "test-knode-api-kid",
       knodeId: producerKnodeId,
-      knodiaEnvironment: "test",
       logLevel: "silent",
       nodeEnv: "test",
       port: 0,
       rateLimiterAwsIamAuth: undefined,
+      rateLimiterEnvironment: "test",
       rateLimiterMaxRequests: 100,
       rateLimiterRedisHost:
         process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",

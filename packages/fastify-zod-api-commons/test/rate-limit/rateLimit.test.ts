@@ -22,7 +22,6 @@ import { buildTestApp } from "../mock/buildTestApp.ts";
 const MAX_REQUESTS = 3;
 
 const SCOPE = {
-  environment: "test",
   knodeId: "Orion" as const,
   serviceName: "backend-for-frontend" as const,
 };
@@ -49,7 +48,6 @@ function buildRateLimiter(
 ): RateLimiter {
   return initRedisRateLimiter({
     config,
-    environment: SCOPE.environment,
     knodeId: SCOPE.knodeId,
     logger: testLogger,
     serviceName: SCOPE.serviceName,
@@ -61,6 +59,7 @@ function buildRateLimiterConfig(
 ): RateLimiterConfig {
   return {
     rateLimiterAwsIamAuth: undefined,
+    rateLimiterEnvironment: "test",
     rateLimiterMaxRequests: MAX_REQUESTS,
     rateLimiterRedisHost: process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
     rateLimiterRedisPort: Number(

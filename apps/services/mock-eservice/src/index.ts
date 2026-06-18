@@ -11,7 +11,6 @@ const logger = createLogger({ config });
 
 const rateLimiter = initRedisRateLimiter({
   config,
-  environment: config.knodiaEnvironment,
   knodeId: config.knodeId,
   logger,
   serviceName: "mock-eservice",

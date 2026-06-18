@@ -7,6 +7,16 @@ export const RateLimiterConfig = z
     RATE_LIMITER_AWS_IAM_SERVERLESS: z.stringbool().default(false),
     RATE_LIMITER_AWS_IAM_USER_ID: z.string().min(1).optional(),
     RATE_LIMITER_DISABLE_AWS_IAM_AUTH: z.stringbool().default(false),
+    // Deployment-environment label used as a segment in the rate-limit key
+    // prefix; regex bans `:` (the segment separator) to keep prefix bytes
+    // unambiguous across services that share a Redis instance.
+    RATE_LIMITER_ENVIRONMENT: z
+      .string()
+      .min(1)
+      .regex(
+        /^[^:]+$/,
+        "must not contain ':' (used as rate-limit key separator)",
+      ),
     RATE_LIMITER_MAX_REQUESTS: z.coerce.number().int().min(1),
     RATE_LIMITER_REDIS_HOST: z.string().min(1),
     RATE_LIMITER_REDIS_PORT: z.coerce.number().int().min(1).max(65535),
@@ -44,6 +54,9 @@ export const RateLimiterConfig = z
           };
     return {
       rateLimiterAwsIamAuth,
+      // Lower-cased so the key prefix is case-insensitive regardless of how
+      // the env var is set (e.g. `Local` and `local` produce the same keys).
+      rateLimiterEnvironment: c.RATE_LIMITER_ENVIRONMENT.toLowerCase(),
       rateLimiterMaxRequests: c.RATE_LIMITER_MAX_REQUESTS,
       rateLimiterRedisHost: c.RATE_LIMITER_REDIS_HOST,
       rateLimiterRedisPort: c.RATE_LIMITER_REDIS_PORT,

@@ -50,13 +50,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .pipe(z.string().array()),
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
-        KNODIA_ENVIRONMENT: z
-          .string()
-          .min(1)
-          .regex(
-            /^[^:]+$/,
-            "must not contain ':' (used as rate-limit key separator)",
-          ),
         ORGANIZATION_PROCESS_URL: z.url(),
         PURPOSE_PROCESS_URL: z.url(),
         RECENT_UPDATE_DAYS: z.coerce.number().positive().default(3),
@@ -101,7 +94,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         },
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
-        knodiaEnvironment: c.KNODIA_ENVIRONMENT,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         purposeProcessUrl: c.PURPOSE_PROCESS_URL,
         recentUpdateDays: c.RECENT_UPDATE_DAYS,

@@ -549,7 +549,6 @@ services:
       ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
       KNODE_ID: "Orion"
-      KNODIA_ENVIRONMENT: local
       ORGANIZATION_PROCESS_URL: "http://organization-process-orion:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-orion:3000"
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-orion:3000"
@@ -582,6 +581,7 @@ services:
       COOKIE_SECURE: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -914,7 +914,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Orion"
-      KNODIA_ENVIRONMENT: local
       TARGET_KNODE_URLS: '{"Lynx":"http://k2k-gateway-lynx:3000"}'
       ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.orion.local.knodia.com"
@@ -947,6 +946,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       RATE_LIMITER_MAX_REQUESTS: "100"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -978,7 +978,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Orion"
-      KNODIA_ENVIRONMENT: local
       ACCEPTED_AUDIENCES: "mock.orion.local.knodia.com"
       EXPECTED_ISSUER: "auth.orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
@@ -998,6 +997,7 @@ services:
       SIGNAL_HUB_DB_USE_SSL: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1033,7 +1033,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Orion"
-      KNODIA_ENVIRONMENT: local
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_orion_signal_hub_user
@@ -1054,6 +1053,7 @@ services:
       SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1292,7 +1292,6 @@ services:
       ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
       KNODE_ID: "Lynx"
-      KNODIA_ENVIRONMENT: local
       ORGANIZATION_PROCESS_URL: "http://organization-process-lynx:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-lynx:3000"
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-lynx:3000"
@@ -1325,6 +1324,7 @@ services:
       COOKIE_SECURE: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1657,7 +1657,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Lynx"
-      KNODIA_ENVIRONMENT: local
       TARGET_KNODE_URLS: '{"Orion":"http://k2k-gateway-orion:3000"}'
       ESERVICE_ACCESS_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
@@ -1690,6 +1689,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       RATE_LIMITER_MAX_REQUESTS: "100"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1721,7 +1721,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Lynx"
-      KNODIA_ENVIRONMENT: local
       ACCEPTED_AUDIENCES: "mock.lynx.local.knodia.com"
       EXPECTED_ISSUER: "auth.lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
@@ -1741,6 +1740,7 @@ services:
       SIGNAL_HUB_DB_USE_SSL: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1776,7 +1776,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       KNODE_ID: "Lynx"
-      KNODIA_ENVIRONMENT: local
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_lynx_signal_hub_user
@@ -1797,6 +1796,7 @@ services:
       SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
       RATE_LIMITER_MAX_REQUESTS: "200"
       RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"

@@ -66,11 +66,11 @@ beforeAll(async () => {
     isProduction: false,
     jwtClockToleranceSeconds: 30,
     knodeId: TEST_KNODE_ID,
-    knodiaEnvironment: "test",
     logLevel: "silent",
     nodeEnv: "test",
     port: 0,
     rateLimiterAwsIamAuth: undefined,
+    rateLimiterEnvironment: "test",
     rateLimiterMaxRequests: 200,
     rateLimiterRedisHost: process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
     rateLimiterRedisPort: Number(
@@ -95,7 +95,6 @@ beforeAll(async () => {
   // the real Redis-backed limiter (against the test container), not the no-op.
   const rateLimiter = initRedisRateLimiter({
     config,
-    environment: config.knodiaEnvironment,
     knodeId: config.knodeId,
     logger: createLogger({ config }),
     serviceName: "mock-eservice",

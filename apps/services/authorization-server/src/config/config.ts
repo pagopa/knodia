@@ -44,13 +44,6 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         KNODE_API_TOKEN_DURATION_SECONDS: z.coerce.number().int().positive(),
         KNODE_API_TOKEN_JWT_KID: z.string(),
         KNODE_ID: KnodeId,
-        KNODIA_ENVIRONMENT: z
-          .string()
-          .min(1)
-          .regex(
-            /^[^:]+$/,
-            "must not contain ':' (used as rate-limit key separator)",
-          ),
       })
       .transform((c) => ({
         clientAssertionMaxTokenAgeSeconds:
@@ -71,7 +64,6 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         knodeApiTokenDurationSeconds: c.KNODE_API_TOKEN_DURATION_SECONDS,
         knodeApiTokenJwtKid: c.KNODE_API_TOKEN_JWT_KID,
         knodeId: c.KNODE_ID,
-        knodiaEnvironment: c.KNODIA_ENVIRONMENT,
       })),
   );
 
