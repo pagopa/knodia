@@ -81,12 +81,12 @@ describe("POST /relay", () => {
     expect(ack.receivedAt).toEqual(expect.any(String));
   });
 
-  it("accepts a Receipt carrying consignment evidence", async () => {
+  it("accepts a Receipt carrying a relay-acceptance evidence", async () => {
     const token = await signToken();
     const body = dispatchPayload();
     body.relayMetadata.messageType = "Receipt";
-    body.evidence.eventIdentifier = "ContentConsignment";
-    body.evidence.eventReason = "MessageConsignedToRecipient";
+    body.evidence.eventIdentifier = "RelayAcceptance";
+    body.evidence.eventReason = "MessageSuccessfullyRelayed";
     const res = await getCtx().app.inject({
       body,
       headers: { authorization: `Bearer ${token}` },
