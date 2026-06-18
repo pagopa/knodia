@@ -14,8 +14,12 @@ import type { OpenAPIV3 } from "openapi-types";
 import { createJsonSchemaTransform } from "fastify-type-provider-zod";
 import z from "zod";
 
+import { RATE_LIMIT_HEADERS } from "../../rate-limit/headers.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
-import { responseHeadersStore } from "./responseHeadersStore.ts";
+import {
+  responseHeadersStore,
+  sharedHeaderComponentsStore,
+} from "./responseHeadersStore.ts";
 
 declare module "fastify" {
   interface FastifySchema {
@@ -78,6 +82,8 @@ const enforceOperationId = (input: TransformInput): TransformInput => {
  * Supports two formats:
  * - Route-level `responseHeaders: z.object(...)` → applies to all responses
  * - Per-response `{ properties: ZodSchema, headers: z.object(...) }` → applies to that status only
+ *
+ * Merges with any entry already in `responseHeadersStore`.
  */
 const extractResponseHeaders = (input: TransformInput): TransformInput => {
   const { responseHeaders, ...schemaRest } = input.schema;
@@ -86,11 +92,11 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   if (!operationId) return input;
 
   // Route-level responseHeaders → apply to all responses
-  if (responseHeaders) {
-    responseHeadersStore.set(
-      operationId,
-      zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
-    );
+  if (responseHeaders instanceof z.ZodObject) {
+    responseHeadersStore.set(operationId, {
+      ...responseHeadersStore.get(operationId),
+      ...zodObjectToResponseHeaders(responseHeaders),
+    });
   }
 
   // Per-response headers → extract from { properties, headers } entries
@@ -98,15 +104,101 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   if (response) {
     for (const [statusCode, val] of Object.entries(response)) {
       if (isResponseEntryWithHeaders(val)) {
-        responseHeadersStore.set(
-          `${operationId}:${statusCode}`,
-          zodObjectToResponseHeaders(val.headers),
-        );
+        responseHeadersStore.set(`${operationId}:${statusCode}`, {
+          ...responseHeadersStore.get(`${operationId}:${statusCode}`),
+          ...zodObjectToResponseHeaders(val.headers),
+        });
       }
     }
   }
 
   return { ...input, schema: schemaRest };
+};
+
+const TOO_MANY_REQUESTS_STATUS = "429";
+
+const int32HeaderComponent = (description: string): OpenAPIV3.HeaderObject => ({
+  description,
+  // `required: false` because earlier-lifecycle 4xx (401/403) responses won't
+  // reach the rate-limit hook and thus won't carry these headers.
+  required: false,
+  schema: {
+    format: "int32",
+    minimum: 0,
+    type: "integer",
+  },
+});
+
+const RATE_LIMIT_HEADER_COMPONENTS: Record<string, OpenAPIV3.HeaderObject> = {
+  [RATE_LIMIT_HEADERS.limit.openapiComponentName]: int32HeaderComponent(
+    "Total requests allowed in the current window.",
+  ),
+  [RATE_LIMIT_HEADERS.remaining.openapiComponentName]: int32HeaderComponent(
+    "Requests remaining in the current window.",
+  ),
+  [RATE_LIMIT_HEADERS.reset.openapiComponentName]: int32HeaderComponent(
+    "Seconds before the current window resets.",
+  ),
+  [RATE_LIMIT_HEADERS.retryAfter.openapiComponentName]: int32HeaderComponent(
+    "Seconds the client should wait before retrying.",
+  ),
+};
+
+// X-RateLimit-* are informational: the runtime headers plugin emits them on
+// every response that reaches it, so we attach them at route level.
+const INFORMATIONAL_RATE_LIMIT_HEADERS = [
+  RATE_LIMIT_HEADERS.limit,
+  RATE_LIMIT_HEADERS.remaining,
+  RATE_LIMIT_HEADERS.reset,
+] as const;
+
+// Retry-After is prescriptive (RFC 9110 §10.2.3) and the runtime plugin only
+// sets it on 429, so we attach it to the 429 response only.
+const RETRY_AFTER_RATE_LIMIT_HEADER = RATE_LIMIT_HEADERS.retryAfter;
+
+// Fresh record per route — js-yaml would otherwise collapse a shared
+// reference into anchor/alias notation in the generated spec.
+const buildRateLimitHeaderRefs = (
+  headers: readonly { openapiComponentName: string; openapiName: string }[],
+): Record<string, OpenAPIV3.ReferenceObject> =>
+  Object.fromEntries(
+    headers.map((h) => [
+      h.openapiName,
+      { $ref: `#/components/headers/${h.openapiComponentName}` },
+    ]),
+  );
+
+/**
+ * Attach rate-limit header refs to routes that declare a 429 response.
+ *
+ * Side effects (lazy, transform-time only):
+ *  - `responseHeadersStore[operationId]`         += X-RateLimit-* refs
+ *  - `responseHeadersStore[operationId:429]`     += Retry-After ref
+ *  - `sharedHeaderComponentsStore[...]`          += rate-limit header components
+ */
+const attachRateLimitHeaders = (input: TransformInput): TransformInput => {
+  const operationId = input.schema.operationId;
+  if (!operationId) return input;
+
+  const response = input.schema.response as Record<string, unknown> | undefined;
+  if (!response || !(TOO_MANY_REQUESTS_STATUS in response)) return input;
+
+  responseHeadersStore.set(operationId, {
+    ...responseHeadersStore.get(operationId),
+    ...buildRateLimitHeaderRefs(INFORMATIONAL_RATE_LIMIT_HEADERS),
+  });
+
+  const tooManyRequestsKey = `${operationId}:${TOO_MANY_REQUESTS_STATUS}`;
+  responseHeadersStore.set(tooManyRequestsKey, {
+    ...responseHeadersStore.get(tooManyRequestsKey),
+    ...buildRateLimitHeaderRefs([RETRY_AFTER_RATE_LIMIT_HEADER]),
+  });
+
+  for (const [name, header] of Object.entries(RATE_LIMIT_HEADER_COMPONENTS)) {
+    sharedHeaderComponentsStore.set(name, header);
+  }
+
+  return input;
 };
 
 /**
@@ -139,6 +231,7 @@ export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
     applyTransformSteps(input, [
       enforceOperationId,
       extractResponseHeaders,
+      attachRateLimitHeaders,
       convertCookiesZodToJsonSchema,
     ]),
   );

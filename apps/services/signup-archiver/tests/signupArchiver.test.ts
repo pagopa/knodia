@@ -12,8 +12,26 @@ import {
 const signupUserId = SignupUserId.parse("11111111-1111-4111-8111-111111111111");
 const digest = "a".repeat(64);
 
-function makeEvent(
-  overrides: Partial<SignupEventV1["data"]> = {},
+function makeDeletionEvent(
+  overrides: Partial<
+    Extract<SignupEventV1, { type: "DeletionRequestedV1" }>["data"]
+  > = {},
+): SignupEventV1 {
+  return {
+    data: {
+      occurredAt: "2026-06-09T10:00:00.000Z",
+      oneIdNonce: "nonce-abc",
+      signupUserId,
+      ...overrides,
+    },
+    type: "DeletionRequestedV1",
+  };
+}
+
+function makeOnboardingEvent(
+  overrides: Partial<
+    Extract<SignupEventV1, { type: "OnboardingCompletedV1" }>["data"]
+  > = {},
 ): SignupEventV1 {
   return {
     data: {
@@ -28,32 +46,32 @@ function makeEvent(
   };
 }
 
-describe("handleSignupMessage - OnboardingCompletedV1", () => {
-  let storeBytesIfAbsent: ReturnType<typeof vi.fn>;
-  let logger: Logger;
-  let deps: SignupArchiverDeps;
+let storeBytesIfAbsent: ReturnType<typeof vi.fn>;
+let logger: Logger;
+let deps: SignupArchiverDeps;
 
-  beforeEach(() => {
-    storeBytesIfAbsent = vi
-      .fn()
-      .mockResolvedValue({ alreadyExists: false, key: "k" });
-    logger = { info: vi.fn(), warn: vi.fn() } as unknown as Logger;
-    deps = {
-      bucket: "test-bucket",
-      fileManager: { storeBytesIfAbsent } as unknown as FileManager,
-    };
-  });
+beforeEach(() => {
+  storeBytesIfAbsent = vi
+    .fn()
+    .mockResolvedValue({ alreadyExists: false, key: "k" });
+  logger = { info: vi.fn(), warn: vi.fn() } as unknown as Logger;
+  deps = {
+    bucket: "test-bucket",
+    fileManager: { storeBytesIfAbsent } as unknown as FileManager,
+  };
+});
 
-  function firstStoreArg() {
-    const call = storeBytesIfAbsent.mock.calls.at(0);
-    if (!call) {
-      throw new Error("storeBytesIfAbsent was not called");
-    }
-    return call[0];
+function firstStoreArg() {
+  const call = storeBytesIfAbsent.mock.calls.at(0);
+  if (!call) {
+    throw new Error("storeBytesIfAbsent was not called");
   }
+  return call[0];
+}
 
+describe("handleSignupMessage - OnboardingCompletedV1", () => {
   it("archives the onboarding action to the expected key with no leftover PII", async () => {
-    await handleSignupMessage(makeEvent(), deps, logger);
+    await handleSignupMessage(makeOnboardingEvent(), deps, logger);
 
     expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
     const arg = firstStoreArg();
@@ -78,7 +96,7 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
   it("rejects an unsafe nonce before touching S3", async () => {
     await expect(
       handleSignupMessage(
-        makeEvent({ oneIdNonce: "../etc/passwd" }),
+        makeOnboardingEvent({ oneIdNonce: "../etc/passwd" }),
         deps,
         logger,
       ),
@@ -89,7 +107,7 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
   it("treats an already-archived record as an idempotent skip", async () => {
     storeBytesIfAbsent.mockResolvedValue({ alreadyExists: true, key: "k" });
 
-    await handleSignupMessage(makeEvent(), deps, logger);
+    await handleSignupMessage(makeOnboardingEvent(), deps, logger);
 
     expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
@@ -102,7 +120,63 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
     storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
 
     await expect(
-      handleSignupMessage(makeEvent(), deps, logger),
+      handleSignupMessage(makeOnboardingEvent(), deps, logger),
+    ).rejects.toThrow(/AccessDenied/);
+  });
+});
+
+describe("handleSignupMessage - DeletionRequestedV1", () => {
+  it("archives the deletion action to the expected key, built only from the message", async () => {
+    await handleSignupMessage(makeDeletionEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+    const arg = firstStoreArg();
+    expect(arg.bucket).toBe("test-bucket");
+    expect(arg.key).toBe(
+      `signup-actions/${signupUserId}/Deletion/nonce-abc.json`,
+    );
+    expect(arg.contentType).toBe("application/json");
+
+    // No PII, no One Identity id: the record carries only fields lifted from
+    // the event payload.
+    expect(JSON.parse(arg.content.toString())).toEqual({
+      action: "Deletion",
+      date: "2026-06-09T10:00:00.000Z",
+      nonce: "nonce-abc",
+    });
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining("Archived Deletion"),
+    );
+  });
+
+  it("rejects an unsafe nonce before touching S3", async () => {
+    await expect(
+      handleSignupMessage(
+        makeDeletionEvent({ oneIdNonce: "../etc/passwd" }),
+        deps,
+        logger,
+      ),
+    ).rejects.toThrow(/Unsafe oneIdNonce/);
+    expect(storeBytesIfAbsent).not.toHaveBeenCalled();
+  });
+
+  it("treats a replayed deletion as an idempotent skip without a new S3 version", async () => {
+    storeBytesIfAbsent.mockResolvedValue({ alreadyExists: true, key: "k" });
+
+    await handleSignupMessage(makeDeletionEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining("already archived"),
+    );
+    expect(logger.info).not.toHaveBeenCalled();
+  });
+
+  it("propagates non-412 S3 failures", async () => {
+    storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
+
+    await expect(
+      handleSignupMessage(makeDeletionEvent(), deps, logger),
     ).rejects.toThrow(/AccessDenied/);
   });
 });

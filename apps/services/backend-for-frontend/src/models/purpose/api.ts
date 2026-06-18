@@ -1,6 +1,7 @@
 import {
   API_Pagination,
   API_PaginationQueryParams,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
@@ -134,16 +135,23 @@ export const API_ArchiveConsumerPurposeQueryParams = z.strictObject({
   knodeId: API_KnodeId,
 });
 
-export const API_GetConsumerPurposesQueryParams =
+export const API_GetConsumerPurposesQueryParams = requireKnodeIdWith(
+  "eserviceId",
+)(
   API_PaginationQueryParams.extend({
-    eserviceId: z
-      .uuid()
-      .optional()
-      .meta({ description: "Filter by E-service ID" }),
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Can only be used together with `knodeId`.",
+    }),
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Knode ID to list Purposes from. Required when `eserviceId` is set.",
+    }),
     state: arrayQueryParam(API_PurposeState)
       .optional()
       .meta({ description: "Filter by Purpose State" }),
-  });
+  }),
+);
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
 >;
