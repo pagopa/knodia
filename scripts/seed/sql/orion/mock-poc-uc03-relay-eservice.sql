@@ -55,7 +55,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'c5f3e0a2-3d4e-4f5a-ab62-000000000323',
   'c5f3e0a2-3d4e-4f5a-ab62-000000000321',
   'c5f3e0a2-3d4e-4f5a-ab62-000000000322',
-  '514a2362364527e73c5f651bb047870a23a72ede4573d0b881a3f60080965e01',
+  'e517f0c4523b3d82921df9731ed2882d2b1a06bdd0eec91732db10af765fbf1f',
   'application/yaml',
   'mock-bearer-poc-uc03-relay-eservice.yaml',
   'c5f3e0a2-3d4e-4f5a-ab62-000000000323/mock-bearer-poc-uc03-relay-eservice.yaml',
