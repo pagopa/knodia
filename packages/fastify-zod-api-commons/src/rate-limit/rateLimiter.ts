@@ -13,7 +13,7 @@ import { buildAwsIamCredentialsProvider } from "./awsIamAuthTokenProvider.ts";
 
 export interface RateLimiter {
   consume(
-    organizationId: ExternalId<OrganizationId> | OrganizationId,
+    rateLimitKey: RateLimitKey,
     logger: FastifyBaseLogger,
   ): Promise<RateLimiterStatus>;
   disconnect(): Promise<void>;
@@ -29,9 +29,13 @@ export interface RateLimiterStatus {
   resetMs: number;
 }
 
+export type RateLimitKey = ExternalId<OrganizationId> | OrganizationId | string;
+
 interface InitRedisRateLimiterOptions {
   config: RateLimiterConfig;
-  knodeId: KnodeId;
+  // Services not tied to a specific Knode (e.g. signup-manager) have no
+  // knodeId; their key namespace omits that segment.
+  knodeId?: KnodeId;
   logger: FastifyBaseLogger;
   serviceName: HTTPServiceName;
 }
@@ -59,8 +63,10 @@ export function initRedisRateLimiter({
   logger,
   serviceName,
 }: InitRedisRateLimiterOptions): RateLimiter {
-  // Lowercase the knodeId so the key namespace is uniformly lower-case
-  const keyPrefix = `knodia-rate-limit:${config.rateLimiterEnvironment}:${knodeId.toLowerCase()}:${serviceName}`;
+  // knodeId is absent for central services (e.g. signup-manager); lower-cased so
+  // the same knode maps to one key namespace regardless of how it's cased in config.
+  const knodeSegment = knodeId ? `:${knodeId.toLowerCase()}` : "";
+  const keyPrefix = `knodia-rate-limit:${config.rateLimiterEnvironment}${knodeSegment}:${serviceName}`;
   const maxRequests = config.rateLimiterMaxRequests;
   const rateIntervalMs = config.rateLimiterTimeWindowSeconds * 1_000;
   const timeoutMs = config.rateLimiterTimeoutSeconds * 1_000;

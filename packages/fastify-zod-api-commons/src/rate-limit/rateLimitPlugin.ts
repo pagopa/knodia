@@ -1,15 +1,10 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { OrganizationId } from "@knodia/common-models/ids";
-
 import { requestContext } from "@fastify/request-context";
 import { type FastifyRequest } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 
-import { callerOrganizationIdFromAuthData } from "../auth/authData.ts";
+import { rateLimitKeyFromAuthData } from "../auth/authData.ts";
 import { enforceRateLimit } from "./enforceRateLimit.ts";
-import { type RateLimiter } from "./rateLimiter.ts";
-
-type RateLimitKey = ExternalId<OrganizationId> | OrganizationId;
+import { type RateLimiter, type RateLimitKey } from "./rateLimiter.ts";
 
 interface RateLimitPluginOptions {
   // Resolve the bucket key from the request. Default: derive it from
@@ -26,10 +21,10 @@ interface RateLimitPluginOptions {
 const defaultKeyFromRequest = (): RateLimitKey | undefined => {
   const authData = requestContext.get("authData");
   if (!authData) return undefined;
-  // `callerOrganizationIdFromAuthData` is exhaustive over `AuthData`, so a
-  // future token type that should be rate-limited will surface via
-  // ts-pattern at compile time, not at runtime.
-  return callerOrganizationIdFromAuthData(authData);
+  // `rateLimitKeyFromAuthData` is exhaustive over `AuthData`, so a future
+  // token type that should be rate-limited will surface via ts-pattern at
+  // compile time, not at runtime.
+  return rateLimitKeyFromAuthData(authData);
 };
 
 export const rateLimitPlugin = fastifyPlugin<RateLimitPluginOptions>(

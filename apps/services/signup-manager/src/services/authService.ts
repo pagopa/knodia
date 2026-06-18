@@ -1,9 +1,15 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { TokenGenerator } from "@knodia/token-generator";
 
+import { requestContext } from "@fastify/request-context";
 import { selectSignupIdentifier } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  enforceRateLimit,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
 import type { OneIdentityConfig } from "../config/config.ts";
@@ -14,6 +20,7 @@ export function authServiceBuilder(
   config: OneIdentityConfig,
   oneIdentityClient: OneIdentityClient,
   tokenGenerator: TokenGenerator,
+  rateLimiter: RateLimiter,
 ) {
   return {
     async exchangeOIDCCode(
@@ -55,6 +62,12 @@ export function authServiceBuilder(
           "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
         );
       }
+
+      // Rate-limit on the resolved person identifier (the token's
+      // uniqueIdentifier), mirroring the protected routes — only after the IdP
+      // exchange yields an identity, so we never mint a token over the limit.
+      const { logger } = getContextValues(requestContext);
+      await enforceRateLimit(rateLimiter, identifier.value, logger);
 
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,
