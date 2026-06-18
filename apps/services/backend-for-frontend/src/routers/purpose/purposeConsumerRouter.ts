@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -49,6 +48,7 @@ import {
   toAPI_ConsumerPurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 
 interface PurposeConsumerRouterOptions {
   config: BffProcessConfig;
@@ -89,13 +89,18 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         headers,
         query: {
           eserviceId: req.query.eserviceId,
+          knodeId: req.query.knodeId,
           limit,
           offset,
           state: req.query.state,
         },
       });
 
-      if (data.results.length === 0) {
+      const targetKnodeId = singleListingKnodeId(
+        data.results,
+        (purpose) => purpose.knodeId,
+      );
+      if (targetKnodeId === undefined) {
         res.send({ pagination: data.pagination, results: [] });
         return;
       }
@@ -116,8 +121,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
               ),
             ),
           getEntityId: (purpose) => purpose.eserviceId,
-          getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
           items: data.results,
+          knodeId: targetKnodeId,
         }),
         Promise.all(
           data.results.map((purpose) =>
@@ -125,29 +130,21 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
               client: keychainProcessClient,
               headers,
               query: {
+                knodeId: purpose.knodeId,
                 limit: 1,
                 offset: 0,
-                purpose: `${purpose.knodeId}:${purpose.id}`,
+                purposeId: purpose.id,
               },
             }),
           ),
         ).then((responses) => {
           const consumerKeychainsMap = new Map<
-            KnodeId,
-            Map<string, keychainProcessApi.Keychains>
+            string,
+            keychainProcessApi.Keychains
           >();
 
           data.results.forEach((purpose, index) => {
-            const consumerKeychainPurposesMap =
-              consumerKeychainsMap.get(purpose.knodeId) ??
-              new Map<string, keychainProcessApi.Keychains>();
-            if (!consumerKeychainsMap.has(purpose.knodeId)) {
-              consumerKeychainsMap.set(
-                purpose.knodeId,
-                consumerKeychainPurposesMap,
-              );
-            }
-            consumerKeychainPurposesMap.set(
+            consumerKeychainsMap.set(
               purpose.id,
               assertEntityExists(
                 responses[index],
@@ -162,13 +159,11 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       const results = data.results.map((purpose) =>
         toAPI_ConsumerPurpose({
           consumerKeychainsCount: assertEntityExists(
-            consumerKeychainsMap.get(purpose.knodeId)?.get(purpose.id),
+            consumerKeychainsMap.get(purpose.id),
             `Consumer keychains not found for Purpose ${purpose.id}`,
           ).pagination.total,
           eserviceDetails: assertEntityExists(
-            eservicesMap
-              .get(purpose.knodeId)
-              ?.get(unsafeBrandExternalId(purpose.eserviceId)),
+            eservicesMap.get(unsafeBrandExternalId(purpose.eserviceId)),
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,
@@ -189,12 +184,16 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerPurposesQueryParams,
       response: {
         200: API_ConsumerPurposes.meta({
-          description: "Consumer Purposes retrieved successfully",
+          description:
+            "Consumer Purposes retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "List consumer Purposes",
       tags: [apiTags.purpose],

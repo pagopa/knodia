@@ -9,10 +9,12 @@ import {
 } from "@knodia/common-models/ids";
 import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
 import {
+  DeletionRequestedV1,
   type EmailChangeRequest,
   type EmailChangeRequestedV1,
   OnboardingCompletedV1,
   SignupUser,
+  SignupUserStatus,
 } from "@knodia/signup-models";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
@@ -44,8 +46,11 @@ const cognitoCreateUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
 const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
-const getSignupUserByIdMock = vi.fn();
 const updateSignupUserEmailMock = vi.fn();
+const cognitoDeleteUserMock = vi.fn();
+const getSignupUserByIdMock = vi.fn();
+const getSignupUserDeletionMock = vi.fn();
+const completeSignupUserDeletionMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
 const logger = {
@@ -58,6 +63,7 @@ function buildDeps(): SignupUpdaterDeps {
   const node = {
     cognitoClient: {
       createOrganizationUser: cognitoCreateUserMock,
+      deleteOrganizationUser: cognitoDeleteUserMock,
       updateUserEmail: cognitoUpdateUserEmailMock,
     },
     internalTokenProvider: {
@@ -68,12 +74,22 @@ function buildDeps(): SignupUpdaterDeps {
   return {
     knodeClients: { Lynx: node, Orion: node },
     signupDbService: {
+      completeSignupUserDeletion: completeSignupUserDeletionMock,
       deleteEmailChangeRequest: deleteEmailChangeRequestMock,
       getEmailChangeRequestById: getEmailChangeRequestByIdMock,
       getSignupUserById: getSignupUserByIdMock,
+      getSignupUserDeletion: getSignupUserDeletionMock,
       updateSignupUserEmail: updateSignupUserEmailMock,
     },
   } as unknown as SignupUpdaterDeps;
+}
+
+function deletionEvent(signupUserId: SignupUserId): DeletionRequestedV1 {
+  const event = zocker(DeletionRequestedV1).setSeed(0).generate();
+  // Pin the discriminant so a schema/seed change can't silently hand us a
+  // different event variant than the one this helper is named for.
+  expect(event.type).toBe("DeletionRequestedV1");
+  return { ...event, data: { ...event.data, signupUserId } };
 }
 
 function emailChangeRequestedEvent({
@@ -118,12 +134,16 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     },
     name: "Mario",
     signupUserId: generateId<SignupUserId>(),
+    status: SignupUserStatus.enum.Active,
     ...overrides,
   };
 }
 
 function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
   const event = zocker(OnboardingCompletedV1).setSeed(0).generate();
+  // Pin the discriminant so a schema/seed change can't silently hand us a
+  // different event variant than the one this helper is named for.
+  expect(event.type).toBe("OnboardingCompletedV1");
   return { ...event, data: { ...event.data, signupUserId } };
 }
 
@@ -148,6 +168,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     getEmailChangeRequestByIdMock.mockReset();
     getSignupUserByIdMock.mockReset();
     updateSignupUserEmailMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
     vi.mocked(logger.error).mockReset();
     vi.mocked(logger.info).mockReset();
     vi.mocked(logger.warn).mockReset();
@@ -256,8 +277,12 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
   });
 
-  it("skips (without throwing) when the signup user is not found, provisioning nothing", async () => {
+  it("skips (without throwing) when the user is gone and a deletion record confirms it, provisioning nothing", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date(),
+      signupUserId: generateId<SignupUserId>(),
+    });
 
     await expect(
       handleSignupMessage(
@@ -268,11 +293,30 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
       ),
     ).resolves.toBeUndefined();
 
-    // A missing user is obsolete and unrecoverable, so the event is skipped
-    // (the offset commits) with a warning rather than blocking the partition.
+    // The deletion registry confirms the row is gone by design, so the event is
+    // skipped (the offset commits) with a warning rather than blocking the partition.
     expect(createOrganizationMock).not.toHaveBeenCalled();
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws (so the message is redelivered) when the user is gone but no deletion record exists", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        onboardingEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow();
+
+    // No deletion record means the disappearance is unexpected, so we don't
+    // silently drop the event: provision nothing and let the partition retry.
+    expect(createOrganizationMock).not.toHaveBeenCalled();
+    expect(cognitoCreateUserMock).not.toHaveBeenCalled();
   });
 });
 
@@ -444,5 +488,125 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(1);
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSignupMessage — DeletionRequestedV1", () => {
+  beforeEach(() => {
+    cognitoDeleteUserMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    completeSignupUserDeletionMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("deletes the Cognito user on both nodes (leaving the orgs), then completes the deletion", async () => {
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    await handleSignupMessage(
+      deletionEvent(user.signupUserId),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoDeleteUserMock).toHaveBeenCalledTimes(2);
+    // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
+    expect(cognitoDeleteUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoDeleteUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledTimes(1);
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledWith(
+      user.signupUserId,
+    );
+  });
+
+  it("skips (logs and commits) when the user is not in DeletionPending status, deleting nothing", async () => {
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.Active }),
+    );
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    // A user not marked for deletion must not have its Cognito users deleted;
+    // the event is skipped (offset commits) rather than looping on completion.
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips a replay after completion (deletion registry entry present)", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      signupUserId: generateId<SignupUserId>(),
+    });
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("logs and commits (without throwing) when the user is not found and no deletion record exists, so the partition isn't blocked", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    // A missing row with no deletion record is a terminal anomaly (no
+    // replication lag is possible), so it's logged at error and the offset
+    // commits rather than redelivering forever and stalling the partition.
+    expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it("rethrows a Cognito user deletion error so the message is redelivered, without completing", async () => {
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoDeleteUserMock.mockRejectedValue(new Error("Cognito unavailable"));
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toBeDefined();
+
+    expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
   });
 });
