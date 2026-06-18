@@ -159,6 +159,7 @@ components:
         - publisher
         - title
       additionalProperties: false
+  headers: {}
 paths:
   /students/{uidStudent}/qualifications:
     get:
