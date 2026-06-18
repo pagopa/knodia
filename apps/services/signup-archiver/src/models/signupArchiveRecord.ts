@@ -12,5 +12,10 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
     termsAcceptanceDigest: z.string().regex(/^[0-9a-f]{64}$/),
     termsAcceptanceVersion: z.string(),
   }),
+  z.strictObject({
+    action: z.literal("Deletion"),
+    date: z.iso.datetime(),
+    nonce: z.string(),
+  }),
 ]);
 export type SignupArchiveRecord = z.infer<typeof SignupArchiveRecord>;

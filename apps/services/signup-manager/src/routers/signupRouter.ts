@@ -88,6 +88,33 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         { tokenType: "ui-signup-session" },
       ]);
 
+      await signupService.deleteCurrentSignupUser(ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Request the deletion of the caller signup user",
+      operationId: "deleteUser",
+      response: {
+        204: z
+          .undefined()
+          .meta({ description: "User deletion requested successfully" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/user/delete",
+  });
+
+  fastify.route({
+    handler: async (_req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
       const currentSignupUser = await signupService.getCurrentSignupUser(ctx);
 
       res.status(200).send(toAPI_CurrentSignupUser(currentSignupUser));

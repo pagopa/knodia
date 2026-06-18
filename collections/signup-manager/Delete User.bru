@@ -1,0 +1,15 @@
+meta {
+  name: Delete User
+  type: http
+}
+
+post {
+  url: {{host-signup-manager}}/user/delete
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-signup-session-jwt}}
+}
