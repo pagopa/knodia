@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { JtiReplayStore } from "@knodia/db-jti-replay-store";
 
@@ -44,6 +45,7 @@ const ClaimsFromCognito = z.object({
 });
 
 interface AuthServiceBuilderOptions {
+  cognitoIdmClient: CognitoIdmClient;
   config: BffProcessConfig;
   magicLinkTokenStore: JtiReplayStore;
   rateLimiter: RateLimiter;
@@ -54,6 +56,7 @@ interface AuthServiceBuilderOptions {
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
 export function authServiceBuilder({
+  cognitoIdmClient,
   config,
   magicLinkTokenStore,
   rateLimiter,
@@ -190,6 +193,11 @@ export function authServiceBuilder({
     const parsed = UISessionRefreshTokenClaims.safeParse(rawPayload);
     if (!parsed.success) {
       throw unauthorizedError("Invalid refresh token claims");
+    }
+
+    const user = await cognitoIdmClient.getUserById(parsed.data.sub);
+    if (!user || user.enabled === false) {
+      throw unauthorizedError("User is disabled or does not exist");
     }
 
     return {

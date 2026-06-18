@@ -9,6 +9,7 @@ export function toIdmUser(user: UserType): IdmUser {
 
   return IdmUser.parse({
     email: attributes.get("email"),
+    enabled: user.Enabled,
     id: attributes.get("sub"),
     roles: attributes.get("custom:roles"),
     username: user.Username,

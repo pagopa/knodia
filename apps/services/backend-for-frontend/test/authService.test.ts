@@ -12,6 +12,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockDecodeJwt = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
+const mockGetUserById = vi.hoisted(() => vi.fn());
 
 vi.mock("jose", () => ({
   // URL-keyed so tests can distinguish the Cognito JWKS from the BFF
@@ -30,6 +31,12 @@ vi.mock("@aws-sdk/client-kms", () => ({
   ): Record<string, unknown> {
     return { ...input };
   },
+}));
+
+vi.mock("@knodia/cognito-idm-client", () => ({
+  buildCognitoIdmClient: () => ({
+    getUserById: mockGetUserById,
+  }),
 }));
 
 import { app, TEST_ALLOWED_ORIGIN } from "./setup.ts";
@@ -129,6 +136,13 @@ function setupValidRefreshToken(overrides: Record<string, unknown> = {}) {
   mockJwtVerify.mockResolvedValue({
     payload: makeRefreshPayload(overrides),
     protectedHeader: { alg: "RS256" },
+  });
+  mockGetUserById.mockResolvedValue({
+    email: "test-user@example.com",
+    enabled: true,
+    id: TEST_USER_ID,
+    roles: ["administrative", "technical"],
+    username: "test-user",
   });
 }
 
@@ -584,6 +598,42 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when the Cognito user does not exist", async () => {
+      setupValidRefreshToken();
+      mockGetUserById.mockResolvedValue(undefined);
+
+      const response = await injectWithAllowedOrigin({
+        cookies: { refresh: "jwt" },
+        method: "POST",
+        url: "/auth/uiSession/refresh",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(mockGetUserById).toHaveBeenCalledWith(TEST_USER_ID);
+      expect(mockKmsSend).not.toHaveBeenCalled();
+    });
+
+    it("returns 401 when the Cognito user is disabled", async () => {
+      setupValidRefreshToken();
+      mockGetUserById.mockResolvedValue({
+        email: "test-user@example.com",
+        enabled: false,
+        id: TEST_USER_ID,
+        roles: ["administrative", "technical"],
+        username: "test-user",
+      });
+
+      const response = await injectWithAllowedOrigin({
+        cookies: { refresh: "jwt" },
+        method: "POST",
+        url: "/auth/uiSession/refresh",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(mockGetUserById).toHaveBeenCalledWith(TEST_USER_ID);
+      expect(mockKmsSend).not.toHaveBeenCalled();
     });
 
     it("returns 401 when the same refresh token is used twice (replay)", async () => {
