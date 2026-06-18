@@ -73,6 +73,12 @@ components:
         - status
         - title
       additionalProperties: false
+    UriScheme:
+      description: Identifier scheme URI accepted by Knodia mock e-services
+      type: string
+      enum:
+        - http://memberstate.ms/PIdentifier
+        - http://memberstate.ms/VAT
     Address:
       description: Address, modelled after Core Person Vocabulary 2.1.1 / Core
         Business Vocabulary 2.2.0
@@ -99,6 +105,57 @@ components:
       example: "01229430085"
       type: string
       pattern: ^[0-9]{11}$
+    LegalIdentifier:
+      description: Unique identifier of a legal entity (Core Business Vocabulary 2.2.0)
+      type: object
+      properties:
+        notation:
+          $ref: "#/components/schemas/CompanyUid"
+        schemeName:
+          type: string
+        schemeURI:
+          $ref: "#/components/schemas/UriScheme"
+      required:
+        - notation
+        - schemeName
+        - schemeURI
+      additionalProperties: false
+    LegalEntityActivity:
+      description: Economic activity of the legal entity — ATECO 2025 classification
+        code (6-digit category level, with NACE Rev. 2.1 correspondence)
+      example: 43.22.07
+      type: string
+    LegalEntity:
+      description: Legal entity (company), modelled after Core Business Vocabulary 2.2.0
+      type: object
+      properties:
+        legalEntityActivity:
+          $ref: "#/components/schemas/LegalEntityActivity"
+        legalIdentifier:
+          $ref: "#/components/schemas/LegalIdentifier"
+        legalName:
+          type: string
+        registrationDate:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+      required:
+        - legalEntityActivity
+        - legalIdentifier
+        - legalName
+      additionalProperties: false
+    CompanyAddress:
+      description: Address of a company in the registry
+      type: object
+      properties:
+        address:
+          $ref: "#/components/schemas/Address"
+        legalEntity:
+          $ref: "#/components/schemas/LegalEntity"
+      required:
+        - address
+        - legalEntity
+      additionalProperties: false
 paths:
   /legal-entities/{uidCompany}/address:
     get:
@@ -116,13 +173,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Address for the requested company
+          description: Default Response
           content:
             application/json:
               schema:
-                description: Address for the requested company
-                allOf:
-                  - $ref: "#/components/schemas/Address"
+                $ref: "#/components/schemas/CompanyAddress"
         "400":
           description: Invalid uid_company
           content:
