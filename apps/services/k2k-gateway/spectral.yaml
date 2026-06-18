@@ -1,1 +1,3 @@
-"extends": ["@knodia/spectral-config/spectral.yaml"]
+extends: ["@knodia/spectral-config/spectral.yaml"]
+rules:
+  missing-ratelimit: off # not exposed publicly yet
