@@ -69,6 +69,7 @@ export const mockPocUc01QualificationsRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No student found for the uidStudent",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get qualifications",
       tags: [apiTags.pocUc01Qualifications],
