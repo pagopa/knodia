@@ -35,7 +35,10 @@ interface MockCompaniesEvidenceUpdateRouterOptions {
 // app, never on the spec-generation apps, so it stays out of the published spec.
 export const mockPocUc02CompaniesEvidenceUpdateRouter: FastifyPluginAsyncZod<
   MockCompaniesEvidenceUpdateRouterOptions
-> = async (fastify, { expectedIssuer, jwksResolvers, knodeId, rateLimiter }) => {
+> = async (
+  fastify,
+  { expectedIssuer, jwksResolvers, knodeId, rateLimiter },
+) => {
   fastify.route({
     handler: async (req, res) => {
       const token = parseAuthHeaderToken(req.headers.authorization);
