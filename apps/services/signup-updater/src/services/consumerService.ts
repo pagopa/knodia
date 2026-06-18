@@ -1,4 +1,3 @@
-import type { SignupEventV1, SignupUser } from "@knodia/signup-models";
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -7,7 +6,6 @@ import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
-  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
@@ -15,6 +13,7 @@ import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import { type SignupEventV1, type SignupUser } from "@knodia/signup-models";
 import { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -38,26 +37,27 @@ export async function handleSignupMessage(
 ): Promise<void> {
   const signupUserId = event.data.signupUserId;
 
-  async function retrieveSignupUserOrWarn(
-    signupUserId: SignupUserId,
-  ): Promise<SignupUser | undefined> {
-    const user = await deps.signupDbService.getSignupUserById(signupUserId);
-
-    // For now we assume a missing user was deleted: nothing to provision, so we
-    // skip the event (committing the offset) rather than blocking the partition.
-    if (user === undefined) {
-      logger.warn(
-        `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
-      );
-    }
-
-    return user;
-  }
-
   return match(event)
     .with({ type: "OnboardingCompletedV1" }, async () => {
-      const user = await retrieveSignupUserOrWarn(signupUserId);
-      if (user === undefined) return;
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
+      if (user === undefined) {
+        // The row is gone. Only skip if the deletion registry confirms it was a
+        // completed deletion: a missing user with no deletion record is an
+        // unexpected invariant violation (e.g. a stale read on an eventually
+        // consistent replica), so we throw and let the partition redeliver
+        // rather than silently dropping a provisioning event.
+        const deletion =
+          await deps.signupDbService.getSignupUserDeletion(signupUserId);
+        if (deletion === undefined) {
+          throw new Error(
+            `Cannot handle OnboardingCompletedV1 for signup user ${signupUserId}: user not found and no deletion record`,
+          );
+        }
+        logger.warn(
+          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user deleted at ${deletion.deletedAt.toISOString()}. Committing the offset; the event is obsolete and has no recovery path.`,
+        );
+        return;
+      }
 
       for (const knodeId of KnodeId.options) {
         await provisionKnode(knodeId, user, deps, correlationId, logger);
@@ -83,9 +83,12 @@ export async function handleSignupMessage(
         );
       }
 
-      const user = await retrieveSignupUserOrWarn(signupUserId);
+      const user = await deps.signupDbService.getSignupUserById(signupUserId);
 
       if (user === undefined) {
+        logger.warn(
+          `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
+        );
         await deps.signupDbService.deleteEmailChangeRequest(
           emailChangeRequestId,
         );
@@ -126,6 +129,13 @@ export async function handleSignupMessage(
       }
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
+    })
+    .with({ type: "DeletionRequestedV1" }, ({ data }) => {
+      // No-op: deprovisioning and deletion completion are implemented in a
+      // follow-up task.
+      logger.info(
+        `Ignoring DeletionRequestedV1 for signup user ${data.signupUserId}: handling not implemented yet`,
+      );
     })
     .exhaustive();
 }
