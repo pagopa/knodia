@@ -16,7 +16,19 @@ headers {
 
 assert {
   res.status: eq 200
-  res.body.fullAddress: eq Via Appia Nuova 12, 00100 Roma
+
+  res.body.address.adminUnitL1: eq Italia
+  res.body.address.adminUnitL2: eq Lazio
+  res.body.address.fullAddress: eq Via Appia Nuova 12, 00100 Roma
+  res.body.address.postCode: eq "00100"
+  res.body.address.postName: eq Roma
+  res.body.legalEntity.legalEntityActivity: eq 01.11.00
+  res.body.legalEntity.legalIdentifier.notation: eq "12345678901"
+  res.body.legalEntity.legalIdentifier.schemeName: eq Partita Iva
+  res.body.legalEntity.legalIdentifier.schemeURI: eq http://memberstate.ms/VAT
+  res.body.legalEntity.legalName: eq Alfa Industria Srl
+  res.body.legalEntity.registrationDate: eq 1954-03-12
+  
   res.headers["knodia-jwt-signature"]: isDefined
   res.headers["digest"]: matches /^SHA-256=/
 }
