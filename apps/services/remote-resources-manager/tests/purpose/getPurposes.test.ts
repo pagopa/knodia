@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
@@ -153,6 +154,105 @@ describe("GET /purposes (getPurposes)", () => {
     );
   });
 
+  it("forwards offset/limit unchanged to the single knode (no per-node reset)", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 5, offset: 5, total: 12 },
+        results: [k2kResult],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ limit: "5", offset: "5" });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ limit: 5, offset: 5 }),
+      }),
+    );
+    expect(response.json().pagination).toEqual({
+      limit: 5,
+      offset: 5,
+      total: 12,
+    });
+  });
+
+  it("returns 501 when the consumer has purposes on more than one knode", async () => {
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+    await remoteResourceDbService.insertPurpose({
+      consumerId: TEST_ORGANIZATION_ID,
+      eserviceId: zocker(API_Purpose).generate().eserviceId,
+      knodeId: otherKnodeId,
+      purposeId: zocker(API_Purpose).generate().id,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(501);
+    expect(getPurposesMock).not.toHaveBeenCalled();
+  });
+
+  it("does not 501 when knodeId scopes a multi-knode consumer to a single knode", async () => {
+    getPurposesMock.mockResolvedValue({ data: mockK2KResponse });
+
+    // Consumer also has purposes on another knode.
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+    await remoteResourceDbService.insertPurpose({
+      consumerId: TEST_ORGANIZATION_ID,
+      eserviceId: zocker(API_Purpose).generate().eserviceId,
+      knodeId: otherKnodeId,
+      purposeId: zocker(API_Purpose).generate().id,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({
+        ...defaultQuery,
+        eserviceId: expectedApiResult.eserviceId,
+        knodeId: expectedApiResult.knodeId,
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          eserviceId: expectedApiResult.eserviceId,
+        }),
+      }),
+    );
+  });
+
+  it("targets the requested knode even when the local readmodel has no purposes for it", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: { pagination: { ...parsedDefaultQuery, total: 0 }, results: [] },
+    });
+
+    const otherKnodeId =
+      expectedApiResult.knodeId === "Orion" ? "Lynx" : "Orion";
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, knodeId: otherKnodeId });
+
+    expect(response.statusCode).toBe(200);
+    expect(getPurposesMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should return 400 when eserviceId is passed without knodeId", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, eserviceId: expectedApiResult.eserviceId });
+
+    expect(response.statusCode).toBe(400);
+    expect(getPurposesMock).not.toHaveBeenCalled();
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {
@@ -171,6 +271,7 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
+    { ...defaultQuery, knodeId: "InvalidKnodeId" },
     { ...defaultQuery, state: "InvalidState" },
     {
       ...defaultQuery,

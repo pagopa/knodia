@@ -118,6 +118,24 @@ export function ReadOnlyGroupStep({ groupIndex, isLastStep, title }: Props) {
   );
 }
 
+// A group's controls can all be conditionally hidden for the selected answers
+// (e.g. the personal-data questions when usesPersonalData=NO). Without this we'd
+// render a dangling section header with nothing under it.
+function hasVisibleControl(
+  element: UISchemaElement,
+  visibleFields: Set<string>,
+): boolean {
+  if (isControl(element)) {
+    return visibleFields.has(scopeToFieldName(element.scope));
+  }
+  if ("elements" in element) {
+    return element.elements.some((child) =>
+      hasVisibleControl(child, visibleFields),
+    );
+  }
+  return false;
+}
+
 function isControl(element: UISchemaElement): element is ControlElement {
   return element.type === "Control";
 }
@@ -140,15 +158,20 @@ function Section({
   visibleFields,
 }: SectionProps) {
   if (isGroup(element)) {
+    if (!hasVisibleControl(element, visibleFields)) return null;
     const label = element.i18n ? getGroupLabel(texts, element.i18n) : undefined;
     const description = element.i18n
       ? getGroupDescription(texts, element.i18n)
       : undefined;
     return (
       <section className="flex flex-col gap-4">
-        {label && <h3 className="body-lg-bold">{label}</h3>}
+        {label && (
+          <h3 className="title-sm-em text-primary-light-high-contrast">
+            {label}
+          </h3>
+        )}
         {description && (
-          <p className="body-md text-primary-light-low-contrast">
+          <p className="body-sm text-primary-light-mid-contrast whitespace-pre-line">
             {description}
           </p>
         )}

@@ -76,6 +76,7 @@ export const mockDpopRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No natural person found for the given Codice Fiscale",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get digital contact",
       tags: [apiTags.digitalContact],

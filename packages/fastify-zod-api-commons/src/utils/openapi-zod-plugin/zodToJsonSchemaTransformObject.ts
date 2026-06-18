@@ -13,7 +13,10 @@ import { createJsonSchemaTransformObject } from "fastify-type-provider-zod";
 
 import { healthRouterTag } from "../../routers/healthRouter.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
-import { responseHeadersStore } from "./responseHeadersStore.ts";
+import {
+  responseHeadersStore,
+  sharedHeaderComponentsStore,
+} from "./responseHeadersStore.ts";
 
 const baseTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
@@ -118,12 +121,20 @@ const updateErrorResponseContentsWithProblemJson = (
   return openapi;
 };
 
+// Prune unreferenced schema and header components. Headers matter for the
+// multi-spec case: `sharedHeaderComponentsStore` is process-global, so a
+// spec generated alongside others can end up with rate-limit header
+// components it never uses — drop those so each spec only carries its own.
 const removeUnusedComponents = (
   openapi: Partial<OpenAPIV3.Document>,
 ): Partial<OpenAPIV3.Document> => {
-  if (!openapi.components?.schemas || !openapi.paths) return openapi;
+  if (!openapi.components || !openapi.paths) return openapi;
 
-  const refs = new Set<string>();
+  const { headers, schemas } = openapi.components;
+  if (!schemas && !headers) return openapi;
+
+  const usedSchemas = new Set<string>();
+  const usedHeaders = new Set<string>();
 
   const collectRefs = (value: unknown) => {
     if (Array.isArray(value)) return value.forEach(collectRefs);
@@ -131,11 +142,15 @@ const removeUnusedComponents = (
 
     for (const [k, v] of Object.entries(value)) {
       if (k === "$ref" && typeof v === "string") {
-        const match = v.match(/^#\/components\/schemas\/(.+)$/);
-        if (match && match[1] && !refs.has(match[1])) {
-          refs.add(match[1]);
-          const component = openapi.components?.schemas?.[match[1]];
-          if (component) collectRefs(component);
+        const schemaName = v.match(/^#\/components\/schemas\/(.+)$/)?.[1];
+        if (schemaName && !usedSchemas.has(schemaName)) {
+          usedSchemas.add(schemaName);
+          collectRefs(schemas?.[schemaName]);
+        }
+        const headerName = v.match(/^#\/components\/headers\/(.+)$/)?.[1];
+        if (headerName && !usedHeaders.has(headerName)) {
+          usedHeaders.add(headerName);
+          collectRefs(headers?.[headerName]);
         }
       } else {
         collectRefs(v);
@@ -145,13 +160,34 @@ const removeUnusedComponents = (
 
   collectRefs(openapi.paths);
 
-  for (const key of Object.keys(openapi.components.schemas)) {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    if (!refs.has(key)) delete openapi.components.schemas[key];
+  if (schemas) {
+    openapi.components.schemas = Object.fromEntries(
+      Object.entries(schemas).filter(([key]) => usedSchemas.has(key)),
+    );
+  }
+
+  if (headers) {
+    openapi.components.headers = Object.fromEntries(
+      Object.entries(headers).filter(([key]) => usedHeaders.has(key)),
+    );
   }
 
   return openapi;
 };
+
+// Deep-clone so each response holds its own copy — sharing a reference would
+// make js-yaml emit anchor/alias notation in the generated spec.
+const cloneHeaderRecord = (
+  src:
+    | Record<string, OpenAPIV3.HeaderObject | OpenAPIV3.ReferenceObject>
+    | undefined,
+):
+  | Record<string, OpenAPIV3.HeaderObject | OpenAPIV3.ReferenceObject>
+  | undefined =>
+  src &&
+  Object.fromEntries(
+    Object.entries(src).map(([k, v]) => [k, structuredClone(v)]),
+  );
 
 const addResponseHeadersToOpenapi = (
   openapi: Partial<OpenAPIV3.Document>,
@@ -181,15 +217,41 @@ const addResponseHeadersToOpenapi = (
         if (routeHeaders || perResponseHeaders) {
           response.headers = {
             ...response.headers,
-            ...routeHeaders,
-            ...perResponseHeaders,
+            ...cloneHeaderRecord(routeHeaders),
+            ...cloneHeaderRecord(perResponseHeaders),
           };
         }
       }
     }
   }
 
-  responseHeadersStore.clear();
+  // Don't clear: @fastify/swagger caches JSON and YAML separately, so this
+  // document transform runs twice per spec, while the per-route transform
+  // (`extractResponseHeaders` + `attachRateLimitHeaders` in
+  // zodToJsonSchemaTransform.ts) fills `responseHeadersStore` once during
+  // `app.ready()`. Clearing here would dangle every `$ref` on the second
+  // format pass. Entries are keyed by `operationId`, so specs generated in
+  // the same process only pick up their own routes' headers.
+  return openapi;
+};
+
+const addSharedHeaderComponents = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (sharedHeaderComponentsStore.size === 0) return openapi;
+
+  openapi.components = openapi.components ?? {};
+  openapi.components.headers = {
+    ...openapi.components.headers,
+    ...Object.fromEntries(sharedHeaderComponentsStore.entries()),
+  };
+
+  // Don't clear: the per-route transform fills this store during
+  // `app.ready()`, and @fastify/swagger runs this transform on each format
+  // call — clearing would dangle every `$ref` on the second pass. The store
+  // is process-global, so a spec may receive components for headers it never
+  // references (another spec generated in the same process registered them);
+  // `removeUnusedComponents` prunes those.
   return openapi;
 };
 
@@ -210,6 +272,7 @@ export const zodToJsonSchemaTransformObject: typeof baseTransformObject = (
       removeZodInputSchemasFromOpenapi,
       updateErrorResponseContentsWithProblemJson,
       addResponseHeadersToOpenapi,
+      addSharedHeaderComponents,
       removeUnusedComponents,
     ],
   );
