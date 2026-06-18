@@ -2,7 +2,11 @@ import type { Producer } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
-import { signupUser } from "@knodia/db-signup";
+import {
+  deletedSignupUser,
+  emailChangeRequest,
+  signupUser,
+} from "@knodia/db-signup";
 import { setupSignupTestDatabase } from "@knodia/test-commons/signupDb";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject, vi } from "vitest";
@@ -24,7 +28,12 @@ const oneIdentityMockConfig = {
 } as const;
 
 async function resetTestDatabases() {
-  await Promise.all([resetTestDatabase(signupDb, signupUser)]);
+  await resetTestDatabase(
+    signupDb,
+    emailChangeRequest,
+    deletedSignupUser,
+    signupUser,
+  );
 }
 
 beforeAll(async () => {

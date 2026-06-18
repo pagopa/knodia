@@ -163,12 +163,16 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       querystring: API_GetEservicesQueryParams,
       response: {
         200: API_Eservices.meta({
-          description: "E-services retrieved successfully",
+          description:
+            "E-services retrieved (sorted by most recently updated agreement first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get E-services",
       tags: [apiTags.eservice],

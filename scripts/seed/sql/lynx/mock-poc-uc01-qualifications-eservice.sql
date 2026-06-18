@@ -54,7 +54,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '72937dcf-e40b-4fa9-8e54-33a21407d19c',
   '4e769859-52d9-40d3-a54c-2de4ba44da10',
   '7046e499-ec54-4ea4-8821-fd22b5ee7ae4',
-  'c9e105218e81a92b2ed8afb99bc21a9af2d95b080d8d20fbd838c3ec49297cf3',
+  '3c32ea57705bf61ec17716b429cf667a76fdb8ff5dcabfd166ca6da7c23a3af9',
   'application/yaml',
   'mock-bearer-poc-uc01-qualifications-eservice.yaml',
   '72937dcf-e40b-4fa9-8e54-33a21407d19c/mock-bearer-poc-uc01-qualifications-eservice.yaml',

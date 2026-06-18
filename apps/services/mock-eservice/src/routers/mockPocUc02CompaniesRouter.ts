@@ -12,6 +12,7 @@ import {
   API_Evidence,
   API_EvidenceType,
   API_LegalEntity,
+  API_Pseudonymization,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { legalEntityNotFound } from "../models/errors.ts";
@@ -26,13 +27,16 @@ interface MockCompaniesRouterOptions {
   knodeId: KnodeId;
 }
 
+// Static seed: unlike the signal-hub mock, this demo's object_id need not rotate,
+// so publish and recover stay consistent without a period constraint.
+const PSEUDONYMIZATION_SEED = "0123456789abcdef";
+
 export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   MockCompaniesRouterOptions
 > = async (fastify, { knodeId }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-
       assertTokenClaimsAreValidForEservice(
         POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
         POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
@@ -66,6 +70,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No legal entity found for the uid_company",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get company information",
       tags: [apiTags.pocUc02Companies],
@@ -76,7 +81,6 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
-
       assertTokenClaimsAreValidForEservice(
         POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
         POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
@@ -114,10 +118,46 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No legal entity found for the uid_company",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get evidences",
       tags: [apiTags.pocUc02Companies],
     },
     url: "/legal-entities/:uidCompany/evidences",
+  });
+
+  fastify.route({
+    handler: async (_req, res) => {
+      const { logger } = getContextValues(requestContext);
+      assertTokenClaimsAreValidForEservice(
+        POC_UC02_COMPANIES_MOCK_ESERVICE_ID,
+        POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
+        POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
+        knodeId,
+      );
+
+      logger.info(
+        "Mock e-service /legal-entities/pseudonymization returned the seed",
+      );
+      res
+        .status(200)
+        .send({ cryptoHashFunction: "sha256", seed: PSEUDONYMIZATION_SEED });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Returns the pseudonymization parameters used by the Producer to publish Signal Hub signals for the evidences managed by this e-service.",
+      operationId: "getCompaniesPseudonymization",
+      response: {
+        200: API_Pseudonymization.meta({
+          description: "Pseudonymization parameters for this e-service",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+      },
+      summary: "Get evidence pseudonymization",
+      tags: [apiTags.pocUc02Companies],
+    },
+    url: "/legal-entities/pseudonymization",
   });
 };

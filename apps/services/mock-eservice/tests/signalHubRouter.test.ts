@@ -14,7 +14,7 @@ import { getCtx, TEST_KNODE_ID } from "./setup.ts";
 import { signEserviceAccessToken } from "./utils.ts";
 
 // E-service IDs of the other mock e-services (mockup 01 bearer). A token issued
-// for those must NOT be accepted by /residence or /pseudonymization.
+// for those must NOT be accepted by /residence or /natural-persons/pseudonymization.
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "e7f5837e-75f4-431d-9465-73366d27bef2",
 );
@@ -146,14 +146,14 @@ describe("mock-eservice Signal Hub router", () => {
     });
   });
 
-  describe("GET /pseudonymization", () => {
+  describe("GET /natural-persons/pseudonymization", () => {
     it("returns 200 with the seed for the current period", async () => {
       vi.setSystemTime(PERIOD_MS * 0 + 1_000);
       const token = await signToken();
       const res = await getCtx().app.inject({
         headers: { authorization: `Bearer ${token}` },
         method: "GET",
-        url: "/pseudonymization",
+        url: "/natural-persons/pseudonymization",
       });
       expect(res.statusCode).toBe(200);
       const body = res.json();
@@ -171,7 +171,7 @@ describe("mock-eservice Signal Hub router", () => {
         const res = await getCtx().app.inject({
           headers: { authorization: `Bearer ${token}` },
           method: "GET",
-          url: "/pseudonymization",
+          url: "/natural-persons/pseudonymization",
         });
         expect(res.statusCode).toBe(200);
         seeds.push(res.json().seed);
@@ -188,7 +188,7 @@ describe("mock-eservice Signal Hub router", () => {
       const res = await getCtx().app.inject({
         headers: { authorization: `Bearer ${token}` },
         method: "GET",
-        url: "/pseudonymization",
+        url: "/natural-persons/pseudonymization",
       });
       expect(res.statusCode).toBe(401);
     });
@@ -197,7 +197,7 @@ describe("mock-eservice Signal Hub router", () => {
       vi.setSystemTime(PERIOD_MS * 0 + 1_000);
       const res = await getCtx().app.inject({
         method: "GET",
-        url: "/pseudonymization",
+        url: "/natural-persons/pseudonymization",
       });
       expect(res.statusCode).toBe(401);
     });

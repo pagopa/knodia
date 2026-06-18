@@ -74,6 +74,7 @@ export const mockBearerRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No natural person found for the given Codice Fiscale",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get personal information",
       tags: [apiTags.personalInformation],

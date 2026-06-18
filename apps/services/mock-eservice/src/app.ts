@@ -2,12 +2,18 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { OpenAPIV3 } from "openapi-types";
 
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { requestContext } from "@fastify/request-context";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  type RateLimiter,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
@@ -26,10 +32,23 @@ import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 import { mockPocUc01QualificationsRouter } from "./routers/mockPocUc01QualificationsRouter.ts";
 import { mockPocUc01SetQualificationRouter } from "./routers/mockPocUc01SetQualificationRouter.ts";
+import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockReceiveDataRouter } from "./routers/mockReceiveDataRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
+
+// Mock-eservice's auth plugins (bearer + DPoP) set `accessTokenClaims` on the
+// request context — not Knodia's `authData`. `rateLimitPlugin`'s default key
+// resolver reads `authData`, so we override it to key on the consumer's
+// home-knode organization id from the access-token claims.
+const rateLimitKeyFromAccessTokenClaims = () =>
+  requestContext.get("accessTokenClaims")?.consumer.id;
+
+const protectedRateLimitOptions = (rateLimiter: RateLimiter) => ({
+  keyFromRequest: rateLimitKeyFromAccessTokenClaims,
+  rateLimiter,
+});
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
@@ -71,10 +90,12 @@ export function buildApp({
   config,
   dynamoClient,
   jwksResolvers,
+  rateLimiter,
 }: {
   config: MockEserviceConfig;
   dynamoClient?: DynamoDBClient;
   jwksResolvers: JWTVerifyGetKey[];
+  rateLimiter: RateLimiter;
 }) {
   const {
     acceptedAudiences,
@@ -114,8 +135,18 @@ export function buildApp({
     ],
   );
 
+  app.register(rateLimitResponseHeadersPlugin);
+
   // Public routes (no auth required)
   app.register(healthRouter);
+  // Demo-only evidence-change route (out of spec); self-authenticates the
+  // producer's Knode API token, so it sits outside the bearer plugin.
+  app.register(mockPocUc02CompaniesEvidenceUpdateRouter, {
+    expectedIssuer,
+    jwksResolvers,
+    knodeId,
+    rateLimiter,
+  });
 
   // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
   app.register(async (protectedApp) => {
@@ -124,6 +155,10 @@ export function buildApp({
       expectedIssuer,
       jwksResolvers,
     });
+    protectedApp.register(
+      rateLimitPlugin,
+      protectedRateLimitOptions(rateLimiter),
+    );
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
     protectedApp.register(mockPocUc01QualificationsRouter, { knodeId });
@@ -143,16 +178,28 @@ export function buildApp({
       jwksResolvers,
       jwtClockToleranceSeconds,
     });
+    protectedApp.register(
+      rateLimitPlugin,
+      protectedRateLimitOptions(rateLimiter),
+    );
     protectedApp.register(mockDpopRouter, { knodeId });
+  });
+
+  app.addHook("onClose", async () => {
+    await rateLimiter.disconnect();
   });
 
   return app;
 }
 
-export function buildAppFromConfig(config: MockEserviceConfig) {
+export function buildAppFromConfig(
+  config: MockEserviceConfig,
+  rateLimiter: RateLimiter,
+) {
   return buildApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
+    rateLimiter,
   });
 }
 

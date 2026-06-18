@@ -3,16 +3,26 @@ import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/au
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { generateId, type SignupUserId } from "@knodia/common-models/ids";
-import { PG_UNIQUE_VIOLATION } from "@knodia/common-models/pgErrorCodes";
+import {
+  type EmailChangeRequestId,
+  generateId,
+  type SignupUserId,
+} from "@knodia/common-models/ids";
+import { isPgUniqueViolation } from "@knodia/common-models/utils";
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
-import { DrizzleQueryError } from "drizzle-orm";
-import { DatabaseError } from "pg";
 
-import type { API_ConfirmOnboardingRequestBody } from "../models/api.ts";
+import type {
+  API_ChangeEmailRequestBody,
+  API_ConfirmOnboardingRequestBody,
+} from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
-import { signupUserGeneratedEntitiesAlreadyExist } from "../models/errors.ts";
+import {
+  signupUserAlreadyHasPendingEmailChangeRequest,
+  signupUserEmailChangeRequestCreationConflict,
+  signupUserGeneratedEntitiesAlreadyExist,
+  signupUserNotFound,
+} from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
 import {
   computeTermsAcceptanceDigest,
@@ -21,6 +31,7 @@ import {
 import {
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIdentifiersDoNotExist,
+  assertSignupUserIsOnboarded,
 } from "../utils/validators.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
@@ -30,6 +41,51 @@ export function signupServiceBuilder(
   signupEventProducer: SignupEventProducer,
 ) {
   return {
+    async changeEmail(
+      { email }: API_ChangeEmailRequestBody,
+      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+    ) {
+      const currentSignupUser =
+        await signupDbService.getUniqueSignupUserByIdentifiers({
+          fiscalNumber: authData.fiscalNumber,
+          personIdentifier: authData.personIdentifier,
+          spidCode: authData.spidCode,
+        });
+
+      assertSignupUserIsOnboarded(currentSignupUser);
+      await assertSignupUserEmailDoesNotExist(email, signupDbService);
+
+      const signupUserEmailChangeRequestAlreadyExists =
+        await signupDbService.checkSignupUserEmailChangeRequestExists(
+          currentSignupUser.signupUserId,
+        );
+
+      if (signupUserEmailChangeRequestAlreadyExists) {
+        throw signupUserAlreadyHasPendingEmailChangeRequest();
+      }
+
+      const emailChangeRequestId = generateId<EmailChangeRequestId>();
+
+      try {
+        await signupDbService.insertEmailChangeRequest({
+          createdAt: new Date(),
+          email,
+          emailChangeRequestId,
+          signupUserId: currentSignupUser.signupUserId,
+        });
+      } catch (error) {
+        if (isPgUniqueViolation(error)) {
+          throw signupUserEmailChangeRequestCreationConflict();
+        }
+        throw error;
+      }
+
+      await signupEventProducer.publishEmailChangeRequestedV1Event({
+        emailChangeRequestId,
+        signupUserId: currentSignupUser.signupUserId,
+      });
+    },
+
     async confirmOnboarding(
       { email }: API_ConfirmOnboardingRequestBody,
       { authData }: AuthorizedContext<UISignupSessionAuthData>,
@@ -94,12 +150,40 @@ export function signupServiceBuilder(
         termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
       });
     },
+    async deleteCurrentSignupUser({
+      authData,
+    }: AuthorizedContext<UISignupSessionAuthData>): Promise<void> {
+      const user = await signupDbService.getUniqueSignupUserByIdentifiers({
+        fiscalNumber: authData.fiscalNumber,
+        personIdentifier: authData.personIdentifier,
+        spidCode: authData.spidCode,
+      });
+
+      if (user === undefined) {
+        throw signupUserNotFound();
+      }
+
+      /**
+       * Mark the row DeletionPending BEFORE publishing: if the publish fails the
+       * row stays DeletionPending and a retried POST republishes (the mark is an
+       * idempotent no-op once pending). Retries differ only in occurredAt; the
+       * event identity (signupUserId + oneIdNonce) is stable and deduplication is
+       * downstream on the signupUserId Kafka key plus idempotent consumers.
+       */
+      await signupDbService.markSignupUserDeletionPending(user.signupUserId);
+
+      await signupEventProducer.publishDeletionRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        oneIdNonce: authData.oneIdNonce,
+        signupUserId: user.signupUserId,
+      });
+    },
     async getCurrentSignupUser({
       authData,
     }: AuthorizedContext<UISignupSessionAuthData>): Promise<
       SignupUser | undefined
     > {
-      return await signupDbService.getSignupUserByIdentifiers({
+      return await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
         personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,
@@ -140,15 +224,5 @@ async function generateUniqueOrganizationNames(
 
   throw genericInternalError(
     "Failed to generate unique organization names after multiple attempts",
-  );
-}
-
-function isPgUniqueViolation(
-  error: unknown,
-): error is DrizzleQueryError & { cause: DatabaseError } {
-  return (
-    error instanceof DrizzleQueryError &&
-    error.cause instanceof DatabaseError &&
-    error.cause?.code === PG_UNIQUE_VIOLATION
   );
 }

@@ -37,9 +37,20 @@ export type API_ConfirmOnboardingRequestBody = z.infer<
   typeof API_ConfirmOnboardingRequestBody
 >;
 
+export const API_ChangeEmailRequestBody = z
+  .strictObject({
+    email: z.email(),
+  })
+  .meta({ id: "ChangeEmailRequestBody" });
+
+export type API_ChangeEmailRequestBody = z.infer<
+  typeof API_ChangeEmailRequestBody
+>;
+
 export const API_OnboardingStatus = z.enum([
   "ACTIVE",
   "SUSPENDED",
+  "DELETION_PENDING",
   "NOT_COMPLETED",
 ]);
 export type API_OnboardingStatus = z.infer<typeof API_OnboardingStatus>;
