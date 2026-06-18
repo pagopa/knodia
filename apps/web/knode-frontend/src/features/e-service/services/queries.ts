@@ -88,11 +88,15 @@ export const producerEserviceOptionsQuery = () =>
   });
 
 // TODO(KN-473): replace hardcoded limit with pagination when the number of keychains linked to an e-service grows
-export const eserviceLinkedConsumerKeychainsQuery = (eserviceId: EserviceId) =>
+export const eserviceLinkedConsumerKeychainsQuery = (
+  eserviceId: EserviceId,
+  knodeId: KnodeId,
+) =>
   getConsumerKeychainsOptions({
     client,
     query: {
       eserviceId,
+      knodeId,
       limit: ESERVICE_LINKED_KEYCHAINS_SECTION_LIMIT,
       offset: 0,
     },

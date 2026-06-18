@@ -174,17 +174,15 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
               })
               .then((res) => res.data.results),
           getEntityId: (purpose) => purpose.consumer.id,
-          getKnodeId: (purpose) => KnodeId.parse(purpose.consumer.knodeId),
           items: data.results,
+          knodeId: config.knodeId,
         }),
       ]);
 
       const results = data.results.map((purpose) =>
         toAPI_ProducerPurpose({
           consumer: assertEntityExists(
-            consumersMap
-              .get(purpose.consumer.knodeId)
-              ?.get(unsafeBrandExternalId(purpose.consumer.id)),
+            consumersMap.get(unsafeBrandExternalId(purpose.consumer.id)),
             `Consumer organization ${purpose.consumer.id} owned by Knode ${purpose.consumer.knodeId} not found for Purpose ${purpose.id}`,
           ),
           eservice: assertEntityExists(
@@ -214,6 +212,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List producer Purposes",
       tags: [apiTags.purpose],
@@ -317,6 +316,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.purpose],
     },
@@ -357,6 +357,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.purpose],
     },
@@ -397,6 +398,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.purpose],
     },

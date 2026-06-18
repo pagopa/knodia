@@ -115,6 +115,7 @@ components:
         - identifier
         - knodeId
       additionalProperties: false
+  headers: {}
 paths:
   /erds:
     get:

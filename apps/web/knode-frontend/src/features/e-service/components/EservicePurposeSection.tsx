@@ -36,7 +36,7 @@ export function EservicePurposeSection({
 }) {
   const canManageConsumption = useHasRole("administrative");
   const { data, isLoading } = useQuery(
-    consumerPurposesByEserviceQuery(eserviceId),
+    consumerPurposesByEserviceQuery(eserviceId, knodeId),
   );
   const purposes = data?.results ?? [];
 
