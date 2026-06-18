@@ -73,6 +73,7 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No SERC serves the given recipient",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Lookup ERDS",
       tags: [apiTags.pocUc03SupervisoryBody],
@@ -122,6 +123,7 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No SERC found for the identifier",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get ERDS metadata",
       tags: [apiTags.pocUc03SupervisoryBody],
