@@ -235,3 +235,15 @@ export type API_Evidence = z.infer<typeof API_Evidence>;
 export const API_CompanyUidPathParam = z.strictObject({
   uidCompany: API_CompanyUid,
 });
+
+export const API_CompanyAddressResponse = z
+  .strictObject({
+    address: API_Address,
+    legalEntity: API_LegalEntity,
+  })
+  .meta({
+    id: "CompanyAddressResponse",
+  });
+export type API_CompanyAddressResponse = z.infer<
+  typeof API_CompanyAddressResponse
+>;

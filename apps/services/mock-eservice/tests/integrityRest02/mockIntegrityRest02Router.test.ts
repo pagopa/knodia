@@ -44,12 +44,18 @@ import {
   vi,
 } from "vitest";
 
+import type { API_CompanyAddressResponse } from "../../src/models/api.ts";
+
 import {
   INTEGRITY_REST_02_MOCK_ESERVICE_ID,
   INTEGRITY_REST_02_MOCK_ESERVICE_VERSION_ID,
   INTEGRITY_REST_02_MOCK_PRODUCER_ID,
 } from "../../src/integrityRest02/mockup.ts";
 import { legalEntityAddressNotFound } from "../../src/models/errors.ts";
+import {
+  retrieveLegalEntity,
+  retrieveLegalEntityAddress,
+} from "../../src/utils/retrievalUtils.ts";
 import { getCtx, integrityRest02KeySet, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
 
@@ -123,7 +129,13 @@ describe("mock-eservice integrity REST 02 router", () => {
       const token = await signToken();
       const res = await getCompanyAddress({ token });
 
+      const expectedResponse: API_CompanyAddressResponse = {
+        address: retrieveLegalEntityAddress(SAMPLE_UID),
+        legalEntity: retrieveLegalEntity(SAMPLE_UID),
+      };
+
       expect(res.statusCode).toBe(200);
+      expect(res.json()).toEqual(expectedResponse);
 
       // --- Knodia-JWT-Signature header must be present ---
       const knodiaJwtSignature =
