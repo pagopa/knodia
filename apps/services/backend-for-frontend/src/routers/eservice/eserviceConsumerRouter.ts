@@ -458,7 +458,8 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerEservicesQueryParams,
       response: {
         200: API_ConsumerEservices.meta({
-          description: "E-services retrieved successfully",
+          description:
+            "E-services retrieved (sorted by most recently updated agreement first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

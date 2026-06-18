@@ -6568,11 +6568,13 @@ paths:
           required: false
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: E-services retrieved (sorted by most recently updated agreement
+            first)
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: E-services retrieved (sorted by most recently updated agreement
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerEservices"
         "400":
@@ -6697,11 +6699,12 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: Consumer Agreements retrieved successfully
+          description: Consumer Agreements retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Consumer Agreements retrieved successfully
+                description: Consumer Agreements retrieved (sorted by most recently updated
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerAgreements"
         "400":
@@ -6809,11 +6812,13 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Pending Consumer Agreements retrieved successfully
+          description: Pending Consumer Agreements retrieved (sorted by most recently
+            updated first)
           content:
             application/json:
               schema:
-                description: Pending Consumer Agreements retrieved successfully
+                description: Pending Consumer Agreements retrieved (sorted by most recently
+                  updated first)
                 allOf:
                   - $ref: "#/components/schemas/PendingConsumerAgreements"
         "400":
@@ -7154,11 +7159,11 @@ paths:
           description: Filter by Purpose State
       responses:
         "200":
-          description: Consumer Purposes retrieved successfully
+          description: Consumer Purposes retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Consumer Purposes retrieved successfully
+                description: Consumer Purposes retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/ConsumerPurposes"
         "400":

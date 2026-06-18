@@ -350,7 +350,8 @@ export const purposeRouter: FastifyPluginAsyncZod<
       querystring: API_GetPurposesQueryParams,
       response: {
         200: API_Purposes.meta({
-          description: "Purposes retrieved successfully",
+          description:
+            "Purposes retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
