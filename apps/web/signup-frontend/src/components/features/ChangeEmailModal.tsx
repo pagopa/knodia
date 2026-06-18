@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { Modal, TextField } from "@/components/ui";
@@ -40,6 +40,11 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
+  // Stop the in-flight poll if the component unmounts mid-apply (e.g. navigating
+  // away from /home), so it neither keeps fetching nor sets state after unmount.
+  const pollAbort = useRef<AbortController | null>(null);
+  useEffect(() => () => pollAbort.current?.abort(), []);
+
   const changeEmail = useMutation({
     ...changeEmailMutationOptions(),
     onError: (error) => {
@@ -50,7 +55,12 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       // The 204 only acks the request; wait until the new email is actually
       // reflected (and the banner, reading the same query, has updated) before
       // closing. Only then is it safe to release the modal.
-      const applied = await pollCurrentUserUntilEmail(queryClient, email);
+      const controller = new AbortController();
+      pollAbort.current = controller;
+      const applied = await pollCurrentUserUntilEmail(queryClient, email, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
       if (!applied) {
         setErrorMessage(
           "The email change is taking longer than expected. Reload the page to check whether it was applied.",

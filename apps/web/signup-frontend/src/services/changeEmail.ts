@@ -46,7 +46,8 @@ export async function pollCurrentUserUntilEmail(
   {
     intervalMs = POLL_INTERVAL_MS,
     maxAttempts = POLL_MAX_ATTEMPTS,
-  }: { intervalMs?: number; maxAttempts?: number } = {},
+    signal,
+  }: { intervalMs?: number; maxAttempts?: number; signal?: AbortSignal } = {},
 ): Promise<boolean> {
   // fetchQuery supplies the queryFn and writes the shared cache, so the banner's
   // useSuspenseQuery observer re-renders with the fresh value.
@@ -54,6 +55,7 @@ export async function pollCurrentUserUntilEmail(
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     await delay(intervalMs);
+    if (signal?.aborted) return false;
     try {
       const user = await queryClient.fetchQuery(query);
       if (user.email === expectedEmail) return true;
