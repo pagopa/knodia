@@ -85,6 +85,10 @@ describe("POST /relay", () => {
     expect(ack.messageIdentifier).toEqual(body.relayMetadata.messageIdentifier);
     expect(ack.correlationId).toEqual(expect.any(String));
     expect(ack.receivedAt).toEqual(expect.any(String));
+    // The route is behind the rate-limit plugin; assert the limiter ran.
+    expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+    expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
   });
 
   it("accepts a Receipt carrying a relay-acceptance evidence", async () => {

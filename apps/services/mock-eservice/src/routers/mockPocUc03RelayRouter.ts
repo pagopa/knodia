@@ -59,6 +59,7 @@ export const mockPocUc03RelayRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Invalid erd_dispatch body" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Relay",
       tags: [apiTags.pocUc03Relay],
