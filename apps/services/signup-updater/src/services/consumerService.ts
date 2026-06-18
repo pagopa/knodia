@@ -53,7 +53,7 @@ export async function handleSignupMessage(
         const deletion =
           await deps.signupDbService.getSignupUserDeletion(signupUserId);
         if (deletion === undefined) {
-          throw new Error(
+          throw genericInternalError(
             `Cannot handle OnboardingCompletedV1 for signup user ${signupUserId}: user not found and no deletion record`,
           );
         }
