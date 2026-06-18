@@ -8,7 +8,7 @@
 //   node send-message.ts \
 //     --consumer-keychain-id <uuid> --purpose-id <uuid> \
 //     --recipient-serc <erdsIdentifier> --relay-url <url> \
-//     --recipient-id 01229430085 --subject "Notifica" --body "Testo del messaggio inoltrato"
+//     --recipient-id 01229430085 --subject "Notification" --body "Forwarded message body"
 
 import { randomUUID } from "node:crypto";
 import { parseArgs } from "node:util";
