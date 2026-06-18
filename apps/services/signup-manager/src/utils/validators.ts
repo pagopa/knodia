@@ -27,7 +27,7 @@ export async function assertSignupUserIdentifiersDoNotExist(
   authData: UISignupSessionAuthData,
   signupDbService: SignupDbService,
 ): Promise<void> {
-  const signupUser = await signupDbService.getSignupUserByIdentifiers({
+  const signupUser = await signupDbService.getUniqueSignupUserByIdentifiers({
     fiscalNumber: authData.fiscalNumber,
     personIdentifier: authData.personIdentifier,
     spidCode: authData.spidCode,

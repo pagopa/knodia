@@ -72,6 +72,7 @@ export function useDetailsStepForm({
       updateDetailsStep(value);
       onSubmitSuccess(value);
     },
+    onSubmitInvalid: focusFirstInvalidField,
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: detailsStepSchema(maxDailyCallsPerConsumer),
@@ -99,15 +100,7 @@ export function useDynamicStepForm(opts: {
       ...opts.formAnswers,
     } as FormValues,
     onSubmit: ({ value }) => opts.onSubmitSuccess(value),
-    onSubmitInvalid: () => {
-      const invalid = document.querySelector<HTMLElement>(
-        '[aria-invalid="true"]',
-      );
-      // scrollIntoView handles react-aria containers (e.g. RadioGroup) where
-      // aria-invalid sits on a non-focusable [role="radiogroup"].
-      invalid?.scrollIntoView({ block: "center" });
-      invalid?.focus();
-    },
+    onSubmitInvalid: focusFirstInvalidField,
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: opts.onDynamic,
@@ -129,4 +122,12 @@ export function usePurposeWizardContext() {
     );
   }
   return context;
+}
+
+// scrollIntoView handles react-aria containers (e.g. RadioGroup) where
+// aria-invalid sits on a non-focusable [role="radiogroup"].
+function focusFirstInvalidField() {
+  const invalid = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+  invalid?.scrollIntoView({ block: "center" });
+  invalid?.focus();
 }

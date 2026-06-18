@@ -113,6 +113,7 @@ components:
           enum:
             - ACTIVE
             - SUSPENDED
+            - DELETION_PENDING
             - NOT_COMPLETED
       required:
         - onboardingStatus
@@ -286,6 +287,39 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /user/delete:
+    post:
+      operationId: deleteUser
+      tags:
+        - signup
+      description: Request the deletion of the caller signup user
+      responses:
+        "204":
+          description: User deletion requested successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /user/me:

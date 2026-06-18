@@ -1,20 +1,32 @@
+/* eslint-disable max-lines-per-function */
 import type {
   EmailChangeRequestId,
   SignupUserId,
 } from "@knodia/common-models/ids";
-import type { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { eq, or, type SQL } from "drizzle-orm";
+import {
+  type EmailChangeRequest,
+  type SignupUser,
+  type SignupUserDeletion,
+  SignupUserStatus,
+} from "@knodia/signup-models";
+import { and, eq, inArray, or, type SQL } from "drizzle-orm";
 
 import {
+  toDeletedSignupUserSQL,
   toEmailChangeRequest,
   toEmailChangeRequestSQL,
   toSignupUser,
+  toSignupUserDeletion,
   toSignupUserSQL,
 } from "../converters/converters.ts";
-import { emailChangeRequest, signupUser } from "../signupUser.ts";
+import {
+  deletedSignupUser,
+  emailChangeRequest,
+  signupUser,
+} from "../signupUser.ts";
 
 export type SignupDbService = ReturnType<typeof signupDbServiceBuilder>;
 
@@ -72,6 +84,42 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result.length > 0;
     },
 
+    async completeSignupUserDeletion(
+      signupUserId: SignupUserId,
+    ): Promise<void> {
+      await db.transaction(async (tx) => {
+        const [deleted] = await tx
+          .delete(signupUser)
+          .where(
+            and(
+              eq(signupUser.signupUserId, signupUserId),
+              eq(signupUser.status, SignupUserStatus.enum.DeletionPending),
+            ),
+          )
+          .returning({ signupUserId: signupUser.signupUserId });
+
+        if (deleted) {
+          await tx
+            .insert(deletedSignupUser)
+            .values(
+              toDeletedSignupUserSQL({ deletedAt: new Date(), signupUserId }),
+            );
+          return;
+        }
+
+        // Idempotent under at-least-once consumption: a replay finds the row
+        // gone but the registry entry present, anything else is an invalid
+        // transition.
+        if (await hasRecordedDeletion(tx, signupUserId)) {
+          return;
+        }
+
+        throw genericInternalError(
+          `Cannot complete deletion of signup user ${signupUserId}: no DeletionPending row or deletion-registry entry found`,
+        );
+      });
+    },
+
     async deleteEmailChangeRequest(
       emailChangeRequestId: EmailChangeRequestId,
     ): Promise<void> {
@@ -106,7 +154,18 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       return result ? toSignupUser(result) : undefined;
     },
 
-    async getSignupUserByIdentifiers({
+    async getSignupUserDeletion(
+      signupUserId: SignupUserId,
+    ): Promise<SignupUserDeletion | undefined> {
+      const [result] = await db
+        .select()
+        .from(deletedSignupUser)
+        .where(eq(deletedSignupUser.signupUserId, signupUserId))
+        .limit(1);
+      return result ? toSignupUserDeletion(result) : undefined;
+    },
+
+    async getUniqueSignupUserByIdentifiers({
       fiscalNumber,
       personIdentifier,
       spidCode,
@@ -138,8 +197,19 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       const result = await db
         .select()
         .from(signupUser)
-        .where(or(...identifierFilters))
-        .limit(1);
+        .where(or(...identifierFilters));
+
+      /**
+       * Each identifier column is UNIQUE, so multiple rows here mean the claims
+       * of one IdP session point at different users (e.g. the spidCode of one
+       * row and the fiscalNumber of another): data corruption to investigate,
+       * never silently pick one.
+       */
+      if (result.length > 1) {
+        throw genericInternalError(
+          "User identifier claims (fiscalNumber, personIdentifier, spidCode) match multiple signup users",
+        );
+      }
 
       const signupUserResult = result.at(0);
 
@@ -156,6 +226,59 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       await db.insert(signupUser).values(toSignupUserSQL(user));
     },
 
+    async markSignupUserDeletionPending(
+      signupUserId: SignupUserId,
+    ): Promise<void> {
+      const [updated] = await db
+        .update(signupUser)
+        .set({
+          status: SignupUserStatus.enum.DeletionPending,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(signupUser.signupUserId, signupUserId),
+            inArray(signupUser.status, [
+              SignupUserStatus.enum.Active,
+              SignupUserStatus.enum.Suspended,
+            ]),
+          ),
+        )
+        .returning({ signupUserId: signupUser.signupUserId });
+
+      if (updated) {
+        return;
+      }
+
+      /**
+       * No row transitioned: either the user is already DeletionPending (retry,
+       * idempotent no-op) or it disappeared/was deleted meanwhile (invalid
+       * transition).
+       */
+      const [existing] = await db
+        .select({ status: signupUser.status })
+        .from(signupUser)
+        .where(eq(signupUser.signupUserId, signupUserId))
+        .limit(1);
+
+      if (existing?.status === SignupUserStatus.enum.DeletionPending) {
+        return;
+      }
+
+      /**
+       * The row may be gone because the deletion already completed: a retry
+       * landing after completeSignupUserDeletion finds no signup_user row but a
+       * registry entry. Mirror its idempotency and treat that as a no-op rather
+       * than a 500.
+       */
+      if (!existing && (await hasRecordedDeletion(db, signupUserId))) {
+        return;
+      }
+
+      throw genericInternalError(
+        `Cannot mark signup user ${signupUserId} as DeletionPending: user ${existing ? `has status ${existing.status}` : "not found"}`,
+      );
+    },
     async updateSignupUserEmail({
       email,
       signupUserId,
@@ -169,4 +292,17 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
+}
+
+// Accepts a transaction too: a PgTransaction is assignable to NodePgDatabase.
+async function hasRecordedDeletion(
+  db: NodePgDatabase,
+  signupUserId: SignupUserId,
+): Promise<boolean> {
+  const [existing] = await db
+    .select({ signupUserId: deletedSignupUser.signupUserId })
+    .from(deletedSignupUser)
+    .where(eq(deletedSignupUser.signupUserId, signupUserId))
+    .limit(1);
+  return existing !== undefined;
 }

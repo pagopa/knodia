@@ -526,6 +526,7 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+        return;
       }
 
       if (target === "AWSCognitoIdentityProviderService.CreateGroup") {

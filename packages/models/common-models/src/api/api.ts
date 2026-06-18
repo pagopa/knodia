@@ -24,6 +24,20 @@ export type API_PaginationQueryParams = z.infer<
   typeof API_PaginationQueryParams
 >;
 
+/**
+ * Refines a query-param schema so the given remote-resource ID fields may only
+ * be passed together with `knodeId`: a remote resource ID is meaningless
+ * without the Knode that owns it, which acts as its scope/namespace.
+ */
+export const requireKnodeIdWith =
+  <Field extends string>(...fields: [Field, ...Field[]]) =>
+  <T extends z.ZodType<Partial<Record<"knodeId" | Field, unknown>>>>(
+    schema: T,
+  ) =>
+    schema.refine((q) => !(fields.some((field) => q[field]) && !q.knodeId), {
+      message: `${fields.map((field) => `\`${field}\``).join(" / ")} can only be used together with \`knodeId\``,
+    });
+
 export const API_FileDownload = z.string().meta({
   description: "Binary file content",
   format: "binary",
