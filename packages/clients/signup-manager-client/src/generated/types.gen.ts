@@ -47,7 +47,7 @@ export type ChangeEmailRequestBody = {
 
 export type CurrentSignupUser = {
     email?: string;
-    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'NOT_COMPLETED';
+    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING' | 'NOT_COMPLETED';
 };
 
 export type GetStatusData = {
@@ -178,6 +178,39 @@ export type ChangeEmailResponses = {
 };
 
 export type ChangeEmailResponse = ChangeEmailResponses[keyof ChangeEmailResponses];
+
+export type DeleteUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/delete';
+};
+
+export type DeleteUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DeleteUserError = DeleteUserErrors[keyof DeleteUserErrors];
+
+export type DeleteUserResponses = {
+    /**
+     * User deletion requested successfully
+     */
+    204: void;
+};
+
+export type DeleteUserResponse = DeleteUserResponses[keyof DeleteUserResponses];
 
 export type GetCurrentSignupUserData = {
     body?: never;
