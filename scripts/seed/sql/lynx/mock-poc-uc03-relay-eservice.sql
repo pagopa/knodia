@@ -92,7 +92,10 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_category" (
 );
 
 -- Pre-filled purpose-form option (Confluence "Purpose Form Use Case 03"). The
--- minimal INSTITUTIONAL / LEGAL_OBLIGATION set valid against the basic 1.0 schema.
+-- INSTITUTIONAL / LEGAL_OBLIGATION set. NOTE: the option must be valid against
+-- the form schema configured on THIS producer's knode (Lynx runs
+-- schemas-withriskanalysis), so it carries the with-risk-analysis answer set;
+-- the Orion relay option uses the basic set because Orion runs schemas-basic.
 INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
   id, eservice_id, name, description,
   form_answers_json, form_schema_version,
@@ -102,7 +105,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
   'b4e2d9f1-2c3d-4e4f-9a51-000000000311',
   '{"en": "Communication between certified electronic delivery systems"}'::jsonb,
   '{"en": "Communication between providers of qualified certified electronic delivery systems in the member state pursuant to EU Regulation No. 910/2014"}'::jsonb,
-  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Forwarding a message from an eIDAS certified electronic delivery system","usesPersonalData":"YES","personalDataTypes":["WITH_IDENTIFYING_DATA"],"legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Article 3, point 36 of EU Regulation No. 910/2014","declarationConfirmGDPR":"true"}'::jsonb,
+  '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Forwarding a message from an eIDAS certified electronic delivery system","usesPersonalData":"YES","personalDataTypes":["WITH_IDENTIFYING_DATA"],"legalBasis":["LEGAL_OBLIGATION"],"legalObligationReference":"Article 3, point 36 of EU Regulation No. 910/2014","declarationConfirmGDPR":"true","knowsDataQuantity":"NO","deliveryMethod":"CLEARTEXT","policyProvided":"YES","policyProvidedMedium":"PRINT","confirmPrincipleIntegrityAndDiscretion":"true","doneDpia":"NO","dataDownload":"NO","purposePursuit":"MERE_CORRECTNESS","checkedExistenceMereCorrectnessInteropCatalogue":"true","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
   0
 ) ON CONFLICT (id) DO UPDATE SET
