@@ -9,7 +9,7 @@ export function RequestErasureModal({
   isOpen,
   onOpenChange,
 }: RequestErasureModalProps) {
-  // TODO(KN-750): enable once the user-deletion route is wired
+  // TODO(KN-786): enable once the user-deletion route is wired
   return (
     <Modal
       actionLabel="Request erasure"
