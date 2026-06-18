@@ -9,6 +9,7 @@ import {
   API_Evidence,
   type API_EvidenceType,
   API_LegalEntity,
+  type API_PeriodOfTime,
   evidenceTypeIdentifiers,
 } from "../models/api.ts";
 import { legalEntityActivities } from "../models/legalEntityActivities.ts";
@@ -52,6 +53,17 @@ const LEGAL_ENTITY_ADDRESSES = readJson(
   AddressesFile,
 );
 
+// Demo-only: the evidence-update route bumps a per-company revision that
+// findEvidences turns into an extended validity end year, so the recover step
+// sees a changed evidence. In-memory, resets on restart.
+const evidenceRevisions = new Map<API_CompanyUid, number>();
+
+export function bumpEvidenceRevision(uid: API_CompanyUid): number {
+  const next = (evidenceRevisions.get(uid) ?? 0) + 1;
+  evidenceRevisions.set(uid, next);
+  return next;
+}
+
 // undefined = unknown company; empty array = known company, no evidence of that type.
 export function findEvidences(
   uid: API_CompanyUid,
@@ -62,13 +74,18 @@ export function findEvidences(
     return undefined;
   }
 
+  const revision = evidenceRevisions.get(uid) ?? 0;
   return (EVIDENCES[uid] ?? [])
     .filter(
       (evidence) =>
         !evidenceType ||
         evidence.isConformantTo.evidenceTypeClassification === evidenceType,
     )
-    .map((evidence) => ({ ...evidence, isAbout: legalEntity }));
+    .map((evidence) => ({
+      ...evidence,
+      isAbout: legalEntity,
+      validityPeriod: reviseValidity(evidence.validityPeriod, revision),
+    }));
 }
 
 export function findLegalEntity(
@@ -85,4 +102,19 @@ export function findLegalEntityAddress(
   uid: API_CompanyUid,
 ): API_Address | undefined {
   return LEGAL_ENTITY_ADDRESSES[uid];
+}
+
+export function resetEvidenceRevisions(): void {
+  evidenceRevisions.clear();
+}
+
+function reviseValidity(
+  period: API_PeriodOfTime,
+  revision: number,
+): API_PeriodOfTime {
+  if (!revision || !period.endtime) {
+    return period;
+  }
+  const [year, month, day] = period.endtime.split("-");
+  return { ...period, endtime: `${Number(year) + revision}-${month}-${day}` };
 }

@@ -1,4 +1,4 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,11 +9,13 @@ import { eserviceLinkedConsumerKeychainsQuery } from "../services/queries";
 
 export function EserviceConsumerKeychainsSection({
   eserviceId,
+  knodeId,
 }: {
   eserviceId: EserviceId;
+  knodeId: KnodeId;
 }) {
   const { data, isLoading } = useQuery(
-    eserviceLinkedConsumerKeychainsQuery(eserviceId),
+    eserviceLinkedConsumerKeychainsQuery(eserviceId, knodeId),
   );
 
   return (

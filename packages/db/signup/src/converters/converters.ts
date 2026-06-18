@@ -1,6 +1,48 @@
-import { SignupUser } from "@knodia/signup-models";
+import {
+  EmailChangeRequest,
+  SignupUser,
+  SignupUserDeletion,
+} from "@knodia/signup-models";
 
-import type { NewSignupUser, SignupUserSQL } from "../signupUser.ts";
+import type {
+  DeletedSignupUserSQL,
+  EmailChangeRequestSQL,
+  NewDeletedSignupUser,
+  NewEmailChangeRequest,
+  NewSignupUser,
+  SignupUserSQL,
+} from "../signupUser.ts";
+
+export function toDeletedSignupUserSQL(
+  deletion: SignupUserDeletion,
+): NewDeletedSignupUser {
+  return {
+    deletedAt: deletion.deletedAt,
+    signupUserId: deletion.signupUserId,
+  };
+}
+
+export function toEmailChangeRequest(
+  sql: EmailChangeRequestSQL,
+): EmailChangeRequest {
+  return EmailChangeRequest.parse({
+    createdAt: sql.createdAt,
+    email: sql.email,
+    emailChangeRequestId: sql.emailChangeRequestId,
+    signupUserId: sql.signupUserId,
+  });
+}
+
+export function toEmailChangeRequestSQL(
+  emailChangeRequest: EmailChangeRequest,
+): NewEmailChangeRequest {
+  return {
+    createdAt: emailChangeRequest.createdAt,
+    email: emailChangeRequest.email,
+    emailChangeRequestId: emailChangeRequest.emailChangeRequestId,
+    signupUserId: emailChangeRequest.signupUserId,
+  };
+}
 
 export function toSignupUser(sql: SignupUserSQL): SignupUser {
   return SignupUser.parse({
@@ -25,6 +67,15 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     spidCode: sql.spidCode ?? undefined,
     status: sql.status,
     updatedAt: sql.updatedAt,
+  });
+}
+
+export function toSignupUserDeletion(
+  sql: DeletedSignupUserSQL,
+): SignupUserDeletion {
+  return SignupUserDeletion.parse({
+    deletedAt: sql.deletedAt,
+    signupUserId: sql.signupUserId,
   });
 }
 

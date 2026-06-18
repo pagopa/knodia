@@ -91,6 +91,16 @@ components:
       required:
         - email
       additionalProperties: false
+    ChangeEmailRequestBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+      required:
+        - email
+      additionalProperties: false
     CurrentSignupUser:
       type: object
       properties:
@@ -103,6 +113,7 @@ components:
           enum:
             - ACTIVE
             - SUSPENDED
+            - DELETION_PENDING
             - NOT_COMPLETED
       required:
         - onboardingStatus
@@ -184,7 +195,7 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /onboarding/confirm:
+  /user/confirmOnboarding:
     post:
       operationId: confirmOnboarding
       tags:
@@ -231,7 +242,87 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /me:
+  /user/changeEmail:
+    post:
+      operationId: changeEmail
+      tags:
+        - signup
+      description: Request email change for the caller user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeEmailRequestBody"
+      responses:
+        "204":
+          description: Email change requested successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /user/delete:
+    post:
+      operationId: deleteUser
+      tags:
+        - signup
+      description: Request the deletion of the caller signup user
+      responses:
+        "204":
+          description: User deletion requested successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /user/me:
     get:
       operationId: getCurrentSignupUser
       tags:

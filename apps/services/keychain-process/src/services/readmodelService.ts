@@ -210,7 +210,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
-      const { limit, name, offset, ownerId, purpose } = params;
+      const { knodeId, limit, name, offset, ownerId, purposeId } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -234,7 +234,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 ownerId
                   ? eq(readmodelConsumerKeychain.ownerId, ownerId)
                   : undefined,
-                purpose
+                purposeId && knodeId
                   ? exists(
                       tx
                         .select()
@@ -247,11 +247,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                             ),
                             eq(
                               readmodelConsumerKeychainPurpose.purposeId,
-                              purpose.id,
+                              purposeId,
                             ),
                             eq(
                               readmodelConsumerKeychainPurpose.producerKnodeId,
-                              purpose.knodeId,
+                              knodeId,
                             ),
                           ),
                         ),

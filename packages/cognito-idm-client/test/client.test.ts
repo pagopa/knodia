@@ -1,6 +1,8 @@
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserCommand,
+  AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -110,6 +112,86 @@ describe("createOrganizationUser", () => {
         givenName: "G",
         organizationId: generateId<OrganizationId>(),
         roles: [UserRole.enum.technical],
+        username: "u",
+      }),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("updateUserEmail", () => {
+  it("updates the user email and marks it as verified", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).updateUserEmail({
+      email: "new.email@example.org",
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledOnce();
+
+    const [updateCall] = send.mock.calls;
+    if (!updateCall) {
+      throw new Error("expected updateUserEmail to issue one command");
+    }
+
+    const updateUser = updateCall.at(0) as AdminUpdateUserAttributesCommand;
+    expect(updateUser).toBeInstanceOf(AdminUpdateUserAttributesCommand);
+    expect(updateUser.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+    expect(updateUser.input.UserAttributes).toEqual([
+      { Name: "email", Value: "new.email@example.org" },
+      { Name: "email_verified", Value: "true" },
+    ]);
+  });
+});
+
+describe("deleteOrganizationUser", () => {
+  it("deletes the user by username via AdminDeleteUser", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+    await buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledTimes(1);
+    const deleteCall = send.mock.calls.at(0)?.at(0) as AdminDeleteUserCommand;
+    expect(deleteCall).toBeInstanceOf(AdminDeleteUserCommand);
+    expect(deleteCall.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("is idempotent: swallows UserNotFoundException", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockRejectedValue(
+        Object.assign(new Error("user not found"), {
+          name: "UserNotFoundException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
+        username: "u",
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("rethrows non-ignored errors", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
         username: "u",
       }),
     ).rejects.toThrow("boom");

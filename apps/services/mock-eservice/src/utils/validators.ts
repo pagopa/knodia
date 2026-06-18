@@ -5,7 +5,10 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
-import { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
+import {
+  EserviceAccessTokenClaims,
+  KnodeApiAccessTokenClaims,
+} from "@knodia/common-models/auth";
 import { verifyAgainstJwksSets } from "@knodia/fastify-zod-api-commons/auth";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type JWTVerifyGetKey } from "jose";
@@ -114,6 +117,31 @@ export async function verifyEserviceAccessToken(
         "Bearer access tokens must not contain DPoP thumbprint claim (cnf.jkt)",
       );
     }
+  }
+
+  return parsed.data;
+}
+
+// Demo-only: verifies the producer's Knode API token for the UC02 evidence-update
+// route. No audience check — the token is audienced to the Signal Hub, not this
+// mock; for a prototype mock a valid knode-api token from the trusted issuer
+// (plus the route's producer-org check) is enough.
+export async function verifyKnodeApiAccessToken(
+  token: string,
+  opts: { expectedIssuer: string; jwksResolvers: JWTVerifyGetKey[] },
+): Promise<KnodeApiAccessTokenClaims> {
+  const rawPayload = await verifyAgainstJwksSets({
+    issuer: opts.expectedIssuer,
+    jwksSets: opts.jwksResolvers,
+    propagateReasons: true,
+    token,
+  });
+
+  const parsed = KnodeApiAccessTokenClaims.safeParse(rawPayload);
+  if (!parsed.success) {
+    throw unauthorizedError(
+      `Invalid knode-api token claims:\n${prettifyError(parsed.error)}`,
+    );
   }
 
   return parsed.data;

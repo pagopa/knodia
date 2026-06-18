@@ -11,6 +11,10 @@ import {
   assertDpopProofNotReplayed,
   verifyDpopProofSignature,
 } from "@knodia/dpop-validator";
+import {
+  enforceRateLimit,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 
 import type { AuthorizationServerConfig } from "../config/config.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -27,15 +31,19 @@ export function tokenServiceBuilder({
   config,
   dpopProofStore,
   getK2K2GatewayApiClient,
+  rateLimiter,
   readmodelService,
   tokenGenerator,
 }: {
   config: AuthorizationServerConfig;
   dpopProofStore: JtiReplayStore;
   getK2K2GatewayApiClient: K2K2GatewayApiClientFactory;
+  rateLimiter: RateLimiter;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
 }) {
+  // enforceRateLimit runs after signature + replay checks so the bucket keys
+  // on a resolved tenant, not on IP or a shared fallback.
   return {
     async issueEserviceAccessToken(
       {
@@ -72,6 +80,8 @@ export function tokenServiceBuilder({
         );
 
       // Check that the DPoP proof has not been replayed if the request is using DPoP
+      // DPoP replay check before rate-limit so a captured proof 401s at the
+      // store without draining the per-tenant bucket.
       if (dpopProofJWT) {
         await assertDpopProofNotReplayed(
           dpopProofJWT,
@@ -80,6 +90,8 @@ export function tokenServiceBuilder({
           config.jwtClockToleranceSeconds,
         );
       }
+
+      await enforceRateLimit(rateLimiter, purpose.data.consumer.id, logger);
 
       // Check that the platform objects (purpose, agreement, e-service version) are in a consumable state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion } = await validatePlatformObjects(
@@ -130,6 +142,8 @@ export function tokenServiceBuilder({
           readmodelService,
           logger,
         );
+
+      await enforceRateLimit(rateLimiter, ownerId, logger);
 
       const token = await tokenGenerator.generateKnodeApiAccessToken({
         audience: config.generatedKnodeApiTokenAudiences,

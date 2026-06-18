@@ -157,6 +157,12 @@ describe("mock-eservice DPoP access-token verification", () => {
         sex: "MALE",
       },
     });
+    // Guard against the regression where mock-eservice's auth plugin set
+    // `accessTokenClaims` but `rateLimitPlugin` only read `authData`,
+    // silently disabling rate-limit on every protected route.
+    expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+    expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
   });
 
   it("returns 404 when the notation is not in the dataset", async () => {

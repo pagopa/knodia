@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import "@knodia/test-commons/dynamodb";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { resetDynamoTable } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
@@ -62,6 +63,14 @@ beforeAll(async () => {
       organizationProcessUrl: "http://localhost:0",
       port: 0,
       purposeProcessUrl: "http://localhost:0",
+      rateLimiterMaxRequests: 200,
+      rateLimiterRedisHost:
+        process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+      rateLimiterRedisPort: Number(
+        process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+      ),
+      rateLimiterTimeoutSeconds: 2,
+      rateLimiterTimeWindowSeconds: 60,
       recentUpdateDays: 3,
       refreshJwt: { secondsDuration: 86400 },
       remoteResourcesManagerUrl: "http://localhost:0",
@@ -76,6 +85,7 @@ beforeAll(async () => {
         "http://localhost:4501/knodia/.well-known/jwks.json",
       ],
     },
+    noopRateLimiter,
     dynamoClient,
   );
 

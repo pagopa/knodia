@@ -162,6 +162,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -185,22 +186,30 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
       ): Promise<API_Keychain> {
-        const [{ data: keys }, { data: members }] = await Promise.all([
-          keychainProcessApi.getProducerKeychainKeys({
-            client: keychainProcessClient,
-            headers,
-            path: { producerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-          keychainProcessApi.getProducerKeychainMembers({
-            client: keychainProcessClient,
-            headers,
-            path: { producerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-        ]);
+        const [{ data: keys }, { data: members }, { data: eservices }] =
+          await Promise.all([
+            keychainProcessApi.getProducerKeychainKeys({
+              client: keychainProcessClient,
+              headers,
+              path: { producerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getProducerKeychainMembers({
+              client: keychainProcessClient,
+              headers,
+              path: { producerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+            keychainProcessApi.getProducerKeychainEservices({
+              client: keychainProcessClient,
+              headers,
+              path: { producerKeychainId: keychain.id },
+              query: { limit: 1, offset: 0 },
+            }),
+          ]);
 
         return toAPI_Keychain(keychain, {
+          eservicesCount: eservices.pagination.total,
           keysCount: keys.pagination.total,
           membersCount: members.pagination.total,
         });
@@ -230,6 +239,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -267,6 +277,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -314,6 +325,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -357,6 +369,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -404,6 +417,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -451,6 +465,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -494,6 +509,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -537,6 +553,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -585,6 +602,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -631,6 +649,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "Producer Keychain Key not found",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -675,6 +694,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -716,6 +736,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -784,6 +805,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -833,6 +855,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
           description: "Producer Keychain or E-service not found",
         }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
@@ -877,6 +900,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "Producer Keychain or E-service link not found",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       tags: [apiTags.producerKeychain],
     },
