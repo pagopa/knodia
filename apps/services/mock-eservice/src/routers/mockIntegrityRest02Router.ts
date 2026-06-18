@@ -10,7 +10,11 @@ import {
   INTEGRITY_REST_02_MOCK_ESERVICE_VERSION_ID,
   INTEGRITY_REST_02_MOCK_PRODUCER_ID,
 } from "../integrityRest02/mockup.ts";
-import { API_CompanyAddress, API_CompanyUidPathParam } from "../models/api.ts";
+import {
+  API_CompanyAddress,
+  API_CompanyUidPathParam,
+  API_IntegrityRest02Headers,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   retrieveLegalEntity,
@@ -63,6 +67,7 @@ export const mockIntegrityRest02Router: FastifyPluginAsyncZod<
             "No legal entity found for the uid_company, or no address is available for it",
         }),
       },
+      responseHeaders: API_IntegrityRest02Headers,
       summary: "Get company address",
       tags: [apiTags.companyAddress],
     },

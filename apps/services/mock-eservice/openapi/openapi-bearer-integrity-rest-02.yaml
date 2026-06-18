@@ -156,6 +156,26 @@ components:
         - address
         - legalEntity
       additionalProperties: false
+  headers:
+    IntegrityRest02DigestHeader:
+      required: true
+      schema:
+        type: string
+      description: Digest of the body using the canonical JSON representation of the
+        response body. The digest is calculated using the SHA-256 algorithm on
+        the response body exactly as it is sent to the client, encoded in Base64
+        as per RFC 3230.
+    IntegrityRest02KnodiaJwtSignatureHeader:
+      required: true
+      schema:
+        type: string
+        format: jwt
+      description: "The `Knodia-JWT-Signature` header contains a JSON Web Signature
+        (JWS) signed with the E-service Producer private key. It ensures payload
+        integrity and non-repudiation across all responses (both success and
+        error), in compliance with: 1) Linee Guida sull'interoperabilità tecnica
+        delle Pubbliche Amministrazioni - Pattern di sicurezza, 2) RFC 7515, 3)
+        RFC 7519"
 paths:
   /legal-entities/{uidCompany}/address:
     get:
@@ -178,6 +198,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CompanyAddress"
+          headers:
+            digest:
+              $ref: "#/components/headers/IntegrityRest02DigestHeader"
+            knodia-jwt-signature:
+              $ref: "#/components/headers/IntegrityRest02KnodiaJwtSignatureHeader"
         "400":
           description: Invalid uid_company
           content:
@@ -186,6 +211,11 @@ paths:
                 description: Invalid uid_company
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            digest:
+              $ref: "#/components/headers/IntegrityRest02DigestHeader"
+            knodia-jwt-signature:
+              $ref: "#/components/headers/IntegrityRest02KnodiaJwtSignatureHeader"
         "401":
           description: Unauthorized
           content:
@@ -194,6 +224,11 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            digest:
+              $ref: "#/components/headers/IntegrityRest02DigestHeader"
+            knodia-jwt-signature:
+              $ref: "#/components/headers/IntegrityRest02KnodiaJwtSignatureHeader"
         "404":
           description: No legal entity found for the uid_company, or no address is
             available for it
@@ -204,6 +239,11 @@ paths:
                   available for it
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            digest:
+              $ref: "#/components/headers/IntegrityRest02DigestHeader"
+            knodia-jwt-signature:
+              $ref: "#/components/headers/IntegrityRest02KnodiaJwtSignatureHeader"
 servers:
   - description: Mock E-service API
     url: /
