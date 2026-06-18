@@ -4,8 +4,8 @@ import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanst
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { changeEmail, confirmOnboarding, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
-import type { ChangeEmailData, ChangeEmailError, ChangeEmailResponse, ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
+import { changeEmail, confirmOnboarding, deleteUser, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession } from '../sdk.gen.ts';
+import type { ChangeEmailData, ChangeEmailError, ChangeEmailResponse, ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -118,6 +118,23 @@ export const changeEmailMutation = (options?: Partial<Options<ChangeEmailData>>)
     const mutationOptions: UseMutationOptions<ChangeEmailResponse, AxiosError<ChangeEmailError>, Options<ChangeEmailData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await changeEmail({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Request the deletion of the caller signup user
+ */
+export const deleteUserMutation = (options?: Partial<Options<DeleteUserData>>): UseMutationOptions<DeleteUserResponse, AxiosError<DeleteUserError>, Options<DeleteUserData>> => {
+    const mutationOptions: UseMutationOptions<DeleteUserResponse, AxiosError<DeleteUserError>, Options<DeleteUserData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteUser({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

@@ -246,6 +246,36 @@ describe("GET /eservices (getEservices)", () => {
     },
   );
 
+  it("returns an empty page when the consumer has no remote agreements", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/eservices")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      pagination: { ...parsedDefaultQuery, total: 0 },
+      results: [],
+    });
+    expect(getAgreementsMock).not.toHaveBeenCalled();
+  });
+
+  it("returns 501 when the consumer has agreements on more than one knode", async () => {
+    await remoteResourceDbService.insertAgreement(
+      testCases[0]!.remoteAgreement,
+    );
+    await remoteResourceDbService.insertAgreement({
+      ...testCases[1]!.remoteAgreement,
+      knodeId: "Lynx",
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/eservices")
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(501);
+    expect(getAgreementsMock).not.toHaveBeenCalled();
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {

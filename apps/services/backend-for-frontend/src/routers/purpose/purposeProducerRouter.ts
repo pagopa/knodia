@@ -174,17 +174,15 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
               })
               .then((res) => res.data.results),
           getEntityId: (purpose) => purpose.consumer.id,
-          getKnodeId: (purpose) => KnodeId.parse(purpose.consumer.knodeId),
           items: data.results,
+          knodeId: config.knodeId,
         }),
       ]);
 
       const results = data.results.map((purpose) =>
         toAPI_ProducerPurpose({
           consumer: assertEntityExists(
-            consumersMap
-              .get(purpose.consumer.knodeId)
-              ?.get(unsafeBrandExternalId(purpose.consumer.id)),
+            consumersMap.get(unsafeBrandExternalId(purpose.consumer.id)),
             `Consumer organization ${purpose.consumer.id} owned by Knode ${purpose.consumer.knodeId} not found for Purpose ${purpose.id}`,
           ),
           eservice: assertEntityExists(

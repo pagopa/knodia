@@ -9,7 +9,6 @@ import {
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
@@ -102,8 +101,8 @@ const enrichAgreements = async ({
           })
           .then((res) => res.data.results),
       getEntityId: (agreement) => agreement.consumer.id,
-      getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
       items: agreements,
+      knodeId: config.knodeId,
     }),
   ]);
 
@@ -111,9 +110,7 @@ const enrichAgreements = async ({
     toAPI_ProducerAgreement({
       agreement,
       consumer: assertEntityExists(
-        consumersMap
-          .get(agreement.consumer.knodeId)
-          ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+        consumersMap.get(unsafeBrandExternalId(agreement.consumer.id)),
         `Consumer organization ${agreement.consumer.id} owned by Knode ${agreement.consumer.knodeId} not found for Agreement ${agreement.id}`,
       ),
       eservice: assertEntityExists(

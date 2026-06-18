@@ -22,7 +22,7 @@ export function useCreatePurposeReceiveData(
     ...createConsumerPurposeMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
-        consumerPurposesByEserviceQuery(eserviceId),
+        consumerPurposesByEserviceQuery(eserviceId, knodeId),
       );
 
       navigate({
