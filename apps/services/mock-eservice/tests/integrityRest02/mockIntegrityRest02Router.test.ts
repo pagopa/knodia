@@ -44,7 +44,7 @@ import {
   vi,
 } from "vitest";
 
-import type { API_CompanyAddressResponse } from "../../src/models/api.ts";
+import type { API_CompanyAddress } from "../../src/models/api.ts";
 
 import {
   INTEGRITY_REST_02_MOCK_ESERVICE_ID,
@@ -129,7 +129,7 @@ describe("mock-eservice integrity REST 02 router", () => {
       const token = await signToken();
       const res = await getCompanyAddress({ token });
 
-      const expectedResponse: API_CompanyAddressResponse = {
+      const expectedResponse: API_CompanyAddress = {
         address: retrieveLegalEntityAddress(SAMPLE_UID),
         legalEntity: retrieveLegalEntity(SAMPLE_UID),
       };

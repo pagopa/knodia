@@ -236,14 +236,13 @@ export const API_CompanyUidPathParam = z.strictObject({
   uidCompany: API_CompanyUid,
 });
 
-export const API_CompanyAddressResponse = z
+export const API_CompanyAddress = z
   .strictObject({
     address: API_Address,
     legalEntity: API_LegalEntity,
   })
   .meta({
-    id: "CompanyAddressResponse",
+    description: "Address of a company in the registry",
+    id: "CompanyAddress",
   });
-export type API_CompanyAddressResponse = z.infer<
-  typeof API_CompanyAddressResponse
->;
+export type API_CompanyAddress = z.infer<typeof API_CompanyAddress>;
