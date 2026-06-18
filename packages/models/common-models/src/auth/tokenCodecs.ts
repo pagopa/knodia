@@ -23,12 +23,12 @@ export const BaseJwtClaims = z.object({
 });
 export type BaseJwtClaims = z.infer<typeof BaseJwtClaims>;
 
-const BaseTokenClaims = BaseJwtClaims.extend({
+const KnodiaJwtClaims = BaseJwtClaims.extend({
   aud: z.union([z.string(), z.array(z.string())]),
   sub: z.string(),
 });
 
-const UserTokenClaims = BaseTokenClaims.extend({
+const UserTokenClaims = KnodiaJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
@@ -38,7 +38,7 @@ const UserTokenClaims = BaseTokenClaims.extend({
 // E-service access tokens are consumed by external platforms that don't need
 // to discriminate Knodia token types, so this codec deliberately omits the
 // `type` literal carried by every other token codec in this file.
-export const EserviceAccessTokenClaims = BaseTokenClaims.extend({
+export const EserviceAccessTokenClaims = KnodiaJwtClaims.extend({
   client_id: ConsumerKeychainId,
   cnf: z.strictObject({ jkt: z.string() }).optional(),
   consumer: z.strictObject({
@@ -59,7 +59,7 @@ export type EserviceAccessTokenClaims = z.infer<
   typeof EserviceAccessTokenClaims
 >;
 
-export const KnodeApiAccessTokenClaims = BaseTokenClaims.extend({
+export const KnodeApiAccessTokenClaims = KnodiaJwtClaims.extend({
   client_id: KnodeApiKeychainId,
   keychain: z.strictObject({ id: KnodeApiKeychainId, knode_id: KnodeId }),
   nbf: z.int(),
@@ -76,12 +76,12 @@ export const UISessionTokenClaims = UserTokenClaims.extend({
 });
 export type UISessionTokenClaims = z.infer<typeof UISessionTokenClaims>;
 
-export const InternalTokenClaims = BaseTokenClaims.extend({
+export const InternalTokenClaims = KnodiaJwtClaims.extend({
   type: z.literal("internal"),
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
-export const UISignupSessionTokenClaims = BaseTokenClaims.extend({
+export const UISignupSessionTokenClaims = KnodiaJwtClaims.extend({
   dateOfBirth: z.string(),
   familyName: z.string(),
   fiscalNumber: z.string().optional(),
@@ -106,7 +106,7 @@ export type UISessionRefreshTokenClaims = z.infer<
 export const ExternalUISessionScope = z.enum(["agreement-activation"]);
 export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
 
-const ExternalUISessionResourceClaims = BaseTokenClaims.extend({
+const ExternalUISessionResourceClaims = KnodiaJwtClaims.extend({
   agreement: z.strictObject({ id: AgreementId, knode_id: KnodeId }),
   consumer: z.strictObject({
     id: ExternalId<OrganizationId>(),
