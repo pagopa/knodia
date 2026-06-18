@@ -5,6 +5,7 @@ import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import { ReadmodelPurposeConfig } from "@knodia/db-readmodel-purpose/config";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
+import { RateLimiterConfig } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
@@ -14,6 +15,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(ReadmodelKeychainConfig)
   .and(ReadmodelPurposeConfig)
   .and(TargetKnodeUrlsConfig)
+  .and(RateLimiterConfig)
   .and(
     z
       .object({

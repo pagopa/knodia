@@ -57,6 +57,12 @@ describe("mock-eservice Bearer access-token verification", () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ dateOfBirth: "2003-06-12" });
+    // Guard against the regression where mock-eservice's auth plugin set
+    // `accessTokenClaims` but `rateLimitPlugin` only read `authData`,
+    // silently disabling rate-limit on every protected route.
+    expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+    expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
   });
 
   it("returns 404 when the notation is not in the dataset", async () => {

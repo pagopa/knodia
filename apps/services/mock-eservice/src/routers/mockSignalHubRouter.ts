@@ -82,6 +82,7 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
           description:
             "No natural person found for the Codice Fiscale, or no residence address found for that person",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get residence",
       tags: [apiTags.residence],
@@ -121,6 +122,7 @@ export const mockSignalHubRouter: FastifyPluginAsyncZod<
           description: "Pseudonymization parameters for this e-service",
         }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get pseudonymization",
       tags: [apiTags.residence],
