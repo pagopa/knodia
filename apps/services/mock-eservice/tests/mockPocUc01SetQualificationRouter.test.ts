@@ -71,6 +71,10 @@ describe("mock-eservice setQualification router", () => {
         acknowledged: true,
         uidStudent: SAMPLE_STUDENT,
       });
+      // The route is behind the rate-limit plugin; assert the limiter ran.
+      expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+      expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+      expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
     });
 
     it("returns 404 for an unknown student", async () => {

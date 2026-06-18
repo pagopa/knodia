@@ -64,6 +64,10 @@ describe("mock-eservice qualifications router", () => {
       expect(qualification.publisher.legalName).toBe(
         "Istituto Tecnico E. Pantaleo",
       );
+      // The route is behind the rate-limit plugin; assert the limiter ran.
+      expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+      expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+      expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
     });
 
     it("filters by iscedfCode", async () => {
