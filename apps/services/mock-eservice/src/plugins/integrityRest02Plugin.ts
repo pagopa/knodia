@@ -32,6 +32,12 @@ export const integrityRest02Plugin =
   fastifyPlugin<IntegrityRest02PluginOptions>(
     async (fastify, { integrityRest02Config, integrityRest02Generator }) => {
       fastify.addHook("onSend", async (_request, response, payload) => {
+        // Do not sign error responses. This preserves original status codes
+        // (e.g. 401 from auth) and avoids requiring auth claims on failures.
+        if (response.statusCode >= 400) {
+          return payload;
+        }
+
         const { correlationId } = getContextValues(requestContext);
 
         const claims = retrieveAccessTokenClaims();
