@@ -9,7 +9,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
   '00000000-0000-4000-8000-000000000004',
   '{"en": "Mockup 04 Company Digital Domicile (Receive data) - Lynx"}'::jsonb,
-  '{"en": "Cross-Border Receive data E-Service that allows forwarding the digital domicile of a legal entity. The signature is ACK = sendDigitalContact(legal_entity, contact_point). The Producer publishes pre-filled lawfulness-of-processing forms for the Consumer to choose from when creating a Purpose."}'::jsonb,
+  '{"en": "Cross-Border Receive data E-Service for forwarding the digital domicile of a legal entity. Signature: ACK = sendDigitalContact(legal_entity, contact_point). Producer publishes pre-filled lawfulness forms the Consumer picks when creating a Purpose."}'::jsonb,
   'ReceiveData',
   true, false,
   0, now(), now()
@@ -103,7 +103,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'e4a7d3f6-ab5c-4094-9f4a-4d7e1e6f8f3b',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  '{"en": "Retrieve company contacts — with confidential third-party data"}'::jsonb,
+  '{"en": "Company contacts — with confidential third-party data"}'::jsonb,
   '{"en": "Retrieve a company''s contacts for institutional communications, with access to confidential or strictly reserved third-party non-personal data."}'::jsonb,
   '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"YES","usesThirdPartyConfidentialData":"YES","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
@@ -122,7 +122,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'f5b8e4a7-bc6d-41a5-aa5b-5e8f2f7a9a4c',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  '{"en": "Retrieve company contacts — with non-confidential third-party data"}'::jsonb,
+  '{"en": "Company contacts — with non-confidential third-party data"}'::jsonb,
   '{"en": "Retrieve a company''s contacts for institutional communications, with access to third-party non-personal data that is not confidential or strictly reserved."}'::jsonb,
   '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"YES","usesThirdPartyConfidentialData":"NO","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
@@ -141,7 +141,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_purpose_form_option" (
 ) VALUES (
   'a6c9f5b8-cd7e-42b6-bb6c-6f9a3a8b0b5d',
   'b1d4a9c6-7e29-4d61-9c12-1a4f8b3e5c08',
-  '{"en": "Retrieve company contacts — without third-party data"}'::jsonb,
+  '{"en": "Company contacts — without third-party data"}'::jsonb,
   '{"en": "Retrieve a company''s contacts for institutional communications, without access to any third-party non-personal data."}'::jsonb,
   '{"purpose":"INSTITUTIONAL","institutionalPurpose":"Service to receive a company''s contacts.","usesPersonalData":"NO","usesThirdPartyNonPersonalData":"NO","isRequestOnBehalfOfThirdParties":"NO"}'::jsonb,
   '1.0',
