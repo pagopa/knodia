@@ -30,8 +30,9 @@ export const integrityRest02Plugin =
   fastifyPlugin<IntegrityRest02PluginOptions>(
     async (fastify, { integrityRest02Config, integrityRest02Generator }) => {
       fastify.addHook("onSend", async (_request, response, payload) => {
-        const { accessTokenClaims, correlationId } =
-          getContextValues(requestContext);
+        const { correlationId } = getContextValues(requestContext);
+
+        const accessTokenClaims = requestContext.get("accessTokenClaims");
 
         const digest = calculateIntegrityRest02Digest(payload);
         const { serialized } =
