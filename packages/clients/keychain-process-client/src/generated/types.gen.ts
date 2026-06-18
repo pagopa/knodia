@@ -226,6 +226,10 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
+         * Producer Knode ID that owns the Purpose. Required when `purposeId` is set.
+         */
+        knodeId?: KnodeId;
+        /**
          * Filter by Consumer Keychain name
          */
         name?: string;
@@ -234,9 +238,9 @@ export type GetConsumerKeychainsData = {
          */
         ownerId?: OrganizationId;
         /**
-         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         * Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`.
          */
-        purpose?: string;
+        purposeId?: string;
     };
     url: '/consumerKeychains';
 };

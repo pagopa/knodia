@@ -246,6 +246,7 @@ components:
         - messageIdentifier
         - receivedAt
       additionalProperties: false
+  headers: {}
 paths:
   /relay:
     post:

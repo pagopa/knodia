@@ -8,6 +8,7 @@ import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontain
 import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
 import { createTestInfraNetwork } from "./packages/test-commons/src/testcontainers/network"
 import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
+import { setupRedisTestContainer } from "./packages/test-commons/src/testcontainers/redis"
 import type { TestProject } from 'vitest/node'
 
 export default async function setup(project: TestProject) {
@@ -18,11 +19,13 @@ export default async function setup(project: TestProject) {
     { container: kafkaContainer, broker },
     { container: minioContainer, connectionString: minioConnectionString },
     { container: dynamoDBContainer, endpoint: dynamoDBEndpoint },
+    { container: redisContainer },
   ] = await Promise.all([
     setupPostgresTestContainer(network),
     setupKafkaTestContainer(),
     setupMinioTestContainer(),
     setupDynamoDBTestContainer(network),
+    setupRedisTestContainer(),
   ]);
 
   // Single Flyway container: creates roles + migrates all template databases
@@ -43,6 +46,7 @@ export default async function setup(project: TestProject) {
       kafkaContainer.stop({ removeVolumes: true }),
       minioContainer.stop({ removeVolumes: true }),
       dynamoDBContainer.stop({ removeVolumes: true }),
+      redisContainer.stop({ removeVolumes: true }),
     ]);
     await network.stop();
   };

@@ -4,6 +4,7 @@ import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserCommand,
   AdminListGroupsForUserCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
@@ -99,6 +100,19 @@ export function buildCognitoIdmClient({
           Username: input.username,
           UserPoolId: cognitoUserPoolId,
         }),
+      );
+    },
+
+    async deleteOrganizationUser(input: { username: string }): Promise<void> {
+      // Idempotent for Kafka replays: a user already removed by a prior attempt
+      // makes AdminDeleteUser raise UserNotFoundException, which we swallow.
+      await swallowCognitoError("UserNotFoundException", () =>
+        client.send(
+          new AdminDeleteUserCommand({
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
       );
     },
 

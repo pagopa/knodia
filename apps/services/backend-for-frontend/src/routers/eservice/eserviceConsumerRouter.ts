@@ -131,6 +131,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Search for E-services",
       tags: [apiTags.eservice],
@@ -179,6 +180,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           headers,
           query: {
             eserviceId: req.params.eserviceId,
+            knodeId: req.query.knodeId,
             limit: 1,
             offset: 0,
           },
@@ -208,6 +210,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get E-service details",
       tags: [apiTags.eservice],
@@ -272,6 +275,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         409: API_Problem.meta({
           description: "E-service mode is not ReceiveData",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get Consumer PurposeFormOptions",
       tags: [apiTags.eservice],
@@ -332,6 +336,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Download E-service latest Version Interface",
       tags: [apiTags.eservice],
@@ -389,6 +394,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 50,
                 offset: 0,
                 state: [API_PurposeState.enum.Active],
@@ -402,6 +408,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               headers,
               query: {
                 eserviceId: eservice.id,
+                knodeId: eservice.knodeId,
                 limit: 1,
                 offset: 0,
               },
@@ -416,10 +423,11 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 client: keychainProcessClient,
                 headers,
                 query: {
+                  knodeId: purpose.knodeId,
                   limit: 50,
                   offset: 0,
                   ownerId: organizationId,
-                  purpose: `${purpose.knodeId}:${purpose.id}`,
+                  purposeId: purpose.id,
                 },
               }),
             ),
@@ -454,12 +462,17 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerEservicesQueryParams,
       response: {
         200: API_ConsumerEservices.meta({
-          description: "E-services retrieved successfully",
+          description:
+            "E-services retrieved (sorted by most recently updated agreement first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get E-services",
       tags: [apiTags.eservice],
