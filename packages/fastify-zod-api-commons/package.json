@@ -18,6 +18,7 @@
     "./http": "./src/utils/http.ts",
     "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
+    "./rate-limit": "./src/rate-limit/index.ts",
     "./security": "./src/utils/openapi-zod-plugin/security.ts",
     "./problemBuilder": "./src/utils/problemBuilder.ts",
     "./startServer": "./src/utils/startServer.ts",
@@ -45,6 +46,8 @@
     "fastify-plugin": "catalog:",
     "jose": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "rate-limiter-flexible": "catalog:",
+    "redis": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:",
     "zod-validation-error": "catalog:"

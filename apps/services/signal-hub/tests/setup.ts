@@ -17,6 +17,7 @@ import {
   purposeWriterServiceBuilder,
 } from "@knodia/db-readmodel-purpose/writer";
 import { signalHubSignal } from "@knodia/db-signal-hub";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { setupSignalHubTestDatabase } from "@knodia/test-commons/signalHubDb";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
@@ -57,9 +58,12 @@ beforeAll(async () => {
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
+    rateLimiter: noopRateLimiter,
     readmodelDb,
     signalHubDb,
   });
+
+  await app.ready();
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
@@ -71,7 +75,11 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await Promise.all([signalHubDb.$client.end(), readmodelDb.$client.end()]);
+  await Promise.all([
+    app.close(),
+    signalHubDb.$client.end(),
+    readmodelDb.$client.end(),
+  ]);
 });
 
 export {

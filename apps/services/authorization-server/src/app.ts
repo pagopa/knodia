@@ -9,6 +9,10 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  type RateLimiter,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import { makeK2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
@@ -26,10 +30,12 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 export function buildApp({
   config,
   dynamoClient,
+  rateLimiter,
   readmodelDb,
 }: {
   config: AuthorizationServerConfig;
   dynamoClient?: DynamoDBClient;
+  rateLimiter: RateLimiter;
   readmodelDb: NodePgDatabase;
 }) {
   const tokenGenerator = tokenGeneratorBuilder();
@@ -72,12 +78,14 @@ export function buildApp({
 
   app.removeAllContentTypeParsers();
   app.register(formBody);
+  app.register(rateLimitResponseHeadersPlugin);
   app.register(healthRouter);
   app.register(tokenRouter, {
     tokenService: tokenServiceBuilder({
       config,
       dpopProofStore,
       getK2K2GatewayApiClient,
+      rateLimiter,
       readmodelService: readmodelServiceBuilder(readmodelDb),
       tokenGenerator,
     }),
@@ -85,17 +93,22 @@ export function buildApp({
 
   app.addHook("onClose", async () => {
     await dpopProofStore.close();
+    await rateLimiter.disconnect();
   });
 
   return app;
 }
 
-export function buildAppFromConfig(config: AuthorizationServerConfig) {
+export function buildAppFromConfig(
+  config: AuthorizationServerConfig,
+  rateLimiter: RateLimiter,
+) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
 
   const app = buildApp({
     config,
+    rateLimiter,
     readmodelDb,
   });
 

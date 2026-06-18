@@ -3,6 +3,7 @@ import {
   AuthConfig,
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
+import { RateLimiterConfig } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { LoggerConfig } from "@knodia/logger/config";
 import { PollingConfig } from "@knodia/polling/config";
 import z from "zod";
@@ -10,6 +11,7 @@ import z from "zod";
 const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(PollingConfig)
+  .and(RateLimiterConfig)
   .and(
     z
       .object({
