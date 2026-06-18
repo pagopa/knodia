@@ -24,20 +24,12 @@ export const PurposeTemplate = z.strictObject({
 });
 export type PurposeTemplate = z.infer<typeof PurposeTemplate>;
 
-// E-service IDs seeded in the Orion namespace by scripts/seed/sql/orion/*.sql.
-// These match the "Mockup 01" (bearer-token, date-of-birth) and "Mockup 02"
-// (DPoP-token, digital-contact) mock e-services referenced by the
-// purpose-template deliverables on Confluence.
 const ORION_MOCKUP_01_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "e7f5837e-75f4-431d-9465-73366d27bef2",
 );
 const ORION_MOCKUP_02_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "905c4569-95db-4670-a146-8239fcb3f41a",
 );
-// E-service ID seeded in the Lynx namespace by scripts/seed/sql/lynx/*.sql.
-// This is the POC UC02 "Company Information & Evidence" cross-border
-// e-service, which the Lynx purpose-template deliverable on Confluence
-// targets as "mockup 05".
 const LYNX_MOCKUP_05_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "16895bc2-deb0-427c-8c25-336207b2d0a1",
 );
