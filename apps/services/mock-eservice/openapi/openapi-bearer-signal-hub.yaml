@@ -213,6 +213,35 @@ components:
         - cryptoHashFunction
         - seed
       additionalProperties: false
+  headers:
+    RateLimitLimit:
+      description: Total requests allowed in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRemaining:
+      description: Requests remaining in the current window.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitReset:
+      description: Seconds before the current window resets.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
+    RateLimitRetryAfter:
+      description: Seconds the client should wait before retrying.
+      required: false
+      schema:
+        format: int32
+        minimum: 0
+        type: integer
 paths:
   /natural-persons/{identifierNotation}/residence:
     get:
@@ -237,6 +266,13 @@ paths:
                 description: Residence for the requested natural person
                 allOf:
                   - $ref: "#/components/schemas/Residence"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "400":
           description: Invalid Codice Fiscale
           content:
@@ -245,6 +281,13 @@ paths:
                 description: Invalid Codice Fiscale
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -253,6 +296,13 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "404":
           description: No natural person found for the Codice Fiscale, or no residence
             address found for that person
@@ -263,6 +313,30 @@ paths:
                   address found for that person
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "429":
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                description: Too Many Requests
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+            Retry-After:
+              $ref: "#/components/headers/RateLimitRetryAfter"
   /natural-persons/pseudonymization:
     get:
       operationId: getPseudonymization
@@ -281,6 +355,13 @@ paths:
                 description: Pseudonymization parameters for this e-service
                 allOf:
                   - $ref: "#/components/schemas/Pseudonymization"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
         "401":
           description: Unauthorized
           content:
@@ -289,6 +370,30 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "429":
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                description: Too Many Requests
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+            Retry-After:
+              $ref: "#/components/headers/RateLimitRetryAfter"
 servers:
   - description: Mock E-service API
     url: /

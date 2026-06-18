@@ -43,7 +43,7 @@ describe("POST /user/changeEmail (changeEmail)", () => {
     const [sendPayload] = kafkaProducerMock.send.mock.calls[0] ?? [];
 
     expect(sendPayload).toEqual({
-      messages: [{ value: expect.any(String) }],
+      messages: [{ key: signupUser.signupUserId, value: expect.any(String) }],
       topic: "test-signup-topic",
     });
 

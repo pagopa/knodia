@@ -143,7 +143,8 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       ),
       query: {
         ...defaultQuery,
-        purpose: `${knodeId}:${purpose1.id}`,
+        knodeId,
+        purposeId: purpose1.id,
       },
       testCase:
         "filter by purpose producer (purposeId, knodeId), sort by updatedAt desc by default",
@@ -179,8 +180,9 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       ),
       query: {
         ...defaultQuery,
+        knodeId,
         ownerId: ownerIdFilter,
-        purpose: `${knodeId}:${purpose1.id}`,
+        purposeId: purpose1.id,
       },
       testCase: "filter by ownerId and purpose together",
       totalCount: 2,

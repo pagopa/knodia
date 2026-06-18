@@ -70,6 +70,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No legal entity found for the uid_company",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get company information",
       tags: [apiTags.pocUc02Companies],
@@ -117,6 +118,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "No legal entity found for the uid_company",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get evidences",
       tags: [apiTags.pocUc02Companies],
@@ -151,6 +153,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
           description: "Pseudonymization parameters for this e-service",
         }),
         401: API_Problem.meta({ description: "Unauthorized" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get evidence pseudonymization",
       tags: [apiTags.pocUc02Companies],
