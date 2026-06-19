@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
 
 import { Modal, TextField } from "@/components/ui";
 import {
@@ -8,8 +7,7 @@ import {
   pollCurrentUserUntilEmail,
 } from "@/services/changeEmail";
 import { changeEmailMutationOptions } from "@/services/queries";
-
-const emailSchema = z.email();
+import { emailSchema } from "@/utils/validation";
 
 // TODO: revise this copy once email change also resets the account and re-sends new credentials.
 const CHANGE_EMAIL_DESCRIPTION =
