@@ -48,6 +48,8 @@ export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
+ * Confirm a user onboarding
+ *
  * Confirm onboarding for the caller user
  */
 export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: Options<ConfirmOnboardingData, ThrowOnError>) => (options.client ?? client).post<ConfirmOnboardingResponses, ConfirmOnboardingErrors, ThrowOnError>({
@@ -61,6 +63,8 @@ export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: 
 });
 
 /**
+ * Change a user email
+ *
  * Request email change for the caller user
  */
 export const changeEmail = <ThrowOnError extends boolean = true>(options: Options<ChangeEmailData, ThrowOnError>) => (options.client ?? client).post<ChangeEmailResponses, ChangeEmailErrors, ThrowOnError>({
@@ -74,6 +78,8 @@ export const changeEmail = <ThrowOnError extends boolean = true>(options: Option
 });
 
 /**
+ * Delete a user
+ *
  * Request the deletion of the caller signup user
  */
 export const deleteUser = <ThrowOnError extends boolean = true>(options?: Options<DeleteUserData, ThrowOnError>) => (options?.client ?? client).post<DeleteUserResponses, DeleteUserErrors, ThrowOnError>({
@@ -83,6 +89,8 @@ export const deleteUser = <ThrowOnError extends boolean = true>(options?: Option
 });
 
 /**
+ * Get the current signup user
+ *
  * Get current signup user onboarding status
  */
 export const getCurrentSignupUser = <ThrowOnError extends boolean = true>(options?: Options<GetCurrentSignupUserData, ThrowOnError>) => (options?.client ?? client).get<GetCurrentSignupUserResponses, GetCurrentSignupUserErrors, ThrowOnError>({

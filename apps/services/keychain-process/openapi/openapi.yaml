@@ -3633,6 +3633,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getProducerKeychainEservices
+      summary: List E-services linked to a Producer Keychain
       tags:
         - producerKeychain
       description: Retrieve a list of E-services linked to a Producer Keychain
@@ -3781,6 +3782,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getProducerKeychainEservice
+      summary: Get an E-service linked to a Producer Keychain
       tags:
         - producerKeychain
       description: Retrieve a specific E-service linked to a Producer Keychain

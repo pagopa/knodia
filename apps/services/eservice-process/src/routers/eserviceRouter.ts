@@ -238,6 +238,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service mode is not ReceiveData",
         }),
       },
+      summary: "Get E-service Purpose form options",
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/purposeFormOptions",

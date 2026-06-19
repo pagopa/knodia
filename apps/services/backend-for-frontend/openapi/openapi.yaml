@@ -7843,6 +7843,7 @@ paths:
   /producerKeychains:
     post:
       operationId: createProducerKeychain
+      summary: Create a Producer Keychain
       tags:
         - producerKeychain
       description: Create a new Producer Keychain
@@ -7932,6 +7933,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     get:
       operationId: getProducerKeychains
+      summary: List Producer Keychains
       tags:
         - producerKeychain
       description: Retrieve a paginated list of Producer Keychains owned by the
@@ -8044,6 +8046,7 @@ paths:
   /producerKeychains/{producerKeychainId}:
     get:
       operationId: getProducerKeychainDetails
+      summary: Get a Producer Keychain
       tags:
         - producerKeychain
       description: Retrieve a Producer Keychain with all its details
@@ -8150,6 +8153,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     patch:
       operationId: updateProducerKeychain
+      summary: Update a Producer Keychain
       tags:
         - producerKeychain
       description: Update a Producer Keychain
@@ -8256,6 +8260,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     delete:
       operationId: deleteProducerKeychain
+      summary: Delete a Producer Keychain
       tags:
         - producerKeychain
       description: Delete a Producer Keychain
@@ -8357,6 +8362,7 @@ paths:
   /producerKeychains/{producerKeychainId}/members:
     post:
       operationId: addProducerKeychainMember
+      summary: Add a Member to a Producer Keychain
       tags:
         - producerKeychain
       description: Add a member to a Producer Keychain
@@ -8478,6 +8484,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     get:
       operationId: getProducerKeychainMembers
+      summary: List Producer Keychain Members
       tags:
         - producerKeychain
       description: Retrieve members of a Producer Keychain
@@ -8602,6 +8609,7 @@ paths:
   /producerKeychains/{producerKeychainId}/members/{userId}:
     delete:
       operationId: removeProducerKeychainMember
+      summary: Remove a Member from a Producer Keychain
       tags:
         - producerKeychain
       description: Remove a Member from a Producer Keychain
@@ -8708,6 +8716,7 @@ paths:
   /producerKeychains/{producerKeychainId}/membership/{userId}:
     get:
       operationId: getProducerKeychainMembership
+      summary: Check a Member of a Producer Keychain
       tags:
         - producerKeychain
       description: Check whether the given User is a Member of a Producer Keychain
@@ -8805,6 +8814,7 @@ paths:
   /producerKeychains/{producerKeychainId}/keys:
     get:
       operationId: getProducerKeychainKeys
+      summary: List Producer Keychain Keys
       tags:
         - producerKeychain
       description: Retrieve keys of a Producer Keychain
@@ -8928,6 +8938,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     post:
       operationId: uploadProducerKeychainKey
+      summary: Upload a Producer Keychain Key
       tags:
         - producerKeychain
       description: Upload a key to a Producer Keychain
@@ -9056,6 +9067,7 @@ paths:
   /producerKeychains/{producerKeychainId}/keys/{keyId}:
     get:
       operationId: downloadProducerKeychainKey
+      summary: Download a Producer Keychain Key
       tags:
         - producerKeychain
       description: Download a Producer Keychain Key
@@ -9168,6 +9180,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     delete:
       operationId: removeProducerKeychainKey
+      summary: Remove a Producer Keychain Key
       tags:
         - producerKeychain
       description: Remove a key from a Producer Keychain
@@ -9274,6 +9287,7 @@ paths:
   /producerKeychains/{producerKeychainId}/eservices:
     get:
       operationId: getProducerKeychainEservices
+      summary: List E-services linked to a Producer Keychain
       tags:
         - producerKeychain
       description: Retrieve E-services linked to a Producer Keychain
@@ -9397,6 +9411,7 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
     post:
       operationId: linkEserviceToProducerKeychain
+      summary: Link an E-service to a Producer Keychain
       tags:
         - producerKeychain
       description: Link an E-service to a Producer Keychain
@@ -9519,6 +9534,7 @@ paths:
   /producerKeychains/{producerKeychainId}/eservices/{eserviceId}:
     delete:
       operationId: unlinkEserviceFromProducerKeychain
+      summary: Unlink an E-service from a Producer Keychain
       tags:
         - producerKeychain
       description: Unlink an E-service from a Producer Keychain

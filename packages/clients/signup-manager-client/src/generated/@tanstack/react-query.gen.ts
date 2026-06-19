@@ -101,6 +101,8 @@ export const exchangeOidcCodeOptions = (options: Options<ExchangeOidcCodeData>) 
 });
 
 /**
+ * Confirm a user onboarding
+ *
  * Confirm onboarding for the caller user
  */
 export const confirmOnboardingMutation = (options?: Partial<Options<ConfirmOnboardingData>>): UseMutationOptions<ConfirmOnboardingResponse, AxiosError<ConfirmOnboardingError>, Options<ConfirmOnboardingData>> => {
@@ -118,6 +120,8 @@ export const confirmOnboardingMutation = (options?: Partial<Options<ConfirmOnboa
 };
 
 /**
+ * Change a user email
+ *
  * Request email change for the caller user
  */
 export const changeEmailMutation = (options?: Partial<Options<ChangeEmailData>>): UseMutationOptions<ChangeEmailResponse, AxiosError<ChangeEmailError>, Options<ChangeEmailData>> => {
@@ -135,6 +139,8 @@ export const changeEmailMutation = (options?: Partial<Options<ChangeEmailData>>)
 };
 
 /**
+ * Delete a user
+ *
  * Request the deletion of the caller signup user
  */
 export const deleteUserMutation = (options?: Partial<Options<DeleteUserData>>): UseMutationOptions<DeleteUserResponse, AxiosError<DeleteUserError>, Options<DeleteUserData>> => {
@@ -154,6 +160,8 @@ export const deleteUserMutation = (options?: Partial<Options<DeleteUserData>>): 
 export const getCurrentSignupUserQueryKey = (options?: Options<GetCurrentSignupUserData>) => createQueryKey('getCurrentSignupUser', options);
 
 /**
+ * Get the current signup user
+ *
  * Get current signup user onboarding status
  */
 export const getCurrentSignupUserOptions = (options?: Options<GetCurrentSignupUserData>) => queryOptions<GetCurrentSignupUserResponse, AxiosError<GetCurrentSignupUserError>, GetCurrentSignupUserResponse, ReturnType<typeof getCurrentSignupUserQueryKey>>({

@@ -201,6 +201,7 @@ paths:
   /user/confirmOnboarding:
     post:
       operationId: confirmOnboarding
+      summary: Confirm a user onboarding
       tags:
         - signup
       description: Confirm onboarding for the caller user
@@ -248,6 +249,7 @@ paths:
   /user/changeEmail:
     post:
       operationId: changeEmail
+      summary: Change a user email
       tags:
         - signup
       description: Request email change for the caller user
@@ -295,6 +297,7 @@ paths:
   /user/delete:
     post:
       operationId: deleteUser
+      summary: Delete a user
       tags:
         - signup
       description: Request the deletion of the caller signup user
@@ -328,6 +331,7 @@ paths:
   /user/me:
     get:
       operationId: getCurrentSignupUser
+      summary: Get the current signup user
       tags:
         - signup
       description: Get current signup user onboarding status

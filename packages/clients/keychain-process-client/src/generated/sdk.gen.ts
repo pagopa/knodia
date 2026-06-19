@@ -587,6 +587,8 @@ export const getProducerKeychainKey = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * List E-services linked to a Producer Keychain
+ *
  * Retrieve a list of E-services linked to a Producer Keychain
  */
 export const getProducerKeychainEservices = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainEservicesData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainEservicesResponses, GetProducerKeychainEservicesErrors, ThrowOnError>({
@@ -623,6 +625,8 @@ export const unlinkEserviceFromProducerKeychain = <ThrowOnError extends boolean 
 });
 
 /**
+ * Get an E-service linked to a Producer Keychain
+ *
  * Retrieve a specific E-service linked to a Producer Keychain
  */
 export const getProducerKeychainEservice = <ThrowOnError extends boolean = true>(options: Options<GetProducerKeychainEserviceData, ThrowOnError>) => (options.client ?? client).get<GetProducerKeychainEserviceResponses, GetProducerKeychainEserviceErrors, ThrowOnError>({

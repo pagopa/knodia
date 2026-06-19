@@ -1307,6 +1307,8 @@ export const getKnodeApiKeychainMembershipOptions = (options: Options<GetKnodeAp
 export const getProducerKeychainsQueryKey = (options: Options<GetProducerKeychainsData>) => createQueryKey('getProducerKeychains', options);
 
 /**
+ * List Producer Keychains
+ *
  * Retrieve a paginated list of Producer Keychains owned by the current user organization
  */
 export const getProducerKeychainsOptions = (options: Options<GetProducerKeychainsData>) => queryOptions<GetProducerKeychainsResponse, AxiosError<GetProducerKeychainsError>, GetProducerKeychainsResponse, ReturnType<typeof getProducerKeychainsQueryKey>>({
@@ -1325,6 +1327,8 @@ export const getProducerKeychainsOptions = (options: Options<GetProducerKeychain
 export const getProducerKeychainsInfiniteQueryKey = (options: Options<GetProducerKeychainsData>): QueryKey<Options<GetProducerKeychainsData>> => createQueryKey('getProducerKeychains', options, true);
 
 /**
+ * List Producer Keychains
+ *
  * Retrieve a paginated list of Producer Keychains owned by the current user organization
  */
 export const getProducerKeychainsInfiniteOptions = (options: Options<GetProducerKeychainsData>) => infiniteQueryOptions<GetProducerKeychainsResponse, AxiosError<GetProducerKeychainsError>, InfiniteData<GetProducerKeychainsResponse>, QueryKey<Options<GetProducerKeychainsData>>, number | Pick<QueryKey<Options<GetProducerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1350,6 +1354,8 @@ export const getProducerKeychainsInfiniteOptions = (options: Options<GetProducer
 });
 
 /**
+ * Create a Producer Keychain
+ *
  * Create a new Producer Keychain
  */
 export const createProducerKeychainMutation = (options?: Partial<Options<CreateProducerKeychainData>>): UseMutationOptions<CreateProducerKeychainResponse, AxiosError<CreateProducerKeychainError>, Options<CreateProducerKeychainData>> => {
@@ -1367,6 +1373,8 @@ export const createProducerKeychainMutation = (options?: Partial<Options<CreateP
 };
 
 /**
+ * Delete a Producer Keychain
+ *
  * Delete a Producer Keychain
  */
 export const deleteProducerKeychainMutation = (options?: Partial<Options<DeleteProducerKeychainData>>): UseMutationOptions<DeleteProducerKeychainResponse, AxiosError<DeleteProducerKeychainError>, Options<DeleteProducerKeychainData>> => {
@@ -1386,6 +1394,8 @@ export const deleteProducerKeychainMutation = (options?: Partial<Options<DeleteP
 export const getProducerKeychainDetailsQueryKey = (options: Options<GetProducerKeychainDetailsData>) => createQueryKey('getProducerKeychainDetails', options);
 
 /**
+ * Get a Producer Keychain
+ *
  * Retrieve a Producer Keychain with all its details
  */
 export const getProducerKeychainDetailsOptions = (options: Options<GetProducerKeychainDetailsData>) => queryOptions<GetProducerKeychainDetailsResponse, AxiosError<GetProducerKeychainDetailsError>, GetProducerKeychainDetailsResponse, ReturnType<typeof getProducerKeychainDetailsQueryKey>>({
@@ -1402,6 +1412,8 @@ export const getProducerKeychainDetailsOptions = (options: Options<GetProducerKe
 });
 
 /**
+ * Update a Producer Keychain
+ *
  * Update a Producer Keychain
  */
 export const updateProducerKeychainMutation = (options?: Partial<Options<UpdateProducerKeychainData>>): UseMutationOptions<UpdateProducerKeychainResponse, AxiosError<UpdateProducerKeychainError>, Options<UpdateProducerKeychainData>> => {
@@ -1421,6 +1433,8 @@ export const updateProducerKeychainMutation = (options?: Partial<Options<UpdateP
 export const getProducerKeychainMembersQueryKey = (options: Options<GetProducerKeychainMembersData>) => createQueryKey('getProducerKeychainMembers', options);
 
 /**
+ * List Producer Keychain Members
+ *
  * Retrieve members of a Producer Keychain
  */
 export const getProducerKeychainMembersOptions = (options: Options<GetProducerKeychainMembersData>) => queryOptions<GetProducerKeychainMembersResponse, AxiosError<GetProducerKeychainMembersError>, GetProducerKeychainMembersResponse, ReturnType<typeof getProducerKeychainMembersQueryKey>>({
@@ -1439,6 +1453,8 @@ export const getProducerKeychainMembersOptions = (options: Options<GetProducerKe
 export const getProducerKeychainMembersInfiniteQueryKey = (options: Options<GetProducerKeychainMembersData>): QueryKey<Options<GetProducerKeychainMembersData>> => createQueryKey('getProducerKeychainMembers', options, true);
 
 /**
+ * List Producer Keychain Members
+ *
  * Retrieve members of a Producer Keychain
  */
 export const getProducerKeychainMembersInfiniteOptions = (options: Options<GetProducerKeychainMembersData>) => infiniteQueryOptions<GetProducerKeychainMembersResponse, AxiosError<GetProducerKeychainMembersError>, InfiniteData<GetProducerKeychainMembersResponse>, QueryKey<Options<GetProducerKeychainMembersData>>, number | Pick<QueryKey<Options<GetProducerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1464,6 +1480,8 @@ export const getProducerKeychainMembersInfiniteOptions = (options: Options<GetPr
 });
 
 /**
+ * Add a Member to a Producer Keychain
+ *
  * Add a member to a Producer Keychain
  */
 export const addProducerKeychainMemberMutation = (options?: Partial<Options<AddProducerKeychainMemberData>>): UseMutationOptions<AddProducerKeychainMemberResponse, AxiosError<AddProducerKeychainMemberError>, Options<AddProducerKeychainMemberData>> => {
@@ -1481,6 +1499,8 @@ export const addProducerKeychainMemberMutation = (options?: Partial<Options<AddP
 };
 
 /**
+ * Remove a Member from a Producer Keychain
+ *
  * Remove a Member from a Producer Keychain
  */
 export const removeProducerKeychainMemberMutation = (options?: Partial<Options<RemoveProducerKeychainMemberData>>): UseMutationOptions<RemoveProducerKeychainMemberResponse, AxiosError<RemoveProducerKeychainMemberError>, Options<RemoveProducerKeychainMemberData>> => {
@@ -1500,6 +1520,8 @@ export const removeProducerKeychainMemberMutation = (options?: Partial<Options<R
 export const getProducerKeychainMembershipQueryKey = (options: Options<GetProducerKeychainMembershipData>) => createQueryKey('getProducerKeychainMembership', options);
 
 /**
+ * Check a Member of a Producer Keychain
+ *
  * Check whether the given User is a Member of a Producer Keychain
  */
 export const getProducerKeychainMembershipOptions = (options: Options<GetProducerKeychainMembershipData>) => queryOptions<GetProducerKeychainMembershipResponse, AxiosError<GetProducerKeychainMembershipError>, GetProducerKeychainMembershipResponse, ReturnType<typeof getProducerKeychainMembershipQueryKey>>({
@@ -1518,6 +1540,8 @@ export const getProducerKeychainMembershipOptions = (options: Options<GetProduce
 export const getProducerKeychainKeysQueryKey = (options: Options<GetProducerKeychainKeysData>) => createQueryKey('getProducerKeychainKeys', options);
 
 /**
+ * List Producer Keychain Keys
+ *
  * Retrieve keys of a Producer Keychain
  */
 export const getProducerKeychainKeysOptions = (options: Options<GetProducerKeychainKeysData>) => queryOptions<GetProducerKeychainKeysResponse, AxiosError<GetProducerKeychainKeysError>, GetProducerKeychainKeysResponse, ReturnType<typeof getProducerKeychainKeysQueryKey>>({
@@ -1536,6 +1560,8 @@ export const getProducerKeychainKeysOptions = (options: Options<GetProducerKeych
 export const getProducerKeychainKeysInfiniteQueryKey = (options: Options<GetProducerKeychainKeysData>): QueryKey<Options<GetProducerKeychainKeysData>> => createQueryKey('getProducerKeychainKeys', options, true);
 
 /**
+ * List Producer Keychain Keys
+ *
  * Retrieve keys of a Producer Keychain
  */
 export const getProducerKeychainKeysInfiniteOptions = (options: Options<GetProducerKeychainKeysData>) => infiniteQueryOptions<GetProducerKeychainKeysResponse, AxiosError<GetProducerKeychainKeysError>, InfiniteData<GetProducerKeychainKeysResponse>, QueryKey<Options<GetProducerKeychainKeysData>>, number | Pick<QueryKey<Options<GetProducerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1561,6 +1587,8 @@ export const getProducerKeychainKeysInfiniteOptions = (options: Options<GetProdu
 });
 
 /**
+ * Upload a Producer Keychain Key
+ *
  * Upload a key to a Producer Keychain
  */
 export const uploadProducerKeychainKeyMutation = (options?: Partial<Options<UploadProducerKeychainKeyData>>): UseMutationOptions<UploadProducerKeychainKeyResponse, AxiosError<UploadProducerKeychainKeyError>, Options<UploadProducerKeychainKeyData>> => {
@@ -1578,6 +1606,8 @@ export const uploadProducerKeychainKeyMutation = (options?: Partial<Options<Uplo
 };
 
 /**
+ * Remove a Producer Keychain Key
+ *
  * Remove a key from a Producer Keychain
  */
 export const removeProducerKeychainKeyMutation = (options?: Partial<Options<RemoveProducerKeychainKeyData>>): UseMutationOptions<RemoveProducerKeychainKeyResponse, AxiosError<RemoveProducerKeychainKeyError>, Options<RemoveProducerKeychainKeyData>> => {
@@ -1598,6 +1628,8 @@ export const downloadProducerKeychainKeyQueryKey = (options: Options<DownloadPro
 
 /**
  * Download a Producer Keychain Key
+ *
+ * Download a Producer Keychain Key
  */
 export const downloadProducerKeychainKeyOptions = (options: Options<DownloadProducerKeychainKeyData>) => queryOptions<DownloadProducerKeychainKeyResponse, AxiosError<DownloadProducerKeychainKeyError>, DownloadProducerKeychainKeyResponse, ReturnType<typeof downloadProducerKeychainKeyQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -1615,6 +1647,8 @@ export const downloadProducerKeychainKeyOptions = (options: Options<DownloadProd
 export const getProducerKeychainEservicesQueryKey = (options: Options<GetProducerKeychainEservicesData>) => createQueryKey('getProducerKeychainEservices', options);
 
 /**
+ * List E-services linked to a Producer Keychain
+ *
  * Retrieve E-services linked to a Producer Keychain
  */
 export const getProducerKeychainEservicesOptions = (options: Options<GetProducerKeychainEservicesData>) => queryOptions<GetProducerKeychainEservicesResponse, AxiosError<GetProducerKeychainEservicesError>, GetProducerKeychainEservicesResponse, ReturnType<typeof getProducerKeychainEservicesQueryKey>>({
@@ -1633,6 +1667,8 @@ export const getProducerKeychainEservicesOptions = (options: Options<GetProducer
 export const getProducerKeychainEservicesInfiniteQueryKey = (options: Options<GetProducerKeychainEservicesData>): QueryKey<Options<GetProducerKeychainEservicesData>> => createQueryKey('getProducerKeychainEservices', options, true);
 
 /**
+ * List E-services linked to a Producer Keychain
+ *
  * Retrieve E-services linked to a Producer Keychain
  */
 export const getProducerKeychainEservicesInfiniteOptions = (options: Options<GetProducerKeychainEservicesData>) => infiniteQueryOptions<GetProducerKeychainEservicesResponse, AxiosError<GetProducerKeychainEservicesError>, InfiniteData<GetProducerKeychainEservicesResponse>, QueryKey<Options<GetProducerKeychainEservicesData>>, number | Pick<QueryKey<Options<GetProducerKeychainEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
@@ -1659,6 +1695,8 @@ export const getProducerKeychainEservicesInfiniteOptions = (options: Options<Get
 
 /**
  * Link an E-service to a Producer Keychain
+ *
+ * Link an E-service to a Producer Keychain
  */
 export const linkEserviceToProducerKeychainMutation = (options?: Partial<Options<LinkEserviceToProducerKeychainData>>): UseMutationOptions<LinkEserviceToProducerKeychainResponse, AxiosError<LinkEserviceToProducerKeychainError>, Options<LinkEserviceToProducerKeychainData>> => {
     const mutationOptions: UseMutationOptions<LinkEserviceToProducerKeychainResponse, AxiosError<LinkEserviceToProducerKeychainError>, Options<LinkEserviceToProducerKeychainData>> = {
@@ -1675,6 +1713,8 @@ export const linkEserviceToProducerKeychainMutation = (options?: Partial<Options
 };
 
 /**
+ * Unlink an E-service from a Producer Keychain
+ *
  * Unlink an E-service from a Producer Keychain
  */
 export const unlinkEserviceFromProducerKeychainMutation = (options?: Partial<Options<UnlinkEserviceFromProducerKeychainData>>): UseMutationOptions<UnlinkEserviceFromProducerKeychainResponse, AxiosError<UnlinkEserviceFromProducerKeychainError>, Options<UnlinkEserviceFromProducerKeychainData>> => {

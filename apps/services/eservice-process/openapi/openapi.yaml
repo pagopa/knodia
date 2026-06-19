@@ -994,6 +994,7 @@ paths:
   /eservices/{eserviceId}/purposeFormOptions:
     get:
       operationId: getEservicePurposeFormOptions
+      summary: Get E-service Purpose form options
       tags:
         - eservice
       description: Retrieve the list of PurposeFormOption entries (pre-filled form
