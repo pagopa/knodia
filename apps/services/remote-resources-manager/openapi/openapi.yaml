@@ -1304,11 +1304,13 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: E-services retrieved (sorted by most recently updated agreement
+            first)
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: E-services retrieved (sorted by most recently updated agreement
+                  first)
                 allOf:
                   - $ref: "#/components/schemas/Eservices"
         "400":
@@ -1341,6 +1343,14 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/interface:
@@ -1501,11 +1511,11 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: Agreements retrieved successfully
+          description: Agreements retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Agreements retrieved successfully
+                description: Agreements retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Agreements"
         "400":
@@ -1530,6 +1540,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /agreements/{agreementId}/reactivate:
@@ -2040,7 +2058,14 @@ paths:
           in: query
           name: eserviceId
           required: false
-          description: Filter by E-service ID
+          description: Filter by E-service ID. Can only be used together with `knodeId`.
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: false
+          description: Knode ID to list Purposes from. Required when `eserviceId` is set.
         - schema:
             type: array
             items:
@@ -2051,11 +2076,11 @@ paths:
           description: Filter by Purpose State
       responses:
         "200":
-          description: Purposes retrieved successfully
+          description: Purposes retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Purposes retrieved successfully
+                description: Purposes retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Purposes"
         "400":
@@ -2080,6 +2105,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/current:
