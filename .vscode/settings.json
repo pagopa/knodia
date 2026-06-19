@@ -34,8 +34,5 @@
   "editor.quickSuggestions": {
     "strings": "on"
   },
-  "tailwindCSS.classFunctions": ["tv"],
-  "chat.tools.terminal.autoApprove": {
-    "shasum": true
-  }
+  "tailwindCSS.classFunctions": ["tv"]
 }
