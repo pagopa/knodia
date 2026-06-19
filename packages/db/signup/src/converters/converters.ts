@@ -67,8 +67,10 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     signupUserId: sql.signupUserId,
     spidCode: sql.spidCode ?? undefined,
     status: sql.status,
-    suspendedAt: sql.suspendedAt ?? undefined,
-    suspensionReason: sql.suspensionReason ?? undefined,
+    ...(sql.status === SignupUserStatus.enum.Suspended && {
+      suspendedAt: sql.suspendedAt,
+      suspensionReason: sql.suspensionReason,
+    }),
     updatedAt: sql.updatedAt,
   });
 }
