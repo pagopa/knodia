@@ -42,6 +42,10 @@ export const signupUser = schema.table(
       sql`${table.spidCode} IS NOT NULL OR ${table.fiscalNumber} IS NOT NULL OR ${table.personIdentifier} IS NOT NULL`,
     ),
     check(
+      "signup_user_status_valid",
+      sql`${table.status} IN ('Active', 'Suspended', 'DeletionPending')`,
+    ),
+    check(
       "signup_user_suspension_consistency",
       sql`(${table.status} = 'Suspended' AND ${table.suspendedAt} IS NOT NULL AND ${table.suspensionReason} IS NOT NULL) OR (${table.status} <> 'Suspended' AND ${table.suspendedAt} IS NULL AND ${table.suspensionReason} IS NULL)`,
     ),
@@ -69,3 +73,14 @@ export type EmailChangeRequestSQL = typeof emailChangeRequest.$inferSelect;
 export type NewEmailChangeRequest = typeof emailChangeRequest.$inferInsert;
 export type NewSignupUser = typeof signupUser.$inferInsert;
 export type SignupUserSQL = typeof signupUser.$inferSelect;
+
+// Completed deletions: the signup_user row is hard-deleted and only its id
+// plus the erasure timestamp survive here, so the deletion act stays provable
+// (idempotent replays, late-event skips) without retaining any PII.
+export const deletedSignupUser = schema.table("deleted_signup_user", {
+  deletedAt: timestamp("deleted_at", { withTimezone: true }).notNull(),
+  signupUserId: uuid("signup_user_id").primaryKey(),
+});
+
+export type DeletedSignupUserSQL = typeof deletedSignupUser.$inferSelect;
+export type NewDeletedSignupUser = typeof deletedSignupUser.$inferInsert;

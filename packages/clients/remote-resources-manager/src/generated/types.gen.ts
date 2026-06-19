@@ -659,13 +659,17 @@ export type GetEservicesErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
 
 export type GetEservicesResponses = {
     /**
-     * E-services retrieved successfully
+     * E-services retrieved (sorted by most recently updated agreement first)
      */
     200: Eservices;
 };
@@ -746,13 +750,17 @@ export type GetAgreementsErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
 
 export type GetAgreementsResponses = {
     /**
-     * Agreements retrieved successfully
+     * Agreements retrieved (sorted by most recently updated first)
      */
     200: Agreements;
 };
@@ -1079,9 +1087,13 @@ export type GetPurposesData = {
          */
         offset: number;
         /**
-         * Filter by E-service ID
+         * Filter by E-service ID. Can only be used together with `knodeId`.
          */
         eserviceId?: string;
+        /**
+         * Knode ID to list Purposes from. Required when `eserviceId` is set.
+         */
+        knodeId?: KnodeId;
         /**
          * Filter by Purpose State
          */
@@ -1103,13 +1115,17 @@ export type GetPurposesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
 
 export type GetPurposesResponses = {
     /**
-     * Purposes retrieved successfully
+     * Purposes retrieved (sorted by most recently updated first)
      */
     200: Purposes;
 };

@@ -23,8 +23,10 @@ const baseRecord = {
 describe("SignupUser — happy paths", () => {
   it("accepts a SPID token carrying both spidCode and fiscalNumber", () => {
     const parsed = SignupUser.parse(baseRecord);
-    expect(parsed.spidCode).toBe("SPID-XYZ-1");
-    expect(parsed.fiscalNumber).toBe("RSSMRA80A01H501U");
+    expect(parsed).toMatchObject({
+      fiscalNumber: "RSSMRA80A01H501U",
+      spidCode: "SPID-XYZ-1",
+    });
   });
 
   it("accepts an eIDAS-only record (only personIdentifier set)", () => {
@@ -34,7 +36,15 @@ describe("SignupUser — happy paths", () => {
       personIdentifier: "FR/IT/12345",
       spidCode: undefined,
     });
-    expect(parsed.personIdentifier).toBe("FR/IT/12345");
+    expect(parsed).toMatchObject({ personIdentifier: "FR/IT/12345" });
+  });
+
+  it("accepts a DeletionPending record with the same shape as Active", () => {
+    const parsed = SignupUser.parse({
+      ...baseRecord,
+      status: "DeletionPending",
+    });
+    expect(parsed.status).toBe("DeletionPending");
   });
 
   it("accepts a suspended user with reason and timestamp", () => {
@@ -60,6 +70,12 @@ describe("SignupUser — shape rejections", () => {
   it("rejects an unknown status", () => {
     expect(() =>
       SignupUser.parse({ ...baseRecord, status: "DEACTIVATED" }),
+    ).toThrow();
+  });
+
+  it("rejects the Deleted status: completed deletions live in the registry, not as user rows", () => {
+    expect(() =>
+      SignupUser.parse({ ...baseRecord, status: "Deleted" }),
     ).toThrow();
   });
 

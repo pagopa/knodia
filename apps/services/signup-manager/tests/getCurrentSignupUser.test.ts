@@ -1,7 +1,8 @@
 import { generateId } from "@knodia/common-models/ids";
+import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import { describe, expect, it } from "vitest";
 
-import { app } from "./setup.ts";
+import { app, signupDb } from "./setup.ts";
 import {
   injectSignupAppRequest,
   makeSignupUser,
@@ -56,6 +57,57 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
       email: signupUser.email,
       onboardingStatus: "SUSPENDED",
     });
+  });
+
+  it("should return DELETION_PENDING with email when the user deletion is pending", async () => {
+    const signupUser = makeSignupUser({
+      email: "deletion.pending.user@example.com",
+      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+      spidCode: validUISignupSessionTokenClaims.spidCode,
+      status: "DeletionPending",
+    });
+    await seedSignupUser(signupUser);
+
+    const response = await injectSignupAppRequest().get("/user/me");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      email: signupUser.email,
+      onboardingStatus: "DELETION_PENDING",
+    });
+  });
+
+  it("should return NOT_COMPLETED when the user deletion has completed", async () => {
+    const signupUser = makeSignupUser({
+      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+      spidCode: validUISignupSessionTokenClaims.spidCode,
+    });
+    await seedSignupUser(signupUser);
+    const dbService = signupDbServiceBuilder(signupDb);
+    await dbService.markSignupUserDeletionPending(signupUser.signupUserId);
+    await dbService.completeSignupUserDeletion(signupUser.signupUserId);
+
+    const response = await injectSignupAppRequest().get("/user/me");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      onboardingStatus: "NOT_COMPLETED",
+    });
+  });
+
+  it("should return 500 when the claims match two different signup users", async () => {
+    await seedSignupUser(
+      makeSignupUser({ spidCode: validUISignupSessionTokenClaims.spidCode }),
+    );
+    await seedSignupUser(
+      makeSignupUser({
+        fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+      }),
+    );
+
+    const response = await injectSignupAppRequest().get("/user/me");
+
+    expect(response.statusCode).toBe(500);
   });
 
   it("should match the signup user by person identifier", async () => {

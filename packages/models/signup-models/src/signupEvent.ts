@@ -26,6 +26,16 @@ export const EmailChangeRequestedV1 = z.object({
 });
 export type EmailChangeRequestedV1 = z.infer<typeof EmailChangeRequestedV1>;
 
+export const DeletionRequestedV1 = z.object({
+  data: z.strictObject({
+    occurredAt: z.iso.datetime(),
+    oneIdNonce: z.string(),
+    signupUserId: SignupUserId,
+  }),
+  type: z.literal("DeletionRequestedV1"),
+});
+export type DeletionRequestedV1 = z.infer<typeof DeletionRequestedV1>;
+
 const SuspensionRequestedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
@@ -40,6 +50,7 @@ type SuspensionRequestedV1 = z.infer<typeof SuspensionRequestedV1>;
 export const SignupEventV1 = z.discriminatedUnion("type", [
   OnboardingCompletedV1,
   EmailChangeRequestedV1,
+  DeletionRequestedV1,
   SuspensionRequestedV1,
 ]);
 export type SignupEventV1 = z.infer<typeof SignupEventV1>;

@@ -1,0 +1,112 @@
+{
+  "00132423": {
+    "dateOfBirth": "1986-09-23",
+    "familyName": "Esposito",
+    "givenName": "Luca",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3165456",
+      "geographicName": "Torre del Greco"
+    },
+    "sex": "MALE"
+  },
+  "00148210": {
+    "dateOfBirth": "1995-03-14",
+    "familyName": "Conti",
+    "givenName": "Giulia",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3169070",
+      "geographicName": "Roma"
+    },
+    "sex": "FEMALE"
+  },
+  "00219574": {
+    "dateOfBirth": "1990-11-02",
+    "familyName": "Ferrari",
+    "givenName": "Marco",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3173435",
+      "geographicName": "Milano"
+    },
+    "sex": "MALE"
+  },
+  "00305128": {
+    "dateOfBirth": "1998-07-21",
+    "familyName": "Russo",
+    "givenName": "Sofia",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3172394",
+      "geographicName": "Napoli"
+    },
+    "sex": "FEMALE"
+  },
+  "00417963": {
+    "dateOfBirth": "1987-01-30",
+    "familyName": "Greco",
+    "givenName": "Alessandro",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3165524",
+      "geographicName": "Torino"
+    },
+    "sex": "MALE"
+  },
+  "00523840": {
+    "dateOfBirth": "1993-09-09",
+    "familyName": "Bianchi",
+    "givenName": "Chiara",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3181928",
+      "geographicName": "Bologna"
+    },
+    "sex": "FEMALE"
+  },
+  "00638215": {
+    "dateOfBirth": "1996-05-18",
+    "familyName": "Esposito",
+    "givenName": "Lorenzo",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/2523920",
+      "geographicName": "Palermo"
+    },
+    "sex": "MALE"
+  },
+  "00742190": {
+    "dateOfBirth": "2000-02-25",
+    "familyName": "Romano",
+    "givenName": "Martina",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3176959",
+      "geographicName": "Firenze"
+    },
+    "sex": "FEMALE"
+  },
+  "00856347": {
+    "dateOfBirth": "1985-12-11",
+    "familyName": "Marino",
+    "givenName": "Davide",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3176219",
+      "geographicName": "Genova"
+    },
+    "sex": "MALE"
+  },
+  "00961043": {
+    "dateOfBirth": "1992-04-08",
+    "familyName": "Gallo",
+    "givenName": "Francesca",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3171728",
+      "geographicName": "Padova"
+    },
+    "sex": "FEMALE"
+  },
+  "01074628": {
+    "dateOfBirth": "1994-08-19",
+    "familyName": "Costa",
+    "givenName": "Matteo",
+    "placeOfBirth": {
+      "geographicIdentifier": "https://www.geonames.org/3182351",
+      "geographicName": "Bari"
+    },
+    "sex": "MALE"
+  }
+}

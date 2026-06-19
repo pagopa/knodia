@@ -95,6 +95,8 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
@@ -579,6 +581,12 @@ services:
       DYNAMODB_MAGIC_LINK_TOKENS_TABLE: knodia-bff-magic-link-tokens
       COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
     depends_on:
       remote-resources-manager-orion:
         condition: service_started
@@ -590,6 +598,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   eservice-readmodel-writer-orion:
     security_opt:
@@ -936,6 +946,12 @@ services:
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      RATE_LIMITER_MAX_REQUESTS: "100"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -943,6 +959,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   mock-eservice-orion:
     security_opt:
@@ -979,6 +997,12 @@ services:
       SIGNAL_HUB_DB_USER: local_orion_mock_eservice_user
       SIGNAL_HUB_DB_PASSWORD: local_orion_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -990,6 +1014,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   signal-hub-orion:
     security_opt:
@@ -1008,6 +1034,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Orion"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_orion_signal_hub_user
@@ -1026,6 +1053,15 @@ services:
       SIGNAL_HUB_DB_NAME: orion_signal_hub
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   signal-hub-cleaner-orion:
     security_opt:
@@ -1288,6 +1324,12 @@ services:
       DYNAMODB_MAGIC_LINK_TOKENS_TABLE: knodia-bff-magic-link-tokens
       COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
     depends_on:
       remote-resources-manager-lynx:
         condition: service_started
@@ -1299,6 +1341,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   eservice-readmodel-writer-lynx:
     security_opt:
@@ -1645,6 +1689,12 @@ services:
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      RATE_LIMITER_MAX_REQUESTS: "100"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -1652,6 +1702,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   mock-eservice-lynx:
     security_opt:
@@ -1688,6 +1740,12 @@ services:
       SIGNAL_HUB_DB_USER: local_lynx_mock_eservice_user
       SIGNAL_HUB_DB_PASSWORD: local_lynx_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
@@ -1699,6 +1757,8 @@ services:
         condition: service_completed_successfully
       dynamodb-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   signal-hub-lynx:
     security_opt:
@@ -1717,6 +1777,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      KNODE_ID: "Lynx"
       ACCEPTED_AUDIENCES: "signalhub.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       READMODEL_DB_USER: local_lynx_signal_hub_user
@@ -1735,6 +1796,15 @@ services:
       SIGNAL_HUB_DB_NAME: lynx_signal_hub
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   signal-hub-cleaner-lynx:
     security_opt:
@@ -2019,6 +2089,19 @@ services:
       CLIENT_SECRET: local-oi-client-secret
       REDIRECT_URI: "http://localhost:5176/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
+
+  redis:
+    security_opt:
+      - no-new-privileges:true
+    image: redis:8.6.3-alpine@sha256:d146f83b1e0f02fc27c26a50cee39338c736674c5959db84363e6ae3cd9e02d2
+    container_name: knodia-multinode-redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   multinode-postgres-data:

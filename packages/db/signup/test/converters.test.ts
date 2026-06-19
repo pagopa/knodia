@@ -1,9 +1,14 @@
 import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
-import type { SignupUserSQL } from "../src/signupUser.ts";
+import type { DeletedSignupUserSQL, SignupUserSQL } from "../src/signupUser.ts";
 
-import { toSignupUser, toSignupUserSQL } from "../src/converters/converters.ts";
+import {
+  toDeletedSignupUserSQL,
+  toSignupUser,
+  toSignupUserDeletion,
+  toSignupUserSQL,
+} from "../src/converters/converters.ts";
 
 function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
   return {
@@ -33,13 +38,14 @@ describe("toSignupUser", () => {
     const row = baseRow();
     const user = toSignupUser(row);
 
-    expect(user.signupUserId).toBe(row.signupUserId);
-    expect(user.fiscalNumber).toBe("RSSMRA80A01H501U");
-    expect(user.generatedEntities.Lynx).toEqual({
-      organizationName: "Lynx Org",
-      userName: "lynx_user",
+    expect(user).toMatchObject({
+      fiscalNumber: "RSSMRA80A01H501U",
+      generatedEntities: {
+        Lynx: { organizationName: "Lynx Org", userName: "lynx_user" },
+        Orion: { organizationName: "Orion Org", userName: "orion_user" },
+      },
+      signupUserId: row.signupUserId,
     });
-    expect(user.generatedEntities.Orion.organizationName).toBe("Orion Org");
   });
 
   it("coerces NULL optional columns to undefined", () => {
@@ -51,9 +57,11 @@ describe("toSignupUser", () => {
       }),
     );
 
-    expect(user.fiscalNumber).toBeUndefined();
-    expect(user.personIdentifier).toBeUndefined();
-    expect(user.spidCode).toBe("SPID-ONLY");
+    expect(user).toMatchObject({
+      fiscalNumber: undefined,
+      personIdentifier: undefined,
+      spidCode: "SPID-ONLY",
+    });
   });
 
   it("maps suspension fields when row is suspended", () => {
@@ -71,7 +79,7 @@ describe("toSignupUser", () => {
     expect(user.suspensionReason).toBe("AccuracyContested");
   });
 
-  it("throws when the row carries no IdP identifier", () => {
+  it("throws when a row carries no IdP identifier", () => {
     expect(() =>
       toSignupUser(
         baseRow({ fiscalNumber: null, personIdentifier: null, spidCode: null }),
@@ -103,5 +111,24 @@ describe("toSignupUserSQL", () => {
     expect(sql.status).toBe("Suspended");
     expect(sql.suspendedAt).toEqual(suspendedAt);
     expect(sql.suspensionReason).toBe("UnlawfulProcessing");
+  });
+});
+
+function deletionRow(
+  overrides: Partial<DeletedSignupUserSQL> = {},
+): DeletedSignupUserSQL {
+  return {
+    deletedAt: new Date("2026-06-01T10:00:05Z"),
+    signupUserId: generateId<SignupUserId>(),
+    ...overrides,
+  };
+}
+
+describe("toSignupUserDeletion / toDeletedSignupUserSQL", () => {
+  it("round-trips a deletion registry entry", () => {
+    const row = deletionRow();
+    const deletion = toSignupUserDeletion(row);
+
+    expect(toDeletedSignupUserSQL(deletion)).toEqual(row);
   });
 });

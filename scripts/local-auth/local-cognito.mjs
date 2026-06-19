@@ -122,6 +122,48 @@ const MOCK_USERS = [
     UserStatus: "CONFIRMED",
     Username: "construction_companies_registry_orion_admin",
   },
+  // POC UC01 users — one per POC org (ids match scripts/seed/sql/{lynx,orion}
+  // and scripts/local-auth/generate-token.mjs). All roles, no role-based behaviour.
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000103" },
+      { Name: "email", Value: "admin@studentregistrylynx.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Student Registry" },
+      { Name: "family_name", Value: "Lynx" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000103",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000103"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "student_registry_lynx_admin",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000104" },
+      { Name: "email", Value: "admin@academyorion.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Academy" },
+      { Name: "family_name", Value: "Orion" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000104",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000104"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "academy_orion_admin",
+  },
 ];
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
@@ -464,6 +506,7 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+        return;
       }
 
       if (target === "AWSCognitoIdentityProviderService.CreateGroup") {
