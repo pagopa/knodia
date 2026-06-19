@@ -29,7 +29,7 @@ function firstProblemCode(error: AxiosError): string | undefined {
 }
 
 const POLL_INTERVAL_MS = 1000;
-const POLL_MAX_ATTEMPTS = 10;
+const POLL_MAX_ATTEMPTS = 30;
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
