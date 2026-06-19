@@ -443,6 +443,10 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     getEmailChangeRequestByIdMock.mockResolvedValue(request);
     getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date("2026-05-28T10:00:00.000Z"),
+      signupUserId,
+    });
     deleteEmailChangeRequestMock.mockResolvedValue(undefined);
 
     await expect(
@@ -588,6 +592,7 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
   it("skips a replay after completion (deletion registry entry present)", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
     getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date("2026-05-28T10:00:00.000Z"),
       signupUserId: generateId<SignupUserId>(),
     });
 
