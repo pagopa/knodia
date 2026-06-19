@@ -29,10 +29,19 @@ export const LYNX_AUTHORIZATION_SERVER_URL =
 export const SUPERVISORY_BODY_MOCK_URL =
   process.env.POC_SUPERVISORY_BODY_MOCK_URL ?? "http://localhost:9991";
 
-// systemSERCLynx's relay (Lynx mock) — the target of send-handover-evidence
-// (Orion → Lynx). The send-message target instead comes from getERDSMetadata.
+// Each SERC's relay endpoint, known point-to-point by the consuming SERC. The
+// relay runs in the producer's infra and is reached directly; getERDSMetadata
+// only resolves which SERC/knode serves a recipient, not how to reach its relay.
+// send-message targets systemSERCOrion; send-handover-evidence targets systemSERCLynx.
+export const ORION_RELAY_URL =
+  process.env.POC_ORION_RELAY_URL ?? "http://localhost:9991";
 export const LYNX_RELAY_URL =
   process.env.POC_LYNX_RELAY_URL ?? "http://localhost:9992";
+
+export const RELAY_URL_BY_SERC = {
+  systemSERCLynx: LYNX_RELAY_URL,
+  systemSERCOrion: ORION_RELAY_URL,
+} as const;
 
 // Sample sender (citizen senderLynx) — hardcoded, narrated in the demo.
 export const SAMPLE_SENDER_IDENTIFIER = {

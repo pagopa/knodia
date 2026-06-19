@@ -2,7 +2,7 @@
 //
 // Mints an e-service access token for systemSERCLynx's keychain/purpose on the
 // supervisoryBodyOrion provide-data e-service, then calls lookupERDS and
-// getERDSMetadata to discover which SERC serves the recipient and its relay URL.
+// getERDSMetadata to discover which SERC (and knode/e-service) serves the recipient.
 //
 //   node lookup-recipient-serc.ts \
 //     --consumer-keychain-id <uuid> --purpose-id <uuid> --recipient-id 01229430085
@@ -16,6 +16,7 @@ import { getJson, mintAccessToken, requirePrivateKey } from "./lib.ts";
 import {
   LYNX_CONSUMER_PRIVATE_KEY_PATH,
   ORION_AUTHORIZATION_SERVER_URL,
+  RECIPIENT_SCHEME,
   SUPERVISORY_BODY_MOCK_URL,
 } from "./paths.ts";
 
@@ -51,9 +52,14 @@ const accessToken = await mintAccessToken(
   purposeId,
 );
 
+const lookupQuery = new URLSearchParams({
+  notation: recipientId,
+  schemeName: RECIPIENT_SCHEME.schemeName,
+  schemeURI: RECIPIENT_SCHEME.schemeURI,
+});
 const { erdsIdentifier } = (await getJson(
   SUPERVISORY_BODY_MOCK_URL,
-  `/erds?identifier=${encodeURIComponent(recipientId)}`,
+  `/erds?${lookupQuery.toString()}`,
   accessToken,
 )) as { erdsIdentifier: string };
 
@@ -63,7 +69,8 @@ const metadata = (await getJson(
   accessToken,
 )) as { domainName: string; eserviceId: string; knodeId: string };
 
-console.log(`Recipient ${recipientId} is served by ${erdsIdentifier}.`);
-console.log(`Relay URL (pass as --relay-url): ${metadata.domainName}`);
+console.log(
+  `Recipient ${recipientId} is served by ${erdsIdentifier} (pass as --recipient-serc).`,
+);
 console.log("\nERDS metadata:");
-console.log(JSON.stringify({ identifier: erdsIdentifier, ...metadata }, null, 2));
+console.log(JSON.stringify(metadata, null, 2));

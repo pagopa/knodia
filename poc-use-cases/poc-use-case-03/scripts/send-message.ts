@@ -2,12 +2,12 @@
 //
 // Mints an e-service access token for systemSERCLynx's keychain/purpose on
 // systemSERCOrion's relay e-service, builds the erd_dispatch carrying the
-// sender's message (messageType=Dispatch) and POSTs it directly to the relay
-// URL returned by getERDSMetadata. Prints the sent dispatch and the ACK.
+// sender's message (messageType=Dispatch) and POSTs it to the recipient SERC's
+// relay (resolved point-to-point from --recipient-serc). Prints the dispatch and ACK.
 //
 //   node send-message.ts \
 //     --consumer-keychain-id <uuid> --purpose-id <uuid> \
-//     --recipient-serc <erdsIdentifier> --relay-url <url> \
+//     --recipient-serc <erdsIdentifier from lookup-recipient-serc> \
 //     --recipient-id 01229430085 --subject "Notification" --body "Forwarded message body"
 
 import { randomUUID } from "node:crypto";
@@ -18,6 +18,7 @@ import {
   LYNX_CONSUMER_PRIVATE_KEY_PATH,
   ORION_AUTHORIZATION_SERVER_URL,
   RECIPIENT_SCHEME,
+  RELAY_URL_BY_SERC,
   SAMPLE_SENDER_IDENTIFIER,
 } from "./paths.ts";
 
@@ -28,7 +29,6 @@ const { values } = parseArgs({
     "purpose-id": { type: "string" },
     "recipient-id": { type: "string" },
     "recipient-serc": { type: "string" },
-    "relay-url": { type: "string" },
     subject: { type: "string" },
   },
   strict: true,
@@ -37,7 +37,6 @@ const { values } = parseArgs({
 const consumerKeychainId = values["consumer-keychain-id"];
 const purposeId = values["purpose-id"];
 const recipientSerc = values["recipient-serc"];
-const relayUrl = values["relay-url"];
 const recipientId = values["recipient-id"];
 const subject = values.subject;
 const body = values.body;
@@ -46,16 +45,18 @@ if (
   !consumerKeychainId ||
   !purposeId ||
   !recipientSerc ||
-  !relayUrl ||
+  !(recipientSerc in RELAY_URL_BY_SERC) ||
   !recipientId ||
   !subject ||
   !body
 ) {
   console.error(
-    "Usage: node send-message.ts --consumer-keychain-id <uuid> --purpose-id <uuid> --recipient-serc <erdsIdentifier> --relay-url <url> --recipient-id <notation> --subject <text> --body <text>",
+    "Usage: node send-message.ts --consumer-keychain-id <uuid> --purpose-id <uuid> --recipient-serc systemSERCLynx|systemSERCOrion --recipient-id <notation> --subject <text> --body <text>",
   );
   process.exit(1);
 }
+
+const relayUrl = RELAY_URL_BY_SERC[recipientSerc as keyof typeof RELAY_URL_BY_SERC];
 
 requirePrivateKey(
   LYNX_CONSUMER_PRIVATE_KEY_PATH,
