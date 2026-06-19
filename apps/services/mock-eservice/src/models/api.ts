@@ -31,9 +31,22 @@ const API_Identifier = z
     id: "Identifier",
   });
 
+// GeoNames place URI. Accepts the human-facing forms (geonames.org /
+// www.geonames.org) and the canonical Linked-Data form (sws.geonames.org/<id>/),
+// so a malformed or non-GeoNames URL is rejected at load. The numeric id is not
+// resolved against GeoNames — that would require a network call.
+const API_GeoNamesUri = z
+  .url()
+  .regex(/^https:\/\/(www\.|sws\.)?geonames\.org\/\d+\/?$/)
+  .meta({
+    description: "GeoNames place identifier URI",
+    example: "https://www.geonames.org/3165456",
+    id: "GeoNamesUri",
+  });
+
 const API_Location = z
   .strictObject({
-    geographicIdentifier: z.url(),
+    geographicIdentifier: API_GeoNamesUri,
     geographicName: z.string(),
   })
   .meta({
@@ -234,6 +247,115 @@ export const API_Evidence = z
   });
 export type API_Evidence = z.infer<typeof API_Evidence>;
 
+// POC UC01 qualifications — student/location/identifier modelled after Core
+// Person Vocabulary 2.1.1, qualification/organisation after the European
+// Learning Model 3.3.1. Reuses API_Location and API_Sex defined above.
+export const API_StudentUid = z
+  .string()
+  .regex(/^[0-9]{8}$/)
+  .meta({
+    description:
+      "Student identifier in the path: 8-digit national student-registry matricola.",
+    example: "00132423",
+    id: "StudentUid",
+  });
+export type API_StudentUid = z.infer<typeof API_StudentUid>;
+
+const API_StudentUriScheme = z
+  .enum(["http://studentRegistryLynx/UIDStudent"])
+  .meta({
+    description: "Identifier scheme URI of the national student registry",
+    id: "StudentUriScheme",
+  });
+
+const API_StudentIdentifier = z
+  .strictObject({
+    notation: API_StudentUid,
+    schemeName: z.string(),
+    schemeURI: API_StudentUriScheme,
+  })
+  .meta({
+    description:
+      "Unique identifier of a student (Core Person Vocabulary 2.1.1)",
+    id: "StudentIdentifier",
+  });
+
+const API_EQFLevel = z
+  .enum([
+    "level01",
+    "level02",
+    "level03",
+    "level04",
+    "level05",
+    "level06",
+    "level07",
+    "level08",
+  ])
+  .meta({
+    description: "European Qualifications Framework level (8-level scale)",
+    id: "EQFLevel",
+  });
+
+export const API_ISCEDFCode = z
+  .enum(["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"])
+  .meta({
+    description: "ISCED-F broad field of education and training code",
+    id: "ISCEDFCode",
+  });
+export type API_ISCEDFCode = z.infer<typeof API_ISCEDFCode>;
+
+const API_Organisation = z
+  .strictObject({
+    legalName: z.string(),
+    location: API_Location,
+  })
+  .meta({
+    description:
+      "Organisation (tertiary education institute), modelled after the European Learning Model 3.3.1",
+    id: "Organisation",
+  });
+
+export const API_Qualification = z
+  .strictObject({
+    EQFLevel: API_EQFLevel,
+    ISCEDFCode: z.array(API_ISCEDFCode).min(1),
+    publisher: API_Organisation,
+    title: z.string(),
+  })
+  .meta({
+    description:
+      "Qualification (learning outcome), modelled after the European Learning Model 3.3.1",
+    id: "Qualification",
+  });
+export type API_Qualification = z.infer<typeof API_Qualification>;
+
+export const API_Student = z
+  .strictObject({
+    dateOfBirth: z.iso.date(),
+    familyName: z.string(),
+    givenName: z.string(),
+    placeOfBirth: API_Location,
+    sex: API_Sex,
+    uidStudent: API_StudentIdentifier,
+  })
+  .meta({
+    description: "Student, modelled after Core Person Vocabulary 2.1.1",
+    id: "Student",
+  });
+export type API_Student = z.infer<typeof API_Student>;
+
+export const API_QualificationAck = z
+  .strictObject({
+    acknowledged: z.literal(true),
+    uidStudent: API_StudentUid,
+  })
+  .meta({
+    description:
+      "Acknowledgement returned by setQualification after the registry accepts the new qualification",
+    id: "QualificationAck",
+  });
+export type API_QualificationAck = z.infer<typeof API_QualificationAck>;
+
 export const API_SendDigitalContactRequest = z
   .strictObject({
     contactPoint: API_ContactPoint,
@@ -262,7 +384,6 @@ export type API_Ack = z.infer<typeof API_Ack>;
 
 // --- POC UC03 (ERDS relay) ---
 
-// The two SERCs of the POC, identified by name (ETSI EN 319 522-2 erdsIdentifier).
 export const API_ErdsIdentifier = z
   .enum(["systemSERCLynx", "systemSERCOrion"])
   .meta({
@@ -272,11 +393,8 @@ export const API_ErdsIdentifier = z
   });
 export type API_ErdsIdentifier = z.infer<typeof API_ErdsIdentifier>;
 
-// Recipient identifier passed to lookupERDS (def-page IDENTIFIER entity). The
-// notation is generic text, not the Codice-Fiscale-only API_Notation above:
-// recipients can be identified by VAT (e.g. the sample 01229430085).
-// No meta id: used as the lookupERDS querystring, which must inline into query
-// params rather than become a $ref component.
+// notation is free text (not the CF-only API_Notation) since recipients may be a
+// VAT; no meta id so it inlines as lookupERDS query params instead of a $ref.
 export const API_ErdsRecipientIdentifier = z.strictObject({
   notation: z.string().min(1),
   schemeName: z.string().min(1),

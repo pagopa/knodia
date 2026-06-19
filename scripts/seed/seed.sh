@@ -50,6 +50,14 @@ aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
   "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml" \
   "s3://$S3_BUCKET/f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-poc-uc02-companies-eservice.yaml"
 
+aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml" \
+  "s3://$S3_BUCKET/72937dcf-e40b-4fa9-8e54-33a21407d19c/mock-bearer-poc-uc01-qualifications-eservice.yaml"
+
+aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml" \
+  "s3://$S3_BUCKET/ff8bebc1-5e1c-4f8d-8611-03e18354558f/mock-bearer-poc-uc01-set-qualification-eservice.yaml"
+
 # Orion-only seed: matches scripts/seed/sql/orion/mock-poc-uc03-supervisory-body-eservice.sql.
 # Uploaded only when the SQL is present in $SQL_DIR (the supervisory body is on Orion).
 if [ -f "$SQL_DIR/mock-poc-uc03-supervisory-body-eservice.sql" ]; then

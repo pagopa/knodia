@@ -10,10 +10,7 @@ import {
   POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
 } from "../pocUc03/mockup.ts";
 
-// Recipient identifier (notation + scheme) -> the SERC that serves it. Matches
-// the def-page examples: recipient 01229430085 (VAT) is served by
-// systemSERCOrion (the demo direction Lynx -> Orion), sender MRARSS80A01L259A
-// (Codice Fiscale) by systemSERCLynx.
+// Recipient identifier (notation + scheme) -> serving SERC, per the def-page examples.
 const ERDS_LOOKUP: readonly {
   erdsIdentifier: API_ErdsIdentifier;
   notation: string;
