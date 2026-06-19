@@ -76,6 +76,7 @@ export async function signEserviceAccessToken({
     nbf: now,
     producer: { id: producerId, knode_id: knodeId },
     purpose: { id: generateId<PurposeId>(), knode_id: knodeId },
+    type: "eservice-access",
   };
 
   return new SignJWT({ ...defaultPayload, ...payload })

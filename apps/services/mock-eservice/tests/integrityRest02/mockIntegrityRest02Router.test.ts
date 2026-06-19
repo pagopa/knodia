@@ -23,6 +23,7 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
+import { Algorithm } from "@knodia/common-models/crypto";
 import { calculateKid } from "@knodia/crypto";
 import {
   CONTENT_ENCODING_HEADER,
@@ -56,7 +57,12 @@ import {
   retrieveLegalEntity,
   retrieveLegalEntityAddress,
 } from "../../src/utils/retrievalUtils.ts";
-import { getCtx, integrityRest02KeySet, TEST_KNODE_ID } from "../setup.ts";
+import {
+  getCtx,
+  INTEGRITY_REST_02_SIGNATURE_ISSUER,
+  integrityRest02KeySet,
+  TEST_KNODE_ID,
+} from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
 
 // A UID present in legalEntitiesAddresses.json.
@@ -147,18 +153,31 @@ describe("mock-eservice integrity REST 02 router", () => {
       // matching public key (by the KID found in the JWT header). In this test we use the local RSA public key that
       // the mock KMS used to sign (the "mock response" of that endpoint).
       const jwtHeader = decodeProtectedHeader(knodiaJwtSignature);
-      const expectedHeaderKid = calculateKid(
-        integrityRest02KeySet.publicKeyJwk,
-      );
-      expect(jwtHeader.kid).toBe(expectedHeaderKid);
+      const expectedHeader = {
+        alg: Algorithm.enum.RS256,
+        kid: calculateKid(integrityRest02KeySet.publicKeyJwk),
+        typ: "JWT",
+        use: "sig",
+      };
+      expect(jwtHeader).toEqual(expectedHeader);
 
       // --- Verify the JWT signature ---
       const { payload } = await jwtVerify(
         knodiaJwtSignature,
         integrityRest02KeySet.keySet.publicKey,
       );
-      const signedHeaders =
-        KnodiaJwtSignatureClaims.parse(payload).signed_headers;
+      const expectedPayload: Omit<KnodiaJwtSignatureClaims, "type"> = {
+        exp: expect.any(Number),
+        iat: expect.any(Number),
+        iss: INTEGRITY_REST_02_SIGNATURE_ISSUER,
+        jti: expect.any(String),
+        signed_headers: expect.any(Array),
+      };
+      expect(payload).toMatchObject(expectedPayload);
+
+      const signedHeaders = KnodiaJwtSignatureClaims.omit({ type: true }).parse(
+        payload,
+      ).signed_headers;
 
       // --- signed_headers.digest must match the Digest response header ---
       const digestResponseHeader = res.headers[DIGEST_HEADER.toLowerCase()];
