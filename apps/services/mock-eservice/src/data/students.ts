@@ -10,6 +10,9 @@ import {
   API_StudentUid,
 } from "../models/api.ts";
 
+// Receive-data registrations mutate this in-memory store (reset on restart), so
+// a getQualifications after setQualification reflects the just-added record.
+
 const STUDENT_UID_SCHEME = {
   schemeName: "Matricola Studente",
   schemeURI: "http://studentRegistryLynx/UIDStudent",
@@ -26,6 +29,17 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 
 const STUDENTS = readJson("students.json", StudentsFile);
 const QUALIFICATIONS = readJson("qualifications.json", QualificationsFile);
+
+export function addQualification(
+  uid: API_StudentUid,
+  qualification: API_Qualification,
+): boolean {
+  if (!findStudent(uid)) {
+    return false;
+  }
+  (QUALIFICATIONS[uid] ??= []).push(qualification);
+  return true;
+}
 
 // undefined = unknown student; empty array = known student, no qualification in
 // that ISCED-F field.
