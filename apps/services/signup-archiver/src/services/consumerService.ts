@@ -56,11 +56,12 @@ export async function handleSignupMessage(
       );
       return undefined;
     })
-    .with({ type: "SuspensionRequestedV1" }, async () => {
+    .with({ type: "SuspensionRequestedV1" }, () => {
       // TODO: PIN-781
       logger.info(
         `Received SuspensionRequestedV1 event; Not yet implemented, skipping archival action`,
       );
+      return undefined;
     })
     .exhaustive();
 

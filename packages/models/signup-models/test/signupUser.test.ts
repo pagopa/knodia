@@ -53,7 +53,7 @@ describe("SignupUser — happy paths", () => {
       status: "Suspended",
       suspendedAt: new Date("2026-05-30T09:00:00Z"),
       suspensionReason: "DataNeededForLegalClaims",
-    });
+    }) as SignupUser & { status: typeof SignupUserStatus.enum.Suspended };
 
     expect(parsed.status).toBe("Suspended");
     expect(parsed.suspensionReason).toBe("DataNeededForLegalClaims");

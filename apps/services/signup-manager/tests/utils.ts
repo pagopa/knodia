@@ -1,5 +1,3 @@
-import type { EmailChangeRequest, SignupUser } from "@knodia/signup-models";
-
 import {
   type EmailChangeRequestId,
   generateId,
@@ -8,10 +6,17 @@ import {
 import { emailChangeRequest, signupUser } from "@knodia/db-signup";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import {
+  type EmailChangeRequest,
+  type SignupUser,
+  SignupUserStatus,
+  SuspensionReason,
+} from "@knodia/signup-models";
+import {
   getTestUISignupSessionTokenClaims,
   type TestToken,
 } from "@knodia/test-commons/auth";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { match } from "ts-pattern";
 
 import { app, signupDb } from "./setup.ts";
 
@@ -62,15 +67,7 @@ export function makeSignupUser(
   const baseCreatedAt = new Date("2026-01-01T00:00:00.000Z");
   const baseUpdatedAt = new Date("2026-01-01T00:00:00.000Z");
 
-  const status = overrides.status ?? "Active";
-  const suspendedAt =
-    overrides.suspendedAt ??
-    (status === "Suspended" ? baseUpdatedAt : undefined);
-  const suspensionReason =
-    overrides.suspensionReason ??
-    (status === "Suspended" ? "UnlawfulProcessing" : undefined);
-
-  return {
+  const base = {
     createdAt: baseCreatedAt,
     dateOfBirth: "1990-01-01",
     email: `seed-${seed}@example.com`,
@@ -89,12 +86,24 @@ export function makeSignupUser(
     name: "Seed",
     signupUserId: seed,
     spidCode: `SPID-${seed}`,
-    status,
-    suspendedAt,
-    suspensionReason,
     updatedAt: baseUpdatedAt,
     ...overrides,
   };
+
+  return match(overrides.status ?? SignupUserStatus.enum.Active)
+    .returnType<SignupUser>()
+    .with(
+      SignupUserStatus.enum.Active,
+      SignupUserStatus.enum.DeletionPending,
+      (status) => ({ ...base, status }),
+    )
+    .with(SignupUserStatus.enum.Suspended, (status) => ({
+      ...base,
+      status,
+      suspendedAt: baseUpdatedAt,
+      suspensionReason: SuspensionReason.enum.UnlawfulProcessing,
+    }))
+    .exhaustive();
 }
 
 export async function seedEmailChangeRequest(request: EmailChangeRequest) {

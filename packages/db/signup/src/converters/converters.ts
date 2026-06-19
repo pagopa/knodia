@@ -2,6 +2,7 @@ import {
   EmailChangeRequest,
   SignupUser,
   SignupUserDeletion,
+  SignupUserStatus,
 } from "@knodia/signup-models";
 
 import type {
@@ -97,8 +98,12 @@ export function toSignupUserSQL(user: SignupUser): NewSignupUser {
     signupUserId: user.signupUserId,
     spidCode: user.spidCode,
     status: user.status,
-    suspendedAt: user.suspendedAt,
-    suspensionReason: user.suspensionReason,
     updatedAt: user.updatedAt,
+    ...(user.status === SignupUserStatus.enum.Suspended
+      ? {
+          suspendedAt: user.suspendedAt,
+          suspensionReason: user.suspensionReason,
+        }
+      : {}),
   };
 }
