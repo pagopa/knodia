@@ -13,7 +13,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   '{"en": "ERDS Relay - Orion"}'::jsonb,
   '{"en": "Cross-Border receive-data E-Service published by a SERC: relays an ERD dispatch (the sender''s message or the delivery evidences) from another SERC and returns an acknowledgement."}'::jsonb,
   'ReceiveData',
-  true, false,
+  false, false,
   0, now(), now()
 ) ON CONFLICT (id) DO UPDATE SET
   producer_id = EXCLUDED.producer_id,
