@@ -183,6 +183,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         producer: { id: input.producer.id, knode_id: input.producer.knodeId },
         purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
+        type: "eservice-access",
       };
 
       const { header, serialized } = await buildAndSignJwt(

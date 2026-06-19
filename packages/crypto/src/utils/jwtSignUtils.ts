@@ -1,6 +1,7 @@
 import type { BaseJwtClaims } from "@knodia/common-models/auth";
 
 import { type KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { match, P } from "ts-pattern";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_USE = "sig";
@@ -15,10 +16,42 @@ export async function buildAndSignJwt<T extends BaseJwtClaims>(
   claims: T,
   headerKid?: string,
 ): Promise<{ header: string; serialized: string }> {
-  const typ =
-    "type" in claims && claims.type === "refresh-ui-session" ? "JWT" : "at+jwt";
+  const typ = match(claims.type)
+    .with(
+      "eservice-access",
+      "external-ui-session",
+      "external-ui-session-magic-link",
+      "internal",
+      "knode-api",
+      "ui-session",
+      "ui-signup-session",
+      () => "at+jwt",
+    )
+    .with("refresh-ui-session", "knodia-jwt-signature", () => "JWT")
+    .exhaustive();
   const header = buildHeader(headerKid ?? kid, typ);
-  const payload = b64url(JSON.stringify(claims));
+
+  const cleanedClaims = match(claims.type)
+    .with("eservice-access", "knodia-jwt-signature", () => {
+      // Strip the `type` field from the claims for these token types, as they are not expected to be present in the JWT payload.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { type, ...rest } = claims;
+      return rest;
+    })
+    .with(
+      P.union(
+        "external-ui-session",
+        "external-ui-session-magic-link",
+        "internal",
+        "knode-api",
+        "refresh-ui-session",
+        "ui-session",
+        "ui-signup-session",
+      ),
+      () => claims,
+    )
+    .exhaustive();
+  const payload = b64url(JSON.stringify(cleanedClaims));
   const message = `${header}.${payload}`;
   const signature = await signWithKms(kmsClient, kid, message);
   return { header, serialized: `${message}.${signature}` };

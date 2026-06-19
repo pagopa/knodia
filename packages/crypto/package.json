@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-kms": "catalog:",
-    "@knodia/common-models": "workspace:*"
+    "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

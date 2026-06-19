@@ -15,11 +15,25 @@ import { UserId } from "../ids/userId.ts";
 import { NonEmptyArray } from "../types.ts";
 import { UserRole } from "./roles.ts";
 
+export const JwtType = z.enum([
+  "eservice-access",
+  "external-ui-session",
+  "external-ui-session-magic-link",
+  "internal",
+  "knode-api",
+  "refresh-ui-session",
+  "ui-session",
+  "ui-signup-session",
+  "knodia-jwt-signature",
+]);
+export type JwtType = z.infer<typeof JwtType>;
+
 export const BaseJwtClaims = z.object({
   exp: z.number().int(),
   iat: z.number().int(),
   iss: z.string(),
   jti: z.string(),
+  type: JwtType,
 });
 export type BaseJwtClaims = z.infer<typeof BaseJwtClaims>;
 
@@ -54,6 +68,7 @@ export const EserviceAccessTokenClaims = KnodiaJwtClaims.extend({
   producer: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
   purpose: z.strictObject({ id: PurposeId, knode_id: KnodeId }),
   sub: ConsumerKeychainId,
+  type: z.literal(JwtType.enum["eservice-access"]),
 });
 export type EserviceAccessTokenClaims = z.infer<
   typeof EserviceAccessTokenClaims
@@ -65,19 +80,19 @@ export const KnodeApiAccessTokenClaims = KnodiaJwtClaims.extend({
   nbf: z.int(),
   organization: z.strictObject({ id: OrganizationId, knode_id: KnodeId }),
   sub: KnodeApiKeychainId,
-  type: z.literal("knode-api"),
+  type: z.literal(JwtType.enum["knode-api"]),
 });
 export type KnodeApiAccessTokenClaims = z.infer<
   typeof KnodeApiAccessTokenClaims
 >;
 
 export const UISessionTokenClaims = UserTokenClaims.extend({
-  type: z.literal("ui-session"),
+  type: z.literal(JwtType.enum["ui-session"]),
 });
 export type UISessionTokenClaims = z.infer<typeof UISessionTokenClaims>;
 
 export const InternalTokenClaims = KnodiaJwtClaims.extend({
-  type: z.literal("internal"),
+  type: z.literal(JwtType.enum["internal"]),
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
@@ -89,7 +104,7 @@ export const UISignupSessionTokenClaims = KnodiaJwtClaims.extend({
   oneIdNonce: z.string(),
   personIdentifier: z.string().optional(),
   spidCode: z.string().optional(),
-  type: z.literal("ui-signup-session"),
+  type: z.literal(JwtType.enum["ui-signup-session"]),
 });
 
 export type UISignupSessionTokenClaims = z.infer<
@@ -97,7 +112,7 @@ export type UISignupSessionTokenClaims = z.infer<
 >;
 
 export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
-  type: z.literal("refresh-ui-session"),
+  type: z.literal(JwtType.enum["refresh-ui-session"]),
 });
 export type UISessionRefreshTokenClaims = z.infer<
   typeof UISessionRefreshTokenClaims
@@ -123,7 +138,7 @@ const ExternalUISessionResourceClaims = KnodiaJwtClaims.extend({
 
 export const ExternalUISessionTokenClaims =
   ExternalUISessionResourceClaims.extend({
-    type: z.literal("external-ui-session"),
+    type: z.literal(JwtType.enum["external-ui-session"]),
   });
 export type ExternalUISessionTokenClaims = z.infer<
   typeof ExternalUISessionTokenClaims
@@ -131,7 +146,7 @@ export type ExternalUISessionTokenClaims = z.infer<
 
 export const ExternalUISessionMagicLinkTokenClaims =
   ExternalUISessionResourceClaims.extend({
-    type: z.literal("external-ui-session-magic-link"),
+    type: z.literal(JwtType.enum["external-ui-session-magic-link"]),
   });
 export type ExternalUISessionMagicLinkTokenClaims = z.infer<
   typeof ExternalUISessionMagicLinkTokenClaims
