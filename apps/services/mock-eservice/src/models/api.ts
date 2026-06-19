@@ -384,7 +384,6 @@ export type API_Ack = z.infer<typeof API_Ack>;
 
 // --- POC UC03 (ERDS relay) ---
 
-// The two SERCs of the POC, identified by name (ETSI EN 319 522-2 erdsIdentifier).
 export const API_ErdsIdentifier = z
   .enum(["systemSERCLynx", "systemSERCOrion"])
   .meta({
@@ -394,11 +393,8 @@ export const API_ErdsIdentifier = z
   });
 export type API_ErdsIdentifier = z.infer<typeof API_ErdsIdentifier>;
 
-// Recipient identifier passed to lookupERDS (def-page IDENTIFIER entity). The
-// notation is generic text, not the Codice-Fiscale-only API_Notation above:
-// recipients can be identified by VAT (e.g. the sample 01229430085).
-// No meta id: used as the lookupERDS querystring, which must inline into query
-// params rather than become a $ref component.
+// notation is free text (not the CF-only API_Notation) since recipients may be a
+// VAT; no meta id so it inlines as lookupERDS query params instead of a $ref.
 export const API_ErdsRecipientIdentifier = z.strictObject({
   notation: z.string().min(1),
   schemeName: z.string().min(1),
