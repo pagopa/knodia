@@ -46,7 +46,7 @@ export type ChangeEmailRequestBody = {
 };
 
 export type SuspendUserRequestBody = {
-    reason: 'AccuracyContested' | 'UnlawfulProcessing' | 'DataNeededForLegalClaims' | 'PendingObjectionVerification';
+    suspensionReason: 'ACCURACY_CONTESTED' | 'UNLAWFUL_PROCESSING' | 'DATA_NEEDED_FOR_LEGAL_CLAIMS' | 'PENDING_OBJECTION_VERIFICATION';
 };
 
 export type CurrentSignupUser = {

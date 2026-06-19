@@ -104,15 +104,15 @@ components:
     SuspendUserRequestBody:
       type: object
       properties:
-        reason:
+        suspensionReason:
           type: string
           enum:
-            - AccuracyContested
-            - UnlawfulProcessing
-            - DataNeededForLegalClaims
-            - PendingObjectionVerification
+            - ACCURACY_CONTESTED
+            - UNLAWFUL_PROCESSING
+            - DATA_NEEDED_FOR_LEGAL_CLAIMS
+            - PENDING_OBJECTION_VERIFICATION
       required:
-        - reason
+        - suspensionReason
       additionalProperties: false
     CurrentSignupUser:
       type: object

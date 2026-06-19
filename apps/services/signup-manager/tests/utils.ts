@@ -29,7 +29,7 @@ export const validChangeEmailBody = {
 };
 
 export const validSuspendUserBody = {
-  reason: "UnlawfulProcessing",
+  suspensionReason: "UNLAWFUL_PROCESSING",
 } as const;
 
 export const validUISignupSessionTokenClaims =

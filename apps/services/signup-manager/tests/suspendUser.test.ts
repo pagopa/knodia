@@ -69,16 +69,19 @@ describe("POST /user/suspend (suspendUser)", () => {
       data: {
         occurredAt: expect.any(String),
         oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
-        reason: "UnlawfulProcessing",
         signupUserId: signupUser.signupUserId,
+        suspensionReason: "UnlawfulProcessing",
       },
       type: "SuspensionRequestedV1",
     });
   });
 
   it.each([
-    ["reason is missing", {}],
-    ["reason is not one of the allowed enum values", { reason: "INVALID" }],
+    ["suspensionReason is missing", {}],
+    [
+      "suspensionReason is not one of the allowed enum values",
+      { suspensionReason: "INVALID" },
+    ],
     [
       "body contains unexpected properties",
       { ...validSuspendUserBody, unexpectedProperty: "unexpected" },
