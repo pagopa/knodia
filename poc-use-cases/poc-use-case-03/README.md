@@ -4,6 +4,8 @@ Step-by-step instructions to run the POC Use Case 03 demo end-to-end. See [POC U
 
 Legend: **[UI]** — do it in the node frontend · **[script]** — run from the `scripts/` folder with `node <name>.ts` · **[narration]** — just explain it out loud, nothing to do.
 
+> In production the SERC↔SERC and SERC↔supervisory-body agreements are standing infrastructure (the Knodia trust circle), set up once — not per message. Phases 2–4 establish them for the demo; the per-message flow is just discover → relay (Phases 5–6).
+
 ## Prerequisites
 
 - `scripts/seed/seed.sh` must have been run against the environment where the demo will run (e.g. dev/test).
@@ -69,7 +71,7 @@ Description: to relay the delivery evidences back to the sender's SERC, `systemS
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `systemSERCOrion` Organization and repeat steps 2–6 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`) — after requesting the agreement, follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active, select the same Purpose Form option for its Purpose, and at step 5 run `node generate-orion-key.ts` (which generates `systemSERCOrion`'s own consumer key) instead of `generate-lynx-key.ts`.
+1. **[UI]** Log in to the Orion Knode as `systemSERCOrion` and repeat steps 2–6 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`), with the same Purpose Form option. Two differences: unlike the Orion-side agreements this one isn't auto-activated — follow the activation link (it opens on the producer, Lynx) and confirm it; and run `node generate-orion-key.ts` instead of `generate-lynx-key.ts`.
 2. Note the Consumer Keychain id and the Purpose id.
 
 ## Phase 5
