@@ -17,8 +17,7 @@ interface MockRelayRouterOptions {
 export const mockPocUc03RelayRouter: FastifyPluginAsyncZod<
   MockRelayRouterOptions
 > = async (fastify, { knodeId }) => {
-  // Both knodes run the same relay code; the e-service it serves (and therefore
-  // the token claims it accepts) is the one published on this knode.
+  // Same code on both knodes; the e-service (and accepted token claims) is this knode's.
   const relay = POC_UC03_RELAY_IDENTITY_BY_KNODE[knodeId];
 
   fastify.route({
@@ -34,8 +33,7 @@ export const mockPocUc03RelayRouter: FastifyPluginAsyncZod<
 
       const { messageIdentifier, messageType } = req.body.relayMetadata;
 
-      // Receive-data mock: the SERC does not persist anything. It accepts the
-      // dispatch and acknowledges receipt; consignment/handover are narrated.
+      // Receive-data mock: nothing is persisted; consignment/handover are narrated.
       const ack = {
         correlationId: generateId(),
         messageIdentifier,
