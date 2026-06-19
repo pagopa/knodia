@@ -179,7 +179,7 @@ const testCases = [
       producer: { id: producer.id, knode_id: producer.knodeId },
       purpose: { id: purposeId, knode_id: producer.knodeId },
       sub: consumerKeychainId,
-    } satisfies EserviceAccessTokenClaims,
+    } satisfies Omit<EserviceAccessTokenClaims, "type">,
     generate: () =>
       generator.generateEserviceAccessToken({
         audience: ["my-audience"],
@@ -218,7 +218,7 @@ const testCases = [
       producer: { id: producer.id, knode_id: producer.knodeId },
       purpose: { id: purposeId, knode_id: producer.knodeId },
       sub: consumerKeychainId,
-    } satisfies EserviceAccessTokenClaims,
+    } satisfies Omit<EserviceAccessTokenClaims, "type">,
     generate: () =>
       generator.generateEserviceAccessToken({
         audience: ["my-audience"],
