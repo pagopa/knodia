@@ -2,6 +2,8 @@ import { type DpopErrorKey } from "@knodia/dpop-validator/errors";
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 
+import type { API_CompanyUid } from "./api.ts";
+
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   DPOP_CLAIMS_VALIDATION_ERROR: "0001",
@@ -18,6 +20,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   RESIDENCE_NOT_AVAILABLE: "0012",
   LEGAL_ENTITY_NOT_FOUND: "0013",
   STUDENT_NOT_FOUND: "0014",
+  LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0015",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -65,6 +68,15 @@ export function invalidDpopThumbprint(
     detail: `DPoP proof thumbprint does not match the expected one. Expected: ${expectedThumbprint}, Received: ${dpopProofThumbprint}`,
     status: 401,
     title: "invalid_dpop_proof",
+  });
+}
+
+export function legalEntityAddressNotFound(uidCompany: API_CompanyUid) {
+  return createApiError({
+    code: "LEGAL_ENTITY_ADDRESS_NOT_FOUND",
+    detail: `No address found for legal entity with uid_company ${uidCompany}`,
+    status: 404,
+    title: "legal_entity_address_not_found",
   });
 }
 

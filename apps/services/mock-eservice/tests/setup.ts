@@ -23,6 +23,9 @@ export const ACCEPTED_AUDIENCES: [string, ...string[]] = ["test.audience"];
 export const EXPECTED_ISSUER = "knodia.org";
 export const TEST_KID = "test-mock-eservice-kid";
 export const TEST_KNODE_ID = KnodeId.enum.Orion;
+export const integrityRest02KeySet = generateKeySet();
+const INTEGRITY_REST_02_SIGNATURE_ISSUER = "test-integrity-issuer";
+const INTEGRITY_REST_02_SIGNATURE_KID = "test-integrity-kid";
 
 let dynamoClient: DynamoDBClient;
 const dynamoDbDpopProofsTable = "knodia-mock-eservice-dpop-proofs";
@@ -63,6 +66,9 @@ beforeAll(async () => {
     dynamoDbDpopProofsTable,
     expectedIssuer: EXPECTED_ISSUER,
     host: "test-host",
+    integrityRest02SignatureIssuer: INTEGRITY_REST_02_SIGNATURE_ISSUER,
+    integrityRest02SignatureKid: INTEGRITY_REST_02_SIGNATURE_KID,
+    integrityRest02SignatureSecondsDuration: 300,
     isProduction: false,
     jwtClockToleranceSeconds: 30,
     knodeId: TEST_KNODE_ID,

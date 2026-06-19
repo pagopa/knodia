@@ -1,0 +1,68 @@
+meta {
+  name: 2 - Get Company Address (Bearer)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-mock-eservice}}/legal-entities/12345678901/address
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+
+  res.body.address.adminUnitL1: eq Italia
+  res.body.address.adminUnitL2: eq Lazio
+  res.body.address.fullAddress: eq Via Appia Nuova 12, 00100 Roma
+  res.body.address.postCode: eq "00100"
+  res.body.address.postName: eq Roma
+  res.body.legalEntity.legalEntityActivity: eq 01.11.00
+  res.body.legalEntity.legalIdentifier.notation: eq "12345678901"
+  res.body.legalEntity.legalIdentifier.schemeName: eq Partita Iva
+  res.body.legalEntity.legalIdentifier.schemeURI: eq http://memberstate.ms/VAT
+  res.body.legalEntity.legalName: eq Alfa Industria Srl
+  res.body.legalEntity.registrationDate: eq 1954-03-12
+  
+  res.headers["knodia-jwt-signature"]: isDefined
+  res.headers["digest"]: matches /^SHA-256=/
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200) {
+    throw new Error(
+      `Request failed with status ${res.status}.\n\n` +
+      `The access_token may be expired or invalid. Re-run the bearer-token-flow (steps 2-11, skipping step 1) to mint a fresh one, then re-run this call.`
+    )
+  }
+
+  const knodiaJwtSignature = res.headers["knodia-jwt-signature"]
+  if (!knodiaJwtSignature) {
+    throw new Error("Knodia-JWT-Signature header is missing from the response")
+  }
+
+  // Decode the JWT
+  const decodeB64 = (s) => JSON.parse(Buffer.from(s.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf-8"))
+  const [h, p] = knodiaJwtSignature.split(".")
+  const decodedKnodiaJwtSignature = { header: decodeB64(h), payload: decodeB64(p) }
+
+  bru.setVar("integrity_rest_02_signature_jwt", JSON.stringify(decodedKnodiaJwtSignature))
+  bru.setVar("integrity_rest_02_signature_raw", knodiaJwtSignature)
+  bru.setVar("integrity_rest_02_signature_kid", decodedKnodiaJwtSignature.header.kid)
+  bru.setVar("integrity_rest_02_digest_header", res.headers["digest"])
+  bru.setVar("integrity_rest_02_content_type_header", res.headers["content-type"])
+  bru.setVar("integrity_rest_02_content_encoding_header", res.headers["content-encoding"])
+}

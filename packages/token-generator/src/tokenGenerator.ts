@@ -28,9 +28,10 @@ import type {
 import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
-import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { KMSClient } from "@aws-sdk/client-kms";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
+import { buildAndSignJwt } from "@knodia/crypto/utils";
 import { calculateJwkThumbprint } from "jose";
 import { randomUUID } from "node:crypto";
 
@@ -45,14 +46,12 @@ import type {
   UISignupSessionToken,
 } from "./models.ts";
 
-const JWT_HEADER_ALG = "RS256";
-const JWT_HEADER_USE = "sig";
-const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
-
 export interface InternalTokenInput extends TokenParams {
   audience: string;
   subject: string;
 }
+
+export type TokenGenerator = ReturnType<typeof tokenGeneratorBuilder>;
 
 interface EserviceAccessTokenInput extends TokenParams {
   audience: string[];
@@ -115,64 +114,9 @@ interface UISignupSessionTokenInput extends TokenParams {
   spidCode: string | undefined;
   subject: string;
 }
-
-const b64url = (data: string): string =>
-  Buffer.from(data).toString("base64url");
-
-export type TokenGenerator = ReturnType<typeof tokenGeneratorBuilder>;
 // eslint-disable-next-line max-lines-per-function
 export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
-
-  function buildHeader(kid: string, typ: string): string {
-    return b64url(
-      JSON.stringify({
-        alg: JWT_HEADER_ALG,
-        kid,
-        typ,
-        use: JWT_HEADER_USE,
-      }),
-    );
-  }
-
-  async function signWithKms(kid: string, message: string): Promise<string> {
-    const { Signature } = await client.send(
-      new SignCommand({
-        KeyId: kid,
-        Message: new TextEncoder().encode(message),
-        SigningAlgorithm: KMS_SIGNING_ALGORITHM,
-      }),
-    );
-
-    if (!Signature) {
-      throw new Error("KMS sign returned no signature");
-    }
-
-    return Buffer.from(Signature).toString("base64url");
-  }
-
-  async function buildAndSignToken(
-    kid: string,
-    claims:
-      | EserviceAccessTokenClaims
-      | ExternalUISessionMagicLinkTokenClaims
-      | ExternalUISessionTokenClaims
-      | InternalTokenClaims
-      | KnodeApiAccessTokenClaims
-      | UISessionRefreshTokenClaims
-      | UISessionTokenClaims
-      | UISignupSessionTokenClaims,
-  ): Promise<{ header: string; serialized: string }> {
-    const typ =
-      "type" in claims && claims.type === "refresh-ui-session"
-        ? "JWT"
-        : "at+jwt";
-    const header = buildHeader(kid, typ);
-    const payload = b64url(JSON.stringify(claims));
-    const message = `${header}.${payload}`;
-    const signature = await signWithKms(kid, message);
-    return { header, serialized: `${message}.${signature}` };
-  }
 
   function buildExternalUISessionResourceClaims(
     input: ExternalUISessionTokenInput,
@@ -241,7 +185,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         sub: input.subject,
       };
 
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
 
       return {
         header,
@@ -257,7 +205,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         ...buildExternalUISessionResourceClaims(input),
         type: "external-ui-session-magic-link",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return {
         header,
         payload: claims,
@@ -273,7 +225,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         ...buildExternalUISessionResourceClaims(input),
         type: "external-ui-session",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return {
         header,
         payload: claims,
@@ -295,7 +251,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         sub: input.subject,
         type: "internal",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return { header, payload: claims, serialized, type: "internal" };
     },
 
@@ -320,7 +280,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         type: "knode-api",
       };
 
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
 
       return {
         header,
@@ -337,7 +301,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         ...buildUserTokenClaims(input),
         type: "refresh-ui-session",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return {
         header,
         payload: claims,
@@ -353,7 +321,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         ...buildUserTokenClaims(input),
         type: "ui-session",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return { header, payload: claims, serialized, type: "ui-session" };
     },
 
@@ -377,7 +349,11 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         sub: input.subject,
         type: "ui-signup-session",
       };
-      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
       return { header, payload: claims, serialized, type: "ui-signup-session" };
     },
   };
