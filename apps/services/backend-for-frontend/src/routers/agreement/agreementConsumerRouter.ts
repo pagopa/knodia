@@ -9,7 +9,6 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -43,6 +42,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 
 interface AgreementConsumerRouterOptions {
   config: BffProcessConfig;
@@ -89,6 +89,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Create a consumer Agreement",
       tags: [apiTags.agreement],
@@ -145,6 +146,10 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get consumer Agreement counters",
       tags: [apiTags.agreement],
@@ -175,6 +180,15 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      const targetKnodeId = singleListingKnodeId(
+        data.results,
+        (agreement) => agreement.knodeId,
+      );
+      if (targetKnodeId === undefined) {
+        res.status(200).send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
       const eservicesMap = await getExternalEntitiesMap({
         fetchFn: ({ entityIds, knodeId }) =>
           Promise.all(
@@ -190,8 +204,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
             ),
           ),
         getEntityId: (agreement) => agreement.eserviceId,
-        getKnodeId: (agreement) => KnodeId.parse(agreement.knodeId),
         items: data.results,
+        knodeId: targetKnodeId,
       });
 
       res.status(200).send({
@@ -200,9 +214,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerAgreement({
             agreement,
             eservice: assertEntityExists(
-              eservicesMap
-                .get(KnodeId.parse(agreement.knodeId))
-                ?.get(unsafeBrandExternalId(agreement.eserviceId)),
+              eservicesMap.get(unsafeBrandExternalId(agreement.eserviceId)),
               `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
             ),
           }),
@@ -217,11 +229,16 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerAgreementsQueryParams,
       response: {
         200: API_ConsumerAgreements.meta({
-          description: "Consumer Agreements retrieved successfully",
+          description:
+            "Consumer Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "List consumer Agreements",
       tags: [apiTags.agreement],
@@ -270,11 +287,16 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       querystring: API_GetPendingConsumerAgreementsQueryParams,
       response: {
         200: API_PendingConsumerAgreements.meta({
-          description: "Pending Consumer Agreements retrieved successfully",
+          description:
+            "Pending Consumer Agreements retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "List pending consumer Agreements",
       tags: [apiTags.agreement],
@@ -318,6 +340,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Agreement not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Create an Agreement activation magic link",
       tags: [apiTags.agreement],
@@ -359,6 +382,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Reactivate an Agreement by consumer",
       tags: [apiTags.agreement],
@@ -400,6 +424,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Suspend an Agreement by consumer",
       tags: [apiTags.agreement],
@@ -441,6 +466,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Archive an Agreement by consumer",
       tags: [apiTags.agreement],

@@ -1,10 +1,23 @@
+import type { Producer } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
+import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
-import { beforeAll } from "vitest";
+import {
+  deletedSignupUser,
+  emailChangeRequest,
+  signupUser,
+} from "@knodia/db-signup";
+import { setupSignupTestDatabase } from "@knodia/test-commons/signupDb";
+import { resetTestDatabase } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject, vi } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
 let app: FastifyInstance;
+let signupDb: TestDrizzleDb;
+const kafkaProducerMock = {
+  send: vi.fn<Producer["send"]>(),
+};
 
 const oneIdentityMockConfig = {
   oneIdentityClientId: "test-one-identity-client-id",
@@ -14,15 +27,27 @@ const oneIdentityMockConfig = {
   oneIdentityRedirectUrl: "https://localhost:5176/login/callback",
 } as const;
 
+async function resetTestDatabases() {
+  await resetTestDatabase(
+    signupDb,
+    emailChangeRequest,
+    deletedSignupUser,
+    signupUser,
+  );
+}
+
 beforeAll(async () => {
+  const connectionString = inject("POSTGRES_CONNECTION_STRING");
+
+  signupDb = await setupSignupTestDatabase(connectionString);
+
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
-      host: "localhost",
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
-      port: 0,
+      signupTopic: "test-signup-topic",
       uiSignupSessionJwt: {
         audience: "test-audience",
         issuer: "test-issuer",
@@ -32,7 +57,18 @@ beforeAll(async () => {
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
       ...oneIdentityMockConfig,
     },
+    kafkaProducer: kafkaProducerMock as unknown as Producer,
+    signupDb,
   });
 });
 
-export { app, oneIdentityMockConfig };
+afterEach(async () => {
+  await resetTestDatabases();
+  kafkaProducerMock.send.mockReset();
+});
+
+afterAll(async () => {
+  await Promise.all([signupDb.$client.end()]);
+});
+
+export { app, kafkaProducerMock, oneIdentityMockConfig, signupDb };

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getAttribute,
   hasAllRequiredAttributes,
   isAttributePossessed,
 } from "../src/attributes.ts";
@@ -9,6 +10,44 @@ const nuts1 = { code: "nuts1", scheme: "vc_territorial_units" };
 const nuts2 = { code: "nuts2", scheme: "vc_territorial_units" };
 const nuts3 = { code: "nuts3", scheme: "vc_territorial_units" };
 const other = { code: "other_code", scheme: "other_scheme" };
+
+describe("getAttribute", () => {
+  it("returns the attribute with its display name when scheme and code exist", () => {
+    expect(
+      getAttribute({
+        code: "companies_registries",
+        scheme: "vc_poc_attributes",
+      }),
+    ).toEqual({
+      id: { code: "companies_registries", scheme: "vc_poc_attributes" },
+      name: "Companies Registries",
+    });
+  });
+
+  it("resolves the training_institutes POC attribute", () => {
+    expect(
+      getAttribute({
+        code: "training_institutes",
+        scheme: "vc_poc_attributes",
+      }),
+    ).toEqual({
+      id: { code: "training_institutes", scheme: "vc_poc_attributes" },
+      name: "Training Institutes",
+    });
+  });
+
+  it("returns undefined for an unknown code in a known scheme", () => {
+    expect(
+      getAttribute({ code: "unknown", scheme: "vc_poc_attributes" }),
+    ).toBeUndefined();
+  });
+
+  it("returns undefined for an unknown scheme", () => {
+    expect(
+      getAttribute({ code: "companies_registries", scheme: "unknown_scheme" }),
+    ).toBeUndefined();
+  });
+});
 
 describe("isAttributePossessed", () => {
   it("returns true when an owned attribute matches both code and scheme", () => {
@@ -69,5 +108,33 @@ describe("hasAllRequiredAttributes", () => {
 
   it("returns false when owned attributes are empty and groups are not", () => {
     expect(hasAllRequiredAttributes([], [[nuts1]])).toBe(false);
+  });
+});
+
+describe("getAttribute", () => {
+  it("resolves the knodia/testing_organization attribute", () => {
+    expect(
+      getAttribute({ code: "testing_organization", scheme: "knodia" }),
+    ).toEqual({
+      id: { code: "testing_organization", scheme: "knodia" },
+      name: "Testing Organization",
+    });
+  });
+
+  it("resolves an existing vc_territorial_units attribute", () => {
+    expect(getAttribute(nuts1)).toEqual({
+      id: { code: "nuts1", scheme: "vc_territorial_units" },
+      name: "NUTS 1",
+    });
+  });
+
+  it("returns undefined for an unknown code in a known scheme", () => {
+    expect(getAttribute({ code: "nope", scheme: "knodia" })).toBeUndefined();
+  });
+
+  it("returns undefined for an unknown scheme", () => {
+    expect(
+      getAttribute({ code: "testing_organization", scheme: "nope" }),
+    ).toBeUndefined();
   });
 });

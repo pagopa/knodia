@@ -8,6 +8,11 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
+  type RateLimiter,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
+import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
@@ -29,6 +34,7 @@ import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRoute
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { knodeApiKeychainRouter } from "./routers/keychain/knodeApiKeychainRouter.ts";
+import { producerKeychainRouter } from "./routers/keychain/producerKeychainRouter.ts";
 import { operatorRouter } from "./routers/operatorRouter.ts";
 import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
@@ -38,6 +44,7 @@ import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(
   config: BffProcessConfig,
+  rateLimiter: RateLimiter,
   injectedDynamoClient?: DynamoDBClient,
 ) {
   const clients = getKnodiaClients({
@@ -87,6 +94,10 @@ export function buildAppFromConfig(
             name: apiTags.knodeApiKeychain,
           },
           {
+            description: "Producer Keychains routes",
+            name: apiTags.producerKeychain,
+          },
+          {
             description: "Purpose routes",
             name: apiTags.purpose,
           },
@@ -118,17 +129,19 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
-  const authService = authServiceBuilder(
+  const authService = authServiceBuilder({
     config,
-    tokenGenerator,
-    refreshTokenStore,
     magicLinkTokenStore,
-  );
+    rateLimiter,
+    refreshTokenStore,
+    tokenGenerator,
+  });
 
-  // Register cookie parser
   app.register(cookie);
+  app.register(rateLimitResponseHeadersPlugin);
 
-  // Public routes (no JWT required)
+  // /auth/* is rate-limited inline inside authService, post-credential check.
+  // /auth/logout intentionally bypasses rate limiting.
   app.register(healthRouter);
   app.register(authRouter, {
     authCookieAllowedOrigins: config.authCookieAllowedOrigins,
@@ -140,6 +153,7 @@ export function buildAppFromConfig(
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(rateLimitPlugin, { rateLimiter });
     protectedApp.register(eserviceTemplateRouter);
     protectedApp.register(purposeTemplateRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
@@ -159,6 +173,12 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(knodeApiKeychainRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
+      organizationProcessClient: clients.organizationProcessClient,
+      pollingService,
+    });
+    protectedApp.register(producerKeychainRouter, {
+      eserviceProcessClient: clients.eserviceProcessClient,
       keychainProcessClient: clients.keychainProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
       pollingService,
@@ -213,7 +233,10 @@ export function buildAppFromConfig(
     });
   });
 
-  app.addHook("onClose", () => sharedDynamoClient.destroy());
+  app.addHook("onClose", async () => {
+    sharedDynamoClient.destroy();
+    await rateLimiter.disconnect();
+  });
 
   return app;
 }

@@ -20,7 +20,9 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEserviceDetailsQueryParams,
+  API_GetEservicePurposeFormOptionsQueryParams,
   API_GetEservicesQueryParams,
+  API_PurposeFormOptions,
 } from "../models/eservice/api.ts";
 
 interface EserviceRouterOptions {
@@ -109,6 +111,47 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
+      const data = await eserviceService.getEservicePurposeFormOptions(
+        toExternalResource<EserviceId>(
+          req.params.eserviceId,
+          req.query.knodeId,
+        ),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the list of PurposeFormOption entries published by the Producer on a ReceiveData E-service hosted on a remote Knode. Returns an empty list when the E-service has no receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.",
+      operationId: "getEservicePurposeFormOptions",
+      params: API_EserviceIdPathParam,
+      querystring: API_GetEservicePurposeFormOptionsQueryParams,
+      response: {
+        200: API_PurposeFormOptions.meta({
+          description: "PurposeFormOption list retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({
+          description: "E-service mode is not ReceiveData",
+        }),
+      },
+      summary: "Get PurposeFormOptions for an E-service",
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/purposeFormOptions",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
       const eservices = await eserviceService.getEservices(req.query, ctx);
 
       res.send(eservices);
@@ -120,12 +163,16 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       querystring: API_GetEservicesQueryParams,
       response: {
         200: API_Eservices.meta({
-          description: "E-services retrieved successfully",
+          description:
+            "E-services retrieved (sorted by most recently updated agreement first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get E-services",
       tags: [apiTags.eservice],

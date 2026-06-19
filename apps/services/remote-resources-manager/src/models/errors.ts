@@ -18,6 +18,7 @@ const {
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_NOT_IMPLEMENTED,
 } = constants;
 
 /* eslint-disable perfectionist/sort-objects */
@@ -29,6 +30,7 @@ const errorCodes = {
   ORGANIZATION_NOT_PURPOSE_CONSUMER: "0005",
   ORGANIZATION_TOKEN_CLAIM_MISMATCH: "0006",
   TARGET_KNODE_URL_NOT_CONFIGURED: "0007",
+  MULTI_KNODE_LISTING_NOT_SUPPORTED: "0008",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -57,6 +59,16 @@ export function agreementNotFound(agreementId: ExternalId<AgreementId>) {
     detail: `Agreement with id ${agreementId} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+// Provisional (KN-589): cross-knode listings are single-knode until cross-knode event propagation lands.
+export function multiKnodeListingNotSupported(knodes: KnodeId[]) {
+  return createApiError<ErrorCodes>({
+    code: "MULTI_KNODE_LISTING_NOT_SUPPORTED",
+    detail: `Cross-knode listings currently support a single remote knode, but ${knodes.length} were found: ${knodes.join(", ")}`,
+    status: HTTP_STATUS_NOT_IMPLEMENTED,
+    title: "Multi-knode listing not supported",
   });
 }
 

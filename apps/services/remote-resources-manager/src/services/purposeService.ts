@@ -1,16 +1,17 @@
 /* eslint-disable max-lines-per-function */
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  KnodeId,
-  OrganizationId,
-  PurposeId,
-} from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { K2K2GatewayApiClientFactory } from "@knodia/k2k-gateway-client/factory";
 
+import {
+  type KnodeId,
+  type OrganizationId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import { match } from "ts-pattern";
 
 import type {
   API_CreatedPurposeResource,
@@ -27,6 +28,10 @@ import {
   toK2KAPI_PurposeState,
 } from "../models/purpose/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import {
+  emptyListingPage,
+  resolveSingleListingKnode,
+} from "../utils/singleKnodeListing.ts";
 import {
   assertOrganizationIsPurposeConsumer,
   assertPurposeExists,
@@ -71,11 +76,8 @@ export function purposeServiceBuilder(
         dailyCalls,
         description,
         eserviceId,
-        formAnswersJson,
-        formSchemaVersion,
         knodeId: targetKnodeId,
         name,
-        template,
       } = reqBody;
       const { organizationId: consumerId } = authData;
 
@@ -86,19 +88,35 @@ export function purposeServiceBuilder(
 
       await retrieveOrganization(consumerId, readmodelService);
 
-      const { data } = await k2kGatewayApi.createPurpose({
-        body: {
-          consumerId,
-          dailyCalls,
-          description,
-          eserviceId,
-          formAnswersJson,
-          formSchemaVersion,
-          name,
-          template: template
-            ? { id: template.id, knodeId: toK2KAPI_KnodeId(template.knodeId) }
+      const baseBody = {
+        consumerId,
+        dailyCalls,
+        description,
+        eserviceId,
+        name,
+      };
+      const body = match(reqBody)
+        .with({ eserviceMode: "ProvideData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "PROVIDE_DATA" as const,
+          formAnswersJson: b.formAnswersJson,
+          formSchemaVersion: b.formSchemaVersion,
+          template: b.template
+            ? {
+                id: b.template.id,
+                knodeId: toK2KAPI_KnodeId(b.template.knodeId),
+              }
             : undefined,
-        },
+        }))
+        .with({ eserviceMode: "ReceiveData" }, (b) => ({
+          ...baseBody,
+          eserviceMode: "RECEIVE_DATA" as const,
+          purposeFormOptionId: b.purposeFormOptionId,
+        }))
+        .exhaustive();
+
+      const { data } = await k2kGatewayApi.createPurpose({
+        body,
         client: getK2K2GatewayApiClient(targetKnodeId),
       });
 
@@ -109,7 +127,7 @@ export function purposeServiceBuilder(
         purposeId: data.id,
       });
 
-      return data;
+      return { ...data, knodeId: targetKnodeId };
     },
     async getCurrentPurposeFormSchemas(
       targetKnodeId: KnodeId,
@@ -162,55 +180,38 @@ export function purposeServiceBuilder(
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { eserviceId, limit, offset, state } = requestQuery;
+      const { eserviceId, knodeId, limit, offset, state } = requestQuery;
       const consumerId = authData.organizationId;
 
-      // TODO: when eserviceId is provided, query only the knode that produces
-      // that e-service instead of iterating over all knodes
-      const knodesWithPurposes =
-        await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
-
-      let totalCount = 0;
-      let dynamicLimit = limit;
-      let dynamicOffset = offset;
-      let results: API_Purpose[] = [];
-
-      for (const targetKnodeId of knodesWithPurposes) {
-        logger.info(
-          `Getting Purposes from Knode ${targetKnodeId} for consumer ${consumerId}`,
+      const targetKnodeId =
+        knodeId ??
+        resolveSingleListingKnode(
+          await remoteResourceDbService.getPurposesDistinctKnodes(consumerId),
         );
-
-        const { data } = await k2kGatewayApi.getPurposes({
-          client: getK2K2GatewayApiClient(targetKnodeId),
-          query: {
-            consumerId,
-            eserviceId,
-            limit: dynamicLimit,
-            offset: dynamicOffset,
-            state: state?.map(toK2KAPI_PurposeState),
-          },
-        });
-
-        if (results.length < limit) {
-          results = results.concat(
-            data.results.map((purpose) =>
-              toAPI_Purpose(purpose, targetKnodeId),
-            ),
-          );
-          dynamicLimit = limit - results.length;
-          dynamicOffset = 0;
-        }
-
-        totalCount += data.pagination.total;
+      if (targetKnodeId === undefined) {
+        return emptyListingPage(limit, offset);
       }
 
-      return {
-        pagination: {
+      logger.info(
+        `Getting Purposes from Knode ${targetKnodeId} for consumer ${consumerId}`,
+      );
+
+      const { data } = await k2kGatewayApi.getPurposes({
+        client: getK2K2GatewayApiClient(targetKnodeId),
+        query: {
+          consumerId,
+          eserviceId,
           limit,
           offset,
-          total: totalCount,
+          state: state?.map(toK2KAPI_PurposeState),
         },
-        results,
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map((purpose) =>
+          toAPI_Purpose(purpose, targetKnodeId),
+        ),
       };
     },
 

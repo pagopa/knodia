@@ -113,6 +113,7 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Activate an Agreement",
       tags: [apiTags.agreement],
@@ -170,9 +171,9 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
           id: eserviceResp.data.id,
           name: eserviceResp.data.name,
         },
+        knodeId: config.knodeId,
         producer: {
           id: producerResp.data.id,
-          knodeId: config.knodeId,
           name: producerResp.data.name,
         },
       });
@@ -190,6 +191,7 @@ export const agreementExternalRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get Agreement activation details",
       tags: [apiTags.agreement],

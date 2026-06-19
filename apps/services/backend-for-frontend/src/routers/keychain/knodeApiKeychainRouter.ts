@@ -35,7 +35,7 @@ import { z } from "zod";
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedKeyResource,
-  API_GetKnodeApiKeychainKeysQueryParams,
+  API_GetKeychainKeysQueryParams,
   API_GetKnodeApiKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
@@ -43,12 +43,12 @@ import {
   API_KeychainKeySeed,
   API_KeychainMembers,
   API_KeychainMemberSeed,
+  API_KeychainMembershipCheckResult,
   API_KeychainPatch,
   API_Keychains,
+  API_KeychainSeed,
   API_KnodeApiKeychainKeyPathParams,
   API_KnodeApiKeychainMemberPathParams,
-  API_KnodeApiKeychainMembershipCheckResult,
-  API_KnodeApiKeychainSeed,
   API_KnodeApiKeychainsQueryParams,
 } from "../../models/keychain/api.ts";
 import {
@@ -129,7 +129,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_KnodeApiKeychainSeed,
+      body: API_KeychainSeed,
       description: "Create a new Knode API Keychain",
       operationId: "createKnodeApiKeychain",
       response: {
@@ -139,6 +139,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Create a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -209,6 +210,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List Knode API Keychains",
       tags: [apiTags.knodeApiKeychain],
@@ -247,6 +249,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -295,6 +298,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Update a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -339,6 +343,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Delete a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -379,7 +384,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       description: "Retrieve keys of a Knode API Keychain",
       operationId: "getKnodeApiKeychainKeys",
       params: API_KnodeApiKeychainIdPathParam,
-      querystring: API_GetKnodeApiKeychainKeysQueryParams,
+      querystring: API_GetKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
           description: "Knode API Keychain Keys retrieved successfully",
@@ -388,6 +393,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List Knode API Keychain Keys",
       tags: [apiTags.knodeApiKeychain],
@@ -435,6 +441,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({
           description: "Knode API Keychain Key not found",
         }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Download a Knode API Keychain Key",
       tags: [apiTags.knodeApiKeychain],
@@ -480,6 +487,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Upload a Knode API Keychain Key",
       tags: [apiTags.knodeApiKeychain],
@@ -522,6 +530,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Remove a Knode API Keychain Key",
       tags: [apiTags.knodeApiKeychain],
@@ -566,6 +575,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List Knode API Keychain Members",
       tags: [apiTags.knodeApiKeychain],
@@ -614,6 +624,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Add a Member to a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -662,6 +673,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Remove a Member from a Knode API Keychain",
       tags: [apiTags.knodeApiKeychain],
@@ -698,7 +710,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getKnodeApiKeychainMembership",
       params: API_KnodeApiKeychainMemberPathParams,
       response: {
-        200: API_KnodeApiKeychainMembershipCheckResult.meta({
+        200: API_KeychainMembershipCheckResult.meta({
           description:
             "Knode API Keychain membership check retrieved successfully",
         }),
@@ -706,6 +718,7 @@ export const knodeApiKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Knode API Keychain not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Check a Knode API Keychain Membership",
       tags: [apiTags.knodeApiKeychain],

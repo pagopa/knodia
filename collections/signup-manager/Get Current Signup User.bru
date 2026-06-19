@@ -1,0 +1,15 @@
+meta {
+  name: Get Current Signup User
+  type: http
+}
+
+get {
+  url: {{host-signup-manager}}/user/me
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-signup-session-jwt}}
+}

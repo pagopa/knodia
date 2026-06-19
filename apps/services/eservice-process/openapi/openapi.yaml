@@ -198,6 +198,13 @@ components:
         - offset
         - total
       additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeFormSchemaVersion:
+      type: string
+      enum:
+        - "1.0"
     EserviceVersionInterfaceDocument:
       type: object
       properties:
@@ -298,6 +305,38 @@ components:
       required:
         - pagination
         - results
+      additionalProperties: false
+    PurposeFormOption:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PurposeFormOption"
+      required:
+        - items
       additionalProperties: false
     EserviceVersion:
       type: object
@@ -950,6 +989,79 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getEservicePurposeFormOptions
+      tags:
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries (pre-filled form
+        answers published by the Producer) for a ReceiveData E-service. Returns
+        an empty list for ReceiveData E-services without receiveDataConfig, and
+        409 if the E-service is not in ReceiveData mode.
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: PurposeFormOption list retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: PurposeFormOption list retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/versions/latest:

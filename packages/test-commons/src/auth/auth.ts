@@ -4,6 +4,7 @@ import type {
   InternalTokenClaims,
   KnodeApiAccessTokenClaims,
   UISessionTokenClaims,
+  UISignupSessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
 import type { NonEmptyArray } from "@knodia/common-models/types";
@@ -66,6 +67,17 @@ export type TestToken =
       type: "external-ui-session";
     }
   | {
+      dateOfBirth?: string;
+      familyName?: string;
+      fiscalNumber?: null | string;
+      name?: string;
+      oneIdNonce: string;
+      personIdentifier?: null | string;
+      spidCode?: null | string;
+      type: "ui-signup-session";
+      uniqueIdentifier?: string;
+    }
+  | {
       keychainId?: KnodeApiKeychainId;
       keychainKnodeId?: KnodeId;
       organizationId?: OrganizationId;
@@ -102,6 +114,9 @@ export function createTestTokenPayload(spec: TestToken): string {
       getTestExternalUISessionTokenClaims(props),
     )
     .with({ type: "knode-api" }, (props) => getTestKnodeApiTokenClaims(props))
+    .with({ type: "ui-signup-session" }, (props) =>
+      getTestUISignupSessionTokenClaims(props),
+    )
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
 }
@@ -210,5 +225,42 @@ export function getTestUISessionTokenClaims(
     sub: props.userId ?? TEST_USER_ID,
     type: "ui-session",
     username: props.username ?? "test-user",
+  };
+}
+
+export function getTestUISignupSessionTokenClaims(
+  props: {
+    dateOfBirth?: string;
+    familyName?: string;
+    fiscalNumber?: null | string;
+    name?: string;
+    oneIdNonce?: string;
+    personIdentifier?: null | string;
+    spidCode?: null | string;
+    uniqueIdentifier?: string;
+  } = {},
+): UISignupSessionTokenClaims {
+  return {
+    aud: "test-audience",
+    dateOfBirth: props.dateOfBirth ?? "2000-01-01",
+    exp: 9999999999,
+    familyName: props.familyName ?? "User",
+    fiscalNumber:
+      props.fiscalNumber === null
+        ? undefined
+        : (props.fiscalNumber ?? "XXXXXX00X00X000X"),
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    name: props.name ?? "Test",
+    oneIdNonce: props.oneIdNonce ?? "test-nonce",
+    personIdentifier:
+      props.personIdentifier === null ? undefined : props.personIdentifier,
+    spidCode:
+      props.spidCode === null
+        ? undefined
+        : (props.spidCode ?? "test-spid-code"),
+    sub: props.uniqueIdentifier ?? "test-unique-identifier",
+    type: "ui-signup-session",
   };
 }

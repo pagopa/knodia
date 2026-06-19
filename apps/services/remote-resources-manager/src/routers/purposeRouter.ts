@@ -82,7 +82,8 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_PurposeSeed,
-      description: "Create a new Purpose",
+      description:
+        "Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.",
       operationId: "createPurpose",
       response: {
         201: API_CreatedPurposeResource.meta({
@@ -260,11 +261,15 @@ export const purposeRouter: FastifyPluginAsyncZod<
       querystring: API_GetPurposesQueryParams,
       response: {
         200: API_Purposes.meta({
-          description: "Purposes retrieved successfully",
+          description:
+            "Purposes retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "Get Purposes",
       tags: [apiTags.purpose],

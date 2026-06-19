@@ -1,0 +1,38 @@
+meta {
+  name: 3 - Get Residence Pseudonymization (Signal Hub Bearer)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host-mock-eservice}}/natural-persons/pseudonymization
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.cryptoHashFunction: eq sha256
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200) {
+    throw new Error(`Request failed with status ${res.status}.`)
+  }
+  if (typeof res.body.seed !== "string" || res.body.seed.length === 0) {
+    throw new Error(`Expected non-empty seed, got: ${JSON.stringify(res.body.seed)}`)
+  }
+  console.log(`==> seed: ${res.body.seed}`)
+}

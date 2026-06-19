@@ -279,6 +279,33 @@ export type Eservices = {
 };
 
 /**
+ * Set of pre-filled form answers published by the Producer on a ReceiveData E-service
+ */
+export type PurposeFormOption = {
+    description: {
+        en: string;
+    };
+    /**
+     * Pre-filled key-value pairs of answers to the Purpose form
+     */
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema referenced by the option (e.g., "1.0")
+     */
+    formSchemaVersion: string;
+    id: string;
+    name: {
+        en: string;
+    };
+};
+
+export type PurposeFormOptions = {
+    items: Array<PurposeFormOption>;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'ORION' | 'LYNX';
@@ -465,10 +492,7 @@ export type PurposeTemplateReference = {
     knodeId: KnodeId;
 };
 
-/**
- * Seed data to create a new Purpose
- */
-export type PurposeSeed = {
+export type PurposeSeedForProvideData = {
     /**
      * Identifier of the Consumer Organization creating the Purpose
      */
@@ -482,11 +506,40 @@ export type PurposeSeed = {
      * Identifier of the E-service this Purpose refers to
      */
     eserviceId: EserviceId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'PROVIDE_DATA';
     formAnswersJson: PurposeFormAnswers;
     formSchemaVersion: PurposeFormSchemaVersion;
-    name: LocalizedPurposeName;
     template?: PurposeTemplateReference;
 };
+
+export type PurposeSeedForReceiveData = {
+    /**
+     * Identifier of the Consumer Organization creating the Purpose
+     */
+    consumerId: OrganizationId;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: EserviceId;
+    name: LocalizedPurposeName;
+    eserviceMode: 'RECEIVE_DATA';
+    /**
+     * Identifier of the PurposeFormOption (pre-filled set of form answers) chosen by the Consumer among those published by the Producer on the E-service
+     */
+    purposeFormOptionId: string;
+};
+
+export type PurposeSeed = ({
+    eserviceMode: 'PROVIDE_DATA';
+} & PurposeSeedForProvideData) | ({
+    eserviceMode: 'RECEIVE_DATA';
+} & PurposeSeedForReceiveData);
 
 /**
  * Unique identifier of the created Purpose resource
@@ -703,6 +756,41 @@ export type GetEserviceResponses = {
 
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
 
+export type GetEservicePurposeFormOptionsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/purposeFormOptions';
+};
+
+export type GetEservicePurposeFormOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * E-service mode is not ReceiveData
+     */
+    409: Problem;
+};
+
+export type GetEservicePurposeFormOptionsError = GetEservicePurposeFormOptionsErrors[keyof GetEservicePurposeFormOptionsErrors];
+
+export type GetEservicePurposeFormOptionsResponses = {
+    /**
+     * PurposeFormOption list retrieved successfully
+     */
+    200: PurposeFormOptions;
+};
+
+export type GetEservicePurposeFormOptionsResponse = GetEservicePurposeFormOptionsResponses[keyof GetEservicePurposeFormOptionsResponses];
+
 export type GetEserviceLatestVersionData = {
     body?: never;
     path: {
@@ -796,7 +884,7 @@ export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
 
 export type GetEservicesResponses = {
     /**
-     * E-services retrieved successfully
+     * E-services retrieved (sorted by name ascending)
      */
     200: Eservices;
 };
@@ -842,7 +930,7 @@ export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
 
 export type GetAgreementsResponses = {
     /**
-     * Agreements retrieved successfully
+     * Agreements retrieved (sorted by most recently updated first)
      */
     200: Agreements;
 };
@@ -1161,7 +1249,7 @@ export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
 
 export type GetPurposesResponses = {
     /**
-     * Purposes retrieved successfully
+     * Purposes retrieved (sorted by most recently updated first)
      */
     200: Purposes;
 };

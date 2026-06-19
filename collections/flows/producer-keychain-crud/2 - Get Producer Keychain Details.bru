@@ -1,0 +1,25 @@
+meta {
+  name: 2 - Get Producer Keychain Details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq {{producerKeychainId}}
+  res.body.description.en: eq Producer Keychain for CRUD flow
+}

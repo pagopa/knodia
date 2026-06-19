@@ -458,6 +458,56 @@ components:
         - pagination
         - results
       additionalProperties: false
+    PurposeFormOption:
+      description: Set of pre-filled form answers published by the Producer on a
+        ReceiveData E-service
+      type: object
+      properties:
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        formAnswersJson:
+          description: Pre-filled key-value pairs of answers to the Purpose form
+          type: object
+          additionalProperties: {}
+        formSchemaVersion:
+          description: Version identifier for the Purpose form schema referenced by the
+            option (e.g., "1.0")
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - description
+        - formAnswersJson
+        - formSchemaVersion
+        - id
+        - name
+      additionalProperties: false
+    PurposeFormOptions:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PurposeFormOption"
+      required:
+        - items
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -768,8 +818,7 @@ components:
         - id
         - knodeId
       additionalProperties: false
-    PurposeSeed:
-      description: Seed data to create a new Purpose
+    PurposeSeedForProvideData:
       type: object
       properties:
         consumerId:
@@ -788,12 +837,16 @@ components:
           description: Identifier of the E-service this Purpose refers to
           allOf:
             - $ref: "#/components/schemas/EserviceId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - PROVIDE_DATA
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
         template:
           allOf:
             - $ref: "#/components/schemas/PurposeTemplateReference"
@@ -802,10 +855,61 @@ components:
         - dailyCalls
         - description
         - eserviceId
+        - name
+        - eserviceMode
         - formAnswersJson
         - formSchemaVersion
-        - name
       additionalProperties: false
+    PurposeSeedForReceiveData:
+      type: object
+      properties:
+        consumerId:
+          description: Identifier of the Consumer Organization creating the Purpose
+          allOf:
+            - $ref: "#/components/schemas/OrganizationId"
+        dailyCalls:
+          description: Expected number of daily API calls for this Purpose
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          description: Identifier of the E-service this Purpose refers to
+          allOf:
+            - $ref: "#/components/schemas/EserviceId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        eserviceMode:
+          type: string
+          enum:
+            - RECEIVE_DATA
+        purposeFormOptionId:
+          description: Identifier of the PurposeFormOption (pre-filled set of form
+            answers) chosen by the Consumer among those published by the
+            Producer on the E-service
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - consumerId
+        - dailyCalls
+        - description
+        - eserviceId
+        - name
+        - eserviceMode
+        - purposeFormOptionId
+      additionalProperties: false
+    PurposeSeed:
+      discriminator:
+        mapping:
+          PROVIDE_DATA: "#/components/schemas/PurposeSeedForProvideData"
+          RECEIVE_DATA: "#/components/schemas/PurposeSeedForReceiveData"
+        propertyName: eserviceMode
+      oneOf:
+        - $ref: "#/components/schemas/PurposeSeedForProvideData"
+        - $ref: "#/components/schemas/PurposeSeedForReceiveData"
     CreatedPurposeResource:
       description: Unique identifier of the created Purpose resource
       allOf:
@@ -1130,6 +1234,56 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/purposeFormOptions:
+    get:
+      operationId: getEservicePurposeFormOptions
+      summary: Get PurposeFormOptions for an E-service
+      tags:
+        - resource
+        - eservice
+      description: Retrieve the list of PurposeFormOption entries published by the
+        Producer on a ReceiveData E-service. Returns an empty list when the
+        E-service has no receiveDataConfig, and 409 if the E-service is not in
+        ReceiveData mode.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: PurposeFormOption list retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: PurposeFormOption list retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: E-service mode is not ReceiveData
+          content:
+            application/problem+json:
+              schema:
+                description: E-service mode is not ReceiveData
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/versions/latest:
     get:
       operationId: getEserviceLatestVersion
@@ -1246,11 +1400,11 @@ paths:
           description: Filter by E-service ID
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: E-services retrieved (sorted by name ascending)
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: E-services retrieved (sorted by name ascending)
                 allOf:
                   - $ref: "#/components/schemas/Eservices"
         "400":
@@ -1357,11 +1511,11 @@ paths:
           description: Filter by Agreement State
       responses:
         "200":
-          description: Agreements retrieved successfully
+          description: Agreements retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Agreements retrieved successfully
+                description: Agreements retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Agreements"
         "400":
@@ -1699,8 +1853,11 @@ paths:
       tags:
         - resource
         - purpose
-      description: Create a new Purpose for a Consumer to declare the intended use of
-        a Producer's E-service
+      description: Create a new Purpose for an E-service on behalf of a Consumer. The
+        request body can be either PurposeSeedForProvideData or
+        PurposeSeedForReceiveData based on the Eservice mode. The first one
+        carries inline form answers compiled by the Consumer, while the second
+        one references a pre-filled PurposeFormOption compiled by the Producer.
       requestBody:
         required: true
         content:
@@ -1789,11 +1946,11 @@ paths:
           description: Filter by Purpose State
       responses:
         "200":
-          description: Purposes retrieved successfully
+          description: Purposes retrieved (sorted by most recently updated first)
           content:
             application/json:
               schema:
-                description: Purposes retrieved successfully
+                description: Purposes retrieved (sorted by most recently updated first)
                 allOf:
                   - $ref: "#/components/schemas/Purposes"
         "400":

@@ -3,11 +3,18 @@ import type { KnodeApiKeychain } from "@knodia/keychain-models";
 
 import {
   generateId,
+  generateUserId,
   type KeyId,
   type KnodeApiKeychainId,
+  type OrganizationId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  TEST_USER_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import {
   getMockKeychainKey,
   getMockKnodeApiKeychain,
@@ -27,7 +34,13 @@ const existingKeys = [
 const knodeApiKeychain: KnodeApiKeychain = {
   ...getMockKnodeApiKeychain(),
   keys: existingKeys,
+  // Owner is the default token org, and TEST_USER_ID is a member — so the
+  // download check (owner-org admin OR member) passes for the default token.
+  ownerId: TEST_ORGANIZATION_ID,
+  users: [{ addedAt: new Date(), userId: TEST_USER_ID }],
 };
+
+const OTHER_ORGANIZATION_ID = generateId<OrganizationId>();
 
 const requestedKey = existingKeys[0]!;
 const VALID_KNODE_API_KEYCHAIN_ID = knodeApiKeychain.id;
@@ -52,7 +65,7 @@ const getKnodeApiKeychainKey = (
 
 describe("GET /knodeApiKeychains/:knodeApiKeychainId/keys/:keyId (getKnodeApiKeychainKey)", () => {
   it.each(allowedTestTokens)(
-    "should return the Knode API keychain key with correct shape ($type, $roles)",
+    "should return the Knode API keychain key for an internal, member or admin caller ($type, $roles)",
     async (token) => {
       await seedKnodeApiKeychain(knodeApiKeychain);
 
@@ -94,6 +107,67 @@ describe("GET /knodeApiKeychains/:knodeApiKeychainId/keys/:keyId (getKnodeApiKey
     const body = response.json<API_KeychainKey>();
 
     expect(body).toEqual(expectedItem!);
+  });
+
+  it("should allow an internal (k2k) caller regardless of membership", async () => {
+    const keychainWithoutCaller: KnodeApiKeychain = {
+      ...knodeApiKeychain,
+      users: [{ addedAt: new Date(), userId: generateUserId() }],
+    };
+    await seedKnodeApiKeychain(keychainWithoutCaller);
+
+    const response = await getKnodeApiKeychainKey(
+      keychainWithoutCaller.id,
+      VALID_KEY_ID,
+      { type: "internal" },
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("should allow an administrative caller that is not a keychain member", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const response = await getKnodeApiKeychainKey(
+      VALID_KNODE_API_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      {
+        roles: ["administrative"],
+        type: "ui-session",
+        userId: generateUserId(),
+      },
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("should return 403 for an administrative caller from a different organization", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const response = await getKnodeApiKeychainKey(
+      VALID_KNODE_API_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      {
+        organizationId: OTHER_ORGANIZATION_ID,
+        roles: ["administrative"],
+        type: "ui-session",
+        userId: generateUserId(),
+      },
+    );
+
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 for a technical caller that is not a keychain member", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const response = await getKnodeApiKeychainKey(
+      VALID_KNODE_API_KEYCHAIN_ID,
+      VALID_KEY_ID,
+      { roles: ["technical"], type: "ui-session", userId: generateUserId() },
+    );
+
+    expect(response.statusCode).toBe(403);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

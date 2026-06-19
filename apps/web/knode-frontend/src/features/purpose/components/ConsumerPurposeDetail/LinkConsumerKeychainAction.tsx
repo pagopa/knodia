@@ -102,6 +102,7 @@ function LinkConsumerKeychainModal({
 
   const [q, setQ] = useState("");
   const [debouncedQ] = useDebounceValue(q, 500);
+  const [alreadyLinked, setAlreadyLinked] = useState(false);
 
   const { data } = useQuery({
     ...getConsumerKeychainOptionsOptions({
@@ -119,6 +120,20 @@ function LinkConsumerKeychainModal({
     },
     onSubmit: async ({ value }) => {
       if (!value.keychainId) return;
+
+      const {
+        data: { isLinked },
+      } = await bffApi.getConsumerKeychainPurposeLink({
+        client,
+        path: { consumerKeychainId: value.keychainId, purposeId },
+        query: { knodeId },
+      });
+
+      if (isLinked) {
+        setAlreadyLinked(true);
+        return;
+      }
+
       handleLinkKeychain(value.keychainId);
     },
     validationLogic: revalidateLogic(),
@@ -129,29 +144,6 @@ function LinkConsumerKeychainModal({
           .nullable()
           .refine((value) => value !== null, "Select a keychain"),
       }),
-      onSubmitAsync: async ({ value: { keychainId } }) => {
-        if (!keychainId) return undefined;
-
-        const {
-          data: { isLinked },
-        } = await bffApi.getConsumerKeychainPurposeLink({
-          client,
-          path: { consumerKeychainId: keychainId, purposeId },
-          query: { knodeId },
-        });
-
-        if (isLinked) {
-          return {
-            fields: {
-              keychainId: {
-                message: "Keychain is already linked to the purpose",
-              },
-            },
-          };
-        }
-
-        return undefined;
-      },
     },
   });
 
@@ -167,6 +159,7 @@ function LinkConsumerKeychainModal({
       onOpenChange={(open) => {
         if (!open) {
           form.reset();
+          setAlreadyLinked(false);
           onClose();
         }
       }}
@@ -183,39 +176,47 @@ function LinkConsumerKeychainModal({
           Purposes.
         </Banner>
       ) : (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-        >
-          <form.Field
-            children={(field) => (
-              <ComboBox
-                errorMessage={getFieldErrorMessage(field.state.meta.errors)}
-                id={field.name}
-                isClearable
-                isInvalid={field.state.meta.errors.length > 0}
-                items={options}
-                label="Consumption Keychains"
-                name={field.name}
-                onBlur={field.handleBlur}
-                onInputChange={(input) => setQ(input)}
-                onSelectionChange={(key) =>
-                  field.handleChange(key as null | string)
-                }
-                placeholder="Select an option..."
-                selectedKey={field.state.value || null}
-              >
-                {(option) => (
-                  <ComboBoxItem id={option.id}>{option.name.en}</ComboBoxItem>
-                )}
-              </ComboBox>
-            )}
-            name="keychainId"
-          />
-        </form>
+        <>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+          >
+            <form.Field
+              children={(field) => (
+                <ComboBox
+                  errorMessage={getFieldErrorMessage(field.state.meta.errors)}
+                  id={field.name}
+                  isClearable
+                  isInvalid={field.state.meta.errors.length > 0}
+                  items={options}
+                  label="Consumption Keychains"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onInputChange={(input) => setQ(input)}
+                  onSelectionChange={(key) => {
+                    setAlreadyLinked(false);
+                    field.handleChange(key as null | string);
+                  }}
+                  placeholder="Select an option..."
+                  selectedKey={field.state.value || null}
+                >
+                  {(option) => (
+                    <ComboBoxItem id={option.id}>{option.name.en}</ComboBoxItem>
+                  )}
+                </ComboBox>
+              )}
+              name="keychainId"
+            />
+          </form>
+          {alreadyLinked && (
+            <Banner kind="error">
+              This Keychain is already linked to this Purpose.
+            </Banner>
+          )}
+        </>
       )}
     </Modal>
   );

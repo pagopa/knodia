@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
+import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -44,5 +44,50 @@ export const startOidcSession = <ThrowOnError extends boolean = true>(options?: 
 export const exchangeOidcCode = <ThrowOnError extends boolean = true>(options: Options<ExchangeOidcCodeData, ThrowOnError>) => (options.client ?? client).get<ExchangeOidcCodeResponses, ExchangeOidcCodeErrors, ThrowOnError>({
     responseType: 'json',
     url: '/auth/oidc/token',
+    ...options
+});
+
+/**
+ * Confirm onboarding for the caller user
+ */
+export const confirmOnboarding = <ThrowOnError extends boolean = true>(options: Options<ConfirmOnboardingData, ThrowOnError>) => (options.client ?? client).post<ConfirmOnboardingResponses, ConfirmOnboardingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/confirmOnboarding',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Request email change for the caller user
+ */
+export const changeEmail = <ThrowOnError extends boolean = true>(options: Options<ChangeEmailData, ThrowOnError>) => (options.client ?? client).post<ChangeEmailResponses, ChangeEmailErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/changeEmail',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Request the deletion of the caller signup user
+ */
+export const deleteUser = <ThrowOnError extends boolean = true>(options?: Options<DeleteUserData, ThrowOnError>) => (options?.client ?? client).post<DeleteUserResponses, DeleteUserErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/delete',
+    ...options
+});
+
+/**
+ * Get current signup user onboarding status
+ */
+export const getCurrentSignupUser = <ThrowOnError extends boolean = true>(options?: Options<GetCurrentSignupUserData, ThrowOnError>) => (options?.client ?? client).get<GetCurrentSignupUserResponses, GetCurrentSignupUserErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/me',
     ...options
 });

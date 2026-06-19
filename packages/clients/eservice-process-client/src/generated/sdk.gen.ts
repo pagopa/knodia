@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ArchiveEserviceData, ArchiveEserviceErrors, ArchiveEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
+import type { ArchiveEserviceData, ArchiveEserviceErrors, ArchiveEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEservicePurposeFormOptionsData, GetEservicePurposeFormOptionsErrors, GetEservicePurposeFormOptionsResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses, UpdateEserviceData, UpdateEserviceErrors, UpdateEserviceResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -19,8 +19,6 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Get status
- *
  * Check the health status of the service
  */
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
@@ -30,8 +28,6 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
- * List E-services
- *
  * Retrieve a list of E-services
  */
 export const getEservices = <ThrowOnError extends boolean = true>(options: Options<GetEservicesData, ThrowOnError>) => (options.client ?? client).get<GetEservicesResponses, GetEservicesErrors, ThrowOnError>({
@@ -42,8 +38,6 @@ export const getEservices = <ThrowOnError extends boolean = true>(options: Optio
 });
 
 /**
- * Create an E-service
- *
  * Create a new E-service
  */
 export const createEservice = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceResponses, CreateEserviceErrors, ThrowOnError>({
@@ -58,8 +52,6 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Get an E-service
- *
  * Retrieve an E-service by its ID
  */
 export const getEservice = <ThrowOnError extends boolean = true>(options: Options<GetEserviceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceResponses, GetEserviceErrors, ThrowOnError>({
@@ -70,8 +62,6 @@ export const getEservice = <ThrowOnError extends boolean = true>(options: Option
 });
 
 /**
- * Update an E-service
- *
  * Update an E-service
  */
 export const updateEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateEserviceResponses, UpdateEserviceErrors, ThrowOnError>({
@@ -86,8 +76,16 @@ export const updateEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Get the latest E-service Version
- *
+ * Retrieve the list of PurposeFormOption entries (pre-filled form answers published by the Producer) for a ReceiveData E-service. Returns an empty list for ReceiveData E-services without receiveDataConfig, and 409 if the E-service is not in ReceiveData mode.
+ */
+export const getEservicePurposeFormOptions = <ThrowOnError extends boolean = true>(options: Options<GetEservicePurposeFormOptionsData, ThrowOnError>) => (options.client ?? client).get<GetEservicePurposeFormOptionsResponses, GetEservicePurposeFormOptionsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}/purposeFormOptions',
+    ...options
+});
+
+/**
  * Retrieve the latest version of an E-service
  */
 export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionResponses, GetEserviceLatestVersionErrors, ThrowOnError>({
@@ -98,8 +96,6 @@ export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(op
 });
 
 /**
- * Get the latest E-service Version Interface
- *
  * Retrieve the interface document of the latest E-service version
  */
 export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionInterfaceErrors, ThrowOnError>({
@@ -111,8 +107,6 @@ export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean =
 
 /**
  * Suspend an E-service
- *
- * Suspend an E-service
  */
 export const suspendEservice = <ThrowOnError extends boolean = true>(options: Options<SuspendEserviceData, ThrowOnError>) => (options.client ?? client).post<SuspendEserviceResponses, SuspendEserviceErrors, ThrowOnError>({
     responseType: 'json',
@@ -122,8 +116,6 @@ export const suspendEservice = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
- * Reactivate an E-service
- *
  * Reactivate a suspended E-service
  */
 export const reactivateEservice = <ThrowOnError extends boolean = true>(options: Options<ReactivateEserviceData, ThrowOnError>) => (options.client ?? client).post<ReactivateEserviceResponses, ReactivateEserviceErrors, ThrowOnError>({
@@ -134,8 +126,6 @@ export const reactivateEservice = <ThrowOnError extends boolean = true>(options:
 });
 
 /**
- * Archive an E-service
- *
  * Archive a suspended E-service
  */
 export const archiveEservice = <ThrowOnError extends boolean = true>(options: Options<ArchiveEserviceData, ThrowOnError>) => (options.client ?? client).post<ArchiveEserviceResponses, ArchiveEserviceErrors, ThrowOnError>({
@@ -146,8 +136,6 @@ export const archiveEservice = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
- * Search for E-services
- *
  * Retrieve a list of E-services based on complex search criteria contained in the request body
  */
 export const getCatalogEservices = <ThrowOnError extends boolean = true>(options: Options<GetCatalogEservicesData, ThrowOnError>) => (options.client ?? client).post<GetCatalogEservicesResponses, GetCatalogEservicesErrors, ThrowOnError>({

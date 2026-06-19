@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource-variable/instrument-sans": "catalog:",
+    "@fontsource-variable/inter": "catalog:",
+    "@fontsource-variable/manrope": "catalog:",
+    "@fontsource/titillium-web": "catalog:",
+    "@knodia/common-models": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
-    "@knodia/ui-kit": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
@@ -20,16 +24,22 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "axios": "catalog:",
+    "jose": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
+    "tailwind-variants": "catalog:",
+    "tailwindcss": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@knodia/ui-kit": "workspace:*",
     "@tanstack/router-plugin": "catalog:",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -37,7 +47,9 @@
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
+    "jsdom": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

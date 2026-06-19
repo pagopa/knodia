@@ -23,6 +23,7 @@ import {
 } from "@knodia/common-models/ids";
 
 import type {
+  API_GetProducerKeychainEservicesQueryParams,
   API_GetProducerKeychainKeysQueryParams,
   API_GetProducerKeychainMembersQueryParams,
   API_GetProducerKeychainsQueryParams,
@@ -64,6 +65,7 @@ import {
   assertEserviceIsNotLinkedToProducerKeychain,
   assertOrganizationIsEserviceProducer,
   assertOrganizationIsKeychainOwner,
+  assertUserIsAllowedToDownloadKey,
 } from "../utils/validators.ts";
 
 export type ProducerKeychainService = ReturnType<
@@ -182,10 +184,43 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
     },
+    async getProducerKeychainEservice(
+      producerKeychainId: ProducerKeychainId,
+      eserviceId: EserviceId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ProducerKeychainEservice>> {
+      logger.info(
+        `Getting E-service ${eserviceId} linked to Producer Keychain ${producerKeychainId}`,
+      );
+
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
+
+      return await retrieveProducerKeychainEservice(
+        { eserviceId, producerKeychainId },
+        readmodelService,
+      );
+    },
+    async getProducerKeychainEservices(
+      producerKeychainId: ProducerKeychainId,
+      params: API_GetProducerKeychainEservicesQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ProducerKeychainEservice>> {
+      logger.info(
+        { params },
+        `Getting E-services linked to Producer Keychain ${producerKeychainId} with params`,
+      );
+
+      await retrieveFlatProducerKeychain(producerKeychainId, readmodelService);
+
+      return await readmodelService.getProducerKeychainEservices(
+        producerKeychainId,
+        params,
+      );
+    },
     async getProducerKeychainKey(
       producerKeychainId: ProducerKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Producer Keychain with ID ${producerKeychainId}`,
@@ -194,6 +229,17 @@ export function producerKeychainServiceBuilder(
       const producerKeychain = await retrieveProducerKeychain(
         producerKeychainId,
         readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        producerKeychain.data,
+      );
+
+      assertUserIsAllowedToDownloadKey(
+        authData,
+        producerKeychainId,
+        producerKeychain.data.users,
       );
 
       return retrieveKeychainKey(producerKeychain.data, kid);

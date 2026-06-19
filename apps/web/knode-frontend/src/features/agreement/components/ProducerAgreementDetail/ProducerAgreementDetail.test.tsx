@@ -22,10 +22,10 @@ function createAgreementDetails(
       name: { en: "Birth Certificate API" },
     },
     id: "10000000-0000-1000-8000-000000000001",
+    knodeId: "Orion",
     latestEserviceVersionState: "Active",
     producer: {
       id: "40000000-0000-1000-8000-000000000001",
-      knodeId: "Orion",
       name: "Rigel Corp",
     },
     state: "Active",

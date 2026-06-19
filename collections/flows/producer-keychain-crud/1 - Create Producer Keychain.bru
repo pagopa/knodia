@@ -1,0 +1,40 @@
+meta {
+  name: 1 - Create Producer Keychain
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-backend-for-frontend}}/producerKeychains
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{randomName}}"
+    },
+    "description": {
+      "en": "Producer Keychain for CRUD flow"
+    }
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.id: isDefined
+}
+
+vars:post-response {
+  producerKeychainId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomName", `Test Producer Keychain ${random}`)
+}

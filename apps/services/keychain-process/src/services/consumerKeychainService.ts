@@ -30,6 +30,7 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
+import { match } from "ts-pattern";
 
 import type {
   API_GetConsumerKeychainKeysQueryParams,
@@ -73,6 +74,7 @@ import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
+  assertUserIsAllowedToDownloadKey,
 } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -197,7 +199,10 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychainKey(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<KeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
@@ -207,6 +212,21 @@ export function consumerKeychainServiceBuilder(
         consumerKeychainId,
         readmodelService,
       );
+
+      match(authData)
+        .with({ tokenType: "internal" }, () => undefined)
+        .with({ tokenType: "ui-session" }, (uiAuthData) => {
+          assertOrganizationIsKeychainOwner(
+            uiAuthData.organizationId,
+            consumerKeychain.data,
+          );
+          assertUserIsAllowedToDownloadKey(
+            uiAuthData,
+            consumerKeychainId,
+            consumerKeychain.data.users,
+          );
+        })
+        .exhaustive();
 
       return retrieveKeychainKey(consumerKeychain.data, kid);
     },
@@ -295,7 +315,7 @@ export function consumerKeychainServiceBuilder(
         `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,
       );
 
-      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+      await retrieveFlatConsumerKeychain(consumerKeychainId, readmodelService);
 
       return await retrieveConsumerKeychainPurpose(
         { consumerKeychainId, purpose },
@@ -313,7 +333,7 @@ export function consumerKeychainServiceBuilder(
         `Getting Purposes linked to Consumer Keychain ${consumerKeychainId} with params`,
       );
 
-      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+      await retrieveFlatConsumerKeychain(consumerKeychainId, readmodelService);
 
       return await readmodelService.getConsumerKeychainPurposes(
         consumerKeychainId,

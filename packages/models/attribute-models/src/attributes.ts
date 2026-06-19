@@ -1,6 +1,13 @@
 import z from "zod";
 
 export const attributes = {
+  knodia: {
+    testing_organization: "Testing Organization",
+  },
+  vc_poc_attributes: {
+    companies_registries: "Companies Registries",
+    training_institutes: "Training Institutes",
+  },
   vc_territorial_units: {
     nuts1: "NUTS 1",
     nuts2: "NUTS 2",

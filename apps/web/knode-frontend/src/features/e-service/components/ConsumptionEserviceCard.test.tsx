@@ -19,11 +19,11 @@ function createEservice(
     consumerKeychains: 0,
     hasRecentlyBeenUpdated: false,
     id: crypto.randomUUID(),
+    knodeId: "Lynx",
     mode: "ProvideData",
     name: { en: "Test E-Service" },
     producer: {
       id: crypto.randomUUID(),
-      knodeId: "Lynx",
       name: "Ursa Major",
     },
     requiredAttributes: [],

@@ -16,13 +16,11 @@ const tabItems = [
   {
     content: <ProductionEServiceKeychainsTab />,
     id: 3,
-    isDisabled: true,
     title: "Keychains",
   },
 ] satisfies readonly {
   content: React.ReactNode;
   id: number;
-  isDisabled?: boolean;
   title: string;
 }[];
 
@@ -36,7 +34,7 @@ export function ProductionEServiceDetailsTabs({
       <Tabs className="mt-10" kind="hug">
         <TabList items={tabItems}>
           {(item) => (
-            <Tab id={item.id} isDisabled={item.isDisabled} key={item.id}>
+            <Tab id={item.id} key={item.id}>
               {item.title}
             </Tab>
           )}

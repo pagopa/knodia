@@ -3,16 +3,24 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import {
+  API_EserviceCategory,
+  API_EserviceMode,
+  API_EserviceVersionState,
+  API_LocalizedName,
+} from "@knodia/eservice-models/api";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
   API_KnodeApiKeychainIdPathParam,
+  API_ProducerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
+import { API_CompactProducer } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeName,
   API_PurposeState,
@@ -21,21 +29,13 @@ import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
 
-export const API_ConsumerKeychainSeed = z
+export const API_KeychainSeed = z
   .strictObject({
     description: API_KeychainLocalizedDescription.optional(),
     name: API_KeychainLocalizedName,
   })
-  .meta({ id: "ConsumerKeychainSeed" });
-export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
-
-export const API_KnodeApiKeychainSeed = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.optional(),
-    name: API_KeychainLocalizedName,
-  })
-  .meta({ id: "KnodeApiKeychainSeed" });
-export type API_KnodeApiKeychainSeed = z.infer<typeof API_KnodeApiKeychainSeed>;
+  .meta({ id: "KeychainSeed" });
+export type API_KeychainSeed = z.infer<typeof API_KeychainSeed>;
 
 export const API_KnodeApiKeychainsQueryParams = API_PaginationQueryParams;
 export type API_KnodeApiKeychainsQueryParams = z.infer<
@@ -44,10 +44,17 @@ export type API_KnodeApiKeychainsQueryParams = z.infer<
 
 export const API_Keychain = z
   .strictObject({
+    eservicesCount: z
+      .number()
+      .int()
+      .min(0)
+      .meta({ format: "int32" })
+      .optional(),
     id: z.uuid(),
     keysCount: z.number().int().min(0).meta({ format: "int32" }),
     membersCount: z.number().int().min(0).meta({ format: "int32" }),
     name: API_KeychainLocalizedName,
+    purposesCount: z.number().int().min(0).meta({ format: "int32" }).optional(),
   })
   .meta({ id: "Keychain" });
 export type API_Keychain = z.infer<typeof API_Keychain>;
@@ -71,31 +78,74 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
-export const API_ConsumerKeychainsQueryParams =
+export const API_ProducerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z.uuid().optional().meta({
       description:
-        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Mutually exclusive with `purpose`.",
+        "Filter by E-service ID. Returns Producer Keychains linked to the given E-service.",
     }),
-    purpose: z
-      .string()
-      .refine((value) => {
-        const [knodeId, id, ...rest] = value.split(":");
-
-        return (
-          rest.length === 0 &&
-          API_KnodeId.safeParse(knodeId).success &&
-          z.uuid().safeParse(id).success
-        );
-      })
-      .optional()
-      .meta({
-        description:
-          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000). Mutually exclusive with `eserviceId`.",
-      }),
-  }).refine((q) => !(q.purpose && q.eserviceId), {
-    message: "`purpose` and `eserviceId` are mutually exclusive",
   });
+export type API_ProducerKeychainsQueryParams = z.infer<
+  typeof API_ProducerKeychainsQueryParams
+>;
+
+export const API_GetProducerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainMembersQueryParams = z.infer<
+  typeof API_GetProducerKeychainMembersQueryParams
+>;
+
+export const API_ProducerKeychainMemberPathParams = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainMemberPathParams = z.infer<
+  typeof API_ProducerKeychainMemberPathParams
+>;
+
+export const API_ProducerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: API_KeyId,
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainKeyPathParams = z.infer<
+  typeof API_ProducerKeychainKeyPathParams
+>;
+
+export const API_ProducerKeychainEservicePathParams = z
+  .strictObject({
+    eserviceId: z.uuid(),
+  })
+  .extend(API_ProducerKeychainIdPathParam.shape);
+
+export type API_ProducerKeychainEservicePathParams = z.infer<
+  typeof API_ProducerKeychainEservicePathParams
+>;
+
+export const API_ConsumerKeychainsQueryParams = requireKnodeIdWith(
+  "eserviceId",
+  "purposeId",
+)(
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().optional().meta({
+      description:
+        "Filter by E-service ID. Returns Consumer Keychains linked to any Active or Suspended Purpose belonging to the given E-service. Requires `knodeId`. Mutually exclusive with `purposeId`.",
+    }),
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Producer Knode ID that owns the E-service and its Purposes. Required when `eserviceId` or `purposeId` is set.",
+    }),
+    purposeId: z.uuid().optional().meta({
+      description:
+        "Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`. Mutually exclusive with `eserviceId`.",
+    }),
+  }).refine((q) => !(q.purposeId && q.eserviceId), {
+    message: "`purposeId` and `eserviceId` are mutually exclusive",
+  }),
+);
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;
@@ -130,9 +180,9 @@ export type API_ConsumerKeychainOptions = z.infer<
   typeof API_ConsumerKeychainOptions
 >;
 
-export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
-export type API_GetConsumerKeychainKeysQueryParams = z.infer<
-  typeof API_GetConsumerKeychainKeysQueryParams
+export const API_GetKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetKeychainKeysQueryParams = z.infer<
+  typeof API_GetKeychainKeysQueryParams
 >;
 
 export const API_GetConsumerKeychainMembersQueryParams =
@@ -156,8 +206,11 @@ export const API_ConsumerKeychainPurpose = z
   .strictObject({
     eservice: API_CompactEservice,
     id: API_PurposeId,
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     name: API_LocalizedPurposeName,
-    producer: API_CompactOrganization,
+    producer: API_CompactProducer,
     state: API_PurposeState,
   })
   .meta({ id: "ConsumerKeychainPurpose" });
@@ -182,11 +235,6 @@ export const API_KeychainPatch = z
   })
   .meta({ id: "KeychainPatch" });
 export type API_KeychainPatch = z.infer<typeof API_KeychainPatch>;
-
-export const API_GetKnodeApiKeychainKeysQueryParams = API_PaginationQueryParams;
-export type API_GetKnodeApiKeychainKeysQueryParams = z.infer<
-  typeof API_GetKnodeApiKeychainKeysQueryParams
->;
 
 export const API_GetKnodeApiKeychainMembersQueryParams =
   API_PaginationQueryParams;
@@ -214,13 +262,13 @@ export type API_KnodeApiKeychainKeyPathParams = z.infer<
   typeof API_KnodeApiKeychainKeyPathParams
 >;
 
-export const API_KnodeApiKeychainMembershipCheckResult = z
+export const API_KeychainMembershipCheckResult = z
   .strictObject({
     isMember: z.boolean(),
   })
-  .meta({ id: "KnodeApiKeychainMembershipCheckResult" });
-export type API_KnodeApiKeychainMembershipCheckResult = z.infer<
-  typeof API_KnodeApiKeychainMembershipCheckResult
+  .meta({ id: "KeychainMembershipCheckResult" });
+export type API_KeychainMembershipCheckResult = z.infer<
+  typeof API_KeychainMembershipCheckResult
 >;
 
 export const API_KeychainKeySeed = z
@@ -255,15 +303,6 @@ export const API_KeychainMemberSeed = z
   })
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
-
-export const API_ConsumerKeychainMembershipCheckResult = z
-  .strictObject({
-    isMember: z.boolean(),
-  })
-  .meta({ id: "ConsumerKeychainMembershipCheckResult" });
-export type API_ConsumerKeychainMembershipCheckResult = z.infer<
-  typeof API_ConsumerKeychainMembershipCheckResult
->;
 
 export const API_ConsumerKeychainPurposeLinkCheckResult = z
   .strictObject({
@@ -321,3 +360,33 @@ export const API_CreatedKeyResource = z
   });
 
 export type API_CreatedKeyResource = z.infer<typeof API_CreatedKeyResource>;
+
+export const API_GetProducerKeychainEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainEservicesQueryParams = z.infer<
+  typeof API_GetProducerKeychainEservicesQueryParams
+>;
+
+export const API_ProducerKeychainEservice = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    id: z.uuid(),
+    linkedAt: z.iso.datetime(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ProducerKeychainEservice" });
+export type API_ProducerKeychainEservice = z.infer<
+  typeof API_ProducerKeychainEservice
+>;
+
+export const API_ProducerKeychainEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ProducerKeychainEservice),
+  })
+  .meta({ id: "ProducerKeychainEservices" });
+export type API_ProducerKeychainEservices = z.infer<
+  typeof API_ProducerKeychainEservices
+>;

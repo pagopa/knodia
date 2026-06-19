@@ -9,7 +9,6 @@ import {
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
@@ -102,8 +101,8 @@ const enrichAgreements = async ({
           })
           .then((res) => res.data.results),
       getEntityId: (agreement) => agreement.consumer.id,
-      getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
       items: agreements,
+      knodeId: config.knodeId,
     }),
   ]);
 
@@ -111,9 +110,7 @@ const enrichAgreements = async ({
     toAPI_ProducerAgreement({
       agreement,
       consumer: assertEntityExists(
-        consumersMap
-          .get(agreement.consumer.knodeId)
-          ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+        consumersMap.get(unsafeBrandExternalId(agreement.consumer.id)),
         `Consumer organization ${agreement.consumer.id} owned by Knode ${agreement.consumer.knodeId} not found for Agreement ${agreement.id}`,
       ),
       eservice: assertEntityExists(
@@ -228,6 +225,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List producer Agreements",
       tags: [apiTags.agreement],
@@ -305,6 +303,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get a producer Agreement",
       tags: [apiTags.agreement],
@@ -346,6 +345,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Reactivate an Agreement by producer",
       tags: [apiTags.agreement],
@@ -387,6 +387,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Suspend an Agreement by producer",
       tags: [apiTags.agreement],

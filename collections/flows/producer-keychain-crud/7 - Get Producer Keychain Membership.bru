@@ -1,0 +1,25 @@
+meta {
+  name: 7 - Get Producer Keychain Membership
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producerKeychains/:producerKeychainId/membership/:userId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainId: {{producerKeychainId}}
+  userId: {{memberUserId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.isMember: eq true
+}

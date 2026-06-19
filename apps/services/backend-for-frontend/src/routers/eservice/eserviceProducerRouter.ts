@@ -17,13 +17,17 @@ import {
   generateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { getEserviceInterfaceFileType } from "@knodia/eservice-models";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
+import {
+  sanitizeFileName,
+  sendFileDownload,
+} from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -44,6 +48,7 @@ import z from "zod";
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { invalidInterfaceFileName } from "../../models/errors.ts";
 import {
   API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
@@ -129,9 +134,15 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       const {
-        interfaceDocument: { content, name, ...interfaceDocumentRest },
+        interfaceDocument: { content, name: rawName, ...interfaceDocumentRest },
         ...rest
       } = req.body;
+
+      const name = sanitizeFileName(rawName);
+
+      if (getEserviceInterfaceFileType(name) === undefined) {
+        throw invalidInterfaceFileName(name);
+      }
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
@@ -177,6 +188,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Create an E-service",
       tags: [apiTags.eservice],
@@ -265,6 +277,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service template not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Create an E-service from a Template",
       tags: [apiTags.eservice],
@@ -370,6 +383,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "List producer E-services",
       tags: [apiTags.eservice],
@@ -496,6 +510,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get a producer E-service",
       tags: [apiTags.eservice],
@@ -541,6 +556,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Update a producer E-service",
       tags: [apiTags.eservice],
@@ -588,6 +604,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Download E-service latest Version Interface",
       tags: [apiTags.eservice],
@@ -631,6 +648,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Suspend an E-service",
       tags: [apiTags.eservice],
@@ -674,6 +692,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Reactivate an E-service",
       tags: [apiTags.eservice],
@@ -717,6 +736,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Archive a producer E-service",
       tags: [apiTags.eservice],

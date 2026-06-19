@@ -37,6 +37,19 @@ export type SessionResponse = {
     uiSignupSessionToken: string;
 };
 
+export type ConfirmOnboardingRequestBody = {
+    email: string;
+};
+
+export type ChangeEmailRequestBody = {
+    email: string;
+};
+
+export type CurrentSignupUser = {
+    email?: string;
+    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING' | 'NOT_COMPLETED';
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -91,3 +104,139 @@ export type ExchangeOidcCodeResponses = {
 };
 
 export type ExchangeOidcCodeResponse = ExchangeOidcCodeResponses[keyof ExchangeOidcCodeResponses];
+
+export type ConfirmOnboardingData = {
+    body: ConfirmOnboardingRequestBody;
+    path?: never;
+    query?: never;
+    url: '/user/confirmOnboarding';
+};
+
+export type ConfirmOnboardingErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ConfirmOnboardingError = ConfirmOnboardingErrors[keyof ConfirmOnboardingErrors];
+
+export type ConfirmOnboardingResponses = {
+    /**
+     * Onboarding confirmed successfully
+     */
+    204: void;
+};
+
+export type ConfirmOnboardingResponse = ConfirmOnboardingResponses[keyof ConfirmOnboardingResponses];
+
+export type ChangeEmailData = {
+    body: ChangeEmailRequestBody;
+    path?: never;
+    query?: never;
+    url: '/user/changeEmail';
+};
+
+export type ChangeEmailErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ChangeEmailError = ChangeEmailErrors[keyof ChangeEmailErrors];
+
+export type ChangeEmailResponses = {
+    /**
+     * Email change requested successfully
+     */
+    204: void;
+};
+
+export type ChangeEmailResponse = ChangeEmailResponses[keyof ChangeEmailResponses];
+
+export type DeleteUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/delete';
+};
+
+export type DeleteUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DeleteUserError = DeleteUserErrors[keyof DeleteUserErrors];
+
+export type DeleteUserResponses = {
+    /**
+     * User deletion requested successfully
+     */
+    204: void;
+};
+
+export type DeleteUserResponse = DeleteUserResponses[keyof DeleteUserResponses];
+
+export type GetCurrentSignupUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/me';
+};
+
+export type GetCurrentSignupUserErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetCurrentSignupUserError = GetCurrentSignupUserErrors[keyof GetCurrentSignupUserErrors];
+
+export type GetCurrentSignupUserResponses = {
+    /**
+     * Current signup user onboarding status
+     */
+    200: CurrentSignupUser;
+};
+
+export type GetCurrentSignupUserResponse = GetCurrentSignupUserResponses[keyof GetCurrentSignupUserResponses];

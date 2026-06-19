@@ -6,6 +6,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 import type { OrganizationWithKnode } from "../organization/types.ts";
 import type {
   API_ConsumerPurpose,
+  API_ConsumerPurposeFormOption,
   API_ProducerPurpose,
   API_PurposeDetails,
 } from "./api.ts";
@@ -31,10 +32,10 @@ export const toAPI_ConsumerPurpose = ({
   hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   keychains: consumerKeychainsCount,
+  knodeId: eserviceDetails.knodeId,
   name: purpose.name,
   producer: {
     id: eserviceDetails.producer.id,
-    knodeId: eserviceDetails.producer.knodeId,
     name: eserviceDetails.producer.name,
   },
   state: purpose.state,
@@ -98,12 +99,12 @@ export const toAPI_ConsumerPurposeDetails = ({
     name: eserviceDetails.name,
   },
   id: purpose.id,
+  knodeId: eserviceDetails.knodeId,
   maxDailyCallsPerConsumer:
     eserviceDetails.latestVersion.maxDailyCallsPerConsumer,
   name: purpose.name,
   producer: {
     id: eserviceDetails.producer.id,
-    knodeId: eserviceDetails.producer.knodeId,
     name: eserviceDetails.producer.name,
   },
   state: purpose.state,
@@ -146,15 +147,33 @@ export const toAPI_PurposeDetails = ({
     name: eservice.name,
   },
   id: purpose.id,
+  knodeId: producer.knodeId,
   maxDailyCallsPerConsumer,
   name: purpose.name,
   producer: {
     id: producer.id,
-    knodeId: producer.knodeId,
     name: producer.name,
   },
   state: purpose.state,
   suspendedByConsumerAt: purpose.suspendedByConsumerAt,
   suspendedByProducerAt: purpose.suspendedByProducerAt,
   updatedAt: purpose.updatedAt,
+});
+
+export const toAPI_ConsumerPurposeFormOption = ({
+  option,
+  schemas,
+}: {
+  option: remoteResourcesManagerApi.PurposeFormOption;
+  schemas: remoteResourcesManagerApi.PurposeFormSchemasResponse;
+}): API_ConsumerPurposeFormOption => ({
+  description: option.description,
+  formAnswersJson: option.formAnswersJson,
+  id: option.id,
+  name: option.name,
+  schema: schemas.schema,
+  texts: schemas.texts,
+  uiSchema: schemas.uiSchema,
+  uiTexts: schemas.uiTexts,
+  version: schemas.version,
 });

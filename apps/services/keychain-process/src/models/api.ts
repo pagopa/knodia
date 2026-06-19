@@ -4,6 +4,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
+  requireKnodeIdWith,
 } from "@knodia/common-models/api";
 import { ExternalId } from "@knodia/common-models/externalResource";
 import { type PurposeId } from "@knodia/common-models/ids";
@@ -41,32 +42,26 @@ export const API_Keychains = z
   .meta({ id: "Keychains" });
 export type API_Keychains = z.infer<typeof API_Keychains>;
 
-const API_GetConsumerKeychainsQueryPurposeFilter = z
-  .string()
-  .transform((v) => {
-    const [knodeId, id] = v.split(":");
-    return { id, knodeId };
-  })
-  .pipe(
-    z.object({
-      id: z.uuid(),
-      knodeId: API_KnodeId,
-    }),
-  );
-
-export const API_GetConsumerKeychainsQueryParams =
+export const API_GetConsumerKeychainsQueryParams = requireKnodeIdWith(
+  "purposeId",
+)(
   API_PaginationQueryParams.extend({
+    knodeId: API_KnodeId.optional().meta({
+      description:
+        "Producer Knode ID that owns the Purpose. Required when `purposeId` is set.",
+    }),
     name: z.string().optional().meta({
       description: "Filter by Consumer Keychain name",
     }),
     ownerId: API_OrganizationId.optional().meta({
       description: "Filter by owner Organization ID",
     }),
-    purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
+    purposeId: z.uuid().optional().meta({
       description:
-        "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+        "Filter by Purpose ID. Returns Consumer Keychains linked to the given Purpose. Requires `knodeId`.",
     }),
-  });
+  }),
+);
 export type API_GetConsumerKeychainsQueryParams = z.infer<
   typeof API_GetConsumerKeychainsQueryParams
 >;
@@ -309,4 +304,31 @@ export type API_ProducerKeychainKeyPathParams = z.infer<
 export const API_GetProducerKeychainKeysQueryParams = API_PaginationQueryParams;
 export type API_GetProducerKeychainKeysQueryParams = z.infer<
   typeof API_GetProducerKeychainKeysQueryParams
+>;
+
+export const API_GetProducerKeychainEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetProducerKeychainEservicesQueryParams = z.infer<
+  typeof API_GetProducerKeychainEservicesQueryParams
+>;
+
+export const API_ProducerKeychainEservice = z
+  .strictObject({
+    eserviceId: z.uuid(),
+    linkedAt: z.iso.datetime(),
+    producerKeychainId: API_KeychainId,
+  })
+  .meta({ id: "ProducerKeychainEservice" });
+export type API_ProducerKeychainEservice = z.infer<
+  typeof API_ProducerKeychainEservice
+>;
+
+export const API_ProducerKeychainEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ProducerKeychainEservice),
+  })
+  .meta({ id: "ProducerKeychainEservices" });
+export type API_ProducerKeychainEservices = z.infer<
+  typeof API_ProducerKeychainEservices
 >;
