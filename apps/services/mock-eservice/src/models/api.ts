@@ -272,6 +272,20 @@ export const API_ErdsIdentifier = z
   });
 export type API_ErdsIdentifier = z.infer<typeof API_ErdsIdentifier>;
 
+// Recipient identifier passed to lookupERDS (def-page IDENTIFIER entity). The
+// notation is generic text, not the Codice-Fiscale-only API_Notation above:
+// recipients can be identified by VAT (e.g. the sample 01229430085).
+// No meta id: used as the lookupERDS querystring, which must inline into query
+// params rather than become a $ref component.
+export const API_ErdsRecipientIdentifier = z.strictObject({
+  notation: z.string().min(1),
+  schemeName: z.string().min(1),
+  schemeURI: API_UriScheme,
+});
+export type API_ErdsRecipientIdentifier = z.infer<
+  typeof API_ErdsRecipientIdentifier
+>;
+
 export const API_ErdsLookupResult = z
   .strictObject({
     erdsIdentifier: API_ErdsIdentifier,
@@ -284,14 +298,17 @@ export type API_ErdsLookupResult = z.infer<typeof API_ErdsLookupResult>;
 
 export const API_ErdsMetadata = z
   .strictObject({
-    domainName: z.url(),
+    domainName: z.string().meta({
+      description: "Domain name of the SERC (ETSI EN 319 522-2)",
+      example: "systemSERCOrion",
+    }),
     eserviceId: z.uuid(),
     identifier: API_ErdsIdentifier,
     knodeId: KnodeId,
   })
   .meta({
     description:
-      "Metadata of an Electronic Registered Delivery Service (getERDSMetadata): the base URL of its relay endpoint and the knode/e-service that publish it.",
+      "Metadata of an Electronic Registered Delivery Service (getERDSMetadata): its domain name and the knode/e-service that publish its relay.",
     id: "ErdsMetadata",
   });
 export type API_ErdsMetadata = z.infer<typeof API_ErdsMetadata>;

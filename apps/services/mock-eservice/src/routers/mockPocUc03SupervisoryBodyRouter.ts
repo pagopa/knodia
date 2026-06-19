@@ -11,6 +11,7 @@ import {
   API_ErdsIdentifier,
   API_ErdsLookupResult,
   API_ErdsMetadata,
+  API_ErdsRecipientIdentifier,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { erdsNotFound, erdsRecipientNotFound } from "../models/errors.ts";
@@ -23,15 +24,11 @@ import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockSupervisoryBodyRouterOptions {
   knodeId: KnodeId;
-  // Relay base URL of each SERC, resolved per environment (see config.ts). The
-  // relay runs in the producer's own infra, not on the Knode, so the lookup is
-  // the only way for a consumer to discover it.
-  relayBaseUrlByErds: Record<API_ErdsIdentifier, string>;
 }
 
 export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
   MockSupervisoryBodyRouterOptions
-> = async (fastify, { knodeId, relayBaseUrlByErds }) => {
+> = async (fastify, { knodeId }) => {
   fastify.route({
     handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
@@ -42,28 +39,23 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         knodeId,
       );
 
-      const { identifier } = req.query;
-      const erdsIdentifier = lookupErds(identifier);
+      const { notation, schemeURI } = req.query;
+      const erdsIdentifier = lookupErds({ notation, schemeURI });
       if (!erdsIdentifier) {
-        throw erdsRecipientNotFound(identifier);
+        throw erdsRecipientNotFound(notation);
       }
 
       logger.info(
-        `Mock e-service lookupERDS(${identifier}) -> ${erdsIdentifier}`,
+        `Mock e-service lookupERDS(${notation}) -> ${erdsIdentifier}`,
       );
       res.status(200).send({ erdsIdentifier });
     },
     method: "GET",
     schema: {
       description:
-        "Resolves the SERC (erdsIdentifier) that serves a recipient identified by the given notation (lookupERDS, Bearer-protected).",
+        "Resolves the SERC (erdsIdentifier) that serves a recipient identified by the given IDENTIFIER (lookupERDS, Bearer-protected).",
       operationId: "lookupERDS",
-      querystring: z.strictObject({
-        identifier: z.string().min(1).meta({
-          description: "Recipient identifier notation",
-          example: "01229430085",
-        }),
-      }),
+      querystring: API_ErdsRecipientIdentifier,
       response: {
         200: API_ErdsLookupResult.meta({
           description: "The SERC that serves the recipient",
@@ -97,16 +89,16 @@ export const mockPocUc03SupervisoryBodyRouter: FastifyPluginAsyncZod<
         throw erdsNotFound(erdsIdentifier);
       }
 
-      const metadata = getErdsMetadata(parsed.data, relayBaseUrlByErds);
+      const metadata = getErdsMetadata(parsed.data);
       logger.info(
-        `Mock e-service getERDSMetadata(${erdsIdentifier}) -> ${metadata.domainName}`,
+        `Mock e-service getERDSMetadata(${erdsIdentifier}) -> knode ${metadata.knodeId}`,
       );
       res.status(200).send(metadata);
     },
     method: "GET",
     schema: {
       description:
-        "Returns the metadata of a SERC — its relay base URL and the knode/e-service that publish it (getERDSMetadata, Bearer-protected).",
+        "Returns the metadata of a SERC — its domain name and the knode/e-service that publish its relay (getERDSMetadata, Bearer-protected).",
       operationId: "getERDSMetadata",
       params: z.strictObject({
         erdsIdentifier: z

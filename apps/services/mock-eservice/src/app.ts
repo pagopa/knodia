@@ -26,7 +26,6 @@ import type { MockEserviceConfig } from "./config/config.ts";
 
 import { bearerAccessTokenAuthPlugin } from "./auth/bearerAccessTokenAuthPlugin.ts";
 import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
-import { type API_ErdsIdentifier } from "./models/api.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
@@ -156,10 +155,7 @@ export function buildApp({
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
     protectedApp.register(mockReceiveDataRouter, { knodeId });
-    protectedApp.register(mockPocUc03SupervisoryBodyRouter, {
-      knodeId,
-      relayBaseUrlByErds: toRelayBaseUrlByErds(config),
-    });
+    protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -344,10 +340,7 @@ function buildBearerPocUc03SupervisoryBodyApp({
       expectedIssuer,
       jwksResolvers,
     });
-    protectedApp.register(mockPocUc03SupervisoryBodyRouter, {
-      knodeId,
-      relayBaseUrlByErds: toRelayBaseUrlByErds(config),
-    });
+    protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
   });
 
   return app;
@@ -503,15 +496,4 @@ function createMockFastifyApp(
 
 function resolveJwksResolvers(config: MockEserviceConfig): JWTVerifyGetKey[] {
   return config.wellKnownUrls.map((url) => createRemoteJWKSet(new URL(url)));
-}
-
-// Relay base URL of each SERC, keyed by erdsIdentifier — what getERDSMetadata
-// returns as domainName (resolved per environment from config).
-function toRelayBaseUrlByErds(
-  config: MockEserviceConfig,
-): Record<API_ErdsIdentifier, string> {
-  return {
-    systemSERCLynx: config.pocUc03RelayBaseUrlLynx,
-    systemSERCOrion: config.pocUc03RelayBaseUrlOrion,
-  };
 }
