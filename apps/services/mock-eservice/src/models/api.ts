@@ -433,9 +433,7 @@ export type API_ErdsMetadata = z.infer<typeof API_ErdsMetadata>;
 
 // erd_dispatch — the payload relayed between SERCs (ETSI EN 319 522-2).
 
-// Globally unique identifier of a party (sender/recipient). Same shape as the
-// existing Identifier but the notation is free text (a recipient may be a VAT,
-// a fiscal code, etc.), so it is not the Codice-Fiscale-restricted API_Notation.
+// notation is free text (not the CF-only API_Notation): a party may be a VAT.
 const API_ErdsPartyIdentifier = z
   .strictObject({
     notation: z.string().min(1),
@@ -448,8 +446,7 @@ const API_ErdsPartyIdentifier = z
     id: "ErdsPartyIdentifier",
   });
 
-// Reference to a message or an evidence: a SERC plus a generated uuid (the def
-// page's MSGIDENTIFIER and EVIDIDENTIFIER share this shape).
+// SERC + uuid — shared by the def page's MSGIDENTIFIER and EVIDIDENTIFIER.
 const API_ErdsRefIdentifier = z
   .strictObject({
     erdsIdentifier: API_ErdsIdentifier,

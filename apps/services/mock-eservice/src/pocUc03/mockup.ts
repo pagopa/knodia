@@ -23,8 +23,7 @@ export const POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "c5f3e0a2-3d4e-4f5a-ab62-000000000321",
 );
 
-// Full relay identities (version + producer) — consumed only by the per-knode
-// identity map below; the relay router and its tests read that map, not these.
+// Full relay identities — used only by the per-knode map below.
 const POC_UC03_RELAY_LYNX_MOCK_ESERVICE_VERSION_ID =
   unsafeBrandId<EserviceVersionId>("b4e2d9f1-2c3d-4e4f-9a51-000000000312");
 const POC_UC03_RELAY_LYNX_MOCK_PRODUCER_ID = unsafeBrandId<OrganizationId>(
@@ -36,8 +35,7 @@ const POC_UC03_RELAY_ORION_MOCK_PRODUCER_ID = unsafeBrandId<OrganizationId>(
   "00000000-0000-4000-8000-000000000106",
 );
 
-// The relay e-service identity served by each knode's mock, selected by KNODE_ID.
-// Both knodes run the same relay router code; only the expected e-service differs.
+// Relay identity per knode (same router code; only the expected e-service differs).
 export const POC_UC03_RELAY_IDENTITY_BY_KNODE = {
   [KnodeId.enum.Lynx]: {
     eserviceId: POC_UC03_RELAY_LYNX_MOCK_ESERVICE_ID,
