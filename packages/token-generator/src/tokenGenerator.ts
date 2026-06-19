@@ -215,7 +215,6 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
-        type: "external-ui-session-magic-link",
       };
     },
 
@@ -235,7 +234,6 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
-        type: "external-ui-session",
       };
     },
 
@@ -257,7 +255,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized, type: "internal" };
+      return { header, payload: claims, serialized };
     },
 
     async generateKnodeApiAccessToken(
@@ -291,7 +289,6 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
-        type: "knode-api",
       };
     },
 
@@ -311,7 +308,6 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
-        type: "refresh-ui-session",
       };
     },
 
@@ -327,7 +323,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized, type: "ui-session" };
+      return { header, payload: claims, serialized };
     },
 
     async generateUISignupSessionToken(
@@ -355,7 +351,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized, type: "ui-signup-session" };
+      return { header, payload: claims, serialized };
     },
   };
 }
