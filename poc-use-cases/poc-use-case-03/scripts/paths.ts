@@ -3,11 +3,9 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const REPO_ROOT = resolve(here, "../../..");
-
 // Consumer private keys — one per SERC (no key shared across orgs). Written by
 // generate-lynx-key / generate-orion-key, read by the demo scripts. Gitignored
-// via poc-use-case-03/.gitignore (.local/).
+// via the shared poc-use-cases/.gitignore (.local/).
 export const LYNX_CONSUMER_PRIVATE_KEY_PATH = resolve(
   here,
   "../.local/lynx-consumer-private-key.pem",

@@ -12,13 +12,9 @@
 
 import { parseArgs } from "node:util";
 
-import { getJson, mintAccessToken, requirePrivateKey } from "./lib.ts";
-import {
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  ORION_AUTHORIZATION_SERVER_URL,
-  RECIPIENT_SCHEME,
-  SUPERVISORY_BODY_MOCK_URL,
-} from "./paths.ts";
+import { getJson } from "../../_shared/eservice-client.ts";
+import { mintLynxConsumerToken } from "./accessToken.ts";
+import { RECIPIENT_SCHEME, SUPERVISORY_BODY_MOCK_URL } from "./paths.ts";
 
 const { values } = parseArgs({
   options: {
@@ -40,34 +36,30 @@ if (!consumerKeychainId || !purposeId || !recipientId) {
   process.exit(1);
 }
 
-requirePrivateKey(
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  "Run generate-lynx-key first and upload its public key to the keychain.",
-);
-
-const accessToken = await mintAccessToken(
-  ORION_AUTHORIZATION_SERVER_URL,
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  consumerKeychainId,
-  purposeId,
-);
-
 const lookupQuery = new URLSearchParams({
   notation: recipientId,
   schemeName: RECIPIENT_SCHEME.schemeName,
   schemeURI: RECIPIENT_SCHEME.schemeURI,
 });
-const { erdsIdentifier } = (await getJson(
-  SUPERVISORY_BODY_MOCK_URL,
-  `/erds?${lookupQuery.toString()}`,
-  accessToken,
-)) as { erdsIdentifier: string };
 
-const metadata = (await getJson(
-  SUPERVISORY_BODY_MOCK_URL,
-  `/erds/${encodeURIComponent(erdsIdentifier)}/metadata`,
-  accessToken,
-)) as { domainName: string; eserviceId: string; knodeId: string };
+let erdsIdentifier: string;
+let metadata: unknown;
+try {
+  const accessToken = await mintLynxConsumerToken(consumerKeychainId, purposeId);
+  ({ erdsIdentifier } = (await getJson(
+    SUPERVISORY_BODY_MOCK_URL,
+    `/erds?${lookupQuery.toString()}`,
+    accessToken,
+  )) as { erdsIdentifier: string });
+  metadata = await getJson(
+    SUPERVISORY_BODY_MOCK_URL,
+    `/erds/${encodeURIComponent(erdsIdentifier)}/metadata`,
+    accessToken,
+  );
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 
 console.log(
   `Recipient ${recipientId} is served by ${erdsIdentifier} (pass as --recipient-serc).`,

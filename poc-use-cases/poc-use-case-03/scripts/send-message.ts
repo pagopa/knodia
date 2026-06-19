@@ -13,10 +13,9 @@
 import { randomUUID } from "node:crypto";
 import { parseArgs } from "node:util";
 
-import { mintAccessToken, postJson, requirePrivateKey } from "./lib.ts";
+import { postJson } from "../../_shared/eservice-client.ts";
+import { mintLynxConsumerToken } from "./accessToken.ts";
 import {
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  ORION_AUTHORIZATION_SERVER_URL,
   RECIPIENT_SCHEME,
   RELAY_URL_BY_SERC,
   SAMPLE_SENDER_IDENTIFIER,
@@ -56,19 +55,8 @@ if (
   process.exit(1);
 }
 
-const relayUrl = RELAY_URL_BY_SERC[recipientSerc as keyof typeof RELAY_URL_BY_SERC];
-
-requirePrivateKey(
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  "Run generate-lynx-key first and upload its public key to the keychain.",
-);
-
-const accessToken = await mintAccessToken(
-  ORION_AUTHORIZATION_SERVER_URL,
-  LYNX_CONSUMER_PRIVATE_KEY_PATH,
-  consumerKeychainId,
-  purposeId,
-);
+const relayUrl =
+  RELAY_URL_BY_SERC[recipientSerc as keyof typeof RELAY_URL_BY_SERC];
 
 const messageId = randomUUID();
 const dispatch = {
@@ -90,7 +78,14 @@ const dispatch = {
   userContent: { body, subject },
 };
 
-const ack = await postJson(relayUrl, "/relay", accessToken, dispatch);
+let ack: unknown;
+try {
+  const accessToken = await mintLynxConsumerToken(consumerKeychainId, purposeId);
+  ack = await postJson(relayUrl, "/relay", accessToken, dispatch);
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 
 console.log("Sent dispatch:");
 console.log(JSON.stringify(dispatch, null, 2));
