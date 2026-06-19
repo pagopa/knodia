@@ -40,8 +40,8 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
-  // Stop the in-flight poll if the component unmounts mid-apply (e.g. navigating
-  // away from /home), so it neither keeps fetching nor sets state after unmount.
+  // If the component unmounts mid-apply (e.g. navigating away from /home), abort
+  // so the poll stops after the current attempt and doesn't set state after unmount.
   const pollAbort = useRef<AbortController | null>(null);
   useEffect(() => () => pollAbort.current?.abort(), []);
 
