@@ -100,14 +100,18 @@ components:
         - schemeName
         - schemeURI
       additionalProperties: false
+    GeoNamesUri:
+      description: GeoNames place identifier URI
+      example: https://www.geonames.org/3165456
+      type: string
+      pattern: ^https:\/\/(www\.|sws\.)?geonames\.org\/\d+\/?$
     Location:
       description: Geographic place, modelled after Core Person Vocabulary 2.1.1
         (GeoNames URI + name)
       type: object
       properties:
         geographicIdentifier:
-          type: string
-          format: uri
+          $ref: "#/components/schemas/GeoNamesUri"
         geographicName:
           type: string
       required:
