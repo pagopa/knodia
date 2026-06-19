@@ -12,7 +12,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   '{"en": "ERDS Lookup & Metadata - Orion"}'::jsonb,
   '{"en": "Cross-Border provide-data E-Service published by the supervisory body: looks up which SERC serves a recipient (lookupERDS) and returns that SERC''s metadata (getERDSMetadata). Bearer-token access."}'::jsonb,
   'ProvideData',
-  true, false,
+  false, false,
   0, now(), now()
 ) ON CONFLICT (id) DO UPDATE SET
   producer_id = EXCLUDED.producer_id,
