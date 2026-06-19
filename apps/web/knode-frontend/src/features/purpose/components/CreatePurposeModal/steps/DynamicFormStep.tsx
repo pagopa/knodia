@@ -157,7 +157,10 @@ export function DynamicFormStep({
             cancelLabel="Previous"
             confirmLabel={isLastStep ? "Create Purpose" : "Next"}
             isDisabled={!canSubmit || isPending}
-            onCancel={prevStep}
+            onCancel={() => {
+              updateFormAnswers(form.state.values);
+              prevStep();
+            }}
             onConfirm={() => form.handleSubmit()}
           />
         )}
