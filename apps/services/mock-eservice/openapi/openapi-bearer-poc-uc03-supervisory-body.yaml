@@ -74,6 +74,12 @@ components:
         - status
         - title
       additionalProperties: false
+    UriScheme:
+      description: Identifier scheme URI accepted by Knodia mock e-services
+      type: string
+      enum:
+        - http://memberstate.ms/PIdentifier
+        - http://memberstate.ms/VAT
     ErdsIdentifier:
       description: Identifier of an Electronic Registered Delivery Service (SERC) in the POC
       type: string
@@ -91,13 +97,14 @@ components:
       additionalProperties: false
     ErdsMetadata:
       description: "Metadata of an Electronic Registered Delivery Service
-        (getERDSMetadata): the base URL of its relay endpoint and the
-        knode/e-service that publish it."
+        (getERDSMetadata): its domain name and the knode/e-service that publish
+        its relay."
       type: object
       properties:
         domainName:
+          description: Domain name of the SERC (ETSI EN 319 522-2)
+          example: systemSERCOrion
           type: string
-          format: uri
         eserviceId:
           type: string
           format: uuid
@@ -152,16 +159,25 @@ paths:
       tags:
         - pocUc03SupervisoryBody
       description: Resolves the SERC (erdsIdentifier) that serves a recipient
-        identified by the given notation (lookupERDS, Bearer-protected).
+        identified by the given IDENTIFIER (lookupERDS, Bearer-protected).
       parameters:
         - schema:
-            example: "01229430085"
             type: string
             minLength: 1
           in: query
-          name: identifier
+          name: notation
           required: true
-          description: Recipient identifier notation
+        - schema:
+            type: string
+            minLength: 1
+          in: query
+          name: schemeName
+          required: true
+        - schema:
+            $ref: "#/components/schemas/UriScheme"
+          in: query
+          name: schemeURI
+          required: true
       responses:
         "200":
           description: The SERC that serves the recipient
@@ -246,8 +262,9 @@ paths:
       summary: Get ERDS metadata
       tags:
         - pocUc03SupervisoryBody
-      description: Returns the metadata of a SERC — its relay base URL and the
-        knode/e-service that publish it (getERDSMetadata, Bearer-protected).
+      description: Returns the metadata of a SERC — its domain name and the
+        knode/e-service that publish its relay (getERDSMetadata,
+        Bearer-protected).
       parameters:
         - schema:
             example: systemSERCOrion

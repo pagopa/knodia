@@ -10,7 +10,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
   'a3f1c8e0-1b2c-4d3e-8f40-000000000301',
   '00000000-0000-4000-8000-000000000107',
   '{"en": "ERDS Lookup & Metadata - Orion"}'::jsonb,
-  '{"en": "Cross-Border provide-data E-Service published by the supervisory body: looks up which SERC serves a recipient (lookupERDS) and returns that SERC''s metadata, including its relay endpoint (getERDSMetadata). Bearer-token access."}'::jsonb,
+  '{"en": "Cross-Border provide-data E-Service published by the supervisory body: looks up which SERC serves a recipient (lookupERDS) and returns that SERC''s metadata (getERDSMetadata). Bearer-token access."}'::jsonb,
   'ProvideData',
   true, false,
   0, now(), now()
@@ -54,7 +54,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'a3f1c8e0-1b2c-4d3e-8f40-000000000303',
   'a3f1c8e0-1b2c-4d3e-8f40-000000000301',
   'a3f1c8e0-1b2c-4d3e-8f40-000000000302',
-  '7cfafbd08e50811c3efde6e1bce80361e8a1aff36cd2ef2268a2ffe4a8f177c1',
+  'e57e09d2b9b5d1d350f80dfba15248cf56518c0caf10bcff505094018640278d',
   'application/yaml',
   'mock-bearer-poc-uc03-supervisory-body-eservice.yaml',
   'a3f1c8e0-1b2c-4d3e-8f40-000000000303/mock-bearer-poc-uc03-supervisory-body-eservice.yaml',

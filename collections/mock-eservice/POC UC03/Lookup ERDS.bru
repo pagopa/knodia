@@ -4,13 +4,15 @@ meta {
 }
 
 get {
-  url: {{host-mock-eservice}}/erds?identifier=01229430085
+  url: {{host-mock-eservice}}/erds?notation=01229430085&schemeName=Partita Iva&schemeURI=http://memberstate.ms/VAT
   body: none
   auth: none
 }
 
 params:query {
-  identifier: 01229430085
+  notation: 01229430085
+  schemeName: Partita Iva
+  schemeURI: http://memberstate.ms/VAT
 }
 
 headers {
