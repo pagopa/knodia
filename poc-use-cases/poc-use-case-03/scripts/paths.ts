@@ -29,10 +29,8 @@ export const LYNX_AUTHORIZATION_SERVER_URL =
 export const SUPERVISORY_BODY_MOCK_URL =
   process.env.POC_SUPERVISORY_BODY_MOCK_URL ?? "http://localhost:9991";
 
-// Each SERC's relay endpoint, known point-to-point by the consuming SERC. The
-// relay runs in the producer's infra and is reached directly; getERDSMetadata
-// only resolves which SERC/knode serves a recipient, not how to reach its relay.
-// send-message targets systemSERCOrion; send-handover-evidence targets systemSERCLynx.
+// Each SERC's relay endpoint, known point-to-point by the consumer (getERDSMetadata
+// resolves which SERC serves a recipient, not how to reach its relay).
 export const ORION_RELAY_URL =
   process.env.POC_ORION_RELAY_URL ?? "http://localhost:9991";
 export const LYNX_RELAY_URL =
