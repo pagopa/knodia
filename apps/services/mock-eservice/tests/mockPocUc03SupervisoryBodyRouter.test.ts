@@ -22,8 +22,20 @@ const OTHER_MOCK_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
   "fa2a800a-5058-4859-b68a-bfbd3ee863c0",
 );
 
-const RECIPIENT_VAT = "01229430085";
-const SENDER_FISCAL_CODE = "MRARSS80A01L259A";
+const RECIPIENT = {
+  notation: "01229430085",
+  schemeName: "Partita Iva",
+  schemeURI: "http://memberstate.ms/VAT",
+};
+const SENDER = {
+  notation: "MRARSS80A01L259A",
+  schemeName: "Codice Fiscale",
+  schemeURI: "http://memberstate.ms/PIdentifier",
+};
+
+function lookupUrl(identifier: Record<string, string>) {
+  return `/erds?${new URLSearchParams(identifier).toString()}`;
+}
 
 async function signToken(
   overrides: {
@@ -49,7 +61,7 @@ describe("GET /erds (lookupERDS)", () => {
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
       method: "GET",
-      url: `/erds?identifier=${RECIPIENT_VAT}`,
+      url: lookupUrl(RECIPIENT),
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ erdsIdentifier: "systemSERCOrion" });
@@ -64,7 +76,7 @@ describe("GET /erds (lookupERDS)", () => {
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
       method: "GET",
-      url: `/erds?identifier=${SENDER_FISCAL_CODE}`,
+      url: lookupUrl(SENDER),
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ erdsIdentifier: "systemSERCLynx" });
@@ -75,18 +87,28 @@ describe("GET /erds (lookupERDS)", () => {
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
       method: "GET",
-      url: "/erds?identifier=99999999999",
+      url: lookupUrl({ ...RECIPIENT, notation: "99999999999" }),
     });
     expect(res.statusCode).toBe(404);
     expect(res.json().title).toBe("erds_recipient_not_found");
   });
 
-  it("returns 400 when identifier is missing", async () => {
+  it("returns 400 when the identifier is incomplete", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
       method: "GET",
-      url: "/erds",
+      url: `/erds?notation=${RECIPIENT.notation}`,
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it("returns 400 for an unknown scheme URI", async () => {
+    const token = await signToken();
+    const res = await getCtx().app.inject({
+      headers: { authorization: `Bearer ${token}` },
+      method: "GET",
+      url: lookupUrl({ ...RECIPIENT, schemeURI: "http://memberstate.ms/NOPE" }),
     });
     expect(res.statusCode).toBe(400);
   });
@@ -94,7 +116,7 @@ describe("GET /erds (lookupERDS)", () => {
   it("returns 401 when the Authorization header is missing", async () => {
     const res = await getCtx().app.inject({
       method: "GET",
-      url: `/erds?identifier=${RECIPIENT_VAT}`,
+      url: lookupUrl(RECIPIENT),
     });
     expect(res.statusCode).toBe(401);
   });
@@ -107,14 +129,14 @@ describe("GET /erds (lookupERDS)", () => {
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
       method: "GET",
-      url: `/erds?identifier=${RECIPIENT_VAT}`,
+      url: lookupUrl(RECIPIENT),
     });
     expect(res.statusCode).toBe(401);
   });
 });
 
 describe("GET /erds/:erdsIdentifier/metadata (getERDSMetadata)", () => {
-  it("returns the Orion SERC metadata with its relay URL", async () => {
+  it("returns the Orion SERC metadata", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
@@ -123,14 +145,14 @@ describe("GET /erds/:erdsIdentifier/metadata (getERDSMetadata)", () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({
-      domainName: "http://localhost:9991",
+      domainName: "systemSERCOrion",
       eserviceId: POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
       identifier: "systemSERCOrion",
       knodeId: "Orion",
     });
   });
 
-  it("returns the Lynx SERC metadata with its relay URL", async () => {
+  it("returns the Lynx SERC metadata", async () => {
     const token = await signToken();
     const res = await getCtx().app.inject({
       headers: { authorization: `Bearer ${token}` },
@@ -139,7 +161,7 @@ describe("GET /erds/:erdsIdentifier/metadata (getERDSMetadata)", () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({
-      domainName: "http://localhost:9992",
+      domainName: "systemSERCLynx",
       eserviceId: POC_UC03_RELAY_LYNX_MOCK_ESERVICE_ID,
       identifier: "systemSERCLynx",
       knodeId: "Lynx",
