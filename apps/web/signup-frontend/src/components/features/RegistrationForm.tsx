@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { z } from "zod";
 
 import { Button, Chip, Link, TextField } from "@/components/ui";
-
-const emailSchema = z.email();
+import { emailSchema } from "@/utils/validation";
 
 interface RegistrationFormProps {
   errorMessage?: string;
