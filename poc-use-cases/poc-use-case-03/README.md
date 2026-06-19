@@ -4,7 +4,7 @@ Step-by-step instructions to run the POC Use Case 03 demo end-to-end. See [POC U
 
 Legend: **[UI]** — do it in the node frontend · **[script]** — run from the `scripts/` folder with `node <name>.ts` · **[narration]** — just explain it out loud, nothing to do.
 
-> In production the SERC↔SERC and SERC↔supervisory-body agreements are standing infrastructure (the Knodia trust circle), set up once — not per message. Phases 2–4 establish them for the demo; the per-message flow is just discover → relay (Phases 5–6).
+> In production the SERC↔SERC and SERC↔supervisory-body agreements are standing infrastructure (the Knodia trust circle), set up once — not per message. Phases 2–4 establish them for the demo; the per-message flow is just discover → relay (Phases 5–6). The relay agreements already exist, but discovery is still needed to learn which SERC serves the specific recipient.
 
 ## Prerequisites
 
