@@ -343,6 +343,18 @@ export const API_Student = z
   });
 export type API_Student = z.infer<typeof API_Student>;
 
+export const API_QualificationAck = z
+  .strictObject({
+    acknowledged: z.literal(true),
+    uidStudent: API_StudentUid,
+  })
+  .meta({
+    description:
+      "Acknowledgement returned by setQualification after the registry accepts the new qualification",
+    id: "QualificationAck",
+  });
+export type API_QualificationAck = z.infer<typeof API_QualificationAck>;
+
 export const API_SendDigitalContactRequest = z
   .strictObject({
     contactPoint: API_ContactPoint,
