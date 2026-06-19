@@ -101,11 +101,9 @@ export function toSignupUserSQL(user: SignupUser): NewSignupUser {
     spidCode: user.spidCode,
     status: user.status,
     updatedAt: user.updatedAt,
-    ...(user.status === SignupUserStatus.enum.Suspended
-      ? {
-          suspendedAt: user.suspendedAt,
-          suspensionReason: user.suspensionReason,
-        }
-      : {}),
+    ...(user.status === SignupUserStatus.enum.Suspended && {
+      suspendedAt: user.suspendedAt,
+      suspensionReason: user.suspensionReason,
+    }),
   };
 }
