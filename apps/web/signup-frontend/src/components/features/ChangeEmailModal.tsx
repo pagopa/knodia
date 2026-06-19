@@ -40,14 +40,15 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
-  // If the component unmounts mid-apply (e.g. navigating away from /home), abort
-  // so the poll stops after the current attempt and doesn't set state after unmount.
-  const pollAbort = useRef<AbortController | null>(null);
-  useEffect(() => () => pollAbort.current?.abort(), []);
+  // If the component unmounts mid-apply (e.g. navigating away from /home), abort so
+  // the request callbacks bail and the poll stops — no state is set after unmount.
+  const applyAbort = useRef<AbortController | null>(null);
+  useEffect(() => () => applyAbort.current?.abort(), []);
 
   const changeEmail = useMutation({
     ...changeEmailMutationOptions(),
     onError: (error) => {
+      if (applyAbort.current?.signal.aborted) return;
       setErrorMessage(changeEmailErrorMessage(error));
       setIsApplying(false);
     },
@@ -55,12 +56,10 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       // The 204 only acks the request; wait until the new email is actually
       // reflected (and the banner, reading the same query, has updated) before
       // closing. Only then is it safe to release the modal.
-      const controller = new AbortController();
-      pollAbort.current = controller;
       const applied = await pollCurrentUserUntilEmail(queryClient, email, {
-        signal: controller.signal,
+        signal: applyAbort.current?.signal,
       });
-      if (controller.signal.aborted) return;
+      if (applyAbort.current?.signal.aborted) return;
       if (!applied) {
         setErrorMessage(
           "The email change is taking longer than expected. Reload the page to check whether it was applied.",
@@ -82,6 +81,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       onConfirm={() => {
         setErrorMessage(undefined);
         setIsApplying(true);
+        applyAbort.current = new AbortController();
         changeEmail.mutate({ body: { email } });
       }}
       // Block dismissal (Cancel / Esc / overlay) while applying; otherwise close.
