@@ -1,3 +1,4 @@
+import { initRedisRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { startServer } from "@knodia/fastify-zod-api-commons/startServer";
 import { createLogger } from "@knodia/logger";
 
@@ -8,7 +9,14 @@ import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
 
 const logger = createLogger({ config });
 
-void startServer(buildAppFromConfig(config), {
+const rateLimiter = initRedisRateLimiter({
+  config,
+  knodeId: config.knodeId,
+  logger,
+  serviceName: "mock-eservice",
+});
+
+void startServer(buildAppFromConfig(config, rateLimiter), {
   host: config.host,
   port: config.port,
 });

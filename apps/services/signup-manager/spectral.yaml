@@ -1,1 +1,8 @@
-"extends": ["@knodia/spectral-config/spectral.yaml"]
+extends: ["@knodia/spectral-config/spectral.yaml"]
+rules:
+  # signup-manager is a frontier service (publicly reachable) but its routers
+  # are still placeholders. The default `missing-ratelimit: error` will start
+  # firing as soon as real routes are added; at that point wire up
+  # `initRedisRateLimiter` + `rateLimitPlugin` + `rateLimitResponseHeadersPlugin`
+  # and declare `429` in each route's Zod response map, then drop this override.
+  missing-ratelimit: off

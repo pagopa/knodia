@@ -269,6 +269,18 @@ describe("POST /legal-entities/:uidCompany/evidence-update", () => {
     await expect(getEvidenceEndtime(eserviceToken)).resolves.toBe("2032-12-31");
   });
 
+  it("emits non-degraded X-RateLimit headers (inline rate limiting)", async () => {
+    const producerToken = await signProducerKnodeApiToken();
+    const res = await postEvidenceUpdate(SAMPLE_VAT, producerToken);
+    expect(res.statusCode).toBe(200);
+    // This route self-auths a Knode API token, so it sits outside the
+    // bearer/DPoP rate-limit scope and enforces inline; assert the limiter
+    // actually ran rather than silently no-op'ing.
+    expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+    expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    expect(res.headers["x-ratelimit-degraded"]).toBeUndefined();
+  });
+
   it("returns 401 when the Authorization header is missing", async () => {
     const res = await postEvidenceUpdate(SAMPLE_VAT);
     expect(res.statusCode).toBe(401);
