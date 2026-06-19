@@ -19,6 +19,3 @@ ALTER TABLE ${NAMESPACE}_signup."signup_user"
       AND "suspension_reason" IS NULL
     )
   );
-
--- signup-manager needs update permission to mark users as suspended.
-GRANT UPDATE ON ${NAMESPACE}_signup."signup_user" TO ${NAMESPACE}_signup_manager_user;

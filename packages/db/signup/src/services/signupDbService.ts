@@ -234,6 +234,8 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .update(signupUser)
         .set({
           status: SignupUserStatus.enum.DeletionPending,
+          suspendedAt: null,
+          suspensionReason: null,
           updatedAt: new Date(),
         })
         .where(
