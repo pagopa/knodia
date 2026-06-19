@@ -9,12 +9,15 @@ import {
   type SignupUserId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
-import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
+import {
+  type SignupUser,
+  SignupUserStatus,
+  type SuspensionReason,
+} from "@knodia/signup-models";
 
 import type {
   API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
-  API_SuspendUserRequestBody,
 } from "../models/api.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
@@ -192,7 +195,7 @@ export function signupServiceBuilder(
       });
     },
     async suspendUser(
-      { reason }: API_SuspendUserRequestBody,
+      { suspensionReason }: { suspensionReason: SuspensionReason },
       { authData }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
       const currentSignupUser =
@@ -207,16 +210,16 @@ export function signupServiceBuilder(
 
       const now = new Date();
       await signupDbService.updateSignupUserSuspension({
-        reason,
         signupUserId: currentSignupUser.signupUserId,
         suspendedAt: now,
+        suspensionReason,
       });
 
       await signupEventProducer.publishSuspensionRequestedV1Event({
         occurredAt: now.toISOString(),
         oneIdNonce: authData.oneIdNonce,
-        reason,
         signupUserId: currentSignupUser.signupUserId,
+        suspensionReason,
       });
     },
   };

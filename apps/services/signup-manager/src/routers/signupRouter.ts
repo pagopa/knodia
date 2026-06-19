@@ -14,7 +14,10 @@ import {
   API_CurrentSignupUser,
   API_SuspendUserRequestBody,
 } from "../models/api.ts";
-import { toAPI_CurrentSignupUser } from "../models/apiConverter.ts";
+import {
+  fromAPI_toSuspensionReason,
+  toAPI_CurrentSignupUser,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface SignupRouterOptions {
@@ -142,7 +145,14 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         { tokenType: "ui-signup-session" },
       ]);
 
-      await signupService.suspendUser(req.body, ctx);
+      await signupService.suspendUser(
+        {
+          suspensionReason: fromAPI_toSuspensionReason(
+            req.body.suspensionReason,
+          ),
+        },
+        ctx,
+      );
 
       res.status(204).send();
     },
