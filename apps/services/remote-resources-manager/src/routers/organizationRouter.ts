@@ -55,7 +55,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Organization not found" }),
       },
-      summary: "Get Organization",
+      summary: "Get an Organization",
       tags: [apiTags.organization],
     },
     url: "/organizations/:organizationId",

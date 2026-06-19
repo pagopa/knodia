@@ -148,7 +148,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
-      summary: "Get E-service",
+      summary: "Get an E-service",
       tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId",

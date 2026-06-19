@@ -42,7 +42,7 @@ export const getPurposes = <ThrowOnError extends boolean = true>(options: Option
 });
 
 /**
- * Create Purpose
+ * Create a Purpose
  *
  * Create a new Purpose for an E-service on behalf of a Consumer. The request body can be either PurposeSeedForProvideData or PurposeSeedForReceiveData based on the Eservice mode. The first one carries inline form answers compiled by the Consumer, while the second one references a pre-filled PurposeFormOption compiled by the Producer.
  */
@@ -70,7 +70,7 @@ export const getPurposesTotalDailyCalls = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Get Purpose
+ * Get a Purpose
  *
  * Retrieve a Purpose by its ID
  */
@@ -142,7 +142,7 @@ export const reactivatePurposeByProducer = <ThrowOnError extends boolean = true>
 });
 
 /**
- * Archive Purpose
+ * Archive a Purpose
  *
  * Archive a Purpose
  */

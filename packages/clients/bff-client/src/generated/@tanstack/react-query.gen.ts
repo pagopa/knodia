@@ -1833,7 +1833,7 @@ export const getConsumerEserviceLatestVersionInterfaceOptions = (options: Option
 export const getConsumerEservicesQueryKey = (options: Options<GetConsumerEservicesData>) => createQueryKey('getConsumerEservices', options);
 
 /**
- * Get E-services
+ * List consumer E-services
  *
  * Retrieve E-services
  */
@@ -1853,7 +1853,7 @@ export const getConsumerEservicesOptions = (options: Options<GetConsumerEservice
 export const getConsumerEservicesInfiniteQueryKey = (options: Options<GetConsumerEservicesData>): QueryKey<Options<GetConsumerEservicesData>> => createQueryKey('getConsumerEservices', options, true);
 
 /**
- * Get E-services
+ * List consumer E-services
  *
  * Retrieve E-services
  */
@@ -2183,7 +2183,7 @@ export const getConsumerCurrentPurposeFormSchemasOptions = (options: Options<Get
 export const getConsumerPurposeDetailsQueryKey = (options: Options<GetConsumerPurposeDetailsData>) => createQueryKey('getConsumerPurposeDetails', options);
 
 /**
- * Get consumer Purpose details
+ * Get a consumer Purpose
  *
  * Retrieve a Consumer Purpose with details
  */

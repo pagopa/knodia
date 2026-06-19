@@ -174,7 +174,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           description: "Multi-knode listing not supported",
         }),
       },
-      summary: "Get E-services",
+      summary: "List E-services",
       tags: [apiTags.eservice],
     },
     url: "/eservices",

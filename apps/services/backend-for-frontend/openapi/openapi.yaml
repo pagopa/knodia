@@ -10201,7 +10201,7 @@ paths:
   /consumer/eservices:
     get:
       operationId: getConsumerEservices
-      summary: Get E-services
+      summary: List consumer E-services
       tags:
         - eservice
       description: Retrieve E-services
@@ -11649,7 +11649,7 @@ paths:
   /consumer/purposes/{purposeId}:
     get:
       operationId: getConsumerPurposeDetails
-      summary: Get consumer Purpose details
+      summary: Get a consumer Purpose
       tags:
         - purpose
       description: Retrieve a Consumer Purpose with details

@@ -1198,7 +1198,7 @@ paths:
   /eservices/{eserviceId}:
     get:
       operationId: getEservice
-      summary: Get E-service
+      summary: Get an E-service
       tags:
         - resource
         - eservice
@@ -1760,7 +1760,7 @@ paths:
   /organizations/{organizationId}:
     get:
       operationId: getOrganization
-      summary: Get Organization
+      summary: Get an Organization
       tags:
         - resource
         - organization
@@ -1982,7 +1982,7 @@ paths:
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
-      summary: Get Purpose
+      summary: Get a Purpose
       tags:
         - purpose
         - resource

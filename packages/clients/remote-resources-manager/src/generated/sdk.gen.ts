@@ -70,7 +70,7 @@ export const getEservicePurposeFormOptions = <ThrowOnError extends boolean = tru
 });
 
 /**
- * Get E-services
+ * List E-services
  *
  * Retrieve E-services
  */
@@ -158,7 +158,7 @@ export const archiveAgreement = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
- * Get Agreement detail
+ * Get an Agreement
  *
  * Retrieve an Agreement by its ID
  */
@@ -194,7 +194,7 @@ export const archivePurpose = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Get Purposes
+ * List Purposes
  *
  * Retrieve a list of Purposes
  */
@@ -234,7 +234,7 @@ export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true
 });
 
 /**
- * Get Purpose
+ * Get a Purpose
  *
  * Retrieve a Purpose by its ID
  */
@@ -270,7 +270,7 @@ export const suspendPurpose = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Get Organization
+ * Get an Organization
  *
  * Retrieve an Organization by its ID
  */

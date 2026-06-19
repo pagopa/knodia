@@ -919,7 +919,7 @@ export const getConsumerEserviceLatestVersionInterface = <ThrowOnError extends b
 });
 
 /**
- * Get E-services
+ * List consumer E-services
  *
  * Retrieve E-services
  */
@@ -1068,7 +1068,7 @@ export const getConsumerCurrentPurposeFormSchemas = <ThrowOnError extends boolea
 });
 
 /**
- * Get consumer Purpose details
+ * Get a consumer Purpose
  *
  * Retrieve a Consumer Purpose with details
  */

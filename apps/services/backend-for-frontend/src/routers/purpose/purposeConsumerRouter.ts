@@ -350,7 +350,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         429: API_Problem.meta({ description: "Too Many Requests" }),
       },
-      summary: "Get consumer Purpose details",
+      summary: "Get a consumer Purpose",
       tags: [apiTags.purpose],
     },
     url: "/consumer/purposes/:purposeId",

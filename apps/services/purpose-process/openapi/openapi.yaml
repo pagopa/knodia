@@ -400,7 +400,7 @@ paths:
   /purposes:
     post:
       operationId: createPurpose
-      summary: Create Purpose
+      summary: Create a Purpose
       tags:
         - purpose
       description: Create a new Purpose for an E-service on behalf of a Consumer. The
@@ -662,7 +662,7 @@ paths:
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
-      summary: Get Purpose
+      summary: Get a Purpose
       tags:
         - purpose
       description: Retrieve a Purpose by its ID
@@ -1080,7 +1080,7 @@ paths:
   /purposes/{purposeId}/archive:
     post:
       operationId: archivePurpose
-      summary: Archive Purpose
+      summary: Archive a Purpose
       tags:
         - purpose
       description: Archive a Purpose

@@ -75,7 +75,7 @@ export const getCatalogEservices = <ThrowOnError extends boolean = true>(options
 });
 
 /**
- * Get E-service
+ * Get an E-service
  *
  * Retrieve an E-service
  */
@@ -211,7 +211,7 @@ export const createAgreementActivationMagicLink = <ThrowOnError extends boolean 
 });
 
 /**
- * Get Organization
+ * Get an Organization
  *
  * Retrieve an Organization
  */
@@ -270,7 +270,7 @@ export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true
 });
 
 /**
- * Get Purpose
+ * Get a Purpose
  *
  * Retrieve a Purpose
  */

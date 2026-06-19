@@ -235,7 +235,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Agreement not found" }),
       },
-      summary: "Get Agreement detail",
+      summary: "Get an Agreement",
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId",

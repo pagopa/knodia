@@ -1273,7 +1273,7 @@ paths:
   /eservices:
     get:
       operationId: getEservices
-      summary: Get E-services
+      summary: List E-services
       tags:
         - eservice
       description: Retrieve E-services
@@ -1764,7 +1764,7 @@ paths:
   /agreements/{agreementId}:
     get:
       operationId: getAgreement
-      summary: Get Agreement detail
+      summary: Get an Agreement
       tags:
         - agreement
       description: Retrieve an Agreement by its ID
@@ -2030,7 +2030,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getPurposes
-      summary: Get Purposes
+      summary: List Purposes
       tags:
         - purpose
       description: Retrieve a list of Purposes
@@ -2166,7 +2166,7 @@ paths:
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
-      summary: Get Purpose
+      summary: Get a Purpose
       tags:
         - purpose
       description: Retrieve a Purpose by its ID
@@ -2367,7 +2367,7 @@ paths:
   /organizations/{organizationId}:
     get:
       operationId: getOrganization
-      summary: Get Organization
+      summary: Get an Organization
       tags:
         - organization
       description: Retrieve an Organization by its ID
