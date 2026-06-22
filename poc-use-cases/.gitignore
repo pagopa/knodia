@@ -1,0 +1,4 @@
+# Local-only private keys written by the demo scripts' generate-* helpers and
+# read by the retrieval/registration scripts. Never commit them. Applies to
+# every use-case folder (poc-use-case-0X/.local/).
+.local/
