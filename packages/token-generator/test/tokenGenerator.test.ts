@@ -357,8 +357,8 @@ describe.each(testCases)(
 
       // Structured fields
       if ("type" in expectedPayload) {
-        assert("type" in result.payload);
-        expect(result.payload.type).toBe(expectedPayload.type);
+        assert("type" in result);
+        expect(result.type).toBe(expectedPayload.type);
       }
       expect(result.payload).toEqual(expectedPayload);
       expect(result.payload.exp).toBe(result.payload.iat + tokenDuration);
