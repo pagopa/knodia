@@ -30,9 +30,12 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
+      const ctxValues = getContextValues(requestContext);
+      const ctx = validateAuthorization(ctxValues, [
         { tokenType: "ui-signup-session" },
       ]);
+
+      ctxValues.logger.info("Confirming onboarding for current signup user");
 
       await signupService.confirmOnboarding(req.body, ctx);
 
@@ -59,9 +62,12 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
+      const ctxValues = getContextValues(requestContext);
+      const ctx = validateAuthorization(ctxValues, [
         { tokenType: "ui-signup-session" },
       ]);
+
+      ctxValues.logger.info("Requesting email change for current signup user");
 
       await signupService.changeEmail(req.body, ctx);
 
@@ -88,9 +94,12 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
 
   fastify.route({
     handler: async (_req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
+      const ctxValues = getContextValues(requestContext);
+      const ctx = validateAuthorization(ctxValues, [
         { tokenType: "ui-signup-session" },
       ]);
+
+      ctxValues.logger.info("Requesting deletion of current signup user");
 
       await signupService.deleteCurrentSignupUser(ctx);
 
@@ -115,9 +124,12 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
 
   fastify.route({
     handler: async (_req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
+      const ctxValues = getContextValues(requestContext);
+      const ctx = validateAuthorization(ctxValues, [
         { tokenType: "ui-signup-session" },
       ]);
+
+      ctxValues.logger.info("Getting current signup user");
 
       const currentSignupUser = await signupService.getCurrentSignupUser(ctx);
 
