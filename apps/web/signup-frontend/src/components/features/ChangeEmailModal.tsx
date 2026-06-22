@@ -22,8 +22,6 @@ export function ChangeEmailModal({
   isOpen,
   onOpenChange,
 }: ChangeEmailModalProps) {
-  // Mount the form only while open: closing unmounts it, so React resets its
-  // state for free — no manual reset needed.
   return isOpen ? (
     <ChangeEmailModalContent onClose={() => onOpenChange(false)} />
   ) : null;
@@ -33,13 +31,11 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>();
-  // True from submit until the change is confirmed applied: keeps the modal open
-  // with both buttons disabled while the async update propagates.
+  // Stays true from submit until the change is confirmed applied — not just while the request is in flight.
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
-  // If the component unmounts mid-apply (e.g. navigating away from /home), abort so
-  // the request callbacks bail and the poll stops — no state is set after unmount.
+  // Abort on unmount so in-flight callbacks and the poll bail without setting state.
   const applyAbort = useRef<AbortController | null>(null);
   useEffect(() => () => applyAbort.current?.abort(), []);
 
@@ -51,9 +47,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       setIsApplying(false);
     },
     onSuccess: async () => {
-      // The 204 only acks the request; wait until the new email is actually
-      // reflected (and the banner, reading the same query, has updated) before
-      // closing. Only then is it safe to release the modal.
+      // 204 only acks the request; wait until the new email is actually reflected before closing.
       const applied = await pollCurrentUserUntilEmail(queryClient, email, {
         signal: applyAbort.current?.signal,
       });

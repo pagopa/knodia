@@ -7,8 +7,7 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { ChangeEmailModal } from "./ChangeEmailModal";
 
-// Stub the poll (keeping the real error helper); its behavior is covered in
-// changeEmail.test.ts. Default: resolve "applied" so the success path closes.
+// Stub the poll (its own behavior is covered in changeEmail.test.ts); default resolves "applied".
 vi.mock("@/services/changeEmail", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/services/changeEmail")>()),
   pollCurrentUserUntilEmail: vi.fn(() => Promise.resolve(true)),
@@ -89,14 +88,12 @@ describe("ChangeEmailModal", () => {
     await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);
     await user.click(screen.getByRole("button", { name: "Change" }));
 
-    // While applying: both buttons disabled and the modal is not closed yet.
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Change" })).toBeDisabled();
     });
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
 
-    // The email landed: now the modal closes.
     resolvePoll(true);
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
