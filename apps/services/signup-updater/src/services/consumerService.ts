@@ -6,6 +6,7 @@ import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
+  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
@@ -139,7 +140,7 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
-    .with({ type: "DeletionRequestedV1" }, async () => {
+    .with({ type: "DeletionRequestedV1" }, async (e) => {
       const user = await retrieveSignupUserOrLogMissingAndSkip(
         signupUserId,
         "DeletionRequestedV1",
