@@ -2,12 +2,18 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { OpenAPIV3 } from "openapi-types";
 
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { requestContext } from "@fastify/request-context";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  type RateLimiter,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
@@ -24,11 +30,25 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
+import { mockPocUc01QualificationsRouter } from "./routers/mockPocUc01QualificationsRouter.ts";
+import { mockPocUc01SetQualificationRouter } from "./routers/mockPocUc01SetQualificationRouter.ts";
 import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
 import { mockReceiveDataRouter } from "./routers/mockReceiveDataRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
+
+// Mock-eservice's auth plugins (bearer + DPoP) set `accessTokenClaims` on the
+// request context — not Knodia's `authData`. `rateLimitPlugin`'s default key
+// resolver reads `authData`, so we override it to key on the consumer's
+// home-knode organization id from the access-token claims.
+const rateLimitKeyFromAccessTokenClaims = () =>
+  requestContext.get("accessTokenClaims")?.consumer.id;
+
+const protectedRateLimitOptions = (rateLimiter: RateLimiter) => ({
+  keyFromRequest: rateLimitKeyFromAccessTokenClaims,
+  rateLimiter,
+});
 
 const bearerAppTag: OpenAPIV3.TagObject = {
   description:
@@ -45,6 +65,16 @@ const signalHubAppTag: OpenAPIV3.TagObject = {
     "Residence lookup + pseudonymization for Signal Hub (Cross-Border E-service 03, Bearer-protected)",
   name: apiTags.residence,
 };
+const pocUc01QualificationsAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Qualifications lookup by uidStudent (Cross-Border E-service, Bearer-protected)",
+  name: apiTags.pocUc01Qualifications,
+};
+const pocUc01SetQualificationAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Qualification registration by uidStudent (Cross-Border receive-data E-service, Bearer-protected)",
+  name: apiTags.pocUc01SetQualification,
+};
 const pocUc02CompaniesAppTag: OpenAPIV3.TagObject = {
   description:
     "Legal-entity information + evidences lookup by uid_company (Bearer-protected)",
@@ -60,10 +90,12 @@ export function buildApp({
   config,
   dynamoClient,
   jwksResolvers,
+  rateLimiter,
 }: {
   config: MockEserviceConfig;
   dynamoClient?: DynamoDBClient;
   jwksResolvers: JWTVerifyGetKey[];
+  rateLimiter: RateLimiter;
 }) {
   const {
     acceptedAudiences,
@@ -96,10 +128,14 @@ export function buildApp({
       bearerAppTag,
       dpopAppTag,
       signalHubAppTag,
+      pocUc01QualificationsAppTag,
+      pocUc01SetQualificationAppTag,
       pocUc02CompaniesAppTag,
       receiveDataAppTag,
     ],
   );
+
+  app.register(rateLimitResponseHeadersPlugin);
 
   // Public routes (no auth required)
   app.register(healthRouter);
@@ -109,6 +145,7 @@ export function buildApp({
     expectedIssuer,
     jwksResolvers,
     knodeId,
+    rateLimiter,
   });
 
   // Bearer-protected routes — bearerAccessTokenAuthPlugin is scoped to this context only.
@@ -118,8 +155,14 @@ export function buildApp({
       expectedIssuer,
       jwksResolvers,
     });
+    protectedApp.register(
+      rateLimitPlugin,
+      protectedRateLimitOptions(rateLimiter),
+    );
     protectedApp.register(mockBearerRouter, { knodeId });
     protectedApp.register(mockSignalHubRouter, { knodeId, seedConfig });
+    protectedApp.register(mockPocUc01QualificationsRouter, { knodeId });
+    protectedApp.register(mockPocUc01SetQualificationRouter, { knodeId });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
     protectedApp.register(mockReceiveDataRouter, { knodeId });
   });
@@ -135,21 +178,51 @@ export function buildApp({
       jwksResolvers,
       jwtClockToleranceSeconds,
     });
+    protectedApp.register(
+      rateLimitPlugin,
+      protectedRateLimitOptions(rateLimiter),
+    );
     protectedApp.register(mockDpopRouter, { knodeId });
+  });
+
+  app.addHook("onClose", async () => {
+    await rateLimiter.disconnect();
   });
 
   return app;
 }
 
-export function buildAppFromConfig(config: MockEserviceConfig) {
+export function buildAppFromConfig(
+  config: MockEserviceConfig,
+  rateLimiter: RateLimiter,
+) {
   return buildApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
+    rateLimiter,
   });
 }
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerPocUc01QualificationsAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc01QualificationsApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerPocUc01SetQualificationAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc01SetQualificationApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -216,6 +289,76 @@ function buildBearerApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerPocUc01QualificationsApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC01 qualifications (getQualifications)",
+      title: "Knodia Mock E-service API (Qualifications)",
+      version: "1.0.0",
+    },
+    [pocUc01QualificationsAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc01QualificationsRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerPocUc01SetQualificationApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC01 setQualification (receive-data)",
+      title: "Knodia Mock E-service API (Set Qualification)",
+      version: "1.0.0",
+    },
+    [pocUc01SetQualificationAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc01SetQualificationRouter, { knodeId });
   });
 
   return app;

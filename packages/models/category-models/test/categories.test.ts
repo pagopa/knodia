@@ -16,6 +16,19 @@ describe("getCategory", () => {
     });
   });
 
+  it("resolves the citizen.training.qualifications POC category", () => {
+    expect(
+      getCategory(
+        "vc_example_eservice_categories",
+        "citizen.training.qualifications",
+      ),
+    ).toEqual({
+      code: "citizen.training.qualifications",
+      name: "Training qualifications",
+      scheme: "vc_example_eservice_categories",
+    });
+  });
+
   it("returns undefined for an unknown code in a known scheme", () => {
     expect(
       getCategory("vc_example_eservice_categories", "unknown.code"),
