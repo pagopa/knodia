@@ -1,7 +1,16 @@
+import { Fragment } from "react";
+
 import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
+
+const KNODIA_WEBSITE_URL = "https://knodia.org";
+const LEGAL_LINKS = [
+  { href: `${KNODIA_WEBSITE_URL}/privacy-policy`, label: "Privacy Policy" },
+  { href: `${KNODIA_WEBSITE_URL}/legal-notes`, label: "Legal Notes" },
+  { href: "https://www.pagopa.it/", label: "Company Details" },
+];
 
 export function Footer() {
   return (
@@ -17,10 +26,21 @@ export function Footer() {
             <span className="font-body text-[14px] leading-[20px] font-normal tracking-[0.35px] uppercase">
               © 2026 Knodia
             </span>
-            {/* TODO: turn these into links */}
-            <span className="text-style-caption whitespace-pre">
-              {`Privacy Policy   ·   Legal Notes   ·   Company Details`}
-            </span>
+            <div className="text-style-caption flex items-center gap-3">
+              {LEGAL_LINKS.map((link, index) => (
+                <Fragment key={link.href}>
+                  {index > 0 && <span aria-hidden>·</span>}
+                  <a
+                    className="hover:underline"
+                    href={link.href}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {link.label}
+                  </a>
+                </Fragment>
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex w-[219px] flex-col gap-[66px]">
