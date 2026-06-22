@@ -52,12 +52,14 @@ export async function handleSignupMessage(
       );
       return undefined;
     })
-    .with({ type: "SuspensionRequestedV1" }, () => {
-      // TODO: PIN-781
-      logger.info(
-        `Received SuspensionRequestedV1 event; Not yet implemented, skipping archival action`,
-      );
-      return undefined;
+    .with({ type: "SuspensionRequestedV1" }, ({ data }) => {
+      assertSafeNonce(data.oneIdNonce, data.signupUserId);
+      return SignupArchiveRecord.parse({
+        action: "Suspension",
+        date: data.occurredAt,
+        nonce: data.oneIdNonce,
+        suspensionReason: data.suspensionReason,
+      });
     })
     .exhaustive();
 
