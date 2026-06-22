@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Identifirer"
+              $ref: "#/components/schemas/Identifier"
       responses:
         "200":
           description: Birth Date
@@ -63,7 +63,7 @@ components:
         with the security specifications and recommendations included in RFC8725.
 
   schemas:
-    Identifirer:
+    Identifier:
       type: object
       properties:
         identifierSchemeURI:
@@ -96,5 +96,5 @@ components:
       type: array
       items:
         allOf:
-          - $ref: "#/components/schemas/Identifirer"
+          - $ref: "#/components/schemas/Identifier"
           - $ref: "#/components/schemas/BirthDate"

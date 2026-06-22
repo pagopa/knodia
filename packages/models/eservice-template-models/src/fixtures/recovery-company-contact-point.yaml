@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Identifirer"
+              $ref: "#/components/schemas/Identifier"
       responses:
         "200":
           description: Digital domicile
@@ -41,7 +41,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Identifirer"
+              $ref: "#/components/schemas/Identifier"
       responses:
         "200":
           description: Address
@@ -62,7 +62,7 @@ components:
         with the security specifications and recommendations included in RFC8725.
 
   schemas:
-    Identifirer:
+    Identifier:
       type: object
       properties:
         identifierSchemeURI:
