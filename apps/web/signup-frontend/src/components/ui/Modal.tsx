@@ -30,7 +30,6 @@ interface ModalProps extends AriaModalOverlayProps {
   title: string;
 }
 
-/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function Modal({
   actionLabel,
   cancelLabel = "Cancel",
