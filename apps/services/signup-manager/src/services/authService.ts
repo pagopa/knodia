@@ -1,13 +1,12 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { TokenGenerator } from "@knodia/token-generator";
 
-import { requestContext } from "@fastify/request-context";
 import { selectSignupIdentifier } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import {
   enforceRateLimit,
+  hashRateLimitKey,
   type RateLimiter,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 
@@ -66,8 +65,13 @@ export function authServiceBuilder(
       // Rate-limit on the resolved person identifier (the token's
       // uniqueIdentifier), mirroring the protected routes — only after the IdP
       // exchange yields an identity, so we never mint a token over the limit.
-      const { logger } = getContextValues(requestContext);
-      await enforceRateLimit(rateLimiter, identifier.value, logger);
+      // Hash it the same way the protected routes do (the identifier is PII and
+      // must not land in Redis keys or logs as plaintext).
+      await enforceRateLimit(
+        rateLimiter,
+        hashRateLimitKey(identifier.value),
+        logger,
+      );
 
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,

@@ -38,8 +38,9 @@ export const rateLimitPlugin = fastifyPlugin<RateLimitPluginOptions>(
       const key = keyFromRequest(req);
       if (key === undefined) {
         // The plugin is only mounted on protected scopes whose callers should
-        // always resolve to an organization key. Internal S2S tokens have none
-        // by design, but they must never reach a frontier service — so an
+        // always resolve to a rate-limit key (an organization id, or a hashed
+        // signup identifier for ui-signup-session). Internal S2S tokens have
+        // none by design, but they must never reach a frontier service — so an
         // unresolved key here means a request slipped through unlimited and we
         // want a trail for it rather than a silent bypass.
         req.log.warn(

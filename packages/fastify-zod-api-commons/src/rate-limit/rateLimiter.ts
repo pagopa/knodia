@@ -8,6 +8,7 @@ import { createClient } from "redis";
 
 import type { HTTPServiceName } from "../models/errors/services.ts";
 import type { RateLimiterConfig } from "./config.ts";
+import type { HashedRateLimitKey } from "./hashRateLimitKey.ts";
 
 import { buildAwsIamCredentialsProvider } from "./awsIamAuthTokenProvider.ts";
 
@@ -29,7 +30,10 @@ export interface RateLimiterStatus {
   resetMs: number;
 }
 
-export type RateLimitKey = ExternalId<OrganizationId> | OrganizationId | string;
+export type RateLimitKey =
+  | ExternalId<OrganizationId>
+  | HashedRateLimitKey
+  | OrganizationId;
 
 interface InitRedisRateLimiterOptions {
   config: RateLimiterConfig;

@@ -90,14 +90,31 @@ export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
   personIdentifier: z.string().min(1).optional(),
   spidCode: z.string().min(1).optional(),
   type: z.literal("ui-signup-session"),
-}).refine(
-  (c) => exactlyOneDefined(c.spidCode, c.fiscalNumber, c.personIdentifier),
-  {
-    message:
-      "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
-    path: ["spidCode"],
-  },
-);
+})
+  .refine(
+    (c) => exactlyOneDefined(c.spidCode, c.fiscalNumber, c.personIdentifier),
+    {
+      message:
+        "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
+      path: ["spidCode"],
+    },
+  )
+  .refine(
+    (c) =>
+      c.sub ===
+      selectSignupIdentifier({
+        fiscalNumber: c.fiscalNumber,
+        personIdentifier: c.personIdentifier,
+        spidCode: c.spidCode,
+      })?.value,
+    {
+      // The protected routes hash `sub` for the rate-limit bucket while the OIDC
+      // exchange hashes the selected identifier directly; pin them equal so both
+      // paths key the same bucket for the same person.
+      message: "sub must equal the selected identifier",
+      path: ["sub"],
+    },
+  );
 
 export interface SignupIdentifier {
   field: "fiscalNumber" | "personIdentifier" | "spidCode";

@@ -1,7 +1,10 @@
 import type { Producer } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
-import type { RateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import type { FastifyInstance } from "fastify";
 
+import {
+  hashRateLimitKey,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 import {
   afterAll,
@@ -35,7 +38,8 @@ vi.mock("jose", async (importOriginal) => {
     jwtVerify: mockJwtVerify,
   };
 });
-vi.mock("@knodia/token-generator", () => ({
+vi.mock("@knodia/token-generator", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@knodia/token-generator")>()),
   tokenGeneratorBuilder: () => ({
     generateUISignupSessionToken: mockGenerateUISignupSessionToken,
   }),
@@ -94,18 +98,27 @@ beforeEach(() => {
 });
 
 describe("rate limiting on protected routes", () => {
-  it("keys the bucket on the ui-signup-session unique identifier", async () => {
+  it("keys the bucket on the hashed ui-signup-session unique identifier", async () => {
     const response = await injectSignupRequest("user-A").get("/user/me");
 
     expect(response.statusCode).toBe(200);
-    expect(consumedKeys).toEqual(["user-A"]);
+    expect(consumedKeys).toEqual([hashRateLimitKey("user-A")]);
   });
 
   it("uses a distinct key per signup user", async () => {
     await injectSignupRequest("user-A").get("/user/me");
     await injectSignupRequest("user-B").get("/user/me");
 
-    expect(consumedKeys).toEqual(["user-A", "user-B"]);
+    expect(consumedKeys).toEqual([
+      hashRateLimitKey("user-A"),
+      hashRateLimitKey("user-B"),
+    ]);
+  });
+
+  it("does not leak the raw identifier into the bucket key", async () => {
+    await injectSignupRequest("user-A").get("/user/me");
+
+    expect(consumedKeys).not.toContain("user-A");
   });
 
   it("returns 429 when the limit is reached", async () => {
@@ -115,7 +128,7 @@ describe("rate limiting on protected routes", () => {
 
     expect(response.statusCode).toBe(429);
     expect(response.json()).toHaveProperty("status", 429);
-    expect(consumedKeys).toEqual(["user-A"]);
+    expect(consumedKeys).toEqual([hashRateLimitKey("user-A")]);
   });
 });
 
@@ -128,7 +141,7 @@ describe("rate limiting on GET /auth/oidc/token", () => {
 
     expect(response.statusCode).toBe(200);
     // PersonIdentifier absent in the mock → falls back to spidCode.
-    expect(consumedKeys).toEqual(["test-spid-code"]);
+    expect(consumedKeys).toEqual([hashRateLimitKey("test-spid-code")]);
   });
 
   it("returns 429 without minting a token when the limit is reached", async () => {
@@ -139,7 +152,7 @@ describe("rate limiting on GET /auth/oidc/token", () => {
     const response = await exchangeCode(cookie, state);
 
     expect(response.statusCode).toBe(429);
-    expect(consumedKeys).toEqual(["test-spid-code"]);
+    expect(consumedKeys).toEqual([hashRateLimitKey("test-spid-code")]);
     expect(mockGenerateUISignupSessionToken).not.toHaveBeenCalled();
   });
 });

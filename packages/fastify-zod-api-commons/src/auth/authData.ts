@@ -19,6 +19,8 @@ import { match } from "ts-pattern";
 
 import type { RateLimitKey } from "../rate-limit/rateLimiter.ts";
 
+import { hashRateLimitKey } from "../rate-limit/hashRateLimitKey.ts";
+
 export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
@@ -161,6 +163,8 @@ export function extractAuthDataFromToken(
 // (UI session, knode-api, consumer's home-knode organization for external UI
 // session), the signup session's unique identifier (signup has no org yet),
 // or undefined for internal service-to-service tokens, which have no caller.
+// The signup identifier is PII, so it's hashed; org ids aren't and pass through
+// verbatim to keep the Redis keys legible.
 export function rateLimitKeyFromAuthData(
   authData: AuthData,
 ): RateLimitKey | undefined {
@@ -168,7 +172,9 @@ export function rateLimitKeyFromAuthData(
     .with({ tokenType: "ui-session" }, (a) => a.organizationId)
     .with({ tokenType: "external-ui-session" }, (a) => a.consumer.id)
     .with({ tokenType: "knode-api" }, (a) => a.organization.id)
-    .with({ tokenType: "ui-signup-session" }, (a) => a.uniqueIdentifier)
+    .with({ tokenType: "ui-signup-session" }, (a) =>
+      hashRateLimitKey(a.uniqueIdentifier),
+    )
     .with({ tokenType: "internal" }, () => undefined)
     .exhaustive();
 }

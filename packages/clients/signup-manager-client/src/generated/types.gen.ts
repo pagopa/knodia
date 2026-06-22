@@ -289,6 +289,10 @@ export type SuspendUserErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendUserError = SuspendUserErrors[keyof SuspendUserErrors];
