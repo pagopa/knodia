@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, StartOidcSessionData } from './types.gen.ts';
+import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, StartOidcSessionData, SuspendUserData, SuspendUserErrors, SuspendUserResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -84,4 +84,17 @@ export const getCurrentSignupUser = <ThrowOnError extends boolean = true>(option
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user/me',
     ...options
+});
+
+/**
+ * Request suspension for the caller user
+ */
+export const suspendUser = <ThrowOnError extends boolean = true>(options: Options<SuspendUserData, ThrowOnError>) => (options.client ?? client).post<SuspendUserResponses, SuspendUserErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/suspend',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });

@@ -1,10 +1,12 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
-import type { SignupUser } from "@knodia/signup-models";
+
+import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
 
 import {
   signupUserEmailAlreadyInUse,
   signupUserIdentifierAlreadyAssociated,
+  signupUserNotActive,
   signupUserNotOnboarded,
 } from "../models/errors.ts";
 
@@ -35,6 +37,12 @@ export async function assertSignupUserIdentifiersDoNotExist(
 
   if (signupUser) {
     throw signupUserIdentifierAlreadyAssociated();
+  }
+}
+
+export function assertSignupUserIsActive(user: SignupUser): void {
+  if (user.status !== SignupUserStatus.enum.Active) {
+    throw signupUserNotActive();
   }
 }
 

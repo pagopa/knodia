@@ -342,6 +342,21 @@ function handleAdminDeleteUser(req, res, payload) {
   );
 }
 
+function handleAdminDisableUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Enabled = false;
+  }
+
+  console.log(
+    `[admin-disable-user] Disabled user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminListGroupsForUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   const groups = (user?.Groups ?? []).map((groupName) => ({
@@ -506,6 +521,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminDisableUser") {
+        handleAdminDisableUser(req, res, payload);
         return;
       }
 
