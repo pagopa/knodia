@@ -4,12 +4,12 @@ import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
+import { config } from "@/config/config";
 
-const KNODIA_WEBSITE_URL = "https://knodia.org";
 const LEGAL_LINKS = [
-  { href: `${KNODIA_WEBSITE_URL}/privacy-policy`, label: "Privacy Policy" },
-  { href: `${KNODIA_WEBSITE_URL}/legal-notes`, label: "Legal Notes" },
-  { href: "https://www.pagopa.it/", label: "Company Details" },
+  { href: config.privacyPolicyUrl, label: "Privacy Policy" },
+  { href: config.legalNotesUrl, label: "Legal Notes" },
+  { href: config.companyDetailsUrl, label: "Company Details" },
 ];
 
 export function Footer() {
