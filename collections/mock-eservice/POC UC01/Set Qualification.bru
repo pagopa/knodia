@@ -1,0 +1,37 @@
+meta {
+  name: Set Qualification
+  type: http
+}
+
+post {
+  url: {{host-mock-eservice}}/students/00132423/qualifications
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "EQFLevel": "level06",
+    "ISCEDFCode": ["06"],
+    "publisher": {
+      "legalName": "Academy Orion",
+      "location": {
+        "geographicIdentifier": "https://www.geonames.org/3165456",
+        "geographicName": "Torre del Greco"
+      }
+    },
+    "title": "bachelor degree in computer science"
+  }
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}

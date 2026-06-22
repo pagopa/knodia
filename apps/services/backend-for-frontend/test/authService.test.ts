@@ -702,7 +702,7 @@ describe("auth integration", () => {
 
   describe("POST /auth/logout", () => {
     it("clears the refresh cookie", async () => {
-      mockDecodeJwt.mockReturnValue(makeRefreshPayload());
+      setupValidRefreshToken();
 
       const response = await injectWithAllowedOrigin({
         cookies: { refresh: "some-refresh-jwt" },
@@ -724,7 +724,7 @@ describe("auth integration", () => {
 
     it("revokes the refresh token JTI in the token store", async () => {
       const jti = `revoke-test-${crypto.randomUUID()}`;
-      mockDecodeJwt.mockReturnValue(makeRefreshPayload({ jti }));
+      setupValidRefreshToken({ jti });
 
       await injectWithAllowedOrigin({
         cookies: { refresh: "jwt-with-jti" },
@@ -750,6 +750,27 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(204);
+    });
+
+    it("silently no-ops when the refresh cookie has an invalid signature", async () => {
+      const jti = `unsigned-${crypto.randomUUID()}`;
+      mockJwtVerify.mockRejectedValue(new Error("signature"));
+
+      const response = await injectWithAllowedOrigin({
+        cookies: { refresh: "forged-jwt" },
+        method: "POST",
+        url: "/auth/logout",
+      });
+      expect(response.statusCode).toBe(204);
+
+      setupValidRefreshToken({ jti });
+      setupKmsSignature();
+      const refreshResponse = await injectWithAllowedOrigin({
+        cookies: { refresh: "refresh-jwt" },
+        method: "POST",
+        url: "/auth/uiSession/refresh",
+      });
+      expect(refreshResponse.statusCode).toBe(200);
     });
   });
 
