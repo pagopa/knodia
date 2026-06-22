@@ -11,6 +11,7 @@ import {
   type SignupUser,
   type SignupUserDeletion,
   SignupUserStatus,
+  type SuspensionReason,
 } from "@knodia/signup-models";
 import { and, eq, inArray, or, type SQL } from "drizzle-orm";
 
@@ -233,6 +234,8 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .update(signupUser)
         .set({
           status: SignupUserStatus.enum.DeletionPending,
+          suspendedAt: null,
+          suspensionReason: null,
           updatedAt: new Date(),
         })
         .where(
@@ -289,6 +292,26 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       await db
         .update(signupUser)
         .set({ email, updatedAt: new Date() })
+        .where(eq(signupUser.signupUserId, signupUserId));
+    },
+
+    async updateSignupUserSuspension({
+      signupUserId,
+      suspendedAt,
+      suspensionReason,
+    }: {
+      signupUserId: SignupUserId;
+      suspendedAt: Date;
+      suspensionReason: SuspensionReason;
+    }): Promise<void> {
+      await db
+        .update(signupUser)
+        .set({
+          status: SignupUserStatus.enum.Suspended,
+          suspendedAt,
+          suspensionReason,
+          updatedAt: new Date(),
+        })
         .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
