@@ -89,8 +89,13 @@ components:
         - placeOfBirth
 
     BirthDate:
-      type: string
-      format: date
+      type: object
+      properties:
+        birthDate:
+          type: string
+          format: date
+      required:
+        - birthDate
 
     MoreBirthDates:
       type: array
