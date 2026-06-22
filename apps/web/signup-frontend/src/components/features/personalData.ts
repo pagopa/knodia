@@ -1,6 +1,6 @@
 interface PersonalData {
   dateOfBirth: string;
-  email: string;
+  email?: string;
   familyName: string;
   name: string;
   uniqueIdentifier: string;
@@ -20,8 +20,7 @@ interface PersonalDataSource {
 export function buildPersonalData(user: PersonalDataSource): PersonalData {
   return {
     dateOfBirth: user.dateOfBirth,
-    // TODO(KN-765): email falls back to empty until the signup user API reliably returns it
-    email: user.email ?? "",
+    ...(user.email !== undefined && { email: user.email }),
     familyName: user.familyName,
     name: user.name,
     uniqueIdentifier:
