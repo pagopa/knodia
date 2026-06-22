@@ -1,6 +1,7 @@
 meta {
   name: Suspend User
   type: http
+  seq: 1
 }
 
 post {
@@ -16,6 +17,6 @@ headers {
 
 body:json {
   {
-    "reason": "UnlawfulProcessing"
+    "suspensionReason": "UNLAWFUL_PROCESSING"
   }
 }
