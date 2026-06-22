@@ -21,8 +21,8 @@ function validSuspensionData() {
   return {
     occurredAt: "2026-05-29T10:00:00.000Z",
     oneIdNonce: generateId(),
-    reason: "UnlawfulProcessing" as const,
     signupUserId: generateId<SignupUserId>(),
+    suspensionReason: "UnlawfulProcessing" as const,
   };
 }
 

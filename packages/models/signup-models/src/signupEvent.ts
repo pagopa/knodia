@@ -40,8 +40,8 @@ const SuspensionRequestedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
     oneIdNonce: z.string(),
-    reason: SuspensionReason,
     signupUserId: SignupUserId,
+    suspensionReason: SuspensionReason,
   }),
   type: z.literal("SuspensionRequestedV1"),
 });
