@@ -95,12 +95,12 @@ const purposeTemplates: Record<KnodeId, PurposeTemplate[]> = {
     {
       createdAt: new Date("2025-01-01T00:00:00Z"),
       description: {
-        en: "Retrieval of personal data to support analyses aimed at improving the efficiency of the entity's digital services.",
+        en: "Retrieval of personal data to support analyses aimed at improving the efficiency of the organization's digital services.",
       },
       formAnswersJson: {
         declarationConfirmGDPR: "true",
         institutionalPurpose:
-          "Analysis of information flows to improve the efficiency of the entity's digital services.",
+          "Analysis of information flows to improve the efficiency of the organization's digital services.",
         legalBasis: ["LEGAL_OBLIGATION", "PUBLIC_INTEREST"],
         legalObligationReference:
           "Art. 6, par. 1, lett. c) GDPR — obligation to safeguard the security of information systems.",
