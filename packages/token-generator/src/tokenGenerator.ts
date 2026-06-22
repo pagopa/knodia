@@ -114,6 +114,7 @@ interface UISignupSessionTokenInput extends TokenParams {
   spidCode: string | undefined;
   subject: string;
 }
+
 // eslint-disable-next-line max-lines-per-function
 export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
