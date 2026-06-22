@@ -9,9 +9,9 @@ import {
 import { changeEmailMutationOptions } from "@/services/queries";
 import { emailSchema } from "@/utils/validation";
 
-// TODO: revise this copy once email change also resets the account and re-sends new credentials.
+// TODO: confirm this copy with the designers.
 const CHANGE_EMAIL_DESCRIPTION =
-  "We will use this email address for operational communications related to your access to the prototype, such as password resets.";
+  "Changing your email address will reset your access: new credentials will be sent to the new address.";
 
 interface ChangeEmailModalProps {
   isOpen: boolean;
