@@ -1,0 +1,26 @@
+meta {
+  name: Get Qualifications
+  type: http
+}
+
+get {
+  url: {{host-mock-eservice}}/students/00132423/qualifications
+  body: none
+  auth: none
+}
+
+params:query {
+  ~iscedfCode: 06
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}

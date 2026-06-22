@@ -1,4 +1,5 @@
 import { generateId, type SignupUserId } from "@knodia/common-models/ids";
+import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import type { DeletedSignupUserSQL, SignupUserSQL } from "../src/signupUser.ts";
@@ -25,7 +26,9 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     personIdentifier: null,
     signupUserId: generateId<SignupUserId>(),
     spidCode: "SPID-XYZ-1",
-    status: "Active",
+    status: SignupUserStatus.enum.Active,
+    suspendedAt: null,
+    suspensionReason: null,
     updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };
@@ -62,6 +65,24 @@ describe("toSignupUser", () => {
     });
   });
 
+  it("maps suspension fields when row is suspended", () => {
+    const suspendedAt = new Date("2026-05-30T09:00:00Z");
+    const user = toSignupUser(
+      baseRow({
+        status: SignupUserStatus.enum.Suspended,
+        suspendedAt,
+        suspensionReason: "AccuracyContested",
+      }),
+    ) as Extract<
+      SignupUser,
+      { status: typeof SignupUserStatus.enum.Suspended }
+    >;
+
+    expect(user.status).toBe(SignupUserStatus.enum.Suspended);
+    expect(user.suspendedAt).toEqual(suspendedAt);
+    expect(user.suspensionReason).toBe("AccuracyContested");
+  });
+
   it("throws when a row carries no IdP identifier", () => {
     expect(() =>
       toSignupUser(
@@ -78,6 +99,22 @@ describe("toSignupUserSQL", () => {
 
     expect(sql.signupUserId).toBe(user.signupUserId);
     expect(sql.orionOrganizationName).toBe("Orion Org");
+  });
+
+  it("keeps suspension fields when flattening to SQL", () => {
+    const suspendedAt = new Date("2026-05-30T09:00:00Z");
+    const user = toSignupUser(
+      baseRow({
+        status: SignupUserStatus.enum.Suspended,
+        suspendedAt,
+        suspensionReason: "UnlawfulProcessing",
+      }),
+    );
+    const sql = toSignupUserSQL(user);
+
+    expect(sql.status).toBe(SignupUserStatus.enum.Suspended);
+    expect(sql.suspendedAt).toEqual(suspendedAt);
+    expect(sql.suspensionReason).toBe("UnlawfulProcessing");
   });
 });
 

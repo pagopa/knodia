@@ -37,6 +37,8 @@ vi.mock("@knodia/organization-process-client", async (importOriginal) => {
   };
 });
 
+import { match } from "ts-pattern";
+
 import type { SignupUpdaterDeps } from "../src/utils/utils.ts";
 
 import { handleSignupMessage } from "../src/services/consumerService.ts";
@@ -118,7 +120,7 @@ function getMockEmailChangeRequest(
 }
 
 function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
-  return {
+  const base = {
     ...zocker(SignupUser).setSeed(0).generate(),
     email: "mario.rossi@example.org",
     familyName: "Rossi",
@@ -134,9 +136,23 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     },
     name: "Mario",
     signupUserId: generateId<SignupUserId>(),
-    status: SignupUserStatus.enum.Active,
     ...overrides,
   };
+
+  return match(overrides.status ?? SignupUserStatus.enum.Active)
+    .returnType<SignupUser>()
+    .with(
+      SignupUserStatus.enum.Active,
+      SignupUserStatus.enum.DeletionPending,
+      (status) => ({ ...base, status }),
+    )
+    .with(SignupUserStatus.enum.Suspended, (status) => ({
+      ...base,
+      status,
+      suspendedAt: new Date(),
+      suspensionReason: "DataNeededForLegalClaims",
+    }))
+    .exhaustive();
 }
 
 function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {

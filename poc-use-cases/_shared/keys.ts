@@ -1,11 +1,16 @@
-// Generates a keypair (via scripts/local-auth/generate-keypair.ts), saves the
-// private key to a fixed path the demo scripts read, and prints the public key.
+// Shared across the POC demo script folders (poc-use-case-0X/scripts).
+//
+// Generates a keypair via scripts/local-auth/generate-keypair.ts, saves the
+// private key to a fixed path the demo scripts read, and prints the public key
+// PEM to stdout (paste it into the keychain in the UI). Fail-fast: this is the
+// whole action of a generate-* script, so it exits the process on error.
 
 import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { REPO_ROOT } from "./paths.ts";
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 function generateKeypair(): { privateKeyPath: string; publicKeyPath: string } {
   const result = spawnSync(
@@ -18,7 +23,9 @@ function generateKeypair(): { privateKeyPath: string; publicKeyPath: string } {
     { encoding: "utf-8" },
   );
   if (result.status !== 0) {
-    console.error(result.stderr || result.stdout);
+    console.error(
+      result.stderr || result.stdout || result.error?.message || "unknown error",
+    );
     process.exit(1);
   }
   const output = `${result.stdout}\n${result.stderr}`;
@@ -27,17 +34,14 @@ function generateKeypair(): { privateKeyPath: string; publicKeyPath: string } {
     ?.trim();
   const publicKeyPath = /Public key\s+written to (.+)/.exec(output)?.[1]?.trim();
   if (!privateKeyPath || !publicKeyPath) {
-    console.error("Could not locate the generated keys:");
+    console.error("Could not locate the generated keys in generate-keypair output:");
     console.error(output);
     process.exit(1);
   }
   return { privateKeyPath, publicKeyPath };
 }
 
-export function generateAndSaveKeypair(
-  label: string,
-  destination: string,
-): void {
+export function generateAndSaveKeypair(label: string, destination: string): void {
   const { privateKeyPath, publicKeyPath } = generateKeypair();
   mkdirSync(dirname(destination), { recursive: true });
   copyFileSync(privateKeyPath, destination);
