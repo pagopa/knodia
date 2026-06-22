@@ -21,7 +21,7 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
     action: z.literal("Suspension"),
     date: z.iso.datetime(),
     nonce: z.string(),
-    reason: z.string(),
+    suspensionReason: z.string(),
   }),
 ]);
 export type SignupArchiveRecord = z.infer<typeof SignupArchiveRecord>;

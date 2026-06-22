@@ -237,7 +237,7 @@ describe("handleSignupMessage - SuspensionRequestedV1", () => {
       action: "Suspension",
       date: "2026-06-09T11:00:00.000Z",
       nonce: "nonce-susp-abc",
-      reason: "UnlawfulProcessing",
+      suspensionReason: "UnlawfulProcessing",
     });
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining("Archived Suspension"),
