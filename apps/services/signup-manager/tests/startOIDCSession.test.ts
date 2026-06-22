@@ -61,6 +61,7 @@ describe("GET /auth/oidc/start (startOIDCSession)", () => {
 
     // Verify cookie attributes
     expect(setCookieHeader).toContain("Path=/");
+    expect(setCookieHeader).toContain("Max-Age=300");
     expect(setCookieHeader).toContain("HttpOnly");
     expect(setCookieHeader).toContain("SameSite=Strict");
   });
