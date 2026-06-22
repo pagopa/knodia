@@ -180,6 +180,12 @@ export async function handleSignupMessage(
       // under at-least-once, so a crash before the offset commits replays safely.
       await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
     })
+    .with({ type: "SuspensionRequestedV1" }, async () => {
+      // TODO: PIN-780
+      logger.info(
+        `Skipping SuspensionRequestedV1 for signup user ${signupUserId}: suspension is not yet implemented`,
+      );
+    })
     .exhaustive();
 }
 

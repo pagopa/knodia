@@ -29,11 +29,10 @@ describe("buildPersonalData", () => {
     ).toBe("PI-1");
   });
 
-  it("falls back to empty strings when optional values are missing", () => {
+  it("omits the email when it is missing", () => {
     const { dateOfBirth, familyName, name } = base;
     expect(buildPersonalData({ dateOfBirth, familyName, name })).toEqual({
       dateOfBirth: "1990-01-01",
-      email: "",
       familyName: "Rossi",
       name: "Mario",
       uniqueIdentifier: "",
