@@ -13,6 +13,7 @@ import {
 import { KnodeId } from "../ids/ids.ts";
 import { UserId } from "../ids/userId.ts";
 import { NonEmptyArray } from "../types.ts";
+import { exactlyOneDefined } from "../utils.ts";
 import { UserRole } from "./roles.ts";
 
 const BaseJwtClaims = z.object({
@@ -80,17 +81,47 @@ export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
   dateOfBirth: z.string(),
   familyName: z.string(),
-  fiscalNumber: z.string().optional(),
+  // .min(1): an empty-string identifier is "present" to the exactly-one refine
+  // but absent to the truthiness-based DB lookup, so reject it at the boundary.
+  fiscalNumber: z.string().min(1).optional(),
   name: z.string(),
   oneIdNonce: z.string(),
-  personIdentifier: z.string().optional(),
-  spidCode: z.string().optional(),
+  personIdentifier: z.string().min(1).optional(),
+  spidCode: z.string().min(1).optional(),
   type: z.literal("ui-signup-session"),
-});
+}).refine(
+  (c) => exactlyOneDefined(c.spidCode, c.fiscalNumber, c.personIdentifier),
+  {
+    message:
+      "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
+    path: ["spidCode"],
+  },
+);
 
 export type UISignupSessionTokenClaims = z.infer<
   typeof UISignupSessionTokenClaims
 >;
+
+/**
+ * Selects the single identifier a signup token/user persists, by precedence
+ * (personIdentifier > spidCode > fiscalNumber). The one source of truth for that
+ * order — mirror it wherever the backend can't be imported (e.g. the frontend).
+ */
+export function selectSignupIdentifier(ids: {
+  fiscalNumber?: string;
+  personIdentifier?: string;
+  spidCode?: string;
+}):
+  | undefined
+  | { field: "fiscalNumber" | "personIdentifier" | "spidCode"; value: string } {
+  return ids.personIdentifier !== undefined
+    ? { field: "personIdentifier", value: ids.personIdentifier }
+    : ids.spidCode !== undefined
+      ? { field: "spidCode", value: ids.spidCode }
+      : ids.fiscalNumber !== undefined
+        ? { field: "fiscalNumber", value: ids.fiscalNumber }
+        : undefined;
+}
 
 export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
   type: z.literal("refresh-ui-session"),

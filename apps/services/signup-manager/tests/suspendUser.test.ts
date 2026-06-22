@@ -13,10 +13,10 @@ import {
 
 describe("POST /user/suspend (suspendUser)", () => {
   it("should return 204 on successful suspension request", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest()
@@ -118,14 +118,15 @@ describe("POST /user/suspend (suspendUser)", () => {
 
   it("should return 409 when the signup user is already suspended", async () => {
     const suspendedAt = new Date("2026-01-01T01:00:00.000Z");
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Suspended",
-      suspendedAt,
-      suspensionReason: "AccuracyContested",
-      updatedAt: suspendedAt,
-    });
+    const signupUser = makeSignupUser(
+      {
+        status: "Suspended",
+        suspendedAt,
+        suspensionReason: "AccuracyContested",
+        updatedAt: suspendedAt,
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest()

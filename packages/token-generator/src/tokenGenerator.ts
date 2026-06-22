@@ -1,16 +1,4 @@
 import type {
-  EserviceAccessTokenClaims,
-  ExternalUISessionMagicLinkTokenClaims,
-  ExternalUISessionScope,
-  ExternalUISessionTokenClaims,
-  InternalTokenClaims,
-  KnodeApiAccessTokenClaims,
-  UISessionRefreshTokenClaims,
-  UISessionTokenClaims,
-  UISignupSessionTokenClaims,
-  UserRole,
-} from "@knodia/common-models/auth";
-import type {
   ExternalId,
   ExternalResource,
 } from "@knodia/common-models/externalResource";
@@ -29,6 +17,19 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import {
+  type EserviceAccessTokenClaims,
+  type ExternalUISessionMagicLinkTokenClaims,
+  type ExternalUISessionScope,
+  type ExternalUISessionTokenClaims,
+  type InternalTokenClaims,
+  type KnodeApiAccessTokenClaims,
+  selectSignupIdentifier,
+  type UISessionRefreshTokenClaims,
+  type UISessionTokenClaims,
+  UISignupSessionTokenClaims,
+  type UserRole,
+} from "@knodia/common-models/auth";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { calculateJwkThumbprint } from "jose";
@@ -113,7 +114,6 @@ interface UISignupSessionTokenInput extends TokenParams {
   oneIdNonce: string;
   PersonIdentifier: string | undefined;
   spidCode: string | undefined;
-  subject: string;
 }
 
 const b64url = (data: string): string =>
@@ -361,22 +361,32 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       input: UISignupSessionTokenInput,
     ): Promise<UISignupSessionToken> {
       const now = dateToSeconds(new Date());
-      const claims: UISignupSessionTokenClaims = {
+
+      // We persist exactly one identifier (SPID returns both spidCode and
+      // fiscalNumber): keep only the precedence winner so a SPID login never
+      // stores its fiscalNumber, which would collide with a later CIE login of
+      // the same person. The codec's parse below rejects zero (or >1) identifier.
+      const identifier = selectSignupIdentifier({
+        fiscalNumber: input.fiscalNumber,
+        personIdentifier: input.PersonIdentifier,
+        spidCode: input.spidCode,
+      });
+
+      const claims = UISignupSessionTokenClaims.parse({
         aud: input.audience,
         dateOfBirth: input.dateOfBirth,
         exp: now + input.secondsDuration,
         familyName: input.familyName,
-        fiscalNumber: input.fiscalNumber,
         iat: now,
         iss: input.issuer,
         jti: randomUUID(),
         name: input.name,
         oneIdNonce: input.oneIdNonce,
-        personIdentifier: input.PersonIdentifier,
-        spidCode: input.spidCode,
-        sub: input.subject,
+        // sub mirrors the single chosen identifier.
+        sub: identifier?.value,
         type: "ui-signup-session",
-      };
+        ...(identifier && { [identifier.field]: identifier.value }),
+      });
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
       return { header, payload: claims, serialized, type: "ui-signup-session" };
     },

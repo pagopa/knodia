@@ -1,5 +1,6 @@
 import { generateId } from "@knodia/common-models/ids";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
+import { SignupUserStatus } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import { app, signupDb } from "./setup.ts";
@@ -21,12 +22,10 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
   });
 
   it("should return ACTIVE with email when the signup user exists", async () => {
-    const signupUser = makeSignupUser({
-      email: "onboarded.user@example.com",
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Active",
-    });
+    const signupUser = makeSignupUser(
+      { email: "onboarded.user@example.com", status: "Active" },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest().get("/user/me");
@@ -40,14 +39,15 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
 
   it("should return SUSPENDED with email when the signup user is suspended", async () => {
     const suspendedAt = new Date("2026-01-01T00:00:00.000Z");
-    const signupUser = makeSignupUser({
-      email: "suspended.user@example.com",
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Suspended",
-      suspendedAt,
-      suspensionReason: "UnlawfulProcessing",
-    });
+    const signupUser = makeSignupUser(
+      {
+        email: "suspended.user@example.com",
+        status: SignupUserStatus.enum.Suspended,
+        suspendedAt,
+        suspensionReason: "UnlawfulProcessing",
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest().get("/user/me");
@@ -60,12 +60,10 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
   });
 
   it("should return DELETION_PENDING with email when the user deletion is pending", async () => {
-    const signupUser = makeSignupUser({
-      email: "deletion.pending.user@example.com",
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "DeletionPending",
-    });
+    const signupUser = makeSignupUser(
+      { email: "deletion.pending.user@example.com", status: "DeletionPending" },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest().get("/user/me");
@@ -78,10 +76,10 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
   });
 
   it("should return NOT_COMPLETED when the user deletion has completed", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
     const dbService = signupDbServiceBuilder(signupDb);
     await dbService.markSignupUserDeletionPending(signupUser.signupUserId);
@@ -95,29 +93,12 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     });
   });
 
-  it("should return 500 when the claims match two different signup users", async () => {
-    await seedSignupUser(
-      makeSignupUser({ spidCode: validUISignupSessionTokenClaims.spidCode }),
-    );
-    await seedSignupUser(
-      makeSignupUser({
-        fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      }),
-    );
-
-    const response = await injectSignupAppRequest().get("/user/me");
-
-    expect(response.statusCode).toBe(500);
-  });
-
   it("should match the signup user by person identifier", async () => {
     const personIdentifier = "test-person-identifier";
-    const signupUser = makeSignupUser({
-      email: "person.identifier.user@example.com",
-      fiscalNumber: undefined,
-      personIdentifier,
-      spidCode: undefined,
-    });
+    const signupUser = makeSignupUser(
+      { email: "person.identifier.user@example.com" },
+      { personIdentifier },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({

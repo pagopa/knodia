@@ -18,6 +18,15 @@ export function dateToSeconds(date: Date): number {
 }
 
 /**
+ * True when exactly one of the given values is defined. The single source for the
+ * "carries exactly one identifier" invariant shared by the signup token codec and
+ * the persisted SignupUser model.
+ */
+export function exactlyOneDefined(...values: unknown[]): boolean {
+  return values.filter((v) => v !== undefined).length === 1;
+}
+
+/**
  * Checks if the given error is a PostgreSQL unique violation error.
  * This is useful to determine if a database operation failed due to a unique constraint violation
  */

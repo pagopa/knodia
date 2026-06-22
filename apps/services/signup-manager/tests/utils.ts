@@ -35,6 +35,26 @@ export const validSuspendUserBody = {
 export const validUISignupSessionTokenClaims =
   getTestUISignupSessionTokenClaims();
 
+// A signup user carries exactly one identifier. Each member forbids the other
+// two keys via `never`, so passing more than one is a compile error; identifiers
+// go through this param, not through `overrides`.
+type SignupUserIdentifier =
+  | {
+      fiscalNumber: string | undefined;
+      personIdentifier?: never;
+      spidCode?: never;
+    }
+  | {
+      fiscalNumber?: never;
+      personIdentifier: string | undefined;
+      spidCode?: never;
+    }
+  | {
+      fiscalNumber?: never;
+      personIdentifier?: never;
+      spidCode: string | undefined;
+    };
+
 export async function getAllEmailChangeRequests() {
   return await signupDb.select().from(emailChangeRequest);
 }
@@ -66,17 +86,22 @@ export function makeEmailChangeRequest(
 
 export function makeSignupUser(
   overrides: Partial<SignupUser> = {},
+  identifier?: SignupUserIdentifier,
 ): SignupUser {
   const seed = overrides.signupUserId ?? generateId<SignupUserId>();
-  const baseCreatedAt = new Date("2026-01-01T00:00:00.000Z");
-  const baseUpdatedAt = new Date("2026-01-01T00:00:00.000Z");
+  const baseDate = new Date("2026-01-01T00:00:00.000Z");
+
+  // Suspension fields live only on the Suspended branch of the union; read them
+  // off overrides here so the match below can apply them (defaulted when absent).
+  const { suspendedAt, suspensionReason } = overrides as Partial<
+    Extract<SignupUser, { status: typeof SignupUserStatus.enum.Suspended }>
+  >;
 
   const base = {
-    createdAt: baseCreatedAt,
+    createdAt: baseDate,
     dateOfBirth: "1990-01-01",
     email: `seed-${seed}@example.com`,
     familyName: "Seed",
-    fiscalNumber: `FISCAL-${seed}`,
     generatedEntities: {
       Lynx: {
         organizationName: `Lynx Seed ${seed}`,
@@ -89,9 +114,10 @@ export function makeSignupUser(
     },
     name: "Seed",
     signupUserId: seed,
-    spidCode: `SPID-${seed}`,
-    updatedAt: baseUpdatedAt,
+    updatedAt: baseDate,
     ...overrides,
+    // Exactly one identifier: default to a SPID login when the caller picks none.
+    ...(identifier ?? { spidCode: `SPID-${seed}` }),
   };
 
   return match(overrides.status ?? SignupUserStatus.enum.Active)
@@ -104,8 +130,9 @@ export function makeSignupUser(
     .with(SignupUserStatus.enum.Suspended, (status) => ({
       ...base,
       status,
-      suspendedAt: baseUpdatedAt,
-      suspensionReason: SuspensionReason.enum.UnlawfulProcessing,
+      suspendedAt: suspendedAt ?? baseDate,
+      suspensionReason:
+        suspensionReason ?? SuspensionReason.enum.UnlawfulProcessing,
     }))
     .exhaustive();
 }

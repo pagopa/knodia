@@ -35,19 +35,18 @@ export function authServiceBuilder(
         oidcSession.nonce,
       );
 
-      /**
-       * - SPID can return `spidCode` and `fiscalNumber`;
-       * - CIE returns `fiscalNumber`;
-       * - eIDAS returns `PersonIdentifier`.
-       */
-      const subject =
-        claims.PersonIdentifier ?? claims.spidCode ?? claims.fiscalNumber;
-      if (!subject) {
+      if (
+        claims.spidCode === undefined &&
+        claims.fiscalNumber === undefined &&
+        claims.PersonIdentifier === undefined
+      ) {
         throw genericInternalError(
           "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
         );
       }
 
+      // The single-identifier selection (SPID/CIE/eIDAS precedence) lives in
+      // generateUISignupSessionToken: it keeps exactly one and sets the sub.
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,
         dateOfBirth: claims.dateOfBirth,
@@ -60,7 +59,6 @@ export function authServiceBuilder(
         PersonIdentifier: claims.PersonIdentifier,
         secondsDuration: config.uiSignupSessionJwt.secondsDuration,
         spidCode: claims.spidCode,
-        subject,
       });
 
       return { uiSignupSessionToken: sessionToken.serialized };

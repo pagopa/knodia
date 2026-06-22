@@ -264,20 +264,20 @@ const testCases = [
     tokenDuration: SECONDS_DURATION,
   },
   {
+    // SPID returns both spidCode and fiscalNumber; only the precedence winner
+    // (spidCode) is persisted, fiscalNumber is dropped.
     expectedPayload: {
       aud: "my-audience",
       dateOfBirth: "2000-01-01",
       exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
       familyName: "Rossi",
-      fiscalNumber: "RSSMRA80A01H501U",
       iat: MOCK_NOW_SECONDS,
       iss: "my-issuer",
       jti: expect.any(String),
       name: "Mario",
       oneIdNonce: "nonce-123",
-      personIdentifier: "person-identifier-123",
       spidCode: "spid-code-123",
-      sub: "subject-123",
+      sub: "spid-code-123",
       type: "ui-signup-session",
     } satisfies UISignupSessionTokenClaims,
     generate: () =>
@@ -290,10 +290,9 @@ const testCases = [
         kid: KID,
         name: "Mario",
         oneIdNonce: "nonce-123",
-        PersonIdentifier: "person-identifier-123",
+        PersonIdentifier: undefined,
         secondsDuration: SECONDS_DURATION,
         spidCode: "spid-code-123",
-        subject: "subject-123",
       }),
     name: "generateUISignupSessionToken",
     tokenDuration: SECONDS_DURATION,
@@ -393,3 +392,59 @@ describe.each(testCases)(
     });
   },
 );
+
+describe("generateUISignupSessionToken — identifier selection", () => {
+  const baseInput = {
+    audience: "my-audience",
+    dateOfBirth: "2000-01-01",
+    familyName: "Rossi",
+    issuer: "my-issuer",
+    kid: KID,
+    name: "Mario",
+    oneIdNonce: "nonce-123",
+    secondsDuration: SECONDS_DURATION,
+  };
+
+  it("keeps personIdentifier (eIDAS wins) and drops spidCode/fiscalNumber", async () => {
+    const { payload } = await generator.generateUISignupSessionToken({
+      ...baseInput,
+      fiscalNumber: "RSSMRA80A01H501U",
+      PersonIdentifier: "person-identifier-123",
+      spidCode: "spid-code-123",
+    });
+
+    expect(payload).toMatchObject({
+      personIdentifier: "person-identifier-123",
+      sub: "person-identifier-123",
+    });
+    expect(payload.fiscalNumber).toBeUndefined();
+    expect(payload.spidCode).toBeUndefined();
+  });
+
+  it("keeps fiscalNumber for a CIE login (only fiscalNumber present)", async () => {
+    const { payload } = await generator.generateUISignupSessionToken({
+      ...baseInput,
+      fiscalNumber: "RSSMRA80A01H501U",
+      PersonIdentifier: undefined,
+      spidCode: undefined,
+    });
+
+    expect(payload).toMatchObject({
+      fiscalNumber: "RSSMRA80A01H501U",
+      sub: "RSSMRA80A01H501U",
+    });
+    expect(payload.personIdentifier).toBeUndefined();
+    expect(payload.spidCode).toBeUndefined();
+  });
+
+  it("throws when no identifier is present", async () => {
+    await expect(
+      generator.generateUISignupSessionToken({
+        ...baseInput,
+        fiscalNumber: undefined,
+        PersonIdentifier: undefined,
+        spidCode: undefined,
+      }),
+    ).rejects.toThrow();
+  });
+});

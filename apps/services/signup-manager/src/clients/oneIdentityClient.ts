@@ -20,12 +20,15 @@ type OneIdentityTokenResponse = z.infer<typeof OneIdentityTokenResponse>;
 const OneIdentityCommonIdTokenClaims = z.object({
   aud: z.string(),
   exp: z.number().int(),
-  fiscalNumber: z.string().optional(),
+  // .min(1): an empty-string identifier would be treated as present here but as
+  // absent by the truthiness-based DB lookup, persisting a value that never
+  // matches on a later login. Reject it at the boundary.
+  fiscalNumber: z.string().min(1).optional(),
   iat: z.number().int(),
   iss: z.url(),
   nonce: z.string(),
-  PersonIdentifier: z.string().optional(),
-  spidCode: z.string().optional(),
+  PersonIdentifier: z.string().min(1).optional(),
+  spidCode: z.string().min(1).optional(),
   sub: z.string(),
 });
 

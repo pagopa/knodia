@@ -44,11 +44,13 @@ const KNODE_API_KEYCHAIN_ID = "00000000-0000-4000-8000-000000000020";
 const KNODE_API_KEYCHAIN_KNODE_ID = "Orion";
 const KNODE_API_ORG_KNODE_ID = "Orion";
 
-// Placeholder values for signup-session tokens (replace with real values for testing)
+// Placeholder values for signup-session tokens (replace with real values for testing).
+// A signup token carries exactly one identifier and its `sub` mirrors it; this is a
+// SPID profile (spidCode). To simulate CIE / eIDAS, swap spidCode for fiscalNumber /
+// personIdentifier and set `sub` to the same value.
 const SIGNUP_NAME = "Mario";
 const SIGNUP_FAMILY_NAME = "Rossi";
 const SIGNUP_DATE_OF_BIRTH = "1980-01-01";
-const SIGNUP_FISCAL_NUMBER = "RSSMRA80A01H501U";
 const SIGNUP_SPID_CODE = "SPID-001";
 const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
@@ -146,13 +148,12 @@ function getClaims(targetEnv, type, orgId, subjectId) {
       };
     case "ui-signup-session":
       return {
-        sub: USER_ID,
+        sub: SIGNUP_SPID_CODE,
         type,
         aud,
         name: SIGNUP_NAME,
         familyName: SIGNUP_FAMILY_NAME,
         dateOfBirth: SIGNUP_DATE_OF_BIRTH,
-        fiscalNumber: SIGNUP_FISCAL_NUMBER,
         spidCode: SIGNUP_SPID_CODE,
         oneIdNonce: SIGNUP_ONE_ID_NONCE,
       };

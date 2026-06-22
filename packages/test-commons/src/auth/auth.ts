@@ -240,15 +240,20 @@ export function getTestUISignupSessionTokenClaims(
     uniqueIdentifier?: string;
   } = {},
 ): UISignupSessionTokenClaims {
+  // A signup user carries exactly one identifier. Default to spidCode (a SPID
+  // login) only when the caller picks none, so passing e.g. personIdentifier
+  // alone can't silently leave the default spidCode set too.
+  const callerSetIdentifier =
+    props.spidCode !== undefined ||
+    props.fiscalNumber !== undefined ||
+    props.personIdentifier !== undefined;
+
   return {
     aud: "test-audience",
     dateOfBirth: props.dateOfBirth ?? "2000-01-01",
     exp: 9999999999,
     familyName: props.familyName ?? "User",
-    fiscalNumber:
-      props.fiscalNumber === null
-        ? undefined
-        : (props.fiscalNumber ?? "XXXXXX00X00X000X"),
+    fiscalNumber: props.fiscalNumber === null ? undefined : props.fiscalNumber,
     iat: 0,
     iss: "test-issuer",
     jti: "test-jti",
@@ -259,7 +264,8 @@ export function getTestUISignupSessionTokenClaims(
     spidCode:
       props.spidCode === null
         ? undefined
-        : (props.spidCode ?? "test-spid-code"),
+        : (props.spidCode ??
+          (callerSetIdentifier ? undefined : "test-spid-code")),
     sub: props.uniqueIdentifier ?? "test-unique-identifier",
     type: "ui-signup-session",
   };

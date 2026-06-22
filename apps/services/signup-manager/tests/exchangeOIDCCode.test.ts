@@ -63,6 +63,20 @@ function getSetCookieHeader(response: {
   );
 }
 
+function injectTokenExchange({
+  cookie,
+  state,
+}: {
+  cookie: string;
+  state: string;
+}) {
+  return app.inject({
+    cookies: { [OIDC_SESSION_COOKIE_NAME]: cookie },
+    method: "GET",
+    url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
+  });
+}
+
 function setupSuccessfulEidasTokenExchange(nonce: string) {
   mockAxiosPost.mockResolvedValueOnce({
     data: oneIdentityResponseMock,
@@ -94,6 +108,27 @@ function setupSuccessfulTokenExchange(nonce: string) {
     payload: {
       ...oneIdentityIdTokenClaimsMock,
       nonce,
+    },
+    protectedHeader: { alg: "RS256" },
+  });
+}
+
+function setupTokenExchangeWithoutIdentifier(nonce: string) {
+  mockAxiosPost.mockResolvedValueOnce({
+    data: oneIdentityResponseMock,
+  });
+
+  mockJwtVerify.mockResolvedValueOnce({
+    payload: {
+      aud: "test-one-identity-client-id",
+      dateOfBirth: "2000-01-01",
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      familyName: "User",
+      iat: Math.floor(Date.now() / 1000),
+      iss: "https://test.one-identity.com",
+      name: "Test User",
+      nonce,
+      sub: "user-123",
     },
     protectedHeader: { alg: "RS256" },
   });
@@ -159,13 +194,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
 
     setupSuccessfulTokenExchange(nonce);
 
-    const response = await app.inject({
-      cookies: {
-        [OIDC_SESSION_COOKIE_NAME]: cookie,
-      },
-      method: "GET",
-      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
-    });
+    const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
@@ -178,13 +207,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
 
     setupSuccessfulEidasTokenExchange(nonce);
 
-    const response = await app.inject({
-      cookies: {
-        [OIDC_SESSION_COOKIE_NAME]: cookie,
-      },
-      method: "GET",
-      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
-    });
+    const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
@@ -196,9 +219,37 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
         familyName: "User",
         name: "Test User",
         PersonIdentifier: "test-person-identifier",
-        subject: "test-person-identifier",
       }),
     );
+  });
+
+  it("forwards the raw OI identifier claims to the token generator", async () => {
+    // authService only forwards; picking the single identifier to persist is
+    // generateUISignupSessionToken's job (mocked here).
+    const { cookie, nonce, state } = await startOIDCSession();
+
+    setupSuccessfulTokenExchange(nonce);
+
+    const response = await injectTokenExchange({ cookie, state });
+
+    expect(response.statusCode).toBe(200);
+    expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fiscalNumber: "XXXXXX00X00X000X",
+        spidCode: "test-spid-code",
+      }),
+    );
+  });
+
+  it("returns 500 when the ID token has no usable identifier", async () => {
+    const { cookie, nonce, state } = await startOIDCSession();
+
+    setupTokenExchangeWithoutIdentifier(nonce);
+
+    const response = await injectTokenExchange({ cookie, state });
+
+    expect(response.statusCode).toBe(500);
+    expect(mockGenerateUISignupSessionToken).not.toHaveBeenCalled();
   });
 
   it('clears the "oidc-session" cookie on successful code exchange', async () => {
@@ -206,13 +257,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
 
     setupSuccessfulTokenExchange(nonce);
 
-    const response = await app.inject({
-      cookies: {
-        [OIDC_SESSION_COOKIE_NAME]: cookie,
-      },
-      method: "GET",
-      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
-    });
+    const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(200);
     expectOIDCSessionCookieCleared(response);
@@ -285,13 +330,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     });
     mockJwtVerify.mockRejectedValueOnce(new Error("Invalid token"));
 
-    const response = await app.inject({
-      cookies: {
-        [OIDC_SESSION_COOKIE_NAME]: cookie,
-      },
-      method: "GET",
-      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
-    });
+    const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(403);
     expect(mockAxiosPost).toHaveBeenCalledOnce();
@@ -312,13 +351,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
       protectedHeader: { alg: "RS256" },
     });
 
-    const response = await app.inject({
-      cookies: {
-        [OIDC_SESSION_COOKIE_NAME]: cookie,
-      },
-      method: "GET",
-      url: `/auth/oidc/token?code=auth-code-123&state=${state}`,
-    });
+    const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(403);
     expect(mockAxiosPost).toHaveBeenCalledOnce();
