@@ -263,6 +263,11 @@ function findUserByUsername(username) {
   );
 }
 
+// Strip CR/LF so user-provided values can't forge extra log lines.
+function sanitizeForLog(value) {
+  return String(value).replace(/[\r\n]/g, " ");
+}
+
 function filterUsers(payload) {
   const filter = payload.Filter;
   if (!filter) {
@@ -469,7 +474,7 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
   }
 
   console.log(
-    `[admin-update-user-attributes] ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+    `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
