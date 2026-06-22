@@ -13,7 +13,9 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 ## Phase 1
 
 Organization: `businessBookletLynx`
+
 Knode: `Lynx`
+
 Description: the Business Booklet of Lynx publishes a cross-border e-service that lets other domains' Construction Company Registries retrieve information and evidence on companies registered in Lynx.
 
 Steps:
@@ -26,7 +28,9 @@ Steps:
 ## Phase 2
 
 Organization: `constructionCompaniesRegistryOrion`
+
 Knode: `Orion`
+
 Description: to use the Lynx e-service in its registration process, the Construction Companies Registry of Orion must first satisfy the e-service's consumption requirements: Agreement, Purpose, Keychain, and Keychain↔Purpose linking.
 
 Steps:
@@ -43,7 +47,9 @@ Steps:
 ## Phase 3
 
 Organization: `constructionCompaniesRegistryOrion`
+
 Knode: `Orion`
+
 Description: on a registration request from a Lynx company, the Construction Companies Registry of Orion retrieves the company's information and evidence from Lynx via the cross-border e-service, then answers the company with the registration outcome.
 
 Steps:
@@ -54,8 +60,10 @@ Steps:
 
 ## Phase 4
 
-Organization: `constructionCompaniesRegistryOrion`
-Knode: `Orion`
+Organizations: `constructionCompaniesRegistryOrion`, `businessBookletLynx`
+
+Knodes: `Orion`, `Lynx`
+
 Description: the Construction Companies Registry of Orion monitors the Lynx Signal Hub for the e-service. When a signal concerns one of its registered Lynx companies, it re-retrieves that company's evidence from Lynx via the e-service and updates the company's registration in Orion accordingly.
 
 Steps:
