@@ -93,7 +93,6 @@ export function integrityRest02GeneratorBuilder(kmsClient?: KMSClient) {
         iss: input.issuer,
         jti: randomUUID(),
         signed_headers: signedHeaders,
-        type: "knodia-jwt-signature",
         ...(input.clientId ? { client_id: input.clientId } : {}),
       };
 

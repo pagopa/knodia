@@ -2687,9 +2687,6 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
-      ts-pattern:
-        specifier: 'catalog:'
-        version: 5.9.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*

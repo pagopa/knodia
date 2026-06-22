@@ -1,4 +1,4 @@
-import { BaseJwtClaims, JwtType } from "@knodia/common-models/auth";
+import { BaseJwtClaims } from "@knodia/common-models/auth";
 import { CORRELATION_ID_HEADER } from "@knodia/common-models/headers";
 import { ConsumerKeychainId } from "@knodia/common-models/ids";
 import z from "zod";
@@ -54,6 +54,5 @@ export type KnodiaJwtSignatureSignedHeaders = z.infer<
 export const KnodiaJwtSignatureClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId.optional(),
   signed_headers: KnodiaJwtSignatureSignedHeaders,
-  type: z.literal(JwtType.enum["knodia-jwt-signature"]),
 });
 export type KnodiaJwtSignatureClaims = z.infer<typeof KnodiaJwtSignatureClaims>;
