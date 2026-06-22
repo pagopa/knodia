@@ -97,6 +97,14 @@ export function makeSignupUser(
     Extract<SignupUser, { status: typeof SignupUserStatus.enum.Suspended }>
   >;
 
+  // Identifiers normally come via the `identifier` param, but `overrides` is a
+  // Partial<SignupUser> so it can carry them too; don't add the default spidCode
+  // on top of one the caller already set there, or the row would carry two.
+  const overridesHasIdentifier =
+    "spidCode" in overrides ||
+    "fiscalNumber" in overrides ||
+    "personIdentifier" in overrides;
+
   const base = {
     createdAt: baseDate,
     dateOfBirth: "1990-01-01",
@@ -116,8 +124,10 @@ export function makeSignupUser(
     signupUserId: seed,
     updatedAt: baseDate,
     ...overrides,
-    // Exactly one identifier: default to a SPID login when the caller picks none.
-    ...(identifier ?? { spidCode: `SPID-${seed}` }),
+    // Exactly one identifier: default to a SPID login only when the caller picks
+    // none (neither the identifier param nor an identifier in overrides).
+    ...(identifier ??
+      (overridesHasIdentifier ? {} : { spidCode: `SPID-${seed}` })),
   };
 
   return match(overrides.status ?? SignupUserStatus.enum.Active)

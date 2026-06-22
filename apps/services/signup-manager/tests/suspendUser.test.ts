@@ -1,4 +1,8 @@
-import { SignupEventV1 } from "@knodia/signup-models";
+import {
+  SignupEventV1,
+  SignupUserStatus,
+  SuspensionReason,
+} from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import { kafkaProducerMock } from "./setup.ts";
@@ -120,9 +124,9 @@ describe("POST /user/suspend (suspendUser)", () => {
     const suspendedAt = new Date("2026-01-01T01:00:00.000Z");
     const signupUser = makeSignupUser(
       {
-        status: "Suspended",
+        status: SignupUserStatus.enum.Suspended,
         suspendedAt,
-        suspensionReason: "AccuracyContested",
+        suspensionReason: SuspensionReason.enum.AccuracyContested,
         updatedAt: suspendedAt,
       },
       { spidCode: validUISignupSessionTokenClaims.spidCode },

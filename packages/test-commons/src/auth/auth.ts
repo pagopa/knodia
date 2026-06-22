@@ -1,14 +1,15 @@
-import type {
-  ExternalUISessionScope,
-  ExternalUISessionTokenClaims,
-  InternalTokenClaims,
-  KnodeApiAccessTokenClaims,
-  UISessionTokenClaims,
-  UISignupSessionTokenClaims,
-  UserRole,
-} from "@knodia/common-models/auth";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
+import {
+  type ExternalUISessionScope,
+  type ExternalUISessionTokenClaims,
+  type InternalTokenClaims,
+  type KnodeApiAccessTokenClaims,
+  selectSignupIdentifier,
+  type UISessionTokenClaims,
+  type UISignupSessionTokenClaims,
+  type UserRole,
+} from "@knodia/common-models/auth";
 import {
   type ExternalId,
   unsafeBrandExternalId,
@@ -248,25 +249,36 @@ export function getTestUISignupSessionTokenClaims(
     props.fiscalNumber !== undefined ||
     props.personIdentifier !== undefined;
 
+  const fiscalNumber =
+    props.fiscalNumber === null ? undefined : props.fiscalNumber;
+  const personIdentifier =
+    props.personIdentifier === null ? undefined : props.personIdentifier;
+  const spidCode =
+    props.spidCode === null
+      ? undefined
+      : (props.spidCode ??
+        (callerSetIdentifier ? undefined : "test-spid-code"));
+
   return {
     aud: "test-audience",
     dateOfBirth: props.dateOfBirth ?? "2000-01-01",
     exp: 9999999999,
     familyName: props.familyName ?? "User",
-    fiscalNumber: props.fiscalNumber === null ? undefined : props.fiscalNumber,
+    fiscalNumber,
     iat: 0,
     iss: "test-issuer",
     jti: "test-jti",
     name: props.name ?? "Test",
     oneIdNonce: props.oneIdNonce ?? "test-nonce",
-    personIdentifier:
-      props.personIdentifier === null ? undefined : props.personIdentifier,
-    spidCode:
-      props.spidCode === null
-        ? undefined
-        : (props.spidCode ??
-          (callerSetIdentifier ? undefined : "test-spid-code")),
-    sub: props.uniqueIdentifier ?? "test-unique-identifier",
+    personIdentifier,
+    spidCode,
+    // sub mirrors the chosen identifier (same precedence as production), so the
+    // default fixture matches a real token.
+    sub:
+      props.uniqueIdentifier ??
+      selectSignupIdentifier({ fiscalNumber, personIdentifier, spidCode })
+        ?.value ??
+      "test-unique-identifier",
     type: "ui-signup-session",
   };
 }

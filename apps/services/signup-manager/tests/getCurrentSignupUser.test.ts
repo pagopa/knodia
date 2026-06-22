@@ -1,6 +1,6 @@
 import { generateId } from "@knodia/common-models/ids";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
-import { SignupUserStatus } from "@knodia/signup-models";
+import { SignupUserStatus, SuspensionReason } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import { app, signupDb } from "./setup.ts";
@@ -23,7 +23,10 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
 
   it("should return ACTIVE with email when the signup user exists", async () => {
     const signupUser = makeSignupUser(
-      { email: "onboarded.user@example.com", status: "Active" },
+      {
+        email: "onboarded.user@example.com",
+        status: SignupUserStatus.enum.Active,
+      },
       { spidCode: validUISignupSessionTokenClaims.spidCode },
     );
     await seedSignupUser(signupUser);
@@ -44,7 +47,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
         email: "suspended.user@example.com",
         status: SignupUserStatus.enum.Suspended,
         suspendedAt,
-        suspensionReason: "UnlawfulProcessing",
+        suspensionReason: SuspensionReason.enum.UnlawfulProcessing,
       },
       { spidCode: validUISignupSessionTokenClaims.spidCode },
     );
@@ -61,7 +64,10 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
 
   it("should return DELETION_PENDING with email when the user deletion is pending", async () => {
     const signupUser = makeSignupUser(
-      { email: "deletion.pending.user@example.com", status: "DeletionPending" },
+      {
+        email: "deletion.pending.user@example.com",
+        status: SignupUserStatus.enum.DeletionPending,
+      },
       { spidCode: validUISignupSessionTokenClaims.spidCode },
     );
     await seedSignupUser(signupUser);
