@@ -95,6 +95,9 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
     environment:
       PGHOST: postgres
@@ -605,6 +608,8 @@ services:
       COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -968,6 +973,8 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       RATE_LIMITER_MAX_REQUESTS: "100"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1017,6 +1024,8 @@ services:
       SIGNAL_HUB_DB_PASSWORD: local_orion_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1075,6 +1084,8 @@ services:
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_orion_signal_hub
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1368,6 +1379,8 @@ services:
       COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1731,6 +1744,8 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       RATE_LIMITER_MAX_REQUESTS: "100"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1780,6 +1795,8 @@ services:
       SIGNAL_HUB_DB_PASSWORD: local_lynx_mock_eservice_user
       SIGNAL_HUB_DB_USE_SSL: "false"
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"
@@ -1838,6 +1855,8 @@ services:
       SIGNAL_HUB_DB_USE_SSL: "false"
       SIGNAL_HUB_DB_SCHEMA: local_lynx_signal_hub
       RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
       RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
       RATE_LIMITER_REDIS_HOST: redis
       RATE_LIMITER_REDIS_PORT: "6379"

@@ -22,10 +22,15 @@ allowBuilds:
   ssh2: false
 
 catalog:
+  "@aws-crypto/sha256-js": 5.2.0
   "@aws-sdk/client-cognito-identity-provider": 3.1023.0
   "@aws-sdk/client-dynamodb": 3.1023.0
   "@aws-sdk/client-kms": 3.1023.0
   "@aws-sdk/client-s3": 3.1023.0
+  "@aws-sdk/credential-provider-node": 3.972.55
+  "@aws-sdk/util-format-url": 3.972.22
+  "@smithy/protocol-http": 5.4.6
+  "@smithy/signature-v4": 5.4.6
   "@bufbuild/buf": 1.61.0
   "@bufbuild/protobuf": 2.10.2
   "@confluentinc/kafka-javascript": 1.7.0
@@ -109,7 +114,7 @@ catalog:
   react-aria-components: 1.14.0
   react-dom: 19.2.0
   react-oidc-context: 3.3.0
-  redis: 4.7.1
+  redis: 5.9.0
   storybook: 10.2.15
   tailwind-merge: 3.4.0
   tailwind-variants: 3.2.2

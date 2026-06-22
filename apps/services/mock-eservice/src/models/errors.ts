@@ -19,7 +19,8 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   NATURAL_PERSON_NOT_FOUND: "0011",
   RESIDENCE_NOT_AVAILABLE: "0012",
   LEGAL_ENTITY_NOT_FOUND: "0013",
-  LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0014",
+  STUDENT_NOT_FOUND: "0014",
+  LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0015",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -103,5 +104,14 @@ export function residenceNotAvailable(notation: string) {
     detail: `No residence address found for natural person ${notation}`,
     status: 404,
     title: "residence_not_available",
+  });
+}
+
+export function studentNotFound(uidStudent: string) {
+  return createApiError({
+    code: "STUDENT_NOT_FOUND",
+    detail: `No student found for uidStudent ${uidStudent}`,
+    status: 404,
+    title: "student_not_found",
   });
 }

@@ -35,12 +35,17 @@
     "vitest": "catalog:"
   },
   "dependencies": {
+    "@aws-crypto/sha256-js": "catalog:",
+    "@aws-sdk/credential-provider-node": "catalog:",
+    "@aws-sdk/util-format-url": "catalog:",
     "@fastify/error": "catalog:",
     "@fastify/request-context": "catalog:",
     "@fastify/swagger": "catalog:",
     "@fastify/swagger-ui": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@smithy/protocol-http": "catalog:",
+    "@smithy/signature-v4": "catalog:",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",

@@ -30,6 +30,7 @@
     "react-dom": "catalog:",
     "tailwind-variants": "catalog:",
     "tailwindcss": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
