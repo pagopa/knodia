@@ -1,6 +1,5 @@
 import { type IconProps, MaterialSymbolIcon } from "./MaterialSymbolIcon";
 
-/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function ArrowForwardIcon(props: IconProps) {
   return (
     <MaterialSymbolIcon
