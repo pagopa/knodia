@@ -335,6 +335,9 @@ importers:
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
       turbo:
         specifier: 'catalog:'
         version: 2.9.14
