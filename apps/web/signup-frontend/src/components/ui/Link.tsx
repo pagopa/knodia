@@ -12,7 +12,6 @@ const linkStyles = tv({
   extend: focusRing,
 });
 
-/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function Link({ children, ...props }: RACLinkProps) {
   return (
     <RACLink
