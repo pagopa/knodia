@@ -45,6 +45,10 @@ export type ChangeEmailRequestBody = {
     email: string;
 };
 
+export type SuspendUserRequestBody = {
+    suspensionReason: 'ACCURACY_CONTESTED' | 'UNLAWFUL_PROCESSING' | 'DATA_NEEDED_FOR_LEGAL_CLAIMS' | 'PENDING_OBJECTION_VERIFICATION';
+};
+
 export type CurrentSignupUser = {
     email?: string;
     onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING' | 'NOT_COMPLETED';
@@ -240,3 +244,40 @@ export type GetCurrentSignupUserResponses = {
 };
 
 export type GetCurrentSignupUserResponse = GetCurrentSignupUserResponses[keyof GetCurrentSignupUserResponses];
+
+export type SuspendUserData = {
+    body: SuspendUserRequestBody;
+    path?: never;
+    query?: never;
+    url: '/user/suspend';
+};
+
+export type SuspendUserErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendUserError = SuspendUserErrors[keyof SuspendUserErrors];
+
+export type SuspendUserResponses = {
+    /**
+     * User suspension requested successfully
+     */
+    204: void;
+};
+
+export type SuspendUserResponse = SuspendUserResponses[keyof SuspendUserResponses];
