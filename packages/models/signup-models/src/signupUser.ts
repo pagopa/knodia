@@ -8,6 +8,14 @@ export const SignupUserStatus = z.enum([
 ]);
 export type SignupUserStatus = z.infer<typeof SignupUserStatus>;
 
+export const SuspensionReason = z.enum([
+  "AccuracyContested",
+  "UnlawfulProcessing",
+  "DataNeededForLegalClaims",
+  "PendingObjectionVerification",
+]);
+export type SuspensionReason = z.infer<typeof SuspensionReason>;
+
 const SignupGeneratedEntitiesPerKnode = z.strictObject({
   organizationName: z.string(),
   userName: z.string(),
@@ -20,22 +28,36 @@ export const SignupGeneratedEntities = z.strictObject({
 });
 export type SignupGeneratedEntities = z.infer<typeof SignupGeneratedEntities>;
 
+const SignupUserBase = z.strictObject({
+  createdAt: z.coerce.date(),
+  dateOfBirth: z.iso.date(),
+  // Not a One Identity claim — user types it on the FE form.
+  email: z.email(),
+  familyName: z.string(),
+  fiscalNumber: z.string().optional(),
+  generatedEntities: SignupGeneratedEntities,
+  name: z.string(),
+  personIdentifier: z.string().optional(),
+  signupUserId: SignupUserId,
+  spidCode: z.string().optional(),
+  updatedAt: z.coerce.date(),
+});
+
+const ActiveSignupUser = SignupUserBase.extend({
+  status: SignupUserStatus.extract([
+    SignupUserStatus.enum.Active,
+    SignupUserStatus.enum.DeletionPending,
+  ]),
+});
+
+const SuspendedSignupUser = SignupUserBase.extend({
+  status: SignupUserStatus.extract([SignupUserStatus.enum.Suspended]),
+  suspendedAt: z.coerce.date(),
+  suspensionReason: SuspensionReason,
+});
+
 export const SignupUser = z
-  .strictObject({
-    createdAt: z.coerce.date(),
-    dateOfBirth: z.iso.date(),
-    // Not a One Identity claim — user types it on the FE form.
-    email: z.email(),
-    familyName: z.string(),
-    fiscalNumber: z.string().optional(),
-    generatedEntities: SignupGeneratedEntities,
-    name: z.string(),
-    personIdentifier: z.string().optional(),
-    signupUserId: SignupUserId,
-    spidCode: z.string().optional(),
-    status: SignupUserStatus,
-    updatedAt: z.coerce.date(),
-  })
+  .discriminatedUnion("status", [ActiveSignupUser, SuspendedSignupUser])
   .refine(
     (u) =>
       u.spidCode !== undefined ||

@@ -2,6 +2,7 @@ import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
+  AdminDisableUserCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -162,6 +163,32 @@ describe("deleteOrganizationUser", () => {
     const deleteCall = send.mock.calls.at(0)?.at(0) as AdminDeleteUserCommand;
     expect(deleteCall).toBeInstanceOf(AdminDeleteUserCommand);
     expect(deleteCall.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+});
+
+describe("disableUser", () => {
+  it("disables the Cognito user", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).disableUser({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledOnce();
+
+    const [disableCall] = send.mock.calls;
+    if (!disableCall) {
+      throw new Error("expected disableUser to issue one command");
+    }
+
+    const disableUser = disableCall.at(0) as AdminDisableUserCommand;
+    expect(disableUser).toBeInstanceOf(AdminDisableUserCommand);
+    expect(disableUser.input).toMatchObject({
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
