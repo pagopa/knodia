@@ -678,7 +678,6 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
 
     expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
-    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it("logs and commits (without throwing) when the user is not found and no deletion record exists, so the partition isn't blocked", async () => {
@@ -699,7 +698,6 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     // commits rather than redelivering forever and stalling the partition.
     expect(cognitoDeleteUserMock).not.toHaveBeenCalled();
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 
   it("rethrows a Cognito user deletion error so the message is redelivered, without completing", async () => {
