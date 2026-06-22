@@ -42,9 +42,11 @@ vi.mock("@knodia/remote-resources-manager-client", async (importOriginal) => {
 const ORGANIZATION_ID = "20000000-2000-1000-8000-000000000002";
 const USER_ID = "10000000-1000-1000-8000-000000000001";
 
-const ORION_GENERIC_TEMPLATE_ID = "a1b2c3d4-0001-4000-8000-000000000001";
-const ORION_ESERVICE_01_TEMPLATE_ID = "a1b2c3d4-0001-4000-8000-000000000002";
+const ORION_GENERIC_TEMPLATE_ID = "f360e76e-87d4-41a1-8ffd-3ca23dbb095e";
+const ORION_ESERVICE_01_TEMPLATE_ID = "4f552baa-db7e-4807-aa68-1cdb0fe67c53";
+const ORION_ESERVICE_02_TEMPLATE_ID = "9f5f71b6-ac03-4711-bc17-0fa9778df112";
 const ORION_BEARER_ESERVICE_ID = "e7f5837e-75f4-431d-9465-73366d27bef2";
+const ORION_DPOP_ESERVICE_ID = "905c4569-95db-4670-a146-8239fcb3f41a";
 
 const CURRENT_MAJOR = 1;
 const CURRENT_FORM_SCHEMA_VERSION = `${CURRENT_MAJOR}.0`;
@@ -103,12 +105,19 @@ describe("GET /purposeTemplates (getPurposeTemplates)", () => {
     expect(response.statusCode).toBe(200);
     const body = response.json() as { eserviceId?: string; id: string }[];
     expect(body.map((t) => t.id).sort()).toEqual(
-      [ORION_GENERIC_TEMPLATE_ID, ORION_ESERVICE_01_TEMPLATE_ID].sort(),
+      [
+        ORION_GENERIC_TEMPLATE_ID,
+        ORION_ESERVICE_01_TEMPLATE_ID,
+        ORION_ESERVICE_02_TEMPLATE_ID,
+      ].sort(),
     );
     const byId = Object.fromEntries(body.map((t) => [t.id, t]));
     expect(byId[ORION_GENERIC_TEMPLATE_ID]?.eserviceId).toBeUndefined();
     expect(byId[ORION_ESERVICE_01_TEMPLATE_ID]?.eserviceId).toBe(
       ORION_BEARER_ESERVICE_ID,
+    );
+    expect(byId[ORION_ESERVICE_02_TEMPLATE_ID]?.eserviceId).toBe(
+      ORION_DPOP_ESERVICE_ID,
     );
   });
 

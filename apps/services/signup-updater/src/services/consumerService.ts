@@ -6,6 +6,7 @@ import {
   type CorrelationId,
   KnodeId,
   type OrganizationId,
+  type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
@@ -63,9 +64,10 @@ export async function handleSignupMessage(
         return;
       }
 
-      for (const knodeId of KnodeId.options) {
-        await provisionKnode(knodeId, user, deps, correlationId, logger);
-      }
+      await forEachKnode(
+        (knodeId) => provisionKnode(knodeId, user, deps, correlationId, logger),
+        logger,
+      );
     })
     .with({ type: "EmailChangeRequestedV1" }, async (e) => {
       const emailChangeRequestId = e.data.emailChangeRequestId;
@@ -87,12 +89,14 @@ export async function handleSignupMessage(
         );
       }
 
-      const user = await deps.signupDbService.getSignupUserById(signupUserId);
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "EmailChangeRequestedV1",
+        deps,
+        logger,
+      );
 
       if (user === undefined) {
-        logger.warn(
-          `Skipping event for signup user ${signupUserId}: user no longer exists (deleted). Deleting the email change request and committing the offset; the event is obsolete and has no recovery path.`,
-        );
         await deps.signupDbService.deleteEmailChangeRequest(
           emailChangeRequestId,
         );
@@ -125,18 +129,23 @@ export async function handleSignupMessage(
         throw error;
       }
 
-      for (const knodeId of KnodeId.options) {
-        await deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
-          email: request.email,
-          username: user.generatedEntities[knodeId].userName,
-        });
-      }
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
+            email: request.email,
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
     .with({ type: "DeletionRequestedV1" }, async (e) => {
-      const user = await deps.signupDbService.getSignupUserById(
-        e.data.signupUserId,
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "DeletionRequestedV1",
+        deps,
+        logger,
       );
 
       // The row is hard-deleted on completion, so a missing user means the saga
@@ -181,9 +190,21 @@ export async function handleSignupMessage(
       await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
     })
     .with({ type: "SuspensionRequestedV1" }, async () => {
-      // TODO: PIN-780
-      logger.info(
-        `Skipping SuspensionRequestedV1 for signup user ${signupUserId}: suspension is not yet implemented`,
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "SuspensionRequestedV1",
+        deps,
+        logger,
+      );
+
+      if (user === undefined) return;
+
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.disableUser({
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
       );
     })
     .exhaustive();
@@ -228,6 +249,32 @@ async function deleteKnodeUser(
   // Idempotent inside the client: a missing user (UserNotFoundException) is
   // swallowed, so a replay after a partial deletion is safe.
   await cognitoClient.deleteOrganizationUser({ username: entities.userName });
+}
+
+async function forEachKnode(
+  action: (knodeId: KnodeId) => Promise<void>,
+  logger: Logger,
+): Promise<void> {
+  const results = await Promise.allSettled(
+    KnodeId.options.map(async (knodeId) => {
+      try {
+        await action(knodeId);
+      } catch (error) {
+        logger.error({ error, knodeId }, `Knode action failed on ${knodeId}`);
+        throw error;
+      }
+    }),
+  );
+
+  const failures = results.filter((r) => r.status === "rejected");
+
+  if (failures.length === 0) return;
+
+  if (failures.length === 1) {
+    throw failures[0]?.reason;
+  }
+
+  throw new AggregateError(failures.map((failure) => failure.reason));
 }
 
 // A 409 here means the org name is already taken by a different organization.
@@ -291,4 +338,29 @@ async function provisionKnode(
     roles: [UserRole.enum.administrative, UserRole.enum.technical],
     username: entities.userName,
   });
+}
+
+async function retrieveSignupUserOrLogMissingAndSkip(
+  signupUserId: SignupUserId,
+  eventType: SignupEventV1["type"],
+  deps: SignupUpdaterDeps,
+  logger: Logger,
+): Promise<SignupUser | undefined> {
+  const user = await deps.signupDbService.getSignupUserById(signupUserId);
+
+  if (user !== undefined) return user;
+
+  const deletion =
+    await deps.signupDbService.getSignupUserDeletion(signupUserId);
+  if (deletion === undefined) {
+    logger.error(
+      `Skipping ${eventType} for signup user ${signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+    );
+  } else {
+    logger.warn(
+      `Skipping ${eventType} for signup user ${signupUserId}: user deleted at ${deletion.deletedAt.toISOString()}. Committing the offset; the event is obsolete and has no recovery path.`,
+    );
+  }
+
+  return undefined;
 }

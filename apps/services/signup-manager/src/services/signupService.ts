@@ -9,7 +9,11 @@ import {
   type SignupUserId,
 } from "@knodia/common-models/ids";
 import { isPgUniqueViolation } from "@knodia/common-models/utils";
-import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
+import {
+  type SignupUser,
+  SignupUserStatus,
+  type SuspensionReason,
+} from "@knodia/signup-models";
 
 import type {
   API_ChangeEmailRequestBody,
@@ -31,6 +35,7 @@ import {
 import {
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIdentifiersDoNotExist,
+  assertSignupUserIsActive,
   assertSignupUserIsOnboarded,
 } from "../utils/validators.ts";
 
@@ -187,6 +192,34 @@ export function signupServiceBuilder(
         fiscalNumber: authData.fiscalNumber,
         personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,
+      });
+    },
+    async suspendUser(
+      { suspensionReason }: { suspensionReason: SuspensionReason },
+      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+    ) {
+      const currentSignupUser =
+        await signupDbService.getUniqueSignupUserByIdentifiers({
+          fiscalNumber: authData.fiscalNumber,
+          personIdentifier: authData.personIdentifier,
+          spidCode: authData.spidCode,
+        });
+
+      assertSignupUserIsOnboarded(currentSignupUser);
+      assertSignupUserIsActive(currentSignupUser);
+
+      const now = new Date();
+      await signupDbService.updateSignupUserSuspension({
+        signupUserId: currentSignupUser.signupUserId,
+        suspendedAt: now,
+        suspensionReason,
+      });
+
+      await signupEventProducer.publishSuspensionRequestedV1Event({
+        occurredAt: now.toISOString(),
+        oneIdNonce: authData.oneIdNonce,
+        signupUserId: currentSignupUser.signupUserId,
+        suspensionReason,
       });
     },
   };
