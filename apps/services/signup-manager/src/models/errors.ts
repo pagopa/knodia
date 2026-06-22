@@ -13,6 +13,7 @@ const errorCodes = {
   SIGNUP_USER_NOT_ONBOARDED: "0005",
   SIGNUP_USER_EMAIL_CHANGE_REQUEST_CREATION_CONFLICT: "0006",
   SIGNUP_USER_NOT_FOUND: "0007",
+  SIGNUP_USER_NOT_ACTIVE: "0008",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -67,6 +68,15 @@ export function signupUserIdentifierAlreadyAssociated() {
       "At least one user identifier is already associated with an onboarded user",
     status: HTTP_STATUS_CONFLICT,
     title: "Signup User Identifier Already Associated",
+  });
+}
+
+export function signupUserNotActive() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_NOT_ACTIVE",
+    detail: "Signup user is not active",
+    status: HTTP_STATUS_CONFLICT,
+    title: "Signup User Not Active",
   });
 }
 

@@ -47,6 +47,24 @@ export type API_ChangeEmailRequestBody = z.infer<
   typeof API_ChangeEmailRequestBody
 >;
 
+export const API_SuspensionReason = z.enum([
+  "ACCURACY_CONTESTED",
+  "UNLAWFUL_PROCESSING",
+  "DATA_NEEDED_FOR_LEGAL_CLAIMS",
+  "PENDING_OBJECTION_VERIFICATION",
+]);
+export type API_SuspensionReason = z.infer<typeof API_SuspensionReason>;
+
+export const API_SuspendUserRequestBody = z
+  .strictObject({
+    suspensionReason: API_SuspensionReason,
+  })
+  .meta({ id: "SuspendUserRequestBody" });
+
+export type API_SuspendUserRequestBody = z.infer<
+  typeof API_SuspendUserRequestBody
+>;
+
 export const API_OnboardingStatus = z.enum([
   "ACTIVE",
   "SUSPENDED",
