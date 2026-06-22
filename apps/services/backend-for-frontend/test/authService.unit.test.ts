@@ -22,6 +22,8 @@ vi.mock("jose", () => ({
   jwtVerify: vi.fn(),
 }));
 
+import type { CognitoIdmClient } from "@knodia/cognito-idm-client";
+
 import type { BffProcessConfig } from "../src/config/config.ts";
 
 import { authServiceBuilder } from "../src/services/authService.ts";
@@ -97,7 +99,10 @@ function buildService(
     generateUISessionToken: vi.fn(async () => ({ serialized: "ui-token" })),
   } as unknown as TokenGenerator;
 
+  const cognitoIdmClient = {} as unknown as CognitoIdmClient;
+
   const service = authServiceBuilder({
+    cognitoIdmClient,
     config: baseConfig,
     magicLinkTokenStore,
     rateLimiter,

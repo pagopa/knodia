@@ -195,8 +195,24 @@ export function authServiceBuilder({
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    const user = await cognitoIdmClient.getUserById(parsed.data.sub);
-    if (!user || user.enabled === false) {
+    /*
+     * Note 1: We run Cognito verification before the JTI-replay consume call.
+     * This means replayed (already-consumed) but otherwise-valid refresh tokens
+     * will trigger a Cognito ListUsers call on every attempt, but this ordering
+     * favors availability: if we consumed JTI first, a transient Cognito error
+     * would burn the token, forcing legitimate users to re-login.
+     *
+     * Note 2: We retrieve the user by username (not sub) because we want to use
+     * AdminGetUser cognito command, which has higher RPM limits than ListUsers.
+     */
+    const user = await cognitoIdmClient.getUserByUsername(parsed.data.username);
+
+    if (!user || user.enabled !== true) {
+      const { logger } = getContextValues(requestContext);
+      logger.warn(
+        { username: parsed.data.username },
+        "UI session refresh rejected: user does not exist or is disabled",
+      );
       throw unauthorizedError("User is disabled or does not exist");
     }
 
