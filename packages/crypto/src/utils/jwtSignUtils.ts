@@ -15,11 +15,7 @@ export async function buildAndSignJwt<T extends BaseJwtClaims>(
   kid: string,
   claims: T,
   headerKid?: string,
-): Promise<{
-  claims: Omit<T, "type"> | T;
-  header: string;
-  serialized: string;
-}> {
+): Promise<{ header: string; serialized: string }> {
   const typ = match(claims.type)
     .with(
       "eservice-access",
@@ -58,11 +54,7 @@ export async function buildAndSignJwt<T extends BaseJwtClaims>(
   const payload = b64url(JSON.stringify(cleanedClaims));
   const message = `${header}.${payload}`;
   const signature = await signWithKms(kmsClient, kid, message);
-  return {
-    claims: cleanedClaims,
-    header,
-    serialized: `${message}.${signature}`,
-  };
+  return { header, serialized: `${message}.${signature}` };
 }
 
 function buildHeader(kid: string, typ: string): string {

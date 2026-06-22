@@ -186,15 +186,15 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         type: "eservice-access",
       };
 
-      const {
-        claims: cleanedClaims,
-        header,
-        serialized,
-      } = await buildAndSignJwt(client, input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
 
       return {
         header,
-        payload: cleanedClaims,
+        payload: claims,
         serialized,
       };
     },
