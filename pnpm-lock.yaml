@@ -2592,6 +2592,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0

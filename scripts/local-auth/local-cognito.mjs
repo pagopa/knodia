@@ -404,7 +404,9 @@ function handleCreateGroup(req, res, payload) {
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
-    console.log(`[admin-create-user] ${payload.Username} already exists`);
+    const action =
+      payload.MessageAction === "RESEND" ? "resent credentials to" : "already exists";
+    console.log(`[admin-create-user] ${action} ${sanitizeForLog(payload.Username)}`);
     writeJson(
       res,
       200,
@@ -475,6 +477,52 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
 
   console.log(
     `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminGetUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+
+  if (!user) {
+    writeJson(
+      res,
+      400,
+      { __type: "UserNotFoundException", message: "User does not exist." },
+      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+    );
+    return;
+  }
+
+  console.log(
+    `[admin-get-user] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {
+      Enabled: user.Enabled,
+      UserAttributes: user.Attributes ?? [],
+      Username: user.Username,
+      UserStatus: user.UserStatus,
+    },
+    { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+  );
+}
+
+function handleAdminResetUserPassword(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.UserStatus = "RESET_REQUIRED";
+    user.UserLastModifiedDate = NOW_IN_SECONDS;
+  }
+
+  console.log(
+    `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -578,6 +626,18 @@ createServer(async (req, res) => {
         "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
       ) {
         handleAdminUpdateUserAttributes(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminGetUser") {
+        handleAdminGetUser(req, res, payload);
+        return;
+      }
+
+      if (
+        target === "AWSCognitoIdentityProviderService.AdminResetUserPassword"
+      ) {
+        handleAdminResetUserPassword(req, res, payload);
         return;
       }
     }

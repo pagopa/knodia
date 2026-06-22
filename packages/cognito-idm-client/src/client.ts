@@ -6,7 +6,9 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminGetUserCommand,
   AdminListGroupsForUserCommand,
+  AdminResetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -14,6 +16,7 @@ import {
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { match } from "ts-pattern";
 
 import type { CognitoIdmClientConfig } from "./config.ts";
 import type { IdmUser } from "./models.ts";
@@ -160,6 +163,39 @@ export function buildCognitoIdmClient({
 
       const user = response.Users?.at(0);
       return user ? toIdmUser(user) : undefined;
+    },
+
+    async resetUserCredentials(input: { username: string }): Promise<void> {
+      // Point read (immediately consistent), unlike getUserById's ListUsers index.
+      const { UserStatus } = await client.send(
+        new AdminGetUserCommand({
+          Username: input.username,
+          UserPoolId: cognitoUserPoolId,
+        }),
+      );
+
+      await match(UserStatus)
+        // Never logged in: resend the temporary credentials to the new address.
+        .with("FORCE_CHANGE_PASSWORD", () =>
+          client.send(
+            new AdminCreateUserCommand({
+              MessageAction: "RESEND",
+              Username: input.username,
+              UserPoolId: cognitoUserPoolId,
+            }),
+          ),
+        )
+        // Otherwise reset; swallow NotAuthorizedException for non-resettable states.
+        .otherwise(() =>
+          swallowCognitoError("NotAuthorizedException", () =>
+            client.send(
+              new AdminResetUserPasswordCommand({
+                Username: input.username,
+                UserPoolId: cognitoUserPoolId,
+              }),
+            ),
+          ),
+        );
     },
 
     async updateUserEmail(input: {
