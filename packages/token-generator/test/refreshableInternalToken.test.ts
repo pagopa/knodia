@@ -31,7 +31,7 @@ describe("refreshableInternalTokenGenerator", () => {
   it("generates a token on the first call", async () => {
     const result = await refreshable.get();
 
-    expect(result.type).toBe("internal");
+    expect(result.payload.type).toBe("internal");
     expect(result.payload.sub).toBe("test-service");
     expect(kmsSendMock).toHaveBeenCalledOnce();
   });
