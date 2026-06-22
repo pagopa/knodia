@@ -54,5 +54,6 @@ export type KnodiaJwtSignatureSignedHeaders = z.infer<
 export const KnodiaJwtSignatureClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId.optional(),
   signed_headers: KnodiaJwtSignatureSignedHeaders,
+  type: "knodia-jwt-signature",
 });
 export type KnodiaJwtSignatureClaims = z.infer<typeof KnodiaJwtSignatureClaims>;

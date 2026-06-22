@@ -16,7 +16,11 @@ export async function buildAndSignJwt<T extends BaseJwtClaims>(
   headerKid?: string,
 ): Promise<{ header: string; serialized: string }> {
   const typ =
-    "type" in claims && claims.type === "refresh-ui-session" ? "JWT" : "at+jwt";
+    "type" in claims &&
+    (claims.type === "refresh-ui-session" ||
+      claims.type === "knodia-jwt-signature")
+      ? "JWT"
+      : "at+jwt";
   const header = buildHeader(headerKid ?? kid, typ);
   const payload = b64url(JSON.stringify(claims));
   const message = `${header}.${payload}`;
