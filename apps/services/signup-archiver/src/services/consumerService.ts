@@ -14,10 +14,6 @@ export interface SignupArchiverDeps {
   fileManager: FileManager;
 }
 
-// The nonce becomes a literal S3 path segment, so it must not contain slashes,
-// whitespace or other characters that would alter the logical key layout.
-const SAFE_NONCE = /^[A-Za-z0-9._-]+$/;
-
 // PROTOTYPE LIMITATION: errors thrown here are treated by the consumer as
 // retryable (offsets commit only on success, see runConsumer), so a permanent
 // data fault — e.g. an unsafe nonce — becomes a poison message that is
@@ -55,6 +51,15 @@ export async function handleSignupMessage(
         `Received EmailChangeRequestedV1 event; No archival action defined, skipping`,
       );
       return undefined;
+    })
+    .with({ type: "SuspensionRequestedV1" }, ({ data }) => {
+      assertSafeNonce(data.oneIdNonce, data.signupUserId);
+      return SignupArchiveRecord.parse({
+        action: "Suspension",
+        date: data.occurredAt,
+        nonce: data.oneIdNonce,
+        suspensionReason: data.suspensionReason,
+      });
     })
     .exhaustive();
 
@@ -102,3 +107,7 @@ function assertSafeNonce(nonce: string, signupUserId: SignupUserId): void {
     );
   }
 }
+
+// The nonce becomes a literal S3 path segment, so it must not contain slashes,
+// whitespace or other characters that would alter the logical key layout.
+const SAFE_NONCE = /^[A-Za-z0-9._-]+$/;
