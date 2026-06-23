@@ -24,6 +24,7 @@ interface ModalProps extends AriaModalOverlayProps {
   cancelLabel?: string;
   children?: React.ReactNode;
   description?: string;
+  errorMessage?: string;
   isActionDisabled?: boolean;
   onCancel?: (e: PressEvent) => void;
   onConfirm?: (e: PressEvent) => void;
@@ -35,6 +36,7 @@ export function Modal({
   cancelLabel = "Cancel",
   children,
   description,
+  errorMessage,
   isActionDisabled = false,
   onCancel,
   onConfirm,
@@ -65,6 +67,15 @@ export function Modal({
           </div>
           {children && (
             <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+          )}
+          {/* TODO: replace with the dedicated error banner once designers define it. */}
+          {errorMessage && (
+            <p
+              className="shrink-0 font-caption text-[14px] leading-[20px] text-status-error"
+              role="alert"
+            >
+              {errorMessage}
+            </p>
           )}
           <div className="flex shrink-0 items-center justify-end gap-6">
             <Button onPress={onCancel} slot="close" variant="secondary">
