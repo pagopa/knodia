@@ -118,7 +118,7 @@
     },
     "deliveryMethod": {
       "type": "string",
-      "enum": ["CLEARTEXT", "PSEUDOANONYMOUS", "AGGREGATE", "ANONYMOUS"],
+      "enum": ["ANONYMOUS", "AGGREGATE", "PSEUDOANONYMOUS", "CLEARTEXT"],
       "default": "ANONYMOUS"
     },
     "policyProvided": {
