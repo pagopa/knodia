@@ -1,0 +1,109 @@
+openapi: 3.0.3
+
+info:
+  title: Recovery of the birth place of a natural person
+  description: |
+    API for recovering the birth place of a natural person
+  version: 1.0.0
+
+servers:
+  - url: https://api.example-erds.it/v1
+
+paths:
+  /getBirthPlace:
+    post:
+      description: |
+        Recovering the birth place of a natural person from the unique national identifier
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Identifier"
+      responses:
+        "200":
+          description: Birth Place
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BirthPlace"
+
+  /getBirthPlaces:
+    post:
+      description: |
+        Recovering the birth place and identifier of a natural person from personal data,
+        the response is an array in the case of multiple people with the same personal data
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonalData"
+      responses:
+        "200":
+          description: Array of birth places
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoreBirthPlaces"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token (Voucher) issued by the Producer Knode.
+        The token is in JWS format and complies
+        with the security specifications and recommendations included in RFC8725.
+
+  schemas:
+    Identifier:
+      type: object
+      properties:
+        identifierSchemeURI:
+          type: string
+        identifierNotation:
+          type: string
+      required:
+        - identifierSchemeURI
+        - identifierNotation
+
+    PersonalData:
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+      required:
+        - givenName
+        - familyName
+        - dateOfBirth
+
+    BirthPlace:
+      type: object
+      properties:
+        geographicIdentifier:
+          type: string
+          pattern: '^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?'
+        geographicName:
+          type: string
+      required:
+        - geographicIdentifier
+        - geographicName
+
+    MoreBirthPlaces:
+      type: array
+      items:
+        allOf:
+          - $ref: "#/components/schemas/Identifier"
+          - $ref: "#/components/schemas/BirthPlace"
