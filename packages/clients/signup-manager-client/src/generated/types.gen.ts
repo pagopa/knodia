@@ -281,3 +281,42 @@ export type SuspendUserResponses = {
 };
 
 export type SuspendUserResponse = SuspendUserResponses[keyof SuspendUserResponses];
+
+export type MaintenanceReactivateUserData = {
+    body?: never;
+    path: {
+        signupUserId: string;
+    };
+    query?: never;
+    url: '/maintenance/users/{signupUserId}/reactivate';
+};
+
+export type MaintenanceReactivateUserErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type MaintenanceReactivateUserError = MaintenanceReactivateUserErrors[keyof MaintenanceReactivateUserErrors];
+
+export type MaintenanceReactivateUserResponses = {
+    /**
+     * User reactivation requested successfully
+     */
+    204: void;
+};
+
+export type MaintenanceReactivateUserResponse = MaintenanceReactivateUserResponses[keyof MaintenanceReactivateUserResponses];
