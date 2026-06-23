@@ -1,12 +1,7 @@
--- Producer keychain + public key for the Lynx Mockup 06 Integrity REST 02 mock,
--- so GET /producerKeys/:kid resolves and the Knodia-JWT-Signature verifies without
--- the manual "create keychain + upload key" step.
---
--- ${NAMESPACE} is substituted by seed.sh via sed. ${KID} and ${ENCODED_PEM} are the
--- mock's signing key, derived from KMS by scripts/seed/derive-integrity-producer-key.ts
--- and provided to seed.sh at runtime — the kid matches because both this seed and the
--- mock compute it as calculateKid() over the same public key. seed.sh skips this file
--- when ${KID} is absent (e.g. tenants without the integrity mock).
+-- Producer keychain for the Lynx Integrity REST 02 mock, so the Knodia-JWT-Signature
+-- verifies without manually creating the keychain.
+-- ${NAMESPACE}/${KID}/${ENCODED_PEM} are substituted by seed.sh via sed; seed.sh skips
+-- this file when ${KID} is absent (e.g. tenants without the integrity mock).
 
 INSERT INTO ${NAMESPACE}_keychain."producer_keychain" (
   id, owner_id, name, description, metadata_version, created_at, updated_at

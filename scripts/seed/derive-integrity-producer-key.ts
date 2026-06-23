@@ -1,23 +1,13 @@
-// Derives the Integrity REST 02 producer signing key from KMS and prints the two
-// values seed.sh substitutes into mock-integrity-rest-02-producer-keychain.sql:
-//   KID         — the kid the mock-eservice puts on the Knodia-JWT-Signature header
-//   ENCODED_PEM — base64 of the public-key PEM, stored as the producer keychain key
-//
-// Derive at runtime (no committed material): the mock signs with the key behind
-// INTEGRITY_PRODUCER_KEY_KMS_ALIAS, which differs per env and is regenerated on
-// every local `down -v` — deriving here keeps the seeded kid matching the signer.
-//
-// Output is shell-sourceable (KID='…'\nENCODED_PEM='…') so seed.sh can either
-// `eval` it for a manual run or read it from the env file the local KMS setup
-// writes for the seed init container.
+// Derive at runtime (no committed material): the signing key differs per env and is
+// regenerated on every local `down -v`, so deriving here keeps the seeded kid
+// matching the mock's signer. Output is shell-sourceable so seed.sh can eval it
+// (manual run) or read the file the local KMS setup writes (init container).
 
 import { GetPublicKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { createHash, createPublicKey } from "node:crypto";
 
-// Mirror of @knodia/crypto.calculateKid (inlined to keep this a standalone node
-// script). Must stay byte-identical: SHA-256 over the JWK with all members
-// sorted, base64url. The mock computes the JWT header kid the same way, so the
-// seeded kid matches.
+// Inlined mirror of @knodia/crypto.calculateKid to keep this script standalone;
+// must stay byte-identical so the seeded kid matches the mock's JWT header kid.
 const calculateKid = (jwk: Record<string, unknown>): string => {
   const sorted = Object.keys(jwk)
     .sort()

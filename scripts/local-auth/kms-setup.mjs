@@ -5,24 +5,9 @@ import {
   DescribeKeyCommand,
   GetPublicKeyCommand,
 } from "@aws-sdk/client-kms";
-import { createHash, createPublicKey } from "node:crypto";
+import { createPublicKey } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
-
-// Mirror of @knodia/crypto.calculateKid (kept in sync with
-// scripts/seed/derive-integrity-producer-key.ts): SHA-256 over the JWK with all
-// members sorted, base64url. Used to emit the integrity producer key the seed
-// container reads — the seed init container has no Node/KMS to derive it itself.
-const calculateKid = (jwk) => {
-  const sorted = Object.keys(jwk)
-    .sort()
-    .reduce((acc, k) => ({ ...acc, [k]: jwk[k] }), {});
-  return createHash("sha256").update(JSON.stringify(sorted)).digest("base64url");
-};
-
-// The mock-eservice signs Knodia-JWT-Signature with this alias; the seed wires the
-// matching public key into the Integrity REST 02 producer keychain.
-const INTEGRITY_PRODUCER_KEY_ALIAS = "alias/local-knodia-key";
 
 const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 const JWKS_OUTPUT_DIR = process.env.JWKS_OUTPUT_DIR ?? "/jwks";
@@ -34,9 +19,13 @@ const kmsClient = new KMSClient({
   credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
 });
 
-// KMS key for knodia services (ui-session, internal, etc.)
-// JWKS is written to disk and served by the local-jwks nginx container.
+// KMS keys for knodia services (ui-session, internal, etc.), published in the JWKS
+// served by the local-jwks container for token validation.
 const kids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
+
+// Dedicated key the mock-eservice signs Knodia-JWT-Signature with. Kept out of the
+// JWKS — it's validated via the seeded producer keychain, not the platform JWKS.
+const INTEGRITY_PRODUCER_KEY_ALIAS = "alias/local-knodia-integrity-rest-02-key";
 
 const jwksDir = `${JWKS_OUTPUT_DIR}/knodia/.well-known`;
 mkdirSync(jwksDir, { recursive: true });
@@ -45,7 +34,7 @@ mkdirSync(KEYS_OUTPUT_DIR, { recursive: true });
 const allJwks = [];
 const generatedPublicKeyPaths = [];
 
-for (const KID of kids) { 
+for (const KID of [...kids, INTEGRITY_PRODUCER_KEY_ALIAS]) {
   try {
     await kmsClient.send(new DescribeKeyCommand({ KeyId: KID }));
     console.log(`Key "${KID}" already exists.`);
@@ -78,24 +67,16 @@ for (const KID of kids) {
     format: "der",
     type: "spki",
   });
-  const jwk = publicKey.export({ format: "jwk" });
   const publicKeyPem = publicKey.export({ format: "pem", type: "spki" });
   const keyName = basename(KID);
   const publicKeyPath = join(KEYS_OUTPUT_DIR, `${keyName}.pub.pem`);
 
   writeFileSync(publicKeyPath, publicKeyPem);
 
-  if (KID === INTEGRITY_PRODUCER_KEY_ALIAS) {
-    const encodedPem = Buffer.from(publicKeyPem.toString()).toString("base64");
-    const envPath = join(KEYS_OUTPUT_DIR, "integrity-producer-key.env");
-    writeFileSync(
-      envPath,
-      `KID='${calculateKid(jwk)}'\nENCODED_PEM='${encodedPem}'\n`
-    );
-    console.log(`Integrity producer key env written: ${envPath}`);
+  if (kids.includes(KID)) {
+    const jwk = publicKey.export({ format: "jwk" });
+    allJwks.push({ ...jwk, kid: KID, use: "sig", alg: "RS256" });
   }
-
-  allJwks.push({ ...jwk, kid: KID, use: "sig", alg: "RS256" });
   generatedPublicKeyPaths.push({ alias: KID, publicKeyPath });
   console.log(`JWK collected for "${KID}"`);
 }

@@ -14,13 +14,9 @@
 # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
 # Optional:     PGPORT, PGSSLMODE (require on remote envs), S3_ENDPOINT_URL (MinIO only).
 #
-# Integrity REST 02 producer key (Lynx only). The keychain SQL needs the mock's
-# signing key, derived from KMS at runtime. Two ways to provide it:
-#   - INTEGRITY_KEY_ENV_FILE — a sourceable file the local KMS setup writes, for the
-#     seed init container (no Node/KMS to derive it itself).
-#   - INTEGRITY_PRODUCER_KEY_KMS_ALIAS + node — self-derive, so a manual dev/test run
-#     only needs `seed.sh` (set the alias, AWS_ENDPOINT_URL_KMS for local).
-# When neither resolves a KID, the integrity keychain SQL is skipped.
+# Integrity REST 02 producer key (Lynx only). INTEGRITY_KEY_ENV_FILE is written by
+# the local KMS setup for the seed init container, which has no Node/KMS to derive it;
+# a manual run instead sets INTEGRITY_PRODUCER_KEY_KMS_ALIAS and self-derives.
 #
 # Dev example (orion):
 #   PGHOST=knodia-platform-data-dev.cluster-cjkmiqcymbbp.eu-south-1.rds.amazonaws.com \
@@ -37,8 +33,6 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
 INTEGRITY_KEYCHAIN_SQL="mock-integrity-rest-02-producer-keychain.sql"
 
-# Resolve the integrity producer signing key (see header). Leaves KID empty if it
-# can't be derived — the keychain SQL is then skipped below.
 if [ -n "${INTEGRITY_KEY_ENV_FILE:-}" ] && [ -f "$INTEGRITY_KEY_ENV_FILE" ]; then
   . "$INTEGRITY_KEY_ENV_FILE"
 elif [ -n "${INTEGRITY_PRODUCER_KEY_KMS_ALIAS:-}" ] && command -v node >/dev/null 2>&1; then

@@ -89,8 +89,8 @@ services:
         condition: service_completed_successfully
       minio-setup:
         condition: service_completed_successfully
-      # Produces /keys/kms/integrity-producer-key.env (KID/ENCODED_PEM) the Lynx
-      # keychain seed reads — this container has no Node/KMS to derive it itself.
+      # Writes the integrity key env file the keychain seed reads (this container
+      # has no Node/KMS to derive it itself).
       local-kms-setup:
         condition: service_completed_successfully
     volumes:
@@ -1048,7 +1048,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-orion:
@@ -1826,7 +1826,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-lynx:
@@ -2113,13 +2113,26 @@ services:
       - multinode-jwks-data:/jwks
       - ./keys:/keys
       - ../scripts/local-auth:/app/scripts/local-auth:ro
+      - ../scripts/seed:/app/scripts/seed:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
       KEYS_OUTPUT_DIR: /keys/kms
-    command: node scripts/local-auth/kms-setup.mjs
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      INTEGRITY_PRODUCER_KEY_KMS_ALIAS: alias/local-knodia-integrity-rest-02-key
+    # Provision the KMS keys, then derive the integrity producer key into the env file
+    # the seed container reads (it has no Node/KMS to derive it itself).
+    command:
+      - sh
+      - -c
+      - |
+        node scripts/local-auth/kms-setup.mjs
+        node scripts/seed/derive-integrity-producer-key.ts > /keys/kms/integrity-producer-key.env
 
   local-jwks:
     security_opt:
