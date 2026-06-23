@@ -1,5 +1,5 @@
 // Derives the Integrity REST 02 producer signing key from KMS and prints the two
-// values seed.sh substitutes into integrity-rest-02-producer-keychain.sql:
+// values seed.sh substitutes into mock-integrity-rest-02-producer-keychain.sql:
 //   KID         — the kid the mock-eservice puts on the Knodia-JWT-Signature header
 //   ENCODED_PEM — base64 of the public-key PEM, stored as the producer keychain key
 //
