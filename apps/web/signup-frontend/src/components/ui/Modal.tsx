@@ -9,6 +9,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
+import { Alert } from "./Alert";
 import { Button } from "./Button";
 
 const overlayStyles = tv({
@@ -23,7 +24,8 @@ interface ModalProps extends AriaModalOverlayProps {
   actionLabel: string;
   cancelLabel?: string;
   children?: React.ReactNode;
-  description?: string;
+  description?: React.ReactNode;
+  errorMessage?: string;
   isActionDisabled?: boolean;
   isCancelDisabled?: boolean;
   onCancel?: (e: PressEvent) => void;
@@ -36,6 +38,7 @@ export function Modal({
   cancelLabel = "Cancel",
   children,
   description,
+  errorMessage,
   isActionDisabled = false,
   isCancelDisabled = false,
   onCancel,
@@ -52,17 +55,19 @@ export function Modal({
     >
       <AriaModal className={modalStyles()}>
         <AriaDialog className="flex min-h-0 w-full flex-1 flex-col gap-8 outline-none">
-          <div className="flex shrink-0 flex-col gap-2">
+          <div className="flex shrink-0 flex-col gap-4">
             <Heading
               className="text-style-subheading text-neutral-graphite"
               slot="title"
             >
               {title}
             </Heading>
-            {description && (
+            {typeof description === "string" ? (
               <p className="text-style-body text-neutral-medium-gray">
                 {description}
               </p>
+            ) : (
+              description
             )}
           </div>
           {children && (
@@ -70,6 +75,7 @@ export function Modal({
               {children}
             </div>
           )}
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <div className="flex shrink-0 items-center justify-end gap-6">
             <Button
               isDisabled={isCancelDisabled}
