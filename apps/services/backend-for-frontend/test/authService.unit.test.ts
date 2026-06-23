@@ -99,7 +99,15 @@ function buildService(
     generateUISessionToken: vi.fn(async () => ({ serialized: "ui-token" })),
   } as unknown as TokenGenerator;
 
-  const cognitoIdmClient = {} as unknown as CognitoIdmClient;
+  const cognitoIdmClient = {
+    getUserByUsername: vi.fn(async () => ({
+      email: "test-user@example.com",
+      enabled: true,
+      id: TEST_USER_ID,
+      roles: ["administrative", "technical"],
+      username: "test-user",
+    })),
+  } as unknown as CognitoIdmClient;
 
   const service = authServiceBuilder({
     cognitoIdmClient,

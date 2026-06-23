@@ -35,7 +35,7 @@ vi.mock("@aws-sdk/client-kms", () => ({
 
 vi.mock("@knodia/cognito-idm-client", () => ({
   buildCognitoIdmClient: () => ({
-    getUserById: mockGetUserById,
+    getUserByUsername: mockGetUserById,
   }),
 }));
 
@@ -611,7 +611,7 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-      expect(mockGetUserById).toHaveBeenCalledWith(TEST_USER_ID);
+      expect(mockGetUserById).toHaveBeenCalledWith("test-user");
       expect(mockKmsSend).not.toHaveBeenCalled();
     });
 
@@ -632,7 +632,7 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-      expect(mockGetUserById).toHaveBeenCalledWith(TEST_USER_ID);
+      expect(mockGetUserById).toHaveBeenCalledWith("test-user");
       expect(mockKmsSend).not.toHaveBeenCalled();
     });
 
