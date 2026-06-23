@@ -103,6 +103,51 @@ describe("GET /organizations (getOrganizations)", () => {
     },
   );
 
+  it.each([
+    {
+      expectedResult: [mockOrganizations[0]] as Organization[],
+      query: { ...defaultQuery, name: "lph" },
+      testCase: "substring match (lph → Alpha)",
+      totalCount: 1,
+    },
+    {
+      expectedResult: [mockOrganizations[0]] as Organization[],
+      query: { ...defaultQuery, name: "ALPHA" },
+      testCase: "case-insensitive match (ALPHA → Alpha)",
+      totalCount: 1,
+    },
+    {
+      expectedResult: [] as Organization[],
+      query: { ...defaultQuery, name: "zzz" },
+      testCase: "no match returns empty result",
+      totalCount: 0,
+    },
+  ] satisfies {
+    expectedResult: Organization[];
+    query: z.input<typeof API_GetOrganizationsQueryParams>;
+    testCase: string;
+    totalCount: number;
+  }[])(
+    "should filter organizations by name (substring, case-insensitive): $testCase",
+    async ({ expectedResult, query, totalCount }) => {
+      await Promise.all(mockOrganizations.map(seedOrganization));
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .get("/organizations")
+        .query(query);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({
+        pagination: {
+          limit: Number(query.limit),
+          offset: Number(query.offset),
+          total: totalCount,
+        },
+        results: expectedResult.map(toExpectAPI_Organization),
+      });
+    },
+  );
+
   it.each(allowedTestTokens)(
     "should return 200 for authorized token ($type, $roles)",
     async (token) => {

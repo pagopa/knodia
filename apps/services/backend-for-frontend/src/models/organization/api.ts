@@ -1,8 +1,47 @@
 import { API_Attribute } from "@knodia/attribute-models/api";
-import { API_UserId } from "@knodia/common-models/api";
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+  API_UserId,
+} from "@knodia/common-models/api";
 import { UserRole } from "@knodia/common-models/auth";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
+
+// Not exported: referenced only by API_Organizations within this file; the
+// frontend consumes the generated client type, not this schema directly.
+const API_Organization = z
+  .strictObject({
+    attributes: z.array(API_Attribute),
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+    name: z.string().min(1),
+  })
+  .meta({ id: "Organization" });
+
+export const API_Organizations = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Organization),
+  })
+  .meta({ id: "Organizations" });
+export type API_Organizations = z.infer<typeof API_Organizations>;
+
+// knodeId is required: an Organization listing is always scoped to a single
+// (remote) Knode — the resource IDs returned are only meaningful together with
+// their owning Knode (remote-resource-ID convention).
+export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
+  {
+    knodeId: API_KnodeId,
+    name: z.string().optional().meta({
+      description:
+        "Filter by Organization name (case-insensitive substring match)",
+    }),
+  },
+);
+export type API_GetOrganizationsQueryParams = z.infer<
+  typeof API_GetOrganizationsQueryParams
+>;
 
 export const API_SessionOrganization = z
   .strictObject({
