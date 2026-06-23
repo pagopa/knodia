@@ -23,6 +23,12 @@ export function changeEmailErrorMessage(error: AxiosError): string {
   }
 }
 
+// Email-in-use is the only field-level error: it stays inline on the input, every
+// other failure surfaces in the modal banner.
+export function isEmailAlreadyInUseError(error: AxiosError): boolean {
+  return firstProblemCode(error) === EMAIL_ALREADY_IN_USE_CODE;
+}
+
 function firstProblemCode(error: AxiosError): string | undefined {
   return ProblemBody.safeParse(error.response?.data).data?.errors.at(0)?.code;
 }

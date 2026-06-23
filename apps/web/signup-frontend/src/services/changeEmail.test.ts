@@ -7,6 +7,7 @@ import { server } from "@/test/msw/server";
 
 import {
   changeEmailErrorMessage,
+  isEmailAlreadyInUseError,
   pollCurrentUserUntilEmail,
 } from "./changeEmail";
 import { getCurrentSignupUserQuery } from "./queries";
@@ -37,6 +38,17 @@ describe("changeEmailErrorMessage", () => {
     expect(changeEmailErrorMessage(axiosProblemError())).toBe(
       "Something went wrong while changing your email address. Please try again.",
     );
+  });
+});
+
+describe("isEmailAlreadyInUseError", () => {
+  it("is true only for the 011-0001 code", () => {
+    expect(isEmailAlreadyInUseError(axiosProblemError("011-0001"))).toBe(true);
+  });
+
+  it("is false for other codes and for an unknown or absent code", () => {
+    expect(isEmailAlreadyInUseError(axiosProblemError("011-0004"))).toBe(false);
+    expect(isEmailAlreadyInUseError(axiosProblemError())).toBe(false);
   });
 });
 
