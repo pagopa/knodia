@@ -469,6 +469,13 @@ services:
       ACCEPTED_AUDIENCES: "k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+      KNODE_ID: "Orion"
     depends_on:
       keychain-process-orion:
         condition: service_started
@@ -1240,6 +1247,13 @@ services:
       ACCEPTED_AUDIENCES: "k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+      KNODE_ID: "Lynx"
     depends_on:
       keychain-process-lynx:
         condition: service_started
