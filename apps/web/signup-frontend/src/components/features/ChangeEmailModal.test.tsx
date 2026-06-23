@@ -100,7 +100,7 @@ describe("ChangeEmailModal", () => {
     });
   });
 
-  it("shows an inline error and stays open on a 409 conflict", async () => {
+  it("shows the email-in-use error inline on the field and stays open", async () => {
     server.use(
       http.post(CHANGE_EMAIL_URL, () =>
         HttpResponse.json(
@@ -122,6 +122,29 @@ describe("ChangeEmailModal", () => {
         "This email address is already in use. Please choose a different one.",
       ),
     ).toBeVisible();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("shows a generic error in the modal banner and stays open", async () => {
+    server.use(
+      http.post(
+        CHANGE_EMAIL_URL,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+    const onOpenChange = vi.fn();
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
+
+    await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);
+    await user.click(screen.getByRole("button", { name: "Change" }));
+
+    const banner = await screen.findByRole("alert");
+    expect(banner).toHaveTextContent(
+      "Something went wrong while changing your email address. Please try again.",
+    );
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });

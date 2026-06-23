@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Modal, TextField } from "@/components/ui";
 import {
   changeEmailErrorMessage,
+  isEmailAlreadyInUseError,
   pollCurrentUserUntilEmail,
 } from "@/services/changeEmail";
 import { changeEmailMutationOptions } from "@/services/queries";
@@ -26,7 +27,9 @@ export function ChangeEmailModal({
 function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string>();
+  // Email-in-use shows inline on the field; every other failure shows in the modal banner.
+  const [fieldError, setFieldError] = useState<string>();
+  const [bannerError, setBannerError] = useState<string>();
   // True from submit until the change is confirmed applied, not just while in flight.
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
@@ -38,7 +41,9 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
     ...changeEmailMutationOptions(),
     onError: (error) => {
       if (applyAbort.current?.signal.aborted) return;
-      setErrorMessage(changeEmailErrorMessage(error));
+      const message = changeEmailErrorMessage(error);
+      if (isEmailAlreadyInUseError(error)) setFieldError(message);
+      else setBannerError(message);
       setIsApplying(false);
     },
     onSuccess: async () => {
@@ -48,7 +53,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       });
       if (applyAbort.current?.signal.aborted) return;
       if (!applied) {
-        setErrorMessage(
+        setBannerError(
           "The email change is taking longer than expected. Reload the page to check whether it was applied.",
         );
         setIsApplying(false);
@@ -63,11 +68,13 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
     <Modal
       actionLabel="Change"
       description="Changing your email address will reset your access: new credentials will be sent to the new address."
+      errorMessage={bannerError}
       isActionDisabled={!isEmailValid || isApplying}
       isCancelDisabled={isApplying}
       isOpen
       onConfirm={() => {
-        setErrorMessage(undefined);
+        setFieldError(undefined);
+        setBannerError(undefined);
         setIsApplying(true);
         applyAbort.current = new AbortController();
         changeEmail.mutate({ body: { email } });
@@ -78,12 +85,13 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       title="Change email address"
     >
       <TextField
-        errorMessage={errorMessage}
+        errorMessage={fieldError}
         isDisabled={isApplying}
         label="New email address"
         onChange={(value) => {
           setEmail(value);
-          setErrorMessage(undefined);
+          setFieldError(undefined);
+          setBannerError(undefined);
         }}
         type="email"
         value={email}
