@@ -48,7 +48,7 @@ async function signToken(
     eserviceVersionId?: EserviceVersionId;
   } = {},
 ) {
-  return signEserviceAccessToken({
+  return await signEserviceAccessToken({
     eserviceId: overrides.eserviceId ?? ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
     eserviceVersionId:
       overrides.eserviceVersionId ?? ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,

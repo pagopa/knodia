@@ -1,5 +1,5 @@
 meta {
-  name: 2 - 2 - Request Company Addresses (Bearer)
+  name: 2 - Request Company Addresses (Bearer)
   type: http
   seq: 2
 }
@@ -42,4 +42,8 @@ script:post-response {
       `The access_token may be expired or invalid. Re-run the bearer-token-flow (steps 2-11, skipping step 1) to mint a fresh one, then re-run this call.`
     )
   }
+}
+
+vars:post-response {
+  companyAddressesRequestId: res.body.requestId
 }
