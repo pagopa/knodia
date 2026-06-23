@@ -56,6 +56,13 @@ describe("GET /producerKeys/:keyId (getProducerKey)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(mockPublicKey);
+
+      // Guard against the regression where mock-eservice's auth plugin set
+      // `accessTokenClaims` but `rateLimitPlugin` only read `authData`,
+      // silently disabling rate-limit on every protected route.
+      expect(response.headers["x-ratelimit-limit"]).toBeDefined();
+      expect(response.headers["x-ratelimit-remaining"]).toBeDefined();
+      expect(response.headers["x-ratelimit-degraded"]).toBeUndefined();
     },
   );
 
