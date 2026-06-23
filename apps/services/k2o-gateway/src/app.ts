@@ -8,6 +8,11 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
+  type RateLimiter,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
+import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
@@ -22,9 +27,11 @@ import { producerKeychainRouter } from "./routers/producerKeychainRouter.ts";
 export function buildApp({
   config,
   keychainProcessUrl,
+  rateLimiter,
 }: {
   config: AuthConfig & LoggerConfig;
   keychainProcessUrl: string;
+  rateLimiter: RateLimiter;
 }) {
   const clients = getKnodiaClients({
     keychainProcessUrl,
@@ -55,6 +62,8 @@ export function buildApp({
     makeApiProblem,
   });
 
+  app.register(rateLimitResponseHeadersPlugin);
+
   // Public routes (no auth required)
   app.register(healthRouter);
 
@@ -62,18 +71,27 @@ export function buildApp({
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(rateLimitPlugin, { rateLimiter });
     protectedApp.register(producerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
     });
   });
 
+  app.addHook("onClose", async () => {
+    await rateLimiter.disconnect();
+  });
+
   return app;
 }
 
-export function buildAppFromConfig(config: K2OGatewayConfig) {
+export function buildAppFromConfig(
+  config: K2OGatewayConfig,
+  rateLimiter: RateLimiter,
+) {
   const app = buildApp({
     config,
     keychainProcessUrl: config.keychainProcessUrl,
+    rateLimiter,
   });
 
   return app;
