@@ -21,6 +21,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   LEGAL_ENTITY_NOT_FOUND: "0013",
   STUDENT_NOT_FOUND: "0014",
   LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0015",
+  ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND: "0016",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -28,6 +29,15 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
   serviceName: "mock-eservice",
 });
+
+export function asyncCompanyAddressesRequestNotFound(requestId: string) {
+  return createApiError({
+    code: "ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND",
+    detail: `No async company addresses request found for requestId ${requestId}`,
+    status: 404,
+    title: "async_company_addresses_request_not_found",
+  });
+}
 
 export function dpopProofNotFound() {
   return createApiError({

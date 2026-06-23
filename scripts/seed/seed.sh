@@ -62,6 +62,10 @@ aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
 "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml" \
 "s3://$S3_BUCKET/62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml"
 
+aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+"$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml" \
+"s3://$S3_BUCKET/7add7dfd-dece-44e4-9d21-7a9c9404506a/mock-bearer-async-consumption-eservice.yaml"
+
 # Lynx-only seed: matches scripts/seed/sql/lynx/mock-receive-data-eservice.sql.
 # Other tenants don't ship this mock yet, so we only upload when the SQL is
 # present in $SQL_DIR.
