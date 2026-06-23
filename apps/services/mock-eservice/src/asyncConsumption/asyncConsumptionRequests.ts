@@ -32,7 +32,7 @@ export function resetAsyncCompanyAddressesRequests(): void {
 
 function getMockFinishDate(requestId: UUID): Date {
   // UUIDs always end in a hex char (0-9, a-f); parse it as base 16 for a
-  // 0-15 offset, giving a finish time 15-30 seconds from now.
-  const offsetSeconds = 15 + parseInt(requestId.slice(-1), 16);
+  // 0-15 offset, giving a finish time 60-75 seconds from now.
+  const offsetSeconds = 60 + parseInt(requestId.slice(-1), 16);
   return new Date(Date.now() + offsetSeconds * 1000);
 }
