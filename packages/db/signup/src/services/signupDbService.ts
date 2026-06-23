@@ -295,6 +295,20 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .where(eq(signupUser.signupUserId, signupUserId));
     },
 
+    async updateSignupUserReactivation(
+      signupUserId: SignupUserId,
+    ): Promise<void> {
+      await db
+        .update(signupUser)
+        .set({
+          status: SignupUserStatus.enum.Active,
+          suspendedAt: null,
+          suspensionReason: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(signupUser.signupUserId, signupUserId));
+    },
+
     async updateSignupUserSuspension({
       signupUserId,
       suspendedAt,

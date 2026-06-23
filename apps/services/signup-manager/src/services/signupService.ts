@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -37,6 +38,7 @@ import {
   assertSignupUserIdentifiersDoNotExist,
   assertSignupUserIsActive,
   assertSignupUserIsOnboarded,
+  assertSignupUserIsSuspended,
 } from "../utils/validators.ts";
 
 export type SignupService = ReturnType<typeof signupServiceBuilder>;
@@ -193,6 +195,28 @@ export function signupServiceBuilder(
         personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,
       });
+    },
+    async reactivateUser({ signupUserId }: { signupUserId: SignupUserId }) {
+      const userToReactivate =
+        await signupDbService.getSignupUserById(signupUserId);
+
+      if (!userToReactivate) {
+        throw signupUserNotFound();
+      }
+
+      assertSignupUserIsOnboarded(userToReactivate);
+      assertSignupUserIsSuspended(userToReactivate);
+
+      const now = new Date();
+      await signupDbService.updateSignupUserReactivation(signupUserId);
+
+      await signupEventProducer.publishMaintenanceUserReactivationRequestedV1Event(
+        {
+          occurredAt: now.toISOString(),
+          oneIdNonce: generateId(),
+          signupUserId,
+        },
+      );
     },
     async suspendUser(
       { suspensionReason }: { suspensionReason: SuspensionReason },

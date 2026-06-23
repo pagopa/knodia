@@ -6,6 +6,7 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminEnableUserCommand,
   AdminListGroupsForUserCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
@@ -120,6 +121,15 @@ export function buildCognitoIdmClient({
     async disableUser(input: { username: string }): Promise<void> {
       await client.send(
         new AdminDisableUserCommand({
+          Username: input.username,
+          UserPoolId: cognitoUserPoolId,
+        }),
+      );
+    },
+
+    async enableUser(input: { username: string }): Promise<void> {
+      await client.send(
+        new AdminEnableUserCommand({
           Username: input.username,
           UserPoolId: cognitoUserPoolId,
         }),

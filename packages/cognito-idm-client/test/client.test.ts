@@ -3,6 +3,7 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminEnableUserCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -219,6 +220,62 @@ describe("disableUser", () => {
 
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
+        username: "u",
+      }),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("enableUser", () => {
+  it("enables the Cognito user", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledOnce();
+
+    const [enableCall] = send.mock.calls;
+    if (!enableCall) {
+      throw new Error("expected enableUser to issue one command");
+    }
+
+    const enableUser = enableCall.at(0) as AdminEnableUserCommand;
+    expect(enableUser).toBeInstanceOf(AdminEnableUserCommand);
+    expect(enableUser.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("is idempotent: swallows UserNotFoundException", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockRejectedValue(
+        Object.assign(new Error("user not found"), {
+          name: "UserNotFoundException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
+        username: "u",
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("rethrows non-ignored errors", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
         username: "u",
       }),
     ).rejects.toThrow("boom");

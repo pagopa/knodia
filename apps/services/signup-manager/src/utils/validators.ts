@@ -8,6 +8,7 @@ import {
   signupUserIdentifierAlreadyAssociated,
   signupUserNotActive,
   signupUserNotOnboarded,
+  signupUserNotSuspended,
 } from "../models/errors.ts";
 
 export async function assertSignupUserEmailDoesNotExist(
@@ -51,5 +52,11 @@ export function assertSignupUserIsOnboarded(
 ): asserts user is SignupUser {
   if (!user) {
     throw signupUserNotOnboarded();
+  }
+}
+
+export function assertSignupUserIsSuspended(user: SignupUser): void {
+  if (user.status !== SignupUserStatus.enum.Suspended) {
+    throw signupUserNotSuspended();
   }
 }

@@ -26,6 +26,14 @@ function validSuspensionData() {
   };
 }
 
+function validMaintenanceUserReactivationData() {
+  return {
+    occurredAt: "2026-05-30T10:00:00.000Z",
+    oneIdNonce: generateId(),
+    signupUserId: generateId<SignupUserId>(),
+  };
+}
+
 describe("SignupEventV1", () => {
   it("parses a valid OnboardingCompletedV1 event", () => {
     const event: SignupEventV1 = {
@@ -51,6 +59,15 @@ describe("SignupEventV1", () => {
     const event: SignupEventV1 = {
       data: validSuspensionData(),
       type: "SuspensionRequestedV1",
+    };
+
+    expect(SignupEventV1.parse(event)).toEqual(event);
+  });
+
+  it("parses a valid MaintenanceUserReactivationRequestedV1 event", () => {
+    const event: SignupEventV1 = {
+      data: validMaintenanceUserReactivationData(),
+      type: "MaintenanceUserReactivationRequestedV1",
     };
 
     expect(SignupEventV1.parse(event)).toEqual(event);
