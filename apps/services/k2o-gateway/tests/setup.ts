@@ -12,7 +12,7 @@ import { buildApp } from "../src/app.ts";
 
 export let app: FastifyInstance;
 
-export const TEST_KNODE_ID = KnodeId.enum.Orion;
+const TEST_KNODE_ID = KnodeId.enum.Orion;
 
 const { logger, loggerConfig } = createTestLogger();
 const rateLimiterConfig: RateLimiterConfig = {
