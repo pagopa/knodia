@@ -4,8 +4,7 @@ import { z } from "zod";
 
 import { getCurrentSignupUserQuery } from "./queries";
 
-// signup-manager problem codes (apps/services/signup-manager/src/models/errors.ts);
-// "011" is the service prefix.
+// signup-manager problem codes (see its models/errors.ts).
 const EMAIL_ALREADY_IN_USE_CODE = "011-0001";
 const PENDING_EMAIL_CHANGE_CODE = "011-0004";
 
@@ -34,12 +33,8 @@ const POLL_MAX_ATTEMPTS = 30;
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-/**
- * The email change is applied asynchronously by signup-updater, so the 204 only
- * acknowledges the request. Refetch getCurrentSignupUser until the new email lands
- * (updating the cache that drives the credentials banner). Returns true once it
- * lands, or false if the window elapses first.
- */
+// The change is applied asynchronously, so poll getCurrentSignupUser until the new
+// email lands (updating the cache behind the banner) or the window elapses.
 export async function pollCurrentUserUntilEmail(
   queryClient: QueryClient,
   expectedEmail: string,
@@ -49,7 +44,6 @@ export async function pollCurrentUserUntilEmail(
     signal,
   }: { intervalMs?: number; maxAttempts?: number; signal?: AbortSignal } = {},
 ): Promise<boolean> {
-  // fetchQuery writes the shared cache, so the banner's useSuspenseQuery re-renders with the new value.
   const query = { ...getCurrentSignupUserQuery(), staleTime: 0 };
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {

@@ -7,7 +7,7 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { ChangeEmailModal } from "./ChangeEmailModal";
 
-// Stub the poll (its own behavior is covered in changeEmail.test.ts); default resolves "applied".
+// Poll stubbed here; its own behavior is covered in changeEmail.test.ts.
 vi.mock("@/services/changeEmail", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/services/changeEmail")>()),
   pollCurrentUserUntilEmail: vi.fn(() => Promise.resolve(true)),
