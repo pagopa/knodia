@@ -24,6 +24,15 @@ describe("getAttribute", () => {
     });
   });
 
+  it("resolves the vc_poc_attributes/erds attribute", () => {
+    expect(getAttribute({ code: "erds", scheme: "vc_poc_attributes" })).toEqual(
+      {
+        id: { code: "erds", scheme: "vc_poc_attributes" },
+        name: "ERDS",
+      },
+    );
+  });
+
   it("resolves the training_institutes POC attribute", () => {
     expect(
       getAttribute({
