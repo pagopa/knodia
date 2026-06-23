@@ -5,6 +5,11 @@
 -- a later CIE login (fiscalNumber only) collide with a SPID user on the same
 -- person. We now keep only the identifier selected by precedence.
 
+-- Rollout: ship signup-manager before (or with) this migration. The new
+-- exactly-one CHECK rejects an onboarding insert from a pre-change token still
+-- carrying both spid_code and fiscal_number, so an old instance issuing such
+-- tokens while the constraint is already in place would fail those signups.
+
 -- Backfill existing rows to the new invariant before tightening the constraint.
 -- Rows written before this change can carry more than one identifier (a SPID
 -- signup stored both spid_code and fiscal_number), and signup is not

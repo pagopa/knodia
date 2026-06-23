@@ -24,7 +24,7 @@ import {
   type ExternalUISessionTokenClaims,
   type InternalTokenClaims,
   type KnodeApiAccessTokenClaims,
-  selectSignupIdentifier,
+  type SignupIdentifier,
   type UISessionRefreshTokenClaims,
   type UISessionTokenClaims,
   UISignupSessionTokenClaims,
@@ -109,11 +109,11 @@ interface UISignupSessionTokenInput extends TokenParams {
   audience: string;
   dateOfBirth: string;
   familyName: string;
-  fiscalNumber: string | undefined;
+  // The single identifier to persist, already selected by precedence in the
+  // caller. The codec's parse below still rejects zero or more than one.
+  identifier: SignupIdentifier;
   name: string;
   oneIdNonce: string;
-  PersonIdentifier: string | undefined;
-  spidCode: string | undefined;
 }
 
 const b64url = (data: string): string =>
@@ -362,17 +362,12 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
     ): Promise<UISignupSessionToken> {
       const now = dateToSeconds(new Date());
 
-      // We persist exactly one identifier (SPID returns both spidCode and
-      // fiscalNumber): keep only the precedence winner so a SPID login never
-      // stores its fiscalNumber, which would collide with a later CIE login of
-      // the same person. The codec's parse below rejects zero (or >1) identifier.
-      const identifier = selectSignupIdentifier({
-        fiscalNumber: input.fiscalNumber,
-        personIdentifier: input.PersonIdentifier,
-        spidCode: input.spidCode,
-      });
+      const identifierClaim = {
+        [input.identifier.field]: input.identifier.value,
+      };
 
       const claims = UISignupSessionTokenClaims.parse({
+        ...identifierClaim,
         aud: input.audience,
         dateOfBirth: input.dateOfBirth,
         exp: now + input.secondsDuration,
@@ -382,10 +377,8 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         jti: randomUUID(),
         name: input.name,
         oneIdNonce: input.oneIdNonce,
-        // sub mirrors the single chosen identifier.
-        sub: identifier?.value,
+        sub: input.identifier.value,
         type: "ui-signup-session",
-        ...(identifier && { [identifier.field]: identifier.value }),
       });
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
       return { header, payload: claims, serialized, type: "ui-signup-session" };

@@ -1,3 +1,5 @@
+import { selectSignupIdentifier } from "@knodia/common-models/auth";
+
 interface PersonalData {
   dateOfBirth: string;
   email?: string;
@@ -23,10 +25,7 @@ export function buildPersonalData(user: PersonalDataSource): PersonalData {
     ...(user.email !== undefined && { email: user.email }),
     familyName: user.familyName,
     name: user.name,
-    // Precedence must match the backend's selectSignupIdentifier
-    // (@knodia/common-models/auth); kept inline since the FE can't import it.
-    uniqueIdentifier:
-      user.personIdentifier ?? user.spidCode ?? user.fiscalNumber ?? "",
+    uniqueIdentifier: selectSignupIdentifier(user)?.value ?? "",
   };
 }
 

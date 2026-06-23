@@ -217,15 +217,18 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
       expect.objectContaining({
         dateOfBirth: "2000-01-01",
         familyName: "User",
+        identifier: {
+          field: "personIdentifier",
+          value: "test-person-identifier",
+        },
         name: "Test User",
-        PersonIdentifier: "test-person-identifier",
       }),
     );
   });
 
-  it("forwards the raw OI identifier claims to the token generator", async () => {
-    // authService only forwards; picking the single identifier to persist is
-    // generateUISignupSessionToken's job (mocked here).
+  it("selects the single precedence winner (SPID drops fiscalNumber) for the token generator", async () => {
+    // The mock ID token carries both spidCode and fiscalNumber (a SPID login);
+    // authService picks spidCode and never forwards the fiscalNumber.
     const { cookie, nonce, state } = await startOIDCSession();
 
     setupSuccessfulTokenExchange(nonce);
@@ -235,8 +238,7 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     expect(response.statusCode).toBe(200);
     expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
       expect.objectContaining({
-        fiscalNumber: "XXXXXX00X00X000X",
-        spidCode: "test-spid-code",
+        identifier: { field: "spidCode", value: "test-spid-code" },
       }),
     );
   });

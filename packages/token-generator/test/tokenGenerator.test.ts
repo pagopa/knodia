@@ -264,8 +264,8 @@ const testCases = [
     tokenDuration: SECONDS_DURATION,
   },
   {
-    // SPID returns both spidCode and fiscalNumber; only the precedence winner
-    // (spidCode) is persisted, fiscalNumber is dropped.
+    // The single identifier is already selected by the caller; the generator
+    // sets it under its claim field and mirrors it in sub.
     expectedPayload: {
       aud: "my-audience",
       dateOfBirth: "2000-01-01",
@@ -285,14 +285,12 @@ const testCases = [
         audience: "my-audience",
         dateOfBirth: "2000-01-01",
         familyName: "Rossi",
-        fiscalNumber: "RSSMRA80A01H501U",
+        identifier: { field: "spidCode", value: "spid-code-123" },
         issuer: "my-issuer",
         kid: KID,
         name: "Mario",
         oneIdNonce: "nonce-123",
-        PersonIdentifier: undefined,
         secondsDuration: SECONDS_DURATION,
-        spidCode: "spid-code-123",
       }),
     name: "generateUISignupSessionToken",
     tokenDuration: SECONDS_DURATION,
@@ -393,7 +391,7 @@ describe.each(testCases)(
   },
 );
 
-describe("generateUISignupSessionToken — identifier selection", () => {
+describe("generateUISignupSessionToken — identifier claim mapping", () => {
   const baseInput = {
     audience: "my-audience",
     dateOfBirth: "2000-01-01",
@@ -405,12 +403,10 @@ describe("generateUISignupSessionToken — identifier selection", () => {
     secondsDuration: SECONDS_DURATION,
   };
 
-  it("keeps personIdentifier (eIDAS wins) and drops spidCode/fiscalNumber", async () => {
+  it("sets personIdentifier as the only identifier and mirrors it in sub", async () => {
     const { payload } = await generator.generateUISignupSessionToken({
       ...baseInput,
-      fiscalNumber: "RSSMRA80A01H501U",
-      PersonIdentifier: "person-identifier-123",
-      spidCode: "spid-code-123",
+      identifier: { field: "personIdentifier", value: "person-identifier-123" },
     });
 
     expect(payload).toMatchObject({
@@ -421,12 +417,10 @@ describe("generateUISignupSessionToken — identifier selection", () => {
     expect(payload.spidCode).toBeUndefined();
   });
 
-  it("keeps fiscalNumber for a CIE login (only fiscalNumber present)", async () => {
+  it("sets fiscalNumber as the only identifier and mirrors it in sub", async () => {
     const { payload } = await generator.generateUISignupSessionToken({
       ...baseInput,
-      fiscalNumber: "RSSMRA80A01H501U",
-      PersonIdentifier: undefined,
-      spidCode: undefined,
+      identifier: { field: "fiscalNumber", value: "RSSMRA80A01H501U" },
     });
 
     expect(payload).toMatchObject({
@@ -435,16 +429,5 @@ describe("generateUISignupSessionToken — identifier selection", () => {
     });
     expect(payload.personIdentifier).toBeUndefined();
     expect(payload.spidCode).toBeUndefined();
-  });
-
-  it("throws when no identifier is present", async () => {
-    await expect(
-      generator.generateUISignupSessionToken({
-        ...baseInput,
-        fiscalNumber: undefined,
-        PersonIdentifier: undefined,
-        spidCode: undefined,
-      }),
-    ).rejects.toThrow();
   });
 });

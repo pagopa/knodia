@@ -26,7 +26,7 @@ import {
   type UserId,
 } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 export const TEST_USER_ID = unsafeBrandUserId(
   "10000000-1000-1000-8000-000000000001",
@@ -242,22 +242,24 @@ export function getTestUISignupSessionTokenClaims(
   } = {},
 ): UISignupSessionTokenClaims {
   // A signup user carries exactly one identifier. Default to spidCode (a SPID
-  // login) only when the caller picks none, so passing e.g. personIdentifier
-  // alone can't silently leave the default spidCode set too.
-  const callerSetIdentifier =
-    props.spidCode !== undefined ||
-    props.fiscalNumber !== undefined ||
-    props.personIdentifier !== undefined;
+  // login) only when the caller supplies no identifier value at all, so passing
+  // e.g. personIdentifier alone can't silently leave the default spidCode set
+  // too. An explicit `null` means "absent", not "use the default": passing
+  // `spidCode: null` (alongside null fiscalNumber/personIdentifier) deliberately
+  // yields a zero-identifier fixture, exercised by the no-identifier rejection
+  // tests.
+  const fiscalNumber = props.fiscalNumber ?? undefined;
+  const personIdentifier = props.personIdentifier ?? undefined;
 
-  const fiscalNumber =
-    props.fiscalNumber === null ? undefined : props.fiscalNumber;
-  const personIdentifier =
-    props.personIdentifier === null ? undefined : props.personIdentifier;
-  const spidCode =
-    props.spidCode === null
-      ? undefined
-      : (props.spidCode ??
-        (callerSetIdentifier ? undefined : "test-spid-code"));
+  const callerSetIdentifier =
+    (props.spidCode ?? props.fiscalNumber ?? props.personIdentifier) != null;
+  const spidCode = match(props.spidCode)
+    .with(P.string, (value) => value)
+    // Explicit `null`: "absent", never the default.
+    .with(null, () => undefined)
+    // Not passed: default to a SPID login unless another identifier was set.
+    .with(undefined, () => (callerSetIdentifier ? undefined : "test-spid-code"))
+    .exhaustive();
 
   return {
     aud: "test-audience",

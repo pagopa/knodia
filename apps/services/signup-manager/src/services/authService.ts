@@ -1,5 +1,6 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 
+import { selectSignupIdentifier } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
@@ -35,30 +36,31 @@ export function authServiceBuilder(
         oidcSession.nonce,
       );
 
-      if (
-        claims.spidCode === undefined &&
-        claims.fiscalNumber === undefined &&
-        claims.PersonIdentifier === undefined
-      ) {
+      // SPID returns both spidCode and fiscalNumber; CIE returns fiscalNumber;
+      // eIDAS returns PersonIdentifier. We persist exactly one, picked by
+      // precedence, so a SPID login never stores its fiscalNumber and collides
+      // with a later CIE login of the same person.
+      const identifier = selectSignupIdentifier({
+        fiscalNumber: claims.fiscalNumber,
+        personIdentifier: claims.PersonIdentifier,
+        spidCode: claims.spidCode,
+      });
+      if (identifier === undefined) {
         throw genericInternalError(
           "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
         );
       }
 
-      // The single-identifier selection (SPID/CIE/eIDAS precedence) lives in
-      // generateUISignupSessionToken: it keeps exactly one and sets the sub.
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,
         dateOfBirth: claims.dateOfBirth,
         familyName: claims.familyName,
-        fiscalNumber: claims.fiscalNumber,
+        identifier,
         issuer: config.uiSignupSessionJwt.issuer,
         kid: config.uiSignupSessionJwt.kid,
         name: claims.name,
         oneIdNonce: claims.nonce,
-        PersonIdentifier: claims.PersonIdentifier,
         secondsDuration: config.uiSignupSessionJwt.secondsDuration,
-        spidCode: claims.spidCode,
       });
 
       return { uiSignupSessionToken: sessionToken.serialized };

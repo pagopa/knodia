@@ -91,19 +91,11 @@ export function makeSignupUser(
   const seed = overrides.signupUserId ?? generateId<SignupUserId>();
   const baseDate = new Date("2026-01-01T00:00:00.000Z");
 
-  // Suspension fields live only on the Suspended branch of the union; read them
-  // off overrides here so the match below can apply them (defaulted when absent).
+  // Read off overrides up here so the match below can apply them to the Suspended
+  // branch, where these fields only exist.
   const { suspendedAt, suspensionReason } = overrides as Partial<
     Extract<SignupUser, { status: typeof SignupUserStatus.enum.Suspended }>
   >;
-
-  // Identifiers normally come via the `identifier` param, but `overrides` is a
-  // Partial<SignupUser> so it can carry them too; don't add the default spidCode
-  // on top of one the caller already set there, or the row would carry two.
-  const overridesHasIdentifier =
-    "spidCode" in overrides ||
-    "fiscalNumber" in overrides ||
-    "personIdentifier" in overrides;
 
   const base = {
     createdAt: baseDate,
@@ -124,10 +116,9 @@ export function makeSignupUser(
     signupUserId: seed,
     updatedAt: baseDate,
     ...overrides,
-    // Exactly one identifier: default to a SPID login only when the caller picks
-    // none (neither the identifier param nor an identifier in overrides).
-    ...(identifier ??
-      (overridesHasIdentifier ? {} : { spidCode: `SPID-${seed}` })),
+    // The schema requires exactly one identifier, so default to SPID when the
+    // caller gives none.
+    ...(identifier ?? { spidCode: `SPID-${seed}` }),
   };
 
   return match(overrides.status ?? SignupUserStatus.enum.Active)

@@ -98,22 +98,25 @@ export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
   },
 );
 
+export interface SignupIdentifier {
+  field: "fiscalNumber" | "personIdentifier" | "spidCode";
+  value: string;
+}
+
 export type UISignupSessionTokenClaims = z.infer<
   typeof UISignupSessionTokenClaims
 >;
 
 /**
- * Selects the single identifier a signup token/user persists, by precedence
- * (personIdentifier > spidCode > fiscalNumber). The one source of truth for that
- * order — mirror it wherever the backend can't be imported (e.g. the frontend).
+ * Identifier precedence: personIdentifier > spidCode > fiscalNumber. The one
+ * source of truth for that order — import it everywhere the precedence is
+ * needed (backend and frontend) instead of re-deriving it.
  */
 export function selectSignupIdentifier(ids: {
   fiscalNumber?: string;
   personIdentifier?: string;
   spidCode?: string;
-}):
-  | undefined
-  | { field: "fiscalNumber" | "personIdentifier" | "spidCode"; value: string } {
+}): SignupIdentifier | undefined {
   return ids.personIdentifier !== undefined
     ? { field: "personIdentifier", value: ids.personIdentifier }
     : ids.spidCode !== undefined
