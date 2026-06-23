@@ -32,9 +32,7 @@ const { PublicKey } = await kms.send(new GetPublicKeyCommand({ KeyId: alias }));
 if (!PublicKey) throw new Error(`No public key for KMS alias '${alias}'`);
 
 const publicKey = createPublicKey({ key: Buffer.from(PublicKey), format: "der", type: "spki" });
-const encodedPem = Buffer.from(
-  publicKey.export({ format: "pem", type: "spki" }).toString(),
-).toString("base64");
+const encodedPem = Buffer.from(publicKey.export({ format: "pem", type: "spki" })).toString("base64");
 const kid = calculateKid(publicKey.export({ format: "jwk" }) as Record<string, unknown>);
 
 process.stdout.write(`KID='${kid}'\nENCODED_PEM='${encodedPem}'\n`);

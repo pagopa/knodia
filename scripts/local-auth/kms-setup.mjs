@@ -21,7 +21,7 @@ const kmsClient = new KMSClient({
 
 // KMS keys for knodia services (ui-session, internal, etc.), published in the JWKS
 // served by the local-jwks container for token validation.
-const kids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
+const jwksKids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
 
 // Dedicated key the mock-eservice signs Knodia-JWT-Signature with. Kept out of the
 // JWKS — it's validated via the seeded producer keychain, not the platform JWKS.
@@ -34,7 +34,7 @@ mkdirSync(KEYS_OUTPUT_DIR, { recursive: true });
 const allJwks = [];
 const generatedPublicKeyPaths = [];
 
-for (const KID of [...kids, INTEGRITY_PRODUCER_KEY_ALIAS]) {
+for (const KID of [...jwksKids, INTEGRITY_PRODUCER_KEY_ALIAS]) {
   try {
     await kmsClient.send(new DescribeKeyCommand({ KeyId: KID }));
     console.log(`Key "${KID}" already exists.`);
@@ -73,12 +73,12 @@ for (const KID of [...kids, INTEGRITY_PRODUCER_KEY_ALIAS]) {
 
   writeFileSync(publicKeyPath, publicKeyPem);
 
-  if (kids.includes(KID)) {
+  if (jwksKids.includes(KID)) {
     const jwk = publicKey.export({ format: "jwk" });
     allJwks.push({ ...jwk, kid: KID, use: "sig", alg: "RS256" });
+    console.log(`JWK collected for "${KID}"`);
   }
   generatedPublicKeyPaths.push({ alias: KID, publicKeyPath });
-  console.log(`JWK collected for "${KID}"`);
 }
 
 const jwks = { keys: allJwks };

@@ -2129,7 +2129,7 @@ services:
     # the seed container reads (it has no Node/KMS to derive it itself).
     command:
       - sh
-      - -c
+      - -ec
       - |
         node scripts/local-auth/kms-setup.mjs
         node scripts/seed/derive-integrity-producer-key.ts > /keys/kms/integrity-producer-key.env
