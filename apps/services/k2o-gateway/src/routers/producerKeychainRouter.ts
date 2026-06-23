@@ -57,6 +57,7 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Producer Key not found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get Producer Key",
       tags: [apiTags.producerKeychain],
