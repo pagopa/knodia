@@ -45,5 +45,19 @@ export function signupEventProducerBuilder({
     ): Promise<void> {
       await publish({ data, type: "OnboardingCompletedV1" });
     },
+
+    async publishSuspensionRequestedV1Event(
+      data: SignupEventData<"SuspensionRequestedV1">,
+    ): Promise<void> {
+      const event: SignupEventV1 = {
+        data,
+        type: "SuspensionRequestedV1",
+      };
+
+      await producer.send({
+        messages: [{ value: JSON.stringify(event) }],
+        topic,
+      });
+    },
   };
 }
