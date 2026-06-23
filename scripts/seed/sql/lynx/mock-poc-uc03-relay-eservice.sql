@@ -76,7 +76,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
 ) VALUES (
   'b4e2d9f1-2c3d-4e4f-9a51-000000000311',
   'b4e2d9f1-2c3d-4e4f-9a51-000000000312',
-  1, 'vc_poc_attributes', 'erds_poc',
+  1, 'vc_poc_attributes', 'erds',
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 
