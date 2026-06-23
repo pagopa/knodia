@@ -19,7 +19,6 @@ interface RadioGroupProps extends RACRadioGroupProps {
   label?: string;
 }
 
-/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function RadioGroup({ children, label, ...props }: RadioGroupProps) {
   return (
     <RACRadioGroup
@@ -52,7 +51,6 @@ const radioCircleStyles = tv({
   },
 });
 
-/** @knipignore — scaffolded in KN-739, wired up by the next signup screens */
 export function Radio({ children, ...props }: RACRadioProps) {
   return (
     <RACRadio

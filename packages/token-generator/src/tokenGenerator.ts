@@ -114,6 +114,7 @@ interface UISignupSessionTokenInput extends TokenParams {
   spidCode: string | undefined;
   subject: string;
 }
+
 // eslint-disable-next-line max-lines-per-function
 export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
@@ -183,18 +184,17 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         producer: { id: input.producer.id, knode_id: input.producer.knodeId },
         purpose: { id: input.purposeId, knode_id: input.producer.knodeId },
         sub: input.subject,
-        type: "eservice-access",
       };
 
-      const {
-        claims: cleanedClaims,
-        header,
-        serialized,
-      } = await buildAndSignJwt(client, input.kid, claims);
+      const { header, serialized } = await buildAndSignJwt(
+        client,
+        input.kid,
+        claims,
+      );
 
       return {
         header,
-        payload: cleanedClaims,
+        payload: claims,
         serialized,
       };
     },
@@ -215,6 +215,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
+        type: "external-ui-session-magic-link",
       };
     },
 
@@ -234,6 +235,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
+        type: "external-ui-session",
       };
     },
 
@@ -255,7 +257,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized };
+      return { header, payload: claims, serialized, type: "internal" };
     },
 
     async generateKnodeApiAccessToken(
@@ -289,6 +291,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
+        type: "knode-api",
       };
     },
 
@@ -308,6 +311,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         header,
         payload: claims,
         serialized,
+        type: "refresh-ui-session",
       };
     },
 
@@ -323,7 +327,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized };
+      return { header, payload: claims, serialized, type: "ui-session" };
     },
 
     async generateUISignupSessionToken(
@@ -351,7 +355,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         input.kid,
         claims,
       );
-      return { header, payload: claims, serialized };
+      return { header, payload: claims, serialized, type: "ui-signup-session" };
     },
   };
 }

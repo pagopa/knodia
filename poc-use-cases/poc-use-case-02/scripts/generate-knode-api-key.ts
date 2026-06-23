@@ -2,7 +2,7 @@
 // the producer on Lynx, one for the consumer on Orion) and prints their public
 // keys to paste into the respective keychains.
 
-import { generateAndSaveKeypair } from "./keys.ts";
+import { generateAndSaveKeypair } from "../../_shared/keys.ts";
 import {
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   PRODUCER_KNODE_API_PRIVATE_KEY_PATH,

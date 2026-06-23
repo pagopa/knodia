@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_authenticated/route'
 import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
+import { Route as LayoutAuthenticatedRegistrationRouteImport } from './routes/_layout/_authenticated/registration'
 import { Route as LayoutAuthenticatedHomeRouteImport } from './routes/_layout/_authenticated/home'
 
 const LayoutRoute = LayoutRouteImport.update({
@@ -40,6 +41,12 @@ const LayoutLoginCallbackRoute = LayoutLoginCallbackRouteImport.update({
   path: '/login/callback',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutAuthenticatedRegistrationRoute =
+  LayoutAuthenticatedRegistrationRouteImport.update({
+    id: '/registration',
+    path: '/registration',
+    getParentRoute: () => LayoutAuthenticatedRouteRoute,
+  } as any)
 const LayoutAuthenticatedHomeRoute = LayoutAuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -50,12 +57,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
+  '/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
+  '/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesById {
@@ -65,13 +74,14 @@ export interface FileRoutesById {
   '/_layout/_authenticated': typeof LayoutAuthenticatedRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/_layout/_authenticated/home': typeof LayoutAuthenticatedHomeRoute
+  '/_layout/_authenticated/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/_layout/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/home' | '/login/callback'
+  fullPaths: '/' | '/login' | '/home' | '/registration' | '/login/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/home' | '/login/callback'
+  to: '/' | '/login' | '/home' | '/registration' | '/login/callback'
   id:
     | '__root__'
     | '/'
@@ -79,6 +89,7 @@ export interface FileRouteTypes {
     | '/_layout/_authenticated'
     | '/login/'
     | '/_layout/_authenticated/home'
+    | '/_layout/_authenticated/registration'
     | '/_layout/login/callback'
   fileRoutesById: FileRoutesById
 }
@@ -125,6 +136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutLoginCallbackRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/_authenticated/registration': {
+      id: '/_layout/_authenticated/registration'
+      path: '/registration'
+      fullPath: '/registration'
+      preLoaderRoute: typeof LayoutAuthenticatedRegistrationRouteImport
+      parentRoute: typeof LayoutAuthenticatedRouteRoute
+    }
     '/_layout/_authenticated/home': {
       id: '/_layout/_authenticated/home'
       path: '/home'
@@ -137,11 +155,13 @@ declare module '@tanstack/react-router' {
 
 interface LayoutAuthenticatedRouteRouteChildren {
   LayoutAuthenticatedHomeRoute: typeof LayoutAuthenticatedHomeRoute
+  LayoutAuthenticatedRegistrationRoute: typeof LayoutAuthenticatedRegistrationRoute
 }
 
 const LayoutAuthenticatedRouteRouteChildren: LayoutAuthenticatedRouteRouteChildren =
   {
     LayoutAuthenticatedHomeRoute: LayoutAuthenticatedHomeRoute,
+    LayoutAuthenticatedRegistrationRoute: LayoutAuthenticatedRegistrationRoute,
   }
 
 const LayoutAuthenticatedRouteRouteWithChildren =

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
+import type { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
-import type { EserviceAccessToken } from "@knodia/token-generator/models";
 
 import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "@knodia/authorization-models/clientAssertion";
 import { generateExternalId } from "@knodia/common-models/externalResource";
@@ -142,7 +142,7 @@ vi.mock("@knodia/token-generator", () => ({
         producer: { id: agreement.producerId, knode_id: producerKnodeId },
         purpose: { id: purpose.id, knode_id: producerKnodeId },
         sub: consumerKeychainId,
-      } satisfies EserviceAccessToken["payload"],
+      } satisfies EserviceAccessTokenClaims,
       serialized: MOCK_TOKEN,
     }),
   }),

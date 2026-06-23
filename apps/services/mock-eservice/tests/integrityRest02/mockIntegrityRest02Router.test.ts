@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
+  type ConsumerKeychainId,
   type EserviceId,
   type EserviceVersionId,
   generateId,
@@ -86,6 +87,7 @@ async function getCompanyAddress({
 
 async function signToken(
   overrides: {
+    clientId?: ConsumerKeychainId;
     eserviceId?: EserviceId;
     eserviceVersionId?: EserviceVersionId;
   } = {},
@@ -97,6 +99,9 @@ async function signToken(
     knodeId: TEST_KNODE_ID,
     producerId: INTEGRITY_REST_02_MOCK_PRODUCER_ID,
     tokenPrivateKey: getCtx().tokenKeys.tokenPrivateKey,
+    ...(overrides.clientId
+      ? { payload: { client_id: overrides.clientId } }
+      : {}),
   });
 }
 
@@ -132,7 +137,10 @@ describe("mock-eservice integrity REST 02 router", () => {
 
   describe("GET /legal-entities/:uidCompany/address (getCompanyAddress)", () => {
     it("returns 200 with a signed response and verifiable integrity headers", async () => {
-      const token = await signToken();
+      const clientId = generateId<ConsumerKeychainId>();
+      const token = await signToken({
+        clientId,
+      });
       const res = await getCompanyAddress({ token });
 
       const expectedResponse: API_CompanyAddress = {
@@ -166,14 +174,16 @@ describe("mock-eservice integrity REST 02 router", () => {
         knodiaJwtSignature,
         integrityRest02KeySet.keySet.publicKey,
       );
-      const expectedPayload: Omit<KnodiaJwtSignatureClaims, "type"> = {
+      const expectedPayload: KnodiaJwtSignatureClaims = {
+        client_id: clientId,
         exp: expect.any(Number),
         iat: expect.any(Number),
         iss: INTEGRITY_REST_02_SIGNATURE_ISSUER,
         jti: expect.any(String),
         signed_headers: expect.any(Array),
+        type: "knodia-jwt-signature",
       };
-      expect(payload).toMatchObject(expectedPayload);
+      expect(payload).toEqual(expectedPayload);
 
       const signedHeaders = KnodiaJwtSignatureClaims.omit({ type: true }).parse(
         payload,

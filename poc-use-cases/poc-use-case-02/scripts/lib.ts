@@ -1,20 +1,30 @@
-// Shared helpers for the POC UC02 Signal Hub demo scripts (Phase 4).
+// Helpers for the POC UC02 Signal Hub demo scripts (Phase 4).
+//
+// The generic e-service access logic is shared with the other POCs
+// (../../_shared/eservice-client.ts); the wrappers here bind UC02's paths and
+// keep the demo's fail-fast (process.exit) style so the scripts stay simple.
 
-import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 
+import {
+  ensureOk,
+  getJson,
+  mintAccessToken as mintAccessTokenOrThrow,
+  mintKnodeApiToken as mintKnodeApiTokenOrThrow,
+} from "../../_shared/eservice-client.ts";
 import {
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   CONSUMER_PRIVATE_KEY_PATH,
   MOCK_ESERVICE_URL,
   PRODUCER_KNODE_API_PRIVATE_KEY_PATH,
-  REPO_ROOT,
 } from "./paths.ts";
 
-const CLIENT_ASSERTION_TYPE =
-  "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+// Demo scripts fail fast: print the message and exit on any error.
+function exitOnError(error: unknown): never {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 
 // Matches the mock e-service's object_id scheme so producer and consumer derive
 // the same id for a company's evidence.
@@ -24,11 +34,10 @@ export function objectIdForCompany(companyId: string, seed: string): string {
 
 // Exit with a clear message on any non-OK HTTP response (demo scripts fail fast).
 export async function assertOk(response: Response, label: string): Promise<void> {
-  if (!response.ok) {
-    console.error(
-      `${label} failed (${response.status}): ${await response.text()}`,
-    );
-    process.exit(1);
+  try {
+    await ensureOk(response, label);
+  } catch (error) {
+    exitOnError(error);
   }
 }
 
@@ -49,65 +58,17 @@ export function assertPrivateKeysExist(...keyPaths: string[]): void {
   }
 }
 
-function signClientAssertion(
-  keyPath: string,
-  extraArgs: string[],
-  keychainId: string,
-): string {
-  const result = spawnSync(
-    "node",
-    [
-      resolve(REPO_ROOT, "scripts/local-auth/generate-client-assertion.ts"),
-      "--key",
-      keyPath,
-      "--keychainId",
-      keychainId,
-      ...extraArgs,
-    ],
-    { encoding: "utf-8" },
-  );
-  if (result.status !== 0) {
-    console.error(result.stderr || result.stdout);
-    process.exit(1);
-  }
-  return result.stdout.trim();
-}
-
-async function requestToken(
-  authorizationServerUrl: string,
-  path: string,
-  clientAssertion: string,
-  clientId: string,
-): Promise<string> {
-  const response = await fetch(`${authorizationServerUrl}${path}`, {
-    body: new URLSearchParams({
-      client_assertion: clientAssertion,
-      client_assertion_type: CLIENT_ASSERTION_TYPE,
-      client_id: clientId,
-      grant_type: "client_credentials",
-    }),
-    method: "POST",
-  });
-  await assertOk(response, `Token request to ${path}`);
-  return ((await response.json()) as { access_token: string }).access_token;
-}
-
 export function mintAccessToken(
   authorizationServerUrl: string,
   consumerKeychainId: string,
   purposeId: string,
 ): Promise<string> {
-  const assertion = signClientAssertion(
-    CONSUMER_PRIVATE_KEY_PATH,
-    ["--purposeId", purposeId],
-    consumerKeychainId,
-  );
-  return requestToken(
+  return mintAccessTokenOrThrow(
     authorizationServerUrl,
-    "/token",
-    assertion,
+    CONSUMER_PRIVATE_KEY_PATH,
     consumerKeychainId,
-  );
+    purposeId,
+  ).catch(exitOnError);
 }
 
 export function mintKnodeApiToken(
@@ -116,17 +77,12 @@ export function mintKnodeApiToken(
   knodeId: string,
   privateKeyPath: string,
 ): Promise<string> {
-  const assertion = signClientAssertion(
-    privateKeyPath,
-    ["--knodeId", knodeId],
-    knodeApiKeychainId,
-  );
-  return requestToken(
+  return mintKnodeApiTokenOrThrow(
     authorizationServerUrl,
-    "/knodeApiToken",
-    assertion,
+    privateKeyPath,
     knodeApiKeychainId,
-  );
+    knodeId,
+  ).catch(exitOnError);
 }
 
 // Marks the company's evidence as changed on the mock e-service (out-of-spec
@@ -149,15 +105,11 @@ export async function triggerEvidenceUpdate(
 }
 
 // GET a JSON resource from the mock e-service with a bearer access token.
-export async function getMockJson(
+export function getMockJson(
   path: string,
   accessToken: string,
 ): Promise<unknown> {
-  const response = await fetch(`${MOCK_ESERVICE_URL}${path}`, {
-    headers: { authorization: `Bearer ${accessToken}` },
-  });
-  await assertOk(response, `GET ${path}`);
-  return response.json();
+  return getJson(MOCK_ESERVICE_URL, path, accessToken).catch(exitOnError);
 }
 
 export async function getPseudonymizationSeed(
