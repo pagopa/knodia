@@ -74,7 +74,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
-  1, 'vc_territorial_units', 'nuts1',
+  1, 'vc_territorial_units', 'nuts3',
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 
