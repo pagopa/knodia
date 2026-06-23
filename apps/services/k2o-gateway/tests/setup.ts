@@ -3,14 +3,19 @@ import type { FastifyInstance } from "fastify";
 import { KnodeId } from "@knodia/common-models/ids";
 import {
   initRedisRateLimiter,
+  type RateLimiter,
   type RateLimiterConfig,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
-import { createTestLogger } from "@knodia/test-commons/utils";
+import {
+  createTestLogger,
+  waitForHealthyLimiter,
+} from "@knodia/test-commons/utils";
 import { afterAll, beforeAll } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
 export let app: FastifyInstance;
+let rateLimiter: RateLimiter;
 
 const TEST_KNODE_ID = KnodeId.enum.Orion;
 
@@ -28,7 +33,7 @@ const rateLimiterConfig: RateLimiterConfig = {
 beforeAll(async () => {
   // k2o-gateway tests assert non-degraded X-RateLimit headers, so they need
   // the real Redis-backed limiter (against the test container), not the no-op.
-  const rateLimiter = initRedisRateLimiter({
+  rateLimiter = initRedisRateLimiter({
     config: rateLimiterConfig,
     knodeId: TEST_KNODE_ID,
     logger,
@@ -45,9 +50,9 @@ beforeAll(async () => {
     rateLimiter,
   });
 
-  await app.ready();
+  await Promise.all([app.ready(), waitForHealthyLimiter(rateLimiter, logger)]);
 });
 
 afterAll(async () => {
-  await app.close();
+  await Promise.all([app.close(), rateLimiter.disconnect()]);
 });
