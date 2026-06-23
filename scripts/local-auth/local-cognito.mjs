@@ -468,8 +468,9 @@ function handleAdminCreateUser(req, res, payload) {
   if (existing) {
     const action =
       payload.MessageAction === "RESEND" ? "resent credentials to" : "already exists";
-    const username = String(payload.Username).replace(/\n|\r/g, " ");
-    console.log(`[admin-create-user] ${action} ${username}`);
+    console.log(
+      `[admin-create-user] ${action} ${sanitizeForLog(payload.Username)}`,
+    );
     writeJson(
       res,
       200,
@@ -560,12 +561,9 @@ function handleAdminGetUser(req, res, payload) {
     return;
   }
 
-  const username = String(payload.Username).replace(/\n|\r/g, " ");
-  const pool = String(payload.UserPoolId ?? DEFAULT_USER_POOL_ID).replace(
-    /\n|\r/g,
-    " ",
+  console.log(
+    `[admin-get-user] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
-  console.log(`[admin-get-user] ${username} in pool ${pool}`);
 
   writeJson(
     res,
@@ -587,12 +585,9 @@ function handleAdminResetUserPassword(req, res, payload) {
     user.UserLastModifiedDate = NOW_IN_SECONDS;
   }
 
-  const username = String(payload.Username).replace(/\n|\r/g, " ");
-  const pool = String(payload.UserPoolId ?? DEFAULT_USER_POOL_ID).replace(
-    /\n|\r/g,
-    " ",
+  console.log(
+    `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
-  console.log(`[admin-reset-user-password] ${username} in pool ${pool}`);
 
   writeJson(res, 200, {}, {
     "x-amz-target": req.headers["x-amz-target"] ?? "",
