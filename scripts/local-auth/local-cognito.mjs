@@ -325,6 +325,11 @@ function findUserByUsername(username) {
   );
 }
 
+// Strip CR/LF so user-provided values can't forge extra log lines.
+function sanitizeForLog(value) {
+  return String(value).replace(/\n|\r/g, " ");
+}
+
 function filterUsers(payload) {
   const filter = payload.Filter;
   if (!filter) {
@@ -506,9 +511,9 @@ function handleAdminAddUserToGroup(req, res, payload) {
     }
   }
 
-  const username = String(payload.Username).replace(/\n|\r/g, " ");
-  const groupName = String(payload.GroupName).replace(/\n|\r/g, " ");
-  console.log(`[admin-add-user-to-group] ${username} -> ${groupName}`);
+  console.log(
+    `[admin-add-user-to-group] ${sanitizeForLog(payload.Username)} -> ${sanitizeForLog(payload.GroupName)}`,
+  );
 
   writeJson(res, 200, {}, {
     "x-amz-target": req.headers["x-amz-target"] ?? "",
@@ -530,12 +535,9 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
     user.UserLastModifiedDate = NOW_IN_SECONDS;
   }
 
-  const username = String(payload.Username).replace(/\n|\r/g, " ");
-  const pool = String(payload.UserPoolId ?? DEFAULT_USER_POOL_ID).replace(
-    /\n|\r/g,
-    " ",
+  console.log(
+    `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
-  console.log(`[admin-update-user-attributes] ${username} in pool ${pool}`);
 
   writeJson(res, 200, {}, {
     "x-amz-target": req.headers["x-amz-target"] ?? "",
