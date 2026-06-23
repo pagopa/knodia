@@ -60,6 +60,25 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     });
   });
 
+  it("should return ONBOARDING_PENDING with email while provisioning is in progress", async () => {
+    const signupUser = makeSignupUser(
+      {
+        email: "onboarding.pending.user@example.com",
+        status: "OnboardingPending",
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
+    await seedSignupUser(signupUser);
+
+    const response = await injectSignupAppRequest().get("/user/me");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      email: signupUser.email,
+      onboardingStatus: "ONBOARDING_PENDING",
+    });
+  });
+
   it("should return SUSPENDED with email when the signup user is suspended", async () => {
     const suspendedAt = new Date("2026-01-01T00:00:00.000Z");
     const signupUser = makeSignupUser(

@@ -1,14 +1,22 @@
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
 import {
   CreatingCredentialsLoader,
   RegistrationForm,
 } from "@/components/features";
-import { useNavigateAfterSignupChange } from "@/hooks/useNavigateAfterSignupChange";
-import { resolveOnboardingRedirect } from "@/services/onboarding";
+import { useOnboardingPublishRecovery } from "@/hooks/useOnboardingPublishRecovery";
+import {
+  isOnboardingPending,
+  keepsUserOnRegistration,
+  resolveOnboardingRedirect,
+} from "@/services/onboarding";
 import {
   confirmOnboardingMutationOptions,
   getCurrentSignupUserQuery,
@@ -20,23 +28,66 @@ export const Route = createFileRoute("/_layout/_authenticated/registration")({
     const { onboardingStatus } = await queryClient.ensureQueryData(
       getCurrentSignupUserQuery(),
     );
-    if (resolveOnboardingRedirect(onboardingStatus) !== "/registration") {
-      throw redirect({ to: "/home" });
+    const destination = resolveOnboardingRedirect(onboardingStatus);
+    if (destination !== "/registration") {
+      throw redirect({ to: destination });
     }
   },
   component: RouteComponent,
 });
 
+const ONBOARDING_PENDING_POLL_MS = 3000;
+
 function RouteComponent() {
-  const navigateAfterChange = useNavigateAfterSignupChange();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string>();
+
+  const {
+    data: { email, onboardingStatus },
+  } = useSuspenseQuery({
+    ...getCurrentSignupUserQuery(),
+    refetchInterval: (query) =>
+      query.state.data && isOnboardingPending(query.state.data.onboardingStatus)
+        ? ONBOARDING_PENDING_POLL_MS
+        : false,
+  });
+
+  // On a leave status, re-run the route guard instead of re-deriving the
+  // destination here (the resolver could throw).
+  useEffect(() => {
+    if (!keepsUserOnRegistration(onboardingStatus)) {
+      void router.invalidate();
+    }
+  }, [onboardingStatus, router]);
 
   const confirmOnboarding = useMutation({
     ...confirmOnboardingMutationOptions(),
     onError: (error) => {
       setErrorMessage(confirmOnboardingErrorMessage(error));
     },
-    onSuccess: () => navigateAfterChange("/home"),
+    onSuccess: async () => {
+      // Refetch the now-pending status; the poller drives the redirect.
+      await queryClient.invalidateQueries({
+        queryKey: getCurrentSignupUserQuery().queryKey,
+      });
+    },
+  });
+
+  const { mutate: confirmMutate } = confirmOnboarding;
+  const republish = useCallback(
+    (recoveryEmail: string) => {
+      confirmMutate({ body: { email: recoveryEmail } });
+    },
+    [confirmMutate],
+  );
+
+  useOnboardingPublishRecovery({
+    email,
+    // Only the load-already-pending case (no manual submit) recovers.
+    enabled: confirmOnboarding.isIdle,
+    onboardingStatus,
+    republish,
   });
 
   return (
@@ -49,7 +100,7 @@ function RouteComponent() {
         />
         <div className="absolute inset-0 bg-neutral-white/60" />
       </div>
-      {confirmOnboarding.isPending ? (
+      {confirmOnboarding.isPending || isOnboardingPending(onboardingStatus) ? (
         <div className="relative m-auto">
           <CreatingCredentialsLoader />
         </div>

@@ -101,6 +101,24 @@ describe("POST /user/changeEmail (changeEmail)", () => {
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
+  it("should return 409 when the signup user is still OnboardingPending", async () => {
+    await seedSignupUser(
+      makeSignupUser({
+        fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+        spidCode: validUISignupSessionTokenClaims.spidCode,
+        status: "OnboardingPending",
+      }),
+    );
+
+    const response = await injectSignupAppRequest()
+      .post("/user/changeEmail")
+      .body(validChangeEmailBody);
+
+    expect(response.statusCode).toBe(409);
+    await expect(getAllEmailChangeRequests()).resolves.toHaveLength(0);
+    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
+  });
+
   it("should return 409 when the email is already associated", async () => {
     const signupUser = makeSignupUser(
       {},

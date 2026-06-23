@@ -231,6 +231,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
           .with({ status: SignupUserStatus.enum.Suspended }, (u) => u)
           .with(
             { status: SignupUserStatus.enum.Active },
+            { status: SignupUserStatus.enum.OnboardingPending },
             { status: SignupUserStatus.enum.DeletionPending },
             () => {
               throw genericInternalError(
@@ -242,35 +243,32 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       );
     },
 
+    async markSignupUserActive(signupUserId: SignupUserId): Promise<void> {
+      await transitionSignupUserStatus(db, {
+        // Present non-pending row is already past onboarding: no-op.
+        acceptsExistingStatus: () => true,
+        from: [SignupUserStatus.enum.OnboardingPending],
+        signupUserId,
+        to: SignupUserStatus.enum.Active,
+      });
+    },
+
     async markSignupUserDeletionPending(
       signupUserId: SignupUserId,
     ): Promise<void> {
-      const [updated] = await db
-        .update(signupUser)
-        .set({
-          status: SignupUserStatus.enum.DeletionPending,
-          suspendedAt: null,
-          suspensionReason: null,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(signupUser.signupUserId, signupUserId),
-            inArray(signupUser.status, [
-              SignupUserStatus.enum.Active,
-              SignupUserStatus.enum.Suspended,
-            ]),
-          ),
-        )
-        .returning({ signupUserId: signupUser.signupUserId });
-
-      if (updated) return;
-
-      await assertSignupUserReachedStatusOrWasDeleted(
-        db,
+      await transitionSignupUserStatus(db, {
+        // DeletionPending is an idempotent retry; any other status throws.
+        acceptsExistingStatus: (status) =>
+          status === SignupUserStatus.enum.DeletionPending,
+        clearSuspension: true,
+        from: [
+          SignupUserStatus.enum.OnboardingPending,
+          SignupUserStatus.enum.Active,
+          SignupUserStatus.enum.Suspended,
+        ],
         signupUserId,
-        SignupUserStatus.enum.DeletionPending,
-      );
+        to: SignupUserStatus.enum.DeletionPending,
+      });
     },
     async updateSignupUserEmail({
       email,
@@ -288,29 +286,15 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
     async updateSignupUserReactivation(
       signupUserId: SignupUserId,
     ): Promise<void> {
-      const [updated] = await db
-        .update(signupUser)
-        .set({
-          status: SignupUserStatus.enum.Active,
-          suspendedAt: null,
-          suspensionReason: null,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(signupUser.signupUserId, signupUserId),
-            eq(signupUser.status, SignupUserStatus.enum.Suspended),
-          ),
-        )
-        .returning({ signupUserId: signupUser.signupUserId });
-
-      if (updated) return;
-
-      await assertSignupUserReachedStatusOrWasDeleted(
-        db,
+      await transitionSignupUserStatus(db, {
+        // Already Active is an idempotent retry; any other status throws.
+        acceptsExistingStatus: (status) =>
+          status === SignupUserStatus.enum.Active,
+        clearSuspension: true,
+        from: [SignupUserStatus.enum.Suspended],
         signupUserId,
-        SignupUserStatus.enum.Active,
-      );
+        to: SignupUserStatus.enum.Active,
+      });
     },
 
     async updateSignupUserSuspension({
@@ -335,39 +319,6 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
   };
 }
 
-async function assertSignupUserReachedStatusOrWasDeleted(
-  db: NodePgDatabase,
-  signupUserId: SignupUserId,
-  status: SignupUser["status"],
-): Promise<void> {
-  /**
-   * No row transitioned: either the user already reached the target status
-   * (retry, idempotent no-op) or it disappeared/was deleted meanwhile.
-   */
-  const [existing] = await db
-    .select({ status: signupUser.status })
-    .from(signupUser)
-    .where(eq(signupUser.signupUserId, signupUserId))
-    .limit(1);
-
-  if (existing?.status === status) {
-    return;
-  }
-
-  /**
-   * The row may be gone because deletion already completed. A retry landing
-   * after completeSignupUserDeletion finds no signup_user row but a registry
-   * entry, which is an idempotent no-op rather than an invalid transition.
-   */
-  if (!existing && (await hasRecordedDeletion(db, signupUserId))) {
-    return;
-  }
-
-  throw genericInternalError(
-    `Cannot mark signup user ${signupUserId} as ${status}: user ${existing ? `has status ${existing.status}` : "not found"}`,
-  );
-}
-
 // Accepts a transaction too: a PgTransaction is assignable to NodePgDatabase.
 async function hasRecordedDeletion(
   db: NodePgDatabase,
@@ -379,4 +330,63 @@ async function hasRecordedDeletion(
     .where(eq(deletedSignupUser.signupUserId, signupUserId))
     .limit(1);
   return existing !== undefined;
+}
+
+/**
+ * Race-safe status transition: a conditional UPDATE guarded on `from`. When no row
+ * matched, a present row is a no-op if `acceptsExistingStatus` allows it, a missing
+ * row is a no-op once the deletion completed, else it throws.
+ */
+async function transitionSignupUserStatus(
+  db: NodePgDatabase,
+  {
+    acceptsExistingStatus,
+    clearSuspension = false,
+    from,
+    signupUserId,
+    to,
+  }: {
+    acceptsExistingStatus: (status: string) => boolean;
+    clearSuspension?: boolean;
+    from: SignupUserStatus[];
+    signupUserId: SignupUserId;
+    to: SignupUserStatus;
+  },
+): Promise<void> {
+  const [updated] = await db
+    .update(signupUser)
+    .set({
+      status: to,
+      updatedAt: new Date(),
+      ...(clearSuspension ? { suspendedAt: null, suspensionReason: null } : {}),
+    })
+    .where(
+      and(
+        eq(signupUser.signupUserId, signupUserId),
+        inArray(signupUser.status, from),
+      ),
+    )
+    .returning({ signupUserId: signupUser.signupUserId });
+
+  if (updated) {
+    return;
+  }
+
+  const [existing] = await db
+    .select({ status: signupUser.status })
+    .from(signupUser)
+    .where(eq(signupUser.signupUserId, signupUserId))
+    .limit(1);
+
+  if (existing) {
+    if (acceptsExistingStatus(existing.status)) {
+      return;
+    }
+  } else if (await hasRecordedDeletion(db, signupUserId)) {
+    return;
+  }
+
+  throw genericInternalError(
+    `Cannot transition signup user ${signupUserId} to ${to}: user ${existing ? `has status ${existing.status}` : "not found"}`,
+  );
 }

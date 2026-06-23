@@ -42,7 +42,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       personIdentifier: null,
       signupUserId: expect.any(String),
       spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Active",
+      status: "OnboardingPending",
       suspendedAt: null,
       suspensionReason: null,
       updatedAt: expect.any(Date),
@@ -200,5 +200,44 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     expect(response.statusCode).toBe(500);
     await expect(getAllSignupUsers()).resolves.toHaveLength(0);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST /user/confirmOnboarding — repeated request (publish retry)", () => {
+  it("republishes for an existing OnboardingPending row instead of returning 409", async () => {
+    const createdAt = new Date("2026-01-01T00:00:00.000Z");
+    const pendingUser = makeSignupUser(
+      {
+        createdAt,
+        email: validConfirmOnboardingBody.email,
+        status: "OnboardingPending",
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
+    await seedSignupUser(pendingUser);
+
+    const response = await injectSignupAppRequest()
+      .post("/user/confirmOnboarding")
+      .body(validConfirmOnboardingBody);
+
+    expect(response.statusCode).toBe(204);
+
+    const signupUsers = await getAllSignupUsers();
+    expect(signupUsers).toHaveLength(1);
+    expect(signupUsers[0]?.signupUserId).toBe(pendingUser.signupUserId);
+    expect(kafkaProducerMock.send).toHaveBeenCalledOnce();
+
+    const messageValue =
+      kafkaProducerMock.send.mock.calls[0]?.[0]?.messages[0]?.value;
+    const event = OnboardingCompletedV1.parse(
+      JSON.parse(messageValue as string),
+    );
+
+    expect(event.data.signupUserId).toBe(pendingUser.signupUserId);
+    // occurredAt and digest derive from the stored createdAt (same as first attempt).
+    expect(event.data.occurredAt).toBe(createdAt.toISOString());
+    expect(event.data.termsAcceptanceDigest).toBe(
+      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+    );
   });
 });

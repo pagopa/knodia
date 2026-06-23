@@ -65,10 +65,25 @@ export async function handleSignupMessage(
         return;
       }
 
+      // Skip provisioning for a user that left the onboarding flow. Active is NOT
+      // skipped: it may be only partially provisioned (409 path), and replay is
+      // idempotent (markSignupUserActive no-ops if already active).
+      if (
+        user.status === SignupUserStatus.enum.DeletionPending ||
+        user.status === SignupUserStatus.enum.Suspended
+      ) {
+        logger.warn(
+          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user is ${user.status} (it left the onboarding flow before this provisioning event was consumed). Committing the offset.`,
+        );
+        return;
+      }
+
       await forEachKnode(
         (knodeId) => provisionKnode(knodeId, user, deps, correlationId, logger),
         logger,
       );
+
+      await deps.signupDbService.markSignupUserActive(signupUserId);
     })
     .with({ type: "EmailChangeRequestedV1" }, async (e) => {
       const emailChangeRequestId = e.data.emailChangeRequestId;

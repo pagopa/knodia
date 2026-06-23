@@ -44,10 +44,17 @@ export function toAPI_CurrentSignupUser(
   if (!signupUser)
     return { onboardingStatus: API_OnboardingStatus.enum.NOT_COMPLETED };
 
+  // Provisioning still in progress: knodes don't exist yet, only the email.
+  if (signupUser.status === SignupUserStatus.enum.OnboardingPending)
+    return {
+      email: signupUser.email,
+      onboardingStatus: API_OnboardingStatus.enum.ONBOARDING_PENDING,
+    };
+
   return {
     email: signupUser.email,
     knodes: toAPI_KnodeAssignments(signupUser.generatedEntities),
-    onboardingStatus: toAPI_OnboardingStatus(signupUser.status),
+    onboardingStatus: toAPI_OnboardedStatus(signupUser.status),
   };
 }
 
@@ -61,7 +68,9 @@ function toAPI_KnodeAssignments(
   }));
 }
 
-function toAPI_OnboardingStatus(status: SignupUserStatus): API_OnboardedStatus {
+function toAPI_OnboardedStatus(
+  status: Exclude<SignupUserStatus, "OnboardingPending">,
+): API_OnboardedStatus {
   return match(status)
     .with(SignupUserStatus.enum.Active, () => API_OnboardingStatus.enum.ACTIVE)
     .with(
