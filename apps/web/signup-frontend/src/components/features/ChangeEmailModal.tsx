@@ -9,10 +9,6 @@ import {
 import { changeEmailMutationOptions } from "@/services/queries";
 import { emailSchema } from "@/utils/validation";
 
-// TODO: confirm this copy with the designers.
-const CHANGE_EMAIL_DESCRIPTION =
-  "Changing your email address will reset your access: new credentials will be sent to the new address.";
-
 interface ChangeEmailModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
@@ -31,11 +27,10 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>();
-  // Stays true from submit until the change is confirmed applied — not just while the request is in flight.
+  // True from submit until the change is confirmed applied, not just while in flight.
   const [isApplying, setIsApplying] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
-  // Abort on unmount so in-flight callbacks and the poll bail without setting state.
   const applyAbort = useRef<AbortController | null>(null);
   useEffect(() => () => applyAbort.current?.abort(), []);
 
@@ -47,7 +42,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       setIsApplying(false);
     },
     onSuccess: async () => {
-      // 204 only acks the request; wait until the new email is actually reflected before closing.
+      // The 204 only acks the request; wait until the new email lands before closing.
       const applied = await pollCurrentUserUntilEmail(queryClient, email, {
         signal: applyAbort.current?.signal,
       });
@@ -64,9 +59,10 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   });
 
   return (
+    // TODO: confirm this copy with the designers.
     <Modal
       actionLabel="Change"
-      description={CHANGE_EMAIL_DESCRIPTION}
+      description="Changing your email address will reset your access: new credentials will be sent to the new address."
       isActionDisabled={!isEmailValid || isApplying}
       isCancelDisabled={isApplying}
       isOpen
@@ -76,7 +72,6 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
         applyAbort.current = new AbortController();
         changeEmail.mutate({ body: { email } });
       }}
-      // Block dismissal (Cancel / Esc / overlay) while applying; otherwise close.
       onOpenChange={(open) => {
         if (!open && !isApplying) onClose();
       }}
