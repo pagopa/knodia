@@ -2,9 +2,7 @@ import type { SerializeOptions } from "@fastify/cookie";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
@@ -29,9 +27,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (_req, res) => {
-      const { logger } = getContextValues(requestContext);
-      logger.info("Starting OIDC session");
-
       const nonce = generateId();
       const state = generateId();
 
@@ -57,9 +52,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
-      logger.info("Exchanging OIDC code for UI signup session token");
-
       const oidcSession = oidcSessionCookie.get(req);
       const { uiSignupSessionToken } = await authService.exchangeOIDCCode({
         code: req.query.code,
