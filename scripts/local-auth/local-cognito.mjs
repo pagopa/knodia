@@ -265,7 +265,7 @@ function findUserByUsername(username) {
 
 // Strip CR/LF so user-provided values can't forge extra log lines.
 function sanitizeForLog(value) {
-  return String(value).replace(/[\r\n]/g, " ");
+  return String(value).replace(/\n|\r/g, " ");
 }
 
 function filterUsers(payload) {
