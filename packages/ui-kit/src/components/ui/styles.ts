@@ -79,6 +79,25 @@ export const dropdownStyles = tv({
   base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-dropdown shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });
 
+// Shared by the single- and multi-select ComboBox field trigger.
+export const fieldSizeStyles = tv({
+  base: "px-3",
+  variants: {
+    size: {
+      sm: "h-8",
+      md: "h-10",
+      lg: "h-12",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+export const fieldInputStyles = tv({
+  base: "flex-1 min-w-0 body-md outline-none bg-transparent placeholder:text-primary-light-low-contrast",
+});
+
 export const listItemStyles = tv({
   extend: focusRing,
   base: "group body-md relative flex w-full items-center gap-3 rounded-list-item px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",

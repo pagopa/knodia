@@ -13,29 +13,17 @@ import {
   Popover,
   type ValidationResult,
 } from "react-aria-components";
-import { tv, type VariantProps } from "tailwind-variants";
+import { type VariantProps } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
-import { dropdownStyles, fieldGroupStyles, listItemStyles } from "./styles";
-
-const sizeStyles = tv({
-  base: "px-3",
-  variants: {
-    size: {
-      sm: "h-8",
-      md: "h-10",
-      lg: "h-12",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
-
-const inputStyles = tv({
-  base: "flex-1 min-w-0 body-md outline-none bg-transparent placeholder:text-primary-light-low-contrast",
-});
+import {
+  dropdownStyles,
+  fieldGroupStyles,
+  fieldInputStyles,
+  fieldSizeStyles,
+  listItemStyles,
+} from "./styles";
 
 interface ComboBoxProps<T extends object> extends Omit<
   AriaComboBoxProps<T>,
@@ -51,7 +39,7 @@ interface ComboBoxProps<T extends object> extends Omit<
   size?: ComboBoxVariants["size"];
 }
 
-type ComboBoxVariants = VariantProps<typeof sizeStyles>;
+type ComboBoxVariants = VariantProps<typeof fieldSizeStyles>;
 
 export function ComboBox<T extends object>({
   label,
@@ -110,7 +98,7 @@ export function ComboBox<T extends object>({
       {label && <Label>{label}</Label>}
       <Group
         className={composeRenderProps(
-          sizeStyles({ size }),
+          fieldSizeStyles({ size }),
           (className, renderProps) =>
             fieldGroupStyles({
               ...renderProps,
@@ -121,7 +109,7 @@ export function ComboBox<T extends object>({
         ref={groupRef}
       >
         <Input
-          className={inputStyles()}
+          className={fieldInputStyles()}
           placeholder={placeholder ?? "Search..."}
         />
         {isClearable && hasValue ? (
