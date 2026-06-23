@@ -452,7 +452,7 @@ function handleAdminAddUserToGroup(req, res, payload) {
   }
 
   console.log(
-    `[admin-add-user-to-group] ${payload.Username} -> ${payload.GroupName}`,
+    `[admin-add-user-to-group] ${sanitizeForLog(payload.Username)} -> ${sanitizeForLog(payload.GroupName)}`,
   );
 
   writeJson(res, 200, {}, {
