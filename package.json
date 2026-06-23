@@ -26,7 +26,7 @@
     "generate-keypair": "node scripts/local-auth/generate-keypair.ts",
     "generate-token": "node scripts/local-auth/generate-token.mjs",
     "generate-all-tokens": "node scripts/local-auth/generate-all-tokens.mjs",
-    "seed-integrity-producer-key": "node scripts/seed/seed-integrity-producer-key.ts",
+    "derive-integrity-producer-key": "node scripts/seed/derive-integrity-producer-key.ts",
     "infra:start": "./scripts/infra-start.sh",
     "infra:stop": "./scripts/infra-stop.sh",
     "infra:destroy": "./scripts/infra-destroy.sh",
@@ -42,7 +42,6 @@
     "@dotenvx/dotenvx": "catalog:",
     "@types/node": "catalog:",
     "knip": "catalog:",
-    "pg": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"
   },

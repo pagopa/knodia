@@ -5,9 +5,24 @@ import {
   DescribeKeyCommand,
   GetPublicKeyCommand,
 } from "@aws-sdk/client-kms";
-import { createPublicKey } from "node:crypto";
+import { createHash, createPublicKey } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
+
+// Mirror of @knodia/crypto.calculateKid (kept in sync with
+// scripts/seed/derive-integrity-producer-key.ts): SHA-256 over the JWK with all
+// members sorted, base64url. Used to emit the integrity producer key the seed
+// container reads — the seed init container has no Node/KMS to derive it itself.
+const calculateKid = (jwk) => {
+  const sorted = Object.keys(jwk)
+    .sort()
+    .reduce((acc, k) => ({ ...acc, [k]: jwk[k] }), {});
+  return createHash("sha256").update(JSON.stringify(sorted)).digest("base64url");
+};
+
+// The mock-eservice signs Knodia-JWT-Signature with this alias; the seed wires the
+// matching public key into the Integrity REST 02 producer keychain.
+const INTEGRITY_PRODUCER_KEY_ALIAS = "alias/local-knodia-key";
 
 const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 const JWKS_OUTPUT_DIR = process.env.JWKS_OUTPUT_DIR ?? "/jwks";
@@ -69,6 +84,16 @@ for (const KID of kids) {
   const publicKeyPath = join(KEYS_OUTPUT_DIR, `${keyName}.pub.pem`);
 
   writeFileSync(publicKeyPath, publicKeyPem);
+
+  if (KID === INTEGRITY_PRODUCER_KEY_ALIAS) {
+    const encodedPem = Buffer.from(publicKeyPem.toString()).toString("base64");
+    const envPath = join(KEYS_OUTPUT_DIR, "integrity-producer-key.env");
+    writeFileSync(
+      envPath,
+      `KID='${calculateKid(jwk)}'\nENCODED_PEM='${encodedPem}'\n`
+    );
+    console.log(`Integrity producer key env written: ${envPath}`);
+  }
 
   allJwks.push({ ...jwk, kid: KID, use: "sig", alg: "RS256" });
   generatedPublicKeyPaths.push({ alias: KID, publicKeyPath });

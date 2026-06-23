@@ -89,8 +89,13 @@ services:
         condition: service_completed_successfully
       minio-setup:
         condition: service_completed_successfully
+      # Produces /keys/kms/integrity-producer-key.env (KID/ENCODED_PEM) the Lynx
+      # keychain seed reads — this container has no Node/KMS to derive it itself.
+      local-kms-setup:
+        condition: service_completed_successfully
     volumes:
       - ../scripts/seed:/seed:ro
+      - ./keys:/keys:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
@@ -107,6 +112,7 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
+      INTEGRITY_KEY_ENV_FILE: /keys/kms/integrity-producer-key.env
     # `-e` makes the shell fail fast on the first tenant error.
     entrypoint:
       - /bin/sh

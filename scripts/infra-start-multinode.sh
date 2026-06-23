@@ -49,18 +49,6 @@ if [ "$failed" -ne 0 ]; then
   exit 1
 fi
 
-# Seed the Lynx producer keychain with the Integrity REST 02 signing key, derived
-# from the same local KMS alias the mock signs with — so the kid matches and
-# GET /producerKeys/:kid resolves without the manual keychain/key-upload flow.
-INTEGRITY_PRODUCER_KEY_KMS_ALIAS=alias/local-knodia-key \
-  AWS_ENDPOINT_URL_KMS=http://localhost:4566 \
-  AWS_REGION=eu-south-1 \
-  AWS_ACCESS_KEY_ID=testawskey \
-  AWS_SECRET_ACCESS_KEY=testawssecret \
-  PGHOST=localhost PGPORT=5432 PGUSER=root PGPASSWORD=root PGDATABASE=lynx_readmodel \
-  NAMESPACE=local_lynx \
-  pnpm seed-integrity-producer-key
-
 # Generate local dev tokens (ui-session + internal) for Bruno collections
 pnpm generate-all-tokens > /dev/null
 
