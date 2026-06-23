@@ -9,6 +9,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
+import { Alert } from "./Alert";
 import { Button } from "./Button";
 
 const overlayStyles = tv({
@@ -70,15 +71,7 @@ export function Modal({
           {children && (
             <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
           )}
-          {/* TODO: replace with the dedicated error banner once designers define it. */}
-          {errorMessage && (
-            <p
-              className="shrink-0 font-caption text-[14px] leading-[20px] text-status-error"
-              role="alert"
-            >
-              {errorMessage}
-            </p>
-          )}
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <div className="flex shrink-0 items-center justify-end gap-6">
             <Button onPress={onCancel} slot="close" variant="secondary">
               {cancelLabel}

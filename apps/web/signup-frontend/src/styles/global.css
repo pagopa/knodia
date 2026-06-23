@@ -77,6 +77,9 @@
     --color-input-label: #555c70;
     --color-input-text: #0e0f13;
     --color-status-error: #d13333;
+    --color-status-error-strong: #5d1313;
+    --color-status-error-surface: #ffd9d9;
+    --color-status-error-border: #ff6666;
     --color-status-warning: #614c15;
     --color-status-warning-surface: #fff5da;
     --color-status-warning-border: #ffd56b;

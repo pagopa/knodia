@@ -66,7 +66,7 @@ describe("RequestErasureModal", () => {
     await user.click(screen.getByRole("button", { name: "Request erasure" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Something went wrong while requesting the deletion of your data. Please try again.",
+      "Something went wrong. Please try again.",
     );
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(

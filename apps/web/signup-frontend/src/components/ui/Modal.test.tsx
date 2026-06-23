@@ -45,7 +45,7 @@ describe("Modal", () => {
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
-  it("renders the error message when provided", () => {
+  it("shows an error alert when an error message is provided", () => {
     render(
       <Modal
         actionLabel="Request erasure"

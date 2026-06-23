@@ -9,4 +9,12 @@ describe("Alert", () => {
 
     expect(screen.getByText("Heads up, this is permanent.")).toBeVisible();
   });
+
+  it("exposes the error severity as an alert role", () => {
+    render(<Alert severity="error">Something went wrong.</Alert>);
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Something went wrong.",
+    );
+  });
 });

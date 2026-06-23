@@ -7,8 +7,7 @@ import {
   getCurrentSignupUserQuery,
 } from "@/services/queries";
 
-const DELETE_USER_ERROR_MESSAGE =
-  "Something went wrong while requesting the deletion of your data. Please try again.";
+const DELETE_USER_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 interface RequestErasureDialogProps {
   onOpenChange: (isOpen: boolean) => void;
