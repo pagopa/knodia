@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
-import { Modal } from "@/components/ui";
+import { Alert, Modal } from "@/components/ui";
 import {
   deleteUserMutationOptions,
   getCurrentSignupUserQuery,
@@ -47,7 +47,13 @@ function RequestErasureDialog({ onOpenChange }: RequestErasureDialogProps) {
   return (
     <Modal
       actionLabel="Request erasure"
-      description="If you confirm this request, your access to the prototype will be removed and your data will be permanently erased. This process may take up to 30 days."
+      description={
+        <Alert>
+          If you confirm this request, your access to the prototype will be
+          removed and your data will be permanently erased. This process may
+          take up to 30 days.
+        </Alert>
+      }
       errorMessage={deleteUser.isError ? DELETE_USER_ERROR_MESSAGE : undefined}
       isActionDisabled={deleteUser.isPending}
       isOpen

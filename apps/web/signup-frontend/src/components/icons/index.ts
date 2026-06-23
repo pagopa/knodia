@@ -4,3 +4,4 @@ export { DownloadIcon } from "./DownloadIcon";
 export { MailAsteriskIcon } from "./MailAsteriskIcon";
 export { ReportIcon } from "./ReportIcon";
 export { SecurityIcon } from "./SecurityIcon";
+export { WarningIcon } from "./WarningIcon";
