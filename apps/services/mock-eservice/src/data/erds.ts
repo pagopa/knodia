@@ -10,7 +10,7 @@ import {
   POC_UC03_RELAY_ORION_MOCK_ESERVICE_ID,
 } from "../pocUc03/mockup.ts";
 
-// Recipient identifier (notation + scheme) -> serving SERC, per the def-page examples.
+// Recipient identifier (notation + scheme) -> serving SERC.
 const ERDS_LOOKUP: readonly {
   erdsIdentifier: API_ErdsIdentifier;
   notation: string;
