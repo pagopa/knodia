@@ -94,6 +94,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
 const OIDC_SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
+  maxAge: 5 * 60, // 5 minutes
   path: "/",
   sameSite: "strict",
   secure: true,
