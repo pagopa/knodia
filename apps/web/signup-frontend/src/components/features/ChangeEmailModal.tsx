@@ -38,6 +38,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
     ...changeEmailMutationOptions(),
     onError: (error) => {
       if (applyAbort.current?.signal.aborted) return;
+      // TODO: route the generic error to a banner inside the Modal component (pending design); email-already-in-use stays inline on the TextField.
       setErrorMessage(changeEmailErrorMessage(error));
       setIsApplying(false);
     },
