@@ -15,9 +15,9 @@ import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
   ASYNC_CONSUMPTION_MOCK_PRODUCER_ID,
 } from "../../src/asyncConsumption/mockup.ts";
+import { API_AsyncConsumptionRequestState } from "../../src/models/api.ts";
 import { getCtx, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
-import { API_AsyncConsumptionRequestState } from "../../src/models/api.ts";
 
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
@@ -100,8 +100,12 @@ describe("POST /legal-entities/address-requests", () => {
       id: secondRequestId,
     });
 
-    expect(getAsyncCompanyAddressesRequestState(firstRequestId)).toEqual(API_AsyncConsumptionRequestState.enum.PENDING);
-    expect(getAsyncCompanyAddressesRequestState(secondRequestId)).toEqual(API_AsyncConsumptionRequestState.enum.PENDING);
+    expect(getAsyncCompanyAddressesRequestState(firstRequestId)).toEqual(
+      API_AsyncConsumptionRequestState.enum.PENDING,
+    );
+    expect(getAsyncCompanyAddressesRequestState(secondRequestId)).toEqual(
+      API_AsyncConsumptionRequestState.enum.PENDING,
+    );
   });
 
   it("returns 400 for a malformed body", async () => {
