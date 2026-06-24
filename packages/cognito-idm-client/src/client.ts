@@ -188,11 +188,13 @@ export function buildCognitoIdmClient({
               }),
             ),
           )
+          // Already pending a reset (typically an idempotent Kafka retry): skip so a
+          // partial multi-knode failure doesn't re-send the reset email on every redelivery.
+          .with("RESET_REQUIRED", () => undefined)
           // Reset; swallow NotAuthorizedException (non-resettable/disabled state).
           // Other errors are transient (throttling, 5xx), so let them propagate and Kafka retries.
           .with(
             "CONFIRMED",
-            "RESET_REQUIRED",
             "ARCHIVED",
             "COMPROMISED",
             "UNCONFIRMED",

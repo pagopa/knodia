@@ -216,6 +216,20 @@ describe("resetUserCredentials", () => {
     expect(send).toHaveBeenCalledTimes(2);
   });
 
+  it("skips the reset when the user is already in RESET_REQUIRED", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "RESET_REQUIRED" } as never)
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+      username: "mario.rossi",
+    });
+
+    // Only AdminGetUser runs; no second reset email on an idempotent retry.
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it("swallows UserNotFoundException when the user no longer exists", async () => {
     const send = vi
       .spyOn(CognitoIdentityProviderClient.prototype, "send")
