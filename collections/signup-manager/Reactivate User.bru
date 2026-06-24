@@ -5,12 +5,20 @@ meta {
 }
 
 post {
-  url: {{host-signup-manager}}/maintenance/users/{{signupUserId}}/reactivate
-  body: none
+  url: {{host-signup-manager}}/maintenance/users/:signupUserId/reactivate
+  body: json
   auth: none
+}
+
+params:path {
+  signupUserId: {{signupUserId}}
 }
 
 headers {
   X-Correlation-Id: {{correlation-id}}
-  Authorization: {{internal-token}}
+  Authorization: {{internal-jwt}}
+}
+
+body:json {
+  {}
 }

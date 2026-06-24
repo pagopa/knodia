@@ -7,6 +7,14 @@ import { describe, expect, it } from "vitest";
 
 import { SignupEventV1 } from "../src/signupEvent.ts";
 
+function validMaintenanceUserReactivationData() {
+  return {
+    occurredAt: "2026-05-30T10:00:00.000Z",
+    oneIdNonce: generateId(),
+    signupUserId: generateId<SignupUserId>(),
+  };
+}
+
 function validOnboardingData() {
   return {
     occurredAt: "2026-05-28T10:00:00.000Z",
@@ -23,14 +31,6 @@ function validSuspensionData() {
     oneIdNonce: generateId(),
     signupUserId: generateId<SignupUserId>(),
     suspensionReason: "UnlawfulProcessing" as const,
-  };
-}
-
-function validMaintenanceUserReactivationData() {
-  return {
-    occurredAt: "2026-05-30T10:00:00.000Z",
-    oneIdNonce: generateId(),
-    signupUserId: generateId<SignupUserId>(),
   };
 }
 

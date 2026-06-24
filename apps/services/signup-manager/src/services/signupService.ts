@@ -200,10 +200,6 @@ export function signupServiceBuilder(
       const userToReactivate =
         await signupDbService.getSignupUserById(signupUserId);
 
-      if (!userToReactivate) {
-        throw signupUserNotFound();
-      }
-
       assertSignupUserIsOnboarded(userToReactivate);
       assertSignupUserIsSuspended(userToReactivate);
 
