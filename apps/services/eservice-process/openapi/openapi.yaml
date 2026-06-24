@@ -245,7 +245,7 @@ components:
         - prettyName
         - updatedAt
       additionalProperties: false
-    Eservice:
+    FlatEservice:
       type: object
       properties:
         categories:
@@ -293,7 +293,7 @@ components:
         - producerId
         - updatedAt
       additionalProperties: false
-    Eservices:
+    FlatEservices:
       type: object
       properties:
         pagination:
@@ -301,7 +301,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/Eservice"
+            $ref: "#/components/schemas/FlatEservice"
       required:
         - pagination
         - results
@@ -738,7 +738,7 @@ paths:
               schema:
                 description: E-services retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservices"
+                  - $ref: "#/components/schemas/FlatEservices"
         "400":
           description: Bad Request
           content:
@@ -790,7 +790,7 @@ paths:
               schema:
                 description: E-service created successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -866,7 +866,7 @@ paths:
               schema:
                 description: E-service retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -939,7 +939,7 @@ paths:
               schema:
                 description: E-service updated successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -1212,7 +1212,7 @@ paths:
               schema:
                 description: E-service suspended successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -1288,7 +1288,7 @@ paths:
               schema:
                 description: E-service reactivated successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -1364,7 +1364,7 @@ paths:
               schema:
                 description: E-service archived successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservice"
+                  - $ref: "#/components/schemas/FlatEservice"
           headers:
             metadata-version:
               required: true
@@ -1457,7 +1457,7 @@ paths:
               schema:
                 description: E-services retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservices"
+                  - $ref: "#/components/schemas/FlatEservices"
         "400":
           description: Bad Request
           content:

@@ -126,7 +126,7 @@ export type EserviceVersionInterfaceDocument = {
     updatedAt: string;
 };
 
-export type Eservice = {
+export type FlatEservice = {
     categories: Array<EserviceCategory>;
     createdAt: string;
     description: LocalizedDescription;
@@ -140,9 +140,9 @@ export type Eservice = {
     updatedAt: string;
 };
 
-export type Eservices = {
+export type FlatEservices = {
     pagination: Pagination;
-    results: Array<Eservice>;
+    results: Array<FlatEservice>;
 };
 
 export type PurposeFormOption = {
@@ -420,7 +420,7 @@ export type GetEservicesResponses = {
     /**
      * E-services retrieved successfully
      */
-    200: Eservices;
+    200: FlatEservices;
 };
 
 export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
@@ -467,7 +467,7 @@ export type CreateEserviceResponses = {
     /**
      * E-service created successfully
      */
-    201: Eservice;
+    201: FlatEservice;
 };
 
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
@@ -512,7 +512,7 @@ export type GetEserviceResponses = {
     /**
      * E-service retrieved successfully
      */
-    200: Eservice;
+    200: FlatEservice;
 };
 
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
@@ -561,7 +561,7 @@ export type UpdateEserviceResponses = {
     /**
      * E-service updated successfully
      */
-    200: Eservice;
+    200: FlatEservice;
 };
 
 export type UpdateEserviceResponse = UpdateEserviceResponses[keyof UpdateEserviceResponses];
@@ -749,7 +749,7 @@ export type SuspendEserviceResponses = {
     /**
      * E-service suspended successfully
      */
-    200: Eservice;
+    200: FlatEservice;
 };
 
 export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
@@ -798,7 +798,7 @@ export type ReactivateEserviceResponses = {
     /**
      * E-service reactivated successfully
      */
-    200: Eservice;
+    200: FlatEservice;
 };
 
 export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
@@ -847,7 +847,7 @@ export type ArchiveEserviceResponses = {
     /**
      * E-service archived successfully
      */
-    200: Eservice;
+    200: FlatEservice;
 };
 
 export type ArchiveEserviceResponse = ArchiveEserviceResponses[keyof ArchiveEserviceResponses];
@@ -895,7 +895,7 @@ export type GetCatalogEservicesResponses = {
     /**
      * E-services retrieved successfully
      */
-    200: Eservices;
+    200: FlatEservices;
 };
 
 export type GetCatalogEservicesResponse = GetCatalogEservicesResponses[keyof GetCatalogEservicesResponses];
