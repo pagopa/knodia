@@ -167,47 +167,50 @@ export function buildCognitoIdmClient({
     },
 
     async resetUserCredentials(input: { username: string }): Promise<void> {
-      // Point read (immediately consistent), unlike getUserById's ListUsers index.
-      const { UserStatus } = await client.send(
-        new AdminGetUserCommand({
-          Username: input.username,
-          UserPoolId: cognitoUserPoolId,
-        }),
-      );
+      // User deleted before a Kafka redelivery: nothing to reset, so don't stall the partition.
+      await swallowCognitoError("UserNotFoundException", async () => {
+        // Point read (immediately consistent), unlike getUserById's ListUsers index.
+        const { UserStatus } = await client.send(
+          new AdminGetUserCommand({
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        );
 
-      await match(UserStatus)
-        // Never logged in: resend the temporary credentials to the new address.
-        .with("FORCE_CHANGE_PASSWORD", () =>
-          client.send(
-            new AdminCreateUserCommand({
-              MessageAction: "RESEND",
-              Username: input.username,
-              UserPoolId: cognitoUserPoolId,
-            }),
-          ),
-        )
-        // Established (or otherwise non-resettable) states: reset; swallow
-        // NotAuthorizedException for states a reset can't apply to.
-        .with(
-          "CONFIRMED",
-          "RESET_REQUIRED",
-          "ARCHIVED",
-          "COMPROMISED",
-          "UNCONFIRMED",
-          "EXTERNAL_PROVIDER",
-          "UNKNOWN",
-          undefined,
-          () =>
-            swallowCognitoError("NotAuthorizedException", () =>
-              client.send(
-                new AdminResetUserPasswordCommand({
-                  Username: input.username,
-                  UserPoolId: cognitoUserPoolId,
-                }),
-              ),
+        await match(UserStatus)
+          // Never logged in: resend the temporary credentials to the new address.
+          .with("FORCE_CHANGE_PASSWORD", () =>
+            client.send(
+              new AdminCreateUserCommand({
+                MessageAction: "RESEND",
+                Username: input.username,
+                UserPoolId: cognitoUserPoolId,
+              }),
             ),
-        )
-        .exhaustive();
+          )
+          // Established (or otherwise non-resettable) states: reset; swallow
+          // NotAuthorizedException for states a reset can't apply to.
+          .with(
+            "CONFIRMED",
+            "RESET_REQUIRED",
+            "ARCHIVED",
+            "COMPROMISED",
+            "UNCONFIRMED",
+            "EXTERNAL_PROVIDER",
+            "UNKNOWN",
+            undefined,
+            () =>
+              swallowCognitoError("NotAuthorizedException", () =>
+                client.send(
+                  new AdminResetUserPasswordCommand({
+                    Username: input.username,
+                    UserPoolId: cognitoUserPoolId,
+                  }),
+                ),
+              ),
+          )
+          .exhaustive();
+      });
     },
 
     async updateUserEmail(input: {

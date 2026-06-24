@@ -215,6 +215,25 @@ describe("resetUserCredentials", () => {
 
     expect(send).toHaveBeenCalledTimes(2);
   });
+
+  it("swallows UserNotFoundException when the user no longer exists", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockRejectedValue(
+        Object.assign(new Error("user gone"), {
+          name: "UserNotFoundException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+        username: "mario.rossi",
+      }),
+    ).resolves.toBeUndefined();
+
+    // AdminGetUser throws and is swallowed; no reset/resend is attempted.
+    expect(send).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("deleteOrganizationUser", () => {
