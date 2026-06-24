@@ -1,3 +1,4 @@
+import { match, P } from "ts-pattern";
 import z from "zod";
 
 import { ExternalId } from "../externalResource.ts";
@@ -117,13 +118,20 @@ export function selectSignupIdentifier(ids: {
   personIdentifier?: string;
   spidCode?: string;
 }): SignupIdentifier | undefined {
-  return ids.personIdentifier !== undefined
-    ? { field: "personIdentifier", value: ids.personIdentifier }
-    : ids.spidCode !== undefined
-      ? { field: "spidCode", value: ids.spidCode }
-      : ids.fiscalNumber !== undefined
-        ? { field: "fiscalNumber", value: ids.fiscalNumber }
-        : undefined;
+  return match(ids)
+    .with({ personIdentifier: P.string }, ({ personIdentifier }) => ({
+      field: "personIdentifier" as const,
+      value: personIdentifier,
+    }))
+    .with({ spidCode: P.string }, ({ spidCode }) => ({
+      field: "spidCode" as const,
+      value: spidCode,
+    }))
+    .with({ fiscalNumber: P.string }, ({ fiscalNumber }) => ({
+      field: "fiscalNumber" as const,
+      value: fiscalNumber,
+    }))
+    .otherwise(() => undefined);
 }
 
 export const UISessionRefreshTokenClaims = UserTokenClaims.extend({

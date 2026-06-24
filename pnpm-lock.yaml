@@ -3749,6 +3749,9 @@ importers:
 
   packages/models/common-models:
     dependencies:
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
