@@ -389,7 +389,7 @@ services:
       ALLOWED_ORIGINS: "http://localhost:5176,http://localhost:5176"
       CLIENT_ID: local-oi-client-id
       CLIENT_SECRET: local-oi-client-secret
-      REDIRECT_URI: "http://localhost:5176/login/callback"
+      REDIRECT_URI: "http://localhost:5176/ui/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
 
   redis:
