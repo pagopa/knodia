@@ -29,9 +29,6 @@ export const organizationRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
         getContextValues(requestContext);
-      // Domain resources are public within Knodia: a read of another Knode's
-      // Organizations needs no ownership check, only a valid ui-session (the
-      // org id is not used as business data here).
       getUISessionAuthData(authData);
 
       logger.info(
