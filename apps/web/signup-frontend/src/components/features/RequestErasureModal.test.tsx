@@ -58,6 +58,19 @@ describe("RequestErasureModal", () => {
     );
   });
 
+  it("disables cancel while the deletion is in flight", async () => {
+    // Never-resolving request keeps the mutation pending.
+    mockDeleteUser.mockReturnValue(new Promise(() => undefined));
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.click(screen.getByRole("button", { name: "Request erasure" }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled(),
+    );
+  });
+
   it("shows an error and keeps the action available when the request fails", async () => {
     mockDeleteUser.mockRejectedValue(new Error("boom"));
     const user = userEvent.setup();
