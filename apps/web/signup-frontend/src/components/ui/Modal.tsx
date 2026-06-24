@@ -52,6 +52,7 @@ export function Modal({
       className={composeRenderProps(props.className, (className, renderProps) =>
         overlayStyles({ ...renderProps, className }),
       )}
+      isKeyboardDismissDisabled={isCancelDisabled}
     >
       <AriaModal className={modalStyles()}>
         <AriaDialog className="flex min-h-0 w-full flex-1 flex-col gap-8 outline-none">
