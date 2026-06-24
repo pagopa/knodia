@@ -7,10 +7,10 @@ import {
 
 import { client } from "@/libs/axios";
 
-export const getCurrentSignupUserQuery = () =>
-  getCurrentSignupUserOptions({
-    client,
-  });
+export const getCurrentSignupUserQuery = () => ({
+  ...getCurrentSignupUserOptions({ client }),
+  refetchOnWindowFocus: true,
+});
 
 export const confirmOnboardingMutationOptions = () =>
   confirmOnboardingMutation({
