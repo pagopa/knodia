@@ -241,13 +241,9 @@ export function getTestUISignupSessionTokenClaims(
     uniqueIdentifier?: string;
   } = {},
 ): UISignupSessionTokenClaims {
-  // A signup user carries exactly one identifier. Default to spidCode (a SPID
-  // login) only when the caller supplies no identifier value at all, so passing
-  // e.g. personIdentifier alone can't silently leave the default spidCode set
-  // too. An explicit `null` means "absent", not "use the default": passing
-  // `spidCode: null` (alongside null fiscalNumber/personIdentifier) deliberately
-  // yields a zero-identifier fixture, exercised by the no-identifier rejection
-  // tests.
+  // Default spidCode only when the caller sets no identifier at all, so a fixture
+  // built from personIdentifier alone doesn't also carry the default. Explicit
+  // `null` means "absent", letting a test build a zero-identifier fixture.
   const fiscalNumber = props.fiscalNumber ?? undefined;
   const personIdentifier = props.personIdentifier ?? undefined;
 
@@ -255,9 +251,7 @@ export function getTestUISignupSessionTokenClaims(
     (props.spidCode ?? props.fiscalNumber ?? props.personIdentifier) != null;
   const spidCode = match(props.spidCode)
     .with(P.string, (value) => value)
-    // Explicit `null`: "absent", never the default.
     .with(null, () => undefined)
-    // Not passed: default to a SPID login unless another identifier was set.
     .with(undefined, () => (callerSetIdentifier ? undefined : "test-spid-code"))
     .exhaustive();
 
@@ -274,8 +268,7 @@ export function getTestUISignupSessionTokenClaims(
     oneIdNonce: props.oneIdNonce ?? "test-nonce",
     personIdentifier,
     spidCode,
-    // sub mirrors the chosen identifier (same precedence as production), so the
-    // default fixture matches a real token.
+    // sub mirrors the chosen identifier, as in production.
     sub:
       props.uniqueIdentifier ??
       selectSignupIdentifier({ fiscalNumber, personIdentifier, spidCode })

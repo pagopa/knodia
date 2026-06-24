@@ -82,8 +82,8 @@ export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 export const UISignupSessionTokenClaims = BaseJwtClaims.extend({
   dateOfBirth: z.string(),
   familyName: z.string(),
-  // .min(1): an empty-string identifier is "present" to the exactly-one refine
-  // but absent to the truthiness-based DB lookup, so reject it at the boundary.
+  // Reject empty strings: "present" to the exactly-one refine but absent to the
+  // truthiness-based DB lookup.
   fiscalNumber: z.string().min(1).optional(),
   name: z.string(),
   oneIdNonce: z.string(),
@@ -108,11 +108,7 @@ export type UISignupSessionTokenClaims = z.infer<
   typeof UISignupSessionTokenClaims
 >;
 
-/**
- * Identifier precedence: personIdentifier > spidCode > fiscalNumber. The one
- * source of truth for that order — import it everywhere the precedence is
- * needed (backend and frontend) instead of re-deriving it.
- */
+// Precedence: personIdentifier > spidCode > fiscalNumber.
 export function selectSignupIdentifier(ids: {
   fiscalNumber?: string;
   personIdentifier?: string;

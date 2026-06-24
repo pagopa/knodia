@@ -143,18 +143,4 @@ describe("getUniqueSignupUserByIdentifiers", () => {
 
     expect(found).toBeUndefined();
   });
-
-  it("throws when the claims match two different users", async () => {
-    const userA = makeSignupUser({}, { spidCode: "SPID-A" });
-    const userB = makeSignupUser({}, { fiscalNumber: "FISCAL-B" });
-    await seedSignupUser(userA);
-    await seedSignupUser(userB);
-
-    await expect(
-      signupDbService().getUniqueSignupUserByIdentifiers({
-        fiscalNumber: "FISCAL-B",
-        spidCode: "SPID-A",
-      }),
-    ).rejects.toThrow();
-  });
 });

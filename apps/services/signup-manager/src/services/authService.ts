@@ -36,10 +36,9 @@ export function authServiceBuilder(
         oidcSession.nonce,
       );
 
-      // SPID returns both spidCode and fiscalNumber; CIE returns fiscalNumber;
-      // eIDAS returns PersonIdentifier. We persist exactly one, picked by
-      // precedence, so a SPID login never stores its fiscalNumber and collides
-      // with a later CIE login of the same person.
+      // SPID returns both spidCode and fiscalNumber; persisting both would let a
+      // later CIE login (fiscalNumber only) collide with the same person's SPID
+      // user. Keep exactly one, by precedence.
       const identifier = selectSignupIdentifier({
         fiscalNumber: claims.fiscalNumber,
         personIdentifier: claims.PersonIdentifier,

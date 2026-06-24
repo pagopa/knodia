@@ -1,22 +1,17 @@
 -- Placeholders: ${NAMESPACE} - environment prefix resolved by Flyway at runtime
 
--- A signup user must carry exactly one identifier, not just at least one: SPID
--- returns both spidCode and fiscalNumber, so persisting more than one would let
--- a later CIE login (fiscalNumber only) collide with a SPID user on the same
--- person. We now keep only the identifier selected by precedence.
+-- Exactly one identifier, not just at least one: SPID returns both spidCode and
+-- fiscalNumber, so keeping both lets a later CIE login (fiscalNumber only)
+-- collide with the same person's SPID user.
 
--- Rollout: ship signup-manager before (or with) this migration. The new
--- exactly-one CHECK rejects an onboarding insert from a pre-change token still
--- carrying both spid_code and fiscal_number, so an old instance issuing such
--- tokens while the constraint is already in place would fail those signups.
+-- Rollout: deploy signup-manager before (or with) this migration, else the new
+-- CHECK rejects onboarding inserts from pre-change tokens still carrying both
+-- spid_code and fiscal_number.
 
--- Backfill existing rows to the new invariant before tightening the constraint.
--- Rows written before this change can carry more than one identifier (a SPID
--- signup stored both spid_code and fiscal_number), and signup is not
--- event-sourced, so there is no projection to rebuild from — the data is fixed
--- here. Keep only the precedence winner (person_identifier > spid_code >
--- fiscal_number) and null the rest. Idempotent: a no-op on rows that already
--- carry a single identifier.
+-- Backfill before tightening: signup is not event-sourced, so there is no
+-- projection to rebuild from — the data is fixed here. Keep the precedence
+-- winner (person_identifier > spid_code > fiscal_number), null the rest.
+-- Idempotent.
 UPDATE ${NAMESPACE}_signup."signup_user"
     SET "fiscal_number" = NULL
     WHERE "fiscal_number" IS NOT NULL

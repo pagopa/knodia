@@ -109,8 +109,8 @@ interface UISignupSessionTokenInput extends TokenParams {
   audience: string;
   dateOfBirth: string;
   familyName: string;
-  // The single identifier to persist, already selected by precedence in the
-  // caller. The codec's parse below still rejects zero or more than one.
+  // Already selected by precedence in the caller; the codec's parse still
+  // rejects zero or more than one.
   identifier: SignupIdentifier;
   name: string;
   oneIdNonce: string;

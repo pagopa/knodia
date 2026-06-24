@@ -45,8 +45,7 @@ const KNODE_API_KEYCHAIN_KNODE_ID = "Orion";
 const KNODE_API_ORG_KNODE_ID = "Orion";
 
 // Placeholder values for signup-session tokens (replace with real values for testing).
-// A signup token carries exactly one identifier and its `sub` mirrors it; this is a
-// SPID profile (spidCode). To simulate CIE / eIDAS, swap spidCode for fiscalNumber /
+// This is a SPID profile (spidCode); for CIE / eIDAS swap it for fiscalNumber /
 // personIdentifier and set `sub` to the same value.
 const SIGNUP_NAME = "Mario";
 const SIGNUP_FAMILY_NAME = "Rossi";

@@ -17,10 +17,6 @@ export function dateToSeconds(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
 
-/**
- * The single source for the "carries exactly one identifier" invariant shared by
- * the signup token codec and the persisted SignupUser model.
- */
 export function exactlyOneDefined(...values: unknown[]): boolean {
   return values.filter((v) => v !== undefined).length === 1;
 }
