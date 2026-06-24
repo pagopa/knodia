@@ -31,10 +31,9 @@ export const organizationRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       getUISessionAuthData(authData);
 
-      logger.info(
-        { requestQuery: req.query },
-        `Getting Organizations owned by Knode ${req.query.knodeId}`,
-      );
+      // Only the validated knodeId (a KnodeId enum) is logged; the free-text
+      // `name` filter is user input and is kept out of the logs.
+      logger.info(`Getting Organizations owned by Knode ${req.query.knodeId}`);
 
       const { data } = await remoteResourcesManagerApi.getOrganizations({
         client: remoteResourcesManagerClient,
