@@ -1,3 +1,5 @@
+import type { OutgoingHttpHeaders } from "http2";
+
 import {
   type EserviceId,
   type EserviceVersionId,
@@ -36,7 +38,7 @@ async function getCompanyAddressesRequestState({
   requestId: string;
   token?: string;
 }) {
-  const headers: Record<string, string> = {};
+  const headers: OutgoingHttpHeaders = {};
   if (token) {
     headers["authorization"] = `Bearer ${token}`;
   }
