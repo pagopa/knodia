@@ -1,3 +1,5 @@
+import { APP_BASE_PATH } from "@/config/basepath";
+
 const AUTH_TOKEN_KEY = "knodia_signup_auth_token";
 
 export function clearAuthToken(): void {
@@ -9,7 +11,7 @@ export function getAuthToken(): null | string {
   return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
-export const LOGIN_URL = "/login";
+export const LOGIN_URL = `${APP_BASE_PATH}/login`;
 
 export function setAuthToken(token: string): void {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
