@@ -86,7 +86,7 @@ export type API_EserviceVersionInterfaceDocument = z.infer<
   typeof API_EserviceVersionInterfaceDocument
 >;
 
-export const API_Eservice = z
+export const API_FlatEservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
@@ -100,16 +100,16 @@ export const API_Eservice = z
     template: API_EserviceTemplateId.optional(),
     updatedAt: z.iso.datetime(),
   })
-  .meta({ id: "Eservice" });
-export type API_Eservice = z.infer<typeof API_Eservice>;
+  .meta({ id: "FlatEservice" });
+export type API_FlatEservice = z.infer<typeof API_FlatEservice>;
 
-export const API_Eservices = z
+export const API_FlatEservices = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_Eservice),
+    results: z.array(API_FlatEservice),
   })
-  .meta({ id: "Eservices" });
-export type API_Eservices = z.infer<typeof API_Eservices>;
+  .meta({ id: "FlatEservices" });
+export type API_FlatEservices = z.infer<typeof API_FlatEservices>;
 
 export const API_PurposeFormOption = z
   .strictObject({
