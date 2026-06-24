@@ -188,8 +188,8 @@ export function buildCognitoIdmClient({
               }),
             ),
           )
-          // Established (or otherwise non-resettable) states: reset; swallow
-          // NotAuthorizedException for states a reset can't apply to.
+          // Reset; swallow NotAuthorizedException (non-resettable/disabled state).
+          // Other errors are transient (throttling, 5xx), so let them propagate and Kafka retries.
           .with(
             "CONFIRMED",
             "RESET_REQUIRED",
