@@ -1,23 +1,50 @@
 import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
 
+export interface AsyncCompanyAddressesRequest {
+  companyUids: API_CompanyUid[];
+  finishDate: Date;
+  id: string;
+  resourceId?: string;
+}
+
 // Demo-only: async-consumption request IDs are kept in-memory and reset on
 // process restart. Next endpoints in this flow read this cache.
-const asyncCompanyAddressesRequests = new Map<string, Date>();
+const asyncCompanyAddressesRequests = new Map<
+  string,
+  AsyncCompanyAddressesRequest
+>();
 
-export function addAsyncCompanyAddressesRequest(requestId: string): void {
-  asyncCompanyAddressesRequests.set(requestId, getMockFinishDate(requestId));
+const asyncCompanyAddressesResults = new Map<
+  string,
+  {
+    address?: API_Address;
+    legalEntity?: API_LegalEntity;
+    uidCompany: API_CompanyUid;
+  }[]
+>();
+
+export function addAsyncCompanyAddressesRequest(
+  requestId: string,
+  companyUids: API_CompanyUid[],
+): void {
+  asyncCompanyAddressesRequests.set(requestId, {
+    companyUids,
+    finishDate: getMockFinishDate(requestId),
+    id: requestId,
+  });
 }
 
 export function getAsyncCompanyAddressesRequestStatus(
+export function getAsyncCompanyAddressesRequest(
   requestId: string,
-): boolean {
+): AsyncCompanyAddressesRequest {
   const request = asyncCompanyAddressesRequests.get(requestId);
 
   if (request === undefined) {
     throw asyncCompanyAddressesRequestNotFound(requestId);
   }
 
-  return request <= new Date();
+  return request;
 }
 
 export function hasAsyncCompanyAddressesRequest(requestId: string): boolean {

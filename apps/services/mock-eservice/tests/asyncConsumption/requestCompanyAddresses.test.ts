@@ -6,8 +6,8 @@ import {
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
-  getAsyncCompanyAddressesRequestStatus,
-  hasAsyncCompanyAddressesRequest,
+  getAsyncCompanyAddressesRequest,
+  getAsyncCompanyAddressesRequestState,
   resetAsyncCompanyAddressesRequests,
 } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
 import {
@@ -17,6 +17,7 @@ import {
 } from "../../src/asyncConsumption/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
+import { API_AsyncConsumptionRequestState } from "../../src/models/api.ts";
 
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
@@ -67,8 +68,12 @@ describe("POST /legal-entities/address-requests", () => {
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(typeof body.requestId).toBe("string");
-    expect(hasAsyncCompanyAddressesRequest(body.requestId)).toBe(true);
+
+    expect(getAsyncCompanyAddressesRequest(body.requestId)).toEqual({
+      companyUids: VALID_BODY,
+      finishDate: expect.any(Date),
+      id: body.requestId,
+    });
   });
 
   it("stores every generated requestId in memory", async () => {
@@ -84,11 +89,19 @@ describe("POST /legal-entities/address-requests", () => {
     const secondRequestId = secondRequest.json().requestId;
 
     expect(firstRequestId).not.toBe(secondRequestId);
-    expect(hasAsyncCompanyAddressesRequest(firstRequestId)).toBe(true);
-    expect(hasAsyncCompanyAddressesRequest(secondRequestId)).toBe(true);
+    expect(getAsyncCompanyAddressesRequest(firstRequestId)).toEqual({
+      companyUids: VALID_BODY,
+      finishDate: expect.any(Date),
+      id: firstRequestId,
+    });
+    expect(getAsyncCompanyAddressesRequest(secondRequestId)).toEqual({
+      companyUids: VALID_BODY,
+      finishDate: expect.any(Date),
+      id: secondRequestId,
+    });
 
-    expect(getAsyncCompanyAddressesRequestStatus(firstRequestId)).toBe(false);
-    expect(getAsyncCompanyAddressesRequestStatus(secondRequestId)).toBe(false);
+    expect(getAsyncCompanyAddressesRequestState(firstRequestId)).toEqual(API_AsyncConsumptionRequestState.enum.PENDING);
+    expect(getAsyncCompanyAddressesRequestState(secondRequestId)).toEqual(API_AsyncConsumptionRequestState.enum.PENDING);
   });
 
   it("returns 400 for a malformed body", async () => {
