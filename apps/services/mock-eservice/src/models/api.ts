@@ -480,15 +480,15 @@ export type API_CompanyAddressesRequest = z.infer<
   typeof API_CompanyAddressesRequest
 >;
 
-export const API_AsyncConsumptionRequestStatus = z
+export const API_AsyncConsumptionRequestState = z
   .enum(["PENDING", "COMPLETED"])
   .meta({
     description:
-      "Status of an asynchronous request to the Producer (Cross-Border E-service 05, Request company addresses).",
-    id: "AsyncConsumptionRequestStatus",
+      "State of an asynchronous request to the Producer (Cross-Border E-service 05, Request company addresses).",
+    id: "AsyncConsumptionRequestState",
   });
-export type API_AsyncConsumptionRequestStatus = z.infer<
-  typeof API_AsyncConsumptionRequestStatus
+export type API_AsyncConsumptionRequestState = z.infer<
+  typeof API_AsyncConsumptionRequestState
 >;
 
 export const API_AsyncConsumptionRequestId = z.uuid().meta({
@@ -505,7 +505,7 @@ const API_AsyncConsumptionResourceId = z.uuid().meta({
 
 export const API_GetCompanyAddressesRequestStatusResponse = z.strictObject({
   resourceId: API_AsyncConsumptionResourceId.optional(),
-  status: API_AsyncConsumptionRequestStatus,
+  state: API_AsyncConsumptionRequestState,
 });
 export type API_GetCompanyAddressesRequestStatusResponse = z.infer<
   typeof API_GetCompanyAddressesRequestStatusResponse
