@@ -103,7 +103,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
         200: API_GetCompanyAddressesRequestStatusResponse,
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
-        404: API_Problem.meta({ description: "Request not found" }),
+        404: API_Problem.meta({ description: "Request Not Found" }),
         429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       summary: "Get company addresses request status",

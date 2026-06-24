@@ -291,11 +291,11 @@ paths:
             X-RateLimit-Reset:
               $ref: "#/components/headers/RateLimitReset"
         "404":
-          description: Request not found
+          description: Request Not Found
           content:
             application/problem+json:
               schema:
-                description: Request not found
+                description: Request Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
           headers:
