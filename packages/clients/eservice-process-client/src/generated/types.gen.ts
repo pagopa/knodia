@@ -198,6 +198,26 @@ export type EserviceVersion = {
     versionNumber: number;
 };
 
+export type ReceiveDataConfig = {
+    purposeFormOptions: Array<PurposeFormOption>;
+};
+
+export type Eservice = {
+    categories: Array<EserviceCategory>;
+    createdAt: string;
+    description: LocalizedDescription;
+    id: string;
+    isConsumerOperatorIdentificationRequired: boolean;
+    isSignalHubEnabled: boolean;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producerId: string;
+    receiveDataConfig?: ReceiveDataConfig;
+    template?: EserviceTemplateId;
+    updatedAt: string;
+    versions: Array<EserviceVersion>;
+};
+
 export type InterfaceDocumentSeed = {
     /**
      * SHA-256 checksum of the uploaded E-service interface document
@@ -512,7 +532,7 @@ export type GetEserviceResponses = {
     /**
      * E-service retrieved successfully
      */
-    200: FlatEservice;
+    200: Eservice;
 };
 
 export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
