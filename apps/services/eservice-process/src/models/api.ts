@@ -181,12 +181,11 @@ export const API_EserviceVersion = z
   .meta({ id: "EserviceVersion" });
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
 
-export const API_ReceiveDataConfig = z
+const API_ReceiveDataConfig = z
   .strictObject({
     purposeFormOptions: z.array(API_PurposeFormOption).min(1),
   })
   .meta({ id: "ReceiveDataConfig" });
-export type API_ReceiveDataConfig = z.infer<typeof API_ReceiveDataConfig>;
 
 export const API_Eservice = z
   .strictObject({
