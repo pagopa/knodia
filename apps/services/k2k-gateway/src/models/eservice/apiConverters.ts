@@ -39,7 +39,7 @@ function toAPI_EserviceVersionState(
 }
 
 export const toAPI_CatalogEserviceSearchResult = (
-  eservice: eserviceProcessApi.Eservice,
+  eservice: eserviceProcessApi.FlatEservice,
   eserviceVersion: eserviceProcessApi.EserviceVersion,
 ): API_CatalogEserviceSearchResult => ({
   categories: eservice.categories,
@@ -54,7 +54,7 @@ export const toAPI_CatalogEserviceSearchResult = (
 });
 
 export const toAPI_Eservice = (
-  eservice: eserviceProcessApi.Eservice,
+  eservice: eserviceProcessApi.FlatEservice,
 ): API_Eservice => ({
   categories: eservice.categories,
   description: eservice.description,

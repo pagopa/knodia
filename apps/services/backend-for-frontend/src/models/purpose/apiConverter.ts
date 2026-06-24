@@ -49,7 +49,7 @@ export const toAPI_ProducerPurpose = ({
   recentUpdateDays,
 }: {
   consumer: remoteResourcesManagerApi.Organization;
-  eservice: eserviceProcessApi.Eservice;
+  eservice: eserviceProcessApi.FlatEservice;
   purpose: purposeProcessApi.Purpose;
   recentUpdateDays: number;
 }): API_ProducerPurpose => ({
@@ -124,7 +124,7 @@ export const toAPI_PurposeDetails = ({
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: remoteResourcesManagerApi.Organization;
-  eservice: eserviceProcessApi.Eservice;
+  eservice: eserviceProcessApi.FlatEservice;
   latestEserviceVersionState: eserviceProcessApi.EserviceVersionState;
   maxDailyCallsPerConsumer: number;
   producer: OrganizationWithKnode;

@@ -71,7 +71,7 @@ export const toAPI_ConsumerKeychainPurpose = (
 
 export const toAPI_ProducerKeychainEservice = (
   link: keychainProcessApi.ProducerKeychainEservice,
-  eservice: eserviceProcessApi.Eservice,
+  eservice: eserviceProcessApi.FlatEservice,
   state: eserviceProcessApi.EserviceVersionState,
 ): API_ProducerKeychainEservice => ({
   categories: eservice.categories,

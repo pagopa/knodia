@@ -70,7 +70,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       async function enrichWithLatestVersionAndMapToAPIResult(
-        eservice: eserviceProcessApi.Eservice,
+        eservice: eserviceProcessApi.FlatEservice,
       ) {
         const { data: latestVersion } =
           await eserviceProcessApi.getEserviceLatestVersion({
