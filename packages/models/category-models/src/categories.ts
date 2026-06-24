@@ -1,4 +1,4 @@
-export interface Category {
+interface Category {
   code: string;
   description: string;
   name: string;
@@ -29,10 +29,8 @@ export type CategoryCode<S extends CategoryScheme> =
   keyof (typeof categories)[S];
 export type CategoryScheme = keyof typeof categories;
 
-// Parallel to `categories` (same scheme→code keys, enforced by the satisfies
-// constraint). Display-ready strings: the canonical Confluence texts open with
-// "E-Services that process …"; that prefix is dropped here because the modal
-// card already names the category, leaving "That process …".
+// Parallel to `categories` (same keys, enforced by satisfies). The canonical
+// "E-Services that process …" prefix is dropped because the modal card already names the category.
 const categoryDescriptions = {
   vc_example_eservice_categories: {
     "citizen.identity.birth_date": "That process the birth date for citizens.",
@@ -75,4 +73,15 @@ export function getCategory(
     return undefined;
   }
   return { code, description, name, scheme };
+}
+
+const allCategories: Category[] = Object.entries(categories).flatMap(
+  ([scheme, codes]) =>
+    Object.keys(codes)
+      .map((code) => getCategory(scheme, code))
+      .filter((category): category is Category => category !== undefined),
+);
+
+export function listCategories(): readonly Category[] {
+  return allCategories;
 }

@@ -1,18 +1,10 @@
-import {
-  categories,
-  type Category,
-  getCategory,
-} from "@knodia/category-models";
+import { listCategories } from "@knodia/category-models";
 import { Modal } from "@knodia/ui-kit/ui";
 
-import { DefinitionCard } from "./DefinitionCard";
+import { toSchemeRefKey } from "@/utils/schemeRef";
 
-const catalogCategories: Category[] = Object.entries(categories).flatMap(
-  ([scheme, codes]) =>
-    Object.keys(codes)
-      .map((code) => getCategory(scheme, code))
-      .filter((category): category is Category => category !== undefined),
-);
+import { DefinitionCard } from "./DefinitionCard";
+import { ModalScrollArea } from "./ModalScrollArea";
 
 interface CategoriesListModalProps {
   isOpen: boolean;
@@ -27,19 +19,18 @@ export function CategoriesListModal({
     <Modal
       isDismissable
       isOpen={isOpen}
-      onDismiss={() => onOpenChange(false)}
       onOpenChange={onOpenChange}
       title="Categories list"
     >
-      <div className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
-        {catalogCategories.map((category) => (
+      <ModalScrollArea className="gap-2">
+        {listCategories().map((category) => (
           <DefinitionCard
             description={category.description}
-            key={`${category.scheme}$${category.code}`}
+            key={toSchemeRefKey(category)}
             name={category.name}
           />
         ))}
-      </div>
+      </ModalScrollArea>
     </Modal>
   );
 }

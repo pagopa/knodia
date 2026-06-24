@@ -1,9 +1,11 @@
 import { categories } from "@knodia/category-models";
 import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
+import { CategoriesListModal } from "@/components/CategoriesListModal";
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
@@ -102,6 +104,8 @@ function CategoriesField({
   form: ReturnType<typeof useGeneralStepForm>;
   isDefinedByTemplate: boolean;
 }) {
+  const [isCategoriesListOpen, setIsCategoriesListOpen] = useState(false);
+
   return (
     <form.Field name="categories">
       {(field) => {
@@ -119,23 +123,36 @@ function CategoriesField({
         }
 
         return (
-          <div className="flex gap-4 justify-between items-end">
-            <Select
-              className="flex-1"
-              label="Categories (optional)"
-              name={field.name}
-              onChange={(keys) => field.handleChange(parseSchemeRefKeys(keys))}
-              placeholder="Select categories"
-              selectionMode="multiple"
-              value={selectedCategories.map(toSchemeRefKey)}
-            >
-              {renderSchemeRefItems(categories)}
-            </Select>
-            <Button hierarchy="neutral" kind="ghost" size="lg">
-              <BookOpenTextIcon />
-              Categories list
-            </Button>
-          </div>
+          <>
+            <div className="flex gap-4 justify-between items-end">
+              <Select
+                className="flex-1"
+                label="Categories (optional)"
+                name={field.name}
+                onChange={(keys) =>
+                  field.handleChange(parseSchemeRefKeys(keys))
+                }
+                placeholder="Select categories"
+                selectionMode="multiple"
+                value={selectedCategories.map(toSchemeRefKey)}
+              >
+                {renderSchemeRefItems(categories)}
+              </Select>
+              <Button
+                hierarchy="neutral"
+                kind="ghost"
+                onPress={() => setIsCategoriesListOpen(true)}
+                size="lg"
+              >
+                <BookOpenTextIcon />
+                Categories list
+              </Button>
+            </div>
+            <CategoriesListModal
+              isOpen={isCategoriesListOpen}
+              onOpenChange={setIsCategoriesListOpen}
+            />
+          </>
         );
       }}
     </form.Field>

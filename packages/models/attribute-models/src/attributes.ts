@@ -20,9 +20,7 @@ export type AttributeCode<S extends AttributeScheme> =
   keyof (typeof attributes)[S];
 export type AttributeScheme = keyof typeof attributes;
 
-// Parallel to `attributes` (same scheme→code keys, enforced by the satisfies
-// constraint): keeps the catalog shape that `renderSchemeRefItems` iterates
-// untouched while exposing a description for the in-UI documentation modals.
+// Parallel to `attributes` (same scheme→code keys, enforced by satisfies): a description per code for the documentation modals.
 const attributeDescriptions = {
   knodia: {
     testing_organization:
@@ -96,4 +94,15 @@ export function isAttributePossessed(
       attr.code === requiredAttribute.code &&
       attr.scheme === requiredAttribute.scheme,
   );
+}
+
+const allAttributes: Attribute[] = Object.entries(attributes).flatMap(
+  ([scheme, codes]) =>
+    Object.keys(codes)
+      .map((code) => getAttribute({ code, scheme }))
+      .filter((attribute): attribute is Attribute => attribute !== undefined),
+);
+
+export function listAttributes(): readonly Attribute[] {
+  return allAttributes;
 }

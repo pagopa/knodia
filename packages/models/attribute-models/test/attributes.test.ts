@@ -4,6 +4,7 @@ import {
   getAttribute,
   hasAllRequiredAttributes,
   isAttributePossessed,
+  listAttributes,
 } from "../src/attributes.ts";
 
 const nuts1 = { code: "nuts1", scheme: "vc_territorial_units" };
@@ -155,5 +156,17 @@ describe("getAttribute", () => {
     expect(
       getAttribute({ code: "testing_organization", scheme: "nope" }),
     ).toBeUndefined();
+  });
+});
+
+describe("listAttributes", () => {
+  it("returns every catalog attribute resolved with its description", () => {
+    const all = listAttributes();
+
+    expect(all).toHaveLength(7);
+    expect(
+      all.every((a) => a.name.length > 0 && a.description.length > 0),
+    ).toBe(true);
+    expect(all.map((a) => a.id.code)).toContain("testing_organization");
   });
 });
