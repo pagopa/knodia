@@ -2161,7 +2161,6 @@ services:
     environment:
       ISSUER: "http://localhost:4567"
       ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
-      ORG_ID: "${ORG_ID:-00000000-0000-4000-8000-000000000002}"
     command: node scripts/local-auth/local-cognito.mjs
 
   local-one-identity:

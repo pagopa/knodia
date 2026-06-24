@@ -374,8 +374,6 @@ services:
     volumes:
       - ../scripts/local-auth:/app/scripts/local-auth:ro
     working_dir: /app
-    environment:
-      ORG_ID: "${ORG_ID:-00000000-0000-4000-8000-000000000002}"
     command: node scripts/local-auth/local-cognito.mjs
 
   local-one-identity:
