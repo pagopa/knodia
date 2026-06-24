@@ -4,8 +4,7 @@ import { Button, Card } from "@/components/ui";
 interface KnodeCardProps {
   knodeName: string;
   organizationName: string;
-  // TODO(KN-753): wire to the real prototype URL.
-  prototypeHref?: string;
+  prototypeHref: string;
   username: string;
 }
 
@@ -34,8 +33,7 @@ export function KnodeCard({
       </div>
       <Button
         className="gap-2 self-start"
-        isDisabled={!prototypeHref}
-        onPress={() => prototypeHref && window.open(prototypeHref, "_blank")}
+        onPress={() => window.open(prototypeHref, "_blank")}
         variant="text"
       >
         Access the prototype

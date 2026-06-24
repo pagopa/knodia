@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 
 import { KnodeCard } from "./KnodeCard";
 
@@ -9,6 +10,7 @@ describe("KnodeCard", () => {
       <KnodeCard
         knodeName="Orion"
         organizationName="Rigel 123 Org"
+        prototypeHref="https://prototype.example"
         username="rigel_123_user"
       />,
     );
@@ -19,5 +21,23 @@ describe("KnodeCard", () => {
     expect(
       screen.getByRole("button", { name: /Access the prototype/ }),
     ).toBeVisible();
+  });
+
+  it("opens the prototype URL in a new tab when the CTA is pressed", async () => {
+    const open = vi.spyOn(window, "open").mockReturnValue(null);
+    render(
+      <KnodeCard
+        knodeName="Orion"
+        organizationName="Rigel 123 Org"
+        prototypeHref="https://prototype.example"
+        username="rigel_123_user"
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /Access the prototype/ }),
+    );
+
+    expect(open).toHaveBeenCalledWith("https://prototype.example", "_blank");
   });
 });

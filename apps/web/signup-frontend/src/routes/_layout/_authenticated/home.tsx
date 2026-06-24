@@ -12,6 +12,7 @@ import {
   RequestErasureModal,
   RequestRestrictionModal,
 } from "@/components/features";
+import { config } from "@/config/config";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { resolveOnboardingRedirect } from "@/services/onboarding";
 import { getCurrentSignupUserQuery } from "@/services/queries";
@@ -29,25 +30,13 @@ export const Route = createFileRoute("/_layout/_authenticated/home")({
   component: RouteComponent,
 });
 
-// TODO(KN-753): replace with real Knode assignments once the signup user API exposes them.
-const KNODES = [
-  {
-    knodeName: "Orion",
-    organizationName: "Rigel 123 Org",
-    username: "rigel_123_user",
-  },
-  {
-    knodeName: "Lynx",
-    organizationName: "Ursa 123 Org",
-    username: "ursa_123_user",
-  },
-];
-
 type OpenModal = "changeEmail" | "erasure" | "restriction" | null;
 
 function RouteComponent() {
   const user = useCurrentUser();
   const [openModal, setOpenModal] = useState<OpenModal>(null);
+
+  if (!user || user.onboardingStatus === "NOT_COMPLETED") return null;
 
   const closeModal = (open: boolean) => {
     if (!open) setOpenModal(null);
@@ -66,7 +55,7 @@ function RouteComponent() {
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
           <div className="flex flex-col gap-20">
-            {user?.email && <CredentialsBanner email={user.email} />}
+            <CredentialsBanner email={user.email} />
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
                 Your journey into Knodia starts here
@@ -76,8 +65,14 @@ function RouteComponent() {
                 interaction flows.
               </p>
               <div className="grid grid-cols-2 gap-12">
-                {KNODES.map((knode) => (
-                  <KnodeCard key={knode.knodeName} {...knode} />
+                {user.knodes.map((knode) => (
+                  <KnodeCard
+                    key={knode.knode}
+                    knodeName={knode.knode}
+                    organizationName={knode.organizationName}
+                    prototypeHref={config.prototypeUrls[knode.knode]}
+                    username={knode.username}
+                  />
                 ))}
               </div>
             </div>
@@ -90,7 +85,7 @@ function RouteComponent() {
           <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-center gap-[46px]">
             <DataWeCollectSection
               onChangeEmail={() => setOpenModal("changeEmail")}
-              onDownload={() => user && downloadPersonalData(user)}
+              onDownload={() => downloadPersonalData(user)}
             />
             <GdprRightsCard
               onRequestErasure={() => setOpenModal("erasure")}
