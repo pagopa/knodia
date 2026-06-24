@@ -3,6 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
+
 import { RequestRestrictionModal } from "./RequestRestrictionModal";
 
 const { mockNavigate, mockSuspendUser } = vi.hoisted(() => ({
@@ -107,7 +109,7 @@ describe("RequestRestrictionModal", () => {
     await user.click(confirmButton());
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Something went wrong. Please try again.",
+      GENERIC_ERROR_MESSAGE,
     );
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(confirmButton()).toBeEnabled();

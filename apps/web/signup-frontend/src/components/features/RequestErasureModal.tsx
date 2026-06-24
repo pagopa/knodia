@@ -2,12 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { Alert, Modal } from "@/components/ui";
+import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
 import {
   deleteUserMutationOptions,
   getCurrentSignupUserQuery,
 } from "@/services/queries";
-
-const DELETE_USER_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 interface RequestErasureDialogProps {
   onOpenChange: (isOpen: boolean) => void;
@@ -53,7 +52,7 @@ function RequestErasureDialog({ onOpenChange }: RequestErasureDialogProps) {
           take up to 30 days.
         </Alert>
       }
-      errorMessage={deleteUser.isError ? DELETE_USER_ERROR_MESSAGE : undefined}
+      errorMessage={deleteUser.isError ? GENERIC_ERROR_MESSAGE : undefined}
       isActionDisabled={deleteUser.isPending}
       isCancelDisabled={deleteUser.isPending}
       isOpen

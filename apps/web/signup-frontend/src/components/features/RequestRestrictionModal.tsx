@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Modal, Radio, RadioGroup } from "@/components/ui";
+import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
 import {
   getCurrentSignupUserQuery,
   suspendUserMutationOptions,
@@ -11,8 +12,6 @@ import {
 
 type SuspensionReason =
   signupManagerApi.SuspendUserRequestBody["suspensionReason"];
-
-const SUSPEND_USER_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 const RESTRICTION_REASONS = [
   {
@@ -80,9 +79,7 @@ function RequestRestrictionDialog({
     <Modal
       actionLabel="Request restriction"
       description="If you confirm this request, your access to the prototype will be suspended while your request is being reviewed."
-      errorMessage={
-        suspendUser.isError ? SUSPEND_USER_ERROR_MESSAGE : undefined
-      }
+      errorMessage={suspendUser.isError ? GENERIC_ERROR_MESSAGE : undefined}
       isActionDisabled={suspendUser.isPending}
       isCancelDisabled={suspendUser.isPending}
       isOpen

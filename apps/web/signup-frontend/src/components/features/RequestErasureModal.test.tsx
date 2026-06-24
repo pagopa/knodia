@@ -3,6 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
+
 import { RequestErasureModal } from "./RequestErasureModal";
 
 const { mockDeleteUser, mockNavigate } = vi.hoisted(() => ({
@@ -79,7 +81,7 @@ describe("RequestErasureModal", () => {
     await user.click(screen.getByRole("button", { name: "Request erasure" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Something went wrong. Please try again.",
+      GENERIC_ERROR_MESSAGE,
     );
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(
