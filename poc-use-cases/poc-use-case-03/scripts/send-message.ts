@@ -55,6 +55,16 @@ if (
   process.exit(1);
 }
 
+// This script always acts as systemSERCLynx (it mints a Lynx consumer token), so
+// the only supported recipient in the POC is systemSERCOrion; relaying to
+// systemSERCLynx (the sender's own SERC) is not implemented.
+if (recipientSerc === "systemSERCLynx") {
+  console.error(
+    "recipient-serc systemSERCLynx is not supported: send-message acts as systemSERCLynx and only relays to systemSERCOrion in this POC.",
+  );
+  process.exit(1);
+}
+
 const relayUrl =
   RELAY_URL_BY_SERC[recipientSerc as keyof typeof RELAY_URL_BY_SERC];
 
