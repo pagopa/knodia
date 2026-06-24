@@ -580,10 +580,19 @@ function handleAdminGetUser(req, res, payload) {
 
 function handleAdminResetUserPassword(req, res, payload) {
   const user = findUserByUsername(payload.Username);
-  if (user) {
-    user.UserStatus = "RESET_REQUIRED";
-    user.UserLastModifiedDate = NOW_IN_SECONDS;
+
+  if (!user) {
+    writeJson(
+      res,
+      400,
+      { __type: "UserNotFoundException", message: "User does not exist." },
+      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+    );
+    return;
   }
+
+  user.UserStatus = "RESET_REQUIRED";
+  user.UserLastModifiedDate = NOW_IN_SECONDS;
 
   console.log(
     `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
