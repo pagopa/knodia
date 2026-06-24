@@ -1,3 +1,4 @@
+import type { API_CompanyUid } from "../models/api.ts";
 import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
@@ -14,15 +15,6 @@ const asyncCompanyAddressesRequests = new Map<
   AsyncCompanyAddressesRequest
 >();
 
-const asyncCompanyAddressesResults = new Map<
-  string,
-  {
-    address?: API_Address;
-    legalEntity?: API_LegalEntity;
-    uidCompany: API_CompanyUid;
-  }[]
->();
-
 export function addAsyncCompanyAddressesRequest(
   requestId: string,
   companyUids: API_CompanyUid[],
@@ -34,7 +26,6 @@ export function addAsyncCompanyAddressesRequest(
   });
 }
 
-export function getAsyncCompanyAddressesRequestStatus(
 export function getAsyncCompanyAddressesRequest(
   requestId: string,
 ): AsyncCompanyAddressesRequest {
