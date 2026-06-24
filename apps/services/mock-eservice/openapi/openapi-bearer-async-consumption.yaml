@@ -175,21 +175,27 @@ components:
       description: List of addresses and legal entities returned by the Producer in
         response to an asynchronous request (Cross-Border E-service 05, Request
         company addresses).
-      type: array
-      items:
-        type: object
-        properties:
-          address:
-            allOf:
-              - $ref: "#/components/schemas/Address"
-          legalEntity:
-            allOf:
-              - $ref: "#/components/schemas/LegalEntity"
-          uidCompany:
-            $ref: "#/components/schemas/CompanyUid"
-        required:
-          - uidCompany
-        additionalProperties: false
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                allOf:
+                  - $ref: "#/components/schemas/Address"
+              legalEntity:
+                allOf:
+                  - $ref: "#/components/schemas/LegalEntity"
+              uidCompany:
+                $ref: "#/components/schemas/CompanyUid"
+            required:
+              - uidCompany
+            additionalProperties: false
+      required:
+        - results
+      additionalProperties: false
   headers:
     RateLimitLimit:
       description: Total requests allowed in the current window.

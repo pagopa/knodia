@@ -130,13 +130,13 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
     expect(res.statusCode).toBe(200);
 
     const body = res.json<API_GetCompanyAddressesResults>();
-    const expectedResponse: API_GetCompanyAddressesResults = COMPANY_UIDS.map(
-      (uid) => ({
+    const expectedResponse: API_GetCompanyAddressesResults = {
+      results: COMPANY_UIDS.map((uid) => ({
         address: findLegalEntityAddress(uid),
         legalEntity: findLegalEntity(uid),
         uidCompany: uid,
-      }),
-    );
+      })),
+    };
     expect(body).toEqual(expectedResponse);
   });
 

@@ -518,7 +518,9 @@ const API_GetCompanyAddressesResult = z.strictObject({
 });
 
 export const API_GetCompanyAddressesResults = z
-  .array(API_GetCompanyAddressesResult)
+  .strictObject({
+    results: z.array(API_GetCompanyAddressesResult),
+  })
   .meta({
     description:
       "List of addresses and legal entities returned by the Producer in response to an asynchronous request (Cross-Border E-service 05, Request company addresses).",

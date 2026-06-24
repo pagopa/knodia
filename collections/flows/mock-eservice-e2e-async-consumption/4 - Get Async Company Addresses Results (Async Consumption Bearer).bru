@@ -29,11 +29,13 @@ script:pre-request {
 
 assert {
   res.status: eq 200
-  res.body: isArray
-  res.body.length: eq 3
+  res.body.results: isArray
+  res.body.results: isArray
+  res.body.results.length: eq 3
 }
 
 script:post-response {
+  const results = res.body.results
   const expected = [
     {
       legalEntity: {
@@ -73,7 +75,7 @@ script:post-response {
     },
   ]
 
-  const actual = res.body
+  const actual = res.body.results
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     throw new Error(
       "Unexpected async company-addresses results payload.\nExpected: " +

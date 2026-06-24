@@ -30,7 +30,7 @@ export const asyncCompanyAddressesRequests = new Map<
 
 export const asyncCompanyAddressesResults = new Map<
   string,
-  API_GetCompanyAddressesResults
+  API_GetCompanyAddressesResults["results"]
 >();
 
 export function addAsyncCompanyAddressesRequest(
@@ -118,7 +118,7 @@ export function getAsyncCompanyAddressesResults(
     throw asyncCompanyAddressesResultsNotFound(resourceId);
   }
 
-  return results;
+  return { results };
 }
 
 function getMockFinishDate(requestId: string): Date {
