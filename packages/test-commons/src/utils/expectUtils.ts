@@ -20,6 +20,27 @@ export function toExpectAgreement(agreement: Agreement) {
   };
 }
 
+export function toExpectAPI_Eservice(
+  eservice: Omit<
+    Eservice,
+    "createdAt" | "id" | "producerId" | "template" | "updatedAt"
+  > & {
+    createdAt: Date | string;
+    id: string;
+    producerId: string;
+    template?: { id: string; knodeId: string };
+    updatedAt: Date | string;
+  },
+) {
+  return {
+    ...toExpectAPI_FlatEservice(eservice),
+    ...(eservice.receiveDataConfig !== undefined
+      ? { receiveDataConfig: eservice.receiveDataConfig }
+      : {}),
+    versions: eservice.versions.map(toExpectAPI_EserviceVersion),
+  };
+}
+
 export function toExpectAPI_EserviceVersion(eserviceVersion: EserviceVersion) {
   return expect.objectContaining({
     accessTokenAudience: expect.arrayContaining(
