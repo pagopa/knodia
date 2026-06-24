@@ -9,3 +9,7 @@ export const resolveOnboardingRedirect = (status: OnboardingStatus) =>
     .with("NOT_COMPLETED", "DELETION_PENDING", () => "/registration" as const)
     .with("SUSPENDED", () => "/suspended" as const)
     .exhaustive();
+
+export type OnboardingDestination = ReturnType<
+  typeof resolveOnboardingRedirect
+>;

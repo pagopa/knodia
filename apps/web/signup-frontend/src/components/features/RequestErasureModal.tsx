@@ -1,12 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 
 import { Alert, Modal } from "@/components/ui";
+import { useNavigateAfterSignupChange } from "@/hooks/useNavigateAfterSignupChange";
 import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
-import {
-  deleteUserMutationOptions,
-  getCurrentSignupUserQuery,
-} from "@/services/queries";
+import { deleteUserMutationOptions } from "@/services/queries";
 
 interface RequestErasureDialogProps {
   onOpenChange: (isOpen: boolean) => void;
@@ -27,19 +24,11 @@ export function RequestErasureModal({
 }
 
 function RequestErasureDialog({ onOpenChange }: RequestErasureDialogProps) {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const navigateAfterChange = useNavigateAfterSignupChange();
 
   const deleteUser = useMutation({
     ...deleteUserMutationOptions(),
-    onSuccess: async () => {
-      // refetchType "all": /registration's guard must read the fresh status.
-      await queryClient.invalidateQueries({
-        queryKey: getCurrentSignupUserQuery().queryKey,
-        refetchType: "all",
-      });
-      await navigate({ to: "/registration" });
-    },
+    onSuccess: () => navigateAfterChange("/registration"),
   });
 
   return (

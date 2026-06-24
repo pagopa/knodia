@@ -1,14 +1,11 @@
 import { type signupManagerApi } from "@knodia/signup-manager-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { Modal, Radio, RadioGroup } from "@/components/ui";
+import { useNavigateAfterSignupChange } from "@/hooks/useNavigateAfterSignupChange";
 import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
-import {
-  getCurrentSignupUserQuery,
-  suspendUserMutationOptions,
-} from "@/services/queries";
+import { suspendUserMutationOptions } from "@/services/queries";
 
 type SuspensionReason =
   signupManagerApi.SuspendUserRequestBody["suspensionReason"];
@@ -59,20 +56,12 @@ export function RequestRestrictionModal({
 function RequestRestrictionDialog({
   onOpenChange,
 }: RequestRestrictionDialogProps) {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const navigateAfterChange = useNavigateAfterSignupChange();
   const [reason, setReason] = useState<SuspensionReason>(DEFAULT_REASON);
 
   const suspendUser = useMutation({
     ...suspendUserMutationOptions(),
-    onSuccess: async () => {
-      // refetchType "all": /suspended's guard must read the fresh status.
-      await queryClient.invalidateQueries({
-        queryKey: getCurrentSignupUserQuery().queryKey,
-        refetchType: "all",
-      });
-      await navigate({ to: "/suspended" });
-    },
+    onSuccess: () => navigateAfterChange("/suspended"),
   });
 
   return (
