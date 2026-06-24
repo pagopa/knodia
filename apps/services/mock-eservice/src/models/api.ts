@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import {
   DIGEST_HEADER,
   KNODIA_JWT_SIGNATURE_HEADER,
@@ -384,6 +385,55 @@ export const API_Ack = z
     id: "Ack",
   });
 export type API_Ack = z.infer<typeof API_Ack>;
+
+// --- POC UC03 (ERDS relay) ---
+
+export const API_ErdsIdentifier = z
+  .enum(["systemSERCLynx", "systemSERCOrion"])
+  .meta({
+    description:
+      "Identifier of an Electronic Registered Delivery Service (SERC) in the POC",
+    id: "ErdsIdentifier",
+  });
+export type API_ErdsIdentifier = z.infer<typeof API_ErdsIdentifier>;
+
+// notation is free text (not the CF-only API_Notation) since recipients may be a
+// VAT; no meta id so it inlines as lookupERDS query params instead of a $ref.
+export const API_ErdsRecipientIdentifier = z.strictObject({
+  notation: z.string().min(1),
+  schemeName: z.string().min(1),
+  schemeURI: API_UriScheme,
+});
+export type API_ErdsRecipientIdentifier = z.infer<
+  typeof API_ErdsRecipientIdentifier
+>;
+
+export const API_ErdsLookupResult = z
+  .strictObject({
+    erdsIdentifier: API_ErdsIdentifier,
+  })
+  .meta({
+    description: "The SERC that serves the looked-up recipient (lookupERDS).",
+    id: "ErdsLookupResult",
+  });
+export type API_ErdsLookupResult = z.infer<typeof API_ErdsLookupResult>;
+
+export const API_ErdsMetadata = z
+  .strictObject({
+    domainName: z.string().meta({
+      description: "Domain name of the SERC (ETSI EN 319 522-2)",
+      example: "systemSERCOrion",
+    }),
+    eserviceId: z.uuid(),
+    identifier: API_ErdsIdentifier,
+    knodeId: KnodeId,
+  })
+  .meta({
+    description:
+      "Metadata of an Electronic Registered Delivery Service (getERDSMetadata): its domain name and the knode/e-service that publish its relay.",
+    id: "ErdsMetadata",
+  });
+export type API_ErdsMetadata = z.infer<typeof API_ErdsMetadata>;
 
 export const API_CompanyUidPathParam = z.strictObject({
   uidCompany: API_CompanyUid,
