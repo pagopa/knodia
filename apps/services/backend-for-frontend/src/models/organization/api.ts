@@ -8,8 +8,6 @@ import { UserRole } from "@knodia/common-models/auth";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
 
-// Not exported: referenced only by API_Organizations within this file; the
-// frontend consumes the generated client type, not this schema directly.
 const API_Organization = z
   .strictObject({
     attributes: z.array(API_Attribute),
@@ -27,9 +25,6 @@ export const API_Organizations = z
   .meta({ id: "Organizations" });
 export type API_Organizations = z.infer<typeof API_Organizations>;
 
-// knodeId is required: an Organization listing is always scoped to a single
-// (remote) Knode — the resource IDs returned are only meaningful together with
-// their owning Knode (remote-resource-ID convention).
 export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
   {
     knodeId: API_KnodeId,
