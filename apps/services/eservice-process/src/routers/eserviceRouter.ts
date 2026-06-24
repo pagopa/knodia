@@ -15,6 +15,7 @@ import {
 import type { EserviceService } from "../services/eserviceService.ts";
 
 import {
+  API_Eservice,
   API_EservicePatch,
   API_EserviceSeed,
   API_EserviceVersion,
@@ -27,6 +28,7 @@ import {
   API_PurposeFormOptions,
 } from "../models/api.ts";
 import {
+  toAPI_Eservice,
   toAPI_EserviceVersion,
   toAPI_EserviceVersionInterfaceDocument,
   toAPI_FlatEservice,
@@ -128,10 +130,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const {
         data: eservice,
         metadata: { version },
-      } = await eserviceService.getFlatEservice(req.params.eserviceId, ctx);
+      } = await eserviceService.getEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_FlatEservice(eservice));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
     schema: {
@@ -142,7 +144,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         200: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service retrieved successfully",
           }),
         },

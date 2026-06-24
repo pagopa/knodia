@@ -43,7 +43,6 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   duplicateInterfaceId,
   eserviceModeNotAllowed,
-  eserviceNotFound,
   eserviceTemplateNotFound,
   inconsistentDailyCalls,
   invalidAttribute,
@@ -292,33 +291,6 @@ export function eserviceServiceBuilder(
       logger.info({ params }, "Getting E-services with params");
 
       return await readmodelService.getEservices(params);
-    },
-    async getFlatEservice(
-      eserviceId: EserviceId,
-      {
-        authData,
-        logger,
-      }: AuthorizedContext<
-        ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
-      >,
-    ): Promise<WithMetadata<FlatEservice>> {
-      logger.info(`Getting flat E-service with ID ${eserviceId}`);
-
-      if (authData.tokenType === "external-ui-session") {
-        assertTokenEserviceClaimsMatchPathParam(
-          authData,
-          eserviceId,
-          config.knodeId,
-        );
-      }
-
-      const flatEservice = await readmodelService.getFlatEservice(eserviceId);
-
-      if (!flatEservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return flatEservice;
     },
 
     async reactivateEservice(

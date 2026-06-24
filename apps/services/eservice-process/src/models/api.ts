@@ -181,6 +181,32 @@ export const API_EserviceVersion = z
   .meta({ id: "EserviceVersion" });
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
 
+export const API_ReceiveDataConfig = z
+  .strictObject({
+    purposeFormOptions: z.array(API_PurposeFormOption).min(1),
+  })
+  .meta({ id: "ReceiveDataConfig" });
+export type API_ReceiveDataConfig = z.infer<typeof API_ReceiveDataConfig>;
+
+export const API_Eservice = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    createdAt: z.iso.datetime(),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producerId: z.uuid(),
+    receiveDataConfig: API_ReceiveDataConfig.optional(),
+    template: API_EserviceTemplateId.optional(),
+    updatedAt: z.iso.datetime(),
+    versions: z.array(API_EserviceVersion),
+  })
+  .meta({ id: "Eservice" });
+export type API_Eservice = z.infer<typeof API_Eservice>;
+
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({

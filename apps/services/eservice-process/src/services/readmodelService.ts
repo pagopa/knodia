@@ -323,11 +323,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         interfaceId,
       );
     },
-    async getFlatEservice(
-      eserviceId: EserviceId,
-    ): Promise<undefined | WithMetadata<FlatEservice>> {
-      return await eserviceReadmodelService.getFlatEserviceById(eserviceId);
-    },
     async getOrganizationById(organizationId: OrganizationId) {
       return await organizationReadmodelService.getOrganizationById(
         organizationId,
