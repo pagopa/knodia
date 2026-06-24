@@ -33,7 +33,9 @@ export function KnodeCard({
       </div>
       <Button
         className="gap-2 self-start"
-        onPress={() => window.open(prototypeHref, "_blank")}
+        onPress={() =>
+          window.open(prototypeHref, "_blank", "noopener,noreferrer")
+        }
         variant="text"
       >
         Access the prototype

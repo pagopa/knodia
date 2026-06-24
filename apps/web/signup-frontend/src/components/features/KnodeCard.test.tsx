@@ -38,6 +38,10 @@ describe("KnodeCard", () => {
       screen.getByRole("button", { name: /Access the prototype/ }),
     );
 
-    expect(open).toHaveBeenCalledWith("https://prototype.example", "_blank");
+    expect(open).toHaveBeenCalledWith(
+      "https://prototype.example",
+      "_blank",
+      "noopener,noreferrer",
+    );
   });
 });
