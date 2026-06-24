@@ -85,8 +85,8 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
 function getAudience(targetEnv, type) {
   if (type === "knode-api") {
     return targetEnv === "local"
-      ? "signalhub.test.knodia.org"
-      : `signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`;
+      ? ["signalhub.test.knodia.org", "k2o-gateway.test.knodia.org"]
+      : [`signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`, `k2o-gateway.${targetEnv.replace("dev-", "")}.dev.knodia.com`];
   }
   return targetEnv === "local"
     ? `local.knodia.test/${type}`

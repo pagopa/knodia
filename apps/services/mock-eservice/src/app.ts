@@ -34,6 +34,7 @@ import { mockPocUc01QualificationsRouter } from "./routers/mockPocUc01Qualificat
 import { mockPocUc01SetQualificationRouter } from "./routers/mockPocUc01SetQualificationRouter.ts";
 import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
+import { mockPocUc03SupervisoryBodyRouter } from "./routers/mockPocUc03SupervisoryBodyRouter.ts";
 import { mockReceiveDataRouter } from "./routers/mockReceiveDataRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
 import { toSignalHubSeedConfig } from "./signalHub/seedEnvConfig.ts";
@@ -85,6 +86,11 @@ const receiveDataAppTag: OpenAPIV3.TagObject = {
     "Submission of company digital domicile (Cross-Border E-service 04, Bearer-protected, Receive-data mode)",
   name: apiTags.companyDigitalDomicile,
 };
+const pocUc03SupervisoryBodyAppTag: OpenAPIV3.TagObject = {
+  description:
+    "ERDS lookup + metadata for the supervisory body (POC UC03 provide-data, Bearer-protected)",
+  name: apiTags.pocUc03SupervisoryBody,
+};
 
 export function buildApp({
   config,
@@ -132,6 +138,7 @@ export function buildApp({
       pocUc01SetQualificationAppTag,
       pocUc02CompaniesAppTag,
       receiveDataAppTag,
+      pocUc03SupervisoryBodyAppTag,
     ],
   );
 
@@ -165,6 +172,7 @@ export function buildApp({
     protectedApp.register(mockPocUc01SetQualificationRouter, { knodeId });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
     protectedApp.register(mockReceiveDataRouter, { knodeId });
+    protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
   });
 
   // DPoP-protected routes — dpopAccessTokenAuthPlugin is scoped to this context only.
@@ -232,6 +240,15 @@ export function buildBearerPocUc02CompaniesAppFromConfig(
   config: MockEserviceConfig,
 ) {
   return buildBearerPocUc02CompaniesApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerPocUc03SupervisoryBodyAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc03SupervisoryBodyApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -394,6 +411,41 @@ function buildBearerPocUc02CompaniesApp({
       jwksResolvers,
     });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerPocUc03SupervisoryBodyApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC03 supervisory body (lookupERDS + getERDSMetadata)",
+      title: "Knodia Mock E-service API (ERDS Lookup & Metadata)",
+      version: "1.0.0",
+    },
+    [pocUc03SupervisoryBodyAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
   });
 
   return app;
