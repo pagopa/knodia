@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '7add7dfd-dece-44e4-9d21-7a9c9404506a',
   '4ed2b4f9-e974-4e69-84d6-7074af92cd4f',
   '8c86125f-ce3e-4fc7-8ea6-4b8c45c241e7',
-  '788dd312f14e635fe883f9c39051317921e380f6bb791b4ddbdebac68e72574f',
+  'f69c2412b6d17e8609676568ffe2d657a547d4ddd683083dcbbcadf6615e1c7c',
   'application/yaml',
   'mock-bearer-async-consumption-eservice.yaml',
   '7add7dfd-dece-44e4-9d21-7a9c9404506a/mock-bearer-async-consumption-eservice.yaml',

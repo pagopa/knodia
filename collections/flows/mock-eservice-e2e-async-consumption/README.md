@@ -1,4 +1,4 @@
-# mock-eservice-e2e-integrity-rest-02
+# mock-eservice-e2e-async-consumption
 
 Exercises the full access-token flow against the seeded mock e-service.
 
@@ -10,6 +10,6 @@ Exercises the full access-token flow against the seeded mock e-service.
    step 1 — the eserviceId is already set). Between step 10 and
    step 11, run the signing script as described in the
    `bearer-token-flow/README.md`.
-3. **Step 2 – Request Company Addresses (Bearer)** — calls
+3. **Step 2 – Request Company Addresses (Async Consumption Bearer)** — calls
    `POST /legal-entities/address-requests` with the `access_token`
    captured by step 11 → expect `200`.
