@@ -7,7 +7,7 @@ import { SortDirection } from "@knodia/db-readmodel-commons/models";
 import { type Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
+import { toExpectAPI_FlatEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
@@ -171,7 +171,7 @@ describe("GET /eservices (getEservices)", () => {
           offset: Number(query.offset),
           total: totalCount,
         },
-        results: expectedResult.map((e) => toExpectAPI_Eservice(e)),
+        results: expectedResult.map((e) => toExpectAPI_FlatEservice(e)),
       });
     },
   );

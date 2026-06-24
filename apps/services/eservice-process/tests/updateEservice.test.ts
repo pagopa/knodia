@@ -11,9 +11,9 @@ import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models"
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import type { API_Eservice } from "../src/models/api.ts";
+import type { API_FlatEservice } from "../src/models/api.ts";
 
-import { toAPI_Eservice } from "../src/models/apiConverter.ts";
+import { toAPI_FlatEservice } from "../src/models/apiConverter.ts";
 import {
   getAllEserviceEvents,
   injectAppRequest,
@@ -52,7 +52,7 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
     expect(responseBody.name).toEqual(body.name);
     expect(responseBody.description).toEqual(body.description);
     expect(responseBody.categories).toEqual(body.categories);
@@ -89,13 +89,13 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
     expect(responseBody.name).toEqual(body.name);
     expect(responseBody.description).toEqual(
-      toAPI_Eservice(eservice).description,
+      toAPI_FlatEservice(eservice).description,
     );
     expect(responseBody.categories).toEqual(
-      toAPI_Eservice(eservice).categories,
+      toAPI_FlatEservice(eservice).categories,
     );
   });
 
@@ -114,9 +114,9 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
     expect(responseBody.description).toEqual(body.description);
-    expect(responseBody.name).toEqual(toAPI_Eservice(eservice).name);
+    expect(responseBody.name).toEqual(toAPI_FlatEservice(eservice).name);
   });
 
   it("should update only categories when only categories is provided", async () => {
@@ -134,9 +134,9 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
     expect(responseBody.categories).toEqual(body.categories);
-    expect(responseBody.name).toEqual(toAPI_Eservice(eservice).name);
+    expect(responseBody.name).toEqual(toAPI_FlatEservice(eservice).name);
   });
 
   it("should accept an empty body and still emit an event", async () => {
@@ -152,10 +152,10 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseBody = response.json<API_Eservice>();
-    expect(responseBody.name).toEqual(toAPI_Eservice(eservice).name);
+    const responseBody = response.json<API_FlatEservice>();
+    expect(responseBody.name).toEqual(toAPI_FlatEservice(eservice).name);
     expect(responseBody.description).toEqual(
-      toAPI_Eservice(eservice).description,
+      toAPI_FlatEservice(eservice).description,
     );
 
     const events = await getAllEserviceEvents();

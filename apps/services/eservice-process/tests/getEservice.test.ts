@@ -6,10 +6,10 @@ import {
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
+import { toExpectAPI_FlatEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Eservice } from "../src/models/api.ts";
+import type { API_FlatEservice } from "../src/models/api.ts";
 
 import { mockEservices } from "./mockEservices.ts";
 import { injectAppRequest, seedEservice } from "./utils.ts";
@@ -40,8 +40,8 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
       expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
       expect(response.statusCode).toBe(200);
 
-      const body = response.json<API_Eservice>();
-      expect(body).toEqual(toExpectAPI_Eservice(eservice));
+      const body = response.json<API_FlatEservice>();
+      expect(body).toEqual(toExpectAPI_FlatEservice(eservice));
     },
   );
 
@@ -55,15 +55,15 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const listResponse = await injectAppRequest(uiToken)
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
-    const listBody = listResponse.json<{ results: API_Eservice[] }>();
+    const listBody = listResponse.json<{ results: API_FlatEservice[] }>();
     const expectedItem = listBody.results.find(
       (i) => i.id === VALID_ESERVICE_ID,
     );
 
     const response = await getEservice(VALID_ESERVICE_ID);
-    const body = response.json<API_Eservice>();
+    const body = response.json<API_FlatEservice>();
 
-    expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
+    expect(body).toEqual(toExpectAPI_FlatEservice(expectedItem!));
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
@@ -95,8 +95,8 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     }).get(`/eservices/${VALID_ESERVICE_ID}`);
 
     expect(response.statusCode).toBe(200);
-    const body = response.json<API_Eservice>();
-    expect(body).toEqual(toExpectAPI_Eservice(eservice));
+    const body = response.json<API_FlatEservice>();
+    expect(body).toEqual(toExpectAPI_FlatEservice(eservice));
   });
 
   it("should return 403 for an external-ui-session token whose eservice.id does not match the path", async () => {

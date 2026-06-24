@@ -26,11 +26,11 @@ import { zocker } from "zocker";
 
 import { buildApp } from "../src/app.ts";
 import {
-  type API_Eservice,
   API_EserviceFromScratchSeed,
   API_EserviceFromTemplateSeed,
+  type API_FlatEservice,
 } from "../src/models/api.ts";
-import { toAPI_Eservice } from "../src/models/apiConverter.ts";
+import { toAPI_FlatEservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService, eventStoreDb, readmodelDb } from "./setup.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
@@ -72,7 +72,7 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
     expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
 
     const expectedEservice: Eservice = {
       categories: body.categories ?? [],
@@ -113,7 +113,7 @@ describe("POST /eservices (createEservice)", () => {
     };
 
     expect({ ...responseBody, template: undefined }).toMatchObject(
-      toAPI_Eservice(expectedEservice),
+      toAPI_FlatEservice(expectedEservice),
     );
 
     const events = await getAllEserviceEvents();
@@ -141,7 +141,7 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
     expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
 
     const expectedEservice: Eservice = {
       categories: templateSeed.eserviceFields.categories,
@@ -185,7 +185,7 @@ describe("POST /eservices (createEservice)", () => {
       ],
     };
 
-    expect(responseBody).toMatchObject(toAPI_Eservice(expectedEservice));
+    expect(responseBody).toMatchObject(toAPI_FlatEservice(expectedEservice));
 
     const events = await getAllEserviceEvents();
     expect(events).toHaveLength(1);
@@ -344,7 +344,7 @@ describe("POST /eservices (createEservice)", () => {
 
     expect(response.statusCode).toBe(201);
 
-    const responseBody = response.json<API_Eservice>();
+    const responseBody = response.json<API_FlatEservice>();
     expect(responseBody.isConsumerOperatorIdentificationRequired).toBe(true);
   });
 });

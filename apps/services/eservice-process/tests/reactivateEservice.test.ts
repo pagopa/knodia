@@ -9,7 +9,7 @@ import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models"
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import { toAPI_Eservice } from "../src/models/apiConverter.ts";
+import { toAPI_FlatEservice } from "../src/models/apiConverter.ts";
 import {
   getAllEserviceEvents,
   injectAppRequest,
@@ -38,7 +38,7 @@ describe("POST /eservices/:eserviceId/reactivate (reactivateEservice)", () => {
 
     const responseBody = response.json();
     expect(responseBody).toEqual({
-      ...toAPI_Eservice(eservice),
+      ...toAPI_FlatEservice(eservice),
       updatedAt: expect.any(String),
     });
 
