@@ -84,7 +84,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       const requestStatus = getAsyncCompanyAddressesRequestStatus(requestId);
 
       logger.info(
-        `Mock e-service company addresses request status requested. Status for request ID ${requestId}: ${requestStatus}`,
+        `Mock e-service company addresses request status requested. Status for request ID ${requestId}: ${requestStatus}.`,
       );
 
       res
@@ -94,7 +94,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Request the addresses of a list of companies identified by their UID (Cross-Border E-service 05, Request company addresses). The Producer will process the request asynchronously and the Consumer can retrieve the results later.",
+        "Get the status of a previously requested company addresses request (Cross-Border E-service 05, Get company addresses). The Producer will return the status of the request, indicating whether it has been completed or is still pending. If the request has been completed, the Consumer can then retrieve the results through a separate endpoint using the resource ID.",
       operationId: "getCompanyAddressesRequestStatus",
       params: z.strictObject({
         requestId: API_AsyncConsumptionRequestId,
