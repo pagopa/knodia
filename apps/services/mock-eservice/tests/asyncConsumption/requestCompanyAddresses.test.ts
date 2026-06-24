@@ -6,8 +6,8 @@ import {
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
+  type AsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequest,
-  getAsyncCompanyAddressesRequestState,
   resetAsyncCompanyAddressesRequests,
 } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
 import {
@@ -15,7 +15,6 @@ import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
   ASYNC_CONSUMPTION_MOCK_PRODUCER_ID,
 } from "../../src/asyncConsumption/mockup.ts";
-import { API_AsyncConsumptionRequestState } from "../../src/models/api.ts";
 import { getCtx, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
 
@@ -73,7 +72,7 @@ describe("POST /legal-entities/address-requests", () => {
       companyUids: VALID_BODY,
       finishDate: expect.any(Date),
       id: body.requestId,
-    });
+    } satisfies AsyncCompanyAddressesRequest);
   });
 
   it("stores every generated requestId in memory", async () => {
@@ -93,19 +92,12 @@ describe("POST /legal-entities/address-requests", () => {
       companyUids: VALID_BODY,
       finishDate: expect.any(Date),
       id: firstRequestId,
-    });
+    } satisfies AsyncCompanyAddressesRequest);
     expect(getAsyncCompanyAddressesRequest(secondRequestId)).toEqual({
       companyUids: VALID_BODY,
       finishDate: expect.any(Date),
       id: secondRequestId,
-    });
-
-    expect(getAsyncCompanyAddressesRequestState(firstRequestId)).toEqual(
-      API_AsyncConsumptionRequestState.enum.PENDING,
-    );
-    expect(getAsyncCompanyAddressesRequestState(secondRequestId)).toEqual(
-      API_AsyncConsumptionRequestState.enum.PENDING,
-    );
+    } satisfies AsyncCompanyAddressesRequest);
   });
 
   it("returns 400 for a malformed body", async () => {

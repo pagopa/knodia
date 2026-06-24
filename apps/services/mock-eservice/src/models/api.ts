@@ -479,14 +479,3 @@ export const API_CompanyAddressesRequest = z.array(API_CompanyUid).meta({
 export type API_CompanyAddressesRequest = z.infer<
   typeof API_CompanyAddressesRequest
 >;
-
-export const API_AsyncConsumptionRequestState = z
-  .enum(["PENDING", "COMPLETED"])
-  .meta({
-    description:
-      "State of an asynchronous request to the Producer (Cross-Border E-service 05, Request company addresses).",
-    id: "AsyncConsumptionRequestState",
-  });
-export type API_AsyncConsumptionRequestState = z.infer<
-  typeof API_AsyncConsumptionRequestState
->;
