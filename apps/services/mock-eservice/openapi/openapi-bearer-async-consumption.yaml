@@ -86,8 +86,8 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/CompanyUid"
-    AsyncConsumptionRequestStatus:
-      description: Status of an asynchronous request to the Producer (Cross-Border
+    AsyncConsumptionRequestState:
+      description: State of an asynchronous request to the Producer (Cross-Border
         E-service 05, Request company addresses).
       type: string
       enum:
@@ -221,13 +221,13 @@ paths:
               $ref: "#/components/headers/RateLimitRetryAfter"
   /legal-entities/address-requests/{requestId}:
     get:
-      operationId: getCompanyAddressesRequestStatus
-      summary: Get company addresses request status
+      operationId: getCompanyAddressesRequestState
+      summary: Get company addresses request state
       tags:
         - asyncCompanyAddresses
-      description: Get the status of a previously requested company addresses request
+      description: Get the state of a previously requested company addresses request
         (Cross-Border E-service 05, Get company addresses). The Producer will
-        return the status of the request, indicating whether it has been
+        return the state of the request, indicating whether it has been
         completed or is still pending. If the request has been completed, the
         Consumer can then retrieve the results through a separate endpoint using
         the resource ID.
@@ -248,10 +248,10 @@ paths:
                   resourceId:
                     allOf:
                       - $ref: "#/components/schemas/AsyncConsumptionResourceId"
-                  status:
-                    $ref: "#/components/schemas/AsyncConsumptionRequestStatus"
+                  state:
+                    $ref: "#/components/schemas/AsyncConsumptionRequestState"
                 required:
-                  - status
+                  - state
                 additionalProperties: false
           headers:
             X-RateLimit-Limit:

@@ -503,10 +503,10 @@ const API_AsyncConsumptionResourceId = z.uuid().meta({
   id: "AsyncConsumptionResourceId",
 });
 
-export const API_GetCompanyAddressesRequestStatusResponse = z.strictObject({
+export const API_GetCompanyAddressesRequestStateResponse = z.strictObject({
   resourceId: API_AsyncConsumptionResourceId.optional(),
   state: API_AsyncConsumptionRequestState,
 });
-export type API_GetCompanyAddressesRequestStatusResponse = z.infer<
-  typeof API_GetCompanyAddressesRequestStatusResponse
+export type API_GetCompanyAddressesRequestStateResponse = z.infer<
+  typeof API_GetCompanyAddressesRequestStateResponse
 >;

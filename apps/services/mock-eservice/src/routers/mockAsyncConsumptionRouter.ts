@@ -9,7 +9,9 @@ import z from "zod";
 
 import {
   addAsyncCompanyAddressesRequest,
-  getAsyncCompanyAddressesRequestStatus,
+  addAsyncCompanyAddressesResult,
+  getAsyncCompanyAddressesRequest,
+  getAsyncCompanyAddressesRequestState,
 } from "../asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -19,9 +21,9 @@ import {
 import {
   API_AsyncConsumptionRequestId,
   API_CompanyAddressesRequest,
-  API_GetCompanyAddressesRequestStatusResponse,
+  API_GetCompanyAddressesRequestStateResponse,
 } from "../models/api.ts";
-import { toAPI_GetCompanyAddressesRequestStatusResponse } from "../models/apiConverter.ts";
+import { toAPI_GetCompanyAddressesRequestStateResponse } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
@@ -81,32 +83,40 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       );
 
       const requestId = req.params.requestId;
-      const requestStatus = getAsyncCompanyAddressesRequestStatus(requestId);
+      const request = getAsyncCompanyAddressesRequest(requestId);
+      const state = getAsyncCompanyAddressesRequestState(request);
 
       logger.info(
-        `Mock e-service company addresses request status requested. Status for request ID ${requestId}: ${requestStatus}.`,
+        `Mock e-service company addresses request state requested. State for request ID ${requestId}: ${state}.`,
       );
+
+      addAsyncCompanyAddressesResult(request);
 
       res
         .status(200)
-        .send(toAPI_GetCompanyAddressesRequestStatusResponse(requestStatus));
+        .send(
+          toAPI_GetCompanyAddressesRequestStateResponse(
+            state,
+            request.resourceId,
+          ),
+        );
     },
     method: "GET",
     schema: {
       description:
-        "Get the status of a previously requested company addresses request (Cross-Border E-service 05, Get company addresses). The Producer will return the status of the request, indicating whether it has been completed or is still pending. If the request has been completed, the Consumer can then retrieve the results through a separate endpoint using the resource ID.",
-      operationId: "getCompanyAddressesRequestStatus",
+        "Get the state of a previously requested company addresses request (Cross-Border E-service 05, Get company addresses). The Producer will return the state of the request, indicating whether it has been completed or is still pending. If the request has been completed, the Consumer can then retrieve the results through a separate endpoint using the resource ID.",
+      operationId: "getCompanyAddressesRequestState",
       params: z.strictObject({
         requestId: API_AsyncConsumptionRequestId,
       }),
       response: {
-        200: API_GetCompanyAddressesRequestStatusResponse,
+        200: API_GetCompanyAddressesRequestStateResponse,
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         404: API_Problem.meta({ description: "Request Not Found" }),
         429: API_Problem.meta({ description: "Too Many Requests" }),
       },
-      summary: "Get company addresses request status",
+      summary: "Get company addresses request state",
       tags: [apiTags.asyncCompanyAddresses],
     },
     url: "/legal-entities/address-requests/:requestId",

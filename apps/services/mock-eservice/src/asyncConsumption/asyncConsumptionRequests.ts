@@ -1,6 +1,10 @@
 import { match } from "ts-pattern";
 
 import {
+  findLegalEntity,
+  findLegalEntityAddress,
+} from "../data/legalEntities.ts";
+import {
   type API_Address,
   API_AsyncConsumptionRequestState,
   type API_CompanyUid,
@@ -17,12 +21,12 @@ export interface AsyncCompanyAddressesRequest {
 
 // Demo-only: async-consumption request IDs are kept in-memory and reset on
 // process restart. Next endpoints in this flow read this cache.
-const asyncCompanyAddressesRequests = new Map<
+export const asyncCompanyAddressesRequests = new Map<
   string,
   AsyncCompanyAddressesRequest
 >();
 
-const asyncCompanyAddressesResults = new Map<
+export const asyncCompanyAddressesResults = new Map<
   string,
   {
     address?: API_Address;
@@ -42,6 +46,32 @@ export function addAsyncCompanyAddressesRequest(
   });
 }
 
+export function addAsyncCompanyAddressesResult(
+  request: AsyncCompanyAddressesRequest,
+): void {
+  if (!request.resourceId) {
+    return;
+  }
+
+  const resources = asyncCompanyAddressesResults.get(request.resourceId);
+  if (resources) {
+    return;
+  }
+
+  const results = request.companyUids.map((uidCompany) => {
+    const legalEntity = findLegalEntity(uidCompany);
+    const address = findLegalEntityAddress(uidCompany);
+
+    return {
+      address,
+      legalEntity,
+      uidCompany,
+    };
+  });
+
+  asyncCompanyAddressesResults.set(request.resourceId, results);
+}
+
 export function getAsyncCompanyAddressesRequest(
   requestId: string,
 ): AsyncCompanyAddressesRequest {
@@ -54,8 +84,31 @@ export function getAsyncCompanyAddressesRequest(
   return request;
 }
 
-export function resetAsyncCompanyAddressesRequests(): void {
-  asyncCompanyAddressesRequests.clear();
+export function getAsyncCompanyAddressesRequestState(
+  request: AsyncCompanyAddressesRequest,
+): API_AsyncConsumptionRequestState {
+  const state =
+    request.finishDate <= new Date()
+      ? API_AsyncConsumptionRequestState.enum.COMPLETED
+      : API_AsyncConsumptionRequestState.enum.PENDING;
+
+  match(state)
+    .with(API_AsyncConsumptionRequestState.enum.COMPLETED, () => {
+      if (!request.resourceId) {
+        // Generate a resource ID for the completed request if it doesn't already have one.
+        request.resourceId = crypto.randomUUID();
+      }
+    })
+    .with(API_AsyncConsumptionRequestState.enum.PENDING, () => {
+      if (request.resourceId) {
+        throw new Error(
+          `Request ${request.id} is still pending but already has a resource ID ${request.resourceId}.`,
+        );
+      }
+    })
+    .exhaustive();
+
+  return state;
 }
 
 function getMockFinishDate(requestId: string): Date {

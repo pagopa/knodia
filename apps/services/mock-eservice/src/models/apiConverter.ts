@@ -1,17 +1,14 @@
-import { randomUUID } from "crypto";
-
 import {
-  API_AsyncConsumptionRequestStatus,
-  type API_GetCompanyAddressesRequestStatusResponse,
+  type API_AsyncConsumptionRequestState,
+  type API_GetCompanyAddressesRequestStateResponse,
 } from "../models/api.ts";
 
-export function toAPI_GetCompanyAddressesRequestStatusResponse(
-  requestStatus: boolean,
-): API_GetCompanyAddressesRequestStatusResponse {
+export function toAPI_GetCompanyAddressesRequestStateResponse(
+  state: API_AsyncConsumptionRequestState,
+  resourceId: string | undefined,
+): API_GetCompanyAddressesRequestStateResponse {
   return {
-    resourceId: requestStatus ? randomUUID() : undefined,
-    status: requestStatus
-      ? API_AsyncConsumptionRequestStatus.enum.COMPLETED
-      : API_AsyncConsumptionRequestStatus.enum.PENDING,
+    resourceId,
+    state,
   };
 }

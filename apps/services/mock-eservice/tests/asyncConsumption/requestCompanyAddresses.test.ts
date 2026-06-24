@@ -8,7 +8,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   type AsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequest,
-  resetAsyncCompanyAddressesRequests,
 } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -17,6 +16,7 @@ import {
 } from "../../src/asyncConsumption/mockup.ts";
 import { getCtx, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
+import { resetAsyncCompanyAddressesMaps } from "./utils.ts";
 
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
@@ -58,7 +58,7 @@ async function signToken(
   });
 }
 
-beforeEach(resetAsyncCompanyAddressesRequests);
+beforeEach(resetAsyncCompanyAddressesMaps);
 
 describe("POST /legal-entities/address-requests", () => {
   it("returns 200 with a requestId and stores it in memory", async () => {

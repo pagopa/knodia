@@ -5,10 +5,7 @@ import {
 } from "@knodia/common-models/ids";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  addAsyncCompanyAddressesRequest,
-  resetAsyncCompanyAddressesRequests,
-} from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
+import { addAsyncCompanyAddressesRequest } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
   ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
@@ -21,6 +18,7 @@ import {
 } from "../../src/models/api.ts";
 import { getCtx, TEST_KNODE_ID } from "../setup.ts";
 import { signEserviceAccessToken } from "../utils.ts";
+import { resetAsyncCompanyAddressesMaps } from "./utils.ts";
 
 const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7",
@@ -67,7 +65,7 @@ async function signToken(
 }
 
 beforeEach(() => {
-  resetAsyncCompanyAddressesRequests();
+  resetAsyncCompanyAddressesMaps();
 
   vi.useFakeTimers({
     // Don't fake setTimeout/setInterval — fastify's internal scheduling would
