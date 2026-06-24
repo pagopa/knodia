@@ -50,7 +50,6 @@ type SuspensionRequestedV1 = z.infer<typeof SuspensionRequestedV1>;
 const MaintenanceUserReactivationRequestedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
-    oneIdNonce: z.string(),
     signupUserId: SignupUserId,
   }),
   type: z.literal("MaintenanceUserReactivationRequestedV1"),

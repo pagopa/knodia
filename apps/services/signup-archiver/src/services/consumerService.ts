@@ -33,7 +33,7 @@ export async function handleSignupMessage(
       return SignupArchiveRecord.parse({
         action: "Onboarding",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
         termsAcceptanceDigest: data.termsAcceptanceDigest,
         termsAcceptanceVersion: data.termsAcceptanceVersion,
       });
@@ -43,7 +43,7 @@ export async function handleSignupMessage(
       return SignupArchiveRecord.parse({
         action: "Deletion",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
       });
     })
     .with({ type: "EmailChangeRequestedV1" }, () => {
@@ -57,10 +57,17 @@ export async function handleSignupMessage(
       return SignupArchiveRecord.parse({
         action: "Suspension",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
         suspensionReason: data.suspensionReason,
       });
     })
+    .with({ type: "MaintenanceUserReactivationRequestedV1" }, ({ data }) =>
+      SignupArchiveRecord.parse({
+        action: "UserReactivation",
+        date: data.occurredAt,
+        identifier: data.occurredAt,
+      }),
+    )
     .exhaustive();
 
   if (record) {
@@ -79,7 +86,7 @@ async function archiveAction(
   logger: Logger,
 ): Promise<void> {
   const content = Buffer.from(JSON.stringify(record), "utf8");
-  const key = `signup-actions/${signupUserId}/${record.action}/${record.nonce}.json`;
+  const key = `signup-actions/${signupUserId}/${record.action}/${record.identifier}.json`;
 
   const { alreadyExists } = await deps.fileManager.storeBytesIfAbsent({
     bucket: deps.bucket,

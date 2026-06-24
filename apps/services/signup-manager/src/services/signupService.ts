@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -209,7 +208,6 @@ export function signupServiceBuilder(
       await signupEventProducer.publishMaintenanceUserReactivationRequestedV1Event(
         {
           occurredAt: now.toISOString(),
-          oneIdNonce: generateId(),
           signupUserId,
         },
       );
