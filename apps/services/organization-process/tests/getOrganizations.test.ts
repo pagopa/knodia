@@ -41,6 +41,15 @@ const mockOrganizations: Organization[] = [
   { ...getMockOrganization(4), id: generateId<OrganizationId>(), name: "Echo" },
 ];
 
+// Signup generates names like "<Star> <code> Org" (whitespace-separated), and an
+// org's unique attribute uses that name as its code. Kept out of
+// `mockOrganizations` so it doesn't disturb the pagination/total assertions.
+const whitespaceNamedOrganization: Organization = {
+  ...getMockOrganization(5),
+  id: generateId<OrganizationId>(),
+  name: "Vega VZ0 Org",
+};
+
 describe("GET /organizations (getOrganizations)", () => {
   const defaultQuery = {
     limit: "4",
@@ -147,6 +156,27 @@ describe("GET /organizations (getOrganizations)", () => {
       });
     },
   );
+
+  // Regression guard: org names contain whitespace (signup uses "<Star> <code>
+  // Org"), so a filter that itself contains whitespace must match as a
+  // contiguous, case-insensitive substring. We rely on this for the e-service
+  // attribute picker; keep it working (any future search refinement must not
+  // break filtering by a multi-word fragment of the name).
+  it("filters by a name fragment that contains whitespace (contiguous, case-insensitive)", async () => {
+    await Promise.all(
+      [...mockOrganizations, whitespaceNamedOrganization].map(seedOrganization),
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/organizations")
+      .query({ ...defaultQuery, name: "vega vz0" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      pagination: { limit: 4, offset: 0, total: 1 },
+      results: [toExpectAPI_Organization(whitespaceNamedOrganization)],
+    });
+  });
 
   it.each(allowedTestTokens)(
     "should return 200 for authorized token ($type, $roles)",
