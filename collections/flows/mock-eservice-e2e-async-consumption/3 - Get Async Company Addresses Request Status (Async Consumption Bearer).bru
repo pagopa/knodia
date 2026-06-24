@@ -28,17 +28,17 @@ script:pre-request {
 
 assert {
   res.status: eq 200
-  res.body.status: matches /^(PENDING|COMPLETED)$/
+  res.body.state: matches /^(PENDING|COMPLETED)$/
 }
 
 script:post-response {
-  const status = res.body.status
+  const state = res.body.state
   const resourceId = res.body.resourceId
 
-  if (status === "COMPLETED") {
+  if (state === "COMPLETED") {
     if (!resourceId) {
       throw new Error(
-        `Expected a valid resourceId when status is COMPLETED. Got: ${resourceId}`
+        `Expected a valid resourceId when state is COMPLETED. Got: ${resourceId}`
       )
     }
 
