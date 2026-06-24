@@ -159,12 +159,10 @@ export function extractAuthDataFromToken(
     .exhaustive();
 }
 
-// Rate-limit bucket key carried by the token: the caller organization id
-// (UI session, knode-api, consumer's home-knode organization for external UI
-// session), the signup session's unique identifier (signup has no org yet),
-// or undefined for internal service-to-service tokens, which have no caller.
-// The signup identifier is PII, so it's hashed; org ids aren't and pass through
-// verbatim to keep the Redis keys legible.
+// Rate-limit bucket key carried by the token: the caller organization id, the
+// signup session's unique identifier (signup has no org yet), or undefined for
+// internal service-to-service tokens (no caller). The signup identifier is PII
+// so it's hashed; org ids pass through verbatim to keep Redis keys legible.
 export function rateLimitKeyFromAuthData(
   authData: AuthData,
 ): RateLimitKey | undefined {

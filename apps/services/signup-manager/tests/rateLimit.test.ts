@@ -1,11 +1,14 @@
 import type { Producer } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { FastifyInstance } from "fastify";
 
+import { generateId } from "@knodia/common-models/ids";
 import {
   hashRateLimitKey,
+  initRedisRateLimiter,
   type RateLimiter,
 } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import { createTestLogger } from "@knodia/test-commons/utils";
 import {
   afterAll,
   beforeAll,
@@ -49,9 +52,8 @@ import { buildApp } from "../src/app.ts";
 import { OIDC_SESSION_COOKIE_NAME } from "../src/models/api.ts";
 import { signupDb, signupManagerTestConfig } from "./setup.ts";
 
-// Toggleable stub: records every key passed to `consume` and returns 429 on
-// demand, so we assert the wiring (key extraction + 429 mapping) without
-// depending on Redis bucket state.
+// Toggleable stub: records keys passed to `consume` and returns 429 on demand,
+// so we assert the wiring (key extraction + 429 mapping) without Redis state.
 let limitReached = false;
 const consumedKeys: string[] = [];
 const stubRateLimiter: RateLimiter = {
@@ -157,6 +159,86 @@ describe("rate limiting on GET /auth/oidc/token", () => {
   });
 });
 
+describe("rate limiting integration (real Redis)", () => {
+  const MAX_REQUESTS = 3;
+  const { logger } = createTestLogger();
+
+  let integrationApp: FastifyInstance;
+  let realRateLimiter: RateLimiter;
+
+  const injectIntegrationRequest = (uniqueIdentifier: string) =>
+    createInjectAppRequest(() => integrationApp)({
+      oneIdNonce: "test-nonce",
+      type: "ui-signup-session",
+      uniqueIdentifier,
+    });
+
+  beforeAll(async () => {
+    // signup-manager isn't tied to a Knode, so no knodeId — mirrors index.ts.
+    realRateLimiter = initRedisRateLimiter({
+      config: {
+        rateLimiterAwsIamAuth: undefined,
+        rateLimiterEnvironment: "test",
+        rateLimiterMaxRequests: MAX_REQUESTS,
+        rateLimiterRedisHost:
+          process.env["RATE_LIMITER_REDIS_HOST"] ?? "127.0.0.1",
+        rateLimiterRedisPort: Number(
+          process.env["RATE_LIMITER_REDIS_PORT"] ?? 6379,
+        ),
+        rateLimiterTimeoutSeconds: 2,
+        rateLimiterTimeWindowSeconds: 60,
+      },
+      logger,
+      serviceName: "signup-manager",
+    });
+
+    integrationApp = buildApp({
+      config: signupManagerTestConfig,
+      kafkaProducer: kafkaProducerMock as unknown as Producer,
+      rateLimiter: realRateLimiter,
+      signupDb,
+    });
+    await integrationApp.ready();
+    await waitForHealthyLimiter(realRateLimiter, logger);
+  });
+
+  // buildApp registers an onClose hook that disconnects the limiter.
+  afterAll(async () => {
+    await integrationApp.close();
+  });
+
+  it("allows requests up to the limit, then returns 429", async () => {
+    // Fresh identifier per test: the reused container keeps bucket state across
+    // runs, so a unique key guarantees an empty bucket.
+    const identifier = `integration-${generateId()}`;
+
+    for (let i = 0; i < MAX_REQUESTS; i++) {
+      const response =
+        await injectIntegrationRequest(identifier).get("/user/me");
+      expect(response.statusCode).toBe(200);
+    }
+
+    const blocked = await injectIntegrationRequest(identifier).get("/user/me");
+    expect(blocked.statusCode).toBe(429);
+    expect(blocked.headers["retry-after"]).toBeDefined();
+  });
+
+  it("keeps a separate bucket per signup user", async () => {
+    const userA = `integration-${generateId()}`;
+    const userB = `integration-${generateId()}`;
+
+    for (let i = 0; i < MAX_REQUESTS; i++) {
+      await injectIntegrationRequest(userA).get("/user/me");
+    }
+
+    const aOver = await injectIntegrationRequest(userA).get("/user/me");
+    const bFresh = await injectIntegrationRequest(userB).get("/user/me");
+
+    expect(aOver.statusCode).toBe(429);
+    expect(bFresh.statusCode).toBe(200);
+  });
+});
+
 function exchangeCode(cookie: string, state: string) {
   return app.inject({
     cookies: { [OIDC_SESSION_COOKIE_NAME]: cookie },
@@ -215,4 +297,21 @@ async function startOIDCSession() {
   }
 
   return { cookie: decodeURIComponent(encodedCookie), nonce, state };
+}
+
+// Redis connects eagerly and `consume` fails open until it's up, so poll with
+// throwaway keys until the limiter reports a non-degraded status.
+async function waitForHealthyLimiter(
+  rateLimiter: RateLimiter,
+  logger: Parameters<RateLimiter["consume"]>[1],
+): Promise<void> {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const status = await rateLimiter.consume(
+      hashRateLimitKey(`warmup-${attempt}`),
+      logger,
+    );
+    if (!status.degraded) return;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error("Redis rate limiter did not become healthy");
 }

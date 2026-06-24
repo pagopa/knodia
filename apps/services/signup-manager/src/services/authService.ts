@@ -62,11 +62,9 @@ export function authServiceBuilder(
         );
       }
 
-      // Rate-limit on the resolved person identifier (the token's
-      // uniqueIdentifier), mirroring the protected routes — only after the IdP
-      // exchange yields an identity, so we never mint a token over the limit.
-      // Hash it the same way the protected routes do (the identifier is PII and
-      // must not land in Redis keys or logs as plaintext).
+      // Rate-limit on the resolved identifier, after the IdP exchange so we never
+      // mint a token over the limit. Hash it like the protected routes do (it's
+      // PII and must not land in Redis keys or logs as plaintext).
       await enforceRateLimit(
         rateLimiter,
         hashRateLimitKey(identifier.value),

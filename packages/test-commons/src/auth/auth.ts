@@ -252,9 +252,9 @@ export function getTestUISignupSessionTokenClaims(
   const spidCode = match(props.spidCode)
     .with(P.string, (value) => value)
     .with(null, () => undefined)
-    // Not passed: default to a SPID login unless another identifier was set.
-    // Its value comes from `uniqueIdentifier` (so callers that only care about
-    // the bucket key get sub === spidCode), falling back to a fixed code.
+    // Not passed: default to a SPID login unless another identifier was set,
+    // using `uniqueIdentifier` so callers that only care about the bucket key
+    // get sub === spidCode, falling back to a fixed code.
     .with(undefined, () =>
       callerSetIdentifier
         ? undefined
