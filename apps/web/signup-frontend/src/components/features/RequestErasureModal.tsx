@@ -55,6 +55,7 @@ function RequestErasureDialog({ onOpenChange }: RequestErasureDialogProps) {
       }
       errorMessage={deleteUser.isError ? DELETE_USER_ERROR_MESSAGE : undefined}
       isActionDisabled={deleteUser.isPending}
+      isCancelDisabled={deleteUser.isPending}
       isOpen
       onConfirm={() => deleteUser.mutate({})}
       onOpenChange={onOpenChange}
