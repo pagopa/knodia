@@ -2004,6 +2004,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/db-signup':
         specifier: workspace:*
         version: link:../../../packages/db/signup
@@ -2056,9 +2059,6 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
