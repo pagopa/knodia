@@ -128,7 +128,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const {
         data: eservice,
         metadata: { version },
-      } = await eserviceService.getEservice(req.params.eserviceId, ctx);
+      } = await eserviceService.getFlatEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_FlatEservice(eservice));
