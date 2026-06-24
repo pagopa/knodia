@@ -114,23 +114,55 @@ components:
       required:
         - suspensionReason
       additionalProperties: false
-    CurrentSignupUser:
+    KnodeAssignment:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-        onboardingStatus:
+        knode:
           type: string
           enum:
-            - ACTIVE
-            - SUSPENDED
-            - DELETION_PENDING
-            - NOT_COMPLETED
+            - Orion
+            - Lynx
+        organizationName:
+          type: string
+        username:
+          type: string
       required:
-        - onboardingStatus
+        - knode
+        - organizationName
+        - username
       additionalProperties: false
+    CurrentSignupUser:
+      oneOf:
+        - type: object
+          properties:
+            onboardingStatus:
+              type: string
+              enum:
+                - NOT_COMPLETED
+          required:
+            - onboardingStatus
+          additionalProperties: false
+        - type: object
+          properties:
+            email:
+              type: string
+              format: email
+              pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+            knodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/KnodeAssignment"
+            onboardingStatus:
+              type: string
+              enum:
+                - ACTIVE
+                - SUSPENDED
+                - DELETION_PENDING
+          required:
+            - email
+            - knodes
+            - onboardingStatus
+          additionalProperties: false
 paths:
   /status:
     get:

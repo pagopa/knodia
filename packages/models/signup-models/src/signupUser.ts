@@ -21,7 +21,6 @@ const SignupGeneratedEntitiesPerKnode = z.strictObject({
   userName: z.string(),
 });
 
-/** @knipignore */
 export const SignupGeneratedEntities = z.strictObject({
   Lynx: SignupGeneratedEntitiesPerKnode,
   Orion: SignupGeneratedEntitiesPerKnode,
