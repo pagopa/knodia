@@ -20,8 +20,10 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   RESIDENCE_NOT_AVAILABLE: "0012",
   LEGAL_ENTITY_NOT_FOUND: "0013",
   STUDENT_NOT_FOUND: "0014",
-  LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0015",
-  ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND: "0016",
+  ERDS_RECIPIENT_NOT_FOUND: "0015",
+  ERDS_NOT_FOUND: "0016",
+  LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0017",
+  ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND: "0018",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -45,6 +47,24 @@ export function dpopProofNotFound() {
     detail: "DPoP proof not found",
     status: 401,
     title: "invalid_dpop_proof",
+  });
+}
+
+export function erdsNotFound(erdsIdentifier: string) {
+  return createApiError({
+    code: "ERDS_NOT_FOUND",
+    detail: `No ERDS found for identifier ${erdsIdentifier}`,
+    status: 404,
+    title: "erds_not_found",
+  });
+}
+
+export function erdsRecipientNotFound(notation: string) {
+  return createApiError({
+    code: "ERDS_RECIPIENT_NOT_FOUND",
+    detail: `No ERDS serves a recipient identified by ${notation}`,
+    status: 404,
+    title: "erds_recipient_not_found",
   });
 }
 
