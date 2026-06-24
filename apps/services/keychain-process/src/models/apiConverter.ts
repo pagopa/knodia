@@ -8,7 +8,10 @@ import type {
   KeychainKey,
   ProducerKeychainEservice,
 } from "@knodia/keychain-models";
-import type { API_CreatedMemberResource } from "@knodia/keychain-models/api";
+import type {
+  API_CreatedMemberResource,
+  API_PublicKey,
+} from "@knodia/keychain-models/api";
 
 import type {
   API_ConsumerKeychainPurpose,
@@ -63,4 +66,11 @@ export const toAPI_ProducerKeychainEservice = (
 ): API_ProducerKeychainEservice => ({
   ...producerKeychainEservice,
   linkedAt: producerKeychainEservice.linkedAt.toISOString(),
+});
+
+export const toAPI_PublicKey = (key: KeychainKey): API_PublicKey => ({
+  algorithm: key.algorithm,
+  encodedPem: key.encodedPem,
+  format: key.format,
+  kid: key.kid,
 });

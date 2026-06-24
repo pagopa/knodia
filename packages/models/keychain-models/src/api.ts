@@ -1,4 +1,4 @@
-import { API_UserId } from "@knodia/common-models/api";
+import { API_KeyId, API_UserId } from "@knodia/common-models/api";
 import { ExternalId } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
@@ -125,3 +125,18 @@ export const API_CreatedMemberResource = z
 export type API_CreatedMemberResource = z.infer<
   typeof API_CreatedMemberResource
 >;
+
+export const API_KeyIdPathParam = z.strictObject({
+  keyId: API_KeyId,
+});
+export type API_KeyIdPathParam = z.infer<typeof API_KeyIdPathParam>;
+
+export const API_PublicKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    encodedPem: z.string(),
+    format: API_KeyFormat,
+    kid: API_KeyId,
+  })
+  .meta({ description: "Public Key details", id: "PublicKey" });
+export type API_PublicKey = z.infer<typeof API_PublicKey>;
