@@ -41,6 +41,7 @@ const errorCodes = {
   ESERVICE_ALREADY_LINKED_TO_PRODUCER_KEYCHAIN: "0016",
   PRODUCER_KEYCHAIN_ESERVICE_NOT_FOUND: "0017",
   ESERVICE_NOT_FOUND: "0018",
+  PRODUCER_KEY_NOT_FOUND: "0019",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -179,6 +180,15 @@ export function producerKeychainNotFound(id: ProducerKeychainId) {
     detail: `Producer keychain with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Producer Keychain Not Found",
+  });
+}
+
+export function producerKeyNotFound(kid: KeyId) {
+  return createApiError<ErrorCodes>({
+    code: "PRODUCER_KEY_NOT_FOUND",
+    detail: `Producer key with kid ${kid} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Producer Key Not Found",
   });
 }
 
