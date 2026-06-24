@@ -5,12 +5,14 @@ import {
   findLegalEntityAddress,
 } from "../data/legalEntities.ts";
 import {
-  type API_Address,
   API_AsyncConsumptionRequestState,
   type API_CompanyUid,
-  type API_LegalEntity,
+  type API_GetCompanyAddressesResults,
 } from "../models/api.ts";
-import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
+import {
+  asyncCompanyAddressesRequestNotFound,
+  asyncCompanyAddressesResultsNotFound,
+} from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
   companyUids: API_CompanyUid[];
@@ -28,11 +30,7 @@ export const asyncCompanyAddressesRequests = new Map<
 
 export const asyncCompanyAddressesResults = new Map<
   string,
-  {
-    address?: API_Address;
-    legalEntity?: API_LegalEntity;
-    uidCompany: API_CompanyUid;
-  }[]
+  API_GetCompanyAddressesResults
 >();
 
 export function addAsyncCompanyAddressesRequest(
@@ -109,6 +107,18 @@ export function getAsyncCompanyAddressesRequestState(
     .exhaustive();
 
   return state;
+}
+
+export function getAsyncCompanyAddressesResults(
+  resourceId: string,
+): API_GetCompanyAddressesResults {
+  const results = asyncCompanyAddressesResults.get(resourceId);
+
+  if (results === undefined) {
+    throw asyncCompanyAddressesResultsNotFound(resourceId);
+  }
+
+  return results;
 }
 
 function getMockFinishDate(requestId: string): Date {
