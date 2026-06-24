@@ -1,6 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createMemoryHistory, createRouter } from "@tanstack/react-router";
-import { type RenderOptions } from "@testing-library/react";
 
 import { APP_BASE_PATH } from "@/config/basepath";
 import { type AuthContext } from "@/contexts/auth";
