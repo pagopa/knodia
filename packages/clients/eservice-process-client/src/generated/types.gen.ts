@@ -487,7 +487,7 @@ export type CreateEserviceResponses = {
     /**
      * E-service created successfully
      */
-    201: FlatEservice;
+    201: Eservice;
 };
 
 export type CreateEserviceResponse = CreateEserviceResponses[keyof CreateEserviceResponses];
@@ -581,7 +581,7 @@ export type UpdateEserviceResponses = {
     /**
      * E-service updated successfully
      */
-    200: FlatEservice;
+    200: Eservice;
 };
 
 export type UpdateEserviceResponse = UpdateEserviceResponses[keyof UpdateEserviceResponses];
@@ -769,7 +769,7 @@ export type SuspendEserviceResponses = {
     /**
      * E-service suspended successfully
      */
-    200: FlatEservice;
+    200: Eservice;
 };
 
 export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
@@ -818,7 +818,7 @@ export type ReactivateEserviceResponses = {
     /**
      * E-service reactivated successfully
      */
-    200: FlatEservice;
+    200: Eservice;
 };
 
 export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
@@ -867,7 +867,7 @@ export type ArchiveEserviceResponses = {
     /**
      * E-service archived successfully
      */
-    200: FlatEservice;
+    200: Eservice;
 };
 
 export type ArchiveEserviceResponse = ArchiveEserviceResponses[keyof ArchiveEserviceResponses];

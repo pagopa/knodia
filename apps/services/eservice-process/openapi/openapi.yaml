@@ -857,7 +857,7 @@ paths:
               schema:
                 description: E-service created successfully
                 allOf:
-                  - $ref: "#/components/schemas/FlatEservice"
+                  - $ref: "#/components/schemas/Eservice"
           headers:
             metadata-version:
               required: true
@@ -1006,7 +1006,7 @@ paths:
               schema:
                 description: E-service updated successfully
                 allOf:
-                  - $ref: "#/components/schemas/FlatEservice"
+                  - $ref: "#/components/schemas/Eservice"
           headers:
             metadata-version:
               required: true
@@ -1279,7 +1279,7 @@ paths:
               schema:
                 description: E-service suspended successfully
                 allOf:
-                  - $ref: "#/components/schemas/FlatEservice"
+                  - $ref: "#/components/schemas/Eservice"
           headers:
             metadata-version:
               required: true
@@ -1355,7 +1355,7 @@ paths:
               schema:
                 description: E-service reactivated successfully
                 allOf:
-                  - $ref: "#/components/schemas/FlatEservice"
+                  - $ref: "#/components/schemas/Eservice"
           headers:
             metadata-version:
               required: true
@@ -1431,7 +1431,7 @@ paths:
               schema:
                 description: E-service archived successfully
                 allOf:
-                  - $ref: "#/components/schemas/FlatEservice"
+                  - $ref: "#/components/schemas/Eservice"
           headers:
             metadata-version:
               required: true
