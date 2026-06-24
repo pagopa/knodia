@@ -1,5 +1,11 @@
 import { match } from "ts-pattern";
-import { API_Address, API_AsyncConsumptionRequestState, API_LegalEntity, type API_CompanyUid } from "../models/api.ts";
+
+import {
+  type API_Address,
+  API_AsyncConsumptionRequestState,
+  type API_CompanyUid,
+  type API_LegalEntity,
+} from "../models/api.ts";
 import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
@@ -48,10 +54,6 @@ export function getAsyncCompanyAddressesRequest(
   return request;
 }
 
-export function hasAsyncCompanyAddressesRequest(requestId: string): boolean {
-  return asyncCompanyAddressesRequests.has(requestId);
-}
-
 export function resetAsyncCompanyAddressesRequests(): void {
   asyncCompanyAddressesRequests.clear();
 }
@@ -61,31 +63,4 @@ function getMockFinishDate(requestId: string): Date {
   // 0-15 offset, giving a finish time 60-75 seconds from now.
   const offsetSeconds = 60 + parseInt(requestId.slice(-1), 16);
   return new Date(Date.now() + offsetSeconds * 1000);
-}
-
-export function getAsyncCompanyAddressesRequestState(
-  request: AsyncCompanyAddressesRequest,
-): API_AsyncConsumptionRequestState {
-  const state =
-    request.finishDate <= new Date()
-      ? API_AsyncConsumptionRequestState.enum.COMPLETED
-      : API_AsyncConsumptionRequestState.enum.PENDING;
-
-  match(state)
-    .with(API_AsyncConsumptionRequestState.enum.COMPLETED, () => {
-      if (!request.resourceId) {
-        // Generate a resource ID for the completed request if it doesn't already have one.
-        request.resourceId = crypto.randomUUID();
-      }
-    })
-    .with(API_AsyncConsumptionRequestState.enum.PENDING, () => {
-      if (request.resourceId) {
-        throw new Error(
-          `Request ${request.id} is still pending but already has a resource ID ${request.resourceId}.`,
-        );
-      }
-    })
-    .exhaustive();
-
-  return state;
 }
