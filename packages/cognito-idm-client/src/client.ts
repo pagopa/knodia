@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { UserRole } from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 
@@ -185,17 +186,28 @@ export function buildCognitoIdmClient({
             }),
           ),
         )
-        // Otherwise reset; swallow NotAuthorizedException for non-resettable states.
-        .otherwise(() =>
-          swallowCognitoError("NotAuthorizedException", () =>
-            client.send(
-              new AdminResetUserPasswordCommand({
-                Username: input.username,
-                UserPoolId: cognitoUserPoolId,
-              }),
+        // Established (or otherwise non-resettable) states: reset; swallow
+        // NotAuthorizedException for states a reset can't apply to.
+        .with(
+          "CONFIRMED",
+          "RESET_REQUIRED",
+          "ARCHIVED",
+          "COMPROMISED",
+          "UNCONFIRMED",
+          "EXTERNAL_PROVIDER",
+          "UNKNOWN",
+          undefined,
+          () =>
+            swallowCognitoError("NotAuthorizedException", () =>
+              client.send(
+                new AdminResetUserPasswordCommand({
+                  Username: input.username,
+                  UserPoolId: cognitoUserPoolId,
+                }),
+              ),
             ),
-          ),
-        );
+        )
+        .exhaustive();
     },
 
     async updateUserEmail(input: {
