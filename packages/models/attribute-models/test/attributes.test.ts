@@ -19,6 +19,8 @@ describe("getAttribute", () => {
         scheme: "vc_poc_attributes",
       }),
     ).toEqual({
+      description:
+        "Organizations that are official business/company registers (e.g., a chamber of commerce), acting as authoritative sources for company data.",
       id: { code: "companies_registries", scheme: "vc_poc_attributes" },
       name: "Companies Registries",
     });
@@ -27,6 +29,8 @@ describe("getAttribute", () => {
   it("resolves the vc_poc_attributes/erds attribute", () => {
     expect(getAttribute({ code: "erds", scheme: "vc_poc_attributes" })).toEqual(
       {
+        description:
+          "Organizations that are Electronic Registered Delivery Service providers.",
         id: { code: "erds", scheme: "vc_poc_attributes" },
         name: "ERDS",
       },
@@ -40,6 +44,8 @@ describe("getAttribute", () => {
         scheme: "vc_poc_attributes",
       }),
     ).toEqual({
+      description:
+        "Organizations that are accredited training/education institutes, acting as authoritative sources for qualifications and training records.",
       id: { code: "training_institutes", scheme: "vc_poc_attributes" },
       name: "Training Institutes",
     });
@@ -125,6 +131,8 @@ describe("getAttribute", () => {
     expect(
       getAttribute({ code: "testing_organization", scheme: "knodia" }),
     ).toEqual({
+      description:
+        "Organizations created for users who are testing the Knodia prototype. All Organizations created for onboarded users have this attribute.",
       id: { code: "testing_organization", scheme: "knodia" },
       name: "Testing Organization",
     });
@@ -132,6 +140,8 @@ describe("getAttribute", () => {
 
   it("resolves an existing vc_territorial_units attribute", () => {
     expect(getAttribute(nuts1)).toEqual({
+      description:
+        "Organizations representing first-level (largest) administrative divisions of countries, based on the Nomenclature of Territorial Units for Statistics (NUTS). Corresponds, e.g., to “Bundesländer” for Germany or “Gewesten / Régions” for Belgium.",
       id: { code: "nuts1", scheme: "vc_territorial_units" },
       name: "NUTS 1",
     });

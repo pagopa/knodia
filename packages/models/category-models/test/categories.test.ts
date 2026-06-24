@@ -11,6 +11,8 @@ describe("getCategory", () => {
       ),
     ).toEqual({
       code: "organization.private_company.construction_activity",
+      description:
+        "That process the construction-sector activity of private companies.",
       name: "Construction activity",
       scheme: "vc_example_eservice_categories",
     });
@@ -24,6 +26,8 @@ describe("getCategory", () => {
       ),
     ).toEqual({
       code: "citizen.training.qualifications",
+      description:
+        "That process the training qualifications and certifications held by citizens.",
       name: "Training qualifications",
       scheme: "vc_example_eservice_categories",
     });
