@@ -20,7 +20,6 @@ import {
   API_EserviceSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
-  API_FlatEservice,
   API_FlatEservices,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
@@ -93,7 +92,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       } = await eserviceService.createEservice(req.body, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(201).send(toAPI_FlatEservice(eservice));
+      res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
@@ -104,7 +103,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         201: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service created successfully",
           }),
         },
@@ -174,7 +173,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_FlatEservice(eservice));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "PATCH",
     schema: {
@@ -187,7 +186,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         200: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service updated successfully",
           }),
         },
@@ -325,7 +324,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       } = await eserviceService.suspendEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_FlatEservice(eservice));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
@@ -336,7 +335,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         200: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service suspended successfully",
           }),
         },
@@ -363,7 +362,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       } = await eserviceService.reactivateEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_FlatEservice(eservice));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
@@ -374,7 +373,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         200: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service reactivated successfully",
           }),
         },
@@ -401,7 +400,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       } = await eserviceService.archiveEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
-      res.status(200).send(toAPI_FlatEservice(eservice));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
@@ -412,7 +411,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       response: {
         200: {
           headers: MetadataVersionHeader,
-          properties: API_FlatEservice.meta({
+          properties: API_Eservice.meta({
             description: "E-service archived successfully",
           }),
         },

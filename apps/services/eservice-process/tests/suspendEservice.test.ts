@@ -9,7 +9,7 @@ import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models"
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import { toAPI_FlatEservice } from "../src/models/apiConverter.ts";
+import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import {
   getAllEserviceEvents,
   injectAppRequest,
@@ -36,10 +36,21 @@ describe("POST /eservices/:eserviceId/suspend (suspendEservice)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
+    const expected = toAPI_Eservice({
+      ...eservice,
+      versions: eservice.versions.map((v) => ({
+        ...v,
+        state: EserviceVersionState.enum.Suspended,
+      })),
+    });
     const responseBody = response.json();
     expect(responseBody).toEqual({
-      ...toAPI_FlatEservice(eservice),
+      ...expected,
       updatedAt: expect.any(String),
+      versions: expected.versions.map((v) => ({
+        ...v,
+        updatedAt: expect.any(String),
+      })),
     });
 
     const events = await getAllEserviceEvents();
