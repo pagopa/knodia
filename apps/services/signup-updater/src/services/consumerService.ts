@@ -221,8 +221,7 @@ async function createTestingOrganization(
     body: {
       // Each organization gets a unique attribute (scheme = its Knode ID, code =
       // its name) on top of testing_organization, so e-services can require it to
-      // restrict consumption to that single organization. org-process accepts the
-      // own-node scheme (KN-809).
+      // restrict consumption to that single organization.
       attributes: [
         TESTING_ORGANIZATION_ATTRIBUTE,
         { code: name, scheme: knodeId },

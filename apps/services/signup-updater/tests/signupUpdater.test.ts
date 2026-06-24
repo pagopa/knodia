@@ -228,7 +228,6 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
     const orionCall = createOrganizationMock.mock.calls.at(0)?.at(0);
     expect(orionCall?.body).toEqual({
-      // testing_organization + the per-org unique attribute (scheme = node, code = name).
       attributes: [
         { code: "testing_organization", scheme: "knodia" },
         { code: "Rossi Org Orion", scheme: "Orion" },
@@ -241,7 +240,6 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     });
     expect(orionCall?.headers.authorization).toBe("Bearer mock-internal-token");
 
-    // The Lynx org carries its own unique attribute scoped to the Lynx node.
     const lynxCall = createOrganizationMock.mock.calls.at(1)?.at(0);
     expect(lynxCall?.body).toEqual({
       attributes: [
