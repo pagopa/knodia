@@ -5,6 +5,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
   createOrderByFilters,
+  escapeRegExp,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
 import {
@@ -54,7 +55,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   ? inArray(readmodelOrganization.id, organizationId)
                   : undefined,
                 name
-                  ? ilike(readmodelOrganization.name, `%${name}%`)
+                  ? ilike(readmodelOrganization.name, `%${escapeRegExp(name)}%`)
                   : undefined,
               ),
             )
