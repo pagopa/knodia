@@ -1,3 +1,5 @@
+import type { OutgoingHttpHeaders } from "http2";
+
 import {
   type EserviceId,
   type EserviceVersionId,
@@ -34,8 +36,13 @@ async function requestCompanyAddresses({
   body?: string[];
   token?: string;
 } = {}) {
+  const headers: OutgoingHttpHeaders = {};
+  if (token) {
+    headers["authorization"] = `Bearer ${token}`;
+  }
+
   return await getCtx().app.inject({
-    headers: { authorization: `Bearer ${token}` },
+    headers,
     method: "POST",
     payload: body,
     url: "/legal-entities/address-requests",
