@@ -64,6 +64,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
     environment:
       PGHOST: postgres
@@ -278,7 +279,7 @@ services:
     depends_on:
       - postgres
 
-  # Mock AWS KMS for local development
+  # Mock AWS KMS for local development (no seed file — keys created via API)
   local-kms:
     security_opt:
       - no-new-privileges:true
@@ -308,14 +309,12 @@ services:
         condition: service_healthy
     volumes:
       - jwks-data:/jwks
-      - ./keys:/keys
       - ../scripts/local-auth:/app/scripts/local-auth:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-      KEYS_OUTPUT_DIR: /keys/kms
     command: node scripts/local-auth/kms-setup.mjs
 
   # Serves JWKS endpoints for local token validation

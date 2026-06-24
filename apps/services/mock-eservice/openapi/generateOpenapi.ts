@@ -6,6 +6,7 @@ import {
   buildBearerPocUc01QualificationsAppFromConfig,
   buildBearerPocUc01SetQualificationAppFromConfig,
   buildBearerPocUc02CompaniesAppFromConfig,
+  buildBearerPocUc03SupervisoryBodyAppFromConfig,
   buildBearerReceiveDataAppFromConfig,
   buildBearerSignalHubAppFromConfig,
   buildDpopAppFromConfig,
@@ -37,6 +38,10 @@ await Promise.all([
   generateOpenapi(
     buildBearerReceiveDataAppFromConfig(config),
     "openapi/openapi-bearer-receive-data.yaml",
+  ),
+  generateOpenapi(
+    buildBearerPocUc03SupervisoryBodyAppFromConfig(config),
+    "openapi/openapi-bearer-poc-uc03-supervisory-body.yaml",
   ),
   generateOpenapi(
     buildBearerIntegrityRest02AppFromConfig(config),

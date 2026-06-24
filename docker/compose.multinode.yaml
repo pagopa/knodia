@@ -103,6 +103,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
     environment:
       PGHOST: postgres
@@ -2119,19 +2120,20 @@ services:
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-      KEYS_OUTPUT_DIR: /keys/kms
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       INTEGRITY_PRODUCER_KEY_KMS_ALIAS: alias/local-knodia-integrity-rest-02-key
     # Provision the KMS keys, then derive the integrity producer key into the env file
-    # the seed container reads (it has no Node/KMS to derive it itself).
+    # the seed container reads (it has no Node/KMS to derive it itself). mkdir keeps the
+    # output dir present on a fresh checkout, since docker/keys is gitignored.
     command:
       - sh
       - -ec
       - |
         node scripts/local-auth/kms-setup.mjs
+        mkdir -p /keys/kms
         node scripts/seed/derive-integrity-producer-key.ts > /keys/kms/integrity-producer-key.env
 
   local-jwks:
