@@ -33,7 +33,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
   MockAsyncConsumptionRouterOptions
 > = async (fastify, { knodeId }) => {
   fastify.route({
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
       const { logger } = getContextValues(requestContext);
       assertTokenClaimsAreValidForEservice(
         ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -43,7 +43,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       );
 
       const requestId = randomUUID();
-      addAsyncCompanyAddressesRequest(requestId);
+      addAsyncCompanyAddressesRequest(requestId, req.body);
 
       logger.info(
         `Mock e-service company addresses requested. Generated request ID: ${requestId}`,
