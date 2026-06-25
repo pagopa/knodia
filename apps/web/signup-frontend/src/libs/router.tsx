@@ -5,6 +5,7 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 
+import { APP_BASE_PATH } from "@/config/basepath";
 import { type AuthContext } from "@/contexts/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
@@ -15,6 +16,7 @@ export interface RouterContext {
 }
 
 export const router = createRouter({
+  basepath: APP_BASE_PATH,
   context: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider

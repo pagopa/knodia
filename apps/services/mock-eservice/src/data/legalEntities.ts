@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import z from "zod";
 
 import {
+  API_Address,
   API_CompanyUid,
   API_Evidence,
   type API_EvidenceType,
@@ -39,6 +40,7 @@ const EvidenceRow = API_Evidence.omit({ isAbout: true }).refine(
 
 const LegalEntitiesFile = z.record(API_CompanyUid, LegalEntityRow);
 const EvidencesFile = z.record(API_CompanyUid, z.array(EvidenceRow));
+const AddressesFile = z.record(API_CompanyUid, API_Address);
 
 const dataDir = dirname(fileURLToPath(import.meta.url));
 const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
@@ -46,6 +48,10 @@ const readJson = <T>(file: string, schema: z.ZodType<T>): T =>
 
 const LEGAL_ENTITIES = readJson("legalEntities.json", LegalEntitiesFile);
 const EVIDENCES = readJson("evidences.json", EvidencesFile);
+const LEGAL_ENTITY_ADDRESSES = readJson(
+  "legalEntitiesAddresses.json",
+  AddressesFile,
+);
 
 // Demo-only: the evidence-update route bumps a per-company revision that
 // findEvidences turns into an extended validity end year, so the recover step
@@ -90,6 +96,12 @@ export function findLegalEntity(
     return undefined;
   }
   return { ...row, legalIdentifier: { ...VAT_SCHEME, notation: uid } };
+}
+
+export function findLegalEntityAddress(
+  uid: API_CompanyUid,
+): API_Address | undefined {
+  return LEGAL_ENTITY_ADDRESSES[uid];
 }
 
 export function resetEvidenceRevisions(): void {
