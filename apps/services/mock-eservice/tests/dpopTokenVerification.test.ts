@@ -4,30 +4,20 @@ import type {
   DpopProofPayload,
 } from "@knodia/authorization-models/dpop";
 
-import { type EserviceAccessTokenClaims } from "@knodia/common-models/auth";
-import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
-  type ConsumerKeychainId,
   type EserviceId,
   type EserviceVersionId,
   generateId,
   KnodeId,
   type OrganizationId,
-  type PurposeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { getMockDpopProof } from "@knodia/test-commons/utils";
-import { calculateJwkThumbprint, SignJWT } from "jose";
-import { randomUUID } from "node:crypto";
+import { calculateJwkThumbprint } from "jose";
 import { describe, expect, it } from "vitest";
 
-import {
-  ACCEPTED_AUDIENCES,
-  EXPECTED_ISSUER,
-  getCtx,
-  TEST_KID,
-  TEST_KNODE_ID,
-} from "./setup.ts";
+import { getCtx, TEST_KNODE_ID } from "./setup.ts";
+import { signEserviceAccessToken } from "./utils.ts";
 
 // Same hardcoded identity as apps/services/mock-eservice/src/routers/mockDpopRouter.ts
 const EXPECTED_ESERVICE_ID = unsafeBrandId<EserviceId>(
@@ -85,44 +75,21 @@ async function signToken(
     dpopKeys: { dpopPublicKeyJwk },
     tokenKeys: { tokenPrivateKey },
   } = getCtx();
-  const {
-    audience,
-    expiresIn = "5m",
-    issuer,
-    payload,
-    typ = "at+jwt",
-  } = overrides;
 
-  const now = Math.floor(Date.now() / 1000);
-  const defaultPayload: Partial<EserviceAccessTokenClaims> = {
-    client_id: generateId<ConsumerKeychainId>(),
-    cnf: {
-      jkt: await calculateJwkThumbprint(dpopPublicKeyJwk),
+  return signEserviceAccessToken({
+    eserviceId: EXPECTED_ESERVICE_ID,
+    eserviceVersionId: EXPECTED_ESERVICE_VERSION_ID,
+    knodeId: TEST_KNODE_ID,
+    payload: {
+      cnf: {
+        jkt: await calculateJwkThumbprint(dpopPublicKeyJwk),
+      },
+      ...overrides.payload,
     },
-    consumer: {
-      id: generateExternalId<OrganizationId>(),
-      knode_id: OTHER_KNODE_ID,
-    },
-    eservice: {
-      id: EXPECTED_ESERVICE_ID,
-      knode_id: TEST_KNODE_ID,
-      version: EXPECTED_ESERVICE_VERSION_ID,
-    },
-    nbf: now,
-    producer: { id: EXPECTED_PRODUCER_ID, knode_id: TEST_KNODE_ID },
-    purpose: { id: generateId<PurposeId>(), knode_id: TEST_KNODE_ID },
-  };
-
-  const jwt = new SignJWT({ ...defaultPayload, ...payload })
-    .setProtectedHeader({ alg: "RS256", kid: TEST_KID, typ })
-    .setSubject(randomUUID())
-    .setIssuer(issuer ?? EXPECTED_ISSUER)
-    .setAudience(audience ?? ACCEPTED_AUDIENCES)
-    .setJti(randomUUID())
-    .setIssuedAt(now)
-    .setExpirationTime(expiresIn);
-
-  return jwt.sign(tokenPrivateKey);
+    producerId: EXPECTED_PRODUCER_ID,
+    tokenPrivateKey,
+    ...overrides,
+  });
 }
 
 describe("mock-eservice DPoP access-token verification", () => {
