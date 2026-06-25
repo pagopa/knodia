@@ -34,17 +34,25 @@ for f in "$SQL_DIR"/*.sql; do
 done
 
 # The s3 key prefix MUST match the `path` of an eservice_interface row in the SQL.
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer.yaml" \
-  "s3://$S3_BUCKET/d44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml"
+# Mockups 01-03 (bearer, dpop, signal-hub) are Orion-only: upload only when the
+# matching SQL is in $SQL_DIR, so the multinode Lynx run doesn't leave orphan specs.
+if [ -f "$SQL_DIR/mock-bearer-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer.yaml" \
+    "s3://$S3_BUCKET/d44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-dpop.yaml" \
-  "s3://$S3_BUCKET/e522049f-2301-442a-91de-e5bcaffd08be/mock-dpop-eservice.yaml"
+if [ -f "$SQL_DIR/mock-dpop-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-dpop.yaml" \
+    "s3://$S3_BUCKET/e522049f-2301-442a-91de-e5bcaffd08be/mock-dpop-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml" \
-  "s3://$S3_BUCKET/e5540a33-703e-4527-9880-05e7d347f93e/mock-bearer-signal-hub-eservice.yaml"
+if [ -f "$SQL_DIR/mock-signal-hub-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml" \
+    "s3://$S3_BUCKET/e5540a33-703e-4527-9880-05e7d347f93e/mock-bearer-signal-hub-eservice.yaml"
+fi
 
 aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
   "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml" \
