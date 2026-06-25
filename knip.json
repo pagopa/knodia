@@ -31,6 +31,10 @@
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
+    "apps/services/k2o-gateway": {
+      "entry": ["tests/**/*.ts"],
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
     "apps/services/authorization-server": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]

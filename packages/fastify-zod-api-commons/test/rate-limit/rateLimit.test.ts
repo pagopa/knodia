@@ -1,7 +1,10 @@
 import { requestContext } from "@fastify/request-context";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { getTestUISessionTokenClaims } from "@knodia/test-commons/auth";
-import { createTestLogger } from "@knodia/test-commons/utils";
+import {
+  createTestLogger,
+  waitForHealthyLimiter,
+} from "@knodia/test-commons/utils";
 import { RateLimiterRedis, type RateLimiterRes } from "rate-limiter-flexible";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -27,11 +30,6 @@ const SCOPE = {
 };
 
 const { logger: testLogger } = createTestLogger();
-
-const delay = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 
 function getBaseUiSessionAuth(): UISessionAuthData {
   const authData = extractAuthDataFromToken(getTestUISessionTokenClaims());
@@ -82,22 +80,6 @@ function freshUiSessionAuth(): UISessionAuthData {
   };
 }
 
-async function waitForHealthyLimiter(rateLimiter: RateLimiter): Promise<void> {
-  let lastStatus: Awaited<ReturnType<RateLimiter["consume"]>> | undefined;
-
-  for (let attempt = 0; attempt < 20; attempt++) {
-    lastStatus = await rateLimiter.consume(freshOrganizationId(), testLogger);
-    if (!lastStatus.degraded) {
-      return;
-    }
-    await delay(50);
-  }
-
-  throw new Error(
-    `Redis rate limiter did not become healthy: ${JSON.stringify(lastStatus)}`,
-  );
-}
-
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -107,7 +89,7 @@ describe("initRedisRateLimiter", () => {
 
   beforeEach(async () => {
     rateLimiter = buildRateLimiter();
-    await waitForHealthyLimiter(rateLimiter);
+    await waitForHealthyLimiter(rateLimiter, testLogger);
   });
 
   afterEach(async () => {
@@ -316,7 +298,7 @@ describe("rateLimitPlugin", () => {
 
   beforeEach(async () => {
     rateLimiter = buildRateLimiter();
-    await waitForHealthyLimiter(rateLimiter);
+    await waitForHealthyLimiter(rateLimiter, testLogger);
   });
 
   afterEach(async () => {
