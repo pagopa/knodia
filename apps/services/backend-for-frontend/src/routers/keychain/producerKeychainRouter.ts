@@ -20,6 +20,7 @@ import {
   getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
 import {
   API_ProducerKeychainEserviceLinkSeed,
   API_ProducerKeychainIdPathParam,
@@ -766,19 +767,24 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
 
       const results = await Promise.all(
         linkedEservices.map(async (link) => {
-          const [{ data: eservice }, { data: latestVersion }] =
-            await Promise.all([
-              eserviceProcessApi.getEservice({
-                client: eserviceProcessClient,
-                headers,
-                path: { eserviceId: link.eserviceId },
-              }),
-              eserviceProcessApi.getEserviceLatestVersion({
-                client: eserviceProcessClient,
-                headers,
-                path: { eserviceId: link.eserviceId },
-              }),
-            ]);
+          const { data: eservice } = await eserviceProcessApi.getEservice({
+            client: eserviceProcessClient,
+            headers,
+            path: { eserviceId: link.eserviceId },
+          });
+
+          const latestVersion = assertEntityExists(
+            eservice.versions.reduce<
+              (typeof eservice.versions)[number] | undefined
+            >(
+              (acc, v) =>
+                acc === undefined || v.versionNumber > acc.versionNumber
+                  ? v
+                  : acc,
+              undefined,
+            ),
+            `Latest version not found for E-service ${eservice.id}`,
+          );
 
           return toAPI_ProducerKeychainEservice(
             link,
