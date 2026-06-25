@@ -122,6 +122,68 @@ const MOCK_USERS = [
     UserStatus: "CONFIRMED",
     Username: "construction_companies_registry_orion_admin",
   },
+  // POC UC03 users — one per POC org (ids match scripts/seed/sql/{lynx,orion}
+  // and scripts/local-auth/generate-token.mjs). All roles, no role-based behaviour.
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000105" },
+      { Name: "email", Value: "admin@systemserclynx.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "System SERC" },
+      { Name: "family_name", Value: "Lynx" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000105",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000105"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "system_serc_lynx_admin",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000106" },
+      { Name: "email", Value: "admin@systemsercorion.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "System SERC" },
+      { Name: "family_name", Value: "Orion" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000106",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000106"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "system_serc_orion_admin",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000107" },
+      { Name: "email", Value: "admin@supervisorybodyorion.example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Supervisory Body" },
+      { Name: "family_name", Value: "Orion" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000107",
+      },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ],
+    Enabled: true,
+    Groups: ["org:00000000-0000-4000-8000-000000000107"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "supervisory_body_orion_admin",
+  },
   // POC UC01 users — one per POC org (ids match scripts/seed/sql/{lynx,orion}
   // and scripts/local-auth/generate-token.mjs). All roles, no role-based behaviour.
   {
@@ -342,6 +404,41 @@ function handleAdminDeleteUser(req, res, payload) {
   );
 }
 
+function handleAdminGetUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+
+  if (!user) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        __type: "UserNotFoundException",
+        message: "User does not exist",
+      }),
+    );
+    return;
+  }
+
+  console.log(
+    `[admin-get-user] Returned user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {
+      Enabled: user.Enabled,
+      UserAttributes: user.Attributes,
+      UserCreateDate: user.UserCreateDate,
+      UserLastModifiedDate: user.UserLastModifiedDate,
+      UserStatus: user.UserStatus,
+      Username: user.Username,
+    },
+    {
+      "x-amz-target": req.headers["x-amz-target"] ?? "",
+    },
+  );
+}
+
 function handleAdminDisableUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   if (user) {
@@ -521,6 +618,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminGetUser") {
+        handleAdminGetUser(req, res, payload);
         return;
       }
 

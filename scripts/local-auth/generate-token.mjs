@@ -22,6 +22,9 @@ const ORG_USERNAMES = {
     "construction_companies_registry_orion_admin",
   "00000000-0000-4000-8000-000000000103": "student_registry_lynx_admin",
   "00000000-0000-4000-8000-000000000104": "academy_orion_admin",
+  "00000000-0000-4000-8000-000000000105": "system_serc_lynx_admin",
+  "00000000-0000-4000-8000-000000000106": "system_serc_orion_admin",
+  "00000000-0000-4000-8000-000000000107": "supervisory_body_orion_admin",
 };
 const INTERNAL_SUB = "local-internal-service";
 
@@ -41,11 +44,12 @@ const KNODE_API_KEYCHAIN_ID = "00000000-0000-4000-8000-000000000020";
 const KNODE_API_KEYCHAIN_KNODE_ID = "Orion";
 const KNODE_API_ORG_KNODE_ID = "Orion";
 
-// Placeholder values for signup-session tokens (replace with real values for testing)
+// Placeholder values for signup-session tokens (replace with real values for testing).
+// This is a SPID profile (spidCode); for CIE / eIDAS swap it for fiscalNumber /
+// personIdentifier and set `sub` to the same value.
 const SIGNUP_NAME = "Mario";
 const SIGNUP_FAMILY_NAME = "Rossi";
 const SIGNUP_DATE_OF_BIRTH = "1980-01-01";
-const SIGNUP_FISCAL_NUMBER = "RSSMRA80A01H501U";
 const SIGNUP_SPID_CODE = "SPID-001";
 const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
@@ -82,8 +86,8 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
 function getAudience(targetEnv, type) {
   if (type === "knode-api") {
     return targetEnv === "local"
-      ? "signalhub.test.knodia.org"
-      : `signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`;
+      ? ["signalhub.test.knodia.org", "k2o-gateway.test.knodia.org"]
+      : [`signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`, `k2o-gateway.${targetEnv.replace("dev-", "")}.dev.knodia.com`];
   }
   return targetEnv === "local"
     ? `local.knodia.test/${type}`
@@ -143,13 +147,12 @@ function getClaims(targetEnv, type, orgId, subjectId) {
       };
     case "ui-signup-session":
       return {
-        sub: USER_ID,
+        sub: SIGNUP_SPID_CODE,
         type,
         aud,
         name: SIGNUP_NAME,
         familyName: SIGNUP_FAMILY_NAME,
         dateOfBirth: SIGNUP_DATE_OF_BIRTH,
-        fiscalNumber: SIGNUP_FISCAL_NUMBER,
         spidCode: SIGNUP_SPID_CODE,
         oneIdNonce: SIGNUP_ONE_ID_NONCE,
       };

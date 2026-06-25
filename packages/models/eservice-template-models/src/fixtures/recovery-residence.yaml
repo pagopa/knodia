@@ -1,0 +1,118 @@
+openapi: 3.0.3
+
+info:
+  title: Recovery of the residence of a natural person
+  description: |
+    API for recovering the residence of a natural person
+  version: 1.0.0
+
+servers:
+  - url: https://api.example-erds.it/v1
+
+paths:
+  /getResidence:
+    post:
+      description: |
+        Recovering the residence of a natural person from the unique national identifier
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Identifier"
+      responses:
+        "200":
+          description: Residence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Residence"
+
+  /getResidences:
+    post:
+      description: |
+        Recovering the residence and identifier of a natural person from personal data,
+        the response is an array in the case of multiple people with the same personal data
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonalData"
+      responses:
+        "200":
+          description: Array of residences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoreResidences"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token (Voucher) issued by the Producer Knode.
+        The token is in JWS format and complies
+        with the security specifications and recommendations included in RFC8725.
+
+  schemas:
+    Identifier:
+      type: object
+      properties:
+        identifierSchemeURI:
+          type: string
+        identifierNotation:
+          type: string
+      required:
+        - identifierSchemeURI
+        - identifierNotation
+
+    PersonalData:
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        placeOfBirth:
+          type: string
+      required:
+        - givenName
+        - familyName
+        - dateOfBirth
+        - placeOfBirth
+
+    Residence:
+      type: object
+      properties:
+        adminUnitL1:
+          type: string
+        adminUnitL2:
+          type: string
+        fullAddress:
+          type: string
+        postCode:
+          type: string
+        postName:
+          type: string
+      required:
+        - adminUnitL1
+        - adminUnitL2
+        - fullAddress
+
+    MoreResidences:
+      type: array
+      items:
+        allOf:
+          - $ref: "#/components/schemas/Identifier"
+          - $ref: "#/components/schemas/Residence"

@@ -2,7 +2,9 @@ import type { SerializeOptions } from "@fastify/cookie";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
@@ -27,10 +29,12 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (_req, res) => {
+      const ctx = getContextValues(requestContext);
+
       const nonce = generateId();
       const state = generateId();
 
-      const { loginUrl } = authService.startOIDCSession({ nonce, state });
+      const { loginUrl } = authService.startOIDCSession({ nonce, state }, ctx);
       oidcSessionCookie.set(res, { nonce, state });
 
       res.status(302).redirect(loginUrl);
@@ -52,12 +56,17 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = getContextValues(requestContext);
+
       const oidcSession = oidcSessionCookie.get(req);
-      const { uiSignupSessionToken } = await authService.exchangeOIDCCode({
-        code: req.query.code,
-        oidcSession,
-        state: req.query.state,
-      });
+      const { uiSignupSessionToken } = await authService.exchangeOIDCCode(
+        {
+          code: req.query.code,
+          oidcSession,
+          state: req.query.state,
+        },
+        ctx,
+      );
 
       oidcSessionCookie.clear(res);
       res.status(200).send({ uiSignupSessionToken });
@@ -76,6 +85,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       security: [],
       tags: [apiTags.auth],
@@ -86,6 +96,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
 const OIDC_SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
+  maxAge: 5 * 60, // 5 minutes
   path: "/",
   sameSite: "strict",
   secure: true,

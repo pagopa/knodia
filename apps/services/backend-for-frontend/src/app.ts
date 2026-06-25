@@ -1,5 +1,7 @@
+/* eslint-disable max-lines-per-function */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
+import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
@@ -129,7 +131,11 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
+
+  const cognitoIdmClient = buildCognitoIdmClient(config);
+
   const authService = authServiceBuilder({
+    cognitoIdmClient,
     config,
     magicLinkTokenStore,
     rateLimiter,

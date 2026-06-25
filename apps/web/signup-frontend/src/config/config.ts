@@ -16,6 +16,7 @@ import { z } from "zod";
 
 const KnodiaSignupFrontendConfig = z.object({
   COMPANY_DETAILS_URL: z.string().min(1, "COMPANY_DETAILS_URL is required"),
+  KNODIA_ORG_URL: z.string().min(1, "KNODIA_ORG_URL is required"),
   LEGAL_NOTES_URL: z.string().min(1, "LEGAL_NOTES_URL is required"),
   OIDC_SESSION_FLOW_START_URL: z
     .string()
@@ -36,6 +37,7 @@ if (!parsed.success) {
 
 export const config = {
   companyDetailsUrl: parsed.data.COMPANY_DETAILS_URL,
+  knodiaOrgUrl: parsed.data.KNODIA_ORG_URL,
   legalNotesUrl: parsed.data.LEGAL_NOTES_URL,
   oidcSessionFlowStartUrl: parsed.data.OIDC_SESSION_FLOW_START_URL,
   privacyPolicyUrl: parsed.data.PRIVACY_POLICY_URL,
