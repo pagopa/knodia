@@ -166,7 +166,7 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
     expect(res.statusCode).toBe(404);
   });
 
-  it("returns 401 when the resource ID does not belong to the request", async () => {
+  it("returns 404 when the resource ID does not belong to the request", async () => {
     const token = await signToken();
     const requestId1 = randomUUID();
     completeRequest(requestId1);
@@ -179,7 +179,7 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
       token,
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(404);
   });
 
   it("returns 401 for a token issued for a different mock e-service", async () => {

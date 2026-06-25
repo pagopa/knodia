@@ -155,7 +155,7 @@ export function resourceIdDoesNotBelongToAsyncRequest(
   return createApiError({
     code: "RESOURCE_ID_DOES_NOT_BELONG_TO_ASYNC_REQUEST",
     detail: `Resource ID ${resourceId} does not belong to request ID ${requestId}`,
-    status: 401,
+    status: 404,
     title: "resource_id_does_not_belong_to_async_request",
   });
 }
