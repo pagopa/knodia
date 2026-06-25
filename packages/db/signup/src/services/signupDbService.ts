@@ -11,9 +11,11 @@ import {
   type SignupUser,
   type SignupUserDeletion,
   SignupUserStatus,
+  type SuspendedSignupUser,
   type SuspensionReason,
 } from "@knodia/signup-models";
 import { and, desc, eq, inArray, or, type SQL } from "drizzle-orm";
+import { match } from "ts-pattern";
 
 import {
   toDeletedSignupUserSQL,
@@ -216,13 +218,29 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       await db.insert(signupUser).values(toSignupUserSQL(user));
     },
 
-    async listSuspendedSignupUsers(): Promise<SignupUser[]> {
+    async listSuspendedSignupUsers(): Promise<SuspendedSignupUser[]> {
       const results = await db
         .select()
         .from(signupUser)
         .where(eq(signupUser.status, SignupUserStatus.enum.Suspended))
         .orderBy(desc(signupUser.suspendedAt));
-      return results.map(toSignupUser);
+      // The query filters on Suspended, but toSignupUser parses the full union;
+      // narrow exhaustively so the return type matches the guarantee. A
+      // non-Suspended row here is impossible and signals a query/data bug.
+      return results.map(toSignupUser).map((user) =>
+        match(user)
+          .with({ status: SignupUserStatus.enum.Suspended }, (u) => u)
+          .with(
+            { status: SignupUserStatus.enum.Active },
+            { status: SignupUserStatus.enum.DeletionPending },
+            () => {
+              throw genericInternalError(
+                "listSuspendedSignupUsers returned a non-Suspended user",
+              );
+            },
+          )
+          .exhaustive(),
+      );
     },
 
     async markSignupUserDeletionPending(

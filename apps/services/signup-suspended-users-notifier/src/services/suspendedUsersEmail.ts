@@ -93,6 +93,17 @@ function csvField(value: string | undefined): string {
   return /[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
+// Static config — build the formatter once and reuse it across every field.
+const ROME_DATE_TIME_FORMAT = new Intl.DateTimeFormat("it-IT", {
+  day: "2-digit",
+  hour: "2-digit",
+  hour12: false,
+  minute: "2-digit",
+  month: "2-digit",
+  timeZone: "Europe/Rome",
+  year: "numeric",
+});
+
 function romeDateParts(date: Date): {
   day: string;
   hour: string;
@@ -100,15 +111,7 @@ function romeDateParts(date: Date): {
   month: string;
   year: string;
 } {
-  const parts = new Intl.DateTimeFormat("it-IT", {
-    day: "2-digit",
-    hour: "2-digit",
-    hour12: false,
-    minute: "2-digit",
-    month: "2-digit",
-    timeZone: "Europe/Rome",
-    year: "numeric",
-  }).formatToParts(date);
+  const parts = ROME_DATE_TIME_FORMAT.formatToParts(date);
   const get = (type: string): string =>
     parts.find((p) => p.type === type)?.value ?? "";
   return {

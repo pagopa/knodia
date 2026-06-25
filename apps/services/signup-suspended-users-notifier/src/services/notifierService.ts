@@ -1,14 +1,7 @@
-import { genericInternalError } from "@knodia/common-models/errors";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import { type EmailSender } from "@knodia/ses-email-sender";
-import {
-  type SignupUser,
-  SignupUserStatus,
-  type SuspendedSignupUser,
-} from "@knodia/signup-models";
 import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type Logger } from "pino";
-import { match } from "ts-pattern";
 
 import {
   buildSuspendedUsersCsv,
@@ -35,9 +28,7 @@ export function notifierServiceBuilder(
     }): Promise<void> {
       logger.info("Suspended-users notification job started");
 
-      const suspended = (await signupDbService.listSuspendedSignupUsers()).map(
-        assertSuspended,
-      );
+      const suspended = await signupDbService.listSuspendedSignupUsers();
 
       // Empty list → do not send (KN-802 redundancy applies only when there is
       // something to report).
@@ -66,22 +57,4 @@ export function notifierServiceBuilder(
       );
     },
   };
-}
-
-// The query filters on status = Suspended, but the row parses to the full
-// union; narrow exhaustively rather than cast. A non-Suspended row here is
-// impossible and signals a query/data bug.
-function assertSuspended(user: SignupUser): SuspendedSignupUser {
-  return match(user)
-    .with({ status: SignupUserStatus.enum.Suspended }, (u) => u)
-    .with(
-      { status: SignupUserStatus.enum.Active },
-      { status: SignupUserStatus.enum.DeletionPending },
-      () => {
-        throw genericInternalError(
-          "listSuspendedSignupUsers returned a non-Suspended user",
-        );
-      },
-    )
-    .exhaustive();
 }
