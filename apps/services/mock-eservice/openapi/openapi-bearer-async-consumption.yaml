@@ -107,6 +107,17 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    GetCompanyAddressesRequestStateResponse:
+      type: object
+      properties:
+        resourceId:
+          allOf:
+            - $ref: "#/components/schemas/AsyncConsumptionResourceId"
+        state:
+          $ref: "#/components/schemas/AsyncConsumptionRequestState"
+      required:
+        - state
+      additionalProperties: false
   headers:
     RateLimitLimit:
       description: Total requests allowed in the current window.
@@ -244,16 +255,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  resourceId:
-                    allOf:
-                      - $ref: "#/components/schemas/AsyncConsumptionResourceId"
-                  state:
-                    $ref: "#/components/schemas/AsyncConsumptionRequestState"
-                required:
-                  - state
-                additionalProperties: false
+                $ref: "#/components/schemas/GetCompanyAddressesRequestStateResponse"
           headers:
             X-RateLimit-Limit:
               $ref: "#/components/headers/RateLimitLimit"

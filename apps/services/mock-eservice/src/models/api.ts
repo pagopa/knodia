@@ -641,10 +641,12 @@ const API_AsyncConsumptionResourceId = z.uuid().meta({
   id: "AsyncConsumptionResourceId",
 });
 
-export const API_GetCompanyAddressesRequestStateResponse = z.strictObject({
-  resourceId: API_AsyncConsumptionResourceId.optional(),
-  state: API_AsyncConsumptionRequestState,
-});
+export const API_GetCompanyAddressesRequestStateResponse = z
+  .strictObject({
+    resourceId: API_AsyncConsumptionResourceId.optional(),
+    state: API_AsyncConsumptionRequestState,
+  })
+  .meta({ id: "GetCompanyAddressesRequestStateResponse" });
 export type API_GetCompanyAddressesRequestStateResponse = z.infer<
   typeof API_GetCompanyAddressesRequestStateResponse
 >;
