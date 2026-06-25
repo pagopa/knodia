@@ -75,7 +75,7 @@ describe("toAPI_ProducerKeychainEservice", () => {
     id: crypto.randomUUID(),
     mode: "ProvideData",
     name: { en: "Test E-Service" },
-  } as eserviceProcessApi.FlatEservice;
+  } as eserviceProcessApi.Eservice;
 
   it("maps e-service metadata, the link timestamp and the version state", () => {
     const result = toAPI_ProducerKeychainEservice(link, eservice, "Active");

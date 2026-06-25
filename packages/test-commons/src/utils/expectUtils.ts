@@ -23,7 +23,7 @@ export function toExpectAgreement(agreement: Agreement) {
 export function toExpectAPI_Eservice(
   eservice: Omit<
     Eservice,
-    "createdAt" | "id" | "producerId" | "template" | "updatedAt"
+    "createdAt" | "id" | "producerId" | "template" | "updatedAt" | "versions"
   > & {
     createdAt: Date | string;
     id: string;
@@ -33,11 +33,18 @@ export function toExpectAPI_Eservice(
   },
 ) {
   return {
-    ...toExpectAPI_FlatEservice(eservice),
-    ...(eservice.receiveDataConfig !== undefined
-      ? { receiveDataConfig: eservice.receiveDataConfig }
-      : {}),
-    versions: eservice.versions.map(toExpectAPI_EserviceVersion),
+    categories: expect.arrayContaining(eservice.categories),
+    createdAt: toExpectIsoOrNull(eservice.createdAt),
+    description: eservice.description,
+    id: unsafeBrandId(eservice.id),
+    isConsumerOperatorIdentificationRequired:
+      eservice.isConsumerOperatorIdentificationRequired,
+    isSignalHubEnabled: eservice.isSignalHubEnabled,
+    mode: eservice.mode,
+    name: eservice.name,
+    producerId: unsafeBrandId(eservice.producerId),
+    ...(eservice.template ? { template: eservice.template } : {}),
+    updatedAt: toExpectIsoOrNull(eservice.updatedAt),
   };
 }
 
@@ -73,34 +80,6 @@ export function toExpectAPI_EserviceVersionInterfaceDocument(
     path: doc.path,
     prettyName: doc.prettyName,
     updatedAt: doc.updatedAt.toISOString(),
-  };
-}
-
-export function toExpectAPI_FlatEservice(
-  eservice: Omit<
-    Eservice,
-    "createdAt" | "id" | "producerId" | "template" | "updatedAt" | "versions"
-  > & {
-    createdAt: Date | string;
-    id: string;
-    producerId: string;
-    template?: { id: string; knodeId: string };
-    updatedAt: Date | string;
-  },
-) {
-  return {
-    categories: expect.arrayContaining(eservice.categories),
-    createdAt: toExpectIsoOrNull(eservice.createdAt),
-    description: eservice.description,
-    id: unsafeBrandId(eservice.id),
-    isConsumerOperatorIdentificationRequired:
-      eservice.isConsumerOperatorIdentificationRequired,
-    isSignalHubEnabled: eservice.isSignalHubEnabled,
-    mode: eservice.mode,
-    name: eservice.name,
-    producerId: unsafeBrandId(eservice.producerId),
-    ...(eservice.template ? { template: eservice.template } : {}),
-    updatedAt: toExpectIsoOrNull(eservice.updatedAt),
   };
 }
 

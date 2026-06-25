@@ -126,25 +126,6 @@ export type EserviceVersionInterfaceDocument = {
     updatedAt: string;
 };
 
-export type FlatEservice = {
-    categories: Array<EserviceCategory>;
-    createdAt: string;
-    description: LocalizedDescription;
-    id: string;
-    isConsumerOperatorIdentificationRequired: boolean;
-    isSignalHubEnabled: boolean;
-    mode: EserviceMode;
-    name: LocalizedName;
-    producerId: string;
-    template?: EserviceTemplateId;
-    updatedAt: string;
-};
-
-export type FlatEservices = {
-    pagination: Pagination;
-    results: Array<FlatEservice>;
-};
-
 export type PurposeFormOption = {
     description: LocalizedDescription;
     formAnswersJson: PurposeFormAnswers;
@@ -198,10 +179,6 @@ export type EserviceVersion = {
     versionNumber: number;
 };
 
-export type ReceiveDataConfig = {
-    purposeFormOptions: Array<PurposeFormOption>;
-};
-
 export type Eservice = {
     categories: Array<EserviceCategory>;
     createdAt: string;
@@ -212,10 +189,13 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
-    receiveDataConfig?: ReceiveDataConfig;
     template?: EserviceTemplateId;
     updatedAt: string;
-    versions: Array<EserviceVersion>;
+};
+
+export type Eservices = {
+    pagination: Pagination;
+    results: Array<Eservice>;
 };
 
 export type InterfaceDocumentSeed = {
@@ -440,7 +420,7 @@ export type GetEservicesResponses = {
     /**
      * E-services retrieved successfully
      */
-    200: FlatEservices;
+    200: Eservices;
 };
 
 export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
@@ -915,7 +895,7 @@ export type GetCatalogEservicesResponses = {
     /**
      * E-services retrieved successfully
      */
-    200: FlatEservices;
+    200: Eservices;
 };
 
 export type GetCatalogEservicesResponse = GetCatalogEservicesResponses[keyof GetCatalogEservicesResponses];

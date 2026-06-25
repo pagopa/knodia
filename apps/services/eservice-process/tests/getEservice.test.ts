@@ -6,13 +6,10 @@ import {
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import {
-  toExpectAPI_Eservice,
-  toExpectAPI_FlatEservice,
-} from "@knodia/test-commons/utils";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Eservice, API_FlatEservice } from "../src/models/api.ts";
+import type { API_Eservice } from "../src/models/api.ts";
 
 import { mockEservices } from "./mockEservices.ts";
 import { injectAppRequest, seedEservice } from "./utils.ts";
@@ -48,7 +45,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     },
   );
 
-  it("should return the same e-service as the list endpoint (flat fields)", async () => {
+  it("should return the same e-service as the list endpoint", async () => {
     await Promise.all(mockEservices.map(seedEservice));
 
     const uiToken: TestToken = {
@@ -58,7 +55,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const listResponse = await injectAppRequest(uiToken)
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
-    const listBody = listResponse.json<{ results: API_FlatEservice[] }>();
+    const listBody = listResponse.json<{ results: API_Eservice[] }>();
     const expectedItem = listBody.results.find(
       (i) => i.id === VALID_ESERVICE_ID,
     );
@@ -66,7 +63,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();
 
-    expect(expectedItem).toEqual(toExpectAPI_FlatEservice(eservice));
+    expect(expectedItem).toEqual(toExpectAPI_Eservice(eservice));
     expect(body).toEqual(toExpectAPI_Eservice(eservice));
   });
 

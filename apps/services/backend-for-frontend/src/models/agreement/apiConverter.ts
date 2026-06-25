@@ -63,7 +63,7 @@ export const toAPI_ProducerAgreement = ({
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: remoteResourcesManagerApi.Organization;
-  eservice: eserviceProcessApi.FlatEservice;
+  eservice: eserviceProcessApi.Eservice;
   recentUpdateDays: number;
 }): API_ProducerAgreement => ({
   consumer: {
@@ -90,7 +90,7 @@ export const toAPI_ProducerAgreementDetails = ({
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: remoteResourcesManagerApi.Organization;
-  eservice: eserviceProcessApi.FlatEservice;
+  eservice: eserviceProcessApi.Eservice;
   latestEserviceVersionState: eserviceProcessApi.EserviceVersionState;
   producer: OrganizationWithKnode;
 }): API_ProducerAgreementDetails => ({

@@ -86,31 +86,6 @@ export type API_EserviceVersionInterfaceDocument = z.infer<
   typeof API_EserviceVersionInterfaceDocument
 >;
 
-export const API_FlatEservice = z
-  .strictObject({
-    categories: z.array(API_EserviceCategory),
-    createdAt: z.iso.datetime(),
-    description: API_LocalizedDescription,
-    id: z.uuid(),
-    isConsumerOperatorIdentificationRequired: z.boolean(),
-    isSignalHubEnabled: z.boolean(),
-    mode: API_EserviceMode,
-    name: API_LocalizedName,
-    producerId: z.uuid(),
-    template: API_EserviceTemplateId.optional(),
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({ id: "FlatEservice" });
-export type API_FlatEservice = z.infer<typeof API_FlatEservice>;
-
-export const API_FlatEservices = z
-  .strictObject({
-    pagination: API_Pagination,
-    results: z.array(API_FlatEservice),
-  })
-  .meta({ id: "FlatEservices" });
-export type API_FlatEservices = z.infer<typeof API_FlatEservices>;
-
 export const API_PurposeFormOption = z
   .strictObject({
     description: API_LocalizedDescription,
@@ -181,12 +156,6 @@ export const API_EserviceVersion = z
   .meta({ id: "EserviceVersion" });
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
 
-const API_ReceiveDataConfig = z
-  .strictObject({
-    purposeFormOptions: z.array(API_PurposeFormOption).min(1),
-  })
-  .meta({ id: "ReceiveDataConfig" });
-
 export const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -198,13 +167,19 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    receiveDataConfig: API_ReceiveDataConfig.optional(),
     template: API_EserviceTemplateId.optional(),
     updatedAt: z.iso.datetime(),
-    versions: z.array(API_EserviceVersion),
   })
   .meta({ id: "Eservice" });
 export type API_Eservice = z.infer<typeof API_Eservice>;
+
+export const API_Eservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Eservice),
+  })
+  .meta({ id: "Eservices" });
+export type API_Eservices = z.infer<typeof API_Eservices>;
 
 const API_InterfaceDocumentSeed = z
   .strictObject({

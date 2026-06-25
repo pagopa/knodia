@@ -17,10 +17,10 @@ import type { EserviceService } from "../services/eserviceService.ts";
 import {
   API_Eservice,
   API_EservicePatch,
+  API_Eservices,
   API_EserviceSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
-  API_FlatEservices,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
@@ -30,7 +30,6 @@ import {
   toAPI_Eservice,
   toAPI_EserviceVersion,
   toAPI_EserviceVersionInterfaceDocument,
-  toAPI_FlatEservice,
   toAPI_PurposeFormOption,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -58,7 +57,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           offset: req.query.offset,
           total: totalCount,
         },
-        results: results.map(toAPI_FlatEservice),
+        results: results.map(toAPI_Eservice),
       });
     },
     method: "GET",
@@ -68,7 +67,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEservices",
       querystring: API_GetEservicesQueryParams,
       response: {
-        200: API_FlatEservices.meta({
+        200: API_Eservices.meta({
           description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -444,7 +443,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           offset: req.query.offset,
           total: totalCount,
         },
-        results: results.map(toAPI_FlatEservice),
+        results: results.map(toAPI_Eservice),
       });
     },
     method: "POST",
@@ -456,7 +455,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getCatalogEservices",
       querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_FlatEservices.meta({
+        200: API_Eservices.meta({
           description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

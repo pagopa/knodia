@@ -33,7 +33,6 @@ import {
   getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
 import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
@@ -403,6 +402,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       const [
         { data: eservice },
+        { data: latestVersion },
         { data: latestVersionInterface },
         { data: activeAgreements },
         { data: suspendedAgreements },
@@ -411,6 +411,11 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         { data: totalDailyCalls },
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
           headers,
           path,
@@ -469,17 +474,6 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           },
         }),
       ]);
-
-      const latestVersion = assertEntityExists(
-        eservice.versions.reduce<
-          (typeof eservice.versions)[number] | undefined
-        >(
-          (acc, v) =>
-            acc === undefined || v.versionNumber > acc.versionNumber ? v : acc,
-          undefined,
-        ),
-        `Latest version not found for E-service ${eservice.id}`,
-      );
 
       res.send(
         toAPI_ProducerEserviceDetails({

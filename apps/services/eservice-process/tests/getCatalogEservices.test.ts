@@ -9,7 +9,7 @@ import {
   EserviceVersionState,
 } from "@knodia/eservice-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { toExpectAPI_FlatEservice } from "@knodia/test-commons/utils";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
@@ -146,7 +146,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
           offset: Number(query.offset),
           total: totalCount,
         },
-        results: expectedResult.map((e) => toExpectAPI_FlatEservice(e)),
+        results: expectedResult.map((e) => toExpectAPI_Eservice(e)),
       });
     },
   );
@@ -197,7 +197,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
     expect(body.results).toHaveLength(2);
     expect(body.results).toEqual(
       expect.arrayContaining(
-        expectedResult.map((e) => toExpectAPI_FlatEservice(e)),
+        expectedResult.map((e) => toExpectAPI_Eservice(e)),
       ),
     );
   });

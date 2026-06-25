@@ -25,7 +25,7 @@ export const toAPI_ProducerEservice = ({
 }: {
   activeAgreements: number;
   activePurposes: number;
-  eservice: eserviceProcessApi.FlatEservice;
+  eservice: eserviceProcessApi.Eservice;
   state: eserviceProcessApi.EserviceVersionState;
 }): API_ProducerEservice => ({
   activeAgreements,
@@ -51,7 +51,7 @@ export const toAPI_ProducerEserviceDetails = ({
       totalApiCallsPerDay: number;
     };
   };
-  eservice: eserviceProcessApi.FlatEservice;
+  eservice: eserviceProcessApi.Eservice;
   latestVersion: eserviceProcessApi.EserviceVersion;
   latestVersionInterface: eserviceProcessApi.EserviceVersionInterfaceDocument;
 }): API_ProducerEserviceDetails => ({

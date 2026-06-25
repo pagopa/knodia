@@ -239,34 +239,43 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
 
       const consumerKnodeId = KnodeId.parse(purpose.consumer.knodeId);
 
-      const [{ data: eservice }, { data: consumer }, { data: agreements }] =
-        await Promise.all([
-          eserviceProcessApi.getEservice({
-            client: eserviceProcessClient,
-            headers,
-            path: { eserviceId: purpose.eserviceId },
-          }),
-          remoteResourcesManagerApi.getOrganization({
-            client: remoteResourcesManagerClient,
-            headers,
-            path: { organizationId: purpose.consumer.id },
-            query: { knodeId: consumerKnodeId },
-          }),
-          // Fetching only 1 agreement is sufficient: agreements are ordered by
-          // updatedAt DESC in the readmodel, so the first result is the most
-          // recently updated one.
-          agreementProcessApi.getAgreements({
-            client: agreementProcessClient,
-            headers,
-            query: {
-              consumerId: purpose.consumer.id,
-              consumerKnodeId,
-              eserviceId: purpose.eserviceId,
-              limit: 1,
-              offset: 0,
-            },
-          }),
-        ]);
+      const [
+        { data: eservice },
+        { data: latestVersion },
+        { data: consumer },
+        { data: agreements },
+      ] = await Promise.all([
+        eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers,
+          path: { eserviceId: purpose.eserviceId },
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path: { eserviceId: purpose.eserviceId },
+        }),
+        remoteResourcesManagerApi.getOrganization({
+          client: remoteResourcesManagerClient,
+          headers,
+          path: { organizationId: purpose.consumer.id },
+          query: { knodeId: consumerKnodeId },
+        }),
+        // Fetching only 1 agreement is sufficient: agreements are ordered by
+        // updatedAt DESC in the readmodel, so the first result is the most
+        // recently updated one.
+        agreementProcessApi.getAgreements({
+          client: agreementProcessClient,
+          headers,
+          query: {
+            consumerId: purpose.consumer.id,
+            consumerKnodeId,
+            eserviceId: purpose.eserviceId,
+            limit: 1,
+            offset: 0,
+          },
+        }),
+      ]);
 
       const { data: producer } = await organizationProcessApi.getOrganization({
         client: organizationProcessClient,
@@ -277,17 +286,6 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       const agreement = assertEntityExists(
         agreements.results.at(0),
         `Agreement not found for Purpose ${purpose.id} (eserviceId: ${purpose.eserviceId}, consumerId: ${purpose.consumer.id})`,
-      );
-
-      const latestVersion = assertEntityExists(
-        eservice.versions.reduce<
-          (typeof eservice.versions)[number] | undefined
-        >(
-          (acc, v) =>
-            acc === undefined || v.versionNumber > acc.versionNumber ? v : acc,
-          undefined,
-        ),
-        `Latest version not found for E-service ${eservice.id}`,
       );
 
       res.status(200).send(

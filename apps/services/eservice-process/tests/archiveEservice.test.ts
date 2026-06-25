@@ -50,27 +50,7 @@ describe("POST /eservices/:eserviceId/archive (archiveEservice)", () => {
       ...(eservice.template !== undefined
         ? { template: eservice.template }
         : {}),
-      ...(eservice.receiveDataConfig !== undefined
-        ? { receiveDataConfig: eservice.receiveDataConfig }
-        : {}),
       updatedAt: expect.any(String),
-      versions: eservice.versions.map((v) =>
-        expect.objectContaining({
-          accessTokenAudience: expect.arrayContaining(v.accessTokenAudience),
-          accessTokenDuration: v.accessTokenDuration,
-          accessTokenType: v.accessTokenType,
-          createdAt: v.createdAt.toISOString(),
-          id: v.id,
-          maxDailyCallsPerConsumer: v.maxDailyCallsPerConsumer,
-          maxDailyCallsPerKnode: v.maxDailyCallsPerKnode,
-          requiredAttributes: v.requiredAttributes.map((g) =>
-            expect.arrayContaining(g),
-          ),
-          state: EserviceVersionState.enum.Archived,
-          updatedAt: expect.any(String),
-          versionNumber: v.versionNumber,
-        }),
-      ),
     });
 
     const events = await getAllEserviceEvents();

@@ -1,5 +1,4 @@
 import {
-  type Eservice,
   type EserviceInterface,
   type EserviceVersion,
   type FlatEservice,
@@ -10,7 +9,6 @@ import {
   type API_Eservice,
   type API_EserviceVersion,
   type API_EserviceVersionInterfaceDocument,
-  type API_FlatEservice,
   type API_PurposeFormOption,
 } from "./api.ts";
 
@@ -30,9 +28,7 @@ export const toAPI_EserviceVersion = (
   versionNumber: version.versionNumber,
 });
 
-export const toAPI_FlatEservice = (
-  eservice: FlatEservice,
-): API_FlatEservice => ({
+export const toAPI_Eservice = (eservice: FlatEservice): API_Eservice => ({
   categories: eservice.categories,
   createdAt: eservice.createdAt.toISOString(),
   description: eservice.description,
@@ -45,27 +41,6 @@ export const toAPI_FlatEservice = (
   producerId: eservice.producerId,
   template: eservice.template,
   updatedAt: eservice.updatedAt.toISOString(),
-});
-
-export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
-  categories: eservice.categories,
-  createdAt: eservice.createdAt.toISOString(),
-  description: eservice.description,
-  id: eservice.id,
-  isConsumerOperatorIdentificationRequired:
-    eservice.isConsumerOperatorIdentificationRequired,
-  isSignalHubEnabled: eservice.isSignalHubEnabled,
-  mode: eservice.mode,
-  name: eservice.name,
-  producerId: eservice.producerId,
-  receiveDataConfig: eservice.receiveDataConfig && {
-    purposeFormOptions: eservice.receiveDataConfig.purposeFormOptions.map(
-      toAPI_PurposeFormOption,
-    ),
-  },
-  template: eservice.template,
-  updatedAt: eservice.updatedAt.toISOString(),
-  versions: eservice.versions.map(toAPI_EserviceVersion),
 });
 
 export const toAPI_EserviceVersionInterfaceDocument = (
