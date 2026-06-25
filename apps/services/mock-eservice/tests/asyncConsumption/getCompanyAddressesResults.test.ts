@@ -39,7 +39,6 @@ const OTHER_MOCK_ESERVICE_ID = unsafeBrandId<EserviceId>(
 const OTHER_MOCK_ESERVICE_VERSION_ID = unsafeBrandId<EserviceVersionId>(
   "fa2a800a-5058-4859-b68a-bfbd3ee863c0",
 );
-const BASE_TIME = new Date("2026-01-01T00:00:00.000Z");
 
 // 01229430085 exists but no address is available, 12345678901 exists and has an address, 00000000000 does not exist
 const COMPANY_UIDS: API_CompanyUid[] = [
@@ -50,7 +49,7 @@ const COMPANY_UIDS: API_CompanyUid[] = [
 
 function completeRequest(requestId: string): string {
   addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
-  vi.setSystemTime(new Date(BASE_TIME.getTime() + 76_000));
+  vi.setSystemTime(new Date(Date.now() + 76_000));
 
   const request = getAsyncCompanyAddressesRequest(requestId);
   const state = getAsyncCompanyAddressesRequestState(request);
@@ -108,7 +107,7 @@ beforeEach(() => {
     // deterministic.
     toFake: ["Date"],
   });
-  vi.setSystemTime(BASE_TIME);
+  vi.setSystemTime(new Date());
 });
 
 afterEach(() => {
@@ -165,6 +164,22 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
     });
 
     expect(res.statusCode).toBe(404);
+  });
+
+  it("returns 401 when the resource ID does not belong to the request", async () => {
+    const token = await signToken();
+    const requestId1 = randomUUID();
+    completeRequest(requestId1);
+    const requestId2 = randomUUID();
+    const resourceId2 = completeRequest(requestId2);
+
+    const res = await getCompanyAddressesResults({
+      requestId: requestId1,
+      resourceId: resourceId2,
+      token,
+    });
+
+    expect(res.statusCode).toBe(401);
   });
 
   it("returns 401 for a token issued for a different mock e-service", async () => {

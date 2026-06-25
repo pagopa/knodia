@@ -15,10 +15,22 @@ import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type JWTVerifyGetKey } from "jose";
 import { prettifyError } from "zod";
 
+import { type AsyncCompanyAddressesRequest } from "../asyncConsumption/asyncConsumptionRequests.ts";
+import { resourceIdDoesNotBelongToAsyncRequest } from "../models/errors.ts";
+
 interface VerifyOptions {
   acceptedAudiences: string[];
   expectedIssuer: string;
   jwksResolvers: JWTVerifyGetKey[];
+}
+
+export function assertResourceIdBelongsToRequest(
+  request: AsyncCompanyAddressesRequest,
+  resourceId: string,
+): void {
+  if (request.resourceId !== resourceId) {
+    throw resourceIdDoesNotBelongToAsyncRequest(request.id, resourceId);
+  }
 }
 
 export function assertTokenClaimsAreValidForEservice(

@@ -28,7 +28,10 @@ import {
 } from "../models/api.ts";
 import { toAPI_GetCompanyAddressesRequestStateResponse } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
+import {
+  assertResourceIdBelongsToRequest,
+  assertTokenClaimsAreValidForEservice,
+} from "../utils/validators.ts";
 
 interface MockAsyncConsumptionRouterOptions {
   knodeId: KnodeId;
@@ -137,8 +140,10 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
 
       const requestId = req.params.requestId;
       const resourceId = req.params.resourceId;
-      getAsyncCompanyAddressesRequest(requestId);
+
+      const request = getAsyncCompanyAddressesRequest(requestId);
       const results = getAsyncCompanyAddressesResults(resourceId);
+      assertResourceIdBelongsToRequest(request, resourceId);
 
       logger.info(
         `Mock e-service company addresses request results requested. Request ID: ${requestId}, Resource ID: ${resourceId}.`,

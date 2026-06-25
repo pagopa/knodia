@@ -25,6 +25,7 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0017",
   ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND: "0018",
   ASYNC_COMPANY_ADDRESSES_RESULTS_NOT_FOUND: "0019",
+  RESOURCE_ID_DOES_NOT_BELONG_TO_ASYNC_REQUEST: "0020",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -144,6 +145,18 @@ export function residenceNotAvailable(notation: string) {
     detail: `No residence address found for natural person ${notation}`,
     status: 404,
     title: "residence_not_available",
+  });
+}
+
+export function resourceIdDoesNotBelongToAsyncRequest(
+  requestId: string,
+  resourceId: string,
+) {
+  return createApiError({
+    code: "RESOURCE_ID_DOES_NOT_BELONG_TO_ASYNC_REQUEST",
+    detail: `Resource ID ${resourceId} does not belong to request ID ${requestId}`,
+    status: 401,
+    title: "resource_id_does_not_belong_to_async_request",
   });
 }
 
