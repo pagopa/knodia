@@ -16,6 +16,7 @@ import {
   isOnboardingPending,
   keepsUserOnRegistration,
   resolveOnboardingRedirect,
+  signupUserEmail,
 } from "@/services/onboarding";
 import {
   confirmOnboardingMutationOptions,
@@ -43,15 +44,15 @@ function RouteComponent() {
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string>();
 
-  const {
-    data: { email, onboardingStatus },
-  } = useSuspenseQuery({
+  const { data } = useSuspenseQuery({
     ...getCurrentSignupUserQuery(),
     refetchInterval: (query) =>
       query.state.data && isOnboardingPending(query.state.data.onboardingStatus)
         ? ONBOARDING_PENDING_POLL_MS
         : false,
   });
+  const { onboardingStatus } = data;
+  const email = signupUserEmail(data);
 
   // On a leave status, re-run the route guard instead of re-deriving the
   // destination here (the resolver could throw).

@@ -3,6 +3,7 @@ import {
   type SignupDbService,
   signupDbServiceBuilder,
 } from "@knodia/db-signup/services";
+import { SignupUserStatus } from "@knodia/signup-models";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { signupDb } from "./setup.ts";
@@ -17,18 +18,20 @@ beforeEach(() => {
 
 describe("markSignupUserActive", () => {
   it("promotes an OnboardingPending user to Active and bumps updatedAt", async () => {
-    const user = makeSignupUser({ status: "OnboardingPending" });
+    const user = makeSignupUser({
+      status: SignupUserStatus.enum.OnboardingPending,
+    });
     await seedSignupUser(user);
 
     await dbService.markSignupUserActive(user.signupUserId);
 
     const row = await dbService.getSignupUserById(user.signupUserId);
-    expect(row?.status).toBe("Active");
+    expect(row?.status).toBe(SignupUserStatus.enum.Active);
     expect(row?.updatedAt.getTime()).toBeGreaterThan(user.updatedAt.getTime());
   });
 
   it("is an idempotent no-op when the user is already Active (Kafka redelivery)", async () => {
-    const user = makeSignupUser({ status: "Active" });
+    const user = makeSignupUser({ status: SignupUserStatus.enum.Active });
     await seedSignupUser(user);
 
     await expect(
@@ -36,11 +39,14 @@ describe("markSignupUserActive", () => {
     ).resolves.toBeUndefined();
 
     const row = await dbService.getSignupUserById(user.signupUserId);
-    expect(row?.status).toBe("Active");
+    expect(row?.status).toBe(SignupUserStatus.enum.Active);
     expect(row?.updatedAt.getTime()).toBe(user.updatedAt.getTime());
   });
 
-  it.each(["Suspended", "DeletionPending"] as const)(
+  it.each([
+    SignupUserStatus.enum.Suspended,
+    SignupUserStatus.enum.DeletionPending,
+  ] as const)(
     "skips (without throwing) when the user moved on to %s",
     async (status) => {
       const user = makeSignupUser({ status });
@@ -56,7 +62,9 @@ describe("markSignupUserActive", () => {
   );
 
   it("is a no-op when the row is gone but the deletion was recorded (replay after erasure)", async () => {
-    const user = makeSignupUser({ status: "OnboardingPending" });
+    const user = makeSignupUser({
+      status: SignupUserStatus.enum.OnboardingPending,
+    });
     await seedSignupUser(user);
     await dbService.markSignupUserDeletionPending(user.signupUserId);
     await dbService.completeSignupUserDeletion(user.signupUserId);

@@ -224,7 +224,7 @@ describe("POST /user/confirmOnboarding — repeated request (publish retry)", ()
 
     const signupUsers = await getAllSignupUsers();
     expect(signupUsers).toHaveLength(1);
-    expect(signupUsers[0]?.signupUserId).toBe(pendingUser.signupUserId);
+    expect(signupUsers.at(0)?.signupUserId).toBe(pendingUser.signupUserId);
     expect(kafkaProducerMock.send).toHaveBeenCalledOnce();
 
     const messageValue =

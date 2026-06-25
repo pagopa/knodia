@@ -12,13 +12,16 @@ import {
 
 describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", () => {
   it("should return 204 on successful reactivation request", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Suspended",
-      suspendedAt: new Date(),
-      suspensionReason: "UnlawfulProcessing",
-    });
+    const signupUser = makeSignupUser(
+      {
+        status: "Suspended",
+        suspendedAt: new Date(),
+        suspensionReason: "UnlawfulProcessing",
+      },
+      {
+        spidCode: validUISignupSessionTokenClaims.spidCode,
+      },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
@@ -105,11 +108,12 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
   });
 
   it("should return 409 when the signup user is not suspended", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "Active",
-    });
+    const signupUser = makeSignupUser(
+      {
+        status: "Active",
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
@@ -121,11 +125,12 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
   });
 
   it("should return 409 when the signup user is in DeletionPending status", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-      status: "DeletionPending",
-    });
+    const signupUser = makeSignupUser(
+      {
+        status: "DeletionPending",
+      },
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({

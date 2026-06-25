@@ -103,11 +103,12 @@ describe("POST /user/changeEmail (changeEmail)", () => {
 
   it("should return 409 when the signup user is still OnboardingPending", async () => {
     await seedSignupUser(
-      makeSignupUser({
-        fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-        spidCode: validUISignupSessionTokenClaims.spidCode,
-        status: "OnboardingPending",
-      }),
+      makeSignupUser(
+        {
+          status: "OnboardingPending",
+        },
+        { spidCode: validUISignupSessionTokenClaims.spidCode },
+      ),
     );
 
     const response = await injectSignupAppRequest()

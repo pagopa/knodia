@@ -246,7 +246,8 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
     async markSignupUserActive(signupUserId: SignupUserId): Promise<void> {
       await transitionSignupUserStatus(db, {
         // Present non-pending row is already past onboarding: no-op.
-        acceptsExistingStatus: () => true,
+        acceptsExistingStatus: (status) =>
+          status !== SignupUserStatus.enum.OnboardingPending,
         from: [SignupUserStatus.enum.OnboardingPending],
         signupUserId,
         to: SignupUserStatus.enum.Active,
@@ -346,7 +347,7 @@ async function transitionSignupUserStatus(
     signupUserId,
     to,
   }: {
-    acceptsExistingStatus: (status: string) => boolean;
+    acceptsExistingStatus: (status: SignupUserStatus) => boolean;
     clearSuspension?: boolean;
     from: SignupUserStatus[];
     signupUserId: SignupUserId;
@@ -379,7 +380,7 @@ async function transitionSignupUserStatus(
     .limit(1);
 
   if (existing) {
-    if (acceptsExistingStatus(existing.status)) {
+    if (acceptsExistingStatus(SignupUserStatus.parse(existing.status))) {
       return;
     }
   } else if (await hasRecordedDeletion(db, signupUserId)) {

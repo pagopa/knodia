@@ -16,6 +16,11 @@ const REGISTRATION_STATUSES = [
   "DELETION_PENDING",
 ] as const;
 
+// email lives only on the pending/onboarded variants of the discriminated union.
+export const signupUserEmail = (
+  user?: signupManagerApi.CurrentSignupUser,
+): string | undefined => (user && "email" in user ? user.email : undefined);
+
 export const isOnboardingPending = (status: OnboardingStatus) =>
   status === "ONBOARDING_PENDING";
 

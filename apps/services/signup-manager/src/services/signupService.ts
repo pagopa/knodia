@@ -349,9 +349,17 @@ async function generateUniqueOrganizationNames(
 }
 
 /**
- * A pending row whose OnboardingCompletedV1 publish failed: re-emit the event
- * (occurredAt and digest reproduced from the stored createdAt) instead of
- * returning 409 and stranding the user. Any other status is an identity conflict.
+ * The row is still OnboardingPending — either the OnboardingCompletedV1 publish
+ * failed, or it succeeded but signup-updater hasn't provisioned the user yet. Either
+ * way we re-emit the event (occurredAt and digest reproduced from the stored
+ * createdAt) instead of returning 409 and stranding the user; a duplicate event is
+ * harmless because the updater's provisioning is idempotent. Any other status is an
+ * identity conflict.
+ *
+ * Returning in a fresh OneID session (new nonce) re-emits under that nonce and the
+ * first-provided email — so the archive may get a duplicate acceptance record, and a
+ * changed email in this repeated request is ignored. We accept it: rare, the
+ * acceptance is never lost, and the first email was confirmed.
  */
 async function resolveRepeatedConfirmOnboarding(
   existingSignupUser: SignupUser,

@@ -65,13 +65,7 @@ export async function handleSignupMessage(
         return;
       }
 
-      // Skip provisioning for a user that left the onboarding flow. Active is NOT
-      // skipped: it may be only partially provisioned (409 path), and replay is
-      // idempotent (markSignupUserActive no-ops if already active).
-      if (
-        user.status === SignupUserStatus.enum.DeletionPending ||
-        user.status === SignupUserStatus.enum.Suspended
-      ) {
+      if (!shouldProvisionOnOnboardingCompleted(user.status)) {
         logger.warn(
           `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user is ${user.status} (it left the onboarding flow before this provisioning event was consumed). Committing the offset.`,
         );
@@ -414,4 +408,24 @@ async function retrieveSignupUserOrLogMissingAndSkip(
   }
 
   return undefined;
+}
+
+// Exhaustive so a new status forces a decision. Active is provisionable too: it
+// may be only partially provisioned (409 path) and replay is idempotent. The rest
+// left the onboarding flow before this event was consumed.
+function shouldProvisionOnOnboardingCompleted(
+  status: SignupUserStatus,
+): boolean {
+  return match(status)
+    .with(
+      SignupUserStatus.enum.OnboardingPending,
+      SignupUserStatus.enum.Active,
+      () => true,
+    )
+    .with(
+      SignupUserStatus.enum.DeletionPending,
+      SignupUserStatus.enum.Suspended,
+      () => false,
+    )
+    .exhaustive();
 }

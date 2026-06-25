@@ -1,6 +1,7 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
 
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
+import { match } from "ts-pattern";
 
 import {
   signupUserEmailAlreadyInUse,
@@ -33,10 +34,22 @@ export function assertSignupUserIsActive(user: SignupUser): void {
 export function assertSignupUserIsOnboarded(
   user: SignupUser | undefined,
 ): asserts user is SignupUser {
-  // OnboardingPending isn't onboarded yet: reject like a missing user.
-  if (!user || user.status === SignupUserStatus.enum.OnboardingPending) {
+  if (!user) {
     throw signupUserNotOnboarded();
   }
+
+  match(user.status)
+    // Provisioning still in flight: not onboarded yet, reject like a missing user.
+    .with(SignupUserStatus.enum.OnboardingPending, () => {
+      throw signupUserNotOnboarded();
+    })
+    .with(
+      SignupUserStatus.enum.Active,
+      SignupUserStatus.enum.Suspended,
+      SignupUserStatus.enum.DeletionPending,
+      () => undefined,
+    )
+    .exhaustive();
 }
 
 export function assertSignupUserIsSuspended(user: SignupUser): void {
