@@ -4,6 +4,7 @@ import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
+import { Link } from "@/components/ui";
 import { APP_BASE_PATH } from "@/config/basepath";
 import { config } from "@/config/config";
 
@@ -31,14 +32,14 @@ export function Footer() {
               {LEGAL_LINKS.map((link, index) => (
                 <Fragment key={link.href}>
                   {index > 0 && <span aria-hidden>·</span>}
-                  <a
-                    className="hover:underline"
+                  <Link
+                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber-30"
                     href={link.href}
                     rel="noopener noreferrer"
                     target="_blank"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </Fragment>
               ))}
             </div>
