@@ -2,6 +2,7 @@ import { KnodeId } from "@knodia/common-models/ids";
 import { SignalHubDbConfig } from "@knodia/db-signal-hub/config";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { RateLimiterConfig } from "@knodia/fastify-zod-api-commons/rate-limit";
+import { IntegrityRest02Config } from "@knodia/integrity-rest-02/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
@@ -11,6 +12,7 @@ const MockEserviceConfig = LoggerConfig.and(HTTPServerConfig)
   .and(SignalHubSeedEnvConfig)
   .and(SignalHubDbConfig)
   .and(RateLimiterConfig)
+  .and(IntegrityRest02Config)
   .and(
     z
       .object({
