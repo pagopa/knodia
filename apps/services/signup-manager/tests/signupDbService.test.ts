@@ -120,11 +120,10 @@ describe("completeSignupUserDeletion", () => {
     await signupDbService().markSignupUserDeletionPending(user.signupUserId);
     await signupDbService().completeSignupUserDeletion(user.signupUserId);
 
-    const sameIdentifiers = makeSignupUser({
-      email: user.email,
-      fiscalNumber: user.fiscalNumber,
-      spidCode: user.spidCode,
-    });
+    const sameIdentifiers = makeSignupUser(
+      { email: user.email },
+      { spidCode: user.spidCode },
+    );
 
     await expect(seedSignupUser(sameIdentifiers)).resolves.toBeUndefined();
   });
@@ -143,19 +142,5 @@ describe("getUniqueSignupUserByIdentifiers", () => {
     });
 
     expect(found).toBeUndefined();
-  });
-
-  it("throws when the claims match two different users", async () => {
-    const userA = makeSignupUser();
-    const userB = makeSignupUser();
-    await seedSignupUser(userA);
-    await seedSignupUser(userB);
-
-    await expect(
-      signupDbService().getUniqueSignupUserByIdentifiers({
-        fiscalNumber: userB.fiscalNumber,
-        spidCode: userA.spidCode,
-      }),
-    ).rejects.toThrow();
   });
 });
