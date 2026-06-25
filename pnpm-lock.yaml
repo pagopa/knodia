@@ -1002,6 +1002,9 @@ importers:
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -1023,6 +1026,70 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.0(@types/node@25.0.0)(jsdom@28.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(vite@7.3.0(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
+
+  apps/services/k2o-gateway:
+    dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/keychain-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/keychain-models
+      '@knodia/keychain-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/keychain-process-client
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      fastify:
+        specifier: 'catalog:'
+        version: 5.8.5
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.8.5)(openapi-types@12.1.3)(zod@4.2.0)
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   apps/services/keychain-process:
     dependencies:
@@ -1937,6 +2004,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/db-signup':
         specifier: workspace:*
         version: link:../../../packages/db/signup
@@ -1952,9 +2022,6 @@ importers:
       '@knodia/signup-models':
         specifier: workspace:*
         version: link:../../../packages/models/signup-models
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../packages/test-commons
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
@@ -1989,15 +2056,15 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -2929,13 +2996,13 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../models/common-models
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../test-commons
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -3749,6 +3816,9 @@ importers:
 
   packages/models/common-models:
     dependencies:
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -4164,6 +4234,9 @@ importers:
       '@types/pg':
         specifier: 'catalog:'
         version: 8.16.0
+      axios:
+        specifier: 'catalog:'
+        version: 1.16.0
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
