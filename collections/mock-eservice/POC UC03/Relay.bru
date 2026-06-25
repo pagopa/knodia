@@ -1,0 +1,60 @@
+meta {
+  name: Relay
+  type: http
+}
+
+post {
+  url: {{host-mock-eservice}}/relay
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "userContent": {
+      "subject": "Notifica",
+      "body": "Testo del messaggio inoltrato"
+    },
+    "relayMetadata": {
+      "version": "KNODIAUSECASE",
+      "messageIdentifier": {
+        "erdsIdentifier": "systemSERCOrion",
+        "uuid": "f50ec0b7-f960-400d-91f0-c42a6d44e3d0"
+      },
+      "senderIdentifier": {
+        "notation": "MRARSS80A01L259A",
+        "schemeName": "Codice Fiscale",
+        "schemeURI": "http://memberstate.ms/PIdentifier"
+      },
+      "recipientIdentifier": {
+        "notation": "01229430085",
+        "schemeName": "Partita Iva",
+        "schemeURI": "http://memberstate.ms/VAT"
+      },
+      "messageType": "Dispatch",
+      "userContentInformation": "text"
+    },
+    "evidence": {
+      "version": "KNODIAUSECASE",
+      "evidenceIdentifier": {
+        "erdsIdentifier": "systemSERCOrion",
+        "uuid": "123e4567-e89b-12d3-a456-426614174000"
+      },
+      "eventIdentifier": "SubmissionAcceptance",
+      "eventReason": "MessageAccepted",
+      "eventTime": "2026-05-21T12:11:00Z"
+    }
+  }
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}

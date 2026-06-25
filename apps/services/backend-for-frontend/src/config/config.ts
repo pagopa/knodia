@@ -1,3 +1,4 @@
+import { CognitoIdmClientConfig } from "@knodia/cognito-idm-client";
 import { KnodeId } from "@knodia/common-models/ids";
 import {
   AuthConfig,
@@ -12,6 +13,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(PollingConfig)
   .and(RateLimiterConfig)
+  .and(CognitoIdmClientConfig)
   .and(
     z
       .object({

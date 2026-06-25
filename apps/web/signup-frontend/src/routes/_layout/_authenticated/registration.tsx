@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
@@ -7,6 +7,7 @@ import {
   CreatingCredentialsLoader,
   RegistrationForm,
 } from "@/components/features";
+import { useNavigateAfterSignupChange } from "@/hooks/useNavigateAfterSignupChange";
 import { resolveOnboardingRedirect } from "@/services/onboarding";
 import {
   confirmOnboardingMutationOptions,
@@ -27,8 +28,7 @@ export const Route = createFileRoute("/_layout/_authenticated/registration")({
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const navigateAfterChange = useNavigateAfterSignupChange();
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const confirmOnboarding = useMutation({
@@ -36,16 +36,7 @@ function RouteComponent() {
     onError: (error) => {
       setErrorMessage(confirmOnboardingErrorMessage(error));
     },
-    onSuccess: async () => {
-      // refetchType "all": this page has no active observer of the query, so the
-      // default would skip the refetch and /home's guard would read a stale
-      // NOT_COMPLETED and bounce back here.
-      await queryClient.invalidateQueries({
-        queryKey: getCurrentSignupUserQuery().queryKey,
-        refetchType: "all",
-      });
-      await navigate({ to: "/home" });
-    },
+    onSuccess: () => navigateAfterChange("/home"),
   });
 
   return (

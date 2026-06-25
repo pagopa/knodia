@@ -13,6 +13,7 @@ import {
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
   getAsyncCompanyAddressesResults,
+  resolveAsyncCompanyAddressesRequest,
 } from "../asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -26,7 +27,6 @@ import {
   API_GetCompanyAddressesRequestStateResponse,
   API_GetCompanyAddressesResults,
 } from "../models/api.ts";
-import { toAPI_GetCompanyAddressesRequestStateResponse } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   assertResourceIdBelongsToRequest,
@@ -90,6 +90,8 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
 
       const requestId = req.params.requestId;
       const request = getAsyncCompanyAddressesRequest(requestId);
+
+      resolveAsyncCompanyAddressesRequest(request);
       const state = getAsyncCompanyAddressesRequestState(request);
 
       logger.info(
@@ -98,14 +100,10 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
 
       addAsyncCompanyAddressesResult(request);
 
-      res
-        .status(200)
-        .send(
-          toAPI_GetCompanyAddressesRequestStateResponse(
-            state,
-            request.resourceId,
-          ),
-        );
+      res.status(200).send({
+        resourceId: request.resourceId,
+        state,
+      });
     },
     method: "GET",
     schema: {

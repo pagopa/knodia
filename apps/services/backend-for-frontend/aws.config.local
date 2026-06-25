@@ -11,3 +11,5 @@ kms=
   endpoint_url=http://localhost:4566
 dynamodb=
   endpoint_url=http://localhost:8085
+cognito_identity_provider =
+  endpoint_url = http://localhost:4567

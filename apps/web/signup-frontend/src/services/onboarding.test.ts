@@ -11,11 +11,11 @@ describe("resolveOnboardingRedirect", () => {
     expect(resolveOnboardingRedirect("NOT_COMPLETED")).toBe("/registration");
   });
 
-  it("throws for SUSPENDED users until suspension handling lands", () => {
-    expect(() => resolveOnboardingRedirect("SUSPENDED")).toThrow();
+  it("sends SUSPENDED users to the suspended page", () => {
+    expect(resolveOnboardingRedirect("SUSPENDED")).toBe("/suspended");
   });
 
-  it("throws for DELETION_PENDING users until deletion handling lands", () => {
-    expect(() => resolveOnboardingRedirect("DELETION_PENDING")).toThrow();
+  it("sends DELETION_PENDING users to the registration page", () => {
+    expect(resolveOnboardingRedirect("DELETION_PENDING")).toBe("/registration");
   });
 });

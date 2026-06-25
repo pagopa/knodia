@@ -99,6 +99,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:ro
     environment:
@@ -594,6 +595,7 @@ services:
       AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5001"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
@@ -1372,6 +1374,7 @@ services:
       AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5002"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
@@ -2161,7 +2164,7 @@ services:
       ALLOWED_ORIGINS: "https://localhost:5176,http://localhost:5176"
       CLIENT_ID: local-oi-client-id
       CLIENT_SECRET: local-oi-client-secret
-      REDIRECT_URI: "http://localhost:5176/login/callback"
+      REDIRECT_URI: "http://localhost:5176/ui/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
 
   redis:
