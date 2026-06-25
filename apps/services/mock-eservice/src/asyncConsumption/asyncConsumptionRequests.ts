@@ -63,8 +63,8 @@ export function addAsyncCompanyAddressesResult(
 
     return {
       address,
+      identifier: uidCompany,
       legalEntity,
-      uidCompany,
     };
   });
 

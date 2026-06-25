@@ -132,8 +132,8 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
     const expectedResponse: API_GetCompanyAddressesResults = {
       results: COMPANY_UIDS.map((uid) => ({
         address: findLegalEntityAddress(uid),
+        identifier: uid,
         legalEntity: findLegalEntity(uid),
-        uidCompany: uid,
       })),
     };
     expect(body).toEqual(expectedResponse);

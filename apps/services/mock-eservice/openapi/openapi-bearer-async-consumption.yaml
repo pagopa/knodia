@@ -183,6 +183,20 @@ components:
       required:
         - state
       additionalProperties: false
+    GetCompanyAddressesResult:
+      type: object
+      properties:
+        address:
+          allOf:
+            - $ref: "#/components/schemas/Address"
+        identifier:
+          $ref: "#/components/schemas/CompanyUid"
+        legalEntity:
+          allOf:
+            - $ref: "#/components/schemas/LegalEntity"
+      required:
+        - identifier
+      additionalProperties: false
     GetCompanyAddressesResults:
       description: List of addresses and legal entities returned by the Producer in
         response to an asynchronous request (Cross-Border E-service 05, Request
@@ -192,19 +206,7 @@ components:
         results:
           type: array
           items:
-            type: object
-            properties:
-              address:
-                allOf:
-                  - $ref: "#/components/schemas/Address"
-              legalEntity:
-                allOf:
-                  - $ref: "#/components/schemas/LegalEntity"
-              uidCompany:
-                $ref: "#/components/schemas/CompanyUid"
-            required:
-              - uidCompany
-            additionalProperties: false
+            $ref: "#/components/schemas/GetCompanyAddressesResult"
       required:
         - results
       additionalProperties: false

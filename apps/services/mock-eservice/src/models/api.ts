@@ -651,11 +651,13 @@ export type API_GetCompanyAddressesRequestStateResponse = z.infer<
   typeof API_GetCompanyAddressesRequestStateResponse
 >;
 
-export const API_GetCompanyAddressesResult = z.strictObject({
-  address: API_Address.optional(),
-  legalEntity: API_LegalEntity.optional(),
-  uidCompany: API_CompanyUid,
-});
+export const API_GetCompanyAddressesResult = z
+  .strictObject({
+    address: API_Address.optional(),
+    identifier: API_CompanyUid,
+    legalEntity: API_LegalEntity.optional(),
+  })
+  .meta({ id: "GetCompanyAddressesResult" });
 export type API_GetCompanyAddressesResult = z.infer<
   typeof API_GetCompanyAddressesResult
 >;
