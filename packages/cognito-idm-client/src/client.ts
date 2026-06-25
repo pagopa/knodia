@@ -6,12 +6,14 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminGetUserCommand,
   AdminListGroupsForUserCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
   ListUsersCommand,
   ListUsersInGroupCommand,
+  UserNotFoundException,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
 
@@ -160,6 +162,24 @@ export function buildCognitoIdmClient({
 
       const user = response.Users?.at(0);
       return user ? toIdmUser(user) : undefined;
+    },
+
+    async getUserByUsername(username: string): Promise<IdmUser | undefined> {
+      try {
+        const user = await client.send(
+          new AdminGetUserCommand({
+            Username: username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        );
+
+        return toIdmUser(user);
+      } catch (error) {
+        if (error instanceof UserNotFoundException) {
+          return undefined;
+        }
+        throw error;
+      }
     },
 
     async updateUserEmail(input: {
