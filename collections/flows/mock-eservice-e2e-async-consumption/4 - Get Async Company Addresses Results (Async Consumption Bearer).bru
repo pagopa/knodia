@@ -37,6 +37,7 @@ script:post-response {
   const results = res.body.results
   const expected = [
     {
+      identifier: "01229430085",
       legalEntity: {
         legalEntityActivity: "43.22.07",
         legalIdentifier: {
@@ -47,7 +48,6 @@ script:post-response {
         legalName: "TUTTO - KLIMA SRL",
         registrationDate: "2012-07-09",
       },
-      uidCompany: "01229430085",
     },
     {
       address: {
@@ -57,6 +57,7 @@ script:post-response {
         postCode: "00100",
         postName: "Roma",
       },
+      identifier: "12345678901",
       legalEntity: {
         legalEntityActivity: "01.11.00",
         legalIdentifier: {
@@ -67,10 +68,9 @@ script:post-response {
         legalName: "Alfa Industria Srl",
         registrationDate: "1954-03-12",
       },
-      uidCompany: "12345678901",
     },
     {
-      uidCompany: "00000000000",
+      identifier: "00000000000",
     },
   ]
 
