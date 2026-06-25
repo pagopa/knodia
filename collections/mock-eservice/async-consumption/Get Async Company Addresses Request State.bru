@@ -24,3 +24,18 @@ script:pre-request {
     )
   }
 }
+
+script:post-response {
+  const state = res.body.state
+  const resourceId = res.body.resourceId
+
+  if (state === "COMPLETED") {
+    if (!resourceId) {
+      throw new Error(
+        `Expected a valid resourceId when state is COMPLETED. Got: ${resourceId}`
+      )
+    }
+
+    bru.setVar("companyAddressesResourceId", resourceId)
+  }
+}
