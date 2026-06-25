@@ -126,6 +126,25 @@ export type EserviceVersionInterfaceDocument = {
     updatedAt: string;
 };
 
+export type Eservice = {
+    categories: Array<EserviceCategory>;
+    createdAt: string;
+    description: LocalizedDescription;
+    id: string;
+    isConsumerOperatorIdentificationRequired: boolean;
+    isSignalHubEnabled: boolean;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producerId: string;
+    template?: EserviceTemplateId;
+    updatedAt: string;
+};
+
+export type Eservices = {
+    pagination: Pagination;
+    results: Array<Eservice>;
+};
+
 export type PurposeFormOption = {
     description: LocalizedDescription;
     formAnswersJson: PurposeFormAnswers;
@@ -177,25 +196,6 @@ export type EserviceVersion = {
      * Version number
      */
     versionNumber: number;
-};
-
-export type Eservice = {
-    categories: Array<EserviceCategory>;
-    createdAt: string;
-    description: LocalizedDescription;
-    id: string;
-    isConsumerOperatorIdentificationRequired: boolean;
-    isSignalHubEnabled: boolean;
-    mode: EserviceMode;
-    name: LocalizedName;
-    producerId: string;
-    template?: EserviceTemplateId;
-    updatedAt: string;
-};
-
-export type Eservices = {
-    pagination: Pagination;
-    results: Array<Eservice>;
 };
 
 export type InterfaceDocumentSeed = {
