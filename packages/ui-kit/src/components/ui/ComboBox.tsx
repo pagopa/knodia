@@ -1,5 +1,4 @@
 import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
-import { useLayoutEffect, useRef, useState } from "react";
 import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
@@ -15,7 +14,10 @@ import {
 } from "react-aria-components";
 import { type VariantProps } from "tailwind-variants";
 
-import { composeTailwindRenderProps } from "../../libs/react-aria";
+import {
+  composeTailwindRenderProps,
+  useTriggerWidth,
+} from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
 import {
   dropdownStyles,
@@ -52,28 +54,7 @@ export function ComboBox<T extends object>({
   placeholder,
   ...props
 }: ComboBoxProps<T>) {
-  const groupRef = useRef<HTMLDivElement>(null);
-  const [popoverWidth, setPopoverWidth] = useState<number | undefined>();
-
-  // Popover width fix: React Aria's --trigger-width CSS variable doesn't correctly
-  // reflect the Group width when using Group as the trigger. We manually measure
-  // the Group with ResizeObserver and apply it as an inline style to the Popover.
-  useLayoutEffect(() => {
-    if (!groupRef.current) return;
-
-    const updateWidth = () => {
-      if (groupRef.current) {
-        setPopoverWidth(groupRef.current.offsetWidth);
-      }
-    };
-
-    updateWidth();
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(groupRef.current);
-
-    return () => observer.disconnect();
-  }, []);
+  const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
 
   const hasValue =
     (props.inputValue != null && props.inputValue !== "") ||

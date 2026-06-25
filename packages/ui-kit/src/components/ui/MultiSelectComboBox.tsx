@@ -1,5 +1,4 @@
 import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
-import { useLayoutEffect, useRef, useState } from "react";
 import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
@@ -20,6 +19,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { type VariantProps } from "tailwind-variants";
 
+import { useTriggerWidth } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
 import {
   chipStyles,
@@ -96,28 +96,7 @@ export function MultiSelectComboBox<T extends object>({
   onChange,
   ...props
 }: MultiSelectComboBoxProps<T>) {
-  const groupRef = useRef<HTMLDivElement>(null);
-  const [popoverWidth, setPopoverWidth] = useState<number | undefined>();
-
-  // Popover width fix: React Aria's --trigger-width doesn't reflect the Group
-  // width when Group is the trigger. Measure it and apply it to the Popover.
-  // (Same workaround as the single-select ComboBox.)
-  useLayoutEffect(() => {
-    if (!groupRef.current) return;
-
-    const updateWidth = () => {
-      if (groupRef.current) {
-        setPopoverWidth(groupRef.current.offsetWidth);
-      }
-    };
-
-    updateWidth();
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(groupRef.current);
-
-    return () => observer.disconnect();
-  }, []);
+  const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
 
   const handleRemove = (keys: Set<Key>) => {
     onChange(value.filter((key) => !keys.has(key)));
