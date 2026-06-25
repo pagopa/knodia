@@ -86,18 +86,19 @@ export function getAsyncCompanyAddressesRequest(
 
 export function getAsyncCompanyAddressesRequestState(
   request: AsyncCompanyAddressesRequest,
-): API_AsyncConsumptionRequestState {
-  // Once a request is completed it must remain completed, even if the system clock moves backwards.
-  if (request.resourceId) {
-    return API_AsyncConsumptionRequestState.enum.COMPLETED;
-  }
+) {
+  return request.resourceId
+    ? API_AsyncConsumptionRequestState.enum.COMPLETED
+    : API_AsyncConsumptionRequestState.enum.PENDING;
+}
 
-  if (request.finishDate <= new Date()) {
+export function resolveAsyncCompanyAddressesRequest(
+  request: AsyncCompanyAddressesRequest,
+) {
+  if (!request.resourceId && request.finishDate <= new Date()) {
     request.resourceId = randomUUID();
-    return API_AsyncConsumptionRequestState.enum.COMPLETED;
+    addAsyncCompanyAddressesResult(request); // populate results as part of the transition
   }
-
-  return API_AsyncConsumptionRequestState.enum.PENDING;
 }
 
 function getMockFinishDate(requestId: string): Date {

@@ -12,6 +12,7 @@ import {
   addAsyncCompanyAddressesResult,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
+  resolveAsyncCompanyAddressesRequest,
 } from "../asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -83,6 +84,8 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
 
       const requestId = req.params.requestId;
       const request = getAsyncCompanyAddressesRequest(requestId);
+
+      resolveAsyncCompanyAddressesRequest(request);
       const state = getAsyncCompanyAddressesRequestState(request);
 
       logger.info(
