@@ -1,3 +1,5 @@
+import { selectSignupIdentifier } from "@knodia/common-models/auth";
+
 interface PersonalData {
   dateOfBirth: string;
   email?: string;
@@ -23,8 +25,7 @@ export function buildPersonalData(user: PersonalDataSource): PersonalData {
     ...(user.email !== undefined && { email: user.email }),
     familyName: user.familyName,
     name: user.name,
-    uniqueIdentifier:
-      user.spidCode ?? user.fiscalNumber ?? user.personIdentifier ?? "",
+    uniqueIdentifier: selectSignupIdentifier(user)?.value ?? "",
   };
 }
 
