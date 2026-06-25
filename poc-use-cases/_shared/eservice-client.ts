@@ -132,3 +132,22 @@ export async function getJson(
   await ensureOk(response, `GET ${path}`);
   return response.json();
 }
+
+// POST a JSON body to a mock e-service with a bearer access token.
+export async function postJson(
+  baseUrl: string,
+  path: string,
+  accessToken: string,
+  body: unknown,
+): Promise<unknown> {
+  const response = await fetch(`${baseUrl}${path}`, {
+    body: JSON.stringify(body),
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json",
+    },
+    method: "POST",
+  });
+  await ensureOk(response, `POST ${path}`);
+  return response.json();
+}

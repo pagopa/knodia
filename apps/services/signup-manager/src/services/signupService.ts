@@ -49,8 +49,10 @@ export function signupServiceBuilder(
   return {
     async changeEmail(
       { email }: API_ChangeEmailRequestBody,
-      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
+      logger.info("Requesting email change for current signup user");
+
       const currentSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
           fiscalNumber: authData.fiscalNumber,
@@ -94,8 +96,10 @@ export function signupServiceBuilder(
 
     async confirmOnboarding(
       { email }: API_ConfirmOnboardingRequestBody,
-      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
+      logger.info("Confirming onboarding for current signup user");
+
       const now = new Date();
       const signupUserId = generateId<SignupUserId>();
       const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
@@ -158,7 +162,10 @@ export function signupServiceBuilder(
     },
     async deleteCurrentSignupUser({
       authData,
+      logger,
     }: AuthorizedContext<UISignupSessionAuthData>): Promise<void> {
+      logger.info("Requesting deletion of current signup user");
+
       const user = await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
         personIdentifier: authData.personIdentifier,
@@ -186,9 +193,12 @@ export function signupServiceBuilder(
     },
     async getCurrentSignupUser({
       authData,
+      logger,
     }: AuthorizedContext<UISignupSessionAuthData>): Promise<
       SignupUser | undefined
     > {
+      logger.info("Getting current signup user");
+
       return await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
         personIdentifier: authData.personIdentifier,
@@ -214,8 +224,10 @@ export function signupServiceBuilder(
     },
     async suspendUser(
       { suspensionReason }: { suspensionReason: SuspensionReason },
-      { authData }: AuthorizedContext<UISignupSessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
+      logger.info("Requesting suspension for current signup user");
+
       const currentSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
           fiscalNumber: authData.fiscalNumber,
