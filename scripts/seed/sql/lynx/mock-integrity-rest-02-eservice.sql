@@ -69,12 +69,19 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   pretty_name = EXCLUDED.pretty_name,
   updated_at = now();
 
+-- group 1 is OR-matched: testing_organization (held by every onboarded org) keeps the
+-- mock consumable by all; nuts3 stays as an accepted alternative.
 INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
   eservice_id, eservice_version_id, group_id, scheme, code, metadata_version
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
   1, 'vc_territorial_units', 'nuts3',
+  0
+), (
+  'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
+  'a72aa082-69f0-4ae2-ae61-051138118ab3',
+  1, 'knodia', 'testing_organization',
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 

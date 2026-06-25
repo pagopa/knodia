@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   'd44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad',
   'e7f5837e-75f4-431d-9465-73366d27bef2',
   '29721f0d-e36e-4157-bcdc-9629ace0f85b',
-  '788dd312f14e635fe883f9c39051317921e380f6bb791b4ddbdebac68e72574f',
+  'b90407eb4ee5a4dc7e37cb7a9185f44e8e049533de0a3026f7cd4c84217a5e55',
   'application/yaml',
   'mock-bearer-eservice.yaml',
   'd44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml',
@@ -69,12 +69,19 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   pretty_name = EXCLUDED.pretty_name,
   updated_at = now();
 
+-- group 1 is OR-matched: testing_organization (held by every onboarded org) keeps the
+-- mock consumable by all; nuts3 stays as an accepted alternative.
 INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
   eservice_id, eservice_version_id, group_id, scheme, code, metadata_version
 ) VALUES (
   'e7f5837e-75f4-431d-9465-73366d27bef2',
   '29721f0d-e36e-4157-bcdc-9629ace0f85b',
   1, 'vc_territorial_units', 'nuts3',
+  0
+), (
+  'e7f5837e-75f4-431d-9465-73366d27bef2',
+  '29721f0d-e36e-4157-bcdc-9629ace0f85b',
+  1, 'knodia', 'testing_organization',
   0
 ) ON CONFLICT ON CONSTRAINT eservice_v_req_attribute_pk DO NOTHING;
 
