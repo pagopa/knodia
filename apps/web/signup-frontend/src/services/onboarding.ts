@@ -6,11 +6,10 @@ type OnboardingStatus = signupManagerApi.CurrentSignupUser["onboardingStatus"];
 export const resolveOnboardingRedirect = (status: OnboardingStatus) =>
   match(status)
     .with("ACTIVE", () => "/home" as const)
-    .with("NOT_COMPLETED", () => "/registration" as const)
-    .with("SUSPENDED", "DELETION_PENDING", (): never => {
-      // TODO(KN-786/KN-787): the deletion (KN-786) and suspension (KN-787) flows will define where these users go
-      throw new Error(
-        "Suspended or deletion-pending user handling is not implemented yet",
-      );
-    })
+    .with("NOT_COMPLETED", "DELETION_PENDING", () => "/registration" as const)
+    .with("SUSPENDED", () => "/suspended" as const)
     .exhaustive();
+
+export type OnboardingDestination = ReturnType<
+  typeof resolveOnboardingRedirect
+>;

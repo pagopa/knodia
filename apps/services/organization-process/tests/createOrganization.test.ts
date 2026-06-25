@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { generateId, type OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   type Organization,
   OrganizationEventV1,
@@ -105,6 +109,47 @@ describe("POST /organizations (createOrganization)", () => {
       .body({
         ...body,
         attributes: [{ code: "nonexistent", scheme: "nonexistent" }],
+      });
+    expect(response.statusCode).toBe(400);
+  });
+
+  // The test app runs as the Orion node (see setup.ts), so an attribute whose
+  // scheme equals "Orion" is the instance's own-node unique attribute.
+  it("should accept a unique attribute whose scheme is the instance's own Knode ID", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({
+        ...body,
+        attributes: [{ code: body.name, scheme: KnodeId.enum.Orion }],
+      });
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Organization>();
+    expect(responseBody.attributes).toEqual([
+      { code: body.name, scheme: KnodeId.enum.Orion },
+    ]);
+  });
+
+  it("should accept a mix of a standard attribute and the instance's own-node unique attribute", async () => {
+    const attributes = [
+      validAttribute,
+      { code: body.name, scheme: KnodeId.enum.Orion },
+    ];
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({ ...body, attributes });
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Organization>();
+    expect(responseBody.attributes).toEqual(attributes);
+  });
+
+  it("should return 400 for an attribute whose scheme is another node's Knode ID", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({
+        ...body,
+        attributes: [{ code: body.name, scheme: KnodeId.enum.Lynx }],
       });
     expect(response.statusCode).toBe(400);
   });
