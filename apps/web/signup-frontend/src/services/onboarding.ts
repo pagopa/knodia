@@ -7,8 +7,9 @@ export const resolveOnboardingRedirect = (status: OnboardingStatus) =>
   match(status)
     .with("ACTIVE", () => "/home" as const)
     .with("NOT_COMPLETED", "DELETION_PENDING", () => "/registration" as const)
-    .with("SUSPENDED", (): never => {
-      // TODO(KN-787): the suspension flow will define where these users go
-      throw new Error("Suspended user handling is not implemented yet");
-    })
+    .with("SUSPENDED", () => "/suspended" as const)
     .exhaustive();
+
+export type OnboardingDestination = ReturnType<
+  typeof resolveOnboardingRedirect
+>;
