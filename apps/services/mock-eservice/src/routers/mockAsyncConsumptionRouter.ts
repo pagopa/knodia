@@ -23,7 +23,6 @@ import {
   API_CompanyAddressesRequest,
   API_GetCompanyAddressesRequestStateResponse,
 } from "../models/api.ts";
-import { toAPI_GetCompanyAddressesRequestStateResponse } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
@@ -92,14 +91,10 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
 
       addAsyncCompanyAddressesResult(request);
 
-      res
-        .status(200)
-        .send(
-          toAPI_GetCompanyAddressesRequestStateResponse(
-            state,
-            request.resourceId,
-          ),
-        );
+      res.status(200).send({
+        resourceId: request.resourceId,
+        state,
+      });
     },
     method: "GET",
     schema: {
