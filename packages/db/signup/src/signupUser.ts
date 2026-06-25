@@ -14,7 +14,7 @@ import { signupDbConfig } from "./config.ts";
 const schema = pgSchema(signupDbConfig.signupDbSchema);
 
 // Postgres treats NULL as distinct in UNIQUE constraints, so users without a
-// given IdP identifier coexist; the CHECK below requires at least one set.
+// given IdP identifier coexist; the CHECK below requires exactly one set.
 export const signupUser = schema.table(
   "signup_user",
   {
@@ -38,8 +38,8 @@ export const signupUser = schema.table(
   },
   (table) => [
     check(
-      "signup_user_at_least_one_identifier",
-      sql`${table.spidCode} IS NOT NULL OR ${table.fiscalNumber} IS NOT NULL OR ${table.personIdentifier} IS NOT NULL`,
+      "signup_user_single_identifier",
+      sql`(${table.spidCode} IS NOT NULL)::int + (${table.fiscalNumber} IS NOT NULL)::int + (${table.personIdentifier} IS NOT NULL)::int = 1`,
     ),
     check(
       "signup_user_status_valid",

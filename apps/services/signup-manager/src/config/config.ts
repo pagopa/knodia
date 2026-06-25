@@ -3,6 +3,7 @@ import {
   AuthConfig,
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
+import { RateLimiterConfig } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { KafkaConfig, SignupTopicConfig } from "@knodia/kafka-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
@@ -45,7 +46,8 @@ const SignupManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(OneIdentityConfig)
   .and(SignupDbConfig)
   .and(KafkaConfig)
-  .and(SignupTopicConfig);
+  .and(SignupTopicConfig)
+  .and(RateLimiterConfig);
 export type SignupManagerConfig = z.infer<typeof SignupManagerConfig>;
 
 export const config = SignupManagerConfig.parse(process.env);
