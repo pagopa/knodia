@@ -7,6 +7,7 @@ import {
 import {
   API_AsyncConsumptionRequestState,
   type API_CompanyUid,
+  type API_GetCompanyAddressesResult,
   type API_GetCompanyAddressesResults,
 } from "../models/api.ts";
 import {
@@ -30,7 +31,7 @@ export const asyncCompanyAddressesRequests = new Map<
 
 export const asyncCompanyAddressesResults = new Map<
   string,
-  API_GetCompanyAddressesResults["results"]
+  API_GetCompanyAddressesResult[]
 >();
 
 export function addAsyncCompanyAddressesRequest(

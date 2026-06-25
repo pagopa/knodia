@@ -511,11 +511,14 @@ export type API_GetCompanyAddressesRequestStateResponse = z.infer<
   typeof API_GetCompanyAddressesRequestStateResponse
 >;
 
-const API_GetCompanyAddressesResult = z.strictObject({
+export const API_GetCompanyAddressesResult = z.strictObject({
   address: API_Address.optional(),
   legalEntity: API_LegalEntity.optional(),
   uidCompany: API_CompanyUid,
 });
+export type API_GetCompanyAddressesResult = z.infer<
+  typeof API_GetCompanyAddressesResult
+>;
 
 export const API_GetCompanyAddressesResults = z
   .strictObject({

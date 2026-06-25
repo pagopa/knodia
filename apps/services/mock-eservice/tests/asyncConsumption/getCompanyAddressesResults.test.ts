@@ -172,12 +172,10 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
       eserviceId: OTHER_MOCK_ESERVICE_ID,
       eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
     });
-    const requestId = randomUUID();
-    const resourceId = completeRequest(requestId);
 
     const res = await getCompanyAddressesResults({
-      requestId,
-      resourceId,
+      requestId: randomUUID(),
+      resourceId: randomUUID(),
       token,
     });
 
@@ -185,12 +183,9 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
   });
 
   it("returns 401 when the Authorization header is missing", async () => {
-    const requestId = randomUUID();
-    const resourceId = completeRequest(requestId);
-
     const res = await getCompanyAddressesResults({
-      requestId,
-      resourceId,
+      requestId: randomUUID(),
+      resourceId: randomUUID(),
     });
 
     expect(res.statusCode).toBe(401);
@@ -210,12 +205,9 @@ describe("GET /legal-entities/address-requests/:requestId/resources/:resourceId 
 
   it("returns 400 for an invalid UUID format in resourceId", async () => {
     const token = await signToken();
-    const requestId = randomUUID();
-
-    addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
 
     const res = await getCompanyAddressesResults({
-      requestId,
+      requestId: randomUUID(),
       resourceId: "not-a-valid-uuid",
       token,
     });
