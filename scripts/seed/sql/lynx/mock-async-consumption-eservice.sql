@@ -8,7 +8,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   '4ed2b4f9-e974-4e69-84d6-7074af92cd4f',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mockup 05 Company Addresses (Bearer) - Lynx"}'::jsonb,
+  '{"en": "Mockup 05 Company Addresses (Async Consumption) - Lynx"}'::jsonb,
   '{"en": "Cross-Border E-Service that returns the registered addresses of legal entities, with Bearer-token access and async processing."}'::jsonb,
   'ProvideData',
   true, false,
