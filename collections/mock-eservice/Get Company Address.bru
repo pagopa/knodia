@@ -1,0 +1,22 @@
+meta {
+  name: Get Company Address
+  type: http
+}
+
+get {
+  url: {{host-mock-eservice}}/legal-entities/12345678901/address
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create Token first — it populates the access_token var on success."
+    )
+  }
+}

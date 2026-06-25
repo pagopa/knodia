@@ -99,6 +99,8 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
@@ -613,6 +615,7 @@ services:
       AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5001"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
@@ -1060,7 +1063,11 @@ services:
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -1387,6 +1394,7 @@ services:
       AUTH_COOKIE_ALLOWED_ORIGINS: "http://localhost:5002"
       COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
+      COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
@@ -1834,7 +1842,11 @@ services:
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -2172,7 +2184,7 @@ services:
       ALLOWED_ORIGINS: "https://localhost:5176,http://localhost:5176"
       CLIENT_ID: local-oi-client-id
       CLIENT_SECRET: local-oi-client-secret
-      REDIRECT_URI: "http://localhost:5176/login/callback"
+      REDIRECT_URI: "http://localhost:5176/ui/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
 
   redis:

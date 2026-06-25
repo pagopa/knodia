@@ -5,6 +5,7 @@
     "@tsconfig/node-ts/tsconfig.json"
   ],
   "compilerOptions": {
+    "types": ["node"],
     "noEmit": true, // typecheck only, we don't transpile into JS, we run TS directly with Node.js
     "lib": [
       "ES2024",
