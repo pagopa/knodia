@@ -182,6 +182,11 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     url: "/user/suspend",
   });
 
+  /**
+   * Internal maintenance endpoint: no ui-signup-session auth data is
+   * available, so the rate limiter key cannot be derived and rate limiting
+   * is intentionally skipped.
+   */
   fastify.route({
     handler: async (req, res) => {
       validateAuthorization(getContextValues(requestContext), [

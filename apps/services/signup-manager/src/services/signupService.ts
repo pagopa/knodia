@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -213,6 +214,7 @@ export function signupServiceBuilder(
       assertSignupUserIsSuspended(userToReactivate);
 
       const now = new Date();
+
       await signupDbService.updateSignupUserReactivation(signupUserId);
 
       await signupEventProducer.publishMaintenanceUserReactivationRequestedV1Event(

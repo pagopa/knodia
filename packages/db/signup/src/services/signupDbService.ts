@@ -238,37 +238,12 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         )
         .returning({ signupUserId: signupUser.signupUserId });
 
-      if (updated) {
-        return;
-      }
+      if (updated) return;
 
-      /**
-       * No row transitioned: either the user is already DeletionPending (retry,
-       * idempotent no-op) or it disappeared/was deleted meanwhile (invalid
-       * transition).
-       */
-      const [existing] = await db
-        .select({ status: signupUser.status })
-        .from(signupUser)
-        .where(eq(signupUser.signupUserId, signupUserId))
-        .limit(1);
-
-      if (existing?.status === SignupUserStatus.enum.DeletionPending) {
-        return;
-      }
-
-      /**
-       * The row may be gone because the deletion already completed: a retry
-       * landing after completeSignupUserDeletion finds no signup_user row but a
-       * registry entry. Mirror its idempotency and treat that as a no-op rather
-       * than a 500.
-       */
-      if (!existing && (await hasRecordedDeletion(db, signupUserId))) {
-        return;
-      }
-
-      throw genericInternalError(
-        `Cannot mark signup user ${signupUserId} as DeletionPending: user ${existing ? `has status ${existing.status}` : "not found"}`,
+      await assertSignupUserReachedStatusOrWasDeleted(
+        db,
+        signupUserId,
+        SignupUserStatus.enum.DeletionPending,
       );
     },
     async updateSignupUserEmail({
@@ -287,7 +262,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
     async updateSignupUserReactivation(
       signupUserId: SignupUserId,
     ): Promise<void> {
-      await db
+      const [updated] = await db
         .update(signupUser)
         .set({
           status: SignupUserStatus.enum.Active,
@@ -295,7 +270,21 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
           suspensionReason: null,
           updatedAt: new Date(),
         })
-        .where(eq(signupUser.signupUserId, signupUserId));
+        .where(
+          and(
+            eq(signupUser.signupUserId, signupUserId),
+            eq(signupUser.status, SignupUserStatus.enum.Suspended),
+          ),
+        )
+        .returning({ signupUserId: signupUser.signupUserId });
+
+      if (updated) return;
+
+      await assertSignupUserReachedStatusOrWasDeleted(
+        db,
+        signupUserId,
+        SignupUserStatus.enum.Active,
+      );
     },
 
     async updateSignupUserSuspension({
@@ -318,6 +307,39 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         .where(eq(signupUser.signupUserId, signupUserId));
     },
   };
+}
+
+async function assertSignupUserReachedStatusOrWasDeleted(
+  db: NodePgDatabase,
+  signupUserId: SignupUserId,
+  status: SignupUser["status"],
+): Promise<void> {
+  /**
+   * No row transitioned: either the user already reached the target status
+   * (retry, idempotent no-op) or it disappeared/was deleted meanwhile.
+   */
+  const [existing] = await db
+    .select({ status: signupUser.status })
+    .from(signupUser)
+    .where(eq(signupUser.signupUserId, signupUserId))
+    .limit(1);
+
+  if (existing?.status === status) {
+    return;
+  }
+
+  /**
+   * The row may be gone because deletion already completed. A retry landing
+   * after completeSignupUserDeletion finds no signup_user row but a registry
+   * entry, which is an idempotent no-op rather than an invalid transition.
+   */
+  if (!existing && (await hasRecordedDeletion(db, signupUserId))) {
+    return;
+  }
+
+  throw genericInternalError(
+    `Cannot mark signup user ${signupUserId} as ${status}: user ${existing ? `has status ${existing.status}` : "not found"}`,
+  );
 }
 
 // Accepts a transaction too: a PgTransaction is assignable to NodePgDatabase.

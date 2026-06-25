@@ -10,7 +10,6 @@ import { SignupEventV1 } from "../src/signupEvent.ts";
 function validMaintenanceUserReactivationData() {
   return {
     occurredAt: "2026-05-30T10:00:00.000Z",
-    oneIdNonce: generateId(),
     signupUserId: generateId<SignupUserId>(),
   };
 }

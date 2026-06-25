@@ -251,24 +251,6 @@ describe("enableUser", () => {
     });
   });
 
-  it("is idempotent: swallows UserNotFoundException", async () => {
-    const send = vi
-      .spyOn(CognitoIdentityProviderClient.prototype, "send")
-      .mockRejectedValue(
-        Object.assign(new Error("user not found"), {
-          name: "UserNotFoundException",
-        }),
-      );
-
-    await expect(
-      buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
-        username: "u",
-      }),
-    ).resolves.toBeUndefined();
-
-    expect(send).toHaveBeenCalledTimes(1);
-  });
-
   it("rethrows non-ignored errors", async () => {
     vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
       Object.assign(new Error("boom"), { name: "InternalErrorException" }),

@@ -75,11 +75,24 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     expect(event).toEqual({
       data: {
         occurredAt: expect.any(String),
-        oneIdNonce: expect.any(String),
         signupUserId: signupUser.signupUserId,
       },
       type: "MaintenanceUserReactivationRequestedV1",
     });
+  });
+
+  it("should not be rate limited for internal maintenance calls", async () => {
+    for (let i = 0; i < 10; i++) {
+      const response = await injectSignupAppRequest({
+        type: "internal",
+      }).post(
+        "/maintenance/users/00000000-0000-0000-0000-000000000000/reactivate",
+      );
+
+      expect(response.statusCode).toBe(404);
+    }
+
+    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
   it("should return 400 when the signupUserId is not a valid UUID", async () => {
