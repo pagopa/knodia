@@ -33,24 +33,60 @@ const baseTransform = createJsonSchemaTransform({
   },
 });
 
+interface ResponseHeaderWithComponentName {
+  componentName?: string;
+  header: OpenAPIV3.HeaderObject;
+}
+
 const zodObjectToResponseHeaders = (
   zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
-): Record<string, OpenAPIV3.HeaderObject> =>
+): Record<string, ResponseHeaderWithComponentName> =>
   Object.fromEntries(
     Object.entries(zodSchema.shape).map(([name, propSchema]) => {
       const { description, ...schema } = z.toJSONSchema(propSchema, {
         target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
       });
+      const componentName =
+        typeof schema["id"] === "string" ? schema["id"] : undefined;
+
+      // `id` is valid JSON Schema metadata but not part of OpenAPI 3.0 Schema.
+      // Drop it so generated header schemas stay OpenAPI-compliant.
+      if ("id" in schema) {
+        delete schema["id"];
+      }
 
       return [
         name,
         {
-          // If parsing undefined fails, it's required
-          required: !propSchema.safeParse(undefined).success,
-          schema: schema as OpenAPIV3.SchemaObject,
-          ...(typeof description === "string" ? { description } : {}),
+          componentName,
+          header: {
+            // If parsing undefined fails, it's required
+            required: !propSchema.safeParse(undefined).success,
+            schema: schema as OpenAPIV3.SchemaObject,
+            ...(typeof description === "string" ? { description } : {}),
+          },
         },
       ];
+    }),
+  );
+
+const buildHeaderRef = (componentName: string): OpenAPIV3.ReferenceObject => ({
+  $ref: `#/components/headers/${componentName}`,
+});
+
+const convertToHeaderComponentReferences = (
+  headers: Record<string, ResponseHeaderWithComponentName>,
+): Record<string, OpenAPIV3.HeaderObject | OpenAPIV3.ReferenceObject> =>
+  Object.fromEntries(
+    Object.entries(headers).map(([name, headerWithComponentName]) => {
+      const { componentName, header } = headerWithComponentName;
+
+      if (!componentName) {
+        return [name, header];
+      }
+
+      sharedHeaderComponentsStore.set(componentName, header);
+      return [name, buildHeaderRef(componentName)];
     }),
   );
 
@@ -95,7 +131,9 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   if (responseHeaders instanceof z.ZodObject) {
     responseHeadersStore.set(operationId, {
       ...responseHeadersStore.get(operationId),
-      ...zodObjectToResponseHeaders(responseHeaders),
+      ...convertToHeaderComponentReferences(
+        zodObjectToResponseHeaders(responseHeaders),
+      ),
     });
   }
 
@@ -106,7 +144,9 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
       if (isResponseEntryWithHeaders(val)) {
         responseHeadersStore.set(`${operationId}:${statusCode}`, {
           ...responseHeadersStore.get(`${operationId}:${statusCode}`),
-          ...zodObjectToResponseHeaders(val.headers),
+          ...convertToHeaderComponentReferences(
+            zodObjectToResponseHeaders(val.headers),
+          ),
         });
       }
     }
