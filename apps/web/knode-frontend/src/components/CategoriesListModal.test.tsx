@@ -1,13 +1,18 @@
-import { describe, expect, it, vi } from "vitest";
+import { Button } from "@knodia/ui-kit/ui";
+import { DialogTrigger } from "react-aria-components";
+import { describe, expect, it } from "vitest";
 
-import { renderWithProviders, screen } from "@/test/utils";
+import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { CategoriesListModal } from "./CategoriesListModal";
 
 describe("CategoriesListModal", () => {
-  it("renders the title and one card per catalog category", () => {
+  it("renders the title and one card per catalog category when open", () => {
     renderWithProviders(
-      <CategoriesListModal isOpen onOpenChange={() => undefined} />,
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <CategoriesListModal />
+      </DialogTrigger>,
     );
 
     expect(screen.getByText("Categories list")).toBeInTheDocument();
@@ -19,22 +24,29 @@ describe("CategoriesListModal", () => {
     expect(screen.getAllByText(/^That process the/)).toHaveLength(13);
   });
 
-  it("does not render when isOpen is false", () => {
+  it("does not render the modal until the trigger is opened", () => {
     renderWithProviders(
-      <CategoriesListModal isOpen={false} onOpenChange={() => undefined} />,
+      <DialogTrigger>
+        <Button>Open</Button>
+        <CategoriesListModal />
+      </DialogTrigger>,
     );
 
     expect(screen.queryByText("Categories list")).not.toBeInTheDocument();
   });
 
-  it("calls onOpenChange(false) when the user presses Escape", async () => {
-    const onOpenChange = vi.fn();
+  it("closes when the user presses Escape", async () => {
     const { user } = renderWithProviders(
-      <CategoriesListModal isOpen onOpenChange={onOpenChange} />,
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <CategoriesListModal />
+      </DialogTrigger>,
     );
 
     await user.keyboard("{Escape}");
 
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    await waitFor(() =>
+      expect(screen.queryByText("Categories list")).not.toBeInTheDocument(),
+    );
   });
 });

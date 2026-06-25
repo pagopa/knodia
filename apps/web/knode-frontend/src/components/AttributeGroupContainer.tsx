@@ -1,12 +1,12 @@
-import { type Attribute, getAttribute } from "@knodia/attribute-models";
+import { getAttribute } from "@knodia/attribute-models";
 import { InteractiveIcon, Tooltip } from "@knodia/ui-kit/ui";
 import {
   BookOpenTextIcon,
   ExclamationMarkIcon,
   SealCheckIcon,
 } from "@phosphor-icons/react";
-import { Fragment, useState } from "react";
-import { TooltipTrigger } from "react-aria-components";
+import { Fragment } from "react";
+import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
@@ -27,9 +27,6 @@ export function AttributeGroupContainer({
   const hasPossessionInfo = attributes.some(
     (attr) => attr.possessed !== undefined,
   );
-  const [selectedAttribute, setSelectedAttribute] = useState<Attribute | null>(
-    null,
-  );
 
   return (
     <div
@@ -45,19 +42,22 @@ export function AttributeGroupContainer({
               </span>
             )}
             <span
-              className={`flex items-center gap-1 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
+              className={`flex items-center gap-2 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
             >
               {resolved?.name ?? attribute.code}
               {resolved && (
-                <TooltipTrigger>
-                  <InteractiveIcon
-                    aria-label={`Show description for ${resolved.name}`}
-                    onPress={() => setSelectedAttribute(resolved)}
-                  >
-                    <BookOpenTextIcon size={20} />
-                  </InteractiveIcon>
-                  <Tooltip>Show description</Tooltip>
-                </TooltipTrigger>
+                <DialogTrigger>
+                  <TooltipTrigger>
+                    <InteractiveIcon
+                      aria-label={`Show description for ${resolved.name}`}
+                      className="hover:cursor-pointer"
+                    >
+                      <BookOpenTextIcon size={20} />
+                    </InteractiveIcon>
+                    <Tooltip>Show description</Tooltip>
+                  </TooltipTrigger>
+                  <AttributeDescriptionModal attribute={resolved} />
+                </DialogTrigger>
               )}
             </span>
           </Fragment>
@@ -77,15 +77,6 @@ export function AttributeGroupContainer({
           weight="bold"
         />
       )}
-      <AttributeDescriptionModal
-        attribute={selectedAttribute}
-        isOpen={selectedAttribute !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedAttribute(null);
-          }
-        }}
-      />
     </div>
   );
 }

@@ -27,7 +27,7 @@ const overlay = tv({
 });
 
 const modal = tv({
-  base: "max-h-full w-xl overflow-hidden rounded-modal bg-white elevation-5 p-6",
+  base: "flex max-h-full w-xl flex-col overflow-hidden rounded-modal bg-white elevation-5 p-6",
   variants: {
     isEntering: {
       true: "animate-in zoom-in-95 duration-200 ease-out",
@@ -85,10 +85,10 @@ export function Modal({
       <AriaModal className={(renderProps) => modal({ ...renderProps })}>
         <AriaDialog
           aria-labelledby={titleId}
-          className="w-full outline-none flex flex-col gap-6"
+          className="w-full min-h-0 outline-none flex flex-col gap-6"
           {...(description && { "aria-describedby": descriptionId })}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 shrink-0">
             <div className="flex justify-between items-start gap-6">
               <p className="title-md-em" id={titleId}>
                 {title}
@@ -112,7 +112,11 @@ export function Modal({
             )}
           </div>
 
-          {children}
+          {children && (
+            <div className="flex flex-col gap-6 min-h-0 overflow-y-auto">
+              {children}
+            </div>
+          )}
 
           {showErrorBanner && (
             <Banner kind="error">
@@ -121,7 +125,7 @@ export function Modal({
           )}
 
           {hasFooter && (
-            <div className="flex justify-between gap-6 items-center">
+            <div className="flex justify-between gap-6 items-center shrink-0">
               {showDontShowAgain ? (
                 <Checkbox
                   {...(onDontShowAgainChange && {

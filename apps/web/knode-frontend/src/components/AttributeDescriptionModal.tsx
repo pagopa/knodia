@@ -5,29 +5,18 @@ import { Modal } from "@knodia/ui-kit/ui";
 import { DefinitionCard } from "./DefinitionCard";
 
 interface AttributeDescriptionModalProps {
-  attribute: Attribute | null;
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  attribute: Attribute;
 }
 
 export function AttributeDescriptionModal({
   attribute,
-  isOpen,
-  onOpenChange,
 }: AttributeDescriptionModalProps) {
   return (
-    <Modal
-      isDismissable
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      title="Attribute description"
-    >
-      {attribute && (
-        <DefinitionCard
-          description={attribute.description}
-          name={attribute.name}
-        />
-      )}
+    <Modal isDismissable title="Attribute description">
+      <DefinitionCard
+        description={attribute.description}
+        name={attribute.name}
+      />
     </Modal>
   );
 }

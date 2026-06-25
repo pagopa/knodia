@@ -1,13 +1,18 @@
-import { describe, expect, it, vi } from "vitest";
+import { Button } from "@knodia/ui-kit/ui";
+import { DialogTrigger } from "react-aria-components";
+import { describe, expect, it } from "vitest";
 
-import { renderWithProviders, screen } from "@/test/utils";
+import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { AttributesListModal } from "./AttributesListModal";
 
 describe("AttributesListModal", () => {
-  it("renders the title, section labels, every catalog attribute and the info banner", () => {
+  it("renders the title, section labels, every catalog attribute and the info banner when open", () => {
     renderWithProviders(
-      <AttributesListModal isOpen onOpenChange={() => undefined} />,
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributesListModal />
+      </DialogTrigger>,
     );
 
     expect(screen.getByText("Attributes list")).toBeInTheDocument();
@@ -24,22 +29,29 @@ describe("AttributesListModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render when isOpen is false", () => {
+  it("does not render the modal until the trigger is opened", () => {
     renderWithProviders(
-      <AttributesListModal isOpen={false} onOpenChange={() => undefined} />,
+      <DialogTrigger>
+        <Button>Open</Button>
+        <AttributesListModal />
+      </DialogTrigger>,
     );
 
     expect(screen.queryByText("Attributes list")).not.toBeInTheDocument();
   });
 
-  it("calls onOpenChange(false) when the user presses Escape", async () => {
-    const onOpenChange = vi.fn();
+  it("closes when the user presses Escape", async () => {
     const { user } = renderWithProviders(
-      <AttributesListModal isOpen onOpenChange={onOpenChange} />,
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributesListModal />
+      </DialogTrigger>,
     );
 
     await user.keyboard("{Escape}");
 
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    await waitFor(() =>
+      expect(screen.queryByText("Attributes list")).not.toBeInTheDocument(),
+    );
   });
 });

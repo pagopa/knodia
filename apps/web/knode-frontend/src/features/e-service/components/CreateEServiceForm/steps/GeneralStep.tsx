@@ -1,7 +1,7 @@
 import { categories } from "@knodia/category-models";
 import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { DialogTrigger } from "react-aria-components";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
@@ -104,8 +104,6 @@ function CategoriesField({
   form: ReturnType<typeof useGeneralStepForm>;
   isDefinedByTemplate: boolean;
 }) {
-  const [isCategoriesListOpen, setIsCategoriesListOpen] = useState(false);
-
   return (
     <form.Field name="categories">
       {(field) => {
@@ -138,20 +136,14 @@ function CategoriesField({
               >
                 {renderSchemeRefItems(categories)}
               </Select>
-              <Button
-                hierarchy="neutral"
-                kind="ghost"
-                onPress={() => setIsCategoriesListOpen(true)}
-                size="lg"
-              >
-                <BookOpenTextIcon />
-                Categories list
-              </Button>
+              <DialogTrigger>
+                <Button hierarchy="neutral" kind="ghost" size="lg">
+                  <BookOpenTextIcon />
+                  Categories list
+                </Button>
+                <CategoriesListModal />
+              </DialogTrigger>
             </div>
-            <CategoriesListModal
-              isOpen={isCategoriesListOpen}
-              onOpenChange={setIsCategoriesListOpen}
-            />
           </>
         );
       }}

@@ -1,21 +1,25 @@
 import { getAttribute } from "@knodia/attribute-models";
+import { Button } from "@knodia/ui-kit/ui";
+import { DialogTrigger } from "react-aria-components";
 import { describe, expect, it } from "vitest";
 
 import { renderWithProviders, screen } from "@/test/utils";
 
 import { AttributeDescriptionModal } from "./AttributeDescriptionModal";
 
-const nuts3 =
-  getAttribute({ code: "nuts3", scheme: "vc_territorial_units" }) ?? null;
+const nuts3 = getAttribute({ code: "nuts3", scheme: "vc_territorial_units" });
+
+if (!nuts3) {
+  throw new Error("Test fixture attribute not found");
+}
 
 describe("AttributeDescriptionModal", () => {
-  it("renders the title and the card for the given attribute", () => {
+  it("renders the title and the card for the given attribute when open", () => {
     renderWithProviders(
-      <AttributeDescriptionModal
-        attribute={nuts3}
-        isOpen
-        onOpenChange={() => undefined}
-      />,
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributeDescriptionModal attribute={nuts3} />
+      </DialogTrigger>,
     );
 
     expect(screen.getByText("Attribute description")).toBeInTheDocument();
@@ -27,26 +31,12 @@ describe("AttributeDescriptionModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders no card when no attribute is selected", () => {
+  it("does not render the modal until the trigger is opened", () => {
     renderWithProviders(
-      <AttributeDescriptionModal
-        attribute={null}
-        isOpen
-        onOpenChange={() => undefined}
-      />,
-    );
-
-    expect(screen.getByText("Attribute description")).toBeInTheDocument();
-    expect(screen.queryByText(/^Organizations/)).not.toBeInTheDocument();
-  });
-
-  it("does not render when isOpen is false", () => {
-    renderWithProviders(
-      <AttributeDescriptionModal
-        attribute={nuts3}
-        isOpen={false}
-        onOpenChange={() => undefined}
-      />,
+      <DialogTrigger>
+        <Button>Open</Button>
+        <AttributeDescriptionModal attribute={nuts3} />
+      </DialogTrigger>,
     );
 
     expect(screen.queryByText("Attribute description")).not.toBeInTheDocument();

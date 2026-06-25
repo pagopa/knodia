@@ -4,25 +4,11 @@ import { Modal } from "@knodia/ui-kit/ui";
 import { toSchemeRefKey } from "@/utils/schemeRef";
 
 import { DefinitionCard } from "./DefinitionCard";
-import { ModalScrollArea } from "./ModalScrollArea";
 
-interface CategoriesListModalProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-}
-
-export function CategoriesListModal({
-  isOpen,
-  onOpenChange,
-}: CategoriesListModalProps) {
+export function CategoriesListModal() {
   return (
-    <Modal
-      isDismissable
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      title="Categories list"
-    >
-      <ModalScrollArea className="gap-2">
+    <Modal isDismissable title="Categories list">
+      <div className="flex flex-col gap-2">
         {listCategories().map((category) => (
           <DefinitionCard
             description={category.description}
@@ -30,7 +16,7 @@ export function CategoriesListModal({
             name={category.name}
           />
         ))}
-      </ModalScrollArea>
+      </div>
     </Modal>
   );
 }

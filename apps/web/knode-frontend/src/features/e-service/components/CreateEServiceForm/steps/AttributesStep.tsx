@@ -1,7 +1,7 @@
 import { attributes } from "@knodia/attribute-models";
 import { Banner, Button, Select } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon, TrashIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { DialogTrigger } from "react-aria-components";
 
 import { AttributesListModal } from "@/components/AttributesListModal";
 import { ModalFooter } from "@/components/ModalFooter";
@@ -26,7 +26,6 @@ export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
   const form = useAttributesStepForm(nextStep);
   const { template } = useEServiceWizardContext();
-  const [isAttributesListOpen, setIsAttributesListOpen] = useState(false);
 
   const handleAddGroup = () => {
     const currentGroups = form.getFieldValue("requiredAttributes") ?? [];
@@ -91,7 +90,6 @@ export function AttributesStep() {
                     areDefinedByTemplate={areDefinedByTemplate}
                     form={form}
                     groupIndex={groupIndex}
-                    onShowAttributesList={() => setIsAttributesListOpen(true)}
                   />
                 </div>
               ))}
@@ -120,11 +118,6 @@ export function AttributesStep() {
           />
         )}
       </form.Subscribe>
-
-      <AttributesListModal
-        isOpen={isAttributesListOpen}
-        onOpenChange={setIsAttributesListOpen}
-      />
     </>
   );
 }
@@ -133,12 +126,10 @@ function AttributesField({
   areDefinedByTemplate,
   form,
   groupIndex,
-  onShowAttributesList,
 }: {
   areDefinedByTemplate: boolean;
   form: AttributesStepForm;
   groupIndex: number;
-  onShowAttributesList: () => void;
 }) {
   return (
     <form.Field name={`requiredAttributes[${groupIndex}]`}>
@@ -171,15 +162,13 @@ function AttributesField({
             >
               {renderSchemeRefItems(attributes)}
             </Select>
-            <Button
-              hierarchy="neutral"
-              kind="ghost"
-              onPress={onShowAttributesList}
-              size="lg"
-            >
-              <BookOpenTextIcon />
-              Attributes list
-            </Button>
+            <DialogTrigger>
+              <Button hierarchy="neutral" kind="ghost" size="lg">
+                <BookOpenTextIcon />
+                Attributes list
+              </Button>
+              <AttributesListModal />
+            </DialogTrigger>
           </div>
         );
       }}
