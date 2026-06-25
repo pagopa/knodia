@@ -14,6 +14,7 @@ import {
   addAsyncCompanyAddressesResult,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
+  resolveAsyncCompanyAddressesRequest,
 } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
@@ -52,6 +53,7 @@ function completeRequest(requestId: string): string {
   vi.setSystemTime(new Date(Date.now() + 76_000));
 
   const request = getAsyncCompanyAddressesRequest(requestId);
+  resolveAsyncCompanyAddressesRequest(request);
   const state = getAsyncCompanyAddressesRequestState(request);
 
   expect(state).toBe(API_AsyncConsumptionRequestState.enum.COMPLETED);
