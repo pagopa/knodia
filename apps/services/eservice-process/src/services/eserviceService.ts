@@ -58,6 +58,7 @@ import {
   retrieveEservice,
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
+  retrieveFlatEservice,
 } from "../utils/readmodelUtils.ts";
 import {
   retrieveEserviceLatestVersionFromEservice,
@@ -238,7 +239,7 @@ export function eserviceServiceBuilder(
       }: AuthorizedContext<
         ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
       >,
-    ): Promise<WithMetadata<Eservice>> {
+    ): Promise<WithMetadata<FlatEservice>> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
       if (authData.tokenType === "external-ui-session") {
@@ -249,7 +250,7 @@ export function eserviceServiceBuilder(
         );
       }
 
-      return await retrieveEservice(eserviceId, readmodelService);
+      return await retrieveFlatEservice(eserviceId, readmodelService);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
