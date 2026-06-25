@@ -1,3 +1,4 @@
+import type { RequestContextData } from "@fastify/request-context";
 import type { TokenGenerator } from "@knodia/token-generator";
 
 import { selectSignupIdentifier } from "@knodia/common-models/auth";
@@ -15,15 +16,20 @@ export function authServiceBuilder(
   tokenGenerator: TokenGenerator,
 ) {
   return {
-    async exchangeOIDCCode({
-      code,
-      oidcSession,
-      state,
-    }: {
-      code: string;
-      oidcSession: null | { nonce: string; state: string };
-      state: string;
-    }) {
+    async exchangeOIDCCode(
+      {
+        code,
+        oidcSession,
+        state,
+      }: {
+        code: string;
+        oidcSession: null | { nonce: string; state: string };
+        state: string;
+      },
+      { logger }: RequestContextData,
+    ) {
+      logger.info("Exchanging OIDC code for UI signup session token");
+
       if (!oidcSession || oidcSession.state !== state) {
         throw forbiddenError("Invalid OIDC session state");
       }
@@ -65,7 +71,12 @@ export function authServiceBuilder(
       return { uiSignupSessionToken: sessionToken.serialized };
     },
 
-    startOIDCSession({ nonce, state }: { nonce: string; state: string }) {
+    startOIDCSession(
+      { nonce, state }: { nonce: string; state: string },
+      { logger }: RequestContextData,
+    ) {
+      logger.info("Starting OIDC session");
+
       return {
         loginUrl: oneIdentityClient.buildOneIdentityLoginUrl({
           nonce,
