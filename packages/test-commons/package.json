@@ -26,6 +26,7 @@
     "@testcontainers/minio": "catalog:",
     "@testcontainers/postgresql": "catalog:",
     "@types/pg": "catalog:",
+    "axios": "catalog:",
     "testcontainers": "catalog:",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",

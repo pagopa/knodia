@@ -3,7 +3,7 @@ import {
   type KnodeApiKeychainId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import { AxiosError, type AxiosResponse } from "axios";
+import { makeAxiosError } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getKnodeApiKeychainKeyMock = vi.hoisted(() => vi.fn());
@@ -33,21 +33,6 @@ vi.mock("@knodia/keychain-process-client", async (importOriginal) => {
 
 // Must import after vi.mock
 import { injectRequest } from "../utils.ts";
-
-function makeAxios404(title: string): AxiosError {
-  const error = new AxiosError("Request failed with status code 404");
-  error.response = {
-    data: {
-      correlationId: generateId(),
-      errors: [{ code: "000-0000", detail: title }],
-      status: 404,
-      title,
-    },
-    headers: {},
-    status: 404,
-  } as AxiosResponse;
-  return error;
-}
 
 const mockKeychainId = generateId<KnodeApiKeychainId>();
 const mockKid = "test-kid-123";
@@ -133,7 +118,7 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
 
   it("should return 404 when key is not found", async () => {
     getKnodeApiKeychainKeyMock.mockRejectedValue(
-      makeAxios404("Key Not Found in Keychain"),
+      makeAxiosError(404, "Key Not Found in Keychain"),
     );
     getKnodeApiKeychainMock.mockResolvedValue(mockKeychainResponse);
 
@@ -143,7 +128,7 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
 
   it("should return 404 when keychain is not found via key endpoint", async () => {
     getKnodeApiKeychainKeyMock.mockRejectedValue(
-      makeAxios404("Knode API Keychain Not Found"),
+      makeAxiosError(404, "Knode API Keychain Not Found"),
     );
     getKnodeApiKeychainMock.mockResolvedValue(mockKeychainResponse);
 
@@ -154,7 +139,7 @@ describe("POST /knodeApiClientAssertionVerificationData (getKnodeApiClientAssert
   it("should return 404 when keychain is not found via keychain endpoint", async () => {
     getKnodeApiKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getKnodeApiKeychainMock.mockRejectedValue(
-      makeAxios404("Knode API Keychain Not Found"),
+      makeAxiosError(404, "Knode API Keychain Not Found"),
     );
 
     const response = await makeRequest();

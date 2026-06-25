@@ -252,7 +252,14 @@ export function getTestUISignupSessionTokenClaims(
   const spidCode = match(props.spidCode)
     .with(P.string, (value) => value)
     .with(null, () => undefined)
-    .with(undefined, () => (callerSetIdentifier ? undefined : "test-spid-code"))
+    // Not passed: default to a SPID login unless another identifier was set,
+    // using `uniqueIdentifier` so callers that only care about the bucket key
+    // get sub === spidCode, falling back to a fixed code.
+    .with(undefined, () =>
+      callerSetIdentifier
+        ? undefined
+        : (props.uniqueIdentifier ?? "test-spid-code"),
+    )
     .exhaustive();
 
   return {
@@ -270,10 +277,8 @@ export function getTestUISignupSessionTokenClaims(
     spidCode,
     // sub mirrors the chosen identifier, as in production.
     sub:
-      props.uniqueIdentifier ??
       selectSignupIdentifier({ fiscalNumber, personIdentifier, spidCode })
-        ?.value ??
-      "test-unique-identifier",
+        ?.value ?? "test-unique-identifier",
     type: "ui-signup-session",
   };
 }

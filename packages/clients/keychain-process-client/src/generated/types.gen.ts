@@ -105,6 +105,16 @@ export type CreatedMemberResource = {
     userId: UserId;
 };
 
+/**
+ * Public Key details
+ */
+export type PublicKey = {
+    algorithm: KeyAlgorithm;
+    encodedPem: string;
+    format: KeyFormat;
+    kid: KeyId;
+};
+
 export type Keychain = {
     createdAt: string;
     description?: KeychainLocalizedDescription;
@@ -2472,3 +2482,48 @@ export type GetProducerKeychainEserviceResponses = {
 };
 
 export type GetProducerKeychainEserviceResponse = GetProducerKeychainEserviceResponses[keyof GetProducerKeychainEserviceResponses];
+
+export type GetProducerKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: KeyId;
+    };
+    query?: never;
+    url: '/producerKeys/{keyId}';
+};
+
+export type GetProducerKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Producer Key not found
+     */
+    404: Problem;
+};
+
+export type GetProducerKeyError = GetProducerKeyErrors[keyof GetProducerKeyErrors];
+
+export type GetProducerKeyResponses = {
+    /**
+     * Producer Key retrieved successfully
+     */
+    200: PublicKey;
+};
+
+export type GetProducerKeyResponse = GetProducerKeyResponses[keyof GetProducerKeyResponses];

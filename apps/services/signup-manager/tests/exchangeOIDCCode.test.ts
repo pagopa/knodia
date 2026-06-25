@@ -26,7 +26,8 @@ vi.mock("jose", async (importOriginal) => {
   };
 });
 
-vi.mock("@knodia/token-generator", () => ({
+vi.mock("@knodia/token-generator", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@knodia/token-generator")>()),
   tokenGeneratorBuilder: () => ({
     generateUISignupSessionToken: mockGenerateUISignupSessionToken,
   }),

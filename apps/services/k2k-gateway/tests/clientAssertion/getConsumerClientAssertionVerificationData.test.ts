@@ -1,5 +1,5 @@
 import { generateId } from "@knodia/common-models/ids";
-import { AxiosError, type AxiosResponse } from "axios";
+import { makeAxiosError } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getConsumerKeychainPurposeMock = vi.hoisted(() => vi.fn());
@@ -47,21 +47,6 @@ vi.mock("@knodia/organization-process-client", async (importOriginal) => {
 
 // Must import after vi.mock
 import { injectRequest } from "../utils.ts";
-
-function makeAxios404(title: string): AxiosError {
-  const error = new AxiosError("Request failed with status code 404");
-  error.response = {
-    data: {
-      correlationId: generateId(),
-      errors: [{ code: "000-0000", detail: title }],
-      status: 404,
-      title,
-    },
-    headers: {},
-    status: 404,
-  } as AxiosResponse;
-  return error;
-}
 
 const mockKeychainId = generateId();
 const mockKid = "test-kid-123";
@@ -186,7 +171,7 @@ describe("POST /consumerClientAssertionVerificationData (getConsumerClientAssert
 
   it("should return 404 when purpose is not linked to keychain", async () => {
     getConsumerKeychainPurposeMock.mockRejectedValue(
-      makeAxios404("Consumer Keychain Purpose Not Found"),
+      makeAxiosError(404, "Consumer Keychain Purpose Not Found"),
     );
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
@@ -198,7 +183,7 @@ describe("POST /consumerClientAssertionVerificationData (getConsumerClientAssert
   it("should return 404 when key is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockRejectedValue(
-      makeAxios404("Key Not Found in Keychain"),
+      makeAxiosError(404, "Key Not Found in Keychain"),
     );
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
 
@@ -210,7 +195,7 @@ describe("POST /consumerClientAssertionVerificationData (getConsumerClientAssert
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockRejectedValue(
-      makeAxios404("Consumer Keychain Not Found"),
+      makeAxiosError(404, "Consumer Keychain Not Found"),
     );
 
     const response = await makeRequest();
