@@ -1,4 +1,4 @@
-# mock-eservice-e2e-integrity-rest-02
+# mock-eservice-e2e-async-consumption
 
 Exercises the full access-token flow against the seeded mock e-service.
 

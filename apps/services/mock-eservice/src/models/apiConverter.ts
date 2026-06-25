@@ -1,7 +1,7 @@
-import {
-  type API_AsyncConsumptionRequestState,
-  type API_GetCompanyAddressesRequestStateResponse,
-} from "../models/api.ts";
+import type {
+  API_AsyncConsumptionRequestState,
+  API_GetCompanyAddressesRequestStateResponse,
+} from "./api.ts";
 
 export function toAPI_GetCompanyAddressesRequestStateResponse(
   state: API_AsyncConsumptionRequestState,

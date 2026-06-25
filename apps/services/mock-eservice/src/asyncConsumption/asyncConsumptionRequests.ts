@@ -1,5 +1,3 @@
-import { match } from "ts-pattern";
-
 import {
   findLegalEntity,
   findLegalEntityAddress,
@@ -85,28 +83,17 @@ export function getAsyncCompanyAddressesRequest(
 export function getAsyncCompanyAddressesRequestState(
   request: AsyncCompanyAddressesRequest,
 ): API_AsyncConsumptionRequestState {
-  const state =
-    request.finishDate <= new Date()
-      ? API_AsyncConsumptionRequestState.enum.COMPLETED
-      : API_AsyncConsumptionRequestState.enum.PENDING;
+  // Once a request is completed it must remain completed, even if the system clock moves backwards.
+  if (request.resourceId) {
+    return API_AsyncConsumptionRequestState.enum.COMPLETED;
+  }
 
-  match(state)
-    .with(API_AsyncConsumptionRequestState.enum.COMPLETED, () => {
-      if (!request.resourceId) {
-        // Generate a resource ID for the completed request if it doesn't already have one.
-        request.resourceId = crypto.randomUUID();
-      }
-    })
-    .with(API_AsyncConsumptionRequestState.enum.PENDING, () => {
-      if (request.resourceId) {
-        throw new Error(
-          `Request ${request.id} is still pending but already has a resource ID ${request.resourceId}.`,
-        );
-      }
-    })
-    .exhaustive();
+  if (request.finishDate <= new Date()) {
+    request.resourceId = crypto.randomUUID();
+    return API_AsyncConsumptionRequestState.enum.COMPLETED;
+  }
 
-  return state;
+  return API_AsyncConsumptionRequestState.enum.PENDING;
 }
 
 export function getAsyncCompanyAddressesResults(
