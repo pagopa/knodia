@@ -7,6 +7,8 @@ import MailComposer from "nodemailer/lib/mail-composer/index.js";
 
 import type { SesEmailSenderConfig } from "./config.ts";
 
+export type EmailSender = ReturnType<typeof initEmailSender>;
+
 interface EmailAttachment {
   content: Buffer | string;
   contentType: string;

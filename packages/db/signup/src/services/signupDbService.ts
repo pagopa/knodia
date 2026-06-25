@@ -13,7 +13,7 @@ import {
   SignupUserStatus,
   type SuspensionReason,
 } from "@knodia/signup-models";
-import { and, eq, inArray, or, type SQL } from "drizzle-orm";
+import { and, desc, eq, inArray, or, type SQL } from "drizzle-orm";
 
 import {
   toDeletedSignupUserSQL,
@@ -214,6 +214,15 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
 
     async insertSignupUser(user: SignupUser): Promise<void> {
       await db.insert(signupUser).values(toSignupUserSQL(user));
+    },
+
+    async listSuspendedSignupUsers(): Promise<SignupUser[]> {
+      const results = await db
+        .select()
+        .from(signupUser)
+        .where(eq(signupUser.status, SignupUserStatus.enum.Suspended))
+        .orderBy(desc(signupUser.suspendedAt));
+      return results.map(toSignupUser);
     },
 
     async markSignupUserDeletionPending(
