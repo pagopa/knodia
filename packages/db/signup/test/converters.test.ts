@@ -17,7 +17,7 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     dateOfBirth: "1980-01-01",
     email: "mario.rossi@example.org",
     familyName: "Rossi",
-    fiscalNumber: "RSSMRA80A01H501U",
+    fiscalNumber: null,
     lynxOrganizationName: "Lynx Org",
     lynxUserName: "lynx_user",
     name: "Mario",
@@ -35,17 +35,17 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
 }
 
 describe("toSignupUser", () => {
-  it("maps a fully populated row, nesting per-knode columns under generatedEntities", () => {
+  it("maps a row, nesting per-knode columns under generatedEntities", () => {
     const row = baseRow();
     const user = toSignupUser(row);
 
     expect(user).toMatchObject({
-      fiscalNumber: "RSSMRA80A01H501U",
       generatedEntities: {
         Lynx: { organizationName: "Lynx Org", userName: "lynx_user" },
         Orion: { organizationName: "Orion Org", userName: "orion_user" },
       },
       signupUserId: row.signupUserId,
+      spidCode: "SPID-XYZ-1",
     });
   });
 
