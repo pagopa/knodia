@@ -86,6 +86,8 @@ export function MultiSelectComboBox<T extends object>({
   children,
   size,
   isInvalid = false,
+  isDisabled,
+  isReadOnly,
   placeholder,
   items,
   loadingState,
@@ -97,6 +99,11 @@ export function MultiSelectComboBox<T extends object>({
   ...props
 }: MultiSelectComboBoxProps<T>) {
   const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
+
+  // The chips live outside <AriaComboBox> (see below), so they don't inherit
+  // its disabled/read-only state — gate removal here, or the buttons stay live
+  // while the field looks inert.
+  const chipsRemovable = !isDisabled && !isReadOnly;
 
   const handleRemove = (keys: Set<Key>) => {
     onChange(value.filter((key) => !keys.has(key)));
@@ -115,7 +122,9 @@ export function MultiSelectComboBox<T extends object>({
         {...props}
         allowsEmptyCollection
         className="group flex flex-col gap-1 w-full min-w-0 relative font-sans"
+        isDisabled={isDisabled}
         isInvalid={isInvalid}
+        isReadOnly={isReadOnly}
         items={items}
         menuTrigger="focus"
         onChange={onChange}
@@ -172,7 +181,7 @@ export function MultiSelectComboBox<T extends object>({
       {selectedTags.length > 0 && (
         <TagGroup
           aria-label={label ? `${label} (selected)` : "Selected"}
-          onRemove={handleRemove}
+          onRemove={chipsRemovable ? handleRemove : undefined}
         >
           <TagList className="flex flex-wrap gap-1" items={selectedTags}>
             {(tag) => (
@@ -184,12 +193,14 @@ export function MultiSelectComboBox<T extends object>({
                 textValue={tag.label}
               >
                 <span className="min-w-0 px-1 truncate">{tag.label}</span>
-                <Button
-                  className="flex items-center justify-center rounded-full p-0.5 outline-none cursor-pointer transition hover:bg-chip-dismiss-bg-hover pressed:bg-chip-dismiss-bg-hover"
-                  slot="remove"
-                >
-                  <XIcon aria-hidden className="size-4" />
-                </Button>
+                {chipsRemovable && (
+                  <Button
+                    className="flex items-center justify-center rounded-full p-0.5 outline-none cursor-pointer transition hover:bg-chip-dismiss-bg-hover pressed:bg-chip-dismiss-bg-hover"
+                    slot="remove"
+                  >
+                    <XIcon aria-hidden className="size-4" />
+                  </Button>
+                )}
               </Tag>
             )}
           </TagList>
