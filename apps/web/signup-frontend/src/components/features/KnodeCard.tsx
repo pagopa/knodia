@@ -1,5 +1,5 @@
 import { ArrowForwardIcon, DeployedCodeIcon } from "@/components/icons";
-import { Button, Card } from "@/components/ui";
+import { Card, Link } from "@/components/ui";
 
 interface KnodeCardProps {
   knodeName: string;
@@ -31,16 +31,15 @@ export function KnodeCard({
           </p>
         </div>
       </div>
-      <Button
-        className="gap-2 self-start"
-        onPress={() =>
-          window.open(prototypeHref, "_blank", "noopener,noreferrer")
-        }
-        variant="text"
+      <Link
+        className="inline-flex items-center gap-2 self-start text-[18px] leading-[28px] font-medium tracking-normal text-primary-violet no-underline"
+        href={prototypeHref}
+        rel="noopener noreferrer"
+        target="_blank"
       >
         Access the prototype
         <ArrowForwardIcon className="size-6" />
-      </Button>
+      </Link>
     </Card>
   );
 }

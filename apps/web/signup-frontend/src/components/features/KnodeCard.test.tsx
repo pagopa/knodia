@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { KnodeCard } from "./KnodeCard";
 
@@ -19,12 +18,11 @@ describe("KnodeCard", () => {
     expect(screen.getByText("Rigel 123 Org")).toBeVisible();
     expect(screen.getByText("rigel_123_user")).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /Access the prototype/ }),
+      screen.getByRole("link", { name: /Access the prototype/ }),
     ).toBeVisible();
   });
 
-  it("opens the prototype URL in a new tab when the CTA is pressed", async () => {
-    const open = vi.spyOn(window, "open").mockReturnValue(null);
+  it("links to the prototype URL, opening it safely in a new tab", () => {
     render(
       <KnodeCard
         knodeName="Orion"
@@ -34,14 +32,9 @@ describe("KnodeCard", () => {
       />,
     );
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /Access the prototype/ }),
-    );
-
-    expect(open).toHaveBeenCalledWith(
-      "https://prototype.example",
-      "_blank",
-      "noopener,noreferrer",
-    );
+    const link = screen.getByRole("link", { name: /Access the prototype/ });
+    expect(link).toHaveAttribute("href", "https://prototype.example");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 });
