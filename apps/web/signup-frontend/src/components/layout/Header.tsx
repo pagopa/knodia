@@ -5,7 +5,7 @@ import { Button } from "@/components/ui";
 import { useAuthContext } from "@/contexts/auth";
 
 export function Header() {
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, logout } = useAuthContext();
 
   return (
     <header className="absolute inset-x-0 top-0 z-40 bg-neutral-white/40 backdrop-blur-[4px]">
@@ -17,9 +17,8 @@ export function Header() {
             src={knodiaLogo}
           />
         </Link>
-        {/* TODO: implement logout and remove isDisabled */}
         {isAuthenticated && (
-          <Button isDisabled variant="text">
+          <Button onPress={logout} variant="text">
             Logout
           </Button>
         )}

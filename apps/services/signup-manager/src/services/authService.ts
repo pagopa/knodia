@@ -1,8 +1,14 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { TokenGenerator } from "@knodia/token-generator";
 
+import { selectSignupIdentifier } from "@knodia/common-models/auth";
 import { genericInternalError } from "@knodia/common-models/errors";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  enforceRateLimit,
+  hashRateLimitKey,
+  type RateLimiter,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
 
 import type { OneIdentityClient } from "../clients/oneIdentityClient.ts";
 import type { OneIdentityConfig } from "../config/config.ts";
@@ -13,6 +19,7 @@ export function authServiceBuilder(
   config: OneIdentityConfig,
   oneIdentityClient: OneIdentityClient,
   tokenGenerator: TokenGenerator,
+  rateLimiter: RateLimiter,
 ) {
   return {
     async exchangeOIDCCode(
@@ -41,32 +48,39 @@ export function authServiceBuilder(
         oidcSession.nonce,
       );
 
-      /**
-       * - SPID can return `spidCode` and `fiscalNumber`;
-       * - CIE returns `fiscalNumber`;
-       * - eIDAS returns `PersonIdentifier`.
-       */
-      const subject =
-        claims.PersonIdentifier ?? claims.spidCode ?? claims.fiscalNumber;
-      if (!subject) {
+      // SPID returns both spidCode and fiscalNumber; persisting both would let a
+      // later CIE login (fiscalNumber only) collide with the same person's SPID
+      // user. Keep exactly one, by precedence.
+      const identifier = selectSignupIdentifier({
+        fiscalNumber: claims.fiscalNumber,
+        personIdentifier: claims.PersonIdentifier,
+        spidCode: claims.spidCode,
+      });
+      if (identifier === undefined) {
         throw genericInternalError(
           "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
         );
       }
 
+      // Rate-limit on the resolved identifier, after the IdP exchange so we never
+      // mint a token over the limit. Hash it like the protected routes do (it's
+      // PII and must not land in Redis keys or logs as plaintext).
+      await enforceRateLimit(
+        rateLimiter,
+        hashRateLimitKey(identifier.value),
+        logger,
+      );
+
       const sessionToken = await tokenGenerator.generateUISignupSessionToken({
         audience: config.uiSignupSessionJwt.audience,
         dateOfBirth: claims.dateOfBirth,
         familyName: claims.familyName,
-        fiscalNumber: claims.fiscalNumber,
+        identifier,
         issuer: config.uiSignupSessionJwt.issuer,
         kid: config.uiSignupSessionJwt.kid,
         name: claims.name,
         oneIdNonce: claims.nonce,
-        PersonIdentifier: claims.PersonIdentifier,
         secondsDuration: config.uiSignupSessionJwt.secondsDuration,
-        spidCode: claims.spidCode,
-        subject,
       });
 
       return { uiSignupSessionToken: sessionToken.serialized };
