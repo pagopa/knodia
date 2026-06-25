@@ -43,7 +43,7 @@ export const toAPI_FlatEservice = (
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  template: eservice.template,
+  ...(eservice.template !== undefined ? { template: eservice.template } : {}),
   updatedAt: eservice.updatedAt.toISOString(),
 });
 
@@ -67,7 +67,7 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
         },
       }
     : {}),
-  template: eservice.template,
+  ...(eservice.template !== undefined ? { template: eservice.template } : {}),
   updatedAt: eservice.updatedAt.toISOString(),
   versions: eservice.versions.map(toAPI_EserviceVersion),
 });
