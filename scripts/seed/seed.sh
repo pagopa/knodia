@@ -36,7 +36,13 @@ INTEGRITY_KEYCHAIN_SQL="mock-integrity-rest-02-producer-keychain.sql"
 if [ -n "${INTEGRITY_KEY_ENV_FILE:-}" ] && [ -f "$INTEGRITY_KEY_ENV_FILE" ]; then
   . "$INTEGRITY_KEY_ENV_FILE"
 elif [ -n "${INTEGRITY_PRODUCER_KEY_KMS_ALIAS:-}" ] && command -v node >/dev/null 2>&1; then
-  eval "$(node "$REPO_ROOT/scripts/seed/derive-integrity-producer-key.ts")"
+  # Capture + check before eval: a failing derive inside `eval "$(...)"` would be
+  # swallowed (eval succeeds on empty output) despite `set -euo pipefail`.
+  integrity_key_env="$(node "$REPO_ROOT/scripts/seed/derive-integrity-producer-key.ts")" || {
+    echo "Failed to derive integrity producer key for alias '$INTEGRITY_PRODUCER_KEY_KMS_ALIAS'" >&2
+    exit 1
+  }
+  eval "$integrity_key_env"
 fi
 
 # Use | as the sed delimiter for the key vars: base64/base64url never contain it.
