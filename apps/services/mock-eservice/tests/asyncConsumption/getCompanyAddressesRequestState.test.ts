@@ -5,6 +5,7 @@ import {
   type EserviceVersionId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { randomUUID } from "crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { addAsyncCompanyAddressesRequest } from "../../src/asyncConsumption/asyncConsumptionRequests.ts";
@@ -85,7 +86,7 @@ afterEach(() => {
 describe("GET /legal-entities/address-requests/:requestId", () => {
   it("returns 200 with state PENDING for a newly created request", async () => {
     const token = await signToken();
-    const requestId = crypto.randomUUID();
+    const requestId = randomUUID();
 
     addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
 
@@ -106,7 +107,7 @@ describe("GET /legal-entities/address-requests/:requestId", () => {
 
   it("returns 200 with state COMPLETED and a resourceId after the finish date", async () => {
     const token = await signToken();
-    const requestId = crypto.randomUUID();
+    const requestId = randomUUID();
 
     addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
     vi.setSystemTime(new Date(BASE_TIME.getTime() + 76_000));
@@ -128,7 +129,7 @@ describe("GET /legal-entities/address-requests/:requestId", () => {
 
   it("returns 200 with state PENDING before the finish date", async () => {
     const token = await signToken();
-    const requestId = crypto.randomUUID();
+    const requestId = randomUUID();
 
     addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
     vi.setSystemTime(new Date(BASE_TIME.getTime() + 59_000));
@@ -150,10 +151,9 @@ describe("GET /legal-entities/address-requests/:requestId", () => {
 
   it("returns 404 when the request ID does not exist", async () => {
     const token = await signToken();
-    const nonExistentRequestId = crypto.randomUUID();
 
     const res = await getCompanyAddressesRequestState({
-      requestId: nonExistentRequestId,
+      requestId: randomUUID(),
       token,
     });
 
@@ -165,12 +165,9 @@ describe("GET /legal-entities/address-requests/:requestId", () => {
       eserviceId: OTHER_MOCK_ESERVICE_ID,
       eserviceVersionId: OTHER_MOCK_ESERVICE_VERSION_ID,
     });
-    const requestId = crypto.randomUUID();
-
-    addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
 
     const res = await getCompanyAddressesRequestState({
-      requestId,
+      requestId: randomUUID(),
       token,
     });
 
@@ -178,12 +175,8 @@ describe("GET /legal-entities/address-requests/:requestId", () => {
   });
 
   it("returns 401 when the Authorization header is missing", async () => {
-    const requestId = crypto.randomUUID();
-
-    addAsyncCompanyAddressesRequest(requestId, COMPANY_UIDS);
-
     const res = await getCompanyAddressesRequestState({
-      requestId,
+      requestId: randomUUID(),
     });
 
     expect(res.statusCode).toBe(401);
