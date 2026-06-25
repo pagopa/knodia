@@ -2,6 +2,7 @@
 @import '@fontsource-variable/instrument-sans';
 @import '@fontsource-variable/inter';
 @import '@fontsource-variable/manrope';
+@import '@fontsource/titillium-web/400.css';
 @import '@fontsource/titillium-web/600.css';
 @import 'tailwindcss';
 
@@ -76,6 +77,12 @@
     --color-input-label: #555c70;
     --color-input-text: #0e0f13;
     --color-status-error: #d13333;
+    --color-status-error-strong: #5d1313;
+    --color-status-error-surface: #ffd9d9;
+    --color-status-error-border: #ff6666;
+    --color-status-warning: #614c15;
+    --color-status-warning-surface: #fff5da;
+    --color-status-warning-border: #ffd56b;
     --radius-card: 24px;
     --radius-chip: 4px;
     --radius-modal: 16px;

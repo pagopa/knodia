@@ -404,6 +404,41 @@ function handleAdminDeleteUser(req, res, payload) {
   );
 }
 
+function handleAdminGetUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+
+  if (!user) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        __type: "UserNotFoundException",
+        message: "User does not exist",
+      }),
+    );
+    return;
+  }
+
+  console.log(
+    `[admin-get-user] Returned user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(
+    res,
+    200,
+    {
+      Enabled: user.Enabled,
+      UserAttributes: user.Attributes,
+      UserCreateDate: user.UserCreateDate,
+      UserLastModifiedDate: user.UserLastModifiedDate,
+      UserStatus: user.UserStatus,
+      Username: user.Username,
+    },
+    {
+      "x-amz-target": req.headers["x-amz-target"] ?? "",
+    },
+  );
+}
+
 function handleAdminDisableUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   if (user) {
@@ -583,6 +618,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDeleteUser") {
         handleAdminDeleteUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminGetUser") {
+        handleAdminGetUser(req, res, payload);
         return;
       }
 

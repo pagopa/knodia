@@ -96,6 +96,10 @@ export type ExchangeOidcCodeErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ExchangeOidcCodeError = ExchangeOidcCodeErrors[keyof ExchangeOidcCodeErrors];
@@ -133,6 +137,10 @@ export type ConfirmOnboardingErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ConfirmOnboardingError = ConfirmOnboardingErrors[keyof ConfirmOnboardingErrors];
@@ -170,6 +178,10 @@ export type ChangeEmailErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type ChangeEmailError = ChangeEmailErrors[keyof ChangeEmailErrors];
@@ -203,6 +215,10 @@ export type DeleteUserErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type DeleteUserError = DeleteUserErrors[keyof DeleteUserErrors];
@@ -232,6 +248,10 @@ export type GetCurrentSignupUserErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type GetCurrentSignupUserError = GetCurrentSignupUserErrors[keyof GetCurrentSignupUserErrors];
@@ -269,6 +289,10 @@ export type SuspendUserErrors = {
      * Conflict
      */
     409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
 };
 
 export type SuspendUserError = SuspendUserErrors[keyof SuspendUserErrors];
