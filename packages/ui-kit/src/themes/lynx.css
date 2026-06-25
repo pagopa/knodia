@@ -136,6 +136,13 @@
   /* Empty icon — brand-soft (theme-scoped) */
   --color-empty-icon-brand-soft-bg: var(--color-brand-light);
 
+  /* Chip dismiss — hover overlay (on-brand high-contrast @ 20%) */
+  --color-chip-dismiss-bg-hover: color-mix(
+    in srgb,
+    var(--color-brand-light-high-contrast) 20%,
+    transparent
+  );
+
   /* Org consumption status */
   --radius-org-consumption-status-card: 0;
   --shadow-org-consumption-status: none;

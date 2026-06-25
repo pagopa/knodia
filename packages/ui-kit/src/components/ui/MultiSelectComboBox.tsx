@@ -22,6 +22,7 @@ import { type VariantProps } from "tailwind-variants";
 
 import { Description, FieldError, Label } from "./Field";
 import {
+  chipStyles,
   dropdownStyles,
   fieldGroupStyles,
   fieldInputStyles,
@@ -190,18 +191,20 @@ export function MultiSelectComboBox<T extends object>({
       {selectedTags.length > 0 && (
         <TagGroup
           aria-label={label ? `${label} (selected)` : "Selected"}
-          className="flex flex-wrap gap-2"
           onRemove={handleRemove}
         >
-          <TagList items={selectedTags}>
+          <TagList className="flex flex-wrap gap-1" items={selectedTags}>
             {(tag) => (
               <Tag
-                className="label-md inline-flex items-center gap-x-1 rounded-chip px-3 py-1 bg-secondary-light-decorative text-secondary-light-high-contrast outline-none"
+                className={chipStyles({
+                  type: "light",
+                  className: "outline-none",
+                })}
                 textValue={tag.label}
               >
-                <span className="min-w-0 truncate">{tag.label}</span>
+                <span className="min-w-0 px-1 truncate">{tag.label}</span>
                 <Button
-                  className="outline-none cursor-pointer flex items-center justify-center"
+                  className="flex items-center justify-center rounded-full p-0.5 outline-none cursor-pointer transition hover:bg-chip-dismiss-bg-hover pressed:bg-chip-dismiss-bg-hover"
                   slot="remove"
                 >
                   <XIcon aria-hidden className="size-4" />
