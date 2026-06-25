@@ -405,9 +405,8 @@ services:
       timeout: 3s
       retries: 5
 
-  # SESv2-compatible mock for local development of the suspended-users notifier
-  # job. No published image exists, so aws-ses-v2-local is installed on a Node
-  # image at startup (same approach as the testcontainer).
+  # SESv2 mock; aws-ses-v2-local has no published image so it's installed on a
+  # Node image at startup.
   ses-mock:
     security_opt:
       - no-new-privileges:true
