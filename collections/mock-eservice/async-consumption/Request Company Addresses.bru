@@ -28,3 +28,7 @@ script:pre-request {
     )
   }
 }
+
+vars:post-response {
+  companyAddressesRequestId: res.body.requestId
+}
