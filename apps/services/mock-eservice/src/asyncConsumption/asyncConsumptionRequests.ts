@@ -91,15 +91,6 @@ export function getAsyncCompanyAddressesRequestState(
     : API_AsyncConsumptionRequestState.enum.PENDING;
 }
 
-export function resolveAsyncCompanyAddressesRequest(
-  request: AsyncCompanyAddressesRequest,
-) {
-  if (!request.resourceId && request.finishDate <= new Date()) {
-    request.resourceId = randomUUID();
-    addAsyncCompanyAddressesResult(request);
-  }
-}
-
 export function getAsyncCompanyAddressesResults(
   resourceId: string,
 ): API_GetCompanyAddressesResults {
@@ -110,6 +101,15 @@ export function getAsyncCompanyAddressesResults(
   }
 
   return { results };
+}
+
+export function resolveAsyncCompanyAddressesRequest(
+  request: AsyncCompanyAddressesRequest,
+) {
+  if (!request.resourceId && request.finishDate <= new Date()) {
+    request.resourceId = randomUUID();
+    addAsyncCompanyAddressesResult(request);
+  }
 }
 
 function getMockFinishDate(requestId: string): Date {
