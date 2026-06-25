@@ -7,8 +7,9 @@ import { server } from "./msw/server";
 // config.ts validates window.env at module load, so it must exist before any
 // module that imports the config (e.g. the axios client) is evaluated.
 vi.stubGlobal("env", {
-  OIDC_SESSION_FLOW_START_URL: "http://localhost:3000/auth/oidc/start",
-  SIGNUP_MANAGER_URL: "http://localhost:3000",
+  KNODIA_ORG_URL: "https://knodia.org/",
+  OIDC_SESSION_FLOW_START_URL: "http://localhost:4200/auth/oidc/start",
+  SIGNUP_MANAGER_URL: "http://localhost:5176/signup-manager",
 });
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

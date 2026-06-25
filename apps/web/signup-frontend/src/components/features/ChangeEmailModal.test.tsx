@@ -13,7 +13,8 @@ vi.mock("@/services/changeEmail", async (importOriginal) => ({
   pollCurrentUserUntilEmail: vi.fn(() => Promise.resolve(true)),
 }));
 
-const CHANGE_EMAIL_URL = "http://localhost:3000/user/changeEmail";
+const CHANGE_EMAIL_URL =
+  "http://localhost:5176/signup-manager/user/changeEmail";
 const NEW_EMAIL = "new.email@example.com";
 
 describe("ChangeEmailModal", () => {

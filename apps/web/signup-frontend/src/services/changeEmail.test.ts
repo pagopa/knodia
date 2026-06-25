@@ -52,7 +52,7 @@ describe("isEmailAlreadyInUseError", () => {
   });
 });
 
-const CURRENT_USER_URL = "http://localhost:3000/user/me";
+const CURRENT_USER_URL = "http://localhost:5176/signup-manager/user/me";
 const OLD_EMAIL = "old@mail.com";
 const NEW_EMAIL = "new@mail.com";
 
