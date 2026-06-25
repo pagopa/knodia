@@ -245,6 +245,67 @@ components:
         - prettyName
         - updatedAt
       additionalProperties: false
+    Eservice:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        template:
+          allOf:
+            - $ref: "#/components/schemas/EserviceTemplateId"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - categories
+        - createdAt
+        - description
+        - id
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - mode
+        - name
+        - producerId
+        - updatedAt
+      additionalProperties: false
+    Eservices:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Eservice"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     PurposeFormOption:
       type: object
       properties:
@@ -349,67 +410,6 @@ components:
         - state
         - updatedAt
         - versionNumber
-      additionalProperties: false
-    Eservice:
-      type: object
-      properties:
-        categories:
-          type: array
-          items:
-            $ref: "#/components/schemas/EserviceCategory"
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        description:
-          $ref: "#/components/schemas/LocalizedDescription"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        isConsumerOperatorIdentificationRequired:
-          type: boolean
-        isSignalHubEnabled:
-          type: boolean
-        mode:
-          $ref: "#/components/schemas/EserviceMode"
-        name:
-          $ref: "#/components/schemas/LocalizedName"
-        producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        template:
-          allOf:
-            - $ref: "#/components/schemas/EserviceTemplateId"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - categories
-        - createdAt
-        - description
-        - id
-        - isConsumerOperatorIdentificationRequired
-        - isSignalHubEnabled
-        - mode
-        - name
-        - producerId
-        - updatedAt
-      additionalProperties: false
-    Eservices:
-      type: object
-      properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/Eservice"
-      required:
-        - pagination
-        - results
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
