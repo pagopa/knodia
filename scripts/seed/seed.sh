@@ -26,6 +26,7 @@
 #   SQL_DIR=./scripts/seed/sql/orion \
 #   S3_BUCKET=knodia-application-documents-dev-orion \
 #   AWS_REGION=eu-south-1 \
+#   INTEGRITY_PRODUCER_KEY_KMS_ALIAS=alias/<env-integrity-signing-key> \  # Lynx only
 #   ./scripts/seed/seed.sh
 set -euo pipefail
 
