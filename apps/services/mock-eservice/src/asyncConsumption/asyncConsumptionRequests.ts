@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import {
   findLegalEntity,
   findLegalEntityAddress,
@@ -91,7 +93,7 @@ export function getAsyncCompanyAddressesRequestState(
   }
 
   if (request.finishDate <= new Date()) {
-    request.resourceId = crypto.randomUUID();
+    request.resourceId = randomUUID();
     return API_AsyncConsumptionRequestState.enum.COMPLETED;
   }
 
