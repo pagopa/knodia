@@ -1,14 +1,15 @@
-import type {
-  ExternalUISessionScope,
-  ExternalUISessionTokenClaims,
-  InternalTokenClaims,
-  KnodeApiAccessTokenClaims,
-  UISessionTokenClaims,
-  UISignupSessionTokenClaims,
-  UserRole,
-} from "@knodia/common-models/auth";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
+import {
+  type ExternalUISessionScope,
+  type ExternalUISessionTokenClaims,
+  type InternalTokenClaims,
+  type KnodeApiAccessTokenClaims,
+  selectSignupIdentifier,
+  type UISessionTokenClaims,
+  type UISignupSessionTokenClaims,
+  type UserRole,
+} from "@knodia/common-models/auth";
 import {
   type ExternalId,
   unsafeBrandExternalId,
@@ -25,7 +26,7 @@ import {
   type UserId,
 } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 export const TEST_USER_ID = unsafeBrandUserId(
   "10000000-1000-1000-8000-000000000001",
@@ -240,27 +241,39 @@ export function getTestUISignupSessionTokenClaims(
     uniqueIdentifier?: string;
   } = {},
 ): UISignupSessionTokenClaims {
+  // Default spidCode only when the caller sets no identifier at all, so a fixture
+  // built from personIdentifier alone doesn't also carry the default. Explicit
+  // `null` means "absent", letting a test build a zero-identifier fixture.
+  const fiscalNumber = props.fiscalNumber ?? undefined;
+  const personIdentifier = props.personIdentifier ?? undefined;
+
+  const callerSetIdentifier =
+    (props.spidCode ?? props.fiscalNumber ?? props.personIdentifier) != null;
+  const spidCode = match(props.spidCode)
+    .with(P.string, (value) => value)
+    .with(null, () => undefined)
+    .with(undefined, () => (callerSetIdentifier ? undefined : "test-spid-code"))
+    .exhaustive();
+
   return {
     aud: "test-audience",
     dateOfBirth: props.dateOfBirth ?? "2000-01-01",
     exp: 9999999999,
     familyName: props.familyName ?? "User",
-    fiscalNumber:
-      props.fiscalNumber === null
-        ? undefined
-        : (props.fiscalNumber ?? "XXXXXX00X00X000X"),
+    fiscalNumber,
     iat: 0,
     iss: "test-issuer",
     jti: "test-jti",
     name: props.name ?? "Test",
     oneIdNonce: props.oneIdNonce ?? "test-nonce",
-    personIdentifier:
-      props.personIdentifier === null ? undefined : props.personIdentifier,
-    spidCode:
-      props.spidCode === null
-        ? undefined
-        : (props.spidCode ?? "test-spid-code"),
-    sub: props.uniqueIdentifier ?? "test-unique-identifier",
+    personIdentifier,
+    spidCode,
+    // sub mirrors the chosen identifier, as in production.
+    sub:
+      props.uniqueIdentifier ??
+      selectSignupIdentifier({ fiscalNumber, personIdentifier, spidCode })
+        ?.value ??
+      "test-unique-identifier",
     type: "ui-signup-session",
   };
 }
