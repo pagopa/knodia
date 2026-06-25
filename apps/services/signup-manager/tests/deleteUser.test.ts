@@ -31,10 +31,8 @@ function getPublishedEventIdentities() {
 function makeMatchingSignupUser(
   overrides: Parameters<typeof makeSignupUser>[0] = {},
 ) {
-  return makeSignupUser({
-    fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+  return makeSignupUser(overrides, {
     spidCode: validUISignupSessionTokenClaims.spidCode,
-    ...overrides,
   });
 }
 
@@ -51,9 +49,9 @@ describe("POST /user/delete (deleteUser)", () => {
     expect(row).toMatchObject({
       // PII stays intact while the deletion is pending
       email: signupUser.email,
-      fiscalNumber: signupUser.fiscalNumber,
       name: signupUser.name,
       signupUserId: signupUser.signupUserId,
+      spidCode: signupUser.spidCode,
       status: "DeletionPending",
     });
     expect(row?.updatedAt.getTime()).toBeGreaterThan(
@@ -144,22 +142,6 @@ describe("POST /user/delete (deleteUser)", () => {
     const response = await injectSignupAppRequest().post("/user/delete");
 
     expect(response.statusCode).toBe(404);
-    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
-  });
-
-  it("should return 500 when the claims match two different signup users", async () => {
-    await seedSignupUser(
-      makeSignupUser({ spidCode: validUISignupSessionTokenClaims.spidCode }),
-    );
-    await seedSignupUser(
-      makeSignupUser({
-        fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      }),
-    );
-
-    const response = await injectSignupAppRequest().post("/user/delete");
-
-    expect(response.statusCode).toBe(500);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 

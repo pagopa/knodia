@@ -45,6 +45,21 @@ describe("Modal", () => {
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
+  it("shows an error alert when an error message is provided", () => {
+    render(
+      <Modal
+        actionLabel="Request erasure"
+        errorMessage="Something went wrong. Please try again."
+        isOpen
+        title="Request data erasure"
+      />,
+    );
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Something went wrong. Please try again.",
+    );
+  });
+
   it("closes via the cancel button", async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();

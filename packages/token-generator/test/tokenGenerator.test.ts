@@ -264,20 +264,20 @@ const testCases = [
     tokenDuration: SECONDS_DURATION,
   },
   {
+    // The single identifier is already selected by the caller; the generator
+    // sets it under its claim field and mirrors it in sub.
     expectedPayload: {
       aud: "my-audience",
       dateOfBirth: "2000-01-01",
       exp: MOCK_NOW_SECONDS + SECONDS_DURATION,
       familyName: "Rossi",
-      fiscalNumber: "RSSMRA80A01H501U",
       iat: MOCK_NOW_SECONDS,
       iss: "my-issuer",
       jti: expect.any(String),
       name: "Mario",
       oneIdNonce: "nonce-123",
-      personIdentifier: "person-identifier-123",
       spidCode: "spid-code-123",
-      sub: "subject-123",
+      sub: "spid-code-123",
       type: "ui-signup-session",
     } satisfies UISignupSessionTokenClaims,
     generate: () =>
@@ -285,15 +285,12 @@ const testCases = [
         audience: "my-audience",
         dateOfBirth: "2000-01-01",
         familyName: "Rossi",
-        fiscalNumber: "RSSMRA80A01H501U",
+        identifier: { field: "spidCode", value: "spid-code-123" },
         issuer: "my-issuer",
         kid: KID,
         name: "Mario",
         oneIdNonce: "nonce-123",
-        PersonIdentifier: "person-identifier-123",
         secondsDuration: SECONDS_DURATION,
-        spidCode: "spid-code-123",
-        subject: "subject-123",
       }),
     name: "generateUISignupSessionToken",
     tokenDuration: SECONDS_DURATION,
@@ -393,3 +390,44 @@ describe.each(testCases)(
     });
   },
 );
+
+describe("generateUISignupSessionToken — identifier claim mapping", () => {
+  const baseInput = {
+    audience: "my-audience",
+    dateOfBirth: "2000-01-01",
+    familyName: "Rossi",
+    issuer: "my-issuer",
+    kid: KID,
+    name: "Mario",
+    oneIdNonce: "nonce-123",
+    secondsDuration: SECONDS_DURATION,
+  };
+
+  it("sets personIdentifier as the only identifier and mirrors it in sub", async () => {
+    const { payload } = await generator.generateUISignupSessionToken({
+      ...baseInput,
+      identifier: { field: "personIdentifier", value: "person-identifier-123" },
+    });
+
+    expect(payload).toMatchObject({
+      personIdentifier: "person-identifier-123",
+      sub: "person-identifier-123",
+    });
+    expect(payload.fiscalNumber).toBeUndefined();
+    expect(payload.spidCode).toBeUndefined();
+  });
+
+  it("sets fiscalNumber as the only identifier and mirrors it in sub", async () => {
+    const { payload } = await generator.generateUISignupSessionToken({
+      ...baseInput,
+      identifier: { field: "fiscalNumber", value: "RSSMRA80A01H501U" },
+    });
+
+    expect(payload).toMatchObject({
+      fiscalNumber: "RSSMRA80A01H501U",
+      sub: "RSSMRA80A01H501U",
+    });
+    expect(payload.personIdentifier).toBeUndefined();
+    expect(payload.spidCode).toBeUndefined();
+  });
+});
