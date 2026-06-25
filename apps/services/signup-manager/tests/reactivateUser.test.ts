@@ -89,7 +89,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
         "/maintenance/users/00000000-0000-0000-0000-000000000000/reactivate",
       );
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(409);
     }
 
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
@@ -153,14 +153,14 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should return 404 when the signup user does not exist", async () => {
+  it("should return 409 when the signup user is not onboarded", async () => {
     const response = await injectSignupAppRequest({
       type: "internal",
     }).post(
       "/maintenance/users/00000000-0000-0000-0000-000000000000/reactivate",
     );
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(409);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 });
