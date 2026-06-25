@@ -77,11 +77,18 @@ const mockedCategory = <
   code: C,
 ): EserviceCategory => ({ code, scheme });
 
-const sharedInterfaceDocument = {
+const interfaceDocument = (
+  name: string,
+  prettyName: string,
+): EserviceTemplateInterface => ({
   contentType: "application/yaml",
-  name: "openapi.yaml",
-  prettyName: { en: "API Interface" },
-};
+  name,
+  prettyName: { en: prettyName },
+});
+
+const testingOrganizationRequiredAttributes = [
+  [mockedAttribute("knodia", "testing_organization")],
+];
 
 /** @knipignore */
 const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
@@ -89,7 +96,29 @@ const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
     {
       createdAt: new Date("2025-01-01T00:00:00Z"),
       description: {
-        en: "Provides verified citizen identity information including birth data and marital status.",
+        en: "API for recovering the birth place of a natural person",
+      },
+      eserviceFields: {
+        categories: [
+          mockedCategory(
+            "vc_example_eservice_categories",
+            "citizen.identity.birth_place",
+          ),
+        ],
+        interfaceDocument: interfaceDocument(
+          "recovery-birth-place.yaml",
+          "Recovery of the birth place",
+        ),
+        mode: EserviceMode.enum.ProvideData,
+        requiredAttributes: testingOrganizationRequiredAttributes,
+      },
+      id: unsafeBrandId("9c708970-7db8-4581-9dbe-88fc70567149"),
+      name: { en: "Recovery of the birth place of a natural person" },
+    },
+    {
+      createdAt: new Date("2025-01-02T00:00:00Z"),
+      description: {
+        en: "API for recovering the birth date of a natural person",
       },
       eserviceFields: {
         categories: [
@@ -97,24 +126,23 @@ const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
             "vc_example_eservice_categories",
             "citizen.identity.birth_date",
           ),
-          mockedCategory(
-            "vc_example_eservice_categories",
-            "citizen.identity.marital_status",
-          ),
         ],
-        interfaceDocument: sharedInterfaceDocument,
+        interfaceDocument: interfaceDocument(
+          "recovery-birth-date.yaml",
+          "Recovery of the birth date",
+        ),
         mode: EserviceMode.enum.ProvideData,
-        requiredAttributes: [
-          [mockedAttribute("vc_territorial_units", "nuts2")],
-        ],
+        requiredAttributes: testingOrganizationRequiredAttributes,
       },
-      id: unsafeBrandId("6067609a-1eec-4e3e-8300-764000dd0440"),
-      name: { en: "Citizen Identity Data Provider" },
+      id: unsafeBrandId("4c34186c-3713-4dd1-a511-14a6f75c8881"),
+      name: { en: "Recovery of the birth date of a natural person" },
     },
+  ],
+  Orion: [
     {
-      createdAt: new Date("2025-01-02T00:00:00Z"),
+      createdAt: new Date("2025-01-01T00:00:00Z"),
       description: {
-        en: "Provides citizen residence information including digital domicile and residence place.",
+        en: "API for recovering the residence of a natural person",
       },
       eserviceFields: {
         categories: [
@@ -122,78 +150,38 @@ const eserviceTemplates: Record<KnodeId, EserviceTemplate[]> = {
             "vc_example_eservice_categories",
             "citizen.residence.residence_place",
           ),
-          mockedCategory(
-            "vc_example_eservice_categories",
-            "citizen.residence.digital_domicile",
-          ),
         ],
-        interfaceDocument: sharedInterfaceDocument,
+        interfaceDocument: interfaceDocument(
+          "recovery-residence.yaml",
+          "Recovery of the residence",
+        ),
         mode: EserviceMode.enum.ProvideData,
-        requiredAttributes: [
-          [
-            mockedAttribute("vc_territorial_units", "nuts2"),
-            mockedAttribute("vc_territorial_units", "nuts1"),
-          ],
-        ],
+        requiredAttributes: testingOrganizationRequiredAttributes,
       },
-      id: unsafeBrandId("f0cec351-d498-4666-8d46-b2a6dfb821aa"),
-      name: { en: "Citizen Residence Data Provider" },
-    },
-  ],
-  Orion: [
-    {
-      createdAt: new Date("2025-01-01T00:00:00Z"),
-      description: {
-        en: "Receives and processes data related to public administration typology and address.",
-      },
-      eserviceFields: {
-        categories: [
-          mockedCategory(
-            "vc_example_eservice_categories",
-            "organization.public_administration.address",
-          ),
-          mockedCategory(
-            "vc_example_eservice_categories",
-            "organization.public_administration.typology",
-          ),
-        ],
-        interfaceDocument: sharedInterfaceDocument,
-        mode: EserviceMode.enum.ProvideData,
-        requiredAttributes: [
-          [mockedAttribute("vc_territorial_units", "nuts3")],
-        ],
-      },
-      id: unsafeBrandId("4834a8bf-84a0-4bf2-8f1e-4102d11b58a9"),
-      name: { en: "Public Administration Data Receiver" },
+      id: unsafeBrandId("2fb8e60c-8da3-4ab5-bfb0-86d6fcafe381"),
+      name: { en: "Recovery of the residence of a natural person" },
     },
     {
       createdAt: new Date("2025-01-02T00:00:00Z"),
       description: {
-        en: "Provides data on private company economic activities and digital domicile.",
+        en: "API for recovering the contact point of a private company",
       },
       eserviceFields: {
         categories: [
-          mockedCategory(
-            "vc_example_eservice_categories",
-            "organization.private_company.economic_activity",
-          ),
           mockedCategory(
             "vc_example_eservice_categories",
             "organization.private_company.digital_domicile",
           ),
         ],
-        interfaceDocument: sharedInterfaceDocument,
+        interfaceDocument: interfaceDocument(
+          "recovery-company-contact-point.yaml",
+          "Recovery of the company contact point",
+        ),
         mode: EserviceMode.enum.ProvideData,
-        requiredAttributes: [
-          [mockedAttribute("vc_territorial_units", "nuts1")],
-          [
-            mockedAttribute("vc_territorial_units", "nuts2"),
-            mockedAttribute("vc_territorial_units", "nuts3"),
-          ],
-        ],
+        requiredAttributes: testingOrganizationRequiredAttributes,
       },
-      id: unsafeBrandId("bec95864-6ca6-4256-bd10-b33ce7868ecd"),
-      name: { en: "Private Company Economic Activity Provider" },
+      id: unsafeBrandId("6897703b-c9ca-4864-a304-248cc8a8a2d1"),
+      name: { en: "Recovery of the contact point of a private company" },
     },
   ],
 };

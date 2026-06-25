@@ -5,6 +5,7 @@ export const HTTPServiceName = z.enum([
   "backend-for-frontend",
   "eservice-process",
   "k2k-gateway",
+  "k2o-gateway",
   "mock-eservice",
   "remote-resources-manager",
   "agreement-process",
@@ -29,6 +30,7 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "authorization-server": "009",
   "signal-hub": "010",
   "signup-manager": "011",
+  "k2o-gateway": "012",
   // mock e-services
   "mock-eservice": "999",
 };

@@ -8,7 +8,6 @@ const baseRecord = {
   dateOfBirth: "1980-01-01",
   email: "mario.rossi@example.org",
   familyName: "Rossi",
-  fiscalNumber: "RSSMRA80A01H501U",
   generatedEntities: {
     Lynx: { organizationName: "Vega 9PD Org", userName: "vega_9pd_user" },
     Orion: { organizationName: "Rigel XA1 Org", userName: "rigel_xa1_user" },
@@ -21,12 +20,18 @@ const baseRecord = {
 };
 
 describe("SignupUser — happy paths", () => {
-  it("accepts a SPID token carrying both spidCode and fiscalNumber", () => {
+  it("accepts a SPID record carrying only spidCode", () => {
     const parsed = SignupUser.parse(baseRecord);
-    expect(parsed).toMatchObject({
+    expect(parsed).toMatchObject({ spidCode: "SPID-XYZ-1" });
+  });
+
+  it("accepts a CIE record (only fiscalNumber set)", () => {
+    const parsed = SignupUser.parse({
+      ...baseRecord,
       fiscalNumber: "RSSMRA80A01H501U",
-      spidCode: "SPID-XYZ-1",
+      spidCode: undefined,
     });
+    expect(parsed).toMatchObject({ fiscalNumber: "RSSMRA80A01H501U" });
   });
 
   it("accepts an eIDAS-only record (only personIdentifier set)", () => {
@@ -112,7 +117,7 @@ describe("SignupUser — shape rejections", () => {
   });
 });
 
-describe("SignupUser — at-least-one-identifier invariant", () => {
+describe("SignupUser — single-identifier invariant", () => {
   it("rejects when no IdP identifier is set", () => {
     expect(() =>
       SignupUser.parse({
@@ -120,6 +125,16 @@ describe("SignupUser — at-least-one-identifier invariant", () => {
         fiscalNumber: undefined,
         personIdentifier: undefined,
         spidCode: undefined,
+      }),
+    ).toThrow();
+  });
+
+  it("rejects when more than one identifier is set", () => {
+    expect(() =>
+      SignupUser.parse({
+        ...baseRecord,
+        fiscalNumber: "RSSMRA80A01H501U",
+        spidCode: "SPID-XYZ-1",
       }),
     ).toThrow();
   });
