@@ -10,11 +10,7 @@ import {
   SignupUserStatus,
   SuspensionReason,
 } from "@knodia/signup-models";
-import {
-  clearSesStore,
-  createTestSesClient,
-  getSentEmails,
-} from "@knodia/test-commons/ses";
+import { setupSesTestStore } from "@knodia/test-commons/ses";
 import { setupSignupTestDatabase } from "@knodia/test-commons/signupDb";
 import {
   createTestLogger,
@@ -47,26 +43,22 @@ const sesConfig: SesEmailSenderConfig = {
 
 let db: TestDrizzleDb;
 let dbService: ReturnType<typeof signupDbServiceBuilder>;
-let sesEndpoint: string;
+let sesStore: ReturnType<typeof setupSesTestStore>;
 let notifierService: NotifierService;
 
 beforeAll(async () => {
   db = await setupSignupTestDatabase(inject("POSTGRES_CONNECTION_STRING"));
   dbService = signupDbServiceBuilder(db);
-  sesEndpoint = inject("SES_CONNECTION_STRING");
-  const emailSender = initEmailSender(
-    sesConfig,
-    createTestSesClient(sesEndpoint),
-  );
+  sesStore = setupSesTestStore(inject("SES_CONNECTION_STRING"));
   notifierService = notifierServiceBuilder(
     db,
-    emailSender,
+    initEmailSender(sesConfig, sesStore.sesClient),
     createTestLogger().logger,
   );
 });
 
 beforeEach(async () => {
-  await clearSesStore(sesEndpoint);
+  await sesStore.cleanAfterEach();
 });
 
 afterEach(async () => {
@@ -131,7 +123,7 @@ describe("suspended-users notifier", () => {
 
     await notifierService.run({ recipient: RECIPIENT, subject: SUBJECT });
 
-    const emails = await getSentEmails(sesEndpoint);
+    const emails = await sesStore.getSentEmails();
     expect(emails).toHaveLength(1);
 
     const email = emails.at(0);
@@ -169,7 +161,7 @@ describe("suspended-users notifier", () => {
 
     await notifierService.run({ recipient: RECIPIENT, subject: SUBJECT });
 
-    await expect(getSentEmails(sesEndpoint)).resolves.toHaveLength(0);
+    await expect(sesStore.getSentEmails()).resolves.toHaveLength(0);
   });
 
   it("rejects when SES is unreachable", async () => {
@@ -178,7 +170,10 @@ describe("suspended-users notifier", () => {
     );
     const failing = notifierServiceBuilder(
       db,
-      initEmailSender(sesConfig, createTestSesClient("http://localhost:1")),
+      initEmailSender(
+        sesConfig,
+        setupSesTestStore("http://localhost:1").sesClient,
+      ),
       createTestLogger().logger,
     );
 
