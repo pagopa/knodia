@@ -15,6 +15,7 @@
 import { z } from "zod";
 
 const KnodiaSignupFrontendConfig = z.object({
+  KNODIA_ORG_URL: z.string().min(1, "KNODIA_ORG_URL is required"),
   LYNX_PROTOTYPE_URL: z.string().min(1, "LYNX_PROTOTYPE_URL is required"),
   OIDC_SESSION_FLOW_START_URL: z
     .string()
@@ -34,6 +35,7 @@ if (!parsed.success) {
 }
 
 export const config = {
+  knodiaOrgUrl: parsed.data.KNODIA_ORG_URL,
   oidcSessionFlowStartUrl: parsed.data.OIDC_SESSION_FLOW_START_URL,
   prototypeUrls: {
     Lynx: parsed.data.LYNX_PROTOTYPE_URL,
