@@ -1,4 +1,5 @@
 import { SignupUserId } from "@knodia/common-models/ids";
+import { exactlyOneDefined } from "@knodia/common-models/utils";
 import { z } from "zod";
 
 export const SignupUserStatus = z.enum([
@@ -33,12 +34,14 @@ const SignupUserBase = z.strictObject({
   // Not a One Identity claim — user types it on the FE form.
   email: z.email(),
   familyName: z.string(),
-  fiscalNumber: z.string().optional(),
+  // .min(1): an empty-string identifier is "present" to the exactly-one refine
+  // but absent to the truthiness-based DB lookup, so reject it at the boundary.
+  fiscalNumber: z.string().min(1).optional(),
   generatedEntities: SignupGeneratedEntities,
   name: z.string(),
-  personIdentifier: z.string().optional(),
+  personIdentifier: z.string().min(1).optional(),
   signupUserId: SignupUserId,
-  spidCode: z.string().optional(),
+  spidCode: z.string().min(1).optional(),
   updatedAt: z.coerce.date(),
 });
 
@@ -58,13 +61,10 @@ const SuspendedSignupUser = SignupUserBase.extend({
 export const SignupUser = z
   .discriminatedUnion("status", [ActiveSignupUser, SuspendedSignupUser])
   .refine(
-    (u) =>
-      u.spidCode !== undefined ||
-      u.fiscalNumber !== undefined ||
-      u.personIdentifier !== undefined,
+    (u) => exactlyOneDefined(u.spidCode, u.fiscalNumber, u.personIdentifier),
     {
       message:
-        "at least one of spidCode / fiscalNumber / personIdentifier must be set",
+        "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
       path: ["spidCode"],
     },
   );

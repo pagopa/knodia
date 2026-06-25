@@ -15,10 +15,10 @@ import {
 
 describe("POST /user/changeEmail (changeEmail)", () => {
   it("should return 204 on successful email change request", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest()
@@ -102,10 +102,10 @@ describe("POST /user/changeEmail (changeEmail)", () => {
   });
 
   it("should return 409 when the email is already associated", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     const existingUser = makeSignupUser({
       email: validChangeEmailBody.email,
     });
@@ -122,10 +122,10 @@ describe("POST /user/changeEmail (changeEmail)", () => {
   });
 
   it("should return 409 when the email already has a pending change request", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     const pendingRequestUser = makeSignupUser();
     await seedSignupUser(signupUser);
     await seedSignupUser(pendingRequestUser);
@@ -146,10 +146,10 @@ describe("POST /user/changeEmail (changeEmail)", () => {
   });
 
   it("should return 409 when the signup user already has a pending change request", async () => {
-    const signupUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(signupUser);
     await seedEmailChangeRequest(
       makeEmailChangeRequest({ signupUserId: signupUser.signupUserId }),
