@@ -130,6 +130,20 @@ describe("POST /organizations (createOrganization)", () => {
     ]);
   });
 
+  it("should accept a mix of a standard attribute and the instance's own-node unique attribute", async () => {
+    const attributes = [
+      validAttribute,
+      { code: body.name, scheme: KnodeId.enum.Orion },
+    ];
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({ ...body, attributes });
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Organization>();
+    expect(responseBody.attributes).toEqual(attributes);
+  });
+
   it("should return 400 for an attribute whose scheme is another node's Knode ID", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/organizations")

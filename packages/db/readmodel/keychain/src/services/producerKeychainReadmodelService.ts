@@ -1,7 +1,8 @@
-import type { ProducerKeychainId } from "@knodia/common-models/ids";
+import type { KeyId, ProducerKeychainId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
   FlatProducerKeychain,
+  KeychainKey,
   ProducerKeychain,
   ProducerKeychainEservice,
 } from "@knodia/keychain-models";
@@ -14,6 +15,7 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import { eq, type SQL } from "drizzle-orm";
 
+import { toKeychainKey } from "../converters/keychainConverters.ts";
 import {
   aggregateFlatProducerKeychain,
   aggregateProducerKeychain,
@@ -41,6 +43,20 @@ export function producerKeychainReadmodelServiceBuilder(
         .where(eq(readmodelProducerKeychain.id, producerKeychainId));
 
       return aggregateFlatProducerKeychain(queryRes);
+    },
+    async getProducerKeyByKid(kid: KeyId): Promise<KeychainKey | undefined> {
+      const queryRes = await readmodelDb
+        .select()
+        .from(readmodelProducerKeychainKey)
+        .where(eq(readmodelProducerKeychainKey.kid, kid));
+
+      const producerKey = throwIfMultiple(
+        queryRes,
+        "producer keychain key",
+        (pk) => getTablePKString(pk, readmodelProducerKeychainKey),
+      );
+
+      return producerKey ? toKeychainKey(producerKey) : undefined;
     },
     async getProducerKeychainById(
       producerKeychainId: ProducerKeychainId,

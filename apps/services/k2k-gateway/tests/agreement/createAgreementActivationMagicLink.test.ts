@@ -1,5 +1,4 @@
 import { generateId } from "@knodia/common-models/ids";
-import { AxiosError, type AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getAgreementActivationClaimsMock = vi.hoisted(() => vi.fn());
@@ -38,6 +37,8 @@ vi.mock("@knodia/agreement-process-client", async (importOriginal) => {
     },
   };
 });
+
+import { makeAxiosError } from "@knodia/test-commons/utils";
 
 // Must import after vi.mock
 import { injectRequest } from "../utils.ts";
@@ -85,21 +86,6 @@ const mockToken = {
   serialized: "mock.magic-link.token",
   type: "external-ui-session-magic-link",
 };
-
-function makeAxiosError(status: number, title: string, code: string) {
-  const err = new AxiosError(`Request failed with status code ${status}`);
-  err.response = {
-    data: {
-      correlationId: generateId(),
-      errors: [{ code, detail: title }],
-      status,
-      title,
-    },
-    headers: {},
-    status,
-  } as AxiosResponse;
-  return err;
-}
 
 beforeEach(() => {
   getAgreementActivationClaimsMock.mockReset();

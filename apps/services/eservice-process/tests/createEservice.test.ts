@@ -250,6 +250,18 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(201);
   });
 
+  it("should accept a mix of a standard required attribute and another node's unique attribute", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body({
+        ...body,
+        requiredAttributes: [
+          [validAttribute, { code: "Vega ABC Org", scheme: KnodeId.enum.Lynx }],
+        ],
+      });
+    expect(response.statusCode).toBe(201);
+  });
+
   it("should return 400 for a required attribute whose scheme is the instance's own Knode ID", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")

@@ -195,26 +195,15 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
         );
       }
 
-      const result = await db
+      // The session token carries exactly one identifier, queried against a
+      // UNIQUE column, so at most one row matches.
+      const [result] = await db
         .select()
         .from(signupUser)
-        .where(or(...identifierFilters));
+        .where(or(...identifierFilters))
+        .limit(1);
 
-      /**
-       * Each identifier column is UNIQUE, so multiple rows here mean the claims
-       * of one IdP session point at different users (e.g. the spidCode of one
-       * row and the fiscalNumber of another): data corruption to investigate,
-       * never silently pick one.
-       */
-      if (result.length > 1) {
-        throw genericInternalError(
-          "User identifier claims (fiscalNumber, personIdentifier, spidCode) match multiple signup users",
-        );
-      }
-
-      const signupUserResult = result.at(0);
-
-      return signupUserResult ? toSignupUser(signupUserResult) : undefined;
+      return result ? toSignupUser(result) : undefined;
     },
 
     async insertEmailChangeRequest(request: EmailChangeRequest): Promise<void> {

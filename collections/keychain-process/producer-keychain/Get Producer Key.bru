@@ -1,0 +1,19 @@
+meta {
+  name: Get Producer Key
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/producerKeys/:producerKeychainKeyId
+  body: none
+  auth: none
+}
+
+params:path {
+  producerKeychainKeyId: {{producerKeychainKeyId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: Bearer {{knode-api-token}}
+}

@@ -31,6 +31,7 @@
     "@knodia/agreement-models": "workspace:*",
     "@knodia/agreement-process-client": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
+    "@knodia/cognito-idm-client": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-jti-replay-store": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
