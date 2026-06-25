@@ -1,4 +1,8 @@
 import { KnodeId } from "@knodia/common-models/ids";
+import {
+  DIGEST_HEADER,
+  KNODIA_JWT_SIGNATURE_HEADER,
+} from "@knodia/integrity-rest-02/models";
 import z from "zod";
 
 const CODICE_FISCALE_REGEX =
@@ -568,3 +572,39 @@ export const API_RelayAck = z
     id: "RelayAck",
   });
 export type API_RelayAck = z.infer<typeof API_RelayAck>;
+
+export const API_CompanyUidPathParam = z.strictObject({
+  uidCompany: API_CompanyUid,
+});
+
+export const API_CompanyAddress = z
+  .strictObject({
+    address: API_Address,
+    legalEntity: API_LegalEntity,
+  })
+  .meta({
+    description: "Address of a company in the registry",
+    id: "CompanyAddress",
+  });
+export type API_CompanyAddress = z.infer<typeof API_CompanyAddress>;
+
+const API_IntegrityRest02DigestHeader = z.string().meta({
+  description:
+    "Digest of the body using the canonical JSON representation of the response body. The digest is calculated using the SHA-256 algorithm on the response body exactly as it is sent to the client, encoded in Base64 as per RFC 3230.",
+  id: "IntegrityRest02DigestHeader",
+});
+
+const API_IntegrityRest02KnodiaJwtSignatureHeader = z.jwt().meta({
+  description: `The \`Knodia-JWT-Signature\` header contains a JSON Web Signature (JWS) signed with the E-service Producer private key. It ensures payload integrity and non-repudiation across all responses (both success and error), in compliance with: 1) Linee Guida sull'interoperabilità tecnica delle Pubbliche Amministrazioni - Pattern di sicurezza, 2) RFC 7515, 3) RFC 7519`,
+  id: "IntegrityRest02KnodiaJwtSignatureHeader",
+});
+
+export const API_IntegrityRest02Headers = z
+  .object({
+    [DIGEST_HEADER]: API_IntegrityRest02DigestHeader,
+    [KNODIA_JWT_SIGNATURE_HEADER]: API_IntegrityRest02KnodiaJwtSignatureHeader,
+  })
+  .meta({
+    description:
+      "Response headers required by the Cross-Border E-service 06 (Integrity Rest 02) specification",
+  });
