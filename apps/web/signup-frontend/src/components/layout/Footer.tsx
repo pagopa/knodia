@@ -33,7 +33,7 @@ export function Footer() {
                 <Fragment key={link.href}>
                   {index > 0 && <span aria-hidden>·</span>}
                   <Link
-                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber-30"
+                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber"
                     href={link.href}
                     rel="noopener noreferrer"
                     target="_blank"
