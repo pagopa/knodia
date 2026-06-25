@@ -146,7 +146,7 @@ export function tokenServiceBuilder({
       await enforceRateLimit(rateLimiter, ownerId, logger);
 
       const token = await tokenGenerator.generateKnodeApiAccessToken({
-        audience: [config.generatedKnodeApiTokenAudience],
+        audience: config.generatedKnodeApiTokenAudiences,
         issuer: config.generatedKnodeApiTokenIssuer,
         keychain: { id: knodeApiKeychainId, knodeId: keychainKnodeId },
         kid: config.knodeApiTokenJwtKid,

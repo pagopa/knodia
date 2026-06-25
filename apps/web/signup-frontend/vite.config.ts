@@ -5,11 +5,14 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig, loadEnv, type ProxyOptions } from "vite";
 
+import { APP_BASE_PATH } from "./src/config/basepath.ts";
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    base: APP_BASE_PATH,
     plugins: [
       devtools(),
       tanstackRouter({

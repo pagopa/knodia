@@ -235,16 +235,28 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(400);
   });
 
-  // The test app runs as the Orion node (see setup.ts), so a required attribute
-  // whose scheme equals "Lynx" is another node's unique attribute, while "Orion"
-  // is this instance's own (same-node) scheme.
-  it("should accept a required attribute whose scheme is another node's Knode ID", async () => {
+  // The test app runs as the Orion knode (see setup.ts), so a required attribute
+  // whose scheme equals "Lynx" is another knode's unique attribute, while "Orion"
+  // is this instance's own (same-knode) scheme.
+  it("should accept a required attribute whose scheme is another knode's Knode ID", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body({
         ...body,
         requiredAttributes: [
           [{ code: "Vega ABC Org", scheme: KnodeId.enum.Lynx }],
+        ],
+      });
+    expect(response.statusCode).toBe(201);
+  });
+
+  it("should accept a mix of a standard required attribute and another knode's unique attribute", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body({
+        ...body,
+        requiredAttributes: [
+          [validAttribute, { code: "Vega ABC Org", scheme: KnodeId.enum.Lynx }],
         ],
       });
     expect(response.statusCode).toBe(201);

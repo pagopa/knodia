@@ -17,6 +17,10 @@ export function dateToSeconds(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
 
+export function exactlyOneDefined(...values: unknown[]): boolean {
+  return values.filter((v) => v !== undefined).length === 1;
+}
+
 /**
  * Checks if the given error is a PostgreSQL unique violation error.
  * This is useful to determine if a database operation failed due to a unique constraint violation
