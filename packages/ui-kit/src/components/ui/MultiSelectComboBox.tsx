@@ -63,14 +63,16 @@ interface MultiSelectComboBoxProps<T extends object> extends Omit<
   /** Loading state for the async list; drives the infinite-scroll sentinel. */
   loadingState?: LoadingState;
   // Controlled-only: chips are rendered from `selectedTags` and removal calls
-  // `onChange`, so both are required (uncontrolled `defaultValue` would leave
-  // chip removal unable to reflect the real selection).
+  // `onChange`, so all three are required. `selectedTags` is the only visual
+  // feedback that a selection happened, so leaving it out would let the user
+  // select an option and see nothing; an uncontrolled `defaultValue` would
+  // likewise leave chip removal unable to reflect the real selection.
   onChange: (keys: Key[]) => void;
   /** Called when the list is scrolled near the end (infinite scroll). */
   onLoadMore?: () => void;
   placeholder?: string;
   /** Selected entries rendered as removable chips below the field. */
-  selectedTags?: MultiSelectComboBoxTag[];
+  selectedTags: MultiSelectComboBoxTag[];
   size?: MultiSelectComboBoxVariants["size"];
   value: Key[];
 }
@@ -88,7 +90,7 @@ export function MultiSelectComboBox<T extends object>({
   items,
   loadingState,
   onLoadMore,
-  selectedTags = [],
+  selectedTags,
   className,
   value,
   onChange,
