@@ -7,6 +7,7 @@ import {
   emailChangeRequest,
   signupUser,
 } from "@knodia/db-signup";
+import { noopRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { setupSignupTestDatabase } from "@knodia/test-commons/signupDb";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject, vi } from "vitest";
@@ -24,8 +25,25 @@ const oneIdentityMockConfig = {
   oneIdentityClientSecret: "test-one-identity-client-secret",
   oneIdentityDomain: "https://test.one-identity.com",
   oneIdentityJWKSUri: "https://test.one-identity.com/.well-known/jwks.json",
-  oneIdentityRedirectUrl: "https://localhost:5176/login/callback",
+  oneIdentityRedirectUrl: "https://localhost:5176/ui/login/callback",
 } as const;
+
+export const signupManagerTestConfig: Parameters<typeof buildApp>[0]["config"] =
+  {
+    acceptedAudiences: ["test-audience"],
+    isProduction: false,
+    logLevel: "silent",
+    nodeEnv: "test",
+    signupTopic: "test-signup-topic",
+    uiSignupSessionJwt: {
+      audience: "test-audience",
+      issuer: "test-issuer",
+      kid: "alias/test-kid",
+      secondsDuration: 3600,
+    },
+    wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
+    ...oneIdentityMockConfig,
+  };
 
 async function resetTestDatabases() {
   await resetTestDatabase(
@@ -42,24 +60,13 @@ beforeAll(async () => {
   signupDb = await setupSignupTestDatabase(connectionString);
 
   app = buildApp({
-    config: {
-      acceptedAudiences: ["test-audience"],
-      isProduction: false,
-      logLevel: "silent",
-      nodeEnv: "test",
-      signupTopic: "test-signup-topic",
-      uiSignupSessionJwt: {
-        audience: "test-audience",
-        issuer: "test-issuer",
-        kid: "alias/test-kid",
-        secondsDuration: 3600,
-      },
-      wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
-      ...oneIdentityMockConfig,
-    },
+    config: signupManagerTestConfig,
     kafkaProducer: kafkaProducerMock as unknown as Producer,
+    rateLimiter: noopRateLimiter,
     signupDb,
   });
+
+  await app.ready();
 });
 
 afterEach(async () => {
@@ -68,7 +75,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await Promise.all([signupDb.$client.end()]);
+  await Promise.all([app.close(), signupDb.$client.end()]);
 });
 
 export { app, kafkaProducerMock, oneIdentityMockConfig, signupDb };

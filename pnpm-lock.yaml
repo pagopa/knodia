@@ -659,6 +659,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
+      '@knodia/cognito-idm-client':
+        specifier: workspace:*
+        version: link:../../../packages/cognito-idm-client
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -2010,6 +2013,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/db-signup':
         specifier: workspace:*
         version: link:../../../packages/db/signup
@@ -2025,9 +2031,6 @@ importers:
       '@knodia/signup-models':
         specifier: workspace:*
         version: link:../../../packages/models/signup-models
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../packages/test-commons
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
@@ -2062,15 +2065,15 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -3005,13 +3008,13 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../models/common-models
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../test-commons
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -3856,6 +3859,9 @@ importers:
 
   packages/models/common-models:
     dependencies:
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0

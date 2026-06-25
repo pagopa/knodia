@@ -5,6 +5,7 @@ import z from "zod";
 
 export const IdmUser = z.object({
   email: z.string(),
+  enabled: z.boolean().optional(),
   id: UserId,
   roles: CommaSeparatedList(UserRole).refine((roles) => roles.length > 0, {
     message: "User must have at least one role",
