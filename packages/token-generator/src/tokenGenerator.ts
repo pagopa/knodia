@@ -1,16 +1,4 @@
 import type {
-  EserviceAccessTokenClaims,
-  ExternalUISessionMagicLinkTokenClaims,
-  ExternalUISessionScope,
-  ExternalUISessionTokenClaims,
-  InternalTokenClaims,
-  KnodeApiAccessTokenClaims,
-  UISessionRefreshTokenClaims,
-  UISessionTokenClaims,
-  UISignupSessionTokenClaims,
-  UserRole,
-} from "@knodia/common-models/auth";
-import type {
   ExternalId,
   ExternalResource,
 } from "@knodia/common-models/externalResource";
@@ -29,6 +17,19 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
 import { KMSClient } from "@aws-sdk/client-kms";
+import {
+  type EserviceAccessTokenClaims,
+  type ExternalUISessionMagicLinkTokenClaims,
+  type ExternalUISessionScope,
+  type ExternalUISessionTokenClaims,
+  type InternalTokenClaims,
+  type KnodeApiAccessTokenClaims,
+  type SignupIdentifier,
+  type UISessionRefreshTokenClaims,
+  type UISessionTokenClaims,
+  UISignupSessionTokenClaims,
+  type UserRole,
+} from "@knodia/common-models/auth";
 import { type PublicKeyJwk } from "@knodia/common-models/crypto";
 import { dateToSeconds } from "@knodia/common-models/utils";
 import { buildAndSignJwt } from "@knodia/crypto/utils";
@@ -107,12 +108,11 @@ interface UISignupSessionTokenInput extends TokenParams {
   audience: string;
   dateOfBirth: string;
   familyName: string;
-  fiscalNumber: string | undefined;
+  // Already selected by precedence in the caller; the codec's parse still
+  // rejects zero or more than one.
+  identifier: SignupIdentifier;
   name: string;
   oneIdNonce: string;
-  PersonIdentifier: string | undefined;
-  spidCode: string | undefined;
-  subject: string;
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -334,22 +334,25 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       input: UISignupSessionTokenInput,
     ): Promise<UISignupSessionToken> {
       const now = dateToSeconds(new Date());
-      const claims: UISignupSessionTokenClaims = {
+
+      const identifierClaim = {
+        [input.identifier.field]: input.identifier.value,
+      };
+
+      const claims = UISignupSessionTokenClaims.parse({
+        ...identifierClaim,
         aud: input.audience,
         dateOfBirth: input.dateOfBirth,
         exp: now + input.secondsDuration,
         familyName: input.familyName,
-        fiscalNumber: input.fiscalNumber,
         iat: now,
         iss: input.issuer,
         jti: randomUUID(),
         name: input.name,
         oneIdNonce: input.oneIdNonce,
-        personIdentifier: input.PersonIdentifier,
-        spidCode: input.spidCode,
-        sub: input.subject,
+        sub: input.identifier.value,
         type: "ui-signup-session",
-      };
+      });
       const { header, serialized } = await buildAndSignJwt(
         client,
         input.kid,
