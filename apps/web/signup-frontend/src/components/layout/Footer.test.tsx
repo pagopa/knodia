@@ -8,18 +8,9 @@ describe("Footer", () => {
     render(<Footer />);
 
     const links = [
-      {
-        href: "/ui/privacy-policy",
-        name: "Privacy Policy",
-      },
-      {
-        href: "https://knodia.org/legal-notes",
-        name: "Legal Notes",
-      },
-      {
-        href: "https://knodia.org/company-details",
-        name: "Company Details",
-      },
+      { href: "/ui/privacy-policy", name: "Privacy Policy" },
+      { href: "/ui/terms-and-conditions", name: "Terms & Conditions" },
+      { href: "https://knodia.org/company-details", name: "Company Details" },
     ];
 
     for (const { href, name } of links) {

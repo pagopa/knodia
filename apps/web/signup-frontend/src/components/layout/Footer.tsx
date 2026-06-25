@@ -10,7 +10,10 @@ import { config } from "@/config/config";
 
 const LEGAL_LINKS = [
   { href: `${APP_BASE_PATH}/privacy-policy`, label: "Privacy Policy" },
-  { href: config.knodiaOrgLegalNotesUrl, label: "Legal Notes" },
+  {
+    href: `${APP_BASE_PATH}/terms-and-conditions`,
+    label: "Terms & Conditions",
+  },
   { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
 ];
 
