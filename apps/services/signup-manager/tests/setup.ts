@@ -25,7 +25,7 @@ const oneIdentityMockConfig = {
   oneIdentityClientSecret: "test-one-identity-client-secret",
   oneIdentityDomain: "https://test.one-identity.com",
   oneIdentityJWKSUri: "https://test.one-identity.com/.well-known/jwks.json",
-  oneIdentityRedirectUrl: "https://localhost:5176/login/callback",
+  oneIdentityRedirectUrl: "https://localhost:5176/ui/login/callback",
 } as const;
 
 export const signupManagerTestConfig: Parameters<typeof buildApp>[0]["config"] =

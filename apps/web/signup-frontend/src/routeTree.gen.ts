@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_authenticated/route'
 import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
+import { Route as LayoutAuthenticatedSuspendedRouteImport } from './routes/_layout/_authenticated/suspended'
 import { Route as LayoutAuthenticatedRegistrationRouteImport } from './routes/_layout/_authenticated/registration'
 import { Route as LayoutAuthenticatedHomeRouteImport } from './routes/_layout/_authenticated/home'
 
@@ -41,6 +42,12 @@ const LayoutLoginCallbackRoute = LayoutLoginCallbackRouteImport.update({
   path: '/login/callback',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutAuthenticatedSuspendedRoute =
+  LayoutAuthenticatedSuspendedRouteImport.update({
+    id: '/suspended',
+    path: '/suspended',
+    getParentRoute: () => LayoutAuthenticatedRouteRoute,
+  } as any)
 const LayoutAuthenticatedRegistrationRoute =
   LayoutAuthenticatedRegistrationRouteImport.update({
     id: '/registration',
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
+  '/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -65,6 +73,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
+  '/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRoutesById {
@@ -75,13 +84,26 @@ export interface FileRoutesById {
   '/login/': typeof LoginIndexRoute
   '/_layout/_authenticated/home': typeof LayoutAuthenticatedHomeRoute
   '/_layout/_authenticated/registration': typeof LayoutAuthenticatedRegistrationRoute
+  '/_layout/_authenticated/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/_layout/login/callback': typeof LayoutLoginCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/home' | '/registration' | '/login/callback'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/registration'
+    | '/suspended'
+    | '/login/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/home' | '/registration' | '/login/callback'
+  to:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/registration'
+    | '/suspended'
+    | '/login/callback'
   id:
     | '__root__'
     | '/'
@@ -90,6 +112,7 @@ export interface FileRouteTypes {
     | '/login/'
     | '/_layout/_authenticated/home'
     | '/_layout/_authenticated/registration'
+    | '/_layout/_authenticated/suspended'
     | '/_layout/login/callback'
   fileRoutesById: FileRoutesById
 }
@@ -136,6 +159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutLoginCallbackRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/_authenticated/suspended': {
+      id: '/_layout/_authenticated/suspended'
+      path: '/suspended'
+      fullPath: '/suspended'
+      preLoaderRoute: typeof LayoutAuthenticatedSuspendedRouteImport
+      parentRoute: typeof LayoutAuthenticatedRouteRoute
+    }
     '/_layout/_authenticated/registration': {
       id: '/_layout/_authenticated/registration'
       path: '/registration'
@@ -156,12 +186,14 @@ declare module '@tanstack/react-router' {
 interface LayoutAuthenticatedRouteRouteChildren {
   LayoutAuthenticatedHomeRoute: typeof LayoutAuthenticatedHomeRoute
   LayoutAuthenticatedRegistrationRoute: typeof LayoutAuthenticatedRegistrationRoute
+  LayoutAuthenticatedSuspendedRoute: typeof LayoutAuthenticatedSuspendedRoute
 }
 
 const LayoutAuthenticatedRouteRouteChildren: LayoutAuthenticatedRouteRouteChildren =
   {
     LayoutAuthenticatedHomeRoute: LayoutAuthenticatedHomeRoute,
     LayoutAuthenticatedRegistrationRoute: LayoutAuthenticatedRegistrationRoute,
+    LayoutAuthenticatedSuspendedRoute: LayoutAuthenticatedSuspendedRoute,
   }
 
 const LayoutAuthenticatedRouteRouteWithChildren =
