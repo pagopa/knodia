@@ -10,6 +10,7 @@ import z from "zod";
 import {
   addAsyncCompanyAddressesRequest,
   addAsyncCompanyAddressesResult,
+  assertResourceIdBelongsToRequest,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
   getAsyncCompanyAddressesResults,
@@ -28,10 +29,7 @@ import {
   API_GetCompanyAddressesResults,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import {
-  assertResourceIdBelongsToRequest,
-  assertTokenClaimsAreValidForEservice,
-} from "../utils/validators.ts";
+import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockAsyncConsumptionRouterOptions {
   knodeId: KnodeId;

@@ -13,6 +13,7 @@ import {
 import {
   asyncCompanyAddressesRequestNotFound,
   asyncCompanyAddressesResultsNotFound,
+  resourceIdDoesNotBelongToAsyncRequest,
 } from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
@@ -69,6 +70,15 @@ export function addAsyncCompanyAddressesResult(
   });
 
   asyncCompanyAddressesResults.set(request.resourceId, results);
+}
+
+export function assertResourceIdBelongsToRequest(
+  request: AsyncCompanyAddressesRequest,
+  resourceId: string,
+): void {
+  if (request.resourceId !== resourceId) {
+    throw resourceIdDoesNotBelongToAsyncRequest(request.id, resourceId);
+  }
 }
 
 export function getAsyncCompanyAddressesRequest(
