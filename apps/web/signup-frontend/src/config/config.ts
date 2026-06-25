@@ -15,13 +15,16 @@
 import { z } from "zod";
 
 const KnodiaSignupFrontendConfig = z.object({
-  COMPANY_DETAILS_URL: z.string().min(1, "COMPANY_DETAILS_URL is required"),
+  KNODIA_ORG_COMPANY_DETAILS_URL: z
+    .string()
+    .min(1, "KNODIA_ORG_COMPANY_DETAILS_URL is required"),
+  KNODIA_ORG_LEGAL_NOTES_URL: z
+    .string()
+    .min(1, "KNODIA_ORG_LEGAL_NOTES_URL is required"),
   KNODIA_ORG_URL: z.string().min(1, "KNODIA_ORG_URL is required"),
-  LEGAL_NOTES_URL: z.string().min(1, "LEGAL_NOTES_URL is required"),
   OIDC_SESSION_FLOW_START_URL: z
     .string()
     .min(1, "OIDC_SESSION_FLOW_START_URL is required"),
-  PRIVACY_POLICY_URL: z.string().min(1, "PRIVACY_POLICY_URL is required"),
   SIGNUP_MANAGER_URL: z.string().min(1, "SIGNUP_MANAGER_URL is required"),
 });
 
@@ -36,11 +39,10 @@ if (!parsed.success) {
 }
 
 export const config = {
-  companyDetailsUrl: parsed.data.COMPANY_DETAILS_URL,
+  knodiaOrgCompanyDetailsUrl: parsed.data.KNODIA_ORG_COMPANY_DETAILS_URL,
+  knodiaOrgLegalNotesUrl: parsed.data.KNODIA_ORG_LEGAL_NOTES_URL,
   knodiaOrgUrl: parsed.data.KNODIA_ORG_URL,
-  legalNotesUrl: parsed.data.LEGAL_NOTES_URL,
   oidcSessionFlowStartUrl: parsed.data.OIDC_SESSION_FLOW_START_URL,
-  privacyPolicyUrl: parsed.data.PRIVACY_POLICY_URL,
   signupManagerUrl: parsed.data.SIGNUP_MANAGER_URL,
 };
 

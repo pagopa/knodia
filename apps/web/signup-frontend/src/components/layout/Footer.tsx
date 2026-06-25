@@ -4,12 +4,13 @@ import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
+import { APP_BASE_PATH } from "@/config/basepath";
 import { config } from "@/config/config";
 
 const LEGAL_LINKS = [
-  { href: config.privacyPolicyUrl, label: "Privacy Policy" },
-  { href: config.legalNotesUrl, label: "Legal Notes" },
-  { href: config.companyDetailsUrl, label: "Company Details" },
+  { href: `${APP_BASE_PATH}/privacy-policy`, label: "Privacy Policy" },
+  { href: config.knodiaOrgLegalNotesUrl, label: "Legal Notes" },
+  { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
 ];
 
 export function Footer() {

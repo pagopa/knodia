@@ -16,6 +16,7 @@ import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_
 import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
 import { Route as LayoutAuthenticatedSuspendedRouteImport } from './routes/_layout/_authenticated/suspended'
 import { Route as LayoutAuthenticatedRegistrationRouteImport } from './routes/_layout/_authenticated/registration'
+import { Route as LayoutAuthenticatedPrivacyPolicyRouteImport } from './routes/_layout/_authenticated/privacy-policy'
 import { Route as LayoutAuthenticatedHomeRouteImport } from './routes/_layout/_authenticated/home'
 
 const LayoutRoute = LayoutRouteImport.update({
@@ -54,6 +55,12 @@ const LayoutAuthenticatedRegistrationRoute =
     path: '/registration',
     getParentRoute: () => LayoutAuthenticatedRouteRoute,
   } as any)
+const LayoutAuthenticatedPrivacyPolicyRoute =
+  LayoutAuthenticatedPrivacyPolicyRouteImport.update({
+    id: '/privacy-policy',
+    path: '/privacy-policy',
+    getParentRoute: () => LayoutAuthenticatedRouteRoute,
+  } as any)
 const LayoutAuthenticatedHomeRoute = LayoutAuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
+  '/privacy-policy': typeof LayoutAuthenticatedPrivacyPolicyRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
@@ -72,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
+  '/privacy-policy': typeof LayoutAuthenticatedPrivacyPolicyRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/login/callback': typeof LayoutLoginCallbackRoute
@@ -83,6 +92,7 @@ export interface FileRoutesById {
   '/_layout/_authenticated': typeof LayoutAuthenticatedRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/_layout/_authenticated/home': typeof LayoutAuthenticatedHomeRoute
+  '/_layout/_authenticated/privacy-policy': typeof LayoutAuthenticatedPrivacyPolicyRoute
   '/_layout/_authenticated/registration': typeof LayoutAuthenticatedRegistrationRoute
   '/_layout/_authenticated/suspended': typeof LayoutAuthenticatedSuspendedRoute
   '/_layout/login/callback': typeof LayoutLoginCallbackRoute
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/home'
+    | '/privacy-policy'
     | '/registration'
     | '/suspended'
     | '/login/callback'
@@ -101,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/home'
+    | '/privacy-policy'
     | '/registration'
     | '/suspended'
     | '/login/callback'
@@ -111,6 +123,7 @@ export interface FileRouteTypes {
     | '/_layout/_authenticated'
     | '/login/'
     | '/_layout/_authenticated/home'
+    | '/_layout/_authenticated/privacy-policy'
     | '/_layout/_authenticated/registration'
     | '/_layout/_authenticated/suspended'
     | '/_layout/login/callback'
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAuthenticatedRegistrationRouteImport
       parentRoute: typeof LayoutAuthenticatedRouteRoute
     }
+    '/_layout/_authenticated/privacy-policy': {
+      id: '/_layout/_authenticated/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof LayoutAuthenticatedPrivacyPolicyRouteImport
+      parentRoute: typeof LayoutAuthenticatedRouteRoute
+    }
     '/_layout/_authenticated/home': {
       id: '/_layout/_authenticated/home'
       path: '/home'
@@ -185,6 +205,7 @@ declare module '@tanstack/react-router' {
 
 interface LayoutAuthenticatedRouteRouteChildren {
   LayoutAuthenticatedHomeRoute: typeof LayoutAuthenticatedHomeRoute
+  LayoutAuthenticatedPrivacyPolicyRoute: typeof LayoutAuthenticatedPrivacyPolicyRoute
   LayoutAuthenticatedRegistrationRoute: typeof LayoutAuthenticatedRegistrationRoute
   LayoutAuthenticatedSuspendedRoute: typeof LayoutAuthenticatedSuspendedRoute
 }
@@ -192,6 +213,8 @@ interface LayoutAuthenticatedRouteRouteChildren {
 const LayoutAuthenticatedRouteRouteChildren: LayoutAuthenticatedRouteRouteChildren =
   {
     LayoutAuthenticatedHomeRoute: LayoutAuthenticatedHomeRoute,
+    LayoutAuthenticatedPrivacyPolicyRoute:
+      LayoutAuthenticatedPrivacyPolicyRoute,
     LayoutAuthenticatedRegistrationRoute: LayoutAuthenticatedRegistrationRoute,
     LayoutAuthenticatedSuspendedRoute: LayoutAuthenticatedSuspendedRoute,
   }

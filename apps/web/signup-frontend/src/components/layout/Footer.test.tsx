@@ -4,20 +4,20 @@ import { describe, expect, it } from "vitest";
 import { Footer } from "./Footer";
 
 describe("Footer", () => {
-  it("renders the legal links pointing to the Knodia website, opening in a new tab", () => {
+  it("renders the legal links opening in a new tab", () => {
     render(<Footer />);
 
     const links = [
       {
-        href: "https://knodia.org/privacy-policy/index.html",
+        href: "/ui/privacy-policy",
         name: "Privacy Policy",
       },
       {
-        href: "https://knodia.org/legal-notes/index.html",
+        href: "https://knodia.org/legal-notes",
         name: "Legal Notes",
       },
       {
-        href: "https://knodia.org/company-details/index.html",
+        href: "https://knodia.org/company-details",
         name: "Company Details",
       },
     ];
