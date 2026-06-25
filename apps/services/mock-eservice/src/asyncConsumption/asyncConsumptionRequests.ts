@@ -97,7 +97,7 @@ export function resolveAsyncCompanyAddressesRequest(
 ) {
   if (!request.resourceId && request.finishDate <= new Date()) {
     request.resourceId = randomUUID();
-    addAsyncCompanyAddressesResult(request); // populate results as part of the transition
+    addAsyncCompanyAddressesResult(request);
   }
 }
 
