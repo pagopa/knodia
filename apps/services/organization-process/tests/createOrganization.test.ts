@@ -113,8 +113,8 @@ describe("POST /organizations (createOrganization)", () => {
     expect(response.statusCode).toBe(400);
   });
 
-  // The test app runs as the Orion node (see setup.ts), so an attribute whose
-  // scheme equals "Orion" is the instance's own-node unique attribute.
+  // The test app runs as the Orion knode (see setup.ts), so an attribute whose
+  // scheme equals "Orion" is the instance's own-knode unique attribute.
   it("should accept a unique attribute whose scheme is the instance's own Knode ID", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/organizations")
@@ -130,7 +130,7 @@ describe("POST /organizations (createOrganization)", () => {
     ]);
   });
 
-  it("should accept a mix of a standard attribute and the instance's own-node unique attribute", async () => {
+  it("should accept a mix of a standard attribute and the instance's own-knode unique attribute", async () => {
     const attributes = [
       validAttribute,
       { code: body.name, scheme: KnodeId.enum.Orion },
@@ -144,7 +144,7 @@ describe("POST /organizations (createOrganization)", () => {
     expect(responseBody.attributes).toEqual(attributes);
   });
 
-  it("should return 400 for an attribute whose scheme is another node's Knode ID", async () => {
+  it("should return 400 for an attribute whose scheme is another knode's Knode ID", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/organizations")
       .body({
