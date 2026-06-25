@@ -85,6 +85,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
       },
       security: [],
       tags: [apiTags.auth],
