@@ -297,21 +297,6 @@ export const aggregateEservice = (
   return buildEservice(toEserviceAggregator(queryRes));
 };
 
-export const aggregateFlatEservice = (
-  queryRes: EserviceAggregatorInput,
-): undefined | WithMetadata<FlatEservice> => {
-  if (queryRes.length === 0) {
-    return undefined;
-  }
-
-  const { categoriesSQL, eservicesSQL } = toEservicesAggregator(queryRes);
-
-  return buildFlatEservice({
-    eserviceCategoriesSQL: categoriesSQL,
-    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service", (e) => e.id),
-  });
-};
-
 export const aggregateFlatEservices = (
   queryRes: EserviceAggregatorInput,
 ): WithMetadata<FlatEservice>[] => {

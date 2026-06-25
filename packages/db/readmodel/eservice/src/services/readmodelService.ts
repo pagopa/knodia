@@ -8,7 +8,6 @@ import type {
   Eservice,
   EserviceInterface,
   EserviceVersion,
-  FlatEservice,
 } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -18,7 +17,6 @@ import { and, eq, type SQL } from "drizzle-orm";
 import {
   aggregateEservice,
   aggregateEserviceVersion,
-  aggregateFlatEservice,
 } from "../converters/aggregators.ts";
 import { toEserviceVersionInterface } from "../converters/index.ts";
 import {
@@ -131,30 +129,6 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return versionInterface
         ? toEserviceVersionInterface(versionInterface)
         : undefined;
-    },
-    async getFlatEserviceByFilter(
-      filters: SQL | undefined,
-    ): Promise<undefined | WithMetadata<FlatEservice>> {
-      assertSQLFiltersAreDefined(filters);
-
-      const queryRes = await readmodelDb
-        .select({
-          category: readmodelEserviceCategory,
-          eservice: readmodelEservice,
-        })
-        .from(readmodelEservice)
-        .leftJoin(
-          readmodelEserviceCategory,
-          eq(readmodelEserviceCategory.eserviceId, readmodelEservice.id),
-        )
-        .where(filters);
-
-      return aggregateFlatEservice(queryRes);
-    },
-    async getFlatEserviceById(
-      eserviceId: EserviceId,
-    ): Promise<undefined | WithMetadata<FlatEservice>> {
-      return this.getFlatEserviceByFilter(eq(readmodelEservice.id, eserviceId));
     },
   };
 }
