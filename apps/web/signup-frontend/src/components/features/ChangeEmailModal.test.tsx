@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
 import { pollCurrentUserUntilEmail } from "@/services/changeEmail";
+import { GENERIC_ERROR_MESSAGE } from "@/services/messages";
 import { server } from "@/test/msw/server";
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
@@ -13,7 +14,8 @@ vi.mock("@/services/changeEmail", async (importOriginal) => ({
   pollCurrentUserUntilEmail: vi.fn(() => Promise.resolve(true)),
 }));
 
-const CHANGE_EMAIL_URL = "http://localhost:3000/user/changeEmail";
+const CHANGE_EMAIL_URL =
+  "http://localhost:5176/signup-manager/user/changeEmail";
 const NEW_EMAIL = "new.email@example.com";
 
 describe("ChangeEmailModal", () => {
@@ -142,9 +144,7 @@ describe("ChangeEmailModal", () => {
     await user.click(screen.getByRole("button", { name: "Change" }));
 
     const banner = await screen.findByRole("alert");
-    expect(banner).toHaveTextContent(
-      "Something went wrong while changing your email address. Please try again.",
-    );
+    expect(banner).toHaveTextContent(GENERIC_ERROR_MESSAGE);
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });

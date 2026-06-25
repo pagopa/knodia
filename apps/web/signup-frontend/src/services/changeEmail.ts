@@ -2,6 +2,7 @@ import { type QueryClient } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { z } from "zod";
 
+import { GENERIC_ERROR_MESSAGE } from "./messages";
 import { getCurrentSignupUserQuery } from "./queries";
 
 // signup-manager problem codes (see its models/errors.ts).
@@ -19,7 +20,7 @@ export function changeEmailErrorMessage(error: AxiosError): string {
     case PENDING_EMAIL_CHANGE_CODE:
       return "You already have a pending email change. Please wait for it to be applied before requesting a new one.";
     default:
-      return "Something went wrong while changing your email address. Please try again.";
+      return GENERIC_ERROR_MESSAGE;
   }
 }
 
