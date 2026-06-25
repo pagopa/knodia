@@ -30,7 +30,6 @@ script:pre-request {
 assert {
   res.status: eq 200
   res.body.results: isArray
-  res.body.results: isArray
   res.body.results.length: eq 3
 }
 
