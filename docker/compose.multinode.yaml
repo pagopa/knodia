@@ -98,6 +98,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
@@ -447,6 +448,37 @@ services:
       minio:
         condition: service_healthy
 
+  k2o-gateway-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-k2o-gateway-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/k2o-gateway/Dockerfile
+    ports:
+      - 3901:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      ACCEPTED_AUDIENCES: "k2o-gateway.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+      KNODE_ID: "Orion"
+    depends_on:
+      keychain-process-orion:
+        condition: service_started
+
   agreement-process-orion:
     security_opt:
       - no-new-privileges:true
@@ -698,7 +730,7 @@ services:
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
       READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
@@ -922,7 +954,7 @@ services:
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.orion.local.knodia.com"
-      GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
+      GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
@@ -1190,6 +1222,37 @@ services:
       minio:
         condition: service_healthy
 
+  k2o-gateway-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-k2o-gateway-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/k2o-gateway/Dockerfile
+    ports:
+      - 3902:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      ACCEPTED_AUDIENCES: "k2o-gateway.test.knodia.org"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
+      RATE_LIMITER_MAX_REQUESTS: "200"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+      KNODE_ID: "Lynx"
+    depends_on:
+      keychain-process-lynx:
+        condition: service_started
+
   agreement-process-lynx:
     security_opt:
       - no-new-privileges:true
@@ -1441,7 +1504,7 @@ services:
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
       READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal,k2o-gateway.test.knodia.org"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       COGNITO_USER_POOL_ID: "local-user-pool-id-for-tests"
       AWS_REGION: eu-south-1
@@ -1665,7 +1728,7 @@ services:
       GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
-      GENERATED_KNODE_API_TOKEN_AUDIENCE: "signalhub.test.knodia.org"
+      GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
       KNODE_API_TOKEN_DURATION_SECONDS: "3600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
