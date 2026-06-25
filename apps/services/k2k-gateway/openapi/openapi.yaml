@@ -1819,6 +1819,12 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
+            type: string
+          in: query
+          name: name
+          required: false
+          description: Filter by Organization name (case-insensitive substring match)
+        - schema:
             type: array
             items:
               $ref: "#/components/schemas/OrganizationId"
