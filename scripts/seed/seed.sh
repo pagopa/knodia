@@ -70,6 +70,20 @@ if [ -f "$SQL_DIR/mock-poc-uc03-supervisory-body-eservice.sql" ]; then
     "s3://$S3_BUCKET/a3f1c8e0-1b2c-4d3e-8f40-000000000303/mock-bearer-poc-uc03-supervisory-body-eservice.yaml"
 fi
 
+# POC UC03 relay: both SERCs publish it, one per knode with a distinct interface
+# id (see scripts/seed/sql/{lynx,orion}/mock-poc-uc03-relay-eservice.sql). Same
+# spec, uploaded under this knode's interface id. NAMESPACE selects the knode
+# (single-node 'local' seeds the orion dir, so it falls to the orion id).
+if [ -f "$SQL_DIR/mock-poc-uc03-relay-eservice.sql" ]; then
+  case "$NAMESPACE" in
+    *lynx*) UC03_RELAY_INTERFACE_ID="b4e2d9f1-2c3d-4e4f-9a51-000000000313" ;;
+    *) UC03_RELAY_INTERFACE_ID="c5f3e0a2-3d4e-4f5a-ab62-000000000323" ;;
+  esac
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml" \
+    "s3://$S3_BUCKET/$UC03_RELAY_INTERFACE_ID/mock-bearer-poc-uc03-relay-eservice.yaml"
+fi
+
 # Lynx-only seed: matches scripts/seed/sql/lynx/mock-receive-data-eservice.sql.
 # Other tenants don't ship this mock yet, so we only upload when the SQL is
 # present in $SQL_DIR.

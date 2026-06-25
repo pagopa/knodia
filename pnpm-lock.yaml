@@ -659,6 +659,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
+      '@knodia/cognito-idm-client':
+        specifier: workspace:*
+        version: link:../../../packages/cognito-idm-client
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models

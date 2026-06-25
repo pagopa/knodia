@@ -37,6 +37,7 @@ import { mockPocUc01QualificationsRouter } from "./routers/mockPocUc01Qualificat
 import { mockPocUc01SetQualificationRouter } from "./routers/mockPocUc01SetQualificationRouter.ts";
 import { mockPocUc02CompaniesEvidenceUpdateRouter } from "./routers/mockPocUc02CompaniesEvidenceUpdateRouter.ts";
 import { mockPocUc02CompaniesRouter } from "./routers/mockPocUc02CompaniesRouter.ts";
+import { mockPocUc03RelayRouter } from "./routers/mockPocUc03RelayRouter.ts";
 import { mockPocUc03SupervisoryBodyRouter } from "./routers/mockPocUc03SupervisoryBodyRouter.ts";
 import { mockReceiveDataRouter } from "./routers/mockReceiveDataRouter.ts";
 import { mockSignalHubRouter } from "./routers/mockSignalHubRouter.ts";
@@ -94,6 +95,11 @@ const pocUc03SupervisoryBodyAppTag: OpenAPIV3.TagObject = {
     "ERDS lookup + metadata for the supervisory body (POC UC03 provide-data, Bearer-protected)",
   name: apiTags.pocUc03SupervisoryBody,
 };
+const pocUc03RelayAppTag: OpenAPIV3.TagObject = {
+  description:
+    "ERD dispatch relay between SERCs (POC UC03 receive-data, Bearer-protected)",
+  name: apiTags.pocUc03Relay,
+};
 const companyAddressAppTag: OpenAPIV3.TagObject = {
   description:
     "Legal-entity address lookup by uid_company (Cross-Border E-service 06, Bearer-protected)",
@@ -147,6 +153,7 @@ export function buildApp({
       pocUc02CompaniesAppTag,
       receiveDataAppTag,
       pocUc03SupervisoryBodyAppTag,
+      pocUc03RelayAppTag,
       companyAddressAppTag,
     ],
   );
@@ -182,6 +189,7 @@ export function buildApp({
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
     protectedApp.register(mockReceiveDataRouter, { knodeId });
     protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
+    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
 
     protectedApp.register(async (integrityRest02App) => {
       integrityRest02App.register(integrityRest02Plugin, {
@@ -266,6 +274,15 @@ export function buildBearerPocUc02CompaniesAppFromConfig(
   config: MockEserviceConfig,
 ) {
   return buildBearerPocUc02CompaniesApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerPocUc03RelayAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerPocUc03RelayApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -476,6 +493,41 @@ function buildBearerPocUc02CompaniesApp({
       jwksResolvers,
     });
     protectedApp.register(mockPocUc02CompaniesRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerPocUc03RelayApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service API for POC UC03 relay (ERD dispatch relay between SERCs)",
+      title: "Knodia Mock E-service API (ERDS Relay)",
+      version: "1.0.0",
+    },
+    [pocUc03RelayAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockPocUc03RelayRouter, { knodeId });
   });
 
   return app;
