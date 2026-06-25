@@ -3,8 +3,10 @@ import { GenericContainer, Wait } from "testcontainers";
 
 const SES_PORT = 8005;
 // aws-ses-v2-local has no published image, so we run it via a Node image and
-// install it at startup — the same approach used by PDND/interop.
-const SES_NODE_IMAGE = "node:24-alpine";
+// install it at startup — the same approach used by PDND/interop. Pinned to the
+// same digest as docker/compose.yaml so dev and CI run the identical build.
+const SES_NODE_IMAGE =
+  "node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03";
 const SES_LOCAL_VERSION = "2.9.0";
 
 const SES_TEST_REGION = "eu-south-1";
@@ -44,7 +46,7 @@ export function createTestSesClient(connectionString: string): SESv2Client {
   });
 }
 
-/** Reads the emails received by the mock (most recent first). */
+/** Reads the emails received by the mock, in insertion order (oldest first). */
 export async function getSentEmails(
   connectionString: string,
 ): Promise<SesStoredEmail[]> {
