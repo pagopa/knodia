@@ -15,5 +15,4 @@ Exercises the full access-token flow against the seeded mock e-service.
    captured by step 11 → expect `200`.
 4. **Step 3 – Get Async Company Addresses Request State (Async Consumption Bearer)** —
    calls `GET /legal-entities/address-requests/:companyAddressesRequestId` with the
-   `access_token` → expect `200` and wait until `state` becomes
-   `COMPLETED`, then capture `companyAddressesResourceId`.
+   `access_token` → expect `200` → repeat until `state` becomes `COMPLETED`, then capture `companyAddressesResourceId`.
