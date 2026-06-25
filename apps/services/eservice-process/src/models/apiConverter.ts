@@ -58,15 +58,11 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  ...(eservice.receiveDataConfig !== undefined
-    ? {
-        receiveDataConfig: {
-          purposeFormOptions: eservice.receiveDataConfig.purposeFormOptions.map(
-            toAPI_PurposeFormOption,
-          ),
-        },
-      }
-    : {}),
+  receiveDataConfig: eservice.receiveDataConfig && {
+    purposeFormOptions: eservice.receiveDataConfig.purposeFormOptions.map(
+      toAPI_PurposeFormOption,
+    ),
+  },
   template: eservice.template,
   updatedAt: eservice.updatedAt.toISOString(),
   versions: eservice.versions.map(toAPI_EserviceVersion),
