@@ -30,6 +30,7 @@ beforeAll(async () => {
       cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
       cognitoJwksUrl:
         "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
+      cognitoUserPoolId: "test-user-pool-id",
       cookie: {
         pathPrefix: "",
         secure: false,
