@@ -10,6 +10,7 @@ import {
   isEmailAlreadyInUseError,
   pollCurrentUserUntilEmail,
 } from "./changeEmail";
+import { GENERIC_ERROR_MESSAGE } from "./messages";
 import { getCurrentSignupUserQuery } from "./queries";
 
 function axiosProblemError(code?: string): AxiosError {
@@ -36,7 +37,7 @@ describe("changeEmailErrorMessage", () => {
 
   it("returns a generic message when the problem code is unknown or absent", () => {
     expect(changeEmailErrorMessage(axiosProblemError())).toBe(
-      "Something went wrong while changing your email address. Please try again.",
+      GENERIC_ERROR_MESSAGE,
     );
   });
 });
