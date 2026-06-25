@@ -14,6 +14,11 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import {
+  type RateLimiter,
+  rateLimitPlugin,
+  rateLimitResponseHeadersPlugin,
+} from "@knodia/fastify-zod-api-commons/rate-limit";
+import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
@@ -38,10 +43,12 @@ import { signupServiceBuilder } from "./services/signupService.ts";
 export function buildApp({
   config,
   kafkaProducer,
+  rateLimiter,
   signupDb,
 }: {
   config: AuthConfig & LoggerConfig & OneIdentityConfig & SignupTopicConfig;
   kafkaProducer: Producer;
+  rateLimiter: RateLimiter;
   signupDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -73,11 +80,13 @@ export function buildApp({
   });
 
   app.register(cookie);
+  app.register(rateLimitResponseHeadersPlugin);
 
   const authService = authServiceBuilder(
     config,
     oneIdentityClientBuilder(config),
     tokenGeneratorBuilder(),
+    rateLimiter,
   );
 
   const signupService = signupServiceBuilder(
@@ -98,13 +107,21 @@ export function buildApp({
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(rateLimitPlugin, { rateLimiter });
     protectedApp.register(signupRouter, { signupService });
+  });
+
+  app.addHook("onClose", async () => {
+    await rateLimiter.disconnect();
   });
 
   return app;
 }
 
-export async function buildAppFromConfig(config: SignupManagerConfig) {
+export async function buildAppFromConfig(
+  config: SignupManagerConfig,
+  rateLimiter: RateLimiter,
+) {
   const { db: signupDb, pool: signupPool } =
     makeSignupDrizzleConnection(config);
 
@@ -114,7 +131,7 @@ export async function buildAppFromConfig(config: SignupManagerConfig) {
     createLogger({ config }),
   );
 
-  const app = buildApp({ config, kafkaProducer, signupDb });
+  const app = buildApp({ config, kafkaProducer, rateLimiter, signupDb });
 
   app.addHook("onClose", async () => {
     await signupPool.end();

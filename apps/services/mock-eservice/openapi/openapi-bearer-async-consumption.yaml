@@ -83,6 +83,7 @@ components:
       description: Submission of a list of legal-entity identifiers to the Producer,
         to request their registered addresses (Cross-Border E-service 05,
         Request company addresses).
+      minItems: 1
       type: array
       items:
         $ref: "#/components/schemas/CompanyUid"

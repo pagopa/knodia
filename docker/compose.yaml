@@ -65,6 +65,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-receive-data.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:ro
     environment:
@@ -391,7 +392,7 @@ services:
       ALLOWED_ORIGINS: "http://localhost:5176,http://localhost:5176"
       CLIENT_ID: local-oi-client-id
       CLIENT_SECRET: local-oi-client-secret
-      REDIRECT_URI: "http://localhost:5176/login/callback"
+      REDIRECT_URI: "http://localhost:5176/ui/login/callback"
     command: node scripts/local-auth/local-one-identity.mjs
 
   redis:

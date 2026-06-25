@@ -7,6 +7,7 @@ export const apiTags = {
   pocUc01Qualifications: "pocUc01Qualifications",
   pocUc01SetQualification: "pocUc01SetQualification",
   pocUc02Companies: "pocUc02Companies",
+  pocUc03Relay: "pocUc03Relay",
   pocUc03SupervisoryBody: "pocUc03SupervisoryBody",
   residence: "residence",
 } as const;
