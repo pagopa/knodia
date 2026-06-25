@@ -9,6 +9,7 @@
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "catalog:",
     "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/client-sesv2": "catalog:",
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/authorization-models": "workspace:*",
@@ -42,6 +43,7 @@
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
+    "./ses": "./src/testcontainers/ses.ts",
     "./dynamodb": "./src/testcontainers/dynamodb.ts",
     "./network": "./src/testcontainers/network.ts",
     "./readmodel": "./src/readmodel.ts",
