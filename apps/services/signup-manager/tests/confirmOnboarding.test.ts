@@ -33,7 +33,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       dateOfBirth: validUISignupSessionTokenClaims.dateOfBirth,
       email: validConfirmOnboardingBody.email,
       familyName: validUISignupSessionTokenClaims.familyName,
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
+      fiscalNumber: null,
       lynxOrganizationName: expect.any(String),
       lynxUserName: expect.any(String),
       name: validUISignupSessionTokenClaims.name,
@@ -127,12 +127,17 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   });
 
   it("should return 409 when the fiscal number is already associated", async () => {
-    const existingUser = makeSignupUser({
-      fiscalNumber: validUISignupSessionTokenClaims.fiscalNumber,
-    });
+    const fiscalNumber = "RSSMRA80A01H501U";
+    const existingUser = makeSignupUser({}, { fiscalNumber });
     await seedSignupUser(existingUser);
 
-    const response = await injectSignupAppRequest()
+    const response = await injectSignupAppRequest({
+      fiscalNumber,
+      oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
+      personIdentifier: null,
+      spidCode: null,
+      type: "ui-signup-session",
+    })
       .post("/user/confirmOnboarding")
       .body(validConfirmOnboardingBody);
 
@@ -142,9 +147,10 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   });
 
   it("should return 409 when the SPID code is already associated", async () => {
-    const existingUser = makeSignupUser({
-      spidCode: validUISignupSessionTokenClaims.spidCode,
-    });
+    const existingUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
     await seedSignupUser(existingUser);
 
     const response = await injectSignupAppRequest()
@@ -158,7 +164,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
 
   it("should return 409 when the person identifier is already associated", async () => {
     const personIdentifier = "test-person-identifier";
-    const existingUser = makeSignupUser({ personIdentifier });
+    const existingUser = makeSignupUser({}, { personIdentifier });
     await seedSignupUser(existingUser);
 
     const response = await injectSignupAppRequest({
@@ -176,7 +182,11 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should return 500 when the ui-signup-session token has no supported user identifier", async () => {
+  it("rejects a ui-signup-session token that carries no identifier", async () => {
+    // The single-identifier invariant lives in the token codec, so a token with
+    // no identifier fails auth validation before reaching the handler (no user
+    // is inserted). The test auth mock surfaces the rejection as a 500;
+    // production returns 401.
     const response = await injectSignupAppRequest({
       fiscalNumber: null,
       oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
