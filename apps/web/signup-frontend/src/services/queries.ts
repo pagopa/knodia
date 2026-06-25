@@ -1,5 +1,6 @@
 import {
   confirmOnboardingMutation,
+  deleteUserMutation,
   getCurrentSignupUserOptions,
 } from "@knodia/signup-manager-client/tanstack-query";
 
@@ -12,5 +13,10 @@ export const getCurrentSignupUserQuery = () =>
 
 export const confirmOnboardingMutationOptions = () =>
   confirmOnboardingMutation({
+    client,
+  });
+
+export const deleteUserMutationOptions = () =>
+  deleteUserMutation({
     client,
   });

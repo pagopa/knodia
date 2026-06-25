@@ -1,4 +1,17 @@
-import { Modal } from "@/components/ui";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+
+import { Alert, Modal } from "@/components/ui";
+import {
+  deleteUserMutationOptions,
+  getCurrentSignupUserQuery,
+} from "@/services/queries";
+
+const DELETE_USER_ERROR_MESSAGE = "Something went wrong. Please try again.";
+
+interface RequestErasureDialogProps {
+  onOpenChange: (isOpen: boolean) => void;
+}
 
 interface RequestErasureModalProps {
   isOpen: boolean;
@@ -9,13 +22,42 @@ export function RequestErasureModal({
   isOpen,
   onOpenChange,
 }: RequestErasureModalProps) {
-  // TODO(KN-786): enable once the user-deletion route is wired
+  if (!isOpen) return null;
+
+  return <RequestErasureDialog onOpenChange={onOpenChange} />;
+}
+
+function RequestErasureDialog({ onOpenChange }: RequestErasureDialogProps) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const deleteUser = useMutation({
+    ...deleteUserMutationOptions(),
+    onSuccess: async () => {
+      // refetchType "all": /registration's guard must read the fresh status.
+      await queryClient.invalidateQueries({
+        queryKey: getCurrentSignupUserQuery().queryKey,
+        refetchType: "all",
+      });
+      await navigate({ to: "/registration" });
+    },
+  });
+
   return (
     <Modal
       actionLabel="Request erasure"
-      description="If you confirm this request, your access to the prototype will be removed and your data will be permanently erased. This process may take a few days."
-      isActionDisabled
-      isOpen={isOpen}
+      description={
+        <Alert>
+          If you confirm this request, your access to the prototype will be
+          removed and your data will be permanently erased. This process may
+          take up to 30 days.
+        </Alert>
+      }
+      errorMessage={deleteUser.isError ? DELETE_USER_ERROR_MESSAGE : undefined}
+      isActionDisabled={deleteUser.isPending}
+      isCancelDisabled={deleteUser.isPending}
+      isOpen
+      onConfirm={() => deleteUser.mutate({})}
       onOpenChange={onOpenChange}
       title="Request data erasure"
     />
