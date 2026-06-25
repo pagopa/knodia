@@ -42,6 +42,10 @@ export type API_Operators = z.infer<typeof API_Operators>;
 
 export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
   {
+    name: z.string().optional().meta({
+      description:
+        "Filter by Organization name (case-insensitive substring match)",
+    }),
     organizationId: arrayQueryParam(z.uuid()).optional().meta({
       description: "Filter by Organization ID",
     }),
