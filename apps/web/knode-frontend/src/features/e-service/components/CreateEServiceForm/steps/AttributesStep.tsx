@@ -250,7 +250,7 @@ function SearchableAttributesField({
                 groupField.handleChange(parseSchemeRefKeys([...newKeys]))
               }
               onInputChange={setInputValue}
-              placeholder="Search attributes or organizations..."
+              placeholder="Select one or more attributes"
               selectedTags={selectedTags}
               value={keys}
             >

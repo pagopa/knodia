@@ -18,7 +18,10 @@ describe("AttributeDescriptionModal", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributeDescriptionModal attribute={nuts3} />
+        <AttributeDescriptionModal
+          description={nuts3.description}
+          name={nuts3.name}
+        />
       </DialogTrigger>,
     );
 
@@ -35,7 +38,10 @@ describe("AttributeDescriptionModal", () => {
     renderWithProviders(
       <DialogTrigger>
         <Button>Open</Button>
-        <AttributeDescriptionModal attribute={nuts3} />
+        <AttributeDescriptionModal
+          description={nuts3.description}
+          name={nuts3.name}
+        />
       </DialogTrigger>,
     );
 

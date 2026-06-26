@@ -1,22 +1,19 @@
-import type { Attribute } from "@knodia/attribute-models";
-
 import { Modal } from "@knodia/ui-kit/ui";
 
 import { DefinitionCard } from "./DefinitionCard";
 
 interface AttributeDescriptionModalProps {
-  attribute: Attribute;
+  description: string;
+  name: string;
 }
 
 export function AttributeDescriptionModal({
-  attribute,
+  description,
+  name,
 }: AttributeDescriptionModalProps) {
   return (
     <Modal isDismissable title="Attribute description">
-      <DefinitionCard
-        description={attribute.description}
-        name={attribute.name}
-      />
+      <DefinitionCard description={description} name={name} />
     </Modal>
   );
 }
