@@ -69,8 +69,6 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   pretty_name = EXCLUDED.pretty_name,
   updated_at = now();
 
--- group 1 is OR-matched: testing_organization (held by every onboarded org) keeps the
--- mock consumable by all; nuts3 stays as an accepted alternative.
 INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
   eservice_id, eservice_version_id, group_id, scheme, code, metadata_version
 ) VALUES (
