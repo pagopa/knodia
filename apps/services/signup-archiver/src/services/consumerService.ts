@@ -63,7 +63,14 @@ export async function handleSignupMessage(
     })
     .with({ type: "MaintenanceUserReactivationRequestedV1" }, ({ data }) =>
       SignupArchiveRecord.parse({
-        action: "UserReactivation",
+        action: "MaintenanceReactivation",
+        date: data.occurredAt,
+        identifier: data.occurredAt,
+      }),
+    )
+    .with({ type: "MaintenanceUserDeletionRequestedV1" }, ({ data }) =>
+      SignupArchiveRecord.parse({
+        action: "MaintenanceDeletion",
         date: data.occurredAt,
         identifier: data.occurredAt,
       }),

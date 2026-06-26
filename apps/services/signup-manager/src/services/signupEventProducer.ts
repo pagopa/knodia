@@ -40,21 +40,21 @@ export function signupEventProducerBuilder({
       await publish({ data, type: "EmailChangeRequestedV1" });
     },
 
-    async publishMaintenanceUserReactivationRequestedV1Event(
-      data: SignupEventData<"MaintenanceUserReactivationRequestedV1">,
-    ): Promise<void> {
-      await publish({
-        data,
-        type: "MaintenanceUserReactivationRequestedV1",
-      });
-    },
-
     async publishMaintenanceUserDeletionRequestedV1Event(
       data: SignupEventData<"MaintenanceUserDeletionRequestedV1">,
     ): Promise<void> {
       await publish({
         data,
         type: "MaintenanceUserDeletionRequestedV1",
+      });
+    },
+
+    async publishMaintenanceUserReactivationRequestedV1Event(
+      data: SignupEventData<"MaintenanceUserReactivationRequestedV1">,
+    ): Promise<void> {
+      await publish({
+        data,
+        type: "MaintenanceUserReactivationRequestedV1",
       });
     },
 
