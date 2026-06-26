@@ -1,5 +1,4 @@
 import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
-import { useLayoutEffect, useRef, useState } from "react";
 import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
@@ -13,29 +12,20 @@ import {
   Popover,
   type ValidationResult,
 } from "react-aria-components";
-import { tv, type VariantProps } from "tailwind-variants";
+import { type VariantProps } from "tailwind-variants";
 
-import { composeTailwindRenderProps } from "../../libs/react-aria";
+import {
+  composeTailwindRenderProps,
+  useTriggerWidth,
+} from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
-import { dropdownStyles, fieldGroupStyles, listItemStyles } from "./styles";
-
-const sizeStyles = tv({
-  base: "px-3",
-  variants: {
-    size: {
-      sm: "h-8",
-      md: "h-10",
-      lg: "h-12",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
-
-const inputStyles = tv({
-  base: "flex-1 min-w-0 body-md outline-none bg-transparent placeholder:text-primary-light-low-contrast",
-});
+import {
+  dropdownStyles,
+  fieldGroupStyles,
+  fieldInputStyles,
+  fieldSizeStyles,
+  listItemStyles,
+} from "./styles";
 
 interface ComboBoxProps<T extends object> extends Omit<
   AriaComboBoxProps<T>,
@@ -51,7 +41,7 @@ interface ComboBoxProps<T extends object> extends Omit<
   size?: ComboBoxVariants["size"];
 }
 
-type ComboBoxVariants = VariantProps<typeof sizeStyles>;
+type ComboBoxVariants = VariantProps<typeof fieldSizeStyles>;
 
 export function ComboBox<T extends object>({
   label,
@@ -64,28 +54,7 @@ export function ComboBox<T extends object>({
   placeholder,
   ...props
 }: ComboBoxProps<T>) {
-  const groupRef = useRef<HTMLDivElement>(null);
-  const [popoverWidth, setPopoverWidth] = useState<number | undefined>();
-
-  // Popover width fix: React Aria's --trigger-width CSS variable doesn't correctly
-  // reflect the Group width when using Group as the trigger. We manually measure
-  // the Group with ResizeObserver and apply it as an inline style to the Popover.
-  useLayoutEffect(() => {
-    if (!groupRef.current) return;
-
-    const updateWidth = () => {
-      if (groupRef.current) {
-        setPopoverWidth(groupRef.current.offsetWidth);
-      }
-    };
-
-    updateWidth();
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(groupRef.current);
-
-    return () => observer.disconnect();
-  }, []);
+  const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
 
   const hasValue =
     (props.inputValue != null && props.inputValue !== "") ||
@@ -110,7 +79,7 @@ export function ComboBox<T extends object>({
       {label && <Label>{label}</Label>}
       <Group
         className={composeRenderProps(
-          sizeStyles({ size }),
+          fieldSizeStyles({ size }),
           (className, renderProps) =>
             fieldGroupStyles({
               ...renderProps,
@@ -121,7 +90,7 @@ export function ComboBox<T extends object>({
         ref={groupRef}
       >
         <Input
-          className={inputStyles()}
+          className={fieldInputStyles()}
           placeholder={placeholder ?? "Search..."}
         />
         {isClearable && hasValue ? (
