@@ -11,7 +11,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   addAsyncCompanyAddressesRequest,
-  addAsyncCompanyAddressesResult,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
   resolveAsyncCompanyAddressesRequest,
@@ -57,8 +56,6 @@ function completeRequest(requestId: string): string {
   const state = getAsyncCompanyAddressesRequestState(request);
 
   expect(state).toBe(API_AsyncConsumptionRequestState.enum.COMPLETED);
-
-  addAsyncCompanyAddressesResult(request);
 
   return request.resourceId!;
 }
