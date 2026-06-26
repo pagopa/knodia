@@ -46,32 +46,6 @@ export function addAsyncCompanyAddressesRequest(
   });
 }
 
-export function addAsyncCompanyAddressesResult(
-  request: AsyncCompanyAddressesRequest,
-): void {
-  if (!request.resourceId) {
-    return;
-  }
-
-  const resources = asyncCompanyAddressesResults.get(request.resourceId);
-  if (resources) {
-    return;
-  }
-
-  const results = request.companyUids.map((uidCompany) => {
-    const legalEntity = findLegalEntity(uidCompany);
-    const address = findLegalEntityAddress(uidCompany);
-
-    return {
-      address,
-      identifier: uidCompany,
-      legalEntity,
-    };
-  });
-
-  asyncCompanyAddressesResults.set(request.resourceId, results);
-}
-
 export function assertResourceIdBelongsToRequest(
   request: AsyncCompanyAddressesRequest,
   resourceId: string,
@@ -120,6 +94,32 @@ export function resolveAsyncCompanyAddressesRequest(
     request.resourceId = randomUUID();
     addAsyncCompanyAddressesResult(request);
   }
+}
+
+function addAsyncCompanyAddressesResult(
+  request: AsyncCompanyAddressesRequest,
+): void {
+  if (!request.resourceId) {
+    return;
+  }
+
+  const resources = asyncCompanyAddressesResults.get(request.resourceId);
+  if (resources) {
+    return;
+  }
+
+  const results = request.companyUids.map((uidCompany) => {
+    const legalEntity = findLegalEntity(uidCompany);
+    const address = findLegalEntityAddress(uidCompany);
+
+    return {
+      address,
+      identifier: uidCompany,
+      legalEntity,
+    };
+  });
+
+  asyncCompanyAddressesResults.set(request.resourceId, results);
 }
 
 function getMockFinishDate(requestId: string): Date {
