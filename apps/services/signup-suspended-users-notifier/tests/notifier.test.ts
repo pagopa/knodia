@@ -16,7 +16,7 @@ import {
 import { seedSuspendedUser, seedUser } from "./utils.ts";
 
 const RECIPIENT = "dpo@pagopa.it";
-const SUBJECT = "KNODIA: Request for application of Right to Restriction";
+const SUBJECT = "Elenco utenti sospesi su Knodia";
 
 describe("suspended-users notifier", () => {
   it("sends one email with a CSV of the Suspended users, ordered desc", async () => {

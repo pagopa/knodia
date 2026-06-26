@@ -13,7 +13,7 @@ const SuspendedUsersNotifierConfig = LoggerConfig.and(SignupDbConfig)
           .default("dpo@pagopa.it"),
         SUSPENDED_USERS_NOTIFICATION_SUBJECT: z
           .string()
-          .default("KNODIA: Request for application of Right to Restriction"),
+          .default("Elenco utenti sospesi su Knodia"),
       })
       .transform((c) => ({
         notificationRecipient: c.SUSPENDED_USERS_NOTIFICATION_RECIPIENT,
