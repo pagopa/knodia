@@ -115,6 +115,10 @@ export type GetOrganizationsData = {
          */
         offset: number;
         /**
+         * Filter by Organization name (case-insensitive substring match)
+         */
+        name?: string;
+        /**
          * Filter by Organization ID
          */
         organizationId?: Array<string>;
