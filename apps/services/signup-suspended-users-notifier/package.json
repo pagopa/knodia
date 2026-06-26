@@ -15,7 +15,6 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -26,8 +25,6 @@
     "@knodia/logger": "workspace:*",
     "@knodia/ses-email-sender": "workspace:*",
     "@knodia/signup-models": "workspace:*",
-    "drizzle-orm": "catalog:",
-    "pg": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",

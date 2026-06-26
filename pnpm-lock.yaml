@@ -2122,12 +2122,6 @@ importers:
       '@knodia/signup-models':
         specifier: workspace:*
         version: link:../../../packages/models/signup-models
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -2156,9 +2150,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.16.0
       concurrently:
         specifier: 'catalog:'
         version: 9.2.1
@@ -3524,9 +3515,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config

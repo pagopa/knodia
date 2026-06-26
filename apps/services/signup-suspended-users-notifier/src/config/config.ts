@@ -3,8 +3,6 @@ import { LoggerConfig } from "@knodia/logger/config";
 import { SesEmailSenderConfig } from "@knodia/ses-email-sender/config";
 import { z } from "zod";
 
-// This is the only place the recipient/subject defaults live: the SES package
-// is deliberately default-free, so the consuming service owns the env defaults.
 const SuspendedUsersNotifierConfig = LoggerConfig.and(SignupDbConfig)
   .and(SesEmailSenderConfig)
   .and(

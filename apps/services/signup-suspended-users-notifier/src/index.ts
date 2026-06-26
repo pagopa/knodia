@@ -1,3 +1,4 @@
+import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
 import { createLogger } from "@knodia/logger";
 import { initEmailSender } from "@knodia/ses-email-sender";
@@ -8,10 +9,15 @@ import { notifierServiceBuilder } from "./services/notifierService.ts";
 const logger = createLogger({ config });
 
 const { db, pool } = makeSignupDrizzleConnection(config);
+const signupDbService = signupDbServiceBuilder(db);
 // No client passed: the endpoint resolves from aws.config.local in dev and from
 // real SES in deployed environments.
 const emailSender = initEmailSender(config);
-const notifierService = notifierServiceBuilder(db, emailSender, logger);
+const notifierService = notifierServiceBuilder(
+  signupDbService,
+  emailSender,
+  logger,
+);
 
 const shutdown = async (reason: string, exitCode = 0) => {
   logger.info(`Shutting down (${reason})`);

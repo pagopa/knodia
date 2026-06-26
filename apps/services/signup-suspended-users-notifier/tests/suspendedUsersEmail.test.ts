@@ -1,7 +1,7 @@
 import { generateId, type SignupUserId } from "@knodia/common-models/ids";
 import {
+  type SignupUser,
   SignupUserStatus,
-  type SuspendedSignupUser,
   SuspensionReason,
 } from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
@@ -9,9 +9,11 @@ import { describe, expect, it } from "vitest";
 import {
   buildSuspendedUsersCsv,
   buildSuspendedUsersEmailBody,
-  formatDateTimeRome,
-  formatIsoDate,
+  formatDate,
+  formatDateTime,
 } from "../src/services/suspendedUsersEmail.ts";
+
+type SuspendedSignupUser = Extract<SignupUser, { status: "Suspended" }>;
 
 const HEADER =
   "ID utente;Nome;Cognome;Email;Data di nascita;Codice fiscale;Identificativo persona;Codice SPID;Sospeso il;Motivo;Motivo (codice);Creato il;Aggiornato il;Organizzazione Lynx;Utente Lynx;Organizzazione Orion;Utente Orion";
@@ -113,24 +115,25 @@ describe("buildSuspendedUsersEmailBody", () => {
       3,
       new Date("2026-06-25T06:00:00Z"),
     );
+    expect(body).toContain("Knodia");
     expect(body).toContain("Utenti totali: 3");
     expect(body).toContain("25/06/2026");
     expect(body).not.toContain("@example.test");
   });
 });
 
-describe("formatDateTimeRome / formatIsoDate", () => {
+describe("formatDateTime / formatDate", () => {
   it("renders timestamps in Europe/Rome, honoring DST", () => {
     // Winter: +01:00 → 13:00; Summer: +02:00 → 14:00
-    expect(formatDateTimeRome(new Date("2026-01-15T12:00:00Z"))).toBe(
+    expect(formatDateTime(new Date("2026-01-15T12:00:00Z"))).toBe(
       "15/01/2026 13:00",
     );
-    expect(formatDateTimeRome(new Date("2026-07-15T12:00:00Z"))).toBe(
+    expect(formatDateTime(new Date("2026-07-15T12:00:00Z"))).toBe(
       "15/07/2026 14:00",
     );
   });
 
-  it("renders an ISO date as gg/mm/aaaa without timezone shift", () => {
-    expect(formatIsoDate("1980-01-15")).toBe("15/01/1980");
+  it("renders a calendar date as gg/mm/aaaa without timezone shift", () => {
+    expect(formatDate("1980-01-15")).toBe("15/01/1980");
   });
 });

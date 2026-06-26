@@ -11,7 +11,6 @@ import {
   type SignupUser,
   type SignupUserDeletion,
   SignupUserStatus,
-  type SuspendedSignupUser,
   type SuspensionReason,
 } from "@knodia/signup-models";
 import { and, desc, eq, inArray, or, type SQL } from "drizzle-orm";
@@ -218,15 +217,15 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
       await db.insert(signupUser).values(toSignupUserSQL(user));
     },
 
-    async listSuspendedSignupUsers(): Promise<SuspendedSignupUser[]> {
+    async listSuspendedSignupUsers(): Promise<
+      Extract<SignupUser, { status: "Suspended" }>[]
+    > {
       const results = await db
         .select()
         .from(signupUser)
         .where(eq(signupUser.status, SignupUserStatus.enum.Suspended))
         .orderBy(desc(signupUser.suspendedAt));
-      // The query filters on Suspended, but toSignupUser parses the full union;
-      // narrow exhaustively so the return type matches the guarantee. A
-      // non-Suspended row here is impossible and signals a query/data bug.
+      // toSignupUser parses the full union; narrow to match the query's filter.
       return results.map(toSignupUser).map((user) =>
         match(user)
           .with({ status: SignupUserStatus.enum.Suspended }, (u) => u)

@@ -1,8 +1,7 @@
-import {
-  type SuspendedSignupUser,
-  SuspensionReason,
-} from "@knodia/signup-models";
+import { type SignupUser, SuspensionReason } from "@knodia/signup-models";
 import { match } from "ts-pattern";
+
+type SuspendedSignupUser = Extract<SignupUser, { status: "Suspended" }>;
 
 const CSV_HEADERS = [
   "ID utente",
@@ -24,11 +23,18 @@ const CSV_HEADERS = [
   "Utente Orion",
 ];
 
-/**
- * One row per Suspended user, ordering preserved from the query. Leading UTF-8
- * BOM + `;` separator + CRLF so Italian Excel opens it with correct columns
- * and accents.
- */
+// Build the formatter once: static config, reused for every timestamp.
+const ROME_DATE_TIME_FORMAT = new Intl.DateTimeFormat("it-IT", {
+  day: "2-digit",
+  hour: "2-digit",
+  hour12: false,
+  minute: "2-digit",
+  month: "2-digit",
+  timeZone: "Europe/Rome",
+  year: "numeric",
+});
+
+// Leading UTF-8 BOM + ';' separator + CRLF so Italian Excel opens it correctly.
 export function buildSuspendedUsersCsv(users: SuspendedSignupUser[]): string {
   const rows = users.map((u) =>
     [
@@ -36,15 +42,15 @@ export function buildSuspendedUsersCsv(users: SuspendedSignupUser[]): string {
       u.name,
       u.familyName,
       u.email,
-      formatIsoDate(u.dateOfBirth),
+      formatDate(u.dateOfBirth),
       u.fiscalNumber,
       u.personIdentifier,
       u.spidCode,
-      formatDateTimeRome(u.suspendedAt),
+      formatDateTime(u.suspendedAt),
       suspensionReasonLabel(u.suspensionReason),
       u.suspensionReason,
-      formatDateTimeRome(u.createdAt),
-      formatDateTimeRome(u.updatedAt),
+      formatDateTime(u.createdAt),
+      formatDateTime(u.updatedAt),
       u.generatedEntities.Lynx.organizationName,
       u.generatedEntities.Lynx.userName,
       u.generatedEntities.Orion.organizationName,
@@ -58,51 +64,37 @@ export function buildSuspendedUsersCsv(users: SuspendedSignupUser[]): string {
   return `\uFEFF${lines.join("\r\n")}\r\n`;
 }
 
-/** Short Italian body, no PII (the personal data is in the CSV attachment). */
 export function buildSuspendedUsersEmailBody(total: number, now: Date): string {
   return [
-    "Gentile team,",
-    "",
-    `in allegato l'elenco degli utenti che hanno richiesto la limitazione del trattamento (sospensione), aggiornato al ${formatDateTimeRome(now)} (Europe/Rome). Utenti totali: ${total}.`,
+    `In allegato l'elenco degli utenti sospesi su Knodia, aggiornato al ${formatDateTime(now)} (Europe/Rome). Utenti totali: ${total}.`,
     "",
     "L'elenco è ordinato dalla sospensione più recente alla meno recente.",
   ].join("\n");
 }
 
-/** `gg/mm/aaaa hh:mm` in Europe/Rome. */
-export function formatDateTimeRome(date: Date): string {
-  const p = romeDateParts(date);
-  return `${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}`;
-}
-
-/** `gg/mm/aaaa` from an ISO date string (`YYYY-MM-DD`), no timezone shift. */
-export function formatIsoDate(isoDate: string): string {
+/** `gg/mm/aaaa` — birth date is a calendar date, formatted without a timezone. */
+export function formatDate(isoDate: string): string {
   const [year, month, day] = isoDate.split("-");
   return `${day}/${month}/${year}`;
 }
 
 /** `aaaa-mm-gg` in Europe/Rome, for the attachment filename. */
-export function romeDateStamp(date: Date): string {
+export function formatDateStamp(date: Date): string {
   const p = romeDateParts(date);
   return `${p.year}-${p.month}-${p.day}`;
 }
 
-// Quote/escape per RFC 4180; the separator is ';' for Excel-IT compatibility.
+/** `gg/mm/aaaa hh:mm` in Europe/Rome. */
+export function formatDateTime(date: Date): string {
+  const p = romeDateParts(date);
+  return `${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}`;
+}
+
+// Quote/escape per RFC 4180; separator is ';' for Excel-IT.
 function csvField(value: string | undefined): string {
   const v = value ?? "";
   return /[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
-
-// Static config — build the formatter once and reuse it across every field.
-const ROME_DATE_TIME_FORMAT = new Intl.DateTimeFormat("it-IT", {
-  day: "2-digit",
-  hour: "2-digit",
-  hour12: false,
-  minute: "2-digit",
-  month: "2-digit",
-  timeZone: "Europe/Rome",
-  year: "numeric",
-});
 
 function romeDateParts(date: Date): {
   day: string;

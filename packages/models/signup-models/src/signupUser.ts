@@ -70,7 +70,3 @@ export const SignupUser = z
     },
   );
 export type SignupUser = z.infer<typeof SignupUser>;
-
-// Derived from the union so it stays the single source of truth for the
-// Suspended branch (suspendedAt + suspensionReason present).
-export type SuspendedSignupUser = Extract<SignupUser, { status: "Suspended" }>;
