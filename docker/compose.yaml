@@ -421,7 +421,9 @@ services:
     ports:
       - 8005:8005
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8005/store"]
+      # 127.0.0.1 not localhost: alpine maps localhost to ::1 (IPv6) but the
+      # server is IPv4-only, so a localhost probe never goes healthy.
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8005/store"]
       interval: 5s
       timeout: 5s
       retries: 20

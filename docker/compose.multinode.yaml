@@ -308,6 +308,7 @@ services:
         aliases:
           - knodia-orion-eservice-interfaces.minio
           - knodia-lynx-eservice-interfaces.minio
+          - knodia-signup-archives.minio
     volumes:
       - multinode-minio-data:/data
     healthcheck:
@@ -350,7 +351,9 @@ services:
     ports:
       - 8005:8005
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8005/store"]
+      # 127.0.0.1 not localhost: alpine maps localhost to ::1 (IPv6) but the
+      # server is IPv4-only, so a localhost probe never goes healthy.
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8005/store"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -2044,10 +2047,10 @@ services:
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ONE_IDENTITY_CLIENT_ID: local-oi-client-id
       ONE_IDENTITY_CLIENT_SECRET: local-oi-client-secret
-      # Browser-facing base (login redirect) and id_token issuer: must match the
-      # mock's ISSUER and be reachable from the user's browser on the host.
+      # Browser-facing base (login redirect + issuer): must match the mock ISSUER
+      # and be reachable from the browser on the host.
       ONE_IDENTITY_DOMAIN: "http://localhost:4568"
-      # Server-reachable base (JWKS fetch + token exchange) on the container network.
+      # Server-reachable base (JWKS + token exchange) on the container network.
       ONE_IDENTITY_JWKS_URI: "http://local-one-identity:3000/jwks"
       ONE_IDENTITY_REDIRECT_URL: "http://localhost:5176/ui/login/callback"
       UI_SIGNUP_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-signup-session"
@@ -2125,6 +2128,44 @@ services:
       minio-setup:
         condition: service_completed_successfully
 
+  # One-shot job (emails the DPO the suspended-users list, then exits). On the
+  # "on-demand" profile so it doesn't run on `up`; launch it by hand:
+  #   docker compose -f docker/compose.multinode.yaml run --rm signup-suspended-users-notifier
+  # Multinode ignores aws.config.local, so the SESv2 endpoint comes from
+  # AWS_ENDPOINT_URL_SESV2 (see the ses-mock note above).
+  signup-suspended-users-notifier:
+    profiles:
+      - on-demand
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multinode-signup-suspended-users-notifier
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-suspended-users-notifier/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      SIGNUP_DB_USER: local_signup_manager_user
+      SIGNUP_DB_PASSWORD: local_signup_manager_user
+      SIGNUP_DB_HOST: postgres
+      SIGNUP_DB_PORT: "5432"
+      SIGNUP_DB_NAME: signup
+      SIGNUP_DB_SCHEMA: local_signup
+      SIGNUP_DB_USE_SSL: "false"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_SESV2: http://ses-mock:8005
+      SES_SENDER_MAIL: noreply@knodia.local
+      SES_SENDER_LABEL: KNODIA
+      SUSPENDED_USERS_NOTIFICATION_RECIPIENT: dpo@pagopa.it
+    depends_on:
+      flyway-signup:
+        condition: service_completed_successfully
+      ses-mock:
+        condition: service_healthy
+
   # ============================================================
   # Frontends
   # ============================================================
@@ -2169,9 +2210,8 @@ services:
       bff-lynx:
         condition: service_started
 
-  # signup-frontend is node-agnostic (central onboarding UI). nginx serves the
-  # SPA and reverse-proxies /signup-manager to the signup-manager container, so
-  # the browser stays same-origin (mirrors the BFF proxy of the knode frontends).
+  # Node-agnostic central onboarding UI: nginx serves the SPA and reverse-proxies
+  # /signup-manager same-origin (mirrors the knode frontends' BFF proxy).
   signup-frontend:
     security_opt:
       - no-new-privileges:true

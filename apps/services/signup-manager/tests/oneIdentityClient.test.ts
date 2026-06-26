@@ -16,8 +16,8 @@ import type { OneIdentityConfig } from "../src/config/config.ts";
 
 import { oneIdentityClientBuilder } from "../src/clients/oneIdentityClient.ts";
 
-// Browser-facing base (login URL + issuer) and the server-reachable base (JWKS
-// + token exchange) deliberately differ, as they do in containerized setups.
+// Browser-facing base (login/issuer) and server-reachable base (JWKS/token)
+// deliberately differ, as in containerized setups.
 const config: OneIdentityConfig = {
   oneIdentityClientId: "client-id",
   oneIdentityClientSecret: "client-secret",

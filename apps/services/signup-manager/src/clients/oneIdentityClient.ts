@@ -78,11 +78,9 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
     },
 
     async exchangeAuthorizationCode(code: string) {
-      // The token endpoint is called server-to-server, so it must be reachable
-      // from this service — which in containerized setups means a different host
-      // than the browser-facing oneIdentityDomain (e.g. container DNS vs the
-      // published host). Keep oneIdentityDomain's path and only swap the host
-      // for the JWKS URI's, which is already the server-reachable base.
+      // Server-to-server call: in containers the token endpoint isn't reachable
+      // at the browser-facing oneIdentityDomain. Keep its path, swap the host
+      // for the JWKS URI's (already the server-reachable base).
       const tokenUrl = new URL(`${config.oneIdentityDomain}/oidc/token`);
       const serverBase = new URL(config.oneIdentityJWKSUri);
       tokenUrl.protocol = serverBase.protocol;
