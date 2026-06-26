@@ -9,7 +9,6 @@ import z from "zod";
 
 import {
   addAsyncCompanyAddressesRequest,
-  addAsyncCompanyAddressesResult,
   assertResourceIdBelongsToRequest,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
@@ -95,8 +94,6 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       logger.info(
         `Mock e-service company addresses request state requested. State for request ID ${requestId}: ${state}.`,
       );
-
-      addAsyncCompanyAddressesResult(request);
 
       res.status(200).send({
         resourceId: request.resourceId,
