@@ -14,7 +14,6 @@ export function initEmailSender(
   sesClient?: SESv2Client,
 ) {
   const client = sesClient ?? new SESv2Client({ region: config.awsRegion });
-  // nodemailer's SES transport builds the MIME and sends it via SESv2 (Content.Raw).
   const transporter = nodemailer.createTransport({
     SES: { SendEmailCommand, sesClient: client },
   });
