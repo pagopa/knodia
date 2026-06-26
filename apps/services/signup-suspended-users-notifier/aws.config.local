@@ -5,5 +5,5 @@ region=eu-south-1
 services=local
 
 [services local]
-ses =
+sesv2 =
     endpoint_url = http://localhost:8005
