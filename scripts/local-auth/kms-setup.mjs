@@ -17,16 +17,20 @@ const kmsClient = new KMSClient({
   credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
 });
 
-// KMS key for knodia services (ui-session, internal, etc.)
-// JWKS is written to disk and served by the local-jwks nginx container.
-const kids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
+// KMS keys for knodia services (ui-session, internal, etc.), published in the JWKS
+// served by the local-jwks container for token validation.
+const jwksKids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
+
+// Dedicated key the mock-eservice signs Knodia-JWT-Signature with. Kept out of the
+// JWKS — it's validated via the seeded producer keychain, not the platform JWKS.
+const INTEGRITY_PRODUCER_KEY_ALIAS = "alias/local-knodia-integrity-rest-02-key";
 
 const jwksDir = `${JWKS_OUTPUT_DIR}/knodia/.well-known`;
 mkdirSync(jwksDir, { recursive: true });
 
 const allJwks = [];
 
-for (const KID of kids) { 
+for (const KID of [...jwksKids, INTEGRITY_PRODUCER_KEY_ALIAS]) {
   try {
     await kmsClient.send(new DescribeKeyCommand({ KeyId: KID }));
     console.log(`Key "${KID}" already exists.`);
@@ -48,6 +52,10 @@ for (const KID of kids) {
       })
     );
     console.log(`Key "${KID}" created.`);
+  }
+
+  if (!jwksKids.includes(KID)) {
+    continue;
   }
 
   const { PublicKey: publicKeyDer } = await kmsClient.send(
