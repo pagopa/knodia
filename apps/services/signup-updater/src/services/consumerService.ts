@@ -207,6 +207,24 @@ export async function handleSignupMessage(
         logger,
       );
     })
+    .with({ type: "MaintenanceUserReactivationRequestedV1" }, async () => {
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "MaintenanceUserReactivationRequestedV1",
+        deps,
+        logger,
+      );
+
+      if (user === undefined) return;
+
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.enableUser({
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
+    })
     .exhaustive();
 }
 

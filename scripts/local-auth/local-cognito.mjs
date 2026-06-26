@@ -325,6 +325,11 @@ function findUserByUsername(username) {
   );
 }
 
+// Strip CR/LF so user-provided values can't forge extra log lines.
+function sanitizeForLog(value) {
+  return String(value).replace(/\n|\r/g, " ");
+}
+
 function filterUsers(payload) {
   const filter = payload.Filter;
   if (!filter) {
@@ -447,6 +452,21 @@ function handleAdminDisableUser(req, res, payload) {
 
   console.log(
     `[admin-disable-user] Disabled user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminEnableUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Enabled = true;
+  }
+
+  console.log(
+    `[admin-enable-user] Enabled user ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -628,6 +648,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDisableUser") {
         handleAdminDisableUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminEnableUser") {
+        handleAdminEnableUser(req, res, payload);
         return;
       }
 
