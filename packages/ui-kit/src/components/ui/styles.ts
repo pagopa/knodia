@@ -79,6 +79,143 @@ export const dropdownStyles = tv({
   base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-dropdown shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });
 
+// Shared by the single- and multi-select ComboBox field trigger.
+export const fieldSizeStyles = tv({
+  base: "px-3",
+  variants: {
+    size: {
+      sm: "h-8",
+      md: "h-10",
+      lg: "h-12",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+export const fieldInputStyles = tv({
+  base: "flex-1 min-w-0 body-md outline-none bg-transparent placeholder:text-primary-light-low-contrast",
+});
+
+// Drives the <Chip> component and any chip-shaped element that can't be built
+// from it (e.g. the removable react-aria Tag in MultiSelectComboBox), so the
+// two never drift.
+export const chipStyles = tv({
+  base: "label-md inline-flex items-center gap-x-0.5 rounded-chip px-3 py-1 [&>svg]:size-4 [&>svg]:shrink-0 h-6.25",
+  variants: {
+    kind: {
+      neutral: "",
+      brand: "",
+      informative: "",
+      success: "",
+      warning: "",
+      error: "",
+    },
+    type: {
+      light: "",
+      bright: "",
+      dark: "",
+    },
+  },
+  defaultVariants: {
+    kind: "neutral",
+    type: "bright",
+  },
+  compoundVariants: [
+    {
+      kind: "neutral",
+      type: "light",
+      class: "bg-secondary-light text-secondary-light-mid-contrast",
+    },
+    {
+      kind: "neutral",
+      type: "bright",
+      class: "bg-secondary-light-decorative text-secondary-light-high-contrast",
+    },
+    {
+      kind: "neutral",
+      type: "dark",
+      class: "bg-secondary-dark text-secondary-dark-mid-contrast",
+    },
+    {
+      kind: "brand",
+      type: "light",
+      class: "bg-brand-light text-brand-light-mid-contrast",
+    },
+    {
+      kind: "brand",
+      type: "bright",
+      class: "bg-brand-light-decorative text-brand-light-high-contrast",
+    },
+    {
+      kind: "brand",
+      type: "dark",
+      class: "bg-brand-dark text-brand-dark-mid-contrast",
+    },
+    {
+      kind: "informative",
+      type: "light",
+      class: "bg-info-light text-info-light-mid-contrast",
+    },
+    {
+      kind: "informative",
+      type: "bright",
+      class: "bg-info-light-decorative text-info-light-high-contrast",
+    },
+    {
+      kind: "informative",
+      type: "dark",
+      class: "bg-info-dark text-info-dark-mid-contrast",
+    },
+    {
+      kind: "success",
+      type: "light",
+      class: "bg-success-light text-success-light-mid-contrast",
+    },
+    {
+      kind: "success",
+      type: "bright",
+      class: "bg-success-light-decorative text-success-light-high-contrast",
+    },
+    {
+      kind: "success",
+      type: "dark",
+      class: "bg-success-dark text-success-dark-mid-contrast",
+    },
+    {
+      kind: "warning",
+      type: "light",
+      class: "bg-warning-light text-warning-light-mid-contrast",
+    },
+    {
+      kind: "warning",
+      type: "bright",
+      class: "bg-warning-light-decorative text-warning-light-high-contrast",
+    },
+    {
+      kind: "warning",
+      type: "dark",
+      class: "bg-warning-dark text-warning-dark-mid-contrast",
+    },
+    {
+      kind: "error",
+      type: "light",
+      class: "bg-error-light text-error-light-mid-contrast",
+    },
+    {
+      kind: "error",
+      type: "bright",
+      class: "bg-error-light-decorative text-error-light-high-contrast",
+    },
+    {
+      kind: "error",
+      type: "dark",
+      class: "bg-error-dark text-error-dark-mid-contrast",
+    },
+  ],
+});
+
 export const listItemStyles = tv({
   extend: focusRing,
   base: "group body-md relative flex w-full items-center gap-3 rounded-list-item px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",

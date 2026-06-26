@@ -1,7 +1,5 @@
 import { SendEmailCommand, SESv2Client } from "@aws-sdk/client-sesv2";
-// nodemailer has no SESv2 transport, so we build the raw MIME ourselves and
-// send it as Content.Raw. MailComposer isn't a public export — import the path.
-import MailComposer from "nodemailer/lib/mail-composer/index.js";
+import nodemailer from "nodemailer";
 
 import type { SesEmailSenderConfig } from "./config.ts";
 
@@ -18,6 +16,10 @@ export function initEmailSender(
   sesClient?: SESv2Client,
 ) {
   const client = sesClient ?? new SESv2Client({ region: config.awsRegion });
+  // nodemailer's SES transport builds the MIME and sends it via SESv2 (Content.Raw).
+  const transporter = nodemailer.createTransport({
+    SES: { SendEmailCommand, sesClient: client },
+  });
   const from = config.sesSenderLabel
     ? `${config.sesSenderLabel} <${config.sesSenderMail}>`
     : config.sesSenderMail;
@@ -34,23 +36,13 @@ export function initEmailSender(
       subject: string;
       to: string;
     }): Promise<void> {
-      const rawMessage = await new MailComposer({
+      await transporter.sendMail({
         attachments,
         from,
         subject,
         text: body,
         to,
-      })
-        .compile()
-        .build();
-
-      await client.send(
-        new SendEmailCommand({
-          Content: { Raw: { Data: rawMessage } },
-          Destination: { ToAddresses: [to] },
-          FromEmailAddress: from,
-        }),
-      );
+      });
     },
   };
 }
