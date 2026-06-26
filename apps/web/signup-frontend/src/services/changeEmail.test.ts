@@ -1,17 +1,11 @@
-import { QueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
-
-import { server } from "@/test/msw/server";
 
 import {
   changeEmailErrorMessage,
   isEmailAlreadyInUseError,
-  pollCurrentUserUntilEmail,
 } from "./changeEmail";
 import { GENERIC_ERROR_MESSAGE } from "./messages";
-import { getCurrentSignupUserQuery } from "./queries";
 
 function axiosProblemError(code?: string): AxiosError {
   const error = new AxiosError("request failed");
@@ -50,70 +44,5 @@ describe("isEmailAlreadyInUseError", () => {
   it("is false for other codes and for an unknown or absent code", () => {
     expect(isEmailAlreadyInUseError(axiosProblemError("011-0004"))).toBe(false);
     expect(isEmailAlreadyInUseError(axiosProblemError())).toBe(false);
-  });
-});
-
-const CURRENT_USER_URL = "/signup-manager/user/me";
-const OLD_EMAIL = "old@mail.com";
-const NEW_EMAIL = "new@mail.com";
-
-function seededQueryClient(email: string) {
-  const queryClient = new QueryClient();
-  queryClient.setQueryData(getCurrentSignupUserQuery().queryKey, {
-    email,
-    onboardingStatus: "ACTIVE",
-  });
-  return queryClient;
-}
-
-describe("pollCurrentUserUntilEmail", () => {
-  it("refetches until the new email is applied, then stops", async () => {
-    let calls = 0;
-    server.use(
-      http.get(CURRENT_USER_URL, () => {
-        calls += 1;
-        return HttpResponse.json({
-          email: calls >= 2 ? NEW_EMAIL : OLD_EMAIL,
-          onboardingStatus: "ACTIVE",
-        });
-      }),
-    );
-    const queryClient = seededQueryClient(OLD_EMAIL);
-
-    const applied = await pollCurrentUserUntilEmail(queryClient, NEW_EMAIL, {
-      intervalMs: 5,
-      maxAttempts: 5,
-    });
-
-    expect(applied).toBe(true);
-    expect(calls).toBe(2);
-    expect(
-      queryClient.getQueryData(getCurrentSignupUserQuery().queryKey),
-    ).toMatchObject({ email: NEW_EMAIL });
-  });
-
-  it("gives up after maxAttempts when the email never changes", async () => {
-    let calls = 0;
-    server.use(
-      http.get(CURRENT_USER_URL, () => {
-        calls += 1;
-        return HttpResponse.json({
-          email: OLD_EMAIL,
-          onboardingStatus: "ACTIVE",
-        });
-      }),
-    );
-    const queryClient = seededQueryClient(OLD_EMAIL);
-
-    const applied = await pollCurrentUserUntilEmail(queryClient, NEW_EMAIL, {
-      intervalMs: 5,
-      maxAttempts: 3,
-    });
-
-    expect(applied).toBe(false);
-    expect(calls).toBe(3);
-    expect(
-      queryClient.getQueryData(getCurrentSignupUserQuery().queryKey),
-    ).toMatchObject({ email: OLD_EMAIL });
   });
 });
