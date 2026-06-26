@@ -17,6 +17,7 @@ export * from "./Link";
 export * from "./Loader";
 export * from "./Menu";
 export * from "./Modal";
+export * from "./MultiSelectComboBox";
 export * from "./NumberField";
 export * from "./Pagination";
 export * from "./Popover";

@@ -6,6 +6,7 @@ export const apiTags = {
   eserviceTemplate: "eserviceTemplate",
   knodeApiKeychain: "knodeApiKeychain",
   operator: "operator",
+  organization: "organization",
   producerKeychain: "producerKeychain",
   purpose: "purpose",
   purposeTemplate: "purposeTemplate",
