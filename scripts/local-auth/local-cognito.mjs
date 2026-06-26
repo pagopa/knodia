@@ -325,6 +325,11 @@ function findUserByUsername(username) {
   );
 }
 
+// Strip CR/LF so user-provided values can't forge extra log lines.
+function sanitizeForLog(value) {
+  return String(value).replace(/\n|\r/g, " ");
+}
+
 function filterUsers(payload) {
   const filter = payload.Filter;
   if (!filter) {
@@ -461,7 +466,7 @@ function handleAdminEnableUser(req, res, payload) {
   }
 
   console.log(
-    `[admin-enable-user] Enabled user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+    `[admin-enable-user] Enabled user ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
