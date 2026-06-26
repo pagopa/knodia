@@ -49,6 +49,15 @@ export function signupEventProducerBuilder({
       });
     },
 
+    async publishMaintenanceUserDeletionRequestedV1Event(
+      data: SignupEventData<"MaintenanceUserDeletionRequestedV1">,
+    ): Promise<void> {
+      await publish({
+        data,
+        type: "MaintenanceUserDeletionRequestedV1",
+      });
+    },
+
     async publishOnboardingCompletedV1Event(
       data: SignupEventData<"OnboardingCompletedV1">,
     ): Promise<void> {

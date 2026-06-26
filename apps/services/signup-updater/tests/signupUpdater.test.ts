@@ -158,6 +158,18 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     .exhaustive();
 }
 
+function maintenanceUserDeletionRequestedEvent(
+  signupUserId: SignupUserId,
+): Extract<SignupEventV1, { type: "MaintenanceUserDeletionRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-05-28T10:00:00.000Z",
+      signupUserId,
+    },
+    type: "MaintenanceUserDeletionRequestedV1",
+  };
+}
+
 function maintenanceUserReactivationRequestedEvent(
   signupUserId: SignupUserId,
 ): Extract<SignupEventV1, { type: "MaintenanceUserReactivationRequestedV1" }> {
@@ -829,5 +841,43 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     ).rejects.toBeDefined();
 
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSignupMessage — MaintenanceUserDeletionRequestedV1", () => {
+  beforeEach(() => {
+    cognitoDeleteUserMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    completeSignupUserDeletionMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("deletes the Cognito user on both nodes, then completes the deletion", async () => {
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    await handleSignupMessage(
+      maintenanceUserDeletionRequestedEvent(user.signupUserId),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoDeleteUserMock).toHaveBeenCalledTimes(2);
+    expect(cognitoDeleteUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoDeleteUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledTimes(1);
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledWith(
+      user.signupUserId,
+    );
   });
 });
