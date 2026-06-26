@@ -2314,6 +2314,41 @@ components:
         - pagination
         - results
       additionalProperties: false
+    Organization:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - id
+        - knodeId
+        - name
+      additionalProperties: false
+    Organizations:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     SessionOrganization:
       description: Organization details for the current session, including attributes
       type: object
@@ -9660,6 +9695,120 @@ paths:
               $ref: "#/components/headers/RateLimitReset"
             Retry-After:
               $ref: "#/components/headers/RateLimitRetryAfter"
+  /organizations:
+    get:
+      operationId: getOrganizations
+      tags:
+        - organization
+      description: Retrieve a list of Organizations owned by a Knode, optionally
+        filtered by name
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: name
+          required: false
+          description: Filter by Organization name (case-insensitive substring match)
+      responses:
+        "200":
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organizations retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organizations"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "429":
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                description: Too Many Requests
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+            Retry-After:
+              $ref: "#/components/headers/RateLimitRetryAfter"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -13313,6 +13462,8 @@ tags:
     name: purpose
   - description: Operator routes
     name: operator
+  - description: Organization routes
+    name: organization
   - description: E-service Templates routes
     name: eserviceTemplate
   - description: Purpose Templates routes
