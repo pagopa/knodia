@@ -10,10 +10,11 @@ describe("initEmailSender", () => {
   });
 
   it("sends an email with a CSV attachment to the store (TC-S-1-02)", async () => {
+    const csvContent = "a;b\r\n1;2\r\n";
     await emailSender.sendEmail({
       attachments: [
         {
-          content: "a;b\r\n1;2\r\n",
+          content: csvContent,
           contentType: "text/csv; charset=utf-8",
           filename: "report.csv",
         },
@@ -36,6 +37,10 @@ describe("initEmailSender", () => {
     const attachment = email?.attachments.at(0);
     expect(attachment?.filename).toBe("report.csv");
     expect(attachment?.contentType).toContain("csv");
+    // Content survives the MIME encode/decode round-trip intact.
+    expect(
+      Buffer.from(attachment?.content ?? "", "base64").toString("utf8"),
+    ).toBe(csvContent);
   });
 
   it("rejects when SES is unreachable (TC-F-1-01)", async () => {
