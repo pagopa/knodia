@@ -1,6 +1,10 @@
 import { generateId } from "@knodia/common-models/ids";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
-import { SignupUserStatus, SuspensionReason } from "@knodia/signup-models";
+import {
+  type SignupUser,
+  SignupUserStatus,
+  SuspensionReason,
+} from "@knodia/signup-models";
 import { describe, expect, it } from "vitest";
 
 import { app, signupDb } from "./setup.ts";
@@ -10,6 +14,21 @@ import {
   seedSignupUser,
   validUISignupSessionTokenClaims,
 } from "./utils.ts";
+
+function expectedKnodes({ generatedEntities }: SignupUser) {
+  return [
+    {
+      knode: "Orion",
+      organizationName: generatedEntities.Orion.organizationName,
+      username: generatedEntities.Orion.userName,
+    },
+    {
+      knode: "Lynx",
+      organizationName: generatedEntities.Lynx.organizationName,
+      username: generatedEntities.Lynx.userName,
+    },
+  ];
+}
 
 describe("GET /user/me (getCurrentSignupUser)", () => {
   it("should return NOT_COMPLETED when the signup user does not exist", async () => {
@@ -36,6 +55,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       email: signupUser.email,
+      knodes: expectedKnodes(signupUser),
       onboardingStatus: "ACTIVE",
     });
   });
@@ -58,6 +78,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       email: signupUser.email,
+      knodes: expectedKnodes(signupUser),
       onboardingStatus: "SUSPENDED",
     });
   });
@@ -77,6 +98,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       email: signupUser.email,
+      knodes: expectedKnodes(signupUser),
       onboardingStatus: "DELETION_PENDING",
     });
   });
@@ -118,6 +140,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       email: signupUser.email,
+      knodes: expectedKnodes(signupUser),
       onboardingStatus: "ACTIVE",
     });
   });
