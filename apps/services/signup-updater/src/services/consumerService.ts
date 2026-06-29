@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
@@ -143,55 +144,61 @@ export async function handleSignupMessage(
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
-    .with({ type: "DeletionRequestedV1" }, async (e) => {
-      const user = await retrieveSignupUserOrLogMissingAndSkip(
-        signupUserId,
-        "DeletionRequestedV1",
-        deps,
-        logger,
-      );
-
-      // The row is hard-deleted on completion, so a missing user means the saga
-      // already finished (deletion-registry entry present) or the id never
-      // existed. Reads hit the same primary the producer wrote DeletionPending
-      // to before emitting the event, so a missing row isn't replication lag:
-      // both cases are terminal. Log and commit instead of throwing, which would
-      // redeliver forever and stall the whole partition.
-      if (user === undefined) {
-        const deletion = await deps.signupDbService.getSignupUserDeletion(
-          e.data.signupUserId,
+    .with(
+      { type: "DeletionRequestedV1" },
+      { type: "MaintenanceUserDeletionRequestedV1" },
+      async (e) => {
+        const user = await retrieveSignupUserOrLogMissingAndSkip(
+          signupUserId,
+          e.type,
+          deps,
+          logger,
         );
-        if (deletion === undefined) {
-          logger.error(
-            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+
+        // The row is hard-deleted on completion, so a missing user means the saga
+        // already finished (deletion-registry entry present) or the id never
+        // existed. Reads hit the same primary the producer wrote DeletionPending
+        // to before emitting the event, so a missing row isn't replication lag:
+        // both cases are terminal. Log and commit instead of throwing, which would
+        // redeliver forever and stall the whole partition.
+        if (user === undefined) {
+          const deletion = await deps.signupDbService.getSignupUserDeletion(
+            e.data.signupUserId,
           );
-        } else {
-          logger.warn(
-            `Skipping DeletionRequestedV1 for signup user ${e.data.signupUserId}: deletion already completed`,
-          );
+          if (deletion === undefined) {
+            logger.error(
+              `Skipping ${e.type} for signup user ${e.data.signupUserId}: signup user not found and no deletion record. Committing the offset to avoid blocking the partition; the missing id needs investigating.`,
+            );
+          } else {
+            logger.warn(
+              `Skipping ${e.type} for signup user ${e.data.signupUserId}: deletion already completed`,
+            );
+          }
+          return;
         }
-        return;
-      }
 
-      // The event is emitted only after the row is marked DeletionPending, so
-      // any other status is a stale or out-of-order event. Skip rather than
-      // delete the Cognito users of a user not marked for deletion and then
-      // loop forever when completion finds no DeletionPending row.
-      if (user.status !== SignupUserStatus.enum.DeletionPending) {
-        logger.error(
-          `Skipping DeletionRequestedV1 for signup user ${user.signupUserId}: unexpected status ${user.status} (expected DeletionPending). Committing the offset to avoid blocking the partition.`,
+        // The event is emitted only after the row is marked DeletionPending, so
+        // any other status is a stale or out-of-order event. Skip rather than
+        // delete the Cognito users of a user not marked for deletion and then
+        // loop forever when completion finds no DeletionPending row.
+        if (user.status !== SignupUserStatus.enum.DeletionPending) {
+          logger.error(
+            `Skipping ${e.type} for signup user ${user.signupUserId}: unexpected status ${user.status} (expected DeletionPending). Committing the offset to avoid blocking the partition.`,
+          );
+          return;
+        }
+
+        for (const knodeId of KnodeId.options) {
+          await deleteKnodeUser(knodeId, user, deps, logger);
+        }
+
+        // Hard-deletes the row and writes the deletion-registry entry; idempotent
+        // under at-least-once, so a crash before the offset commits replays safely.
+        await deps.signupDbService.completeSignupUserDeletion(
+          user.signupUserId,
         );
-        return;
-      }
-
-      for (const knodeId of KnodeId.options) {
-        await deleteKnodeUser(knodeId, user, deps, logger);
-      }
-
-      // Hard-deletes the row and writes the deletion-registry entry; idempotent
-      // under at-least-once, so a crash before the offset commits replays safely.
-      await deps.signupDbService.completeSignupUserDeletion(user.signupUserId);
-    })
+      },
+    )
     .with({ type: "SuspensionRequestedV1" }, async () => {
       const user = await retrieveSignupUserOrLogMissingAndSkip(
         signupUserId,

@@ -13,7 +13,8 @@ import {
   SignupUserStatus,
   type SuspensionReason,
 } from "@knodia/signup-models";
-import { and, eq, inArray, or, type SQL } from "drizzle-orm";
+import { and, desc, eq, inArray, or, type SQL } from "drizzle-orm";
+import { match } from "ts-pattern";
 
 import {
   toDeletedSignupUserSQL,
@@ -214,6 +215,31 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
 
     async insertSignupUser(user: SignupUser): Promise<void> {
       await db.insert(signupUser).values(toSignupUserSQL(user));
+    },
+
+    async listSuspendedSignupUsers(): Promise<
+      Extract<SignupUser, { status: "Suspended" }>[]
+    > {
+      const results = await db
+        .select()
+        .from(signupUser)
+        .where(eq(signupUser.status, SignupUserStatus.enum.Suspended))
+        .orderBy(desc(signupUser.suspendedAt));
+      // toSignupUser parses the full union; narrow to match the query's filter.
+      return results.map(toSignupUser).map((user) =>
+        match(user)
+          .with({ status: SignupUserStatus.enum.Suspended }, (u) => u)
+          .with(
+            { status: SignupUserStatus.enum.Active },
+            { status: SignupUserStatus.enum.DeletionPending },
+            () => {
+              throw genericInternalError(
+                "listSuspendedSignupUsers returned a non-Suspended user",
+              );
+            },
+          )
+          .exhaustive(),
+      );
     },
 
     async markSignupUserDeletionPending(

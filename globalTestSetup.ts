@@ -6,6 +6,7 @@ import { signalHubDbTemplate } from "./packages/test-commons/src/signalHubDb"
 import { signupDbTemplate } from "./packages/test-commons/src/signupDb"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
 import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
+import { setupSesTestContainer } from "./packages/test-commons/src/testcontainers/ses"
 import { createTestInfraNetwork } from "./packages/test-commons/src/testcontainers/network"
 import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
 import { setupRedisTestContainer } from "./packages/test-commons/src/testcontainers/redis"
@@ -20,12 +21,14 @@ export default async function setup(project: TestProject) {
     { container: minioContainer, connectionString: minioConnectionString },
     { container: dynamoDBContainer, endpoint: dynamoDBEndpoint },
     { container: redisContainer },
+    { container: sesContainer, connectionString: sesConnectionString },
   ] = await Promise.all([
     setupPostgresTestContainer(network),
     setupKafkaTestContainer(),
     setupMinioTestContainer(),
     setupDynamoDBTestContainer(network),
     setupRedisTestContainer(),
+    setupSesTestContainer(),
   ]);
 
   // Single Flyway container: creates roles + migrates all template databases
@@ -39,6 +42,7 @@ export default async function setup(project: TestProject) {
   project.provide("KAFKA_BROKER", broker);
   project.provide("MINIO_CONNECTION_STRING", minioConnectionString);
   project.provide("DYNAMODB_CONNECTION_STRING", dynamoDBEndpoint);
+  project.provide("SES_CONNECTION_STRING", sesConnectionString);
 
   return async function teardown() {
     await Promise.all([
@@ -47,6 +51,7 @@ export default async function setup(project: TestProject) {
       minioContainer.stop({ removeVolumes: true }),
       dynamoDBContainer.stop({ removeVolumes: true }),
       redisContainer.stop({ removeVolumes: true }),
+      sesContainer.stop({ removeVolumes: true }),
     ]);
     await network.stop();
   };

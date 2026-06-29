@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, MaintenanceReactivateUserData, MaintenanceReactivateUserErrors, MaintenanceReactivateUserResponses, StartOidcSessionData, SuspendUserData, SuspendUserErrors, SuspendUserResponses } from './types.gen.ts';
+import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, MaintenanceDeleteUserData, MaintenanceDeleteUserErrors, MaintenanceDeleteUserResponses, MaintenanceReactivateUserData, MaintenanceReactivateUserErrors, MaintenanceReactivateUserResponses, StartOidcSessionData, SuspendUserData, SuspendUserErrors, SuspendUserResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -105,5 +105,14 @@ export const suspendUser = <ThrowOnError extends boolean = true>(options: Option
 export const maintenanceReactivateUser = <ThrowOnError extends boolean = true>(options: Options<MaintenanceReactivateUserData, ThrowOnError>) => (options.client ?? client).post<MaintenanceReactivateUserResponses, MaintenanceReactivateUserErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/maintenance/users/{signupUserId}/reactivate',
+    ...options
+});
+
+/**
+ * Delete a signup user (maintenance only)
+ */
+export const maintenanceDeleteUser = <ThrowOnError extends boolean = true>(options: Options<MaintenanceDeleteUserData, ThrowOnError>) => (options.client ?? client).post<MaintenanceDeleteUserResponses, MaintenanceDeleteUserErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/maintenance/users/{signupUserId}/delete',
     ...options
 });
