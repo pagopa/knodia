@@ -11,11 +11,11 @@ import { ReportFilledIcon } from "@/components/icons";
 import { fieldErrorTextClass, focusRing } from "./styles";
 
 const checkboxStyles = tv({
-  base: "group flex cursor-pointer items-start gap-2",
+  base: "group flex cursor-pointer items-start gap-2 py-4",
 });
 
 const boxStyles = tv({
-  base: "mt-[2px] flex size-4 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
+  base: "flex size-6 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
   // Applied after the variants so tailwind-merge keeps the red border over the
   // selected/unselected border color when the field is invalid.
   compoundVariants: [
@@ -63,7 +63,7 @@ export function Checkbox({ errorMessage, ...props }: CheckboxProps) {
               {isSelected && (
                 <svg
                   aria-hidden
-                  className="size-2.5 text-neutral-white"
+                  className="size-4 text-neutral-white"
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="round"
