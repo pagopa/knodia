@@ -82,7 +82,7 @@ const SidebarNavItemLink = createLink(SidebarNavItem);
 
 const LEGAL_LINKS = [
   { href: config.privacyPolicyUrl, label: "Privacy Policy" },
-  { href: config.termsAndConditionsUrl, label: "Terms & Conditions" },
+  { href: config.termsAndConditionsUrl, label: "Terms and Conditions" },
 ];
 
 export function Sidebar() {
@@ -119,7 +119,11 @@ function SidebarLegalLinks() {
     >
       {LEGAL_LINKS.map((link, index) => (
         <Fragment key={link.href}>
-          {index > 0 && <span aria-hidden> · </span>}
+          {index > 0 && (
+            <span aria-hidden className="mx-2">
+              ·
+            </span>
+          )}
           <Link
             className="text-secondary-light-low-contrast"
             href={link.href}

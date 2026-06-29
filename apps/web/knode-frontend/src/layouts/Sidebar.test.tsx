@@ -36,11 +36,11 @@ describe("Sidebar", () => {
     expect(privacyLink).toHaveAttribute("rel", "noopener noreferrer");
 
     expect(
-      screen.getByRole("link", { name: "Terms & Conditions" }),
+      screen.getByRole("link", { name: "Terms and Conditions" }),
     ).toHaveAttribute("href", "http://localhost:5176/ui/terms-and-conditions");
 
     expect(screen.getByRole("navigation", { name: "Legal" })).toHaveTextContent(
-      "Privacy Policy · Terms & Conditions",
+      "Privacy Policy·Terms and Conditions",
     );
   });
 });
