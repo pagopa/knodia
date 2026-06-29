@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import z from "zod";
 
 export const OIDC_SESSION_COOKIE_NAME = "oidc-session";
@@ -81,10 +82,36 @@ export const API_OnboardingStatus = z.enum([
 ]);
 export type API_OnboardingStatus = z.infer<typeof API_OnboardingStatus>;
 
-export const API_CurrentSignupUser = z
+export const API_KnodeAssignment = z
   .strictObject({
-    email: z.email().optional(),
-    onboardingStatus: API_OnboardingStatus,
+    knode: KnodeId,
+    organizationName: z.string(),
+    username: z.string(),
   })
+  .meta({ id: "KnodeAssignment" });
+export type API_KnodeAssignment = z.infer<typeof API_KnodeAssignment>;
+
+const API_NotCompletedSignupUser = z.strictObject({
+  onboardingStatus: API_OnboardingStatus.extract(["NOT_COMPLETED"]),
+});
+
+export const API_OnboardedStatus = API_OnboardingStatus.extract([
+  "ACTIVE",
+  "SUSPENDED",
+  "DELETION_PENDING",
+]);
+export type API_OnboardedStatus = z.infer<typeof API_OnboardedStatus>;
+
+const API_OnboardedSignupUser = z.strictObject({
+  email: z.email(),
+  knodes: z.array(API_KnodeAssignment),
+  onboardingStatus: API_OnboardedStatus,
+});
+
+export const API_CurrentSignupUser = z
+  .discriminatedUnion("onboardingStatus", [
+    API_NotCompletedSignupUser,
+    API_OnboardedSignupUser,
+  ])
   .meta({ id: "CurrentSignupUser" });
 export type API_CurrentSignupUser = z.infer<typeof API_CurrentSignupUser>;
