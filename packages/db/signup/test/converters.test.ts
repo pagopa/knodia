@@ -29,6 +29,7 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     status: SignupUserStatus.enum.Active,
     suspendedAt: null,
     suspensionReason: null,
+    termsAcceptedAt: new Date("2026-05-28T10:00:00Z"),
     updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };
@@ -46,7 +47,15 @@ describe("toSignupUser", () => {
       },
       signupUserId: row.signupUserId,
       spidCode: "SPID-XYZ-1",
+      termsAcceptedAt: row.termsAcceptedAt,
     });
+  });
+
+  it("round-trips termsAcceptedAt through SQL and back", () => {
+    const termsAcceptedAt = new Date("2026-04-02T07:15:00Z");
+    const user = toSignupUser(baseRow({ termsAcceptedAt }));
+    expect(user.termsAcceptedAt).toEqual(termsAcceptedAt);
+    expect(toSignupUserSQL(user).termsAcceptedAt).toEqual(termsAcceptedAt);
   });
 
   it("coerces NULL optional columns to undefined", () => {

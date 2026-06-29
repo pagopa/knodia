@@ -99,6 +99,7 @@ const API_NotCompletedSignupUser = z.strictObject({
 const API_OnboardingPendingSignupUser = z.strictObject({
   email: z.email(),
   onboardingStatus: API_OnboardingStatus.extract(["ONBOARDING_PENDING"]),
+  termsAcceptedAt: z.iso.datetime(),
 });
 
 export const API_OnboardedStatus = API_OnboardingStatus.extract([
@@ -112,6 +113,7 @@ const API_OnboardedSignupUser = z.strictObject({
   email: z.email(),
   knodes: z.array(API_KnodeAssignment),
   onboardingStatus: API_OnboardedStatus,
+  termsAcceptedAt: z.iso.datetime(),
 });
 
 export const API_CurrentSignupUser = z

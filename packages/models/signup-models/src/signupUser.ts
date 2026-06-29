@@ -43,6 +43,9 @@ const SignupUserBase = z.strictObject({
   personIdentifier: z.string().min(1).optional(),
   signupUserId: SignupUserId,
   spidCode: z.string().min(1).optional(),
+  // Legal acceptance instant; separate from createdAt because it diverges once
+  // re-acceptance of future T&C versions exists.
+  termsAcceptedAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
 

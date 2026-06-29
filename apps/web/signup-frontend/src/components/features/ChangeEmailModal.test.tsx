@@ -19,7 +19,11 @@ const ackChangeEmail = () =>
 
 const currentUserReturns = (email: string) =>
   http.get(CURRENT_USER_URL, () =>
-    HttpResponse.json({ email, onboardingStatus: "ACTIVE" }),
+    HttpResponse.json({
+      email,
+      onboardingStatus: "ACTIVE",
+      termsAcceptedAt: "2026-01-01T00:00:00.000Z",
+    }),
   );
 
 afterEach(() => {
@@ -105,6 +109,7 @@ describe("ChangeEmailModal", () => {
         return HttpResponse.json({
           email: calls >= 2 ? NEW_EMAIL : OLD_EMAIL,
           onboardingStatus: "ACTIVE",
+          termsAcceptedAt: "2026-01-01T00:00:00.000Z",
         });
       }),
     );
@@ -142,6 +147,7 @@ describe("ChangeEmailModal", () => {
       email: NEW_EMAIL,
       knodes: [],
       onboardingStatus: "ACTIVE",
+      termsAcceptedAt: "2026-01-01T00:00:00.000Z",
     });
 
     await user.type(screen.getByLabelText("New email address"), NEW_EMAIL);

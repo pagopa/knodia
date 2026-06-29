@@ -52,6 +52,7 @@ describe("POST /user/suspend (suspendUser)", () => {
       status: "Suspended",
       suspendedAt: expect.any(Date),
       suspensionReason: "UnlawfulProcessing",
+      termsAcceptedAt: signupUser.termsAcceptedAt,
       updatedAt: expect.any(Date),
     });
 
