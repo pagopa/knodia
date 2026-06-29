@@ -15,7 +15,7 @@ const checkboxStyles = tv({
 });
 
 const boxStyles = tv({
-  base: "flex size-6 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
+  base: "flex size-[18px] items-center justify-center rounded-[2px] border transition-colors",
   // Applied after the variants so tailwind-merge keeps the red border over the
   // selected/unselected border color when the field is invalid.
   compoundVariants: [
@@ -33,7 +33,7 @@ const boxStyles = tv({
       true: "border-status-error",
     },
     isSelected: {
-      false: "border-input-border bg-neutral-white",
+      false: "border-input-text bg-neutral-white",
       true: "border-primary-violet bg-primary-violet",
     },
   },
@@ -59,21 +59,23 @@ export function Checkbox({ errorMessage, ...props }: CheckboxProps) {
         props.children,
         (children, { isSelected, ...renderProps }) => (
           <>
-            <span className={boxStyles({ isSelected, ...renderProps })}>
-              {isSelected && (
-                <svg
-                  aria-hidden
-                  className="size-4 text-neutral-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M3.5 8.5l3 3 6-7" />
-                </svg>
-              )}
+            <span className="flex size-6 shrink-0 items-center justify-center">
+              <span className={boxStyles({ isSelected, ...renderProps })}>
+                {isSelected && (
+                  <svg
+                    aria-hidden
+                    className="size-3 text-neutral-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.5 8.5l3 3 6-7" />
+                  </svg>
+                )}
+              </span>
             </span>
             <span className="flex flex-1 flex-col gap-[6px]">
               <span className="text-style-label text-neutral-graphite">
