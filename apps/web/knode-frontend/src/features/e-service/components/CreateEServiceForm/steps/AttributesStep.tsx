@@ -165,14 +165,8 @@ function AttributesField({
 
 function AttributesListCTA() {
   return (
-    // mt-7 drops the CTA to the field row, below the combobox's label.
     <DialogTrigger>
-      <Button
-        className="mt-7 shrink-0"
-        hierarchy="neutral"
-        kind="ghost"
-        size="lg"
-      >
+      <Button className="shrink-0" hierarchy="neutral" kind="ghost" size="lg">
         <BookOpenTextIcon />
         Attributes list
       </Button>
@@ -260,7 +254,15 @@ function SearchableAttributesField({
                 </MultiSelectComboBoxItem>
               )}
             </MultiSelectComboBox>
-            <AttributesListCTA />
+            {/* The CTA aligns to the dropdown, not to the chips that grow below
+                it: an invisible label reserves the label row so the button's top
+                meets the input's (both share the same height). */}
+            <div className="flex flex-col gap-1">
+              <Label aria-hidden className="invisible">
+                &nbsp;
+              </Label>
+              <AttributesListCTA />
+            </div>
           </div>
         );
       }}
@@ -281,18 +283,18 @@ function TemplateAttributesField({
         const tags = (groupField.state.value ?? []).map(toSchemeRefKey);
 
         return (
-          <div className="flex gap-4 items-start">
-            {/* Template attributes are locked, so they are displayed as static
-                chips rather than an editable (disabled) field. */}
-            <div className="flex flex-1 flex-col gap-1">
-              <Label>Attributes</Label>
-              <div className="flex flex-wrap items-center gap-2">
+          // Template attributes are locked, so they are displayed as static
+          // chips rather than an editable (disabled) field.
+          <div className="flex flex-col gap-1">
+            <Label>Attributes</Label>
+            <div className="flex gap-4 items-center">
+              <div className="flex flex-1 flex-wrap items-center gap-2">
                 {tags.map((key) => (
                   <Chip key={key} label={getSchemeRefLabel(key)} type="light" />
                 ))}
               </div>
+              <AttributesListCTA />
             </div>
-            <AttributesListCTA />
           </div>
         );
       }}
