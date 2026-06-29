@@ -562,7 +562,31 @@ function handleAdminAddUserToGroup(req, res, payload) {
   }
 
   console.log(
-    `[admin-add-user-to-group] ${payload.Username} -> ${payload.GroupName}`,
+    `[admin-add-user-to-group] ${sanitizeForLog(payload.Username)} -> ${sanitizeForLog(payload.GroupName)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminUpdateUserAttributes(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Attributes = user.Attributes ?? [];
+    for (const attribute of payload.UserAttributes ?? []) {
+      const existing = user.Attributes.find((a) => a.Name === attribute.Name);
+      if (existing) {
+        existing.Value = attribute.Value;
+      } else {
+        user.Attributes.push(attribute);
+      }
+    }
+    user.UserLastModifiedDate = NOW_IN_SECONDS;
+  }
+
+  console.log(
+    `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -668,6 +692,14 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminAddUserToGroup") {
         handleAdminAddUserToGroup(req, res, payload);
+        return;
+      }
+
+      if (
+        target ===
+        "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
+      ) {
+        handleAdminUpdateUserAttributes(req, res, payload);
         return;
       }
     }
