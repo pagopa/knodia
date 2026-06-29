@@ -49,6 +49,35 @@ function makeSuspended(
   };
 }
 
+// RFC 4180 line parser (";" delimiter): treats ";" / "" inside quotes literally.
+function parseCsvRow(line: string): string[] {
+  const fields: string[] = [];
+  let field = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (inQuotes) {
+      if (char === '"' && line[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        field += char;
+      }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === ";") {
+      fields.push(field);
+      field = "";
+    } else {
+      field += char;
+    }
+  }
+  fields.push(field);
+  return fields;
+}
+
 describe("buildSuspendedUsersCsv", () => {
   it("starts with a UTF-8 BOM and a ;-separated Italian header", () => {
     const csv = buildSuspendedUsersCsv([makeSuspended()]);
@@ -101,11 +130,17 @@ describe("buildSuspendedUsersCsv", () => {
     expect(cells[10]).toBe("UnlawfulProcessing");
   });
 
-  it("quotes and escapes fields containing the separator or quotes", () => {
+  it("keeps the row intact when a field contains the separator or quotes", () => {
     const csv = buildSuspendedUsersCsv([
       makeSuspended({ familyName: 'Ro;ss"i' }),
     ]);
-    expect(csvLines(csv)[1]).toContain('"Ro;ss""i"');
+    const lines = csvLines(csv);
+    // The ";" and '"' live inside a quoted field, so the row still parses to the
+    // same column count as the header, with the value recovered intact.
+    const headerCells = parseCsvRow(lines[0] ?? "");
+    const dataCells = parseCsvRow(lines[1] ?? "");
+    expect(dataCells).toHaveLength(headerCells.length);
+    expect(dataCells[2]).toBe('Ro;ss"i');
   });
 });
 
