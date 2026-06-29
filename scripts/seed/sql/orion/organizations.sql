@@ -1,6 +1,7 @@
--- Mock e-services producer organization (publisher) for the orion knode.
--- The testing env mirrors prod, so only the mock publisher is seeded here; the
--- consumer test org lives in test-organization.sql.
+-- Mock e-services producer (publisher) for the orion knode — the only org seeded here
+-- (testing env ~ prod) and the org the login mock points to. Consumption is cross-knode
+-- (each knode's publisher consumes the other knode's e-services), so it carries
+-- testing_organization to satisfy the mocks' required attribute.
 -- ${NAMESPACE} is substituted at runtime by seed.sh via sed.
 
 INSERT INTO ${NAMESPACE}_organization."organization" (id, name, metadata_version, created_at, updated_at)

@@ -10,7 +10,7 @@ const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
 
 // Hardcoded configuration for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
-const ORG_ID = "d5a0decf-f6e9-4ee1-a2e8-43db2b910416";
+const ORG_ID = "00000000-0000-4000-8000-000000000004";
 const ROLES = ["administrative", "technical"];
 
 // ui-session operator username shown in the UI; per POC org so `--org` logins
