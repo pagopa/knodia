@@ -1,3 +1,4 @@
+import { type signupManagerApi } from "@knodia/signup-manager-client";
 import { QueryClient } from "@tanstack/react-query";
 import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 
@@ -14,6 +15,7 @@ interface CreateTestRouterOptions {
 
 interface TestRouterContext {
   auth?: Partial<AuthContext>;
+  currentUser?: signupManagerApi.CurrentSignupUser;
   queryClient?: QueryClient;
 }
 
@@ -34,6 +36,7 @@ export function createTestRouterFromFiles({
       ...defaultAuthContext,
       ...routerContext.auth,
     },
+    currentUser: routerContext.currentUser,
     queryClient:
       routerContext.queryClient ??
       new QueryClient({
