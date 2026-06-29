@@ -1,5 +1,7 @@
+/* eslint-disable max-lines-per-function */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
+import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
@@ -36,12 +38,14 @@ import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRoute
 import { knodeApiKeychainRouter } from "./routers/keychain/knodeApiKeychainRouter.ts";
 import { producerKeychainRouter } from "./routers/keychain/producerKeychainRouter.ts";
 import { operatorRouter } from "./routers/operatorRouter.ts";
+import { organizationRouter } from "./routers/organization/organizationRouter.ts";
 import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
+// eslint-disable-next-line max-lines-per-function
 export function buildAppFromConfig(
   config: BffProcessConfig,
   rateLimiter: RateLimiter,
@@ -106,6 +110,10 @@ export function buildAppFromConfig(
             name: apiTags.operator,
           },
           {
+            description: "Organization routes",
+            name: apiTags.organization,
+          },
+          {
             description: "E-service Templates routes",
             name: apiTags.eserviceTemplate,
           },
@@ -129,7 +137,11 @@ export function buildAppFromConfig(
     config.dynamoDbMagicLinkTokensTable,
     sharedDynamoClient,
   );
+
+  const cognitoIdmClient = buildCognitoIdmClient(config);
+
   const authService = authServiceBuilder({
+    cognitoIdmClient,
     config,
     magicLinkTokenStore,
     rateLimiter,
@@ -185,6 +197,9 @@ export function buildAppFromConfig(
     });
     protectedApp.register(operatorRouter, {
       organizationProcessClient: clients.organizationProcessClient,
+    });
+    protectedApp.register(organizationRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,

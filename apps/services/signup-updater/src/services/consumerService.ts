@@ -129,14 +129,17 @@ export async function handleSignupMessage(
         throw error;
       }
 
-      await forEachKnode(
-        (knodeId) =>
-          deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
-            email: request.email,
-            username: user.generatedEntities[knodeId].userName,
-          }),
-        logger,
-      );
+      await forEachKnode(async (knodeId) => {
+        const username = user.generatedEntities[knodeId].userName;
+        const cognitoClient = deps.knodeClients[knodeId].cognitoClient;
+
+        await cognitoClient.updateUserEmail({
+          email: request.email,
+          username,
+        });
+        // Reset after the update so the credential message reaches the new address.
+        await cognitoClient.resetUserCredentials({ username });
+      }, logger);
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
@@ -207,6 +210,24 @@ export async function handleSignupMessage(
         logger,
       );
     })
+    .with({ type: "MaintenanceUserReactivationRequestedV1" }, async () => {
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "MaintenanceUserReactivationRequestedV1",
+        deps,
+        logger,
+      );
+
+      if (user === undefined) return;
+
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.enableUser({
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
+    })
     .exhaustive();
 }
 
@@ -215,10 +236,17 @@ async function createTestingOrganization(
   headers: ReturnType<typeof getKnodiaServiceHeaders>,
   name: string,
   organizationId: OrganizationId,
+  knodeId: KnodeId,
 ): Promise<OrganizationId> {
   const { data } = await organizationProcessApi.createOrganization({
     body: {
-      attributes: [TESTING_ORGANIZATION_ATTRIBUTE],
+      // Each organization gets a unique attribute (scheme = its Knode ID, code =
+      // its name) on top of testing_organization, so e-services can require it to
+      // restrict consumption to that single organization.
+      attributes: [
+        TESTING_ORGANIZATION_ATTRIBUTE,
+        { code: name, scheme: knodeId },
+      ],
       externalOrganizationId: organizationId,
       name,
     },
@@ -319,6 +347,7 @@ async function provisionKnode(
       headers,
       entities.organizationName,
       externalOrganizationId(user.signupUserId, knodeId),
+      knodeId,
     );
   } catch (error) {
     if (isDuplicateOrganizationNameConflict(error)) {

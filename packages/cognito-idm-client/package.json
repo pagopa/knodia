@@ -13,6 +13,7 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "catalog:",
     "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

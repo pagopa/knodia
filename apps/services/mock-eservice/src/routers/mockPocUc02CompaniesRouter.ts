@@ -6,9 +6,10 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-import { findEvidences, findLegalEntity } from "../data/legalEntities.ts";
+import { findEvidences } from "../data/legalEntities.ts";
 import {
   API_CompanyUid,
+  API_CompanyUidPathParam,
   API_Evidence,
   API_EvidenceType,
   API_LegalEntity,
@@ -21,6 +22,7 @@ import {
   POC_UC02_COMPANIES_MOCK_ESERVICE_VERSION_ID,
   POC_UC02_COMPANIES_MOCK_PRODUCER_ID,
 } from "../pocUc02Companies/mockup.ts";
+import { retrieveLegalEntity } from "../utils/retrievalUtils.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
 interface MockCompaniesRouterOptions {
@@ -45,10 +47,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
       );
 
       const { uidCompany } = req.params;
-      const legalEntity = findLegalEntity(uidCompany);
-      if (!legalEntity) {
-        throw legalEntityNotFound(uidCompany);
-      }
+      const legalEntity = retrieveLegalEntity(uidCompany);
 
       logger.info(
         `Mock e-service /legal-entities/${uidCompany}/information returned the legal entity`,
@@ -105,7 +104,7 @@ export const mockPocUc02CompaniesRouter: FastifyPluginAsyncZod<
       description:
         "Returns the evidences held about a legal entity (company), optionally filtered by evidence type (Bearer-protected).",
       operationId: "getEvidences",
-      params: z.strictObject({ uidCompany: API_CompanyUid }),
+      params: API_CompanyUidPathParam,
       querystring: z.strictObject({
         evidenceType: API_EvidenceType.optional(),
       }),

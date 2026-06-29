@@ -17,7 +17,7 @@ import {
   type EserviceTemplateId,
   type EserviceVersionId,
   generateId,
-  type KnodeId,
+  KnodeId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -134,8 +134,20 @@ export function eserviceServiceBuilder(
       const { categories, mode, requiredAttributes, template } =
         resolveTemplateFixedFields(seed);
 
+      // Attribute validation is relaxed to let an e-service require a
+      // per-organization unique attribute (scheme = Knode ID, code = org name)
+      // without an attribute store. Beyond the standard set, only schemes that
+      // are Knode IDs other than this instance's are accepted: e-service
+      // consumption is always cross-knode, so a same-knode scheme matches no
+      // legitimate flow. Generalises to N knodes. The code is intentionally not
+      // validated against the remote organizations (that would force a
+      // cross-knode call in a write path; deferred).
       for (const attr of requiredAttributes.flat()) {
-        if (getAttribute(attr) === undefined) {
+        const isStandardAttribute = getAttribute(attr) !== undefined;
+        const isOtherKnodeUniqueAttribute =
+          KnodeId.safeParse(attr.scheme).success &&
+          attr.scheme !== config.knodeId;
+        if (!isStandardAttribute && !isOtherKnodeUniqueAttribute) {
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }

@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -12,6 +13,7 @@ import {
   API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
   API_CurrentSignupUser,
+  API_SignupUserIdPathParam,
   API_SuspendUserRequestBody,
 } from "../models/api.ts";
 import {
@@ -178,5 +180,41 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       tags: [apiTags.signup],
     },
     url: "/user/suspend",
+  });
+
+  /**
+   * Internal maintenance endpoint: no ui-signup-session auth data is
+   * available, so the rate limiter key cannot be derived and rate limiting
+   * is intentionally skipped.
+   */
+  fastify.route({
+    handler: async (req, res) => {
+      validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      await signupService.reactivateUser({
+        signupUserId: unsafeBrandId(req.params.signupUserId),
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate a suspended signup user (maintenance only)",
+      operationId: "maintenanceReactivateUser",
+      params: API_SignupUserIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "User reactivation requested successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/maintenance/users/:signupUserId/reactivate",
   });
 };

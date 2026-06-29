@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { UserRole } from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 
@@ -6,14 +7,19 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminEnableUserCommand,
+  AdminGetUserCommand,
   AdminListGroupsForUserCommand,
+  AdminResetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
   ListUsersCommand,
   ListUsersInGroupCommand,
+  UserNotFoundException,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { match } from "ts-pattern";
 
 import type { CognitoIdmClientConfig } from "./config.ts";
 import type { IdmUser } from "./models.ts";
@@ -126,6 +132,15 @@ export function buildCognitoIdmClient({
       );
     },
 
+    async enableUser(input: { username: string }): Promise<void> {
+      await client.send(
+        new AdminEnableUserCommand({
+          Username: input.username,
+          UserPoolId: cognitoUserPoolId,
+        }),
+      );
+    },
+
     async getOrganizationUsers(
       organizationId: OrganizationId,
     ): Promise<IdmUser[]> {
@@ -160,6 +175,74 @@ export function buildCognitoIdmClient({
 
       const user = response.Users?.at(0);
       return user ? toIdmUser(user) : undefined;
+    },
+
+    async getUserByUsername(username: string): Promise<IdmUser | undefined> {
+      try {
+        const user = await client.send(
+          new AdminGetUserCommand({
+            Username: username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        );
+
+        return toIdmUser(user);
+      } catch (error) {
+        if (error instanceof UserNotFoundException) {
+          return undefined;
+        }
+        throw error;
+      }
+    },
+
+    async resetUserCredentials(input: { username: string }): Promise<void> {
+      // User deleted before a Kafka redelivery: nothing to reset, so don't stall the partition.
+      await swallowCognitoError("UserNotFoundException", async () => {
+        // Point read (immediately consistent), unlike getUserById's ListUsers index.
+        const { UserStatus } = await client.send(
+          new AdminGetUserCommand({
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        );
+
+        await match(UserStatus)
+          // Never logged in: resend the temporary credentials to the new address.
+          .with("FORCE_CHANGE_PASSWORD", () =>
+            client.send(
+              new AdminCreateUserCommand({
+                MessageAction: "RESEND",
+                Username: input.username,
+                UserPoolId: cognitoUserPoolId,
+              }),
+            ),
+          )
+          // Already pending a reset (typically an idempotent Kafka retry): skip so a
+          // partial multi-knode failure doesn't re-send the reset email on every redelivery.
+          // TODO(KN-830): a corrective email change while still RESET_REQUIRED won't re-send the reset.
+          .with("RESET_REQUIRED", () => undefined)
+          // Reset; swallow NotAuthorizedException (non-resettable/disabled state).
+          // Other errors are transient (throttling, 5xx), so let them propagate and Kafka retries.
+          .with(
+            "CONFIRMED",
+            "ARCHIVED",
+            "COMPROMISED",
+            "UNCONFIRMED",
+            "EXTERNAL_PROVIDER",
+            "UNKNOWN",
+            undefined,
+            () =>
+              swallowCognitoError("NotAuthorizedException", () =>
+                client.send(
+                  new AdminResetUserPasswordCommand({
+                    Username: input.username,
+                    UserPoolId: cognitoUserPoolId,
+                  }),
+                ),
+              ),
+          )
+          .exhaustive();
+      });
     },
 
     async updateUserEmail(input: {

@@ -8,20 +8,25 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
   z.strictObject({
     action: z.literal("Onboarding"),
     date: z.iso.datetime(),
-    nonce: z.string(),
+    identifier: z.string(),
     termsAcceptanceDigest: z.string().regex(/^[0-9a-f]{64}$/),
     termsAcceptanceVersion: z.string(),
   }),
   z.strictObject({
     action: z.literal("Deletion"),
     date: z.iso.datetime(),
-    nonce: z.string(),
+    identifier: z.string(),
   }),
   z.strictObject({
     action: z.literal("Suspension"),
     date: z.iso.datetime(),
-    nonce: z.string(),
+    identifier: z.string(),
     suspensionReason: z.string(),
+  }),
+  z.strictObject({
+    action: z.literal("UserReactivation"),
+    date: z.iso.datetime(),
+    identifier: z.string(),
   }),
 ]);
 export type SignupArchiveRecord = z.infer<typeof SignupArchiveRecord>;
