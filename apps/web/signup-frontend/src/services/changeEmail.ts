@@ -1,9 +1,7 @@
-import { type QueryClient } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { z } from "zod";
 
 import { GENERIC_ERROR_MESSAGE } from "./messages";
-import { getCurrentSignupUserQuery } from "./queries";
 
 // signup-manager problem codes (see its models/errors.ts).
 const EMAIL_ALREADY_IN_USE_CODE = "011-0001";
@@ -32,36 +30,4 @@ export function isEmailAlreadyInUseError(error: AxiosError): boolean {
 
 function firstProblemCode(error: AxiosError): string | undefined {
   return ProblemBody.safeParse(error.response?.data).data?.errors.at(0)?.code;
-}
-
-const POLL_INTERVAL_MS = 1000;
-const POLL_MAX_ATTEMPTS = 30;
-
-const delay = (ms: number) =>
-  new Promise<void>((resolve) => setTimeout(resolve, ms));
-
-// The change is applied asynchronously, so poll getCurrentSignupUser until the new
-// email lands (updating the cache behind the banner) or the window elapses.
-export async function pollCurrentUserUntilEmail(
-  queryClient: QueryClient,
-  expectedEmail: string,
-  {
-    intervalMs = POLL_INTERVAL_MS,
-    maxAttempts = POLL_MAX_ATTEMPTS,
-    signal,
-  }: { intervalMs?: number; maxAttempts?: number; signal?: AbortSignal } = {},
-): Promise<boolean> {
-  const query = { ...getCurrentSignupUserQuery(), staleTime: 0 };
-
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    await delay(intervalMs);
-    if (signal?.aborted) return false;
-    try {
-      const user = await queryClient.fetchQuery(query);
-      if (user.email === expectedEmail) return true;
-    } catch {
-      // Transient refetch failure; keep polling until the window elapses.
-    }
-  }
-  return false;
 }

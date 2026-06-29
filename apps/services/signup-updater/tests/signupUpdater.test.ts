@@ -161,6 +161,18 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     .exhaustive();
 }
 
+function maintenanceUserReactivationRequestedEvent(
+  signupUserId: SignupUserId,
+): Extract<SignupEventV1, { type: "MaintenanceUserReactivationRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-05-28T10:00:00.000Z",
+      signupUserId,
+    },
+    type: "MaintenanceUserReactivationRequestedV1",
+  };
+}
+
 function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
   const event = zocker(OnboardingCompletedV1).setSeed(0).generate();
   // Pin the discriminant so a schema/seed change can't silently hand us a
@@ -232,7 +244,10 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
     const orionCall = createOrganizationMock.mock.calls.at(0)?.at(0);
     expect(orionCall?.body).toEqual({
-      attributes: [{ code: "testing_organization", scheme: "knodia" }],
+      attributes: [
+        { code: "testing_organization", scheme: "knodia" },
+        { code: "Rossi Org Orion", scheme: "Orion" },
+      ],
       externalOrganizationId: externalOrganizationId(
         user.signupUserId,
         "Orion",
@@ -240,6 +255,16 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
       name: "Rossi Org Orion",
     });
     expect(orionCall?.headers.authorization).toBe("Bearer mock-internal-token");
+
+    const lynxCall = createOrganizationMock.mock.calls.at(1)?.at(0);
+    expect(lynxCall?.body).toEqual({
+      attributes: [
+        { code: "testing_organization", scheme: "knodia" },
+        { code: "Rossi Org Lynx", scheme: "Lynx" },
+      ],
+      externalOrganizationId: externalOrganizationId(user.signupUserId, "Lynx"),
+      name: "Rossi Org Lynx",
+    });
 
     expect(cognitoCreateUserMock).toHaveBeenCalledTimes(2);
     expect(cognitoCreateUserMock.mock.calls.at(0)?.at(0)).toMatchObject({
@@ -636,6 +661,93 @@ describe("handleSignupMessage — SuspensionRequestedV1", () => {
       handleSignupMessage(
         suspensionRequestedEvent(user.signupUserId),
         buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("handleSignupMessage — MaintenanceUserReactivationRequestedV1", () => {
+  const cognitoEnableUserMock = vi.fn();
+
+  beforeEach(() => {
+    createOrganizationMock.mockReset();
+    cognitoCreateUserMock.mockReset();
+    cognitoDisableUserMock.mockReset();
+    cognitoEnableUserMock.mockReset();
+    cognitoUpdateUserEmailMock.mockReset();
+    deleteEmailChangeRequestMock.mockReset();
+    getEmailChangeRequestByIdMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    updateSignupUserEmailMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("enables the Cognito user on both knodes", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await handleSignupMessage(
+      maintenanceUserReactivationRequestedEvent(user.signupUserId),
+      deps,
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoEnableUserMock).toHaveBeenCalledTimes(2);
+    expect(cognitoEnableUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoEnableUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+  });
+
+  it("skips (without throwing) when the signup user is not found and deletion record exists", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date("2026-05-28T10:00:00.000Z"),
+      signupUserId: generateId<SignupUserId>(),
+    });
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await expect(
+      handleSignupMessage(
+        maintenanceUserReactivationRequestedEvent(generateId<SignupUserId>()),
+        deps,
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoEnableUserMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws when enabling the user fails on one knode", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoEnableUserMock.mockRejectedValueOnce(new Error("boom"));
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await expect(
+      handleSignupMessage(
+        maintenanceUserReactivationRequestedEvent(user.signupUserId),
+        deps,
         correlationId,
         logger,
       ),
