@@ -21,6 +21,19 @@ export const retrieveEservice = async (
   return eservice;
 };
 
+export const retrieveFlatEservice = async (
+  eserviceId: EserviceId,
+  readmodelService: ReadmodelService,
+) => {
+  const eservice = await readmodelService.getFlatEservice(eserviceId);
+
+  if (!eservice) {
+    throw eserviceNotFound(eserviceId);
+  }
+
+  return eservice;
+};
+
 export const retrieveEserviceLatestVersion = async (
   eserviceId: EserviceId,
   readmodelService: ReadmodelService,

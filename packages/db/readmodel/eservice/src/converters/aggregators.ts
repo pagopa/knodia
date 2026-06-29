@@ -16,6 +16,7 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type FlatEservice,
   LocalizedDescription,
   LocalizedName,
   PurposeFormOption,
@@ -250,6 +251,42 @@ const buildEservice = ({
   };
 };
 
+const buildFlatEservice = ({
+  eserviceCategoriesSQL,
+  eserviceSQL,
+}: {
+  eserviceCategoriesSQL: EserviceCategorySQL[];
+  eserviceSQL: EserviceSQL;
+}): WithMetadata<FlatEservice> => {
+  const categories = eserviceCategoriesSQL.map((categorySQL) => ({
+    code: categorySQL.code,
+    scheme: categorySQL.scheme,
+  }));
+
+  const flatEservice: FlatEservice = {
+    categories,
+    createdAt: eserviceSQL.createdAt,
+    description: LocalizedDescription.parse(eserviceSQL.description),
+    id: unsafeBrandId(eserviceSQL.id),
+    isConsumerOperatorIdentificationRequired:
+      eserviceSQL.isConsumerOperatorIdentificationRequired,
+    isSignalHubEnabled: eserviceSQL.isSignalHubEnabled,
+    mode: EserviceMode.parse(eserviceSQL.mode),
+    name: LocalizedName.parse(eserviceSQL.name),
+    producerId: unsafeBrandId(eserviceSQL.producerId),
+    template: toOptionalExternalResource<EserviceTemplateId>(
+      eserviceSQL.templateId,
+      eserviceSQL.templateKnodeId,
+    ),
+    updatedAt: eserviceSQL.updatedAt,
+  };
+
+  return {
+    data: flatEservice,
+    metadata: { version: eserviceSQL.metadataVersion },
+  };
+};
+
 export const aggregateEservice = (
   queryRes: EserviceAggregatorInput,
 ): undefined | WithMetadata<Eservice> => {
@@ -258,6 +295,37 @@ export const aggregateEservice = (
   }
 
   return buildEservice(toEserviceAggregator(queryRes));
+};
+
+export const aggregateFlatEservice = (
+  queryRes: EserviceAggregatorInput,
+): undefined | WithMetadata<FlatEservice> => {
+  if (queryRes.length === 0) {
+    return undefined;
+  }
+
+  const { categoriesSQL, eservicesSQL } = toEservicesAggregator(queryRes);
+
+  return buildFlatEservice({
+    eserviceCategoriesSQL: categoriesSQL,
+    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service", (e) => e.id),
+  });
+};
+
+export const aggregateFlatEservices = (
+  queryRes: EserviceAggregatorInput,
+): WithMetadata<FlatEservice>[] => {
+  const { categoriesSQL, eservicesSQL } = toEservicesAggregator(queryRes);
+
+  const categoriesSQLByEserviceId = createEserviceSQLPropertyMap(categoriesSQL);
+
+  return eservicesSQL.map((eserviceSQL) => {
+    const eserviceId = unsafeBrandId<EserviceId>(eserviceSQL.id);
+    return buildFlatEservice({
+      eserviceCategoriesSQL: categoriesSQLByEserviceId.get(eserviceId) || [],
+      eserviceSQL,
+    });
+  });
 };
 
 export const aggregateEservices = (
