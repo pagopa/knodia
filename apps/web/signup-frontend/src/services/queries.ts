@@ -3,6 +3,7 @@ import {
   confirmOnboardingMutation,
   deleteUserMutation,
   getCurrentSignupUserOptions,
+  resetCredentialsMutation,
   suspendUserMutation,
 } from "@knodia/signup-manager-client/tanstack-query";
 
@@ -25,6 +26,11 @@ export const changeEmailMutationOptions = () =>
 
 export const deleteUserMutationOptions = () =>
   deleteUserMutation({
+    client,
+  });
+
+export const resetCredentialsMutationOptions = () =>
+  resetCredentialsMutation({
     client,
   });
 

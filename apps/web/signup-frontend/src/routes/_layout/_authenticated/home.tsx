@@ -12,6 +12,7 @@ import {
   KnodeCard,
   RequestErasureModal,
   RequestRestrictionModal,
+  ResetPasswordsModal,
 } from "@/components/features";
 import { config } from "@/config/config";
 import { useAuthContext } from "@/contexts/auth";
@@ -39,7 +40,12 @@ export const Route = createFileRoute("/_layout/_authenticated/home")({
   component: RouteComponent,
 });
 
-type OpenModal = "changeEmail" | "erasure" | "restriction" | null;
+type OpenModal =
+  | "changeEmail"
+  | "erasure"
+  | "resetPasswords"
+  | "restriction"
+  | null;
 
 function RouteComponent() {
   const { user } = Route.useRouteContext();
@@ -66,6 +72,7 @@ function RouteComponent() {
             <CredentialsBanner
               email={user.email}
               onChangeEmail={() => setOpenModal("changeEmail")}
+              onResetPasswords={() => setOpenModal("resetPasswords")}
             />
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
@@ -113,6 +120,11 @@ function RouteComponent() {
 
       <ChangeEmailModal
         isOpen={openModal === "changeEmail"}
+        onOpenChange={closeModal}
+      />
+      <ResetPasswordsModal
+        email={user.email}
+        isOpen={openModal === "resetPasswords"}
         onOpenChange={closeModal}
       />
       <RequestErasureModal
