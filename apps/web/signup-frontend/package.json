@@ -49,6 +49,7 @@
     "eslint": "catalog:",
     "globals": "catalog:",
     "jsdom": "catalog:",
+    "msw": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -3,6 +3,9 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
+  AdminEnableUserCommand,
+  AdminGetUserCommand,
+  AdminResetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -150,6 +153,104 @@ describe("updateUserEmail", () => {
   });
 });
 
+describe("resetUserCredentials", () => {
+  it("resets the password of a user with established credentials", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "CONFIRMED" } as never)
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledTimes(2);
+
+    const getUser = send.mock.calls.at(0)?.at(0) as AdminGetUserCommand;
+    expect(getUser).toBeInstanceOf(AdminGetUserCommand);
+
+    const reset = send.mock.calls.at(1)?.at(0) as AdminResetUserPasswordCommand;
+    expect(reset).toBeInstanceOf(AdminResetUserPasswordCommand);
+    expect(reset.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("resends the temporary credentials of a user that never logged in", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "FORCE_CHANGE_PASSWORD" } as never)
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledTimes(2);
+
+    const resend = send.mock.calls.at(1)?.at(0) as AdminCreateUserCommand;
+    expect(resend).toBeInstanceOf(AdminCreateUserCommand);
+    expect(resend.input).toMatchObject({
+      MessageAction: "RESEND",
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("swallows NotAuthorizedException when the user is not in a resettable state", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "CONFIRMED" } as never)
+      .mockRejectedValue(
+        Object.assign(new Error("cannot reset"), {
+          name: "NotAuthorizedException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+        username: "mario.rossi",
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("skips the reset when the user is already in RESET_REQUIRED", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "RESET_REQUIRED" } as never)
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+      username: "mario.rossi",
+    });
+
+    // Only AdminGetUser runs; no second reset email on an idempotent retry.
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("swallows UserNotFoundException when the user no longer exists", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockRejectedValue(
+        Object.assign(new Error("user gone"), {
+          name: "UserNotFoundException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+        username: "mario.rossi",
+      }),
+    ).resolves.toBeUndefined();
+
+    // AdminGetUser throws and is swallowed; no reset/resend is attempted.
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("deleteOrganizationUser", () => {
   it("deletes the user by username via AdminDeleteUser", async () => {
     const send = vi
@@ -219,6 +320,44 @@ describe("disableUser", () => {
 
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
+        username: "u",
+      }),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("enableUser", () => {
+  it("enables the Cognito user", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledOnce();
+
+    const [enableCall] = send.mock.calls;
+    if (!enableCall) {
+      throw new Error("expected enableUser to issue one command");
+    }
+
+    const enableUser = enableCall.at(0) as AdminEnableUserCommand;
+    expect(enableUser).toBeInstanceOf(AdminEnableUserCommand);
+    expect(enableUser.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("rethrows non-ignored errors", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).enableUser({
         username: "u",
       }),
     ).rejects.toThrow("boom");
