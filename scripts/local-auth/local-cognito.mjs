@@ -594,6 +594,31 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
   });
 }
 
+function handleAdminResetUserPassword(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+
+  if (!user) {
+    writeJson(
+      res,
+      400,
+      { __type: "UserNotFoundException", message: "User does not exist." },
+      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+    );
+    return;
+  }
+
+  user.UserStatus = "RESET_REQUIRED";
+  user.UserLastModifiedDate = NOW_IN_SECONDS;
+
+  console.log(
+    `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
@@ -700,6 +725,13 @@ createServer(async (req, res) => {
         "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
       ) {
         handleAdminUpdateUserAttributes(req, res, payload);
+        return;
+      }
+
+      if (
+        target === "AWSCognitoIdentityProviderService.AdminResetUserPassword"
+      ) {
+        handleAdminResetUserPassword(req, res, payload);
         return;
       }
     }
