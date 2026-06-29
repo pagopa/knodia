@@ -130,3 +130,9 @@ export const Eservice = z.strictObject({
   versions: z.array(EserviceVersion),
 });
 export type Eservice = z.infer<typeof Eservice>;
+
+export const FlatEservice = Eservice.omit({
+  receiveDataConfig: true,
+  versions: true,
+});
+export type FlatEservice = z.infer<typeof FlatEservice>;

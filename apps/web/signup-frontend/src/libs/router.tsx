@@ -1,3 +1,4 @@
+import { type signupManagerApi } from "@knodia/signup-manager-client";
 import { type QueryClient } from "@tanstack/react-query";
 import {
   createRouter,
@@ -12,6 +13,7 @@ import { routeTree } from "@/routeTree.gen";
 
 export interface RouterContext {
   auth: AuthContext;
+  currentUser: signupManagerApi.CurrentSignupUser | undefined;
   queryClient: QueryClient;
 }
 
@@ -20,6 +22,7 @@ export const router = createRouter({
   context: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+    currentUser: undefined, // Set from React-land in main.tsx, like auth
     queryClient,
   },
   defaultPreload: "intent",
