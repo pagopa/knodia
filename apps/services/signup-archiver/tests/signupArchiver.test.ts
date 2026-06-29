@@ -377,7 +377,7 @@ describe("handleSignupMessage - MaintenanceUserDeletionRequestedV1", () => {
   it("treats an already-archived maintenance deletion record as an idempotent skip", async () => {
     storeBytesIfAbsent.mockResolvedValue({ alreadyExists: true, key: "k" });
 
-    await handleSignupMessage(makeUserReactivationEvent(), deps, logger);
+    await handleSignupMessage(makeUserMaintenanceDeletionEvent(), deps, logger);
 
     expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
   });
@@ -386,7 +386,7 @@ describe("handleSignupMessage - MaintenanceUserDeletionRequestedV1", () => {
     storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
 
     await expect(
-      handleSignupMessage(makeUserReactivationEvent(), deps, logger),
+      handleSignupMessage(makeUserMaintenanceDeletionEvent(), deps, logger),
     ).rejects.toThrow(/AccessDenied/);
   });
 });

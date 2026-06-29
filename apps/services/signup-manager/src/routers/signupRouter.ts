@@ -195,6 +195,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         { tokenType: "internal" },
       ]);
 
+      // TODO: KN-798 - Replace internal token with maintenance token
       await signupService.reactivateUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),
@@ -229,6 +230,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         { tokenType: "internal" },
       ]);
 
+      // TODO: KN-798 - Replace internal token with maintenance token
       await signupService.maintenanceDeleteUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),
