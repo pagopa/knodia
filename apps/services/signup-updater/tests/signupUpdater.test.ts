@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { Logger } from "pino";
 
 import {
@@ -48,6 +49,7 @@ import { externalOrganizationId } from "../src/utils/externalOrganizationId.ts";
 const cognitoCreateUserMock = vi.fn();
 const cognitoDisableUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
+const cognitoResetUserCredentialsMock = vi.fn();
 const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
 const updateSignupUserEmailMock = vi.fn();
@@ -69,6 +71,7 @@ function buildDeps(): SignupUpdaterDeps {
       createOrganizationUser: cognitoCreateUserMock,
       deleteOrganizationUser: cognitoDeleteUserMock,
       disableUser: cognitoDisableUserMock,
+      resetUserCredentials: cognitoResetUserCredentialsMock,
       updateUserEmail: cognitoUpdateUserEmailMock,
     },
     internalTokenProvider: {
@@ -158,6 +161,18 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
     .exhaustive();
 }
 
+function maintenanceUserReactivationRequestedEvent(
+  signupUserId: SignupUserId,
+): Extract<SignupEventV1, { type: "MaintenanceUserReactivationRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-05-28T10:00:00.000Z",
+      signupUserId,
+    },
+    type: "MaintenanceUserReactivationRequestedV1",
+  };
+}
+
 function onboardingEvent(signupUserId: SignupUserId): OnboardingCompletedV1 {
   const event = zocker(OnboardingCompletedV1).setSeed(0).generate();
   // Pin the discriminant so a schema/seed change can't silently hand us a
@@ -198,6 +213,7 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     cognitoCreateUserMock.mockReset();
     cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
+    cognitoResetUserCredentialsMock.mockReset();
     deleteEmailChangeRequestMock.mockReset();
     getEmailChangeRequestByIdMock.mockReset();
     getSignupUserByIdMock.mockReset();
@@ -373,6 +389,7 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     cognitoCreateUserMock.mockReset();
     cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
+    cognitoResetUserCredentialsMock.mockReset();
     deleteEmailChangeRequestMock.mockReset();
     getEmailChangeRequestByIdMock.mockReset();
     getSignupUserByIdMock.mockReset();
@@ -382,7 +399,7 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     vi.mocked(logger.warn).mockReset();
   });
 
-  it("updates the signup user email, updates Cognito on both nodes, and deletes the request", async () => {
+  it("updates the email, updates Cognito and resets credentials on both nodes, and deletes the request", async () => {
     const user = getMockSignupUser();
     const emailChangeRequestId = generateId<EmailChangeRequestId>();
     const request = getMockEmailChangeRequest({
@@ -393,6 +410,7 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     getSignupUserByIdMock.mockResolvedValue(user);
     updateSignupUserEmailMock.mockResolvedValue(undefined);
     cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
+    cognitoResetUserCredentialsMock.mockResolvedValue(undefined);
     deleteEmailChangeRequestMock.mockResolvedValue(undefined);
 
     await handleSignupMessage(
@@ -419,6 +437,13 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     expect(cognitoUpdateUserEmailMock.mock.calls.at(1)?.at(0)).toEqual({
       email: request.email,
+      username: "mario.rossi.lynx",
+    });
+    expect(cognitoResetUserCredentialsMock).toHaveBeenCalledTimes(2);
+    expect(cognitoResetUserCredentialsMock).toHaveBeenCalledWith({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoResetUserCredentialsMock).toHaveBeenCalledWith({
       username: "mario.rossi.lynx",
     });
     expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
@@ -540,6 +565,34 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
   });
+
+  it("throws and keeps the request pending when the credential reset fails", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
+    updateSignupUserEmailMock.mockResolvedValue(undefined);
+    cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
+    cognitoResetUserCredentialsMock.mockRejectedValueOnce(new Error("boom"));
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({
+          emailChangeRequestId,
+          signupUserId: user.signupUserId,
+        }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+  });
 });
 
 describe("handleSignupMessage — SuspensionRequestedV1", () => {
@@ -548,6 +601,7 @@ describe("handleSignupMessage — SuspensionRequestedV1", () => {
     cognitoCreateUserMock.mockReset();
     cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
+    cognitoResetUserCredentialsMock.mockReset();
     deleteEmailChangeRequestMock.mockReset();
     getEmailChangeRequestByIdMock.mockReset();
     getSignupUserByIdMock.mockReset();
@@ -607,6 +661,93 @@ describe("handleSignupMessage — SuspensionRequestedV1", () => {
       handleSignupMessage(
         suspensionRequestedEvent(user.signupUserId),
         buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("handleSignupMessage — MaintenanceUserReactivationRequestedV1", () => {
+  const cognitoEnableUserMock = vi.fn();
+
+  beforeEach(() => {
+    createOrganizationMock.mockReset();
+    cognitoCreateUserMock.mockReset();
+    cognitoDisableUserMock.mockReset();
+    cognitoEnableUserMock.mockReset();
+    cognitoUpdateUserEmailMock.mockReset();
+    deleteEmailChangeRequestMock.mockReset();
+    getEmailChangeRequestByIdMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    updateSignupUserEmailMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("enables the Cognito user on both knodes", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await handleSignupMessage(
+      maintenanceUserReactivationRequestedEvent(user.signupUserId),
+      deps,
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoEnableUserMock).toHaveBeenCalledTimes(2);
+    expect(cognitoEnableUserMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoEnableUserMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+  });
+
+  it("skips (without throwing) when the signup user is not found and deletion record exists", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date("2026-05-28T10:00:00.000Z"),
+      signupUserId: generateId<SignupUserId>(),
+    });
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await expect(
+      handleSignupMessage(
+        maintenanceUserReactivationRequestedEvent(generateId<SignupUserId>()),
+        deps,
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoEnableUserMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws when enabling the user fails on one knode", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoEnableUserMock.mockRejectedValueOnce(new Error("boom"));
+
+    const deps = buildDeps();
+    deps.knodeClients.Lynx.cognitoClient.enableUser = cognitoEnableUserMock;
+    deps.knodeClients.Orion.cognitoClient.enableUser = cognitoEnableUserMock;
+
+    await expect(
+      handleSignupMessage(
+        maintenanceUserReactivationRequestedEvent(user.signupUserId),
+        deps,
         correlationId,
         logger,
       ),

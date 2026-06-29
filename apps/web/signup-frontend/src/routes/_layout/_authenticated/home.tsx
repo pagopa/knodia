@@ -66,7 +66,12 @@ function RouteComponent() {
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
           <div className="flex flex-col gap-20">
-            {user?.email && <CredentialsBanner email={user.email} />}
+            {user?.email && (
+              <CredentialsBanner
+                email={user.email}
+                onChangeEmail={() => setOpenModal("changeEmail")}
+              />
+            )}
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
                 Your journey into Knodia starts here
@@ -89,7 +94,6 @@ function RouteComponent() {
         <div className="mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[142.5px] pb-[222.5px]">
           <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-center gap-[46px]">
             <DataWeCollectSection
-              onChangeEmail={() => setOpenModal("changeEmail")}
               onDownload={() => user && downloadPersonalData(user)}
             />
             <GdprRightsCard
