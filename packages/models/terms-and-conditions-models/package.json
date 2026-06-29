@@ -1,0 +1,25 @@
+{
+  "name": "@knodia/terms-and-conditions-models",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "dependencies": {
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
