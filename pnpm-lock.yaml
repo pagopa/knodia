@@ -21,6 +21,9 @@ catalogs:
     '@aws-sdk/client-s3':
       specifier: 3.1023.0
       version: 3.1023.0
+    '@aws-sdk/client-sesv2':
+      specifier: 3.1023.0
+      version: 3.1023.0
     '@aws-sdk/credential-provider-node':
       specifier: 3.972.55
       version: 3.972.55
@@ -171,6 +174,9 @@ catalogs:
     '@types/node':
       specifier: 25.0.0
       version: 25.0.0
+    '@types/nodemailer':
+      specifier: 8.0.1
+      version: 8.0.1
     '@types/pg':
       specifier: 8.16.0
       version: 8.16.0
@@ -249,6 +255,9 @@ catalogs:
     msw:
       specifier: 2.12.10
       version: 2.12.10
+    nodemailer:
+      specifier: 9.0.1
+      version: 9.0.1
     oidc-client-ts:
       specifier: 3.1.0
       version: 3.1.0
@@ -4225,6 +4234,43 @@ importers:
         specifier: 'catalog:'
         version: 4.1.0(@types/node@25.0.0)(jsdom@28.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(vite@7.3.0(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
 
+  packages/ses-email-sender:
+    dependencies:
+      '@aws-sdk/client-sesv2':
+        specifier: 'catalog:'
+        version: 3.1023.0
+      nodemailer:
+        specifier: 'catalog:'
+        version: 9.0.1
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      '@types/nodemailer':
+        specifier: 'catalog:'
+        version: 8.0.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.0(@types/node@25.0.0)(jsdom@28.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(vite@7.3.0(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
+
   packages/spectral-config: {}
 
   packages/test-commons:
@@ -4233,6 +4279,9 @@ importers:
         specifier: 'catalog:'
         version: 3.1023.0
       '@aws-sdk/client-s3':
+        specifier: 'catalog:'
+        version: 3.1023.0
+      '@aws-sdk/client-sesv2':
         specifier: 'catalog:'
         version: 3.1023.0
       '@confluentinc/kafka-javascript':
@@ -4555,6 +4604,10 @@ packages:
 
   '@aws-sdk/client-s3@3.1023.0':
     resolution: {integrity: sha512-IvNy49sdoCWd3fgHQxail3y0UQdfKj1Xk0VPu9HTwlog60o9Lmp5ykjZ2LlIuHEPaxq4Siih707GB/ulUWgetw==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/client-sesv2@3.1023.0':
+    resolution: {integrity: sha512-pmOLDTuc5QqlnVKDSOqU1NfWYlGMYisBvxZyEqh8gIFke2OcD+GhRj0xKAorMd9TToKOj1khwSTGapUnZWN9aQ==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/client-sts@3.1000.0':
@@ -7043,6 +7096,9 @@ packages:
   '@types/node@25.0.0':
     resolution: {integrity: sha512-rl78HwuZlaDIUSeUKkmogkhebA+8K1Hy7tddZuJ3D0xV8pZSfsYGTsliGUol1JPzu9EKnTxPC4L1fiWouStRew==}
 
+  '@types/nodemailer@8.0.1':
+    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
+
   '@types/pg@8.16.0':
     resolution: {integrity: sha512-RmhMd/wD+CF8Dfo+cVIy3RR5cl8CyfXQ0tGgW6XBL8L4LM/UTEbNXYRbLwU6w+CgrKBNbrQWt4FUtTfaU5jSYQ==}
 
@@ -9145,6 +9201,10 @@ packages:
     resolution: {integrity: sha512-Pzr3rol8fvhG/oJjIq2NTVB0vmdNNlz22FENhhPojYRZ4/ee08CfK4YuKmuL54V9MLhI1kpzxfOJ/63LzmZzDg==}
     engines: {node: '>=14'}
 
+  nodemailer@9.0.1:
+    resolution: {integrity: sha512-Gwv8SQewT616ZM/URn0H54b8PWo/Wum7md3EW2aWy1lO27+WZCX+Xyak3J+NlmHUjDh5ME+uesJUDRbR3Ye8Bw==}
+    engines: {node: '>=6.0.0'}
+
   nopt@5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
     engines: {node: '>=6'}
@@ -10550,7 +10610,7 @@ snapshots:
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-crypto/supports-web-crypto': 5.2.0
       '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.973.7
+      '@aws-sdk/types': 3.973.12
       '@aws-sdk/util-locate-window': 3.965.4
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
@@ -10818,6 +10878,51 @@ snapshots:
       '@smithy/util-stream': 4.5.22
       '@smithy/util-utf8': 4.2.2
       '@smithy/util-waiter': 4.2.15
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - aws-crt
+
+  '@aws-sdk/client-sesv2@3.1023.0':
+    dependencies:
+      '@aws-crypto/sha256-browser': 5.2.0
+      '@aws-crypto/sha256-js': 5.2.0
+      '@aws-sdk/core': 3.974.20
+      '@aws-sdk/credential-provider-node': 3.972.55
+      '@aws-sdk/middleware-host-header': 3.972.9
+      '@aws-sdk/middleware-logger': 3.972.9
+      '@aws-sdk/middleware-recursion-detection': 3.972.10
+      '@aws-sdk/middleware-user-agent': 3.972.29
+      '@aws-sdk/region-config-resolver': 3.972.11
+      '@aws-sdk/signature-v4-multi-region': 3.996.34
+      '@aws-sdk/types': 3.973.12
+      '@aws-sdk/util-endpoints': 3.996.6
+      '@aws-sdk/util-user-agent-browser': 3.972.9
+      '@aws-sdk/util-user-agent-node': 3.973.15
+      '@smithy/config-resolver': 4.4.14
+      '@smithy/core': 3.24.6
+      '@smithy/fetch-http-handler': 5.4.6
+      '@smithy/hash-node': 4.2.13
+      '@smithy/invalid-dependency': 4.2.13
+      '@smithy/middleware-content-length': 4.2.13
+      '@smithy/middleware-endpoint': 4.4.29
+      '@smithy/middleware-retry': 4.5.0
+      '@smithy/middleware-serde': 4.2.17
+      '@smithy/middleware-stack': 4.2.13
+      '@smithy/node-config-provider': 4.3.13
+      '@smithy/node-http-handler': 4.7.7
+      '@smithy/protocol-http': 5.4.6
+      '@smithy/smithy-client': 4.12.9
+      '@smithy/types': 4.14.3
+      '@smithy/url-parser': 4.2.13
+      '@smithy/util-base64': 4.3.2
+      '@smithy/util-body-length-browser': 4.2.2
+      '@smithy/util-body-length-node': 4.2.3
+      '@smithy/util-defaults-mode-browser': 4.3.45
+      '@smithy/util-defaults-mode-node': 4.2.49
+      '@smithy/util-endpoints': 3.3.4
+      '@smithy/util-middleware': 4.2.13
+      '@smithy/util-retry': 4.3.0
+      '@smithy/util-utf8': 4.2.2
       tslib: 2.8.1
     transitivePeerDependencies:
       - aws-crt
@@ -13749,6 +13854,10 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@types/nodemailer@8.0.1':
+    dependencies:
+      '@types/node': 25.0.0
+
   '@types/pg@8.16.0':
     dependencies:
       '@types/node': 25.0.0
@@ -16045,6 +16154,8 @@ snapshots:
     dependencies:
       '@types/sarif': 2.1.7
       fs-extra: 10.1.0
+
+  nodemailer@9.0.1: {}
 
   nopt@5.0.0:
     dependencies:
