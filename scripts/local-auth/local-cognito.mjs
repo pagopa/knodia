@@ -12,7 +12,7 @@ const DEFAULT_USER_POOL_ID =
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const USERNAME = "mario_rossi";
-const ORG_ID = "00000000-0000-4000-8000-000000000002";
+const ORG_ID = "d5a0decf-f6e9-4ee1-a2e8-43db2b910416";
 const ROLES = ["administrative", "technical"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
 const MOCK_USERS = [
