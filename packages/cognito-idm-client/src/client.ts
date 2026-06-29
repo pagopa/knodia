@@ -177,6 +177,24 @@ export function buildCognitoIdmClient({
       return user ? toIdmUser(user) : undefined;
     },
 
+    async getUserByUsername(username: string): Promise<IdmUser | undefined> {
+      try {
+        const user = await client.send(
+          new AdminGetUserCommand({
+            Username: username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        );
+
+        return toIdmUser(user);
+      } catch (error) {
+        if (error instanceof UserNotFoundException) {
+          return undefined;
+        }
+        throw error;
+      }
+    },
+
     async resetUserCredentials(input: { username: string }): Promise<void> {
       // User deleted before a Kafka redelivery: nothing to reset, so don't stall the partition.
       await swallowCognitoError("UserNotFoundException", async () => {
@@ -225,24 +243,6 @@ export function buildCognitoIdmClient({
           )
           .exhaustive();
       });
-    },
-
-    async getUserByUsername(username: string): Promise<IdmUser | undefined> {
-      try {
-        const user = await client.send(
-          new AdminGetUserCommand({
-            Username: username,
-            UserPoolId: cognitoUserPoolId,
-          }),
-        );
-
-        return toIdmUser(user);
-      } catch (error) {
-        if (error instanceof UserNotFoundException) {
-          return undefined;
-        }
-        throw error;
-      }
     },
 
     async updateUserEmail(input: {

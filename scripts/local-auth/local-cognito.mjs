@@ -516,11 +516,7 @@ function handleCreateGroup(req, res, payload) {
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
-    const action =
-      payload.MessageAction === "RESEND" ? "resent credentials to" : "already exists";
-    console.log(
-      `[admin-create-user] ${action} ${sanitizeForLog(payload.Username)}`,
-    );
+    console.log(`[admin-create-user] ${payload.Username} already exists`);
     writeJson(
       res,
       200,
@@ -596,36 +592,6 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
   writeJson(res, 200, {}, {
     "x-amz-target": req.headers["x-amz-target"] ?? "",
   });
-}
-
-function handleAdminGetUser(req, res, payload) {
-  const user = findUserByUsername(payload.Username);
-
-  if (!user) {
-    writeJson(
-      res,
-      400,
-      { __type: "UserNotFoundException", message: "User does not exist." },
-      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
-    );
-    return;
-  }
-
-  console.log(
-    `[admin-get-user] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
-  );
-
-  writeJson(
-    res,
-    200,
-    {
-      Enabled: user.Enabled,
-      UserAttributes: user.Attributes ?? [],
-      Username: user.Username,
-      UserStatus: user.UserStatus,
-    },
-    { "x-amz-target": req.headers["x-amz-target"] ?? "" },
-  );
 }
 
 function handleAdminResetUserPassword(req, res, payload) {
@@ -759,11 +725,6 @@ createServer(async (req, res) => {
         "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
       ) {
         handleAdminUpdateUserAttributes(req, res, payload);
-        return;
-      }
-
-      if (target === "AWSCognitoIdentityProviderService.AdminGetUser") {
-        handleAdminGetUser(req, res, payload);
         return;
       }
 
