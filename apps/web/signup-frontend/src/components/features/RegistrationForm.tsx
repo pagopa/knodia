@@ -45,46 +45,48 @@ export function RegistrationForm({
         Enter your email address to receive the credentials and access the
         prototype.
       </p>
-      <p className="text-style-small text-neutral-graphite">
-        By submitting your email address, you agree to the{" "}
-        <Link
-          href={PRIVACY_POLICY_PATH}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
-      <div className="flex flex-col gap-4">
-        <Checkbox
-          errorMessage={requiredError(termsAccepted)}
-          isSelected={termsAccepted}
-          onChange={setTermsAccepted}
-        >
-          I have read, understood and agree to Knodia’s <TermsLink />
-        </Checkbox>
-        <Checkbox
-          errorMessage={requiredError(articlesAccepted)}
-          isSelected={articlesAccepted}
-          onChange={setArticlesAccepted}
-        >
-          Pursuant to articles 1341 and 1342 of the italian civil code, I
-          expressely approve articles 12 and 14 of Knodia’s <TermsLink />
-        </Checkbox>
-      </div>
-      <div className="flex items-start gap-8">
-        <TextField
-          className="w-[272px]"
-          errorMessage={errorMessage}
-          label="Email address"
-          onChange={setEmail}
-          type="email"
-          value={email}
-        />
-        <Button isDisabled={!isEmailValid} type="submit" variant="primary">
-          Request credentials
-        </Button>
+      <div className="flex flex-col gap-6">
+        <p className="text-style-small text-neutral-graphite">
+          By submitting your email address, you agree to the{" "}
+          <Link
+            href={PRIVACY_POLICY_PATH}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+        <div className="flex flex-col">
+          <Checkbox
+            errorMessage={requiredError(termsAccepted)}
+            isSelected={termsAccepted}
+            onChange={setTermsAccepted}
+          >
+            I have read, understood and agree to Knodia’s <TermsLink />
+          </Checkbox>
+          <Checkbox
+            errorMessage={requiredError(articlesAccepted)}
+            isSelected={articlesAccepted}
+            onChange={setArticlesAccepted}
+          >
+            Pursuant to articles 1341 and 1342 of the italian civil code, I
+            expressely approve articles 12 and 14 of Knodia’s <TermsLink />
+          </Checkbox>
+        </div>
+        <div className="flex items-start gap-8">
+          <TextField
+            className="w-[272px]"
+            errorMessage={errorMessage}
+            label="Email address"
+            onChange={setEmail}
+            type="email"
+            value={email}
+          />
+          <Button isDisabled={!isEmailValid} type="submit" variant="primary">
+            Request credentials
+          </Button>
+        </div>
       </div>
     </form>
   );

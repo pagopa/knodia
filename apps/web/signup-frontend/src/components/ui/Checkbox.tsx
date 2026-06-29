@@ -15,7 +15,15 @@ const checkboxStyles = tv({
 });
 
 const boxStyles = tv({
-  base: "mt-[2px] flex size-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors",
+  base: "mt-[2px] flex size-4 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
+  // Applied after the variants so tailwind-merge keeps the red border over the
+  // selected/unselected border color when the field is invalid.
+  compoundVariants: [
+    {
+      className: "border-status-error",
+      isInvalid: true,
+    },
+  ],
   extend: focusRing,
   variants: {
     isDisabled: {
