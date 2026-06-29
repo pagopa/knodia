@@ -1,10 +1,15 @@
-import { MailAsteriskIcon } from "@/components/icons";
+import { ArrowForwardIcon, MailAsteriskIcon } from "@/components/icons";
+import { Button } from "@/components/ui";
 
 interface CredentialsBannerProps {
   email: string;
+  onChangeEmail: () => void;
 }
 
-export function CredentialsBanner({ email }: CredentialsBannerProps) {
+export function CredentialsBanner({
+  email,
+  onChangeEmail,
+}: CredentialsBannerProps) {
   return (
     <div className="flex items-center gap-10 rounded-card bg-deep-violet p-12">
       <MailAsteriskIcon className="size-[92px] shrink-0 text-primary-violet-60" />
@@ -19,10 +24,19 @@ export function CredentialsBanner({ email }: CredentialsBannerProps) {
           You can now use them to access Orion Knode and Lynx Knode.
           <br />
           <br />
-          Have not received them or cannot find them anymore? Access the
-          prototype, go to Log in, then choose “Forgot your password?” to
-          request a new one.
+          Have not received them or cannot find them anymore?
+          <br />
+          Access the prototype, go to Log in, then choose “Forgot your
+          password?” to request a new one.
         </p>
+        <Button
+          className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
+          onPress={onChangeEmail}
+          variant="text"
+        >
+          Change email address
+          <ArrowForwardIcon className="size-6" />
+        </Button>
       </div>
     </div>
   );

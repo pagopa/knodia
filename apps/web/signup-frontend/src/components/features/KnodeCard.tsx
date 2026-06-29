@@ -1,11 +1,10 @@
 import { ArrowForwardIcon, DeployedCodeIcon } from "@/components/icons";
-import { Button, Card } from "@/components/ui";
+import { Card, Link } from "@/components/ui";
 
 interface KnodeCardProps {
   knodeName: string;
   organizationName: string;
-  // TODO(KN-753): wire to the real prototype URL.
-  prototypeHref?: string;
+  prototypeHref: string;
   username: string;
 }
 
@@ -32,15 +31,15 @@ export function KnodeCard({
           </p>
         </div>
       </div>
-      <Button
-        className="gap-2 self-start"
-        isDisabled={!prototypeHref}
-        onPress={() => prototypeHref && window.open(prototypeHref, "_blank")}
-        variant="text"
+      <Link
+        className="inline-flex items-center gap-2 self-start text-[18px] leading-[28px] font-medium tracking-normal text-primary-violet no-underline"
+        href={prototypeHref}
+        rel="noopener noreferrer"
+        target="_blank"
       >
         Access the prototype
         <ArrowForwardIcon className="size-6" />
-      </Button>
+      </Link>
     </Card>
   );
 }

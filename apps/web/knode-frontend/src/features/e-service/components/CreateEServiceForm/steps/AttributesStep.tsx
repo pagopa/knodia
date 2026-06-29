@@ -1,7 +1,9 @@
 import { attributes } from "@knodia/attribute-models";
 import { Banner, Button, Select } from "@knodia/ui-kit/ui";
-import { TrashIcon } from "@phosphor-icons/react";
+import { BookOpenTextIcon, TrashIcon } from "@phosphor-icons/react";
+import { DialogTrigger } from "react-aria-components";
 
+import { AttributesListModal } from "@/components/AttributesListModal";
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
@@ -135,30 +137,39 @@ function AttributesField({
         const value = groupField.state.value ?? [];
 
         return (
-          <Select
-            className="flex-1"
-            endIcon={
-              areDefinedByTemplate ? (
-                <DefinedByTemplateIconTooltip />
-              ) : undefined
-            }
-            errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
-            id={`${groupField.name}-${groupIndex}`}
-            isInvalid={!groupField.state.meta.isValid}
-            isReadOnly={areDefinedByTemplate}
-            isRequired
-            label="Attributes"
-            name={groupField.name}
-            onChange={(keys) =>
-              groupField.handleChange(parseSchemeRefKeys(keys))
-            }
-            placeholder="Select one or more attributes"
-            selectionListFormatType="disjunction"
-            selectionMode="multiple"
-            value={value.map(toSchemeRefKey)}
-          >
-            {renderSchemeRefItems(attributes)}
-          </Select>
+          <div className="flex gap-4 justify-between items-end">
+            <Select
+              className="flex-1"
+              endIcon={
+                areDefinedByTemplate ? (
+                  <DefinedByTemplateIconTooltip />
+                ) : undefined
+              }
+              errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
+              id={`${groupField.name}-${groupIndex}`}
+              isInvalid={!groupField.state.meta.isValid}
+              isReadOnly={areDefinedByTemplate}
+              isRequired
+              label="Attributes"
+              name={groupField.name}
+              onChange={(keys) =>
+                groupField.handleChange(parseSchemeRefKeys(keys))
+              }
+              placeholder="Select one or more attributes"
+              selectionListFormatType="disjunction"
+              selectionMode="multiple"
+              value={value.map(toSchemeRefKey)}
+            >
+              {renderSchemeRefItems(attributes)}
+            </Select>
+            <DialogTrigger>
+              <Button hierarchy="neutral" kind="ghost" size="lg">
+                <BookOpenTextIcon />
+                Attributes list
+              </Button>
+              <AttributesListModal />
+            </DialogTrigger>
+          </div>
         );
       }}
     </form.Field>
