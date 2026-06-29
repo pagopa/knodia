@@ -38,6 +38,7 @@ import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 const otherKnodeId =
   KnodeId.options.find((id) => id !== config.knodeId) ?? config.knodeId;
 
+// TODO(KN-843): replace hardcoded limit with infinite scroll when the other knode's organizations grow
 const REMOTE_ORGANIZATIONS_PAGE_SIZE = 50;
 
 // The standard set is a static dictionary; flatten it once at module load.
