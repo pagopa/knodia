@@ -5,15 +5,15 @@ import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
 import { Link } from "@/components/ui";
-import { APP_BASE_PATH } from "@/config/basepath";
 import { config } from "@/config/config";
+import {
+  PRIVACY_POLICY_PATH,
+  TERMS_AND_CONDITIONS_PATH,
+} from "@/config/legalLinks";
 
 const LEGAL_LINKS = [
-  { href: `${APP_BASE_PATH}/privacy-policy`, label: "Privacy Policy" },
-  {
-    href: `${APP_BASE_PATH}/terms-and-conditions`,
-    label: "Terms & Conditions",
-  },
+  { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
+  { href: TERMS_AND_CONDITIONS_PATH, label: "Terms & Conditions" },
   { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
 ];
 

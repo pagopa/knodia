@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-import { Button, Chip, Link, TextField } from "@/components/ui";
+import { Button, Checkbox, Chip, Link, TextField } from "@/components/ui";
+import {
+  PRIVACY_POLICY_PATH,
+  TERMS_AND_CONDITIONS_PATH,
+} from "@/config/legalLinks";
 import { emailSchema } from "@/utils/validation";
 
 interface RegistrationFormProps {
@@ -8,11 +12,16 @@ interface RegistrationFormProps {
   onSubmit: (email: string) => void;
 }
 
+const REQUIRED_FIELD_MESSAGE = "Required field";
+
 export function RegistrationForm({
   errorMessage,
   onSubmit,
 }: RegistrationFormProps) {
   const [email, setEmail] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [articlesAccepted, setArticlesAccepted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
 
   return (
@@ -20,7 +29,8 @@ export function RegistrationForm({
       className="flex w-[680px] max-w-full flex-col gap-8"
       onSubmit={(event) => {
         event.preventDefault();
-        if (isEmailValid) onSubmit(email);
+        setSubmitted(true);
+        if (isEmailValid && termsAccepted && articlesAccepted) onSubmit(email);
       }}
     >
       <div className="self-start">
@@ -33,11 +43,52 @@ export function RegistrationForm({
         Enter your email address to receive the credentials and access the
         prototype.
       </p>
-      {/* TODO(KN-783): set the real Terms & Conditions link target */}
       <p className="text-style-small text-neutral-graphite">
-        By submitting your email address, you agree to{" "}
-        <Link href="#">Knodia’s Terms &amp; Conditions</Link>.
+        By submitting your email address, you agree to the{" "}
+        <Link
+          href={PRIVACY_POLICY_PATH}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Privacy Policy
+        </Link>
+        .
       </p>
+      <div className="flex flex-col gap-4">
+        <Checkbox
+          errorMessage={
+            submitted && !termsAccepted ? REQUIRED_FIELD_MESSAGE : undefined
+          }
+          isSelected={termsAccepted}
+          onChange={setTermsAccepted}
+        >
+          I have read, understood and agree to Knodia’s{" "}
+          <Link
+            href={TERMS_AND_CONDITIONS_PATH}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Terms &amp; Conditions
+          </Link>
+        </Checkbox>
+        <Checkbox
+          errorMessage={
+            submitted && !articlesAccepted ? REQUIRED_FIELD_MESSAGE : undefined
+          }
+          isSelected={articlesAccepted}
+          onChange={setArticlesAccepted}
+        >
+          Pursuant to articles 1341 and 1342 of the italian civil code, I
+          expressely approve articles 12 and 14 of Knodia’s{" "}
+          <Link
+            href={TERMS_AND_CONDITIONS_PATH}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Terms &amp; Conditions
+          </Link>
+        </Checkbox>
+      </div>
       <div className="flex items-start gap-8">
         <TextField
           className="w-[272px]"
