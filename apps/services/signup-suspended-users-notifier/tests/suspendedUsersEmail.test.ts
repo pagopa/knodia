@@ -126,7 +126,7 @@ describe("buildSuspendedUsersCsv", () => {
       }),
     ]);
     const cells = csvLines(csv)[1]?.split(";") ?? [];
-    expect(cells[9]).toBe("Trattamento illecito");
+    expect(cells[9]).toBe("Trattamento illecito (Art. 18.1.(b) GDPR)");
     expect(cells[10]).toBe("UnlawfulProcessing");
   });
 

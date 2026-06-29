@@ -115,24 +115,25 @@ function romeDateParts(date: Date): {
   };
 }
 
+// Labels mirror the GDPR Art. 18 references shown to users when they pick a reason.
 function suspensionReasonLabel(reason: SuspensionReason): string {
   return match(reason)
     .with(
       SuspensionReason.enum.AccuracyContested,
-      () => "Esattezza dei dati contestata",
+      () => "Esattezza dei dati contestata (Art. 18.1.(a) GDPR)",
     )
     .with(
       SuspensionReason.enum.UnlawfulProcessing,
-      () => "Trattamento illecito",
+      () => "Trattamento illecito (Art. 18.1.(b) GDPR)",
     )
     .with(
       SuspensionReason.enum.DataNeededForLegalClaims,
       () =>
-        "Dati necessari per accertamento/esercizio/difesa di un diritto in giudizio",
+        "Dati necessari per accertamento/esercizio/difesa di un diritto in giudizio (Art. 18.1.(c) GDPR)",
     )
     .with(
       SuspensionReason.enum.PendingObjectionVerification,
-      () => "Verifica dell'opposizione in corso",
+      () => "Verifica dell'opposizione in corso (Art. 18.1.(d) GDPR)",
     )
     .exhaustive();
 }
