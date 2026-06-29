@@ -23,4 +23,24 @@ describe("Sidebar", () => {
     expect(screen.getAllByText("Agreements")).toHaveLength(2);
     expect(screen.getAllByText("Purposes")).toHaveLength(2);
   });
+
+  it("renders the legal links pointing at the configured URLs", () => {
+    renderWithProviders(<Sidebar />);
+
+    const privacyLink = screen.getByRole("link", { name: "Privacy Policy" });
+    expect(privacyLink).toHaveAttribute(
+      "href",
+      "http://localhost:5176/ui/privacy-policy",
+    );
+    expect(privacyLink).toHaveAttribute("target", "_blank");
+    expect(privacyLink).toHaveAttribute("rel", "noopener noreferrer");
+
+    expect(
+      screen.getByRole("link", { name: "Terms & Conditions" }),
+    ).toHaveAttribute("href", "http://localhost:5176/ui/terms-and-conditions");
+
+    expect(screen.getByRole("navigation", { name: "Legal" })).toHaveTextContent(
+      "Privacy Policy · Terms & Conditions",
+    );
+  });
 });
