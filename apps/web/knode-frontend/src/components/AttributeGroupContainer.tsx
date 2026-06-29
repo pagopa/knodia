@@ -65,6 +65,7 @@ export function AttributeGroupContainer({
                 <AttributeDescriptionModal
                   description={description}
                   name={name}
+                  variant={resolved ? "definition" : "info"}
                 />
               </DialogTrigger>
             </span>
