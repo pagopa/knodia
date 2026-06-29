@@ -4,8 +4,8 @@ import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanst
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { changeEmail, confirmOnboarding, deleteUser, exchangeOidcCode, getCurrentSignupUser, getStatus, type Options, startOidcSession, suspendUser } from '../sdk.gen.ts';
-import type { ChangeEmailData, ChangeEmailError, ChangeEmailResponse, ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, StartOidcSessionData, SuspendUserData, SuspendUserError, SuspendUserResponse } from '../types.gen.ts';
+import { changeEmail, confirmOnboarding, deleteUser, exchangeOidcCode, getCurrentSignupUser, getStatus, maintenanceReactivateUser, type Options, startOidcSession, suspendUser } from '../sdk.gen.ts';
+import type { ChangeEmailData, ChangeEmailError, ChangeEmailResponse, ConfirmOnboardingData, ConfirmOnboardingError, ConfirmOnboardingResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, ExchangeOidcCodeData, ExchangeOidcCodeError, ExchangeOidcCodeResponse, GetCurrentSignupUserData, GetCurrentSignupUserError, GetCurrentSignupUserResponse, GetStatusData, GetStatusResponse, MaintenanceReactivateUserData, MaintenanceReactivateUserError, MaintenanceReactivateUserResponse, StartOidcSessionData, SuspendUserData, SuspendUserError, SuspendUserResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -170,6 +170,23 @@ export const suspendUserMutation = (options?: Partial<Options<SuspendUserData>>)
     const mutationOptions: UseMutationOptions<SuspendUserResponse, AxiosError<SuspendUserError>, Options<SuspendUserData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await suspendUser({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Reactivate a suspended signup user (maintenance only)
+ */
+export const maintenanceReactivateUserMutation = (options?: Partial<Options<MaintenanceReactivateUserData>>): UseMutationOptions<MaintenanceReactivateUserResponse, AxiosError<MaintenanceReactivateUserError>, Options<MaintenanceReactivateUserData>> => {
+    const mutationOptions: UseMutationOptions<MaintenanceReactivateUserResponse, AxiosError<MaintenanceReactivateUserError>, Options<MaintenanceReactivateUserData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await maintenanceReactivateUser({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

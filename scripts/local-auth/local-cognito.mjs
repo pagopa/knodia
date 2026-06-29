@@ -459,6 +459,21 @@ function handleAdminDisableUser(req, res, payload) {
   });
 }
 
+function handleAdminEnableUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Enabled = true;
+  }
+
+  console.log(
+    `[admin-enable-user] Enabled user ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminListGroupsForUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   const groups = (user?.Groups ?? []).map((groupName) => ({
@@ -657,6 +672,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminDisableUser") {
         handleAdminDisableUser(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.AdminEnableUser") {
+        handleAdminEnableUser(req, res, payload);
         return;
       }
 
