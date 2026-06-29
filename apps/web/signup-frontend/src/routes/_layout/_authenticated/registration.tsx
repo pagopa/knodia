@@ -40,7 +40,7 @@ function RouteComponent() {
   });
 
   return (
-    <section className="relative flex min-h-[820px] flex-1 flex-col pt-(--header-height)">
+    <section className="relative flex min-h-[916px] flex-1 flex-col pt-(--header-height)">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <img
           alt=""
