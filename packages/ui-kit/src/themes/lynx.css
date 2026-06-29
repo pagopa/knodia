@@ -270,6 +270,9 @@
   /* Settings card */
   --radius-settings-card: 0;
 
+  /* Definition card */
+  --radius-definition-card: 0;
+
   /* Agreement counter card */
   --spacing-counter-card: 24px;
   --spacing-counter-card-right: 24px;
