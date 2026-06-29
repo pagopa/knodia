@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
 import {
@@ -13,19 +14,27 @@ import {
   RequestRestrictionModal,
 } from "@/components/features";
 import { config } from "@/config/config";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useAuthContext } from "@/contexts/auth";
 import { resolveOnboardingRedirect } from "@/services/onboarding";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export const Route = createFileRoute("/_layout/_authenticated/home")({
-  beforeLoad: async ({ context: { queryClient } }) => {
-    const { onboardingStatus } = await queryClient.ensureQueryData(
-      getCurrentSignupUserQuery(),
-    );
-    const destination = resolveOnboardingRedirect(onboardingStatus);
+  beforeLoad: async ({ context: { currentUser, queryClient } }) => {
+    const user =
+      currentUser ??
+      (await queryClient.ensureQueryData(getCurrentSignupUserQuery()));
+    const destination = resolveOnboardingRedirect(user.onboardingStatus);
     if (destination !== "/home") {
       throw redirect({ to: destination });
     }
+    // Only ACTIVE reaches /home; narrow it for the component.
+    return match(user)
+      .with({ onboardingStatus: "ACTIVE" }, (activeUser) => ({
+        user: activeUser,
+      }))
+      .otherwise(() => {
+        throw redirect({ to: destination });
+      });
   },
   component: RouteComponent,
 });
@@ -33,10 +42,9 @@ export const Route = createFileRoute("/_layout/_authenticated/home")({
 type OpenModal = "changeEmail" | "erasure" | "restriction" | null;
 
 function RouteComponent() {
-  const user = useCurrentUser();
+  const { user } = Route.useRouteContext();
+  const { sessionTokenClaims } = useAuthContext();
   const [openModal, setOpenModal] = useState<OpenModal>(null);
-
-  if (!user || user.onboardingStatus === "NOT_COMPLETED") return null;
 
   const closeModal = (open: boolean) => {
     if (!open) setOpenModal(null);
@@ -85,7 +93,13 @@ function RouteComponent() {
           <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-center gap-[46px]">
             <DataWeCollectSection
               onChangeEmail={() => setOpenModal("changeEmail")}
-              onDownload={() => downloadPersonalData(user)}
+              onDownload={() =>
+                sessionTokenClaims &&
+                downloadPersonalData({
+                  ...sessionTokenClaims,
+                  email: user.email,
+                })
+              }
             />
             <GdprRightsCard
               onRequestErasure={() => setOpenModal("erasure")}
