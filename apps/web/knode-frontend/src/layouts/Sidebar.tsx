@@ -4,6 +4,7 @@ import {
   SidebarSection,
   Sidebar as UISidebar,
 } from "@knodia/ui-kit/layout";
+import { Link } from "@knodia/ui-kit/ui";
 import {
   GearIcon,
   HandshakeIcon,
@@ -20,7 +21,6 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { Fragment } from "react";
-import { Link } from "react-aria-components";
 
 import { config } from "@/config/config";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
@@ -121,7 +121,7 @@ function SidebarLegalLinks() {
         <Fragment key={link.href}>
           {index > 0 && <span aria-hidden> · </span>}
           <Link
-            className="underline"
+            className="text-secondary-light-low-contrast"
             href={link.href}
             rel="noopener noreferrer"
             target="_blank"
