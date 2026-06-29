@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { Logger } from "pino";
 
 import { UserRole } from "@knodia/common-models/auth";
