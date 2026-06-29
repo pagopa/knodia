@@ -22,7 +22,6 @@ import {
 import {
   AUTHORIZATION_SERVER_URL,
   COMPANIES_ESERVICE_ID,
-  CONSUMER_AUTHORIZATION_SERVER_URL,
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
   CONSUMER_PRIVATE_KEY_PATH,
   SIGNAL_HUB_URL,
@@ -67,8 +66,10 @@ assertPrivateKeysExist(
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
 );
 
+// Minted at the target Signal Hub's knode (Lynx) so the token is one that hub
+// trusts; knodeId "Orion" tells Lynx to resolve the keychain from Orion.
 const knodeApiToken = await mintKnodeApiToken(
-  CONSUMER_AUTHORIZATION_SERVER_URL,
+  AUTHORIZATION_SERVER_URL,
   consumerKnodeApiKeychainId,
   "Orion",
   CONSUMER_KNODE_API_PRIVATE_KEY_PATH,
