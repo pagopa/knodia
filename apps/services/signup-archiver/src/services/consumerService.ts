@@ -52,6 +52,12 @@ export async function handleSignupMessage(
       );
       return undefined;
     })
+    .with({ type: "CredentialResetRequestedV1" }, () => {
+      logger.info(
+        `Received CredentialResetRequestedV1 event; No archival action defined, skipping`,
+      );
+      return undefined;
+    })
     .with({ type: "SuspensionRequestedV1" }, ({ data }) => {
       assertSafeNonce(data.oneIdNonce, data.signupUserId);
       return SignupArchiveRecord.parse({

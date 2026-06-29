@@ -34,6 +34,7 @@ const TESTING_ORGANIZATION_ATTRIBUTE = {
   scheme: "knodia",
 } satisfies organizationProcessApi.Attribute;
 
+// eslint-disable-next-line max-lines-per-function -- one arm per event variant; the match grows with the union
 export async function handleSignupMessage(
   event: SignupEventV1,
   deps: SignupUpdaterDeps,
@@ -223,6 +224,24 @@ export async function handleSignupMessage(
       await forEachKnode(
         (knodeId) =>
           deps.knodeClients[knodeId].cognitoClient.enableUser({
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
+    })
+    .with({ type: "CredentialResetRequestedV1" }, async () => {
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "CredentialResetRequestedV1",
+        deps,
+        logger,
+      );
+
+      if (user === undefined) return;
+
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.resetUserCredentials({
             username: user.generatedEntities[knodeId].userName,
           }),
         logger,

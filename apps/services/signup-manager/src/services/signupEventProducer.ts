@@ -28,6 +28,12 @@ export function signupEventProducerBuilder({
   }
 
   return {
+    async publishCredentialResetRequestedV1Event(
+      data: SignupEventData<"CredentialResetRequestedV1">,
+    ): Promise<void> {
+      await publish({ data, type: "CredentialResetRequestedV1" });
+    },
+
     async publishDeletionRequestedV1Event(
       data: SignupEventData<"DeletionRequestedV1">,
     ): Promise<void> {

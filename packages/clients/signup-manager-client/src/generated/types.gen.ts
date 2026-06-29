@@ -315,6 +315,43 @@ export type SuspendUserResponses = {
 
 export type SuspendUserResponse = SuspendUserResponses[keyof SuspendUserResponses];
 
+export type ResetCredentialsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/resetCredentials';
+};
+
+export type ResetCredentialsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+    /**
+     * Too Many Requests
+     */
+    429: Problem;
+};
+
+export type ResetCredentialsError = ResetCredentialsErrors[keyof ResetCredentialsErrors];
+
+export type ResetCredentialsResponses = {
+    /**
+     * Credential reset requested successfully
+     */
+    204: void;
+};
+
+export type ResetCredentialsResponse = ResetCredentialsResponses[keyof ResetCredentialsResponses];
+
 export type MaintenanceReactivateUserData = {
     body?: never;
     path: {

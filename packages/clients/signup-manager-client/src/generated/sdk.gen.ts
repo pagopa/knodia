@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, MaintenanceReactivateUserData, MaintenanceReactivateUserErrors, MaintenanceReactivateUserResponses, StartOidcSessionData, SuspendUserData, SuspendUserErrors, SuspendUserResponses } from './types.gen.ts';
+import type { ChangeEmailData, ChangeEmailErrors, ChangeEmailResponses, ConfirmOnboardingData, ConfirmOnboardingErrors, ConfirmOnboardingResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, ExchangeOidcCodeData, ExchangeOidcCodeErrors, ExchangeOidcCodeResponses, GetCurrentSignupUserData, GetCurrentSignupUserErrors, GetCurrentSignupUserResponses, GetStatusData, GetStatusResponses, MaintenanceReactivateUserData, MaintenanceReactivateUserErrors, MaintenanceReactivateUserResponses, ResetCredentialsData, ResetCredentialsErrors, ResetCredentialsResponses, StartOidcSessionData, SuspendUserData, SuspendUserErrors, SuspendUserResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -97,6 +97,15 @@ export const suspendUser = <ThrowOnError extends boolean = true>(options: Option
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Request credential reset for the caller user
+ */
+export const resetCredentials = <ThrowOnError extends boolean = true>(options?: Options<ResetCredentialsData, ThrowOnError>) => (options?.client ?? client).post<ResetCredentialsResponses, ResetCredentialsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/resetCredentials',
+    ...options
 });
 
 /**

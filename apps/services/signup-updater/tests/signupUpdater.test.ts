@@ -92,6 +92,19 @@ function buildDeps(): SignupUpdaterDeps {
   } as unknown as SignupUpdaterDeps;
 }
 
+function credentialResetRequestedEvent(
+  signupUserId: SignupUserId,
+): Extract<SignupEventV1, { type: "CredentialResetRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-05-28T10:00:00.000Z",
+      oneIdNonce: "nonce-1",
+      signupUserId,
+    },
+    type: "CredentialResetRequestedV1",
+  };
+}
+
 function deletionEvent(signupUserId: SignupUserId): DeletionRequestedV1 {
   const event = zocker(DeletionRequestedV1).setSeed(0).generate();
   // Pin the discriminant so a schema/seed change can't silently hand us a
@@ -660,6 +673,72 @@ describe("handleSignupMessage — SuspensionRequestedV1", () => {
     await expect(
       handleSignupMessage(
         suspensionRequestedEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("handleSignupMessage — CredentialResetRequestedV1", () => {
+  beforeEach(() => {
+    cognitoResetUserCredentialsMock.mockReset();
+    getSignupUserByIdMock.mockReset();
+    getSignupUserDeletionMock.mockReset();
+    vi.mocked(logger.error).mockReset();
+    vi.mocked(logger.info).mockReset();
+    vi.mocked(logger.warn).mockReset();
+  });
+
+  it("resets the Cognito credentials on both knodes", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+
+    await handleSignupMessage(
+      credentialResetRequestedEvent(user.signupUserId),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(cognitoResetUserCredentialsMock).toHaveBeenCalledTimes(2);
+    expect(cognitoResetUserCredentialsMock.mock.calls.at(0)?.at(0)).toEqual({
+      username: "mario.rossi.orion",
+    });
+    expect(cognitoResetUserCredentialsMock.mock.calls.at(1)?.at(0)).toEqual({
+      username: "mario.rossi.lynx",
+    });
+  });
+
+  it("skips (without throwing) when the signup user is not found and deletion record exists", async () => {
+    getSignupUserByIdMock.mockResolvedValue(undefined);
+    getSignupUserDeletionMock.mockResolvedValue({
+      deletedAt: new Date("2026-05-28T10:00:00.000Z"),
+      signupUserId: generateId<SignupUserId>(),
+    });
+
+    await expect(
+      handleSignupMessage(
+        credentialResetRequestedEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws when resetting the credentials fails on one knode", async () => {
+    const user = getMockSignupUser();
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoResetUserCredentialsMock.mockRejectedValueOnce(new Error("boom"));
+
+    await expect(
+      handleSignupMessage(
+        credentialResetRequestedEvent(user.signupUserId),
         buildDeps(),
         correlationId,
         logger,

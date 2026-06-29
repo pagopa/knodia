@@ -26,6 +26,7 @@ interface SignupRouterOptions {
   signupService: SignupService;
 }
 
+// eslint-disable-next-line max-lines-per-function -- one block per route; grows as routes are added
 export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify,
   { signupService },
@@ -180,6 +181,34 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       tags: [apiTags.signup],
     },
     url: "/user/suspend",
+  });
+
+  fastify.route({
+    handler: async (_req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
+      await signupService.resetCredentials(ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Request credential reset for the caller user",
+      operationId: "resetCredentials",
+      response: {
+        204: z.undefined().meta({
+          description: "Credential reset requested successfully",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/user/resetCredentials",
   });
 
   /**

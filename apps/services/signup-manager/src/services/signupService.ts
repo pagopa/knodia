@@ -224,6 +224,28 @@ export function signupServiceBuilder(
         },
       );
     },
+    async resetCredentials({
+      authData,
+      logger,
+    }: AuthorizedContext<UISignupSessionAuthData>) {
+      logger.info("Requesting credential reset for current signup user");
+
+      const currentSignupUser =
+        await signupDbService.getUniqueSignupUserByIdentifiers({
+          fiscalNumber: authData.fiscalNumber,
+          personIdentifier: authData.personIdentifier,
+          spidCode: authData.spidCode,
+        });
+
+      assertSignupUserIsOnboarded(currentSignupUser);
+      assertSignupUserIsActive(currentSignupUser);
+
+      await signupEventProducer.publishCredentialResetRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        oneIdNonce: authData.oneIdNonce,
+        signupUserId: currentSignupUser.signupUserId,
+      });
+    },
     async suspendUser(
       { suspensionReason }: { suspensionReason: SuspensionReason },
       { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
