@@ -66,6 +66,14 @@ export type API_SuspendUserRequestBody = z.infer<
   typeof API_SuspendUserRequestBody
 >;
 
+export const API_SignupUserIdPathParam = z.strictObject({
+  signupUserId: z.uuid(),
+});
+
+export type API_SignupUserIdPathParam = z.infer<
+  typeof API_SignupUserIdPathParam
+>;
+
 export const API_OnboardingStatus = z.enum([
   "ACTIVE",
   "SUSPENDED",

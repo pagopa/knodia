@@ -129,14 +129,17 @@ export async function handleSignupMessage(
         throw error;
       }
 
-      await forEachKnode(
-        (knodeId) =>
-          deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
-            email: request.email,
-            username: user.generatedEntities[knodeId].userName,
-          }),
-        logger,
-      );
+      await forEachKnode(async (knodeId) => {
+        const username = user.generatedEntities[knodeId].userName;
+        const cognitoClient = deps.knodeClients[knodeId].cognitoClient;
+
+        await cognitoClient.updateUserEmail({
+          email: request.email,
+          username,
+        });
+        // Reset after the update so the credential message reaches the new address.
+        await cognitoClient.resetUserCredentials({ username });
+      }, logger);
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
@@ -202,6 +205,24 @@ export async function handleSignupMessage(
       await forEachKnode(
         (knodeId) =>
           deps.knodeClients[knodeId].cognitoClient.disableUser({
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
+    })
+    .with({ type: "MaintenanceUserReactivationRequestedV1" }, async () => {
+      const user = await retrieveSignupUserOrLogMissingAndSkip(
+        signupUserId,
+        "MaintenanceUserReactivationRequestedV1",
+        deps,
+        logger,
+      );
+
+      if (user === undefined) return;
+
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.enableUser({
             username: user.generatedEntities[knodeId].userName,
           }),
         logger,

@@ -751,6 +751,55 @@ paths:
               $ref: "#/components/headers/RateLimitReset"
             Retry-After:
               $ref: "#/components/headers/RateLimitRetryAfter"
+  /maintenance/users/{signupUserId}/reactivate:
+    post:
+      operationId: maintenanceReactivateUser
+      tags:
+        - signup
+      description: Reactivate a suspended signup user (maintenance only)
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: signupUserId
+          required: true
+      responses:
+        "204":
+          description: User reactivation requested successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Signup Manager API
     url: /
