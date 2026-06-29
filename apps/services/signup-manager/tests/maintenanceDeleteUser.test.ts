@@ -10,10 +10,7 @@ import {
 } from "./utils.ts";
 
 describe("POST /maintenance/users/:signupUserId/delete (maintenanceDeleteUser)", () => {
-  it.each([
-    { status: "Active" as const },
-    { status: "Suspended" as const },
-  ])(
+  it.each([{ status: "Active" as const }, { status: "Suspended" as const }])(
     "should return 204, mark the user DeletionPending and publish the maintenance deletion event for $status user",
     async ({ status }) => {
       const signupUser = makeSignupUser({ status });
