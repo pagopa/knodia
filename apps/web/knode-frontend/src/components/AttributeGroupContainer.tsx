@@ -1,12 +1,18 @@
 import { getAttribute } from "@knodia/attribute-models";
+import { InteractiveIcon, Tooltip } from "@knodia/ui-kit/ui";
 import {
   BookOpenTextIcon,
   ExclamationMarkIcon,
   SealCheckIcon,
 } from "@phosphor-icons/react";
 import { Fragment } from "react";
+import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import type { SchemeRef } from "@/types/schemeRef";
+
+import { toSchemeRefKey } from "@/utils/schemeRef";
+
+import { AttributeDescriptionModal } from "./AttributeDescriptionModal";
 
 interface AttributeWithPossession extends SchemeRef {
   possessed?: boolean;
@@ -26,21 +32,37 @@ export function AttributeGroupContainer({
     <div
       className={`flex items-center gap-4 py-3 px-4 rounded-attribute-group body-md text-secondary-light-mid-contrast ${getGroupStyle(isGroupSatisfied, hasPossessionInfo)}`}
     >
-      {attributes.map((attribute, index) => (
-        <Fragment key={`${attribute.scheme}$${attribute.code}`}>
-          {index > 0 && (
-            <span className="body-sm text-secondary-light-low-contrast">
-              or
+      {attributes.map((attribute, index) => {
+        const resolved = getAttribute(attribute);
+        return (
+          <Fragment key={toSchemeRefKey(attribute)}>
+            {index > 0 && (
+              <span className="body-sm text-secondary-light-low-contrast">
+                or
+              </span>
+            )}
+            <span
+              className={`flex items-center gap-2 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
+            >
+              {resolved?.name ?? attribute.code}
+              {resolved && (
+                <DialogTrigger>
+                  <TooltipTrigger>
+                    <InteractiveIcon
+                      aria-label={`Show description for ${resolved.name}`}
+                      className="hover:cursor-pointer"
+                    >
+                      <BookOpenTextIcon size={20} />
+                    </InteractiveIcon>
+                    <Tooltip>Show description</Tooltip>
+                  </TooltipTrigger>
+                  <AttributeDescriptionModal attribute={resolved} />
+                </DialogTrigger>
+              )}
             </span>
-          )}
-          <span
-            className={`flex gap-1 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
-          >
-            {getAttribute(attribute)?.name ?? attribute.code}
-            <BookOpenTextIcon size={20} />
-          </span>
-        </Fragment>
-      ))}
+          </Fragment>
+        );
+      })}
       {isGroupSatisfied && (
         <SealCheckIcon
           className="ml-auto shrink-0 text-success-light-low-contrast"

@@ -49,9 +49,18 @@ export type SuspendUserRequestBody = {
     suspensionReason: 'ACCURACY_CONTESTED' | 'UNLAWFUL_PROCESSING' | 'DATA_NEEDED_FOR_LEGAL_CLAIMS' | 'PENDING_OBJECTION_VERIFICATION';
 };
 
+export type KnodeAssignment = {
+    knode: 'Orion' | 'Lynx';
+    organizationName: string;
+    username: string;
+};
+
 export type CurrentSignupUser = {
-    email?: string;
-    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING' | 'NOT_COMPLETED';
+    onboardingStatus: 'NOT_COMPLETED';
+} | {
+    email: string;
+    knodes: Array<KnodeAssignment>;
+    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING';
 };
 
 export type GetStatusData = {

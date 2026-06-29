@@ -140,6 +140,7 @@ describe("ChangeEmailModal", () => {
     // Seed the shared cache so it already holds the email the user will submit.
     queryClient.setQueryData(getCurrentSignupUserQuery().queryKey, {
       email: NEW_EMAIL,
+      knodes: [],
       onboardingStatus: "ACTIVE",
     });
 
