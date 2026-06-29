@@ -24,7 +24,12 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
     suspensionReason: z.string(),
   }),
   z.strictObject({
-    action: z.literal("UserReactivation"),
+    action: z.literal("MaintenanceReactivation"),
+    date: z.iso.datetime(),
+    identifier: z.string(),
+  }),
+  z.strictObject({
+    action: z.literal("MaintenanceDeletion"),
     date: z.iso.datetime(),
     identifier: z.string(),
   }),

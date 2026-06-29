@@ -1,6 +1,9 @@
 /* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
-import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISignupSessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -206,7 +209,39 @@ export function signupServiceBuilder(
         spidCode: authData.spidCode,
       });
     },
-    async reactivateUser({ signupUserId }: { signupUserId: SignupUserId }) {
+    async maintenanceDeleteUser(
+      {
+        signupUserId,
+      }: {
+        signupUserId: SignupUserId;
+      },
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ) {
+      logger.info(
+        `Requesting maintenance deletion for signup user ${signupUserId}`,
+      );
+      const userToDelete =
+        await signupDbService.getSignupUserById(signupUserId);
+
+      if (userToDelete === undefined) {
+        throw signupUserNotFound();
+      }
+
+      await signupDbService.markSignupUserDeletionPending(signupUserId);
+
+      await signupEventProducer.publishMaintenanceUserDeletionRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        signupUserId,
+      });
+    },
+    async reactivateUser(
+      { signupUserId }: { signupUserId: SignupUserId },
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ) {
+      logger.info(
+        `Requesting maintenance reactivation for signup user ${signupUserId}`,
+      );
+
       const userToReactivate =
         await signupDbService.getSignupUserById(signupUserId);
 
