@@ -18,7 +18,7 @@ export function initEmailSender(
     SES: { SendEmailCommand, sesClient: client },
   });
   const from = config.sesSenderLabel
-    ? `${config.sesSenderLabel} <${config.sesSenderMail}>`
+    ? { address: config.sesSenderMail, name: config.sesSenderLabel }
     : config.sesSenderMail;
 
   return {
