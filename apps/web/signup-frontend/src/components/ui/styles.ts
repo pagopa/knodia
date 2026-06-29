@@ -9,3 +9,6 @@ export const focusRing = tv({
     },
   },
 });
+
+export const fieldErrorTextClass =
+  "font-caption text-[14px] leading-[20px] text-status-error";

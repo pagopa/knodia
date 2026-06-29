@@ -1,3 +1,4 @@
+import { useId } from "react";
 import {
   composeRenderProps,
   Checkbox as RACCheckbox,
@@ -5,9 +6,9 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { ReportIcon } from "@/components/icons";
+import { ReportFilledIcon } from "@/components/icons";
 
-import { focusRing } from "./styles";
+import { fieldErrorTextClass, focusRing } from "./styles";
 
 const checkboxStyles = tv({
   base: "group flex cursor-pointer items-start gap-2",
@@ -35,8 +36,11 @@ interface CheckboxProps extends RACCheckboxProps {
 }
 
 export function Checkbox({ errorMessage, ...props }: CheckboxProps) {
+  const errorId = useId();
+
   return (
     <RACCheckbox
+      aria-describedby={errorMessage ? errorId : undefined}
       isInvalid={props.isInvalid ?? Boolean(errorMessage)}
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
@@ -64,12 +68,15 @@ export function Checkbox({ errorMessage, ...props }: CheckboxProps) {
               )}
             </span>
             <span className="flex flex-1 flex-col gap-[6px]">
-              <span className="text-style-small text-neutral-graphite">
+              <span className="text-style-label text-neutral-graphite">
                 {children}
               </span>
               {errorMessage && (
-                <span className="flex items-center gap-1 font-caption text-[14px] leading-[20px] text-status-error">
-                  <ReportIcon className="size-4 shrink-0" />
+                <span
+                  className={`flex items-center gap-1 ${fieldErrorTextClass}`}
+                  id={errorId}
+                >
+                  <ReportFilledIcon className="size-4 shrink-0" />
                   {errorMessage}
                 </span>
               )}

@@ -23,6 +23,8 @@ export function RegistrationForm({
   const [articlesAccepted, setArticlesAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const isEmailValid = emailSchema.safeParse(email).success;
+  const requiredError = (accepted: boolean) =>
+    submitted && !accepted ? REQUIRED_FIELD_MESSAGE : undefined;
 
   return (
     <form
@@ -56,37 +58,19 @@ export function RegistrationForm({
       </p>
       <div className="flex flex-col gap-4">
         <Checkbox
-          errorMessage={
-            submitted && !termsAccepted ? REQUIRED_FIELD_MESSAGE : undefined
-          }
+          errorMessage={requiredError(termsAccepted)}
           isSelected={termsAccepted}
           onChange={setTermsAccepted}
         >
-          I have read, understood and agree to Knodia’s{" "}
-          <Link
-            href={TERMS_AND_CONDITIONS_PATH}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Terms &amp; Conditions
-          </Link>
+          I have read, understood and agree to Knodia’s <TermsLink />
         </Checkbox>
         <Checkbox
-          errorMessage={
-            submitted && !articlesAccepted ? REQUIRED_FIELD_MESSAGE : undefined
-          }
+          errorMessage={requiredError(articlesAccepted)}
           isSelected={articlesAccepted}
           onChange={setArticlesAccepted}
         >
           Pursuant to articles 1341 and 1342 of the italian civil code, I
-          expressely approve articles 12 and 14 of Knodia’s{" "}
-          <Link
-            href={TERMS_AND_CONDITIONS_PATH}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Terms &amp; Conditions
-          </Link>
+          expressely approve articles 12 and 14 of Knodia’s <TermsLink />
         </Checkbox>
       </div>
       <div className="flex items-start gap-8">
@@ -103,5 +87,18 @@ export function RegistrationForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+function TermsLink() {
+  return (
+    <Link
+      href={TERMS_AND_CONDITIONS_PATH}
+      rel="noopener noreferrer"
+      target="_blank"
+      variant="caption"
+    >
+      Terms &amp; Conditions
+    </Link>
   );
 }

@@ -10,6 +10,8 @@ import { tv } from "tailwind-variants";
 
 import { ReportIcon } from "@/components/icons";
 
+import { fieldErrorTextClass } from "./styles";
+
 const textFieldStyles = tv({
   base: "group flex w-full flex-col gap-[2px]",
 });
@@ -40,7 +42,7 @@ export function TextField({ errorMessage, label, ...props }: TextFieldProps) {
         </Label>
         <ReportIcon className="hidden size-6 shrink-0 text-status-error group-data-invalid:block" />
       </div>
-      <FieldError className="px-[14px] font-caption text-[14px] leading-[20px] text-status-error">
+      <FieldError className={`px-[14px] ${fieldErrorTextClass}`}>
         {errorMessage}
       </FieldError>
     </RACTextField>

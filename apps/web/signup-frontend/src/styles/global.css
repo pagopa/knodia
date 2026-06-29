@@ -134,6 +134,13 @@
     font-weight: 500;
 }
 
+@utility text-style-label {
+    font-family: var(--font-caption);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+}
+
 @utility text-style-caption {
     font-family: var(--font-body);
     font-size: 14px;
