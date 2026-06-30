@@ -9,8 +9,10 @@ import z from "zod";
 
 import {
   addAsyncCompanyAddressesRequest,
+  assertResourceIdBelongsToRequest,
   getAsyncCompanyAddressesRequest,
   getAsyncCompanyAddressesRequestState,
+  getAsyncCompanyAddressesResults,
   resolveAsyncCompanyAddressesRequest,
 } from "../asyncConsumption/asyncConsumptionRequests.ts";
 import {
@@ -20,8 +22,10 @@ import {
 } from "../asyncConsumption/mockup.ts";
 import {
   API_AsyncConsumptionRequestId,
+  API_AsyncConsumptionResourceId,
   API_CompanyAddressesRequest,
   API_GetCompanyAddressesRequestStateResponse,
+  API_GetCompanyAddressesResults,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
@@ -115,5 +119,50 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       tags: [apiTags.asyncCompanyAddresses],
     },
     url: "/legal-entities/address-requests/:requestId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+      assertTokenClaimsAreValidForEservice(
+        ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
+        ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
+        ASYNC_CONSUMPTION_MOCK_PRODUCER_ID,
+        knodeId,
+      );
+
+      const requestId = req.params.requestId;
+      const resourceId = req.params.resourceId;
+
+      const request = getAsyncCompanyAddressesRequest(requestId);
+      const results = getAsyncCompanyAddressesResults(resourceId);
+      assertResourceIdBelongsToRequest(request, resourceId);
+
+      logger.info(
+        `Mock e-service company addresses request results requested. Request ID: ${requestId}, Resource ID: ${resourceId}.`,
+      );
+
+      res.status(200).send(results);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Get the results of a previously requested company addresses request (Cross-Border E-service 05, Get company addresses). The Producer will return the results of the request, including the addresses of the requested companies. The Consumer must provide the resource ID obtained from the previous request to retrieve the results.",
+      operationId: "getCompanyAddressesResults",
+      params: z.strictObject({
+        requestId: API_AsyncConsumptionRequestId,
+        resourceId: API_AsyncConsumptionResourceId,
+      }),
+      response: {
+        200: API_GetCompanyAddressesResults,
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+      },
+      summary: "Get company addresses results",
+      tags: [apiTags.asyncCompanyAddresses],
+    },
+    url: "/legal-entities/address-requests/:requestId/resources/:resourceId",
   });
 };
