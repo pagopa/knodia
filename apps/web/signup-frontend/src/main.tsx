@@ -5,11 +5,11 @@ import { RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM, { type Root } from "react-dom/client";
 
+import { useCurrentUserSource } from "@/hooks/useCurrentUserSource";
 import { router } from "@/libs/router";
 import { queryClient } from "@/libs/tanstack-query";
 
 import { AuthContextProvider, useAuthContext } from "./contexts/auth";
-import { useCurrentUserSource } from "./hooks/useCurrentUserSource";
 
 declare global {
   interface Window {

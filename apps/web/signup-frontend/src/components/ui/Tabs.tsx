@@ -25,9 +25,6 @@ function useTabsKind(kind?: TabsKind): TabsKind {
 
 const tabList = tv({
   base: "flex border-b border-neutral-surface-gray",
-  defaultVariants: {
-    kind: "fill",
-  },
   variants: {
     kind: {
       fill: "w-full",

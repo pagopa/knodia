@@ -17,10 +17,12 @@ type OneTrustWindow = Window & {
 const extendedWindow = window as OneTrustWindow;
 
 export const OT_PRIVACY_NOTICE_SCRIPT_ID = "otprivacy-notice-script";
-const OT_PRIVACY_NOTICE_TARGET_ID =
+export const OT_PRIVACY_NOTICE_TARGET_ID =
   "otnotice-7197cf41-6b45-430a-921f-bdee20487448";
 const OT_PRIVACY_NOTICE_URL =
   "https://privacyportalde-cdn.onetrust.com/storage-container/77f17844-04c3-4969-a11d-462ee77acbe1/privacy-notices/7197cf41-6b45-430a-921f-bdee20487448/published/privacynotice.json";
+const OT_PRIVACY_NOTICE_SETTINGS_HASH =
+  "eyJjYWxsYmFja1VybCI6Imh0dHBzOi8vcHJpdmFjeXBvcnRhbC1kZS5vbmV0cnVzdC5jb20vcmVxdWVzdC92MS9wcml2YWN5Tm90aWNlcy9zdGF0cy92aWV3cyIsImNvbnRlbnRBcGlVcmwiOiJodHRwczovL3ByaXZhY3lwb3J0YWwtZGUub25ldHJ1c3QuY29tL3JlcXVlc3QvdjEvZW50ZXJwcmlzZXBvbGljeS9kaWdpdGFscG9saWN5L2NvbnRlbnQiLCJtZXRhZGF0YUFwaVVybCI6Imh0dHBzOi8vcHJpdmFjeXBvcnRhbC1kZS5vbmV0cnVzdC5jb20vcmVxdWVzdC92MS9lbnRlcnByaXNlcG9saWN5L2RpZ2l0YWxwb2xpY3kvbWV0YS1kYXRhIn0=";
 const OT_SCRIPT_LOAD_TIMEOUT_MS = 10_000;
 
 let oneTrustScriptLoadPromise: Promise<void> | undefined;
@@ -28,8 +30,7 @@ let oneTrustScriptLoadPromise: Promise<void> | undefined;
 export const ONE_TRUST_PRIVACY_POLICY_SCRIPT_ATTRIBUTES = {
   charSet: "UTF-8",
   id: OT_PRIVACY_NOTICE_SCRIPT_ID,
-  settings:
-    "eyJjYWxsYmFja1VybCI6Imh0dHBzOi8vcHJpdmFjeXBvcnRhbC1kZS5vbmV0cnVzdC5jb20vcmVxdWVzdC92MS9wcml2YWN5Tm90aWNlcy9zdGF0cy92aWV3cyIsImNvbnRlbnRBcGlVcmwiOiJodHRwczovL3ByaXZhY3lwb3J0YWwtZGUub25ldHJ1c3QuY29tL3JlcXVlc3QvdjEvZW50ZXJwcmlzZXBvbGljeS9kaWdpdGFscG9saWN5L2NvbnRlbnQiLCJtZXRhZGF0YUFwaVVybCI6Imh0dHBzOi8vcHJpdmFjeXBvcnRhbC1kZS5vbmV0cnVzdC5jb20vcmVxdWVzdC92MS9lbnRlcnByaXNlcG9saWN5L2RpZ2l0YWxwb2xpY3kvbWV0YS1kYXRhIn0=",
+  settings: OT_PRIVACY_NOTICE_SETTINGS_HASH,
   src: "https://privacyportalde-cdn.onetrust.com/privacy-notice-scripts/otnotice-1.0.min.js",
   type: "text/javascript",
 } as const;

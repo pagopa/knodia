@@ -6,6 +6,7 @@ import { Tab, TabList, TabPanel, Tabs } from "@/components/ui";
 import {
   loadOneTrustPrivacyPolicy,
   ONE_TRUST_PRIVACY_POLICY_SCRIPT_ATTRIBUTES,
+  OT_PRIVACY_NOTICE_TARGET_ID,
 } from "@/services/oneTrust";
 
 const LANGUAGE_LABELS = {
@@ -59,7 +60,7 @@ function RouteComponent() {
           <TabPanel id={lang}>
             <div
               className="otnotice privacy-policy-page__notice"
-              id="otnotice-7197cf41-6b45-430a-921f-bdee20487448"
+              id={OT_PRIVACY_NOTICE_TARGET_ID}
             ></div>
           </TabPanel>
         </Tabs>
