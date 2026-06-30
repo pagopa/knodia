@@ -3,6 +3,7 @@ import { exactlyOneDefined } from "@knodia/common-models/utils";
 import { z } from "zod";
 
 export const SignupUserStatus = z.enum([
+  "OnboardingPending",
   "Active",
   "Suspended",
   "DeletionPending",
@@ -45,8 +46,9 @@ const SignupUserBase = z.strictObject({
   updatedAt: z.coerce.date(),
 });
 
-const ActiveSignupUser = SignupUserBase.extend({
+const NonSuspendedSignupUser = SignupUserBase.extend({
   status: SignupUserStatus.extract([
+    SignupUserStatus.enum.OnboardingPending,
     SignupUserStatus.enum.Active,
     SignupUserStatus.enum.DeletionPending,
   ]),
@@ -59,7 +61,7 @@ const SuspendedSignupUser = SignupUserBase.extend({
 });
 
 export const SignupUser = z
-  .discriminatedUnion("status", [ActiveSignupUser, SuspendedSignupUser])
+  .discriminatedUnion("status", [NonSuspendedSignupUser, SuspendedSignupUser])
   .refine(
     (u) => exactlyOneDefined(u.spidCode, u.fiscalNumber, u.personIdentifier),
     {

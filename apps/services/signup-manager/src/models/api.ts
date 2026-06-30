@@ -75,6 +75,7 @@ export type API_SignupUserIdPathParam = z.infer<
 >;
 
 export const API_OnboardingStatus = z.enum([
+  "ONBOARDING_PENDING",
   "ACTIVE",
   "SUSPENDED",
   "DELETION_PENDING",
@@ -95,6 +96,11 @@ const API_NotCompletedSignupUser = z.strictObject({
   onboardingStatus: API_OnboardingStatus.extract(["NOT_COMPLETED"]),
 });
 
+const API_OnboardingPendingSignupUser = z.strictObject({
+  email: z.email(),
+  onboardingStatus: API_OnboardingStatus.extract(["ONBOARDING_PENDING"]),
+});
+
 export const API_OnboardedStatus = API_OnboardingStatus.extract([
   "ACTIVE",
   "SUSPENDED",
@@ -111,6 +117,7 @@ const API_OnboardedSignupUser = z.strictObject({
 export const API_CurrentSignupUser = z
   .discriminatedUnion("onboardingStatus", [
     API_NotCompletedSignupUser,
+    API_OnboardingPendingSignupUser,
     API_OnboardedSignupUser,
   ])
   .meta({ id: "CurrentSignupUser" });
