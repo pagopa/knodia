@@ -1,0 +1,49 @@
+meta {
+  name: 2 - Request Company Addresses (Async Consumption Bearer)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host-mock-eservice}}/legal-entities/address-requests
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  [
+    "01229430085",
+    "12345678901",
+    "98765432109"
+  ]
+}
+
+assert {
+  res.status: eq 200
+  res.body.requestId: matches /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$/
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token") && !bru.getEnvVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run the bearer-token-flow (steps 2-11, skipping step 1) first — step 11 stashes the access_token."
+    )
+  }
+}
+
+script:post-response {
+  if (res.status !== 200) {
+    throw new Error(
+      `Request failed with status ${res.status}.\n\n` +
+      `The access_token may be expired or invalid. Re-run the bearer-token-flow (steps 2-11, skipping step 1) to mint a fresh one, then re-run this call.`
+    )
+  }
+}
+
+vars:post-response {
+  companyAddressesRequestId: res.body.requestId
+}

@@ -608,3 +608,12 @@ export const API_IntegrityRest02Headers = z
     description:
       "Response headers required by the Cross-Border E-service 06 (Integrity Rest 02) specification",
   });
+
+export const API_CompanyAddressesRequest = z.array(API_CompanyUid).min(1).meta({
+  description:
+    "Submission of a list of legal-entity identifiers to the Producer, to request their registered addresses (Cross-Border E-service 05, Request company addresses).",
+  id: "CompanyAddressesRequest",
+});
+export type API_CompanyAddressesRequest = z.infer<
+  typeof API_CompanyAddressesRequest
+>;
