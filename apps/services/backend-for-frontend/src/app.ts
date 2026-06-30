@@ -45,7 +45,6 @@ import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.t
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
-// eslint-disable-next-line max-lines-per-function
 export function buildAppFromConfig(
   config: BffProcessConfig,
   rateLimiter: RateLimiter,

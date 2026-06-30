@@ -1,0 +1,47 @@
+meta {
+  name: 3 - Get Async Company Addresses Request State (Async Consumption Bearer)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host-mock-eservice}}/legal-entities/address-requests/:companyAddressesRequestId
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+params:path {
+  companyAddressesRequestId: {{companyAddressesRequestId}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.state: matches /^(PENDING|COMPLETED)$/
+}
+
+script:post-response {
+  const state = res.body.state
+  const resourceId = res.body.resourceId
+
+  if (state === "COMPLETED") {
+    if (!resourceId) {
+      throw new Error(
+        `Expected a valid resourceId when state is COMPLETED. Got: ${resourceId}`
+      )
+    }
+
+    bru.setVar("companyAddressesResourceId", resourceId)
+  }
+}

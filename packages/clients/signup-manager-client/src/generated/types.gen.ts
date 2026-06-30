@@ -59,6 +59,9 @@ export type CurrentSignupUser = {
     onboardingStatus: 'NOT_COMPLETED';
 } | {
     email: string;
+    onboardingStatus: 'ONBOARDING_PENDING';
+} | {
+    email: string;
     knodes: Array<KnodeAssignment>;
     onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING';
 };
@@ -353,3 +356,42 @@ export type MaintenanceReactivateUserResponses = {
 };
 
 export type MaintenanceReactivateUserResponse = MaintenanceReactivateUserResponses[keyof MaintenanceReactivateUserResponses];
+
+export type MaintenanceDeleteUserData = {
+    body?: never;
+    path: {
+        signupUserId: string;
+    };
+    query?: never;
+    url: '/maintenance/users/{signupUserId}/delete';
+};
+
+export type MaintenanceDeleteUserErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type MaintenanceDeleteUserError = MaintenanceDeleteUserErrors[keyof MaintenanceDeleteUserErrors];
+
+export type MaintenanceDeleteUserResponses = {
+    /**
+     * User deletion requested successfully
+     */
+    204: void;
+};
+
+export type MaintenanceDeleteUserResponse = MaintenanceDeleteUserResponses[keyof MaintenanceDeleteUserResponses];
