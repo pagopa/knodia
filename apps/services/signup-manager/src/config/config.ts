@@ -14,7 +14,7 @@ const OneIdentityConfig = z
     ONE_IDENTITY_CLIENT_SECRET: z.string(),
     ONE_IDENTITY_DOMAIN: z.url(),
     ONE_IDENTITY_JWKS_URI: z.url(),
-    ONE_IDENTITY_REDIRECT_URL: z.string(),
+    ONE_IDENTITY_REDIRECT_URL: z.url(),
 
     UI_SIGNUP_SESSION_JWT_AUDIENCE: z.string(),
     UI_SIGNUP_SESSION_JWT_ISSUER: z.string(),

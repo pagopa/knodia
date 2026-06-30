@@ -334,30 +334,6 @@ services:
       mc retention set --default GOVERNANCE 1d local/knodia-signup-archives;
       "
 
-  # SESv2 mock; aws-ses-v2-local has no published image so it's installed on a
-  # Node image at startup. Multinode doesn't read aws.config.local, so an
-  # in-compose SES consumer must point here via AWS_ENDPOINT_URL_SESV2.
-  ses-mock:
-    security_opt:
-      - no-new-privileges:true
-    labels:
-      knodia.check.on.startup: "true"
-    container_name: knodia-multinode-ses-mock
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
-    entrypoint:
-      - /bin/sh
-      - -c
-      - "npm install -g aws-ses-v2-local@2.9.0 && aws-ses-v2-local --port=8005 --host=0.0.0.0"
-    ports:
-      - 8005:8005
-    healthcheck:
-      # 127.0.0.1 not localhost: alpine maps localhost to ::1 (IPv6) but the
-      # server is IPv4-only, so a localhost probe never goes healthy.
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8005/store"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   # ============================================================
   # pgAdmin
   # ============================================================
@@ -1944,6 +1920,30 @@ services:
   # ============================================================
   # Signup
   # ============================================================
+
+  # SESv2 mock; aws-ses-v2-local has no published image so it's installed on a
+  # Node image at startup. Multinode doesn't read aws.config.local, so an
+  # in-compose SES consumer must point here via AWS_ENDPOINT_URL_SESV2.
+  ses-mock:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-ses-mock
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    entrypoint:
+      - /bin/sh
+      - -c
+      - "npm install -g aws-ses-v2-local@2.9.0 && aws-ses-v2-local --port=8005 --host=0.0.0.0"
+    ports:
+      - 8005:8005
+    healthcheck:
+      # 127.0.0.1 not localhost: alpine maps localhost to ::1 (IPv6) but the
+      # server is IPv4-only, so a localhost probe never goes healthy.
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8005/store"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   flyway-signup:
     security_opt:
