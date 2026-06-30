@@ -54,6 +54,7 @@ import {
   toAPI_PurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 interface PurposeProducerRouterOptions {
@@ -142,6 +143,17 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.results.map((purpose) => purpose.eserviceId),
       );
+      // Consumers live on the knode that owns the purposes (the other knode),
+      // not on the producer's own knode. The empty-results guard above ensures
+      // this always resolves.
+      const consumerKnodeId = singleListingKnodeId(
+        data.results,
+        (purpose) => purpose.consumer.knodeId,
+      );
+      if (consumerKnodeId === undefined) {
+        res.send({ pagination: data.pagination, results: [] });
+        return;
+      }
       const [eservicesMap, consumersMap] = await Promise.all([
         eserviceProcessApi
           .getEservices({
@@ -160,13 +172,13 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
               ),
           ),
         getExternalEntitiesMap({
-          fetchFn: ({ entityIds }) =>
+          fetchFn: ({ entityIds, knodeId }) =>
             remoteResourcesManagerApi
               .getOrganizations({
                 client: remoteResourcesManagerClient,
                 headers: getKnodiaServiceHeaders(req, correlationId),
                 query: {
-                  knodeId: config.knodeId,
+                  knodeId,
                   limit: entityIds.length,
                   offset: 0,
                   organizationId: entityIds,
@@ -175,7 +187,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
               .then((res) => res.data.results),
           getEntityId: (purpose) => purpose.consumer.id,
           items: data.results,
-          knodeId: config.knodeId,
+          knodeId: consumerKnodeId,
         }),
       ]);
 

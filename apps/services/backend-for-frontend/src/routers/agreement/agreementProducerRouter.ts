@@ -51,6 +51,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { singleListingKnodeId } from "../../utils/knode.ts";
 import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 const enrichAgreements = async ({
@@ -69,6 +70,16 @@ const enrichAgreements = async ({
   const eserviceIds = new Set(
     agreements.map((agreement) => agreement.eserviceId),
   );
+  // Consumers live on the knode that owns the agreements (the other knode), not
+  // on the producer's own knode. enrichAgreements is only called on a non-empty
+  // listing, so this always resolves.
+  const consumerKnodeId = singleListingKnodeId(
+    agreements,
+    (agreement) => agreement.consumer.knodeId,
+  );
+  if (consumerKnodeId === undefined) {
+    return [];
+  }
   const [eservicesMap, consumersMap] = await Promise.all([
     eserviceProcessApi
       .getEservices({
@@ -86,13 +97,13 @@ const enrichAgreements = async ({
           new Map(res.data.results.map((eservice) => [eservice.id, eservice])),
       ),
     getExternalEntitiesMap({
-      fetchFn: ({ entityIds }) =>
+      fetchFn: ({ entityIds, knodeId }) =>
         remoteResourcesManagerApi
           .getOrganizations({
             client: remoteResourcesManagerClient,
             headers,
             query: {
-              knodeId: config.knodeId,
+              knodeId,
               // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
               limit: entityIds.length,
               offset: 0,
@@ -102,7 +113,7 @@ const enrichAgreements = async ({
           .then((res) => res.data.results),
       getEntityId: (agreement) => agreement.consumer.id,
       items: agreements,
-      knodeId: config.knodeId,
+      knodeId: consumerKnodeId,
     }),
   ]);
 
