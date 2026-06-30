@@ -41,14 +41,26 @@ export function fromAPI_toSuspensionReason(
 export function toAPI_CurrentSignupUser(
   signupUser: SignupUser | undefined,
 ): API_CurrentSignupUser {
-  if (!signupUser)
-    return { onboardingStatus: API_OnboardingStatus.enum.NOT_COMPLETED };
-
-  return {
-    email: signupUser.email,
-    knodes: toAPI_KnodeAssignments(signupUser.generatedEntities),
-    onboardingStatus: toAPI_OnboardingStatus(signupUser.status),
-  };
+  return match(signupUser)
+    .with(undefined, () => ({
+      onboardingStatus: API_OnboardingStatus.enum.NOT_COMPLETED,
+    }))
+    .with({ status: SignupUserStatus.enum.OnboardingPending }, (user) => ({
+      // Provisioning still in progress: knodes don't exist yet, only the email.
+      email: user.email,
+      onboardingStatus: API_OnboardingStatus.enum.ONBOARDING_PENDING,
+    }))
+    .with(
+      { status: SignupUserStatus.enum.Active },
+      { status: SignupUserStatus.enum.Suspended },
+      { status: SignupUserStatus.enum.DeletionPending },
+      (user) => ({
+        email: user.email,
+        knodes: toAPI_KnodeAssignments(user.generatedEntities),
+        onboardingStatus: toAPI_OnboardedStatus(user.status),
+      }),
+    )
+    .exhaustive();
 }
 
 function toAPI_KnodeAssignments(
@@ -61,7 +73,9 @@ function toAPI_KnodeAssignments(
   }));
 }
 
-function toAPI_OnboardingStatus(status: SignupUserStatus): API_OnboardedStatus {
+function toAPI_OnboardedStatus(
+  status: Exclude<SignupUserStatus, "OnboardingPending">,
+): API_OnboardedStatus {
   return match(status)
     .with(SignupUserStatus.enum.Active, () => API_OnboardingStatus.enum.ACTIVE)
     .with(

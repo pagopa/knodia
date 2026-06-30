@@ -57,6 +57,7 @@ const cognitoDeleteUserMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
 const getSignupUserDeletionMock = vi.fn();
 const completeSignupUserDeletionMock = vi.fn();
+const markSignupUserActiveMock = vi.fn();
 
 const correlationId = generateId<CorrelationId>();
 const logger = {
@@ -87,6 +88,7 @@ function buildDeps(): SignupUpdaterDeps {
       getEmailChangeRequestById: getEmailChangeRequestByIdMock,
       getSignupUserById: getSignupUserByIdMock,
       getSignupUserDeletion: getSignupUserDeletionMock,
+      markSignupUserActive: markSignupUserActiveMock,
       updateSignupUserEmail: updateSignupUserEmailMock,
     },
   } as unknown as SignupUpdaterDeps;
@@ -148,6 +150,7 @@ function getMockSignupUser(overrides: Partial<SignupUser> = {}): SignupUser {
   return match(overrides.status ?? SignupUserStatus.enum.Active)
     .returnType<SignupUser>()
     .with(
+      SignupUserStatus.enum.OnboardingPending,
       SignupUserStatus.enum.Active,
       SignupUserStatus.enum.DeletionPending,
       (status) => ({ ...base, status }),
@@ -219,25 +222,30 @@ function suspensionRequestedEvent(
 
 const conflict = { isAxiosError: true, response: { status: 409 } };
 
-describe("handleSignupMessage — OnboardingCompletedV1", () => {
-  beforeEach(() => {
-    createOrganizationMock.mockReset();
-    cognitoCreateUserMock.mockReset();
-    cognitoDisableUserMock.mockReset();
-    cognitoUpdateUserEmailMock.mockReset();
-    cognitoResetUserCredentialsMock.mockReset();
-    deleteEmailChangeRequestMock.mockReset();
-    getEmailChangeRequestByIdMock.mockReset();
-    getSignupUserByIdMock.mockReset();
-    updateSignupUserEmailMock.mockReset();
-    getSignupUserDeletionMock.mockReset();
-    vi.mocked(logger.error).mockReset();
-    vi.mocked(logger.info).mockReset();
-    vi.mocked(logger.warn).mockReset();
-  });
+function resetOnboardingMocks(): void {
+  createOrganizationMock.mockReset();
+  cognitoCreateUserMock.mockReset();
+  cognitoDisableUserMock.mockReset();
+  cognitoUpdateUserEmailMock.mockReset();
+  cognitoResetUserCredentialsMock.mockReset();
+  deleteEmailChangeRequestMock.mockReset();
+  getEmailChangeRequestByIdMock.mockReset();
+  getSignupUserByIdMock.mockReset();
+  updateSignupUserEmailMock.mockReset();
+  getSignupUserDeletionMock.mockReset();
+  markSignupUserActiveMock.mockReset();
+  vi.mocked(logger.error).mockReset();
+  vi.mocked(logger.info).mockReset();
+  vi.mocked(logger.warn).mockReset();
+}
+
+describe("handleSignupMessage — OnboardingCompletedV1 provisioning", () => {
+  beforeEach(resetOnboardingMocks);
 
   it("creates an org (with the testing_organization attribute) and a Cognito user on both nodes", async () => {
-    const user = getMockSignupUser();
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.OnboardingPending,
+    });
     const orionOrgId = generateId<OrganizationId>();
     const lynxOrgId = generateId<OrganizationId>();
     getSignupUserByIdMock.mockResolvedValue(user);
@@ -291,10 +299,16 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
       organizationId: lynxOrgId,
       username: "mario.rossi.lynx",
     });
+
+    expect(markSignupUserActiveMock).toHaveBeenCalledExactlyOnceWith(
+      user.signupUserId,
+    );
   });
 
   it("skips the node and logs on a 409 (name taken by another org) instead of throwing, so the partition isn't blocked", async () => {
-    getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.OnboardingPending }),
+    );
     createOrganizationMock.mockRejectedValue(conflict);
 
     await expect(
@@ -313,7 +327,9 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
   });
 
   it("skips only the node that returns a 409 and still provisions the others", async () => {
-    getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.OnboardingPending }),
+    );
     createOrganizationMock
       .mockResolvedValueOnce({ data: { id: generateId<OrganizationId>() } })
       .mockRejectedValueOnce(conflict);
@@ -334,7 +350,9 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
   });
 
   it("rethrows a non-409 error so the message is redelivered", async () => {
-    getSignupUserByIdMock.mockResolvedValue(getMockSignupUser());
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.OnboardingPending }),
+    );
     createOrganizationMock.mockRejectedValue({
       isAxiosError: true,
       response: { status: 500 },
@@ -350,7 +368,12 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     ).rejects.toBeDefined();
 
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
+    expect(markSignupUserActiveMock).not.toHaveBeenCalled();
   });
+});
+
+describe("handleSignupMessage — OnboardingCompletedV1 skip & replay semantics", () => {
+  beforeEach(resetOnboardingMocks);
 
   it("skips (without throwing) when the user is gone and a deletion record confirms it, provisioning nothing", async () => {
     getSignupUserByIdMock.mockResolvedValue(undefined);
@@ -373,6 +396,68 @@ describe("handleSignupMessage — OnboardingCompletedV1", () => {
     expect(createOrganizationMock).not.toHaveBeenCalled();
     expect(cognitoCreateUserMock).not.toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips provisioning when a deletion was requested before the event was consumed (user is DeletionPending)", async () => {
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.DeletionPending }),
+    );
+
+    await expect(
+      handleSignupMessage(
+        onboardingEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(createOrganizationMock).not.toHaveBeenCalled();
+    expect(cognitoCreateUserMock).not.toHaveBeenCalled();
+    expect(markSignupUserActiveMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips provisioning when the user was suspended before the event was consumed (user is Suspended)", async () => {
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.Suspended }),
+    );
+
+    await expect(
+      handleSignupMessage(
+        onboardingEvent(generateId<SignupUserId>()),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(createOrganizationMock).not.toHaveBeenCalled();
+    expect(cognitoCreateUserMock).not.toHaveBeenCalled();
+    expect(markSignupUserActiveMock).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-provisions on redelivery when the user is already Active (so the 409 name-conflict recovery can complete the skipped knode)", async () => {
+    getSignupUserByIdMock.mockResolvedValue(
+      getMockSignupUser({ status: SignupUserStatus.enum.Active }),
+    );
+    createOrganizationMock
+      .mockResolvedValueOnce({ data: { id: generateId<OrganizationId>() } })
+      .mockResolvedValueOnce({ data: { id: generateId<OrganizationId>() } });
+
+    await handleSignupMessage(
+      onboardingEvent(generateId<SignupUserId>()),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(createOrganizationMock).toHaveBeenCalledTimes(2);
+    expect(cognitoCreateUserMock).toHaveBeenCalledTimes(2);
+    expect(markSignupUserActiveMock).toHaveBeenCalledExactlyOnceWith(
+      expect.any(String),
+    );
   });
 
   it("throws (so the message is redelivered) when the user is gone but no deletion record exists", async () => {

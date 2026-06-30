@@ -89,6 +89,18 @@ describe("POST /user/delete (deleteUser)", () => {
     expect(row?.status).toBe("DeletionPending");
   });
 
+  it("should work from the OnboardingPending status too (provisioning still in flight)", async () => {
+    await seedSignupUser(
+      makeMatchingSignupUser({ status: "OnboardingPending" }),
+    );
+
+    const response = await injectSignupAppRequest().post("/user/delete");
+
+    expect(response.statusCode).toBe(204);
+    const [row] = await getAllSignupUsers();
+    expect(row?.status).toBe("DeletionPending");
+  });
+
   it("should republish an event with the same identity on a repeated POST", async () => {
     await seedSignupUser(makeMatchingSignupUser());
 
