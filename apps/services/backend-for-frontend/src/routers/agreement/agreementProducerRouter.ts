@@ -9,6 +9,7 @@ import {
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
@@ -50,6 +51,7 @@ import {
   toAPI_ProducerAgreementDetails,
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
+import { multiKnodeListingNotSupported } from "../../models/errors.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
@@ -69,6 +71,21 @@ const enrichAgreements = async ({
   const eserviceIds = new Set(
     agreements.map((agreement) => agreement.eserviceId),
   );
+  // Consumers live on the knode that owns the agreement (the other knode), not
+  // on the producer's own knode. Unlike the consumer-side RRM listings (single
+  // remote knode by KN-589), this listing comes from the local agreement-process,
+  // so consumers can span knodes — fail fast instead of silently resolving them
+  // all to one knode. enrichAgreements is only called on a non-empty listing.
+  const consumerKnodeIds = [
+    ...new Set(agreements.map((agreement) => agreement.consumer.knodeId)),
+  ].map((knodeId) => KnodeId.parse(knodeId));
+  if (consumerKnodeIds.length > 1) {
+    throw multiKnodeListingNotSupported(consumerKnodeIds);
+  }
+  const [consumerKnodeId] = consumerKnodeIds;
+  if (consumerKnodeId === undefined) {
+    return [];
+  }
   const [eservicesMap, consumersMap] = await Promise.all([
     eserviceProcessApi
       .getEservices({
@@ -86,13 +103,13 @@ const enrichAgreements = async ({
           new Map(res.data.results.map((eservice) => [eservice.id, eservice])),
       ),
     getExternalEntitiesMap({
-      fetchFn: ({ entityIds }) =>
+      fetchFn: ({ entityIds, knodeId }) =>
         remoteResourcesManagerApi
           .getOrganizations({
             client: remoteResourcesManagerClient,
             headers,
             query: {
-              knodeId: config.knodeId,
+              knodeId,
               // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
               limit: entityIds.length,
               offset: 0,
@@ -102,7 +119,7 @@ const enrichAgreements = async ({
           .then((res) => res.data.results),
       getEntityId: (agreement) => agreement.consumer.id,
       items: agreements,
-      knodeId: config.knodeId,
+      knodeId: consumerKnodeId,
     }),
   ]);
 
@@ -226,6 +243,9 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       tags: [apiTags.agreement],
     },
