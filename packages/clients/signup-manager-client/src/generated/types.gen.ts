@@ -49,9 +49,18 @@ export type SuspendUserRequestBody = {
     suspensionReason: 'ACCURACY_CONTESTED' | 'UNLAWFUL_PROCESSING' | 'DATA_NEEDED_FOR_LEGAL_CLAIMS' | 'PENDING_OBJECTION_VERIFICATION';
 };
 
+export type KnodeAssignment = {
+    knode: 'Orion' | 'Lynx';
+    organizationName: string;
+    username: string;
+};
+
 export type CurrentSignupUser = {
-    email?: string;
-    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING' | 'NOT_COMPLETED';
+    onboardingStatus: 'NOT_COMPLETED';
+} | {
+    email: string;
+    knodes: Array<KnodeAssignment>;
+    onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING';
 };
 
 export type GetStatusData = {
@@ -305,3 +314,81 @@ export type SuspendUserResponses = {
 };
 
 export type SuspendUserResponse = SuspendUserResponses[keyof SuspendUserResponses];
+
+export type MaintenanceReactivateUserData = {
+    body?: never;
+    path: {
+        signupUserId: string;
+    };
+    query?: never;
+    url: '/maintenance/users/{signupUserId}/reactivate';
+};
+
+export type MaintenanceReactivateUserErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type MaintenanceReactivateUserError = MaintenanceReactivateUserErrors[keyof MaintenanceReactivateUserErrors];
+
+export type MaintenanceReactivateUserResponses = {
+    /**
+     * User reactivation requested successfully
+     */
+    204: void;
+};
+
+export type MaintenanceReactivateUserResponse = MaintenanceReactivateUserResponses[keyof MaintenanceReactivateUserResponses];
+
+export type MaintenanceDeleteUserData = {
+    body?: never;
+    path: {
+        signupUserId: string;
+    };
+    query?: never;
+    url: '/maintenance/users/{signupUserId}/delete';
+};
+
+export type MaintenanceDeleteUserErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type MaintenanceDeleteUserError = MaintenanceDeleteUserErrors[keyof MaintenanceDeleteUserErrors];
+
+export type MaintenanceDeleteUserResponses = {
+    /**
+     * User deletion requested successfully
+     */
+    204: void;
+};
+
+export type MaintenanceDeleteUserResponse = MaintenanceDeleteUserResponses[keyof MaintenanceDeleteUserResponses];

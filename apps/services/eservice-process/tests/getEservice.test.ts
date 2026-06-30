@@ -63,7 +63,8 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();
 
-    expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
+    expect(expectedItem).toEqual(toExpectAPI_Eservice(eservice));
+    expect(body).toEqual(toExpectAPI_Eservice(eservice));
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

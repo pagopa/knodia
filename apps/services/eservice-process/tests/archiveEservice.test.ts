@@ -9,7 +9,6 @@ import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models"
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import {
   getAllEserviceEvents,
   injectAppRequest,
@@ -38,7 +37,19 @@ describe("POST /eservices/:eserviceId/archive (archiveEservice)", () => {
 
     const responseBody = response.json();
     expect(responseBody).toEqual({
-      ...toAPI_Eservice(eservice),
+      categories: expect.arrayContaining(eservice.categories),
+      createdAt: eservice.createdAt.toISOString(),
+      description: eservice.description,
+      id: eservice.id,
+      isConsumerOperatorIdentificationRequired:
+        eservice.isConsumerOperatorIdentificationRequired,
+      isSignalHubEnabled: eservice.isSignalHubEnabled,
+      mode: eservice.mode,
+      name: eservice.name,
+      producerId: eservice.producerId,
+      ...(eservice.template !== undefined
+        ? { template: eservice.template }
+        : {}),
       updatedAt: expect.any(String),
     });
 

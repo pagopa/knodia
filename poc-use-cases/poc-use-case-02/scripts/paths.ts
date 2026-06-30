@@ -36,8 +36,3 @@ export const MOCK_ESERVICE_URL =
 // Signals are published to and pulled from the producer knode's (Lynx) Signal Hub.
 export const SIGNAL_HUB_URL =
   process.env.POC_SIGNAL_HUB_URL ?? "http://localhost:3802";
-
-// The consumer's Knode API token is minted by the consumer knode's (Orion)
-// authorization-server, since its Knode API keychain lives there.
-export const CONSUMER_AUTHORIZATION_SERVER_URL =
-  process.env.POC_CONSUMER_AUTHORIZATION_SERVER_URL ?? "http://localhost:3701";

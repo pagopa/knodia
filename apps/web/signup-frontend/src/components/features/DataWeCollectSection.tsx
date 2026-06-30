@@ -1,46 +1,22 @@
-import { ArrowForwardIcon, DownloadIcon } from "@/components/icons";
+import { DownloadIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 
-const COLLECTED_DATA = [
-  "Full name",
-  "Birth date",
-  "Identity provider identifier",
-  "Email address",
-];
-
 interface DataWeCollectSectionProps {
-  onChangeEmail: () => void;
   onDownload: () => void;
 }
 
 export function DataWeCollectSection({
-  onChangeEmail,
   onDownload,
 }: DataWeCollectSectionProps) {
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-style-section-title text-neutral-graphite">
-        Data we collect
+        Your personal data
       </h2>
-      <div className="flex flex-col gap-2">
-        <p className="text-style-body text-neutral-medium-gray">
-          To set up your access, we collect the following data:
-        </p>
-        <ul className="text-style-body list-disc pl-6 text-neutral-medium-gray">
-          {COLLECTED_DATA.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </div>
+      <p className="text-style-body text-neutral-medium-gray">
+        We collected some of your data to set up your access.
+      </p>
       <div className="flex flex-col gap-4">
-        <Button
-          className="gap-2 self-start"
-          onPress={onChangeEmail}
-          variant="text"
-        >
-          Change email address
-          <ArrowForwardIcon className="size-6" />
-        </Button>
         <Button
           className="gap-2 self-start"
           onPress={onDownload}

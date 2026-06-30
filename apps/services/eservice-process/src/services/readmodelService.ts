@@ -24,8 +24,8 @@ import {
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
-  aggregateEservices,
   aggregateEserviceVersion,
+  aggregateFlatEservices,
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
@@ -34,6 +34,7 @@ import {
   type Eservice,
   type EserviceInterface,
   EserviceVersionState,
+  type FlatEservice,
 } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
@@ -70,7 +71,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
-    ): Promise<ListResult<Eservice>> {
+    ): Promise<ListResult<FlatEservice>> {
       const { limit, offset } = params;
 
       const keywords = "keywords" in body ? body.keywords : undefined;
@@ -134,7 +135,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
-        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
@@ -154,10 +154,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const eservices = aggregateEservices(queryRes);
+        const flatEservices = aggregateFlatEservices(queryRes);
 
         return {
-          results: eservices.map((e) => e.data),
+          results: flatEservices.map((e) => e.data),
           totalCount,
         };
       });
@@ -218,7 +218,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<Eservice>> {
+    ): Promise<ListResult<FlatEservice>> {
       const {
         eserviceId,
         limit,
@@ -289,7 +289,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           .offset(offset)
           .as("paginatedIds");
 
-        // TODO return FlatEservice when addressing https://pagopa.atlassian.net/browse/KN-257
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
@@ -309,10 +308,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const eservices = aggregateEservices(queryRes);
+        const flatEservices = aggregateFlatEservices(queryRes);
 
         return {
-          results: eservices.map((e) => e.data),
+          results: flatEservices.map((e) => e.data),
           totalCount,
         };
       });
@@ -323,6 +322,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await eserviceReadmodelService.getEserviceVersionInterfaceById(
         interfaceId,
       );
+    },
+    async getFlatEservice(
+      eserviceId: EserviceId,
+    ): Promise<undefined | WithMetadata<FlatEservice>> {
+      return await eserviceReadmodelService.getFlatEserviceById(eserviceId);
     },
     async getOrganizationById(organizationId: OrganizationId) {
       return await organizationReadmodelService.getOrganizationById(

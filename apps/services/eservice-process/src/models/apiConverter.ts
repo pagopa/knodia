@@ -1,7 +1,7 @@
 import {
-  type Eservice,
   type EserviceInterface,
   type EserviceVersion,
+  type FlatEservice,
   type PurposeFormOption,
 } from "@knodia/eservice-models";
 
@@ -28,7 +28,7 @@ export const toAPI_EserviceVersion = (
   versionNumber: version.versionNumber,
 });
 
-export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
+export const toAPI_Eservice = (eservice: FlatEservice): API_Eservice => ({
   categories: eservice.categories,
   createdAt: eservice.createdAt.toISOString(),
   description: eservice.description,

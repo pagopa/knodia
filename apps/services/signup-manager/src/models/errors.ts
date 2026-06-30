@@ -14,6 +14,7 @@ const errorCodes = {
   SIGNUP_USER_EMAIL_CHANGE_REQUEST_CREATION_CONFLICT: "0006",
   SIGNUP_USER_NOT_FOUND: "0007",
   SIGNUP_USER_NOT_ACTIVE: "0008",
+  SIGNUP_USER_NOT_SUSPENDED: "0009",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -95,5 +96,14 @@ export function signupUserNotOnboarded() {
     detail: "Signup user has not completed onboarding",
     status: HTTP_STATUS_CONFLICT,
     title: "Signup User Not Onboarded",
+  });
+}
+
+export function signupUserNotSuspended() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_NOT_SUSPENDED",
+    detail: "Signup user is not suspended",
+    status: HTTP_STATUS_CONFLICT,
+    title: "Signup User Not Suspended",
   });
 }
