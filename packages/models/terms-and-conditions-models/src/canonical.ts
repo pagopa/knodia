@@ -6,7 +6,7 @@ import {
   type TermsDocument,
 } from "./schema.ts";
 
-export interface TermsValues {
+interface TermsValues {
   /** Formatted acceptance date, e.g. "25 giugno 2026". */
   date: string;
   /** Display label of the version, e.g. "ver. 1". */
