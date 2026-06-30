@@ -1,4 +1,4 @@
-export type OneTrustPrivacyPolicyLanguage = "en" | "it";
+type OneTrustPrivacyPolicyLanguage = "en" | "it";
 
 type OneTrustWindow = Window & {
   OneTrust?: {
@@ -16,7 +16,7 @@ type OneTrustWindow = Window & {
 };
 const extendedWindow = window as OneTrustWindow;
 
-export const OT_PRIVACY_NOTICE_SCRIPT_ID = "otprivacy-notice-script";
+const OT_PRIVACY_NOTICE_SCRIPT_ID = "otprivacy-notice-script";
 export const OT_PRIVACY_NOTICE_TARGET_ID =
   "otnotice-7197cf41-6b45-430a-921f-bdee20487448";
 const OT_PRIVACY_NOTICE_URL =
