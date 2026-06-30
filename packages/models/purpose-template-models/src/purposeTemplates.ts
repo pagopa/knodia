@@ -31,7 +31,7 @@ const ORION_MOCKUP_02_ESERVICE_ID = unsafeBrandId<EserviceId>(
   "905c4569-95db-4670-a146-8239fcb3f41a",
 );
 const LYNX_MOCKUP_05_ESERVICE_ID = unsafeBrandId<EserviceId>(
-  "16895bc2-deb0-427c-8c25-336207b2d0a1",
+  "4ed2b4f9-e974-4e69-84d6-7074af92cd4f",
 );
 
 /** @knipignore */

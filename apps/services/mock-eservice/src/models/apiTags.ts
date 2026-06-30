@@ -1,4 +1,5 @@
 export const apiTags = {
+  asyncCompanyAddresses: "asyncCompanyAddresses",
   companyAddress: "companyAddress",
   companyDigitalDomicile: "companyDigitalDomicile",
   digitalContact: "digitalContact",
