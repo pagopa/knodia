@@ -1,16 +1,28 @@
+import { genericInternalError } from "@knodia/common-models/errors";
+import {
+  formatTermsDate,
+  getTermsDocument,
+  knodiaVersionLabel,
+  toAcceptedText,
+} from "@knodia/terms-and-conditions-models";
 import { createHash } from "node:crypto";
 
-// TODO: replace with the real T&C document version once a versioning scheme exists.
-export const TERMS_AND_CONDITIONS_VERSION = "1.0.0";
-
-export function computeTermsAcceptanceDigest(acceptedAt: Date): string {
-  const document = buildTermsAcceptanceDocument(acceptedAt);
-  return createHash("sha256")
-    .update(JSON.stringify(document), "utf8")
-    .digest("hex");
-}
-
-// TODO: replace the mock body with the real T&C document content (or a reference to it) when available.
-function buildTermsAcceptanceDocument(acceptedAt: Date) {
-  return { acceptedAt: acceptedAt.toISOString() };
+// SHA-256 over the canonical Italian text (art. 14: only the Italian version is binding), with
+// the acceptance date substituted. Both the document text and the "ver. N" label come from the
+// accepted `version`, not the current one, so re-hashing a past acceptance reproduces the
+// original bytes even after a version bump. node:crypto lives only here.
+export function computeTermsAcceptanceDigest(
+  acceptedAt: Date,
+  version: number,
+): string {
+  const document = getTermsDocument("it", version);
+  const knodiaVersion = knodiaVersionLabel(version);
+  if (!document || knodiaVersion === undefined) {
+    throw genericInternalError(`No T&C document for version ${version}`);
+  }
+  const text = toAcceptedText(document, {
+    date: formatTermsDate(acceptedAt, "it"),
+    knodiaVersion,
+  });
+  return createHash("sha256").update(text, "utf8").digest("hex");
 }

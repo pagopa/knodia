@@ -1,10 +1,8 @@
 import { OnboardingCompletedV1 } from "@knodia/signup-models";
+import { TERMS_DOCUMENT_VERSION } from "@knodia/terms-and-conditions-models";
 import { describe, expect, it } from "vitest";
 
-import {
-  computeTermsAcceptanceDigest,
-  TERMS_AND_CONDITIONS_VERSION,
-} from "../src/utils/termsAcceptance.ts";
+import { computeTermsAcceptanceDigest } from "../src/utils/termsAcceptance.ts";
 import { kafkaProducerMock } from "./setup.ts";
 import {
   getAllSignupUsers,
@@ -74,7 +72,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
         oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
         signupUserId: signupUser?.signupUserId,
         termsAcceptanceDigest: expect.any(String),
-        termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+        termsAcceptanceVersion: TERMS_DOCUMENT_VERSION,
       },
       type: "OnboardingCompletedV1",
     });
@@ -82,7 +80,10 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     // The acceptance instant travels in the message (not the DB); the digest is
     // derived from it, so it must match a recomputation over occurredAt.
     expect(event.data.termsAcceptanceDigest).toBe(
-      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+      computeTermsAcceptanceDigest(
+        new Date(event.data.occurredAt),
+        event.data.termsAcceptanceVersion,
+      ),
     );
   });
 
@@ -263,10 +264,17 @@ describe("POST /user/confirmOnboarding — repeated request (publish retry)", ()
     );
 
     expect(event.data.signupUserId).toBe(pendingUser.signupUserId);
-    // occurredAt and digest derive from the stored acceptance instant, not createdAt.
+    // occurredAt, version and digest derive from the stored row, not from createdAt or the
+    // current constant, so a later version bump can't alter a re-emitted acceptance.
     expect(event.data.occurredAt).toBe(termsAcceptedAt.toISOString());
+    expect(event.data.termsAcceptanceVersion).toBe(
+      pendingUser.termsAcceptedVersion,
+    );
     expect(event.data.termsAcceptanceDigest).toBe(
-      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+      computeTermsAcceptanceDigest(
+        new Date(event.data.occurredAt),
+        event.data.termsAcceptanceVersion,
+      ),
     );
   });
 });
