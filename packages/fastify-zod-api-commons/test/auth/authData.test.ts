@@ -2,6 +2,7 @@ import {
   getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestKnodeApiTokenClaims,
+  getTestMaintenanceTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -11,11 +12,13 @@ import {
   extractAuthDataFromToken,
   type InternalAuthData,
   type KnodeApiAuthData,
+  type MaintenanceAuthData,
   type UISessionAuthData,
 } from "../../src/auth/authData.ts";
 
 const uiSessionClaims = getTestUISessionTokenClaims();
 const internalClaims = getTestInternalTokenClaims();
+const maintenanceClaims = getTestMaintenanceTokenClaims();
 const externalUISessionClaims = getTestExternalUISessionTokenClaims();
 const knodeApiClaims = getTestKnodeApiTokenClaims();
 
@@ -37,6 +40,14 @@ describe("extractAuthDataFromToken", () => {
     expect(result).toEqual({
       tokenType: internalClaims.type,
     } satisfies InternalAuthData);
+  });
+
+  it("maps maintenance claims to MaintenanceAuthData", () => {
+    const result = extractAuthDataFromToken(maintenanceClaims);
+
+    expect(result).toEqual({
+      tokenType: maintenanceClaims.type,
+    } satisfies MaintenanceAuthData);
   });
 
   it("maps knode-api claims to KnodeApiAuthData", () => {

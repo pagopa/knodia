@@ -83,6 +83,13 @@ export const InternalTokenClaims = KnodiaJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
+// Minted manually (never by a service) via the generate-token script, signed
+// with a single dedicated KMS key, to drive signup-manager maintenance endpoints.
+export const MaintenanceTokenClaims = KnodiaJwtClaims.extend({
+  type: z.literal("maintenance"),
+});
+export type MaintenanceTokenClaims = z.infer<typeof MaintenanceTokenClaims>;
+
 export const UISignupSessionTokenClaims = KnodiaJwtClaims.extend({
   dateOfBirth: z.string(),
   familyName: z.string(),
@@ -197,6 +204,7 @@ export type ExternalUISessionMagicLinkTokenClaims = z.infer<
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
+  MaintenanceTokenClaims,
   ExternalUISessionTokenClaims,
   KnodeApiAccessTokenClaims,
   UISignupSessionTokenClaims,

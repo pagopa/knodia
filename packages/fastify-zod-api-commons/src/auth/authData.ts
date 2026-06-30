@@ -25,6 +25,7 @@ export type AuthData =
   | ExternalUISessionAuthData
   | InternalAuthData
   | KnodeApiAuthData
+  | MaintenanceAuthData
   | UISessionAuthData
   | UISignupSessionAuthData;
 
@@ -66,6 +67,10 @@ export interface KnodeApiAuthData {
   tokenType: "knode-api";
 }
 
+export interface MaintenanceAuthData {
+  tokenType: "maintenance";
+}
+
 export interface UISessionAuthData {
   organizationId: OrganizationId;
   tokenType: "ui-session";
@@ -102,6 +107,12 @@ export function extractAuthDataFromToken(
       { type: "internal" },
       (): InternalAuthData => ({
         tokenType: "internal",
+      }),
+    )
+    .with(
+      { type: "maintenance" },
+      (): MaintenanceAuthData => ({
+        tokenType: "maintenance",
       }),
     )
     .with(
@@ -161,8 +172,8 @@ export function extractAuthDataFromToken(
 
 // Rate-limit bucket key carried by the token: the caller organization id, the
 // signup session's unique identifier (signup has no org yet), or undefined for
-// internal service-to-service tokens (no caller). The signup identifier is PII
-// so it's hashed; org ids pass through verbatim to keep Redis keys legible.
+// internal/maintenance tokens (no caller). The signup identifier is PII so it's
+// hashed; org ids pass through verbatim to keep Redis keys legible.
 export function rateLimitKeyFromAuthData(
   authData: AuthData,
 ): RateLimitKey | undefined {
@@ -174,5 +185,6 @@ export function rateLimitKeyFromAuthData(
       hashRateLimitKey(a.uniqueIdentifier),
     )
     .with({ tokenType: "internal" }, () => undefined)
+    .with({ tokenType: "maintenance" }, () => undefined)
     .exhaustive();
 }
