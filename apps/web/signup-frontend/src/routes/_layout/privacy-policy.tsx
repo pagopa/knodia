@@ -4,8 +4,8 @@ import z from "zod";
 
 import { Tab, TabList, TabPanel, Tabs } from "@/components/ui";
 import {
-  cleanupOneTrustPrivacyPolicyScript,
-  loadOneTrustPrivacyPolicyScript,
+  loadOneTrustPrivacyPolicy,
+  ONE_TRUST_PRIVACY_POLICY_SCRIPT_ATTRIBUTES,
 } from "@/services/oneTrust";
 
 const LANGUAGE_LABELS = {
@@ -15,6 +15,9 @@ const LANGUAGE_LABELS = {
 
 export const Route = createFileRoute("/_layout/privacy-policy")({
   component: RouteComponent,
+  head: () => ({
+    scripts: [ONE_TRUST_PRIVACY_POLICY_SCRIPT_ATTRIBUTES],
+  }),
   validateSearch: z.object({
     lang: z.enum(["en", "it"]).catch("en"),
   }),
@@ -25,8 +28,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   useEffect(() => {
-    loadOneTrustPrivacyPolicyScript(lang);
-    return cleanupOneTrustPrivacyPolicyScript;
+    void loadOneTrustPrivacyPolicy(lang);
   }, [lang]);
 
   return (
