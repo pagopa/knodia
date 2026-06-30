@@ -60,37 +60,55 @@ for f in "$SQL_DIR"/*.sql; do
 done
 
 # The s3 key prefix MUST match the `path` of an eservice_interface row in the SQL.
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer.yaml" \
-  "s3://$S3_BUCKET/d44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml"
+# Each interface is uploaded only to the knode whose $SQL_DIR seeds the mock, so a
+# multinode run never leaves orphan specs on the wrong node.
+if [ -f "$SQL_DIR/mock-bearer-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer.yaml" \
+    "s3://$S3_BUCKET/d44bcdeb-d0dc-46c3-abf6-dd2862fdd7ad/mock-bearer-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-dpop.yaml" \
-  "s3://$S3_BUCKET/e522049f-2301-442a-91de-e5bcaffd08be/mock-dpop-eservice.yaml"
+if [ -f "$SQL_DIR/mock-dpop-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-dpop.yaml" \
+    "s3://$S3_BUCKET/e522049f-2301-442a-91de-e5bcaffd08be/mock-dpop-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml" \
-  "s3://$S3_BUCKET/e5540a33-703e-4527-9880-05e7d347f93e/mock-bearer-signal-hub-eservice.yaml"
+if [ -f "$SQL_DIR/mock-signal-hub-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml" \
+    "s3://$S3_BUCKET/e5540a33-703e-4527-9880-05e7d347f93e/mock-bearer-signal-hub-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml" \
-  "s3://$S3_BUCKET/f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-poc-uc02-companies-eservice.yaml"
+if [ -f "$SQL_DIR/mock-poc-uc02-companies-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc02-companies.yaml" \
+    "s3://$S3_BUCKET/f26b46b5-b440-45f2-a774-e6e218f92c61/mock-bearer-poc-uc02-companies-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml" \
-  "s3://$S3_BUCKET/72937dcf-e40b-4fa9-8e54-33a21407d19c/mock-bearer-poc-uc01-qualifications-eservice.yaml"
+if [ -f "$SQL_DIR/mock-poc-uc01-qualifications-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-qualifications.yaml" \
+    "s3://$S3_BUCKET/72937dcf-e40b-4fa9-8e54-33a21407d19c/mock-bearer-poc-uc01-qualifications-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml" \
-  "s3://$S3_BUCKET/ff8bebc1-5e1c-4f8d-8611-03e18354558f/mock-bearer-poc-uc01-set-qualification-eservice.yaml"
+if [ -f "$SQL_DIR/mock-poc-uc01-set-qualification-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc01-set-qualification.yaml" \
+    "s3://$S3_BUCKET/ff8bebc1-5e1c-4f8d-8611-03e18354558f/mock-bearer-poc-uc01-set-qualification-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml" \
-  "s3://$S3_BUCKET/62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml"
+if [ -f "$SQL_DIR/mock-integrity-rest-02-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml" \
+    "s3://$S3_BUCKET/62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml"
+fi
 
-aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
-  "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml" \
-  "s3://$S3_BUCKET/7add7dfd-dece-44e4-9d21-7a9c9404506a/mock-bearer-async-consumption-eservice.yaml"
+if [ -f "$SQL_DIR/mock-async-consumption-eservice.sql" ]; then
+  aws ${S3_ENDPOINT_URL:+--endpoint-url "$S3_ENDPOINT_URL"} s3 cp \
+    "$REPO_ROOT/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml" \
+    "s3://$S3_BUCKET/7add7dfd-dece-44e4-9d21-7a9c9404506a/mock-bearer-async-consumption-eservice.yaml"
+fi
 
 # Orion-only seed: matches scripts/seed/sql/orion/mock-poc-uc03-supervisory-body-eservice.sql.
 # Uploaded only when the SQL is present in $SQL_DIR (the supervisory body is on Orion).
