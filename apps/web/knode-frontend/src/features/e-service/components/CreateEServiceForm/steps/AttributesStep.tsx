@@ -232,39 +232,28 @@ function SearchableAttributesField({
         }));
 
         return (
-          <div className="flex gap-4 items-start">
-            <MultiSelectComboBox
-              className="flex-1"
-              errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
-              inputValue={inputValue}
-              isInvalid={!groupField.state.meta.isValid}
-              isRequired
-              items={items}
-              label="Attributes"
-              onChange={(newKeys) =>
-                groupField.handleChange(parseSchemeRefKeys([...newKeys]))
-              }
-              onInputChange={setInputValue}
-              placeholder="Select one or more attributes"
-              selectedTags={selectedTags}
-              value={keys}
-            >
-              {(item) => (
-                <MultiSelectComboBoxItem id={item.id}>
-                  {item.label}
-                </MultiSelectComboBoxItem>
-              )}
-            </MultiSelectComboBox>
-            {/* The CTA aligns to the dropdown, not to the chips that grow below
-                it: an invisible label reserves the label row so the button's top
-                meets the input's (both share the same height). */}
-            <div className="flex flex-col gap-1">
-              <Label aria-hidden className="invisible">
-                &nbsp;
-              </Label>
-              <AttributesListCTA />
-            </div>
-          </div>
+          <MultiSelectComboBox
+            action={<AttributesListCTA />}
+            errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
+            inputValue={inputValue}
+            isInvalid={!groupField.state.meta.isValid}
+            isRequired
+            items={items}
+            label="Attributes"
+            onChange={(newKeys) =>
+              groupField.handleChange(parseSchemeRefKeys([...newKeys]))
+            }
+            onInputChange={setInputValue}
+            placeholder="Select one or more attributes"
+            selectedTags={selectedTags}
+            value={keys}
+          >
+            {(item) => (
+              <MultiSelectComboBoxItem id={item.id}>
+                {item.label}
+              </MultiSelectComboBoxItem>
+            )}
+          </MultiSelectComboBox>
         );
       }}
     </form.Field>
