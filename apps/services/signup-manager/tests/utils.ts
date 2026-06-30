@@ -124,6 +124,7 @@ export function makeSignupUser(
   return match(overrides.status ?? SignupUserStatus.enum.Active)
     .returnType<SignupUser>()
     .with(
+      SignupUserStatus.enum.OnboardingPending,
       SignupUserStatus.enum.Active,
       SignupUserStatus.enum.DeletionPending,
       (status) => ({ ...base, status }),

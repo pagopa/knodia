@@ -106,6 +106,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
@@ -308,6 +309,7 @@ services:
         aliases:
           - knodia-orion-eservice-interfaces.minio
           - knodia-lynx-eservice-interfaces.minio
+          - knodia-signup-archives.minio
     volumes:
       - multinode-minio-data:/data
     healthcheck:
@@ -329,6 +331,8 @@ services:
       mc alias set local http://minio:9000 testawskey testawssecret;
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
+      mc mb --with-lock --ignore-existing local/knodia-signup-archives;
+      mc retention set --default GOVERNANCE 1d local/knodia-signup-archives;
       "
 
   # ============================================================
@@ -1918,6 +1922,30 @@ services:
   # Signup
   # ============================================================
 
+  # SESv2 mock; aws-ses-v2-local has no published image so it's installed on a
+  # Node image at startup. Multinode doesn't read aws.config.local, so an
+  # in-compose SES consumer must point here via AWS_ENDPOINT_URL_SESV2.
+  ses-mock:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-ses-mock
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    entrypoint:
+      - /bin/sh
+      - -c
+      - "npm install -g aws-ses-v2-local@2.9.0 && aws-ses-v2-local --port=8005 --host=0.0.0.0"
+    ports:
+      - 8005:8005
+    healthcheck:
+      # 127.0.0.1 not localhost: alpine maps localhost to ::1 (IPv6) but the
+      # server is IPv4-only, so a localhost probe never goes healthy.
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8005/store"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   flyway-signup:
     security_opt:
       - no-new-privileges:true
@@ -1999,6 +2027,146 @@ services:
       organization-process-lynx:
         condition: service_started
 
+  signup-manager:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signup-manager
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-manager/Dockerfile
+    ports:
+      - 4200:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-signup-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      ONE_IDENTITY_CLIENT_ID: local-oi-client-id
+      ONE_IDENTITY_CLIENT_SECRET: local-oi-client-secret
+      # Browser-facing base (login redirect + issuer): must match the mock ISSUER
+      # and be reachable from the browser on the host.
+      ONE_IDENTITY_DOMAIN: "http://localhost:4568"
+      # Server-reachable base (JWKS + token exchange) on the container network.
+      ONE_IDENTITY_JWKS_URI: "http://local-one-identity:3000/jwks"
+      ONE_IDENTITY_REDIRECT_URL: "http://localhost:5176/ui/login/callback"
+      UI_SIGNUP_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-signup-session"
+      UI_SIGNUP_SESSION_JWT_ISSUER: "local-knodia"
+      UI_SIGNUP_SESSION_JWT_KID: "alias/local-knodia-key"
+      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "300"
+      SIGNUP_DB_USER: local_signup_manager_user
+      SIGNUP_DB_PASSWORD: local_signup_manager_user
+      SIGNUP_DB_HOST: postgres
+      SIGNUP_DB_PORT: "5432"
+      SIGNUP_DB_NAME: signup
+      SIGNUP_DB_SCHEMA: local_signup
+      SIGNUP_DB_USE_SSL: "false"
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-signup-manager
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+      SIGNUP_TOPIC: signup.events
+      RATE_LIMITER_MAX_REQUESTS: "100"
+      RATE_LIMITER_DISABLE_AWS_IAM_AUTH: "true"
+      RATE_LIMITER_ENVIRONMENT: local
+      RATE_LIMITER_TIME_WINDOW_SECONDS: "60"
+      RATE_LIMITER_REDIS_HOST: redis
+      RATE_LIMITER_REDIS_PORT: "6379"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-setup:
+        condition: service_completed_successfully
+      flyway-signup:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+      local-one-identity:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  signup-archiver:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signup-archiver
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-archiver/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-signup-archiver
+      KAFKA_GROUP_ID: kafka-signup-archiver
+      TOPIC_STARTING_OFFSET: earliest
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+      SIGNUP_TOPIC: signup.events
+      SIGNUP_ARCHIVES_S3_BUCKET: knodia-signup-archives
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_S3: http://minio:9000
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-setup:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      minio-setup:
+        condition: service_completed_successfully
+
+  # One-shot job (emails the DPO the suspended-users list, then exits). On the
+  # "on-demand" profile so it doesn't run on `up`; launch it by hand:
+  #   docker compose -f docker/compose.multinode.yaml run --rm signup-suspended-users-notifier
+  # Multinode ignores aws.config.local, so the SESv2 endpoint comes from
+  # AWS_ENDPOINT_URL_SESV2 (see the ses-mock note above).
+  signup-suspended-users-notifier:
+    profiles:
+      - on-demand
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multinode-signup-suspended-users-notifier
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/signup-suspended-users-notifier/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      SIGNUP_DB_USER: local_signup_manager_user
+      SIGNUP_DB_PASSWORD: local_signup_manager_user
+      SIGNUP_DB_HOST: postgres
+      SIGNUP_DB_PORT: "5432"
+      SIGNUP_DB_NAME: signup
+      SIGNUP_DB_SCHEMA: local_signup
+      SIGNUP_DB_USE_SSL: "false"
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_ENDPOINT_URL_SESV2: http://ses-mock:8005
+      SES_SENDER_MAIL: noreply@knodia.local
+      SES_SENDER_LABEL: KNODIA
+      SUSPENDED_USERS_NOTIFICATION_RECIPIENT: dpo@pagopa.it
+    depends_on:
+      flyway-signup:
+        condition: service_completed_successfully
+      ses-mock:
+        condition: service_healthy
+
   # ============================================================
   # Frontends
   # ============================================================
@@ -2041,6 +2209,28 @@ services:
       BFF_UPSTREAM: "http://bff-lynx:3000"
     depends_on:
       bff-lynx:
+        condition: service_started
+
+  # Node-agnostic central onboarding UI: nginx serves the SPA and reverse-proxies
+  # /signup-manager same-origin (mirrors the knode frontends' BFF proxy).
+  signup-frontend:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-signup-frontend
+    build:
+      context: ..
+      dockerfile: apps/web/signup-frontend/Dockerfile
+    ports:
+      - 5176:80
+    volumes:
+      - ./multinode/nginx-signup-frontend.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./multinode/env-signup.js:/usr/share/nginx/html/ui/env.js:ro
+    environment:
+      SIGNUP_MANAGER_UPSTREAM: "http://signup-manager:3000"
+    depends_on:
+      signup-manager:
         condition: service_started
 
   # ============================================================
