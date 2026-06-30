@@ -89,8 +89,13 @@ services:
         condition: service_completed_successfully
       minio-setup:
         condition: service_completed_successfully
+      # Writes the integrity key env file the keychain seed reads (this container
+      # has no Node/KMS to derive it itself).
+      local-kms-setup:
+        condition: service_completed_successfully
     volumes:
       - ../scripts/seed:/seed:ro
+      - ./keys:/keys:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer.yaml:/apps/services/mock-eservice/openapi/openapi-bearer.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-dpop.yaml:/apps/services/mock-eservice/openapi/openapi-dpop.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-signal-hub.yaml:ro
@@ -110,6 +115,7 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
+      INTEGRITY_KEY_ENV_FILE: /keys/kms/integrity-producer-key.env
     # `-e` makes the shell fail fast on the first tenant error.
     entrypoint:
       - /bin/sh
@@ -325,6 +331,28 @@ services:
       mc mb --ignore-existing local/knodia-orion-eservice-interfaces;
       mc mb --ignore-existing local/knodia-lynx-eservice-interfaces;
       "
+
+  # SESv2 mock; aws-ses-v2-local has no published image so it's installed on a
+  # Node image at startup. Multinode doesn't read aws.config.local, so an
+  # in-compose SES consumer must point here via AWS_ENDPOINT_URL_SESV2.
+  ses-mock:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-ses-mock
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    entrypoint:
+      - /bin/sh
+      - -c
+      - "npm install -g aws-ses-v2-local@2.9.0 && aws-ses-v2-local --port=8005 --host=0.0.0.0"
+    ports:
+      - 8005:8005
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8005/store"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   # ============================================================
   # pgAdmin
@@ -1046,7 +1074,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-orion:
@@ -1825,7 +1853,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
-      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-key
+      INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
       INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
     depends_on:
       flyway-lynx:
@@ -2110,13 +2138,29 @@ services:
         condition: service_healthy
     volumes:
       - multinode-jwks-data:/jwks
+      - ./keys:/keys
       - ../scripts/local-auth:/app/scripts/local-auth:ro
+      - ../scripts/seed:/app/scripts/seed:ro
       - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
       JWKS_OUTPUT_DIR: /jwks
-    command: node scripts/local-auth/kms-setup.mjs
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_REGION: eu-south-1
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      INTEGRITY_PRODUCER_KEY_KMS_ALIAS: alias/local-knodia-integrity-rest-02-key
+    # Provision the KMS keys, then derive the integrity producer key into the env file
+    # the seed container reads (it has no Node/KMS to derive it itself). mkdir keeps the
+    # output dir present on a fresh checkout, since docker/keys is gitignored.
+    command:
+      - sh
+      - -ec
+      - |
+        node scripts/local-auth/kms-setup.mjs
+        mkdir -p /keys/kms
+        node scripts/seed/derive-integrity-producer-key.ts > /keys/kms/integrity-producer-key.env
 
   local-jwks:
     security_opt:

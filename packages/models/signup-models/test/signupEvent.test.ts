@@ -7,6 +7,20 @@ import { describe, expect, it } from "vitest";
 
 import { SignupEventV1 } from "../src/signupEvent.ts";
 
+function validMaintenanceUserDeletionData() {
+  return {
+    occurredAt: "2026-05-31T10:00:00.000Z",
+    signupUserId: generateId<SignupUserId>(),
+  };
+}
+
+function validMaintenanceUserReactivationData() {
+  return {
+    occurredAt: "2026-05-30T10:00:00.000Z",
+    signupUserId: generateId<SignupUserId>(),
+  };
+}
+
 function validOnboardingData() {
   return {
     occurredAt: "2026-05-28T10:00:00.000Z",
@@ -51,6 +65,24 @@ describe("SignupEventV1", () => {
     const event: SignupEventV1 = {
       data: validSuspensionData(),
       type: "SuspensionRequestedV1",
+    };
+
+    expect(SignupEventV1.parse(event)).toEqual(event);
+  });
+
+  it("parses a valid MaintenanceUserReactivationRequestedV1 event", () => {
+    const event: SignupEventV1 = {
+      data: validMaintenanceUserReactivationData(),
+      type: "MaintenanceUserReactivationRequestedV1",
+    };
+
+    expect(SignupEventV1.parse(event)).toEqual(event);
+  });
+
+  it("parses a valid MaintenanceUserDeletionRequestedV1 event", () => {
+    const event: SignupEventV1 = {
+      data: validMaintenanceUserDeletionData(),
+      type: "MaintenanceUserDeletionRequestedV1",
     };
 
     expect(SignupEventV1.parse(event)).toEqual(event);

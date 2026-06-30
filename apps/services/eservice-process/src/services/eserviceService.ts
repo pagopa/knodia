@@ -26,6 +26,7 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type FlatEservice,
   type PurposeFormOption,
 } from "@knodia/eservice-models";
 import { getEserviceTemplate } from "@knodia/eservice-template-models";
@@ -57,6 +58,7 @@ import {
   retrieveEservice,
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
+  retrieveFlatEservice,
 } from "../utils/readmodelUtils.ts";
 import {
   retrieveEserviceLatestVersionFromEservice,
@@ -138,16 +140,16 @@ export function eserviceServiceBuilder(
       // per-organization unique attribute (scheme = Knode ID, code = org name)
       // without an attribute store. Beyond the standard set, only schemes that
       // are Knode IDs other than this instance's are accepted: e-service
-      // consumption is always inter-node, so a same-node scheme matches no
-      // legitimate flow. Generalises to N nodes. The code is intentionally not
-      // validated against the remote organizations (that would force an
-      // inter-node call in a write path; deferred).
+      // consumption is always cross-knode, so a same-knode scheme matches no
+      // legitimate flow. Generalises to N knodes. The code is intentionally not
+      // validated against the remote organizations (that would force a
+      // cross-knode call in a write path; deferred).
       for (const attr of requiredAttributes.flat()) {
         const isStandardAttribute = getAttribute(attr) !== undefined;
-        const isOtherNodeUniqueAttribute =
+        const isOtherKnodeUniqueAttribute =
           KnodeId.safeParse(attr.scheme).success &&
           attr.scheme !== config.knodeId;
-        if (!isStandardAttribute && !isOtherNodeUniqueAttribute) {
+        if (!isStandardAttribute && !isOtherKnodeUniqueAttribute) {
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }
@@ -225,7 +227,7 @@ export function eserviceServiceBuilder(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
       { logger }: AuthorizedContext<InternalAuthData>,
-    ): Promise<ListResult<Eservice>> {
+    ): Promise<ListResult<FlatEservice>> {
       logger.info({ body, params }, "Getting catalog E-services with params");
       return await readmodelService.getCatalogEservices(body, params);
     },
@@ -237,7 +239,7 @@ export function eserviceServiceBuilder(
       }: AuthorizedContext<
         ExternalUISessionAuthData | InternalAuthData | UISessionAuthData
       >,
-    ): Promise<WithMetadata<Eservice>> {
+    ): Promise<WithMetadata<FlatEservice>> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
       if (authData.tokenType === "external-ui-session") {
@@ -248,7 +250,7 @@ export function eserviceServiceBuilder(
         );
       }
 
-      return await retrieveEservice(eserviceId, readmodelService);
+      return await retrieveFlatEservice(eserviceId, readmodelService);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
@@ -298,7 +300,7 @@ export function eserviceServiceBuilder(
     async getEservices(
       params: API_GetEservicesQueryParams,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<ListResult<Eservice>> {
+    ): Promise<ListResult<FlatEservice>> {
       logger.info({ params }, "Getting E-services with params");
 
       return await readmodelService.getEservices(params);

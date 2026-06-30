@@ -38,6 +38,7 @@ import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRoute
 import { knodeApiKeychainRouter } from "./routers/keychain/knodeApiKeychainRouter.ts";
 import { producerKeychainRouter } from "./routers/keychain/producerKeychainRouter.ts";
 import { operatorRouter } from "./routers/operatorRouter.ts";
+import { organizationRouter } from "./routers/organization/organizationRouter.ts";
 import { purposeTemplateRouter } from "./routers/purpose-template/purposeTemplateRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
@@ -106,6 +107,10 @@ export function buildAppFromConfig(
           {
             description: "Operator routes",
             name: apiTags.operator,
+          },
+          {
+            description: "Organization routes",
+            name: apiTags.organization,
           },
           {
             description: "E-service Templates routes",
@@ -191,6 +196,9 @@ export function buildAppFromConfig(
     });
     protectedApp.register(operatorRouter, {
       organizationProcessClient: clients.organizationProcessClient,
+    });
+    protectedApp.register(organizationRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,

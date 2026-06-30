@@ -9,6 +9,7 @@ describe("KnodeCard", () => {
       <KnodeCard
         knodeName="Orion"
         organizationName="Rigel 123 Org"
+        prototypeHref="https://prototype.example"
         username="rigel_123_user"
       />,
     );
@@ -17,7 +18,23 @@ describe("KnodeCard", () => {
     expect(screen.getByText("Rigel 123 Org")).toBeVisible();
     expect(screen.getByText("rigel_123_user")).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /Access the prototype/ }),
+      screen.getByRole("link", { name: /Access the prototype/ }),
     ).toBeVisible();
+  });
+
+  it("links to the prototype URL, opening it safely in a new tab", () => {
+    render(
+      <KnodeCard
+        knodeName="Orion"
+        organizationName="Rigel 123 Org"
+        prototypeHref="https://prototype.example"
+        username="rigel_123_user"
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: /Access the prototype/ });
+    expect(link).toHaveAttribute("href", "https://prototype.example");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

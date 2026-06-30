@@ -68,14 +68,14 @@ export function organizationServiceBuilder(
 
       // Attribute validation is relaxed to support per-organization unique
       // attributes (scheme = Knode ID, code = organization name) without
-      // introducing an attribute store. Only the instance's own node is
-      // accepted because every organization is always created on its own node.
+      // introducing an attribute store. Only the instance's own knode is
+      // accepted because every organization is always created on its own knode.
       // The code is intentionally not validated against the name (an optional
       // `code === name` tightening is deferred).
       for (const attr of seed.attributes) {
         const isStandardAttribute = getAttribute(attr) !== undefined;
-        const isOwnNodeUniqueAttribute = attr.scheme === config.knodeId;
-        if (!isStandardAttribute && !isOwnNodeUniqueAttribute) {
+        const isOwnKnodeUniqueAttribute = attr.scheme === config.knodeId;
+        if (!isStandardAttribute && !isOwnKnodeUniqueAttribute) {
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }

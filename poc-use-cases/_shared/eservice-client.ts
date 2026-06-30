@@ -17,6 +17,14 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const CLIENT_ASSERTION_TYPE =
   "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
 
+// Accepted audience differs per knode and env, so derive it from the auth-server
+// URL instead of a static --aud. Localhost keeps generate-client-assertion's default.
+function audienceArgs(authorizationServerUrl: string, endpoint: string): string[] {
+  const { host, hostname } = new URL(authorizationServerUrl);
+  if (hostname === "localhost" || hostname === "127.0.0.1") return [];
+  return ["--aud", `${host}${endpoint}`];
+}
+
 // Throw with the response body on any non-OK HTTP response.
 export async function ensureOk(response: Response, label: string): Promise<void> {
   if (!response.ok) {
@@ -88,7 +96,7 @@ export async function mintAccessToken(
 ): Promise<string> {
   const assertion = signClientAssertion(
     consumerPrivateKeyPath,
-    ["--purposeId", purposeId],
+    ["--purposeId", purposeId, ...audienceArgs(authorizationServerUrl, "/token")],
     consumerKeychainId,
   );
   return requestToken(
@@ -109,7 +117,7 @@ export async function mintKnodeApiToken(
 ): Promise<string> {
   const assertion = signClientAssertion(
     knodeApiPrivateKeyPath,
-    ["--knodeId", knodeId],
+    ["--knodeId", knodeId, ...audienceArgs(authorizationServerUrl, "/knodeApiToken")],
     knodeApiKeychainId,
   );
   return requestToken(

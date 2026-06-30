@@ -72,7 +72,9 @@ export function Modal({
             )}
           </div>
           {children && (
-            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto pt-3">
+              {children}
+            </div>
           )}
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <div className="flex shrink-0 items-center justify-end gap-6">
