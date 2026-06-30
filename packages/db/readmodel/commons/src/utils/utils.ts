@@ -5,6 +5,7 @@ import { type ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
   and,
   asc,
+  type Column,
   count,
   desc,
   eq,
@@ -251,10 +252,6 @@ export const createOrderByFilters = ({
   });
 };
 
-export function escapeRegExp(str: string): string {
-  return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
-}
-
 export async function getTableTotalCount(
   db: NodePgDatabase,
   query: PgSelect,
@@ -276,7 +273,7 @@ export function ilikeJsonB({
   column: PgColumn;
   value: string;
 }): SQL {
-  const pattern = `%${escapeRegExp(value)}%`;
+  const pattern = `%${escapeSqlLike(value)}%`;
 
   return sql`
     exists (
@@ -318,3 +315,22 @@ export const updateMetadataVersionInTables = async <
       );
   }
 };
+
+// Escapes SQL LIKE metacharacters (%, _, \) so they are treated as literals.
+// Must be used on user input before embedding it in an ILIKE pattern.
+// Kept separate from ilikeEscaped because the caller decides where to place
+// the wildcards (e.g. `%${escapeSqlLike(val)}%` for contains, no % for exact).
+// Merging escape + ilike into one function would escape the caller's own % wildcards.
+export function escapeSqlLike(value: string): string {
+  return value.replace(/[\\%_]/g, "\\$&");
+}
+
+// Performs an ILIKE comparison with the ESCAPE clause, which tells Postgres
+// to interpret backslashes produced by escapeSqlLike as escape characters.
+// Without ESCAPE '\\', the \% and \_ sequences would not be treated as literals.
+export function ilikeEscaped(
+  column: Column | SQL.Aliased,
+  pattern: string,
+): SQL {
+  return sql`${column} ILIKE ${pattern} ESCAPE '\\'`;
+}
