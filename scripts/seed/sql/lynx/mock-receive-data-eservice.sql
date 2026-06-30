@@ -72,11 +72,6 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   pretty_name = EXCLUDED.pretty_name,
   updated_at = now();
 
--- Wipe required attributes and reinsert, so a stale nuts3 (seeded before
--- testing_organization) is dropped on dev/multinode reruns.
-DELETE FROM ${NAMESPACE}_eservice."eservice_version_required_attribute"
- WHERE eservice_version_id = 'c2e5b1d4-8f3a-4e72-9d28-2b5c9c4f6d19';
-
 INSERT INTO ${NAMESPACE}_eservice."eservice_version_required_attribute" (
   eservice_id, eservice_version_id, group_id, scheme, code, metadata_version
 ) VALUES (
