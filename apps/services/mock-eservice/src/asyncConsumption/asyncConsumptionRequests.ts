@@ -1,4 +1,15 @@
-import { type API_CompanyUid } from "../models/api.ts";
+import { randomUUID } from "crypto";
+
+import {
+  findLegalEntity,
+  findLegalEntityAddress,
+} from "../data/legalEntities.ts";
+import {
+  type API_Address,
+  API_AsyncConsumptionRequestState,
+  type API_CompanyUid,
+  type API_LegalEntity,
+} from "../models/api.ts";
 import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
@@ -10,9 +21,18 @@ export interface AsyncCompanyAddressesRequest {
 
 // Demo-only: async-consumption request IDs are kept in-memory and reset on
 // process restart. Next endpoints in this flow read this cache.
-const asyncCompanyAddressesRequests = new Map<
+export const asyncCompanyAddressesRequests = new Map<
   string,
   AsyncCompanyAddressesRequest
+>();
+
+export const asyncCompanyAddressesResults = new Map<
+  string,
+  {
+    address?: API_Address;
+    legalEntity?: API_LegalEntity;
+    uidCompany: API_CompanyUid;
+  }[]
 >();
 
 export function addAsyncCompanyAddressesRequest(
@@ -38,8 +58,47 @@ export function getAsyncCompanyAddressesRequest(
   return request;
 }
 
-export function resetAsyncCompanyAddressesRequests(): void {
-  asyncCompanyAddressesRequests.clear();
+export function getAsyncCompanyAddressesRequestState(
+  request: AsyncCompanyAddressesRequest,
+) {
+  return request.resourceId
+    ? API_AsyncConsumptionRequestState.enum.COMPLETED
+    : API_AsyncConsumptionRequestState.enum.PENDING;
+}
+
+export function resolveAsyncCompanyAddressesRequest(
+  request: AsyncCompanyAddressesRequest,
+) {
+  if (!request.resourceId && request.finishDate <= new Date()) {
+    request.resourceId = randomUUID();
+    addAsyncCompanyAddressesResult(request);
+  }
+}
+
+function addAsyncCompanyAddressesResult(
+  request: AsyncCompanyAddressesRequest,
+): void {
+  if (!request.resourceId) {
+    return;
+  }
+
+  const resources = asyncCompanyAddressesResults.get(request.resourceId);
+  if (resources) {
+    return;
+  }
+
+  const results = request.companyUids.map((uidCompany) => {
+    const legalEntity = findLegalEntity(uidCompany);
+    const address = findLegalEntityAddress(uidCompany);
+
+    return {
+      address,
+      legalEntity,
+      uidCompany,
+    };
+  });
+
+  asyncCompanyAddressesResults.set(request.resourceId, results);
 }
 
 function getMockFinishDate(requestId: string): Date {

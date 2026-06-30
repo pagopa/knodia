@@ -7,13 +7,22 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import { randomUUID } from "crypto";
 import z from "zod";
 
-import { addAsyncCompanyAddressesRequest } from "../asyncConsumption/asyncConsumptionRequests.ts";
+import {
+  addAsyncCompanyAddressesRequest,
+  getAsyncCompanyAddressesRequest,
+  getAsyncCompanyAddressesRequestState,
+  resolveAsyncCompanyAddressesRequest,
+} from "../asyncConsumption/asyncConsumptionRequests.ts";
 import {
   ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
   ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
   ASYNC_CONSUMPTION_MOCK_PRODUCER_ID,
 } from "../asyncConsumption/mockup.ts";
-import { API_CompanyAddressesRequest } from "../models/api.ts";
+import {
+  API_AsyncConsumptionRequestId,
+  API_CompanyAddressesRequest,
+  API_GetCompanyAddressesRequestStateResponse,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { assertTokenClaimsAreValidForEservice } from "../utils/validators.ts";
 
@@ -50,7 +59,7 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       operationId: "requestCompanyAddresses",
       response: {
         200: z.strictObject({
-          requestId: z.uuid(),
+          requestId: API_AsyncConsumptionRequestId,
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -60,5 +69,51 @@ export const mockAsyncConsumptionRouter: FastifyPluginAsyncZod<
       tags: [apiTags.asyncCompanyAddresses],
     },
     url: "/legal-entities/address-requests",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+      assertTokenClaimsAreValidForEservice(
+        ASYNC_CONSUMPTION_MOCK_ESERVICE_ID,
+        ASYNC_CONSUMPTION_MOCK_ESERVICE_VERSION_ID,
+        ASYNC_CONSUMPTION_MOCK_PRODUCER_ID,
+        knodeId,
+      );
+
+      const requestId = req.params.requestId;
+      const request = getAsyncCompanyAddressesRequest(requestId);
+
+      resolveAsyncCompanyAddressesRequest(request);
+      const state = getAsyncCompanyAddressesRequestState(request);
+
+      logger.info(
+        `Mock e-service company addresses request state requested. State for request ID ${requestId}: ${state}.`,
+      );
+
+      res.status(200).send({
+        resourceId: request.resourceId,
+        state,
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Get the state of a previously requested company addresses request (Cross-Border E-service 05, Get company addresses). The Producer will return the state of the request, indicating whether it has been completed or is still pending. If the request has been completed, the Consumer can then retrieve the results through a separate endpoint using the resource ID.",
+      operationId: "getCompanyAddressesRequestState",
+      params: z.strictObject({
+        requestId: API_AsyncConsumptionRequestId,
+      }),
+      response: {
+        200: API_GetCompanyAddressesRequestStateResponse,
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        404: API_Problem.meta({ description: "Request Not Found" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+      },
+      summary: "Get company addresses request state",
+      tags: [apiTags.asyncCompanyAddresses],
+    },
+    url: "/legal-entities/address-requests/:requestId",
   });
 };
