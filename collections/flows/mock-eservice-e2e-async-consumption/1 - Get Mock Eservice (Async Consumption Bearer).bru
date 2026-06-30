@@ -1,0 +1,36 @@
+meta {
+  name: 1 - Get Mock Eservice (Async Consumption Bearer)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: 4ed2b4f9-e974-4e69-84d6-7074af92cd4f
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+vars:post-response {
+  eserviceId: res.body.id
+}
+
+script:post-response {
+  console.log(
+    `\n==> eserviceId captured (${res.body.id}).\n` +
+    "Now run the bearer-token-flow from step 2 (Get Eservice Latest Version) to step 11 (Create E-service Access Token), skipping step 1 (Create Eservice) — the flow will reuse this eserviceId.\n" +
+    "When it's done, run step 2 of this flow (Request Company Addresses).\n"
+  )
+}

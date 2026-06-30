@@ -106,6 +106,7 @@ services:
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-supervisory-body.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-poc-uc03-relay.yaml:ro
       - ../apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-integrity-rest-02.yaml:ro
+      - ../apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:/apps/services/mock-eservice/openapi/openapi-bearer-async-consumption.yaml:ro
     environment:
       PGHOST: postgres
       PGUSER: root
