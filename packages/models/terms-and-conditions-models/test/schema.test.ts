@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Fragment, TermsDocument } from "../src/schema.ts";
+import { Fragment, PlaceholderKind, TermsDocument } from "../src/schema.ts";
 
 describe("TermsDocument schema", () => {
   it("parses a well-formed document", () => {
@@ -8,7 +8,10 @@ describe("TermsDocument schema", () => {
       blocks: [
         { content: [{ text: "Art. 1" }], level: 2, type: "heading" },
         {
-          content: [{ placeholder: "version" }, { email: "info@knodia.org" }],
+          content: [
+            { placeholder: PlaceholderKind.enum.version },
+            { email: "info@knodia.org" },
+          ],
           marker: "a)",
           type: "paragraph",
         },

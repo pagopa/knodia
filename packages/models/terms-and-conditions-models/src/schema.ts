@@ -10,12 +10,12 @@ const TextFragment = z.strictObject({
 export const PlaceholderKind = z.enum(["version", "date"]);
 export type PlaceholderKind = z.infer<typeof PlaceholderKind>;
 
-// Carries no inline value — substituted identically on render and digest, so the two can't diverge.
+// No inline value: substituted identically on render and digest, so they can't diverge.
 const PlaceholderFragment = z.strictObject({
   placeholder: PlaceholderKind,
 });
 
-// The address doubles as the visible link text and the digest text — there is no separate label.
+// Address doubles as link text and digest text; no separate label.
 const EmailFragment = z.strictObject({
   email: z.email(),
 });
