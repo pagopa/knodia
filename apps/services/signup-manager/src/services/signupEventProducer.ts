@@ -40,6 +40,24 @@ export function signupEventProducerBuilder({
       await publish({ data, type: "EmailChangeRequestedV1" });
     },
 
+    async publishMaintenanceUserDeletionRequestedV1Event(
+      data: SignupEventData<"MaintenanceUserDeletionRequestedV1">,
+    ): Promise<void> {
+      await publish({
+        data,
+        type: "MaintenanceUserDeletionRequestedV1",
+      });
+    },
+
+    async publishMaintenanceUserReactivationRequestedV1Event(
+      data: SignupEventData<"MaintenanceUserReactivationRequestedV1">,
+    ): Promise<void> {
+      await publish({
+        data,
+        type: "MaintenanceUserReactivationRequestedV1",
+      });
+    },
+
     async publishOnboardingCompletedV1Event(
       data: SignupEventData<"OnboardingCompletedV1">,
     ): Promise<void> {
@@ -49,15 +67,7 @@ export function signupEventProducerBuilder({
     async publishSuspensionRequestedV1Event(
       data: SignupEventData<"SuspensionRequestedV1">,
     ): Promise<void> {
-      const event: SignupEventV1 = {
-        data,
-        type: "SuspensionRequestedV1",
-      };
-
-      await producer.send({
-        messages: [{ value: JSON.stringify(event) }],
-        topic,
-      });
+      await publish({ data, type: "SuspensionRequestedV1" });
     },
   };
 }

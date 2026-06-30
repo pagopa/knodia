@@ -67,6 +67,42 @@ function makeSuspensionEvent(
   };
 }
 
+function makeUserMaintenanceDeletionEvent(
+  overrides: Partial<
+    Extract<
+      SignupEventV1,
+      { type: "MaintenanceUserDeletionRequestedV1" }
+    >["data"]
+  > = {},
+): Extract<SignupEventV1, { type: "MaintenanceUserDeletionRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-06-09T12:00:00.000Z",
+      signupUserId,
+      ...overrides,
+    },
+    type: "MaintenanceUserDeletionRequestedV1",
+  };
+}
+
+function makeUserReactivationEvent(
+  overrides: Partial<
+    Extract<
+      SignupEventV1,
+      { type: "MaintenanceUserReactivationRequestedV1" }
+    >["data"]
+  > = {},
+): Extract<SignupEventV1, { type: "MaintenanceUserReactivationRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-06-09T12:00:00.000Z",
+      signupUserId,
+      ...overrides,
+    },
+    type: "MaintenanceUserReactivationRequestedV1",
+  };
+}
+
 beforeEach(() => {
   storeBytesIfAbsent = vi
     .fn()
@@ -101,7 +137,7 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
     expect(JSON.parse(arg.content.toString())).toEqual({
       action: "Onboarding",
       date: "2026-06-09T10:00:00.000Z",
-      nonce: "nonce-abc",
+      identifier: "nonce-abc",
       termsAcceptanceDigest: digest,
       termsAcceptanceVersion: "v1",
     });
@@ -159,7 +195,7 @@ describe("handleSignupMessage - DeletionRequestedV1", () => {
     expect(JSON.parse(arg.content.toString())).toEqual({
       action: "Deletion",
       date: "2026-06-09T10:00:00.000Z",
-      nonce: "nonce-abc",
+      identifier: "nonce-abc",
     });
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining("Archived Deletion"),
@@ -236,7 +272,7 @@ describe("handleSignupMessage - SuspensionRequestedV1", () => {
     expect(JSON.parse(arg.content.toString())).toEqual({
       action: "Suspension",
       date: "2026-06-09T11:00:00.000Z",
-      nonce: "nonce-susp-abc",
+      identifier: "nonce-susp-abc",
       suspensionReason: "UnlawfulProcessing",
     });
     expect(logger.info).toHaveBeenCalledWith(
@@ -272,6 +308,85 @@ describe("handleSignupMessage - SuspensionRequestedV1", () => {
 
     await expect(
       handleSignupMessage(makeSuspensionEvent(), deps, logger),
+    ).rejects.toThrow(/AccessDenied/);
+  });
+});
+
+describe("handleSignupMessage - MaintenanceUserReactivationRequestedV1", () => {
+  it("archives the user reactivation action to the expected key", async () => {
+    await handleSignupMessage(makeUserReactivationEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+    const arg = firstStoreArg();
+    expect(arg.bucket).toBe("test-bucket");
+    expect(arg.key).toBe(
+      `signup-actions/${signupUserId}/MaintenanceReactivation/2026-06-09T12:00:00.000Z.json`,
+    );
+    expect(arg.contentType).toBe("application/json");
+
+    expect(JSON.parse(arg.content.toString())).toEqual({
+      action: "MaintenanceReactivation",
+      date: "2026-06-09T12:00:00.000Z",
+      identifier: "2026-06-09T12:00:00.000Z",
+    });
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining("Archived MaintenanceReactivation"),
+    );
+  });
+
+  it("treats an already-archived maintenance reactivation record as an idempotent skip", async () => {
+    storeBytesIfAbsent.mockResolvedValue({ alreadyExists: true, key: "k" });
+
+    await handleSignupMessage(makeUserReactivationEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining("already archived"),
+    );
+    expect(logger.info).not.toHaveBeenCalled();
+  });
+
+  it("propagates storage failures", async () => {
+    storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
+
+    await expect(
+      handleSignupMessage(makeUserReactivationEvent(), deps, logger),
+    ).rejects.toThrow(/AccessDenied/);
+  });
+});
+
+describe("handleSignupMessage - MaintenanceUserDeletionRequestedV1", () => {
+  it("archives the user deletion action to the expected key", async () => {
+    await handleSignupMessage(makeUserMaintenanceDeletionEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+    const arg = firstStoreArg();
+    expect(arg.bucket).toBe("test-bucket");
+    expect(arg.key).toBe(
+      `signup-actions/${signupUserId}/MaintenanceDeletion/2026-06-09T12:00:00.000Z.json`,
+    );
+    expect(arg.contentType).toBe("application/json");
+
+    expect(JSON.parse(arg.content.toString())).toEqual({
+      action: "MaintenanceDeletion",
+      date: "2026-06-09T12:00:00.000Z",
+      identifier: "2026-06-09T12:00:00.000Z",
+    });
+  });
+
+  it("treats an already-archived maintenance deletion record as an idempotent skip", async () => {
+    storeBytesIfAbsent.mockResolvedValue({ alreadyExists: true, key: "k" });
+
+    await handleSignupMessage(makeUserMaintenanceDeletionEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).toHaveBeenCalledTimes(1);
+  });
+
+  it("propagates storage failures", async () => {
+    storeBytesIfAbsent.mockRejectedValue(new Error("AccessDenied"));
+
+    await expect(
+      handleSignupMessage(makeUserMaintenanceDeletionEvent(), deps, logger),
     ).rejects.toThrow(/AccessDenied/);
   });
 });

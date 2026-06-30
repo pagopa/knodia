@@ -28,6 +28,10 @@ export const API_OrganizationIdPathParam = z.strictObject({
 
 export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
   {
+    name: z.string().optional().meta({
+      description:
+        "Filter by Organization name (case-insensitive substring match)",
+    }),
     organizationId: arrayQueryParam(API_OrganizationId).optional().meta({
       description: "Filter by Organization ID",
     }),

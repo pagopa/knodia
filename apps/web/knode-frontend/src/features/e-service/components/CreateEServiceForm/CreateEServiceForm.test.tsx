@@ -44,11 +44,16 @@ const TEST_TEMPLATE: bffApi.EserviceTemplateDetails = {
   name: { en: "Citizen Residence Data Provider" },
 };
 
+// Disambiguates the attributes <Select> trigger from the "Attributes list" doc
+// button — both expose an accessible name containing "Attributes".
+const attributesSelectName = (name: string) =>
+  name.includes("Attributes") && name !== "Attributes list";
+
 /** Helper: select first attribute on AttributesStep and click Next */
 async function fillAttributesStep(
   user: ReturnType<typeof renderWizard>["user"],
 ) {
-  const attrSelect = screen.getByRole("button", { name: /attributes/i });
+  const attrSelect = screen.getByRole("button", { name: attributesSelectName });
 
   await user.click(attrSelect);
   await waitFor(() => {
@@ -144,7 +149,9 @@ async function fillTemplateAttributesStep(
   user: ReturnType<typeof renderWizard>["user"],
 ) {
   expect(screen.getByText("NUTS 2 or NUTS 1")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /attributes/i })).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: attributesSelectName }),
+  ).toBeDisabled();
 
   await user.click(screen.getByRole("button", { name: "Next" }));
   await waitFor(() => {
@@ -387,7 +394,7 @@ describe("CreateEServiceForm — template flow", () => {
     expect(screen.getByText("NUTS 2")).toBeInTheDocument();
     expect(screen.getByText("NUTS 1")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /attributes/i }),
+      screen.queryByRole("button", { name: attributesSelectName }),
     ).not.toBeInTheDocument();
   });
 
@@ -584,7 +591,9 @@ describe("CreateEServiceForm — multi-select trigger text", () => {
     await fillTechnicalStep(user);
     await fillDocsStep(user);
 
-    const attrSelect = screen.getByRole("button", { name: /attributes/i });
+    const attrSelect = screen.getByRole("button", {
+      name: attributesSelectName,
+    });
 
     await user.click(attrSelect);
     await waitFor(() => {

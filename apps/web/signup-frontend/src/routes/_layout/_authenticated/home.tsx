@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 import heroCanvas from "@/assets/hero-canvas.webp";
 import {
@@ -12,41 +13,37 @@ import {
   RequestErasureModal,
   RequestRestrictionModal,
 } from "@/components/features";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { config } from "@/config/config";
+import { useAuthContext } from "@/contexts/auth";
 import { resolveOnboardingRedirect } from "@/services/onboarding";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export const Route = createFileRoute("/_layout/_authenticated/home")({
-  beforeLoad: async ({ context: { queryClient } }) => {
-    const { onboardingStatus } = await queryClient.ensureQueryData(
-      getCurrentSignupUserQuery(),
-    );
-    const destination = resolveOnboardingRedirect(onboardingStatus);
+  beforeLoad: async ({ context: { currentUser, queryClient } }) => {
+    const user =
+      currentUser ??
+      (await queryClient.ensureQueryData(getCurrentSignupUserQuery()));
+    const destination = resolveOnboardingRedirect(user.onboardingStatus);
     if (destination !== "/home") {
       throw redirect({ to: destination });
     }
+    // Only ACTIVE reaches /home; narrow it for the component.
+    return match(user)
+      .with({ onboardingStatus: "ACTIVE" }, (activeUser) => ({
+        user: activeUser,
+      }))
+      .otherwise(() => {
+        throw redirect({ to: destination });
+      });
   },
   component: RouteComponent,
 });
 
-// TODO(KN-753): replace with real Knode assignments once the signup user API exposes them.
-const KNODES = [
-  {
-    knodeName: "Orion",
-    organizationName: "Rigel 123 Org",
-    username: "rigel_123_user",
-  },
-  {
-    knodeName: "Lynx",
-    organizationName: "Ursa 123 Org",
-    username: "ursa_123_user",
-  },
-];
-
 type OpenModal = "changeEmail" | "erasure" | "restriction" | null;
 
 function RouteComponent() {
-  const user = useCurrentUser();
+  const { user } = Route.useRouteContext();
+  const { sessionTokenClaims } = useAuthContext();
   const [openModal, setOpenModal] = useState<OpenModal>(null);
 
   const closeModal = (open: boolean) => {
@@ -66,7 +63,10 @@ function RouteComponent() {
         </div>
         <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[216px] pb-20">
           <div className="flex flex-col gap-20">
-            {user?.email && <CredentialsBanner email={user.email} />}
+            <CredentialsBanner
+              email={user.email}
+              onChangeEmail={() => setOpenModal("changeEmail")}
+            />
             <div className="flex flex-col gap-12">
               <h1 className="text-style-section-title text-neutral-graphite">
                 Your journey into Knodia starts here
@@ -76,8 +76,14 @@ function RouteComponent() {
                 interaction flows.
               </p>
               <div className="grid grid-cols-2 gap-12">
-                {KNODES.map((knode) => (
-                  <KnodeCard key={knode.knodeName} {...knode} />
+                {user.knodes.map((knode) => (
+                  <KnodeCard
+                    key={knode.knode}
+                    knodeName={knode.knode}
+                    organizationName={knode.organizationName}
+                    prototypeHref={config.prototypeUrls[knode.knode]}
+                    username={knode.username}
+                  />
                 ))}
               </div>
             </div>
@@ -89,8 +95,13 @@ function RouteComponent() {
         <div className="mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[142.5px] pb-[222.5px]">
           <div className="grid min-h-[308px] w-[1134px] max-w-full grid-cols-[1fr_555px] items-center gap-[46px]">
             <DataWeCollectSection
-              onChangeEmail={() => setOpenModal("changeEmail")}
-              onDownload={() => user && downloadPersonalData(user)}
+              onDownload={() =>
+                sessionTokenClaims &&
+                downloadPersonalData({
+                  ...sessionTokenClaims,
+                  email: user.email,
+                })
+              }
             />
             <GdprRightsCard
               onRequestErasure={() => setOpenModal("erasure")}

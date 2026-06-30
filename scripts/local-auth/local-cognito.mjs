@@ -325,6 +325,11 @@ function findUserByUsername(username) {
   );
 }
 
+// Strip CR/LF so user-provided values can't forge extra log lines.
+function sanitizeForLog(value) {
+  return String(value).replace(/\n|\r/g, " ");
+}
+
 function filterUsers(payload) {
   const filter = payload.Filter;
   if (!filter) {
@@ -454,6 +459,21 @@ function handleAdminDisableUser(req, res, payload) {
   });
 }
 
+function handleAdminEnableUser(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Enabled = true;
+  }
+
+  console.log(
+    `[admin-enable-user] Enabled user ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminListGroupsForUser(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   const groups = (user?.Groups ?? []).map((groupName) => ({
@@ -542,7 +562,56 @@ function handleAdminAddUserToGroup(req, res, payload) {
   }
 
   console.log(
-    `[admin-add-user-to-group] ${payload.Username} -> ${payload.GroupName}`,
+    `[admin-add-user-to-group] ${sanitizeForLog(payload.Username)} -> ${sanitizeForLog(payload.GroupName)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminUpdateUserAttributes(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Attributes = user.Attributes ?? [];
+    for (const attribute of payload.UserAttributes ?? []) {
+      const existing = user.Attributes.find((a) => a.Name === attribute.Name);
+      if (existing) {
+        existing.Value = attribute.Value;
+      } else {
+        user.Attributes.push(attribute);
+      }
+    }
+    user.UserLastModifiedDate = NOW_IN_SECONDS;
+  }
+
+  console.log(
+    `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminResetUserPassword(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+
+  if (!user) {
+    writeJson(
+      res,
+      400,
+      { __type: "UserNotFoundException", message: "User does not exist." },
+      { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+    );
+    return;
+  }
+
+  user.UserStatus = "RESET_REQUIRED";
+  user.UserLastModifiedDate = NOW_IN_SECONDS;
+
+  console.log(
+    `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -631,6 +700,11 @@ createServer(async (req, res) => {
         return;
       }
 
+      if (target === "AWSCognitoIdentityProviderService.AdminEnableUser") {
+        handleAdminEnableUser(req, res, payload);
+        return;
+      }
+
       if (target === "AWSCognitoIdentityProviderService.CreateGroup") {
         handleCreateGroup(req, res, payload);
         return;
@@ -643,6 +717,21 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.AdminAddUserToGroup") {
         handleAdminAddUserToGroup(req, res, payload);
+        return;
+      }
+
+      if (
+        target ===
+        "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
+      ) {
+        handleAdminUpdateUserAttributes(req, res, payload);
+        return;
+      }
+
+      if (
+        target === "AWSCognitoIdentityProviderService.AdminResetUserPassword"
+      ) {
+        handleAdminResetUserPassword(req, res, payload);
         return;
       }
     }

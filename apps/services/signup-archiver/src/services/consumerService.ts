@@ -24,16 +24,17 @@ export async function handleSignupMessage(
   deps: SignupArchiverDeps,
   logger: Logger,
 ): Promise<void> {
-  // The nonce is only carried by the archived action variants (Onboarding,
-  // Deletion); EmailChangeRequestedV1 has no nonce and no archival action, so
-  // it is validated inside each archiving arm rather than once before the match.
+  // The nonce is only carried by some archived action variants (Onboarding,
+  // Deletion, Suspension); EmailChangeRequestedV1 has no nonce and no archival action;
+  // MaintenanceReactivation and MaintenanceDeletion have archival actions but carry no nonce,
+  // so nonce validation is performed inside each archiving arm rather than once before the match.
   const record: SignupArchiveRecord | undefined = match(event)
     .with({ type: "OnboardingCompletedV1" }, ({ data }) => {
       assertSafeNonce(data.oneIdNonce, data.signupUserId);
       return SignupArchiveRecord.parse({
         action: "Onboarding",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
         termsAcceptanceDigest: data.termsAcceptanceDigest,
         termsAcceptanceVersion: data.termsAcceptanceVersion,
       });
@@ -43,7 +44,7 @@ export async function handleSignupMessage(
       return SignupArchiveRecord.parse({
         action: "Deletion",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
       });
     })
     .with({ type: "EmailChangeRequestedV1" }, () => {
@@ -57,10 +58,24 @@ export async function handleSignupMessage(
       return SignupArchiveRecord.parse({
         action: "Suspension",
         date: data.occurredAt,
-        nonce: data.oneIdNonce,
+        identifier: data.oneIdNonce,
         suspensionReason: data.suspensionReason,
       });
     })
+    .with({ type: "MaintenanceUserReactivationRequestedV1" }, ({ data }) =>
+      SignupArchiveRecord.parse({
+        action: "MaintenanceReactivation",
+        date: data.occurredAt,
+        identifier: data.occurredAt,
+      }),
+    )
+    .with({ type: "MaintenanceUserDeletionRequestedV1" }, ({ data }) =>
+      SignupArchiveRecord.parse({
+        action: "MaintenanceDeletion",
+        date: data.occurredAt,
+        identifier: data.occurredAt,
+      }),
+    )
     .exhaustive();
 
   if (record) {
@@ -79,7 +94,7 @@ async function archiveAction(
   logger: Logger,
 ): Promise<void> {
   const content = Buffer.from(JSON.stringify(record), "utf8");
-  const key = `signup-actions/${signupUserId}/${record.action}/${record.nonce}.json`;
+  const key = `signup-actions/${signupUserId}/${record.action}/${record.identifier}.json`;
 
   const { alreadyExists } = await deps.fileManager.storeBytesIfAbsent({
     bucket: deps.bucket,

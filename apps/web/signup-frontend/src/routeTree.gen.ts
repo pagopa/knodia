@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as LayoutTermsAndConditionsRouteImport } from './routes/_layout/terms-and-conditions'
+import { Route as LayoutPrivacyPolicyRouteImport } from './routes/_layout/privacy-policy'
 import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_authenticated/route'
 import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
 import { Route as LayoutAuthenticatedSuspendedRouteImport } from './routes/_layout/_authenticated/suspended'
@@ -31,6 +33,17 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LayoutTermsAndConditionsRoute =
+  LayoutTermsAndConditionsRouteImport.update({
+    id: '/terms-and-conditions',
+    path: '/terms-and-conditions',
+    getParentRoute: () => LayoutRoute,
+  } as any)
+const LayoutPrivacyPolicyRoute = LayoutPrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutAuthenticatedRouteRoute =
   LayoutAuthenticatedRouteRouteImport.update({
@@ -62,6 +75,8 @@ const LayoutAuthenticatedHomeRoute = LayoutAuthenticatedHomeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/privacy-policy': typeof LayoutPrivacyPolicyRoute
+  '/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
@@ -70,6 +85,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacy-policy': typeof LayoutPrivacyPolicyRoute
+  '/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login': typeof LoginIndexRoute
   '/home': typeof LayoutAuthenticatedHomeRoute
   '/registration': typeof LayoutAuthenticatedRegistrationRoute
@@ -81,6 +98,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/_authenticated': typeof LayoutAuthenticatedRouteRouteWithChildren
+  '/_layout/privacy-policy': typeof LayoutPrivacyPolicyRoute
+  '/_layout/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login/': typeof LoginIndexRoute
   '/_layout/_authenticated/home': typeof LayoutAuthenticatedHomeRoute
   '/_layout/_authenticated/registration': typeof LayoutAuthenticatedRegistrationRoute
@@ -91,6 +110,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/privacy-policy'
+    | '/terms-and-conditions'
     | '/login'
     | '/home'
     | '/registration'
@@ -99,6 +120,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/privacy-policy'
+    | '/terms-and-conditions'
     | '/login'
     | '/home'
     | '/registration'
@@ -109,6 +132,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_layout'
     | '/_layout/_authenticated'
+    | '/_layout/privacy-policy'
+    | '/_layout/terms-and-conditions'
     | '/login/'
     | '/_layout/_authenticated/home'
     | '/_layout/_authenticated/registration'
@@ -144,6 +169,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_layout/terms-and-conditions': {
+      id: '/_layout/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof LayoutTermsAndConditionsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/privacy-policy': {
+      id: '/_layout/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof LayoutPrivacyPolicyRouteImport
+      parentRoute: typeof LayoutRoute
     }
     '/_layout/_authenticated': {
       id: '/_layout/_authenticated'
@@ -203,11 +242,15 @@ const LayoutAuthenticatedRouteRouteWithChildren =
 
 interface LayoutRouteChildren {
   LayoutAuthenticatedRouteRoute: typeof LayoutAuthenticatedRouteRouteWithChildren
+  LayoutPrivacyPolicyRoute: typeof LayoutPrivacyPolicyRoute
+  LayoutTermsAndConditionsRoute: typeof LayoutTermsAndConditionsRoute
   LayoutLoginCallbackRoute: typeof LayoutLoginCallbackRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAuthenticatedRouteRoute: LayoutAuthenticatedRouteRouteWithChildren,
+  LayoutPrivacyPolicyRoute: LayoutPrivacyPolicyRoute,
+  LayoutTermsAndConditionsRoute: LayoutTermsAndConditionsRoute,
   LayoutLoginCallbackRoute: LayoutLoginCallbackRoute,
 }
 
