@@ -44,6 +44,7 @@ import z from "zod";
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
+import { multiKnodeListingNotSupported } from "../../models/errors.ts";
 import {
   API_GetProducerPurposesQueryParams,
   API_ProducerPurposes,
@@ -54,7 +55,6 @@ import {
   toAPI_PurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { singleListingKnodeId } from "../../utils/knode.ts";
 import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 interface PurposeProducerRouterOptions {
@@ -143,13 +143,18 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.results.map((purpose) => purpose.eserviceId),
       );
-      // Consumers live on the knode that owns the purposes (the other knode),
-      // not on the producer's own knode. The empty-results guard above ensures
-      // this always resolves.
-      const consumerKnodeId = singleListingKnodeId(
-        data.results,
-        (purpose) => purpose.consumer.knodeId,
-      );
+      // Consumers live on the knode that owns the purpose (the other knode), not
+      // on the producer's own knode. Unlike the consumer-side RRM listings
+      // (single remote knode by KN-589), this listing comes from the local
+      // purpose-process, so consumers can span knodes — fail fast instead of
+      // silently resolving them all to one knode.
+      const consumerKnodeIds = [
+        ...new Set(data.results.map((purpose) => purpose.consumer.knodeId)),
+      ].map((knodeId) => KnodeId.parse(knodeId));
+      if (consumerKnodeIds.length > 1) {
+        throw multiKnodeListingNotSupported(consumerKnodeIds);
+      }
+      const [consumerKnodeId] = consumerKnodeIds;
       if (consumerKnodeId === undefined) {
         res.send({ pagination: data.pagination, results: [] });
         return;
@@ -225,6 +230,9 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         429: API_Problem.meta({ description: "Too Many Requests" }),
+        501: API_Problem.meta({
+          description: "Multi-knode listing not supported",
+        }),
       },
       summary: "List producer Purposes",
       tags: [apiTags.purpose],
