@@ -19,10 +19,8 @@ import { resolveOnboardingRedirect } from "@/services/onboarding";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 
 export const Route = createFileRoute("/_layout/_authenticated/home")({
-  beforeLoad: async ({ context: { currentUser, queryClient } }) => {
-    const user =
-      currentUser ??
-      (await queryClient.ensureQueryData(getCurrentSignupUserQuery()));
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const user = await queryClient.ensureQueryData(getCurrentSignupUserQuery());
     const destination = resolveOnboardingRedirect(user.onboardingStatus);
     if (destination !== "/home") {
       throw redirect({ to: destination });
