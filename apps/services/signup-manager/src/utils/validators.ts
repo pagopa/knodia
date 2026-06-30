@@ -1,11 +1,10 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
-import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
+import { match } from "ts-pattern";
 
 import {
   signupUserEmailAlreadyInUse,
-  signupUserIdentifierAlreadyAssociated,
   signupUserNotActive,
   signupUserNotOnboarded,
   signupUserNotSuspended,
@@ -26,21 +25,6 @@ export async function assertSignupUserEmailDoesNotExist(
   }
 }
 
-export async function assertSignupUserIdentifiersDoNotExist(
-  authData: UISignupSessionAuthData,
-  signupDbService: SignupDbService,
-): Promise<void> {
-  const signupUser = await signupDbService.getUniqueSignupUserByIdentifiers({
-    fiscalNumber: authData.fiscalNumber,
-    personIdentifier: authData.personIdentifier,
-    spidCode: authData.spidCode,
-  });
-
-  if (signupUser) {
-    throw signupUserIdentifierAlreadyAssociated();
-  }
-}
-
 export function assertSignupUserIsActive(user: SignupUser): void {
   if (user.status !== SignupUserStatus.enum.Active) {
     throw signupUserNotActive();
@@ -53,6 +37,19 @@ export function assertSignupUserIsOnboarded(
   if (!user) {
     throw signupUserNotOnboarded();
   }
+
+  match(user.status)
+    // Provisioning still in flight: not onboarded yet, reject like a missing user.
+    .with(SignupUserStatus.enum.OnboardingPending, () => {
+      throw signupUserNotOnboarded();
+    })
+    .with(
+      SignupUserStatus.enum.Active,
+      SignupUserStatus.enum.Suspended,
+      SignupUserStatus.enum.DeletionPending,
+      () => undefined,
+    )
+    .exhaustive();
 }
 
 export function assertSignupUserIsSuspended(user: SignupUser): void {

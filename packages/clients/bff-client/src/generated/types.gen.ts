@@ -5189,6 +5189,10 @@ export type GetProducerAgreementsErrors = {
      * Too Many Requests
      */
     429: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
@@ -5388,6 +5392,10 @@ export type GetProducerPurposesErrors = {
      * Too Many Requests
      */
     429: Problem;
+    /**
+     * Multi-knode listing not supported
+     */
+    501: Problem;
 };
 
 export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];

@@ -65,10 +65,19 @@ export async function handleSignupMessage(
         return;
       }
 
+      if (!shouldProvisionOnOnboardingCompleted(user.status)) {
+        logger.warn(
+          `Skipping OnboardingCompletedV1 for signup user ${signupUserId}: user is ${user.status} (it left the onboarding flow before this provisioning event was consumed). Committing the offset.`,
+        );
+        return;
+      }
+
       await forEachKnode(
         (knodeId) => provisionKnode(knodeId, user, deps, correlationId, logger),
         logger,
       );
+
+      await deps.signupDbService.markSignupUserActive(signupUserId);
     })
     .with({ type: "EmailChangeRequestedV1" }, async (e) => {
       const emailChangeRequestId = e.data.emailChangeRequestId;
@@ -399,4 +408,24 @@ async function retrieveSignupUserOrLogMissingAndSkip(
   }
 
   return undefined;
+}
+
+// Exhaustive so a new status forces a decision. Active is provisionable too: it
+// may be only partially provisioned (409 path) and replay is idempotent. The rest
+// left the onboarding flow before this event was consumed.
+function shouldProvisionOnOnboardingCompleted(
+  status: SignupUserStatus,
+): boolean {
+  return match(status)
+    .with(
+      SignupUserStatus.enum.OnboardingPending,
+      SignupUserStatus.enum.Active,
+      () => true,
+    )
+    .with(
+      SignupUserStatus.enum.DeletionPending,
+      SignupUserStatus.enum.Suspended,
+      () => false,
+    )
+    .exhaustive();
 }
