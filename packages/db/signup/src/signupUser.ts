@@ -43,7 +43,7 @@ export const signupUser = schema.table(
     ),
     check(
       "signup_user_status_valid",
-      sql`${table.status} IN ('Active', 'Suspended', 'DeletionPending')`,
+      sql`${table.status} IN ('OnboardingPending', 'Active', 'Suspended', 'DeletionPending')`,
     ),
     check(
       "signup_user_suspension_consistency",

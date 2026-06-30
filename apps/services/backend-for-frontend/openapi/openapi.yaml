@@ -12412,6 +12412,21 @@ paths:
               $ref: "#/components/headers/RateLimitReset"
             Retry-After:
               $ref: "#/components/headers/RateLimitRetryAfter"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
   /producer/agreements/{agreementId}:
     get:
       operationId: getProducerAgreementDetails
@@ -12888,6 +12903,21 @@ paths:
               $ref: "#/components/headers/RateLimitReset"
             Retry-After:
               $ref: "#/components/headers/RateLimitRetryAfter"
+        "501":
+          description: Multi-knode listing not supported
+          content:
+            application/problem+json:
+              schema:
+                description: Multi-knode listing not supported
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
   /producer/purposes/{purposeId}:
     get:
       operationId: getProducerPurposeDetails

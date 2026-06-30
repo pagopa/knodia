@@ -23,6 +23,9 @@ const errorCodes: Record<DpopErrorKey, string> & Record<string, string> = {
   ERDS_RECIPIENT_NOT_FOUND: "0015",
   ERDS_NOT_FOUND: "0016",
   LEGAL_ENTITY_ADDRESS_NOT_FOUND: "0017",
+  ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND: "0018",
+  ASYNC_COMPANY_ADDRESSES_RESULTS_NOT_FOUND: "0019",
+  RESOURCE_ID_DOES_NOT_BELONG_TO_ASYNC_REQUEST: "0020",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -30,6 +33,24 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
   serviceName: "mock-eservice",
 });
+
+export function asyncCompanyAddressesRequestNotFound(requestId: string) {
+  return createApiError({
+    code: "ASYNC_COMPANY_ADDRESSES_REQUEST_NOT_FOUND",
+    detail: `No async company addresses request found for requestId ${requestId}`,
+    status: 404,
+    title: "async_company_addresses_request_not_found",
+  });
+}
+
+export function asyncCompanyAddressesResultsNotFound(resourceId: string) {
+  return createApiError({
+    code: "ASYNC_COMPANY_ADDRESSES_RESULTS_NOT_FOUND",
+    detail: `No async company addresses results found for resourceId ${resourceId}`,
+    status: 404,
+    title: "async_company_addresses_results_not_found",
+  });
+}
 
 export function dpopProofNotFound() {
   return createApiError({
@@ -124,6 +145,18 @@ export function residenceNotAvailable(notation: string) {
     detail: `No residence address found for natural person ${notation}`,
     status: 404,
     title: "residence_not_available",
+  });
+}
+
+export function resourceIdDoesNotBelongToAsyncRequest(
+  requestId: string,
+  resourceId: string,
+) {
+  return createApiError({
+    code: "RESOURCE_ID_DOES_NOT_BELONG_TO_ASYNC_REQUEST",
+    detail: `Resource ID ${resourceId} does not belong to request ID ${requestId}`,
+    status: 404,
+    title: "resource_id_does_not_belong_to_async_request",
   });
 }
 

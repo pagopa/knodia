@@ -1,6 +1,9 @@
 /* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
-import type { UISignupSessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISignupSessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { genericInternalError } from "@knodia/common-models/errors";
@@ -26,6 +29,7 @@ import {
   signupUserAlreadyHasPendingEmailChangeRequest,
   signupUserEmailChangeRequestCreationConflict,
   signupUserGeneratedEntitiesAlreadyExist,
+  signupUserIdentifierAlreadyAssociated,
   signupUserNotFound,
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
@@ -35,7 +39,6 @@ import {
 } from "../utils/termsAcceptance.ts";
 import {
   assertSignupUserEmailDoesNotExist,
-  assertSignupUserIdentifiersDoNotExist,
   assertSignupUserIsActive,
   assertSignupUserIsOnboarded,
   assertSignupUserIsSuspended,
@@ -101,65 +104,28 @@ export function signupServiceBuilder(
     ) {
       logger.info("Confirming onboarding for current signup user");
 
-      const now = new Date();
-      const signupUserId = generateId<SignupUserId>();
-      const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
+      const existingSignupUser =
+        await signupDbService.getUniqueSignupUserByIdentifiers({
+          fiscalNumber: authData.fiscalNumber,
+          personIdentifier: authData.personIdentifier,
+          spidCode: authData.spidCode,
+        });
 
-      await assertSignupUserIdentifiersDoNotExist(authData, signupDbService);
-      await assertSignupUserEmailDoesNotExist(email, signupDbService);
-
-      const { lynxOrganizationName, orionOrganizationName } =
-        await generateUniqueOrganizationNames(signupDbService);
-
-      const newSignupUser: SignupUser = {
-        createdAt: now,
-        dateOfBirth: authData.dateOfBirth,
-        email,
-        familyName: authData.familyName,
-        fiscalNumber: authData.fiscalNumber,
-        generatedEntities: {
-          Lynx: {
-            organizationName: lynxOrganizationName,
-            userName: toUserName(lynxOrganizationName),
-          },
-          Orion: {
-            organizationName: orionOrganizationName,
-            userName: toUserName(orionOrganizationName),
-          },
-        },
-        name: authData.name,
-        personIdentifier: authData.personIdentifier,
-        signupUserId,
-        spidCode: authData.spidCode,
-        status: SignupUserStatus.enum.Active,
-        updatedAt: now,
-      };
-
-      try {
-        await signupDbService.insertSignupUser(newSignupUser);
-      } catch (error) {
-        /**
-         * The uniqueness checks in the asserts above are performed before the insert and are not
-         * done in the same transaction. If a concurrent onboarding inserts the same email or one of
-         * the same identifiers in the meantime, the database will reject this insert with a unique
-         * constraint violation.
-         *
-         * In that case, we map the database error to a 409 Conflict so the client gets a meaningful
-         * response instead of a generic internal error.
-         */
-
-        if (isPgUniqueViolation(error))
-          throw signupUserGeneratedEntitiesAlreadyExist();
-        throw error;
+      if (existingSignupUser) {
+        await resolveRepeatedConfirmOnboarding(
+          existingSignupUser,
+          authData,
+          signupEventProducer,
+        );
+        return;
       }
 
-      await signupEventProducer.publishOnboardingCompletedV1Event({
-        occurredAt: now.toISOString(),
-        oneIdNonce: authData.oneIdNonce,
-        signupUserId,
-        termsAcceptanceDigest,
-        termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
-      });
+      await createOnboardingPendingUser(
+        email,
+        authData,
+        signupDbService,
+        signupEventProducer,
+      );
     },
     async deleteCurrentSignupUser({
       authData,
@@ -206,7 +172,39 @@ export function signupServiceBuilder(
         spidCode: authData.spidCode,
       });
     },
-    async reactivateUser({ signupUserId }: { signupUserId: SignupUserId }) {
+    async maintenanceDeleteUser(
+      {
+        signupUserId,
+      }: {
+        signupUserId: SignupUserId;
+      },
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ) {
+      logger.info(
+        `Requesting maintenance deletion for signup user ${signupUserId}`,
+      );
+      const userToDelete =
+        await signupDbService.getSignupUserById(signupUserId);
+
+      if (userToDelete === undefined) {
+        throw signupUserNotFound();
+      }
+
+      await signupDbService.markSignupUserDeletionPending(signupUserId);
+
+      await signupEventProducer.publishMaintenanceUserDeletionRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        signupUserId,
+      });
+    },
+    async reactivateUser(
+      { signupUserId }: { signupUserId: SignupUserId },
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ) {
+      logger.info(
+        `Requesting maintenance reactivation for signup user ${signupUserId}`,
+      );
+
       const userToReactivate =
         await signupDbService.getSignupUserById(signupUserId);
 
@@ -279,6 +277,64 @@ export function signupServiceBuilder(
   };
 }
 
+async function createOnboardingPendingUser(
+  email: string,
+  authData: UISignupSessionAuthData,
+  signupDbService: SignupDbService,
+  signupEventProducer: SignupEventProducer,
+): Promise<void> {
+  const now = new Date();
+  const signupUserId = generateId<SignupUserId>();
+  const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
+
+  await assertSignupUserEmailDoesNotExist(email, signupDbService);
+
+  const { lynxOrganizationName, orionOrganizationName } =
+    await generateUniqueOrganizationNames(signupDbService);
+
+  const newSignupUser: SignupUser = {
+    createdAt: now,
+    dateOfBirth: authData.dateOfBirth,
+    email,
+    familyName: authData.familyName,
+    fiscalNumber: authData.fiscalNumber,
+    generatedEntities: {
+      Lynx: {
+        organizationName: lynxOrganizationName,
+        userName: toUserName(lynxOrganizationName),
+      },
+      Orion: {
+        organizationName: orionOrganizationName,
+        userName: toUserName(orionOrganizationName),
+      },
+    },
+    name: authData.name,
+    personIdentifier: authData.personIdentifier,
+    signupUserId,
+    spidCode: authData.spidCode,
+    status: SignupUserStatus.enum.OnboardingPending,
+    updatedAt: now,
+  };
+
+  try {
+    await signupDbService.insertSignupUser(newSignupUser);
+  } catch (error) {
+    // Pre-insert uniqueness checks aren't transactional; map a concurrent
+    // unique-violation to 409 instead of a generic 500.
+    if (isPgUniqueViolation(error))
+      throw signupUserGeneratedEntitiesAlreadyExist();
+    throw error;
+  }
+
+  await signupEventProducer.publishOnboardingCompletedV1Event({
+    occurredAt: now.toISOString(),
+    oneIdNonce: authData.oneIdNonce,
+    signupUserId,
+    termsAcceptanceDigest,
+    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+  });
+}
+
 async function generateUniqueOrganizationNames(
   signupDbService: SignupDbService,
 ) {
@@ -312,4 +368,37 @@ async function generateUniqueOrganizationNames(
   throw genericInternalError(
     "Failed to generate unique organization names after multiple attempts",
   );
+}
+
+/**
+ * The row is still OnboardingPending — either the OnboardingCompletedV1 publish
+ * failed, or it succeeded but signup-updater hasn't provisioned the user yet. Either
+ * way we re-emit the event (occurredAt and digest reproduced from the stored
+ * createdAt) instead of returning 409 and stranding the user; a duplicate event is
+ * harmless because the updater's provisioning is idempotent. Any other status is an
+ * identity conflict.
+ *
+ * Returning in a fresh OneID session (new nonce) re-emits under that nonce and the
+ * first-provided email — so the archive may get a duplicate acceptance record, and a
+ * changed email in this repeated request is ignored. We accept it: rare, the
+ * acceptance is never lost, and the first email was confirmed.
+ */
+async function resolveRepeatedConfirmOnboarding(
+  existingSignupUser: SignupUser,
+  authData: UISignupSessionAuthData,
+  signupEventProducer: SignupEventProducer,
+): Promise<void> {
+  if (existingSignupUser.status !== SignupUserStatus.enum.OnboardingPending) {
+    throw signupUserIdentifierAlreadyAssociated();
+  }
+
+  await signupEventProducer.publishOnboardingCompletedV1Event({
+    occurredAt: existingSignupUser.createdAt.toISOString(),
+    oneIdNonce: authData.oneIdNonce,
+    signupUserId: existingSignupUser.signupUserId,
+    termsAcceptanceDigest: computeTermsAcceptanceDigest(
+      existingSignupUser.createdAt,
+    ),
+    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+  });
 }

@@ -48,3 +48,13 @@ For example, to rebuild only the Orion BFF and frontend:
 docker compose -f docker/compose.multinode.yaml build bff-orion frontend-orion
 docker compose -f docker/compose.multinode.yaml up -d --no-deps bff-orion frontend-orion
 ```
+
+### On-demand jobs: suspended-users notifier
+
+`signup-suspended-users-notifier` is a one-shot batch job (it emails the DPO the list of suspended users, then exits), so it is behind the `on-demand` profile and does **not** start with `pnpm multinode:start`. Run it by hand once the stack is up:
+
+```bash
+docker compose -f docker/compose.multinode.yaml run --rm signup-suspended-users-notifier
+```
+
+`run` starts its dependencies and surfaces the job's exit code, so a failed run is visible instead of being swallowed by the startup health-check. The image is built on first invocation (it is skipped by the `multinode:start` build because it is not in the default profile).

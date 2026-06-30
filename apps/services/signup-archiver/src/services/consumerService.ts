@@ -24,9 +24,10 @@ export async function handleSignupMessage(
   deps: SignupArchiverDeps,
   logger: Logger,
 ): Promise<void> {
-  // The nonce is only carried by the archived action variants (Onboarding,
-  // Deletion); EmailChangeRequestedV1 has no nonce and no archival action, so
-  // it is validated inside each archiving arm rather than once before the match.
+  // The nonce is only carried by some archived action variants (Onboarding,
+  // Deletion, Suspension); EmailChangeRequestedV1 has no nonce and no archival action;
+  // MaintenanceReactivation and MaintenanceDeletion have archival actions but carry no nonce,
+  // so nonce validation is performed inside each archiving arm rather than once before the match.
   const record: SignupArchiveRecord | undefined = match(event)
     .with({ type: "OnboardingCompletedV1" }, ({ data }) => {
       assertSafeNonce(data.oneIdNonce, data.signupUserId);
@@ -69,7 +70,14 @@ export async function handleSignupMessage(
     })
     .with({ type: "MaintenanceUserReactivationRequestedV1" }, ({ data }) =>
       SignupArchiveRecord.parse({
-        action: "UserReactivation",
+        action: "MaintenanceReactivation",
+        date: data.occurredAt,
+        identifier: data.occurredAt,
+      }),
+    )
+    .with({ type: "MaintenanceUserDeletionRequestedV1" }, ({ data }) =>
+      SignupArchiveRecord.parse({
+        action: "MaintenanceDeletion",
         date: data.occurredAt,
         identifier: data.occurredAt,
       }),

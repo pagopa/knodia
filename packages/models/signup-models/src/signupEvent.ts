@@ -68,6 +68,17 @@ const CredentialResetRequestedV1 = z.object({
 });
 type CredentialResetRequestedV1 = z.infer<typeof CredentialResetRequestedV1>;
 
+const MaintenanceUserDeletionRequestedV1 = z.object({
+  data: z.strictObject({
+    occurredAt: z.iso.datetime(),
+    signupUserId: SignupUserId,
+  }),
+  type: z.literal("MaintenanceUserDeletionRequestedV1"),
+});
+type MaintenanceUserDeletionRequestedV1 = z.infer<
+  typeof MaintenanceUserDeletionRequestedV1
+>;
+
 export const SignupEventV1 = z.discriminatedUnion("type", [
   OnboardingCompletedV1,
   EmailChangeRequestedV1,
@@ -75,5 +86,6 @@ export const SignupEventV1 = z.discriminatedUnion("type", [
   SuspensionRequestedV1,
   MaintenanceUserReactivationRequestedV1,
   CredentialResetRequestedV1,
+  MaintenanceUserDeletionRequestedV1,
 ]);
 export type SignupEventV1 = z.infer<typeof SignupEventV1>;

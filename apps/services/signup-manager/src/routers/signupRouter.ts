@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -212,19 +213,24 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   });
 
   /**
-   * Internal maintenance endpoint: no ui-signup-session auth data is
+   * Internal maintenance endpoints: no ui-signup-session auth data is
    * available, so the rate limiter key cannot be derived and rate limiting
    * is intentionally skipped.
    */
+
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      await signupService.reactivateUser({
-        signupUserId: unsafeBrandId(req.params.signupUserId),
-      });
+      // TODO: KN-798 - Replace internal token with maintenance token
+      await signupService.reactivateUser(
+        {
+          signupUserId: unsafeBrandId(req.params.signupUserId),
+        },
+        ctx,
+      );
 
       res.status(204).send();
     },
@@ -245,5 +251,40 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
       tags: [apiTags.signup],
     },
     url: "/maintenance/users/:signupUserId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      // TODO: KN-798 - Replace internal token with maintenance token
+      await signupService.maintenanceDeleteUser(
+        {
+          signupUserId: unsafeBrandId(req.params.signupUserId),
+        },
+        ctx,
+      );
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Delete a signup user (maintenance only)",
+      operationId: "maintenanceDeleteUser",
+      params: API_SignupUserIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "User deletion requested successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/maintenance/users/:signupUserId/delete",
   });
 };

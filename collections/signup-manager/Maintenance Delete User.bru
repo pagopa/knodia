@@ -1,0 +1,23 @@
+meta {
+  name: Maintenance Delete User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host-signup-manager}}/maintenance/users/:signupUserId/delete
+  body: json
+  auth: none
+}
+
+params:path {
+  signupUserId: {{signupUserId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}
+
+body:json {
+}
