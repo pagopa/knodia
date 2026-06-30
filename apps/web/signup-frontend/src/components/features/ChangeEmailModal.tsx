@@ -1,4 +1,3 @@
-import { type signupManagerApi } from "@knodia/signup-manager-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -7,6 +6,7 @@ import {
   changeEmailErrorMessage,
   isEmailAlreadyInUseError,
 } from "@/services/changeEmail";
+import { signupUserEmail } from "@/services/onboarding";
 import {
   changeEmailMutationOptions,
   getCurrentSignupUserQuery,
@@ -17,10 +17,6 @@ const POLL_INTERVAL_MS = 1000;
 const POLL_TIMEOUT_MS = 30_000;
 const POLL_TIMEOUT_MESSAGE =
   "The email change is taking longer than expected. Reload the page to check whether it was applied.";
-
-// email lives only on the onboarded variant of the discriminated union.
-const currentEmail = (user?: signupManagerApi.CurrentSignupUser) =>
-  user && "email" in user ? user.email : undefined;
 
 interface ChangeEmailModalProps {
   isOpen: boolean;
@@ -61,7 +57,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
     ...getCurrentSignupUserQuery(),
     enabled: isApplying && changeEmail.isSuccess,
     refetchInterval: (query) =>
-      currentEmail(query.state.data) === email ? false : POLL_INTERVAL_MS,
+      signupUserEmail(query.state.data) === email ? false : POLL_INTERVAL_MS,
     staleTime: 0,
   });
 
@@ -72,7 +68,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
     if (
       isApplying &&
       changeEmail.isSuccess &&
-      currentEmail(currentUser.data) === email
+      signupUserEmail(currentUser.data) === email
     )
       onClose();
   }, [isApplying, changeEmail.isSuccess, currentUser.data, email, onClose]);
