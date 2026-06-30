@@ -30,6 +30,7 @@ import { dpopAccessTokenAuthPlugin } from "./auth/dpopAccessTokenAuthPlugin.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { integrityRest02Plugin } from "./plugins/integrityRest02Plugin.ts";
+import { mockAsyncConsumptionRouter } from "./routers/mockAsyncConsumptionRouter.ts";
 import { mockBearerRouter } from "./routers/mockBearerRouter.ts";
 import { mockDpopRouter } from "./routers/mockDpopRouter.ts";
 import { mockIntegrityRest02Router } from "./routers/mockIntegrityRest02Router.ts";
@@ -105,6 +106,11 @@ const companyAddressAppTag: OpenAPIV3.TagObject = {
     "Legal-entity address lookup by uid_company (Cross-Border E-service 06, Bearer-protected)",
   name: apiTags.companyAddress,
 };
+const asyncCompanyAddressesAppTag: OpenAPIV3.TagObject = {
+  description:
+    "Asynchronous legal entity addresses lookup (Cross-Border E-service 05, Bearer-protected)",
+  name: apiTags.asyncCompanyAddresses,
+};
 
 export function buildApp({
   config,
@@ -155,6 +161,7 @@ export function buildApp({
       pocUc03SupervisoryBodyAppTag,
       pocUc03RelayAppTag,
       companyAddressAppTag,
+      asyncCompanyAddressesAppTag,
     ],
   );
 
@@ -190,6 +197,7 @@ export function buildApp({
     protectedApp.register(mockReceiveDataRouter, { knodeId });
     protectedApp.register(mockPocUc03SupervisoryBodyRouter, { knodeId });
     protectedApp.register(mockPocUc03RelayRouter, { knodeId });
+    protectedApp.register(mockAsyncConsumptionRouter, { knodeId });
 
     protectedApp.register(async (integrityRest02App) => {
       integrityRest02App.register(integrityRest02Plugin, {
@@ -238,6 +246,15 @@ export function buildAppFromConfig(
 
 export function buildBearerAppFromConfig(config: MockEserviceConfig) {
   return buildBearerApp({
+    config,
+    jwksResolvers: resolveJwksResolvers(config),
+  });
+}
+
+export function buildBearerAsyncConsumptionAppFromConfig(
+  config: MockEserviceConfig,
+) {
+  return buildBearerAsyncConsumptionApp({
     config,
     jwksResolvers: resolveJwksResolvers(config),
   });
@@ -349,6 +366,41 @@ function buildBearerApp({
       jwksResolvers,
     });
     protectedApp.register(mockBearerRouter, { knodeId });
+  });
+
+  return app;
+}
+
+function buildBearerAsyncConsumptionApp({
+  config,
+  jwksResolvers,
+}: {
+  config: MockEserviceConfig;
+  jwksResolvers: JWTVerifyGetKey[];
+}) {
+  const { acceptedAudiences, expectedIssuer, knodeId } = config;
+
+  const app = createMockFastifyApp(
+    config,
+    bearerAuthSecurityScheme,
+    bearerAuthSecurity,
+    {
+      description:
+        "Mock e-service for Async Consumption (legal-entity addresses lookup)",
+      title: "Knodia Mock E-service API (Async Consumption)",
+      version: "1.0.0",
+    },
+    [asyncCompanyAddressesAppTag],
+  );
+
+  // No health router: this app is only used for OpenAPI generation, where we don't want /status.
+  app.register(async (protectedApp) => {
+    protectedApp.register(bearerAccessTokenAuthPlugin, {
+      acceptedAudiences,
+      expectedIssuer,
+      jwksResolvers,
+    });
+    protectedApp.register(mockAsyncConsumptionRouter, { knodeId });
   });
 
   return app;
