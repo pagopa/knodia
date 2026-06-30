@@ -30,6 +30,10 @@ const KnodeFrontendConfig = z.object({
   MAX_KEYS_PER_KEYCHAIN: z.coerce
     .number()
     .min(1, "MAX_KEYS_PER_KEYCHAIN must be at least 1"),
+  PRIVACY_POLICY_URL: z.string().min(1, "PRIVACY_POLICY_URL is required"),
+  TERMS_AND_CONDITIONS_URL: z
+    .string()
+    .min(1, "TERMS_AND_CONDITIONS_URL is required"),
 });
 
 const parsed = KnodeFrontendConfig.safeParse(window.env);
@@ -53,6 +57,8 @@ export const config = {
   },
   knodeId: parsed.data.KNODE_ID,
   maxKeysPerKeychain: parsed.data.MAX_KEYS_PER_KEYCHAIN,
+  privacyPolicyUrl: parsed.data.PRIVACY_POLICY_URL,
+  termsAndConditionsUrl: parsed.data.TERMS_AND_CONDITIONS_URL,
 };
 
 declare global {

@@ -4,6 +4,7 @@ import {
   SidebarSection,
   Sidebar as UISidebar,
 } from "@knodia/ui-kit/layout";
+import { Link } from "@knodia/ui-kit/ui";
 import {
   GearIcon,
   HandshakeIcon,
@@ -19,7 +20,9 @@ import {
   type LinkProps,
   useLocation,
 } from "@tanstack/react-router";
+import { Fragment } from "react";
 
+import { config } from "@/config/config";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
 
 interface SidebarItem {
@@ -77,6 +80,11 @@ const SIDEBAR_SECTIONS: SidebarSection[] = [
  */
 const SidebarNavItemLink = createLink(SidebarNavItem);
 
+const LEGAL_LINKS = [
+  { href: config.privacyPolicyUrl, label: "Privacy Policy" },
+  { href: config.termsAndConditionsUrl, label: "Terms and Conditions" },
+];
+
 export function Sidebar() {
   const location = useLocation();
   const { data: sessionOrganization } = useQuery(sessionOrganizationQuery());
@@ -98,6 +106,34 @@ export function Sidebar() {
           ))}
         </SidebarSection>
       ))}
+      <SidebarLegalLinks />
     </UISidebar>
+  );
+}
+
+function SidebarLegalLinks() {
+  return (
+    <nav
+      aria-label="Legal"
+      className="mt-auto label-sm text-secondary-light-low-contrast"
+    >
+      {LEGAL_LINKS.map((link, index) => (
+        <Fragment key={link.href}>
+          {index > 0 && (
+            <span aria-hidden className="mx-2">
+              ·
+            </span>
+          )}
+          <Link
+            className="text-secondary-light-low-contrast"
+            href={link.href}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {link.label}
+          </Link>
+        </Fragment>
+      ))}
+    </nav>
   );
 }
