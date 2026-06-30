@@ -1,0 +1,214 @@
+{
+  "blocks": [
+    { "type": "heading", "level": 1, "content": [{ "text": "BETA PROGRAMME" }] },
+    { "type": "heading", "level": 1, "content": [{ "text": "Terms and Conditions" }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "These terms and conditions (hereinafter, \"T&Cs\") govern the trial for the pre-release version of Knodia " },
+        { "placeholder": "version" },
+        { "text": " (\"" },
+        { "text": "Platform", "bold": true },
+        { "text": "\") by and between PagoPA S.p.A., with registered office at Piazza Colonna 370, Rome (RM), VAT number and registration number with the Register of Companies 15376371009 (\"" },
+        { "text": "PagoPA", "bold": true },
+        { "text": "\"), and (\"" },
+        { "text": "Tester", "bold": true },
+        { "text": "\" or \"" },
+        { "text": "You", "bold": true },
+        { "text": "\"). By accepting these T&Cs, you enrol in the beta programme for the Platform (the \"" },
+        { "text": "Beta Programme", "bold": true },
+        { "text": "\") with effect from " },
+        { "placeholder": "date" },
+        { "text": "." }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "PagoPA and the Tester are hereinafter collectively referred to as the \"" },
+        { "text": "Parties", "bold": true },
+        { "text": "\" and individually as a \"" },
+        { "text": "Party", "bold": true },
+        { "text": "\"." }
+      ]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "Whereas:" }] },
+    {
+      "type": "paragraph",
+      "marker": "(i)",
+      "content": [
+        { "text": "PagoPA intends to launch a trial of the Platform, making available, for the purpose of testing the cross-border exchange of public information assets, the aforementioned Platform, currently in its prototype phase, together with the relevant materials and software documentation which may contain product plans, products under development, prototypes, beta products, and related materials, data, or information protected by confidentiality (hereinafter jointly referred to as the \"" },
+        { "text": "Prototype", "bold": true },
+        { "text": "\" Platform);" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "marker": "(ii)",
+      "content": [{ "text": "the Platform is a cross-border authentication and authorisation framework, designed as a technical and administrative solution aimed at enabling digital interaction between organisations from different Member States of the European Union. The solution implements an API-first approach and is intended to facilitate the implementation of the \"once-only\" principle;" }]
+    },
+    {
+      "type": "paragraph",
+      "marker": "(iii)",
+      "content": [
+        { "text": "the launch of such trial is in line with the Agreement dated 26 January 2026, entered into between the Company and the Presidency of the Council of Ministers – Department for Digital Transformation, in implementation of sub-investment 1.3.1 (hereinafter, the \"" },
+        { "text": "Agreement", "bold": true },
+        { "text": "\"), for the creation of a Prototype which, by leveraging the experience gained in the field of interoperability in Italy, can demonstrate the operation of a technical solution embodying the pillars of the European Interoperability Framework within a cross-border scenario;" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "marker": "(iv)",
+      "content": [{ "text": "the Tester wishes to have access to the Prototype, is aware of the nature thereof, and is willing to use and test the functionality of the Prototype free of charge and on a confidential basis, including with respect to any feedback provided upon conclusion of its use;" }]
+    },
+    {
+      "type": "paragraph",
+      "marker": "(v)",
+      "content": [{ "text": "for the purpose of regulating their mutual rights and obligations within the framework of the trial, in compliance with the principles of transparency, fairness, and good faith, the Parties agree that the conditions of access to and use of the Prototype, the commitments of the Parties, as well as the arrangements for managing shared information, shall be governed by these T&Cs;" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "In consideration of the premises, the Parties hereby agree as follows:" }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "1. LICENCE." }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "Pursuant to these T&Cs, PagoPA grants the Tester a non-transferable, non-exclusive, and limited licence to use the Prototype for the Beta Period as defined in these T&Cs. The licence granted hereunder is limited to the Beta Programme, and therefore to the testing of the Prototype exclusively at an internal level, in a non-production environment, for the sole purpose of providing PagoPA with feedback on the usability and functionality of the Prototype. The execution of the Beta Programme may imply the transmission of data to the backend of PagoPA residing on servers owned by PagoPA or managed on its behalf (\"" },
+        { "text": "PagoPA BE", "bold": true },
+        { "text": "\"). For the purpose of conducting the test, the Tester may receive a licence key enabling the Prototype." }
+      ]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "2. DURATION." }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "The duration of the licence granted hereunder shall be deemed valid until 31/12/2026 (the \"" },
+        { "text": "Beta Period", "bold": true },
+        { "text": "\"), unless terminated for breach or as otherwise provided in these T&Cs. PagoPA may extend the Beta Period at its sole discretion, in which case it shall give written notice thereof to the Tester. These T&Cs shall terminate in the event of express termination communicated in writing by one Party to the other Party in accordance with the procedures set forth in paragraph 11. Upon termination or expiry of the Beta Period, the Tester shall delete all Confidential Information (as defined hereinafter). The Tester may withdraw from these T&Cs and the licence at any time by giving written notice to PagoPA in accordance with the procedures set forth in paragraph 11." }
+      ]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "3. FEEDBACK." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester shall use the Prototype and, upon request by PagoPA, may provide detailed feedback and communicate any defects encountered in the Prototype (including with respect to its usability) in accordance with the methods and timelines to be specified by PagoPA." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "4. CONFIDENTIAL INFORMATION." }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "The Tester agrees not to discuss the details or status of the Beta Programme, or any functionality provided as part of such programme, with third parties. The Prototype and the Beta Programme (including all features, milestones, and results) are confidential and proprietary information of PagoPA (\"" },
+        { "text": "Confidential Information", "bold": true },
+        { "text": "\"). The Tester shall not disclose or cause to be disclosed Confidential Information. The Tester undertakes to adopt appropriate measures to protect all Confidential Information from unauthorized disclosure or use. Nothing in these T&Cs prohibits or restricts the use of information which: (a) is or becomes part of the public domain other than through a breach of these T&Cs (provided, however, that information which is the subject of current public rumours or reports shall not become public solely on the basis of such rumours or reports); (b) was known to a Party prior to being received from the other Party; (c) is disclosed to a Party by a third party, unless such Party is aware, or should reasonably be aware, that such disclosure constitutes an unlawful or improper act; or (d) is independently developed by a Party without the use of any Confidential Information. Without prejudice to the provisions of Section 2 above, any results, analyses, or other information generated during benchmarking and/or performance testing pursuant to the Beta Programme shall constitute Confidential Information and, upon request by PagoPA, shall be provided to PagoPA. In the event that disclosure of Confidential Information is required by operation of law or regulation, the Tester shall: (i) promptly notify PagoPA in writing of such requirement; and (ii) limit the content and dissemination of such disclosure to what is reasonably necessary to comply with the requirement. The Tester acknowledges that damages for the improper disclosure of Confidential Information may be irreparable; therefore, PagoPA shall be entitled to seek damages and/or equitable relief, including a preliminary or permanent injunction, in addition to all other remedies, for any breach or threatened breach of this Section or Section 5." }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "Without prejudice to the foregoing, PagoPA may disclose any Confidential Information without the prior written consent of the Tester to third parties, including but not limited to public entities and commercial partners." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "5. PUBLIC ANNOUNCEMENTS. PUBLICATIONS." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester is aware that the launch of the Prototype trial falls within the scope of the activities envisaged by the Agreement and, consequently, is of significant interest to the Italian government, investors, analysts, and other public and private entities; therefore, the Tester is prohibited from making any announcement or communication in relation to the Prototype and/or the execution of these T&Cs and/or the implementation of the Beta Programme. If the disclosure of confidential commercial or technical information is required pursuant to a legal or regulatory obligation or requirement, the Tester shall: (i) promptly notify PagoPA in writing of such obligation or requirement; and (ii) limit the content and dissemination of such disclosure to what is reasonably necessary to comply with the obligation or requirement." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "6. OWNERSHIP. LIMITED USE. ASSIGNMENT." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "All Intellectual Property Rights in and to the Prototype and the Beta Programme shall remain vested in PagoPA and its licensors, and no part thereof may be used in any form or by any means, except as expressly granted pursuant to these T&Cs and/or any applicable licences. It is, in fact, understood that no right is transferred or granted to the Tester save within the limits expressly provided for under these T&Cs." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "\"Intellectual Property Rights\" means all rights existing from time to time under applicable law in respect of patents, copyright, trade secrets, trade marks, designs and models, domain names, database rights, competition, image rights, and all other industrial and intellectual property rights, whether registered or unregistered, including economic exploitation rights and relevant applications for registration." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester acknowledges that the Prototype, or any part thereof, may not be used, copied, transferred, distributed, or modified outside of what is expressly permitted by these T&Cs. Any form of reverse engineering, decompilation, disassembly, or attempt to extract the source code is likewise prohibited." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester acknowledges and agrees that any bug or error reports, feedback, photos, videos, sounds, audiovisual products, texts, comments, or ideas submitted by the Tester to PagoPA in relation to the Confidential Information shall be deemed \"intellectual works\" (opere dell'ingegno) which the Tester hereby assigns to PagoPA, together with any invention, improvement, know-how, or other intellectual works (to the extent protectable) conceived, learnt, or reduced to practice or expression during the performance of these T&Cs, provided that such invention, know-how, or intellectual work relates to the use and operation of the Prototype and the Beta Programme and to any copyright, patent right, trade secret, sui generis database right, and all other intellectual and industrial property rights of any kind relating thereto. The Tester undertakes to take any action reasonably requested by PagoPA to evidence, perfect, obtain, or maintain the foregoing." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "7. DISCLAIMER OF WARRANTY." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester accepts and acknowledges that: (a) the Prototype is a beta product still undergoing testing and does not represent a final product of PagoPA; and (b) the Prototype may contain bugs, defects, errors, and other problems that could cause system failures and loss/corruption of data within devices. Consequently, the Prototype is provided \"as is\" and its use is at the sole risk and peril of the Tester. To the maximum extent permitted by applicable laws and regulations, PagoPA and its licensors make no warranties of any kind, whether express or implied, including, without limitation, warranties of merchantability, fitness for a particular purpose, and non-infringement of third-party rights. PagoPA assumes no liability for the correct installation and/or use of the Prototype. PagoPA and its licensors shall not be held liable for any content or information made accessible by the Prototype. PagoPA does not guarantee any updates or improvements to the Prototype." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "8. LIMITATION OF LIABILITY." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "To the maximum extent permitted by applicable laws and regulations, in no event shall PagoPA or its licensors be liable for: (i) damages of any kind, including indirect damages, damages for interruption of use, or for loss, loss of integrity, or corruption of data, loss of profits, or costs for the procurement of substitute goods or services, howsoever caused (including, but not limited to, use, misuse, inability to use, or interruption of use) under any theory of liability; or (ii) any claim for compensation attributable to errors, omissions, or other inaccuracies in the functionalities of the Prototype. This limitation of liability shall not apply to liability arising from wilful misconduct (dolo) or gross negligence (colpa grave). The Prototype is provided at no additional cost solely for trial and beta testing purposes, and the Parties agree that the aforementioned limitations represent a reasonable allocation of risk under these T&Cs." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "9. PERSONAL DATA" }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "PagoPA shall process personal data collected during the Beta Programme in accordance with the privacy policy provided to the Tester." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "Should the Tester use personal data within the framework of the Beta Programme – in breach of the undertaking set out in the following paragraph – the Tester shall act as an independent data controller, in compliance with the principles and obligations set forth in Regulation (EU) 2016/679 and applicable national legislation. In such event, the Tester undertakes to indemnify and hold harmless PagoPA from and against any claim, penalty, or damage arising from breaches of applicable legislation attributable to the Tester's own conduct." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "10. USE OF FICTITIOUS DATA." }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "text": "During the course of the Beta Programme, the Tester undertakes to use exclusively fictitious data created ad hoc by the Tester (hereinafter, \"" },
+        { "text": "Fictitious Data", "bold": true },
+        { "text": "\"), thereby excluding any possibility of transmitting real and personal data. The Tester acknowledges and agrees that PagoPA is the exclusive owner of all rights in and to the Fictitious Data generated, transmitted, and processed within the framework of the Beta Programme. The Company may freely use, process, and dispose of such Fictitious Data – including through aggregation – for the following purposes:" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "marker": "a)",
+      "content": [{ "text": "monitoring, verifying, and analysing the operation, performance, and use of the Prototype;" }]
+    },
+    {
+      "type": "paragraph",
+      "marker": "b)",
+      "content": [{ "text": "improving, developing, and optimising the Prototype itself, as well as the services and technologies of PagoPA." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "PagoPA may also use, process, and share the data referred to in this Section with third parties (including, but not limited to, parent companies, subsidiaries, or affiliates, technological and commercial partners, supervisory bodies, competent authorities, research institutes, and universities) for the purposes of analysis, research, development, innovation, improvement of its products and services, reporting, and enhancement of corporate information assets." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "11. NOTICES." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "Any notice between the Parties concerning these T&Cs shall be sent to the following addresses:" }]
+    },
+    {
+      "type": "paragraph",
+      "marker": "-",
+      "content": [
+        { "text": "for PagoPA, via email to " },
+        { "email": "info@knodia.org" },
+        { "text": " or via certified email (PEC/REM) to " },
+        { "email": "pagopaspa@pec.pagopa.it" },
+        { "text": ";" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "marker": "-",
+      "content": [{ "text": "for the Tester, via one of the channels (e.g. email) provided upon participation in the Beta Programme." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "12. APPLICABLE LAW AND JURISDICTION." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "These T&Cs shall be governed by and construed in accordance with Italian law. The Parties agree that any dispute arising out of or in connection with these T&Cs shall be subject to the exclusive and mandatory jurisdiction of the Court of Rome." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "13. MISCELLANEOUS PROVISIONS." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "In the event that any provision of these T&Cs, or any part thereof, is held to be void, invalid, or unenforceable, the remaining portion thereof shall not be affected, provided always that the Parties hereby agree to negotiate in good faith in order to replace such provision, or part thereof, with a valid and enforceable provision having substantially the same effect, having regard to the subject matter and purpose of these T&Cs." }]
+    },
+    { "type": "heading", "level": 2, "content": [{ "text": "14. PREVALENCE CLAUSE." }] },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "The Tester accepts and acknowledges that the original text of these T&Cs is in the Italian language. The Italian version of these T&Cs is, therefore, the sole official and authoritative text, and any translations are provided for information purposes or convenience of understanding only. In the event of any conflict between the Italian version and any translations into other languages, the binding legal meaning shall be exclusively that provided by the Italian language." }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "Pursuant to and for the purposes of Articles 1341 and 1342 of the Italian Civil Code, by proceeding you expressly declare that you have read, understood, and accepted the following sections of these T&Cs: Section 12 (Applicable Law and Jurisdiction) and Section 14 (Prevalence Clause)." }]
+    }
+  ]
+}
