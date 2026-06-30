@@ -8,6 +8,36 @@ import { KafkaConfig, SignupTopicConfig } from "@knodia/kafka-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
+import {
+  ALLOW_ALL,
+  type AllowedEmailDomains,
+} from "../utils/emailDomainAllowlist.ts";
+
+const EmailAllowlistConfig = z
+  .object({
+    SIGNUP_ALLOWED_EMAIL_DOMAINS: z.string(),
+  })
+  .transform((c) => {
+    const raw = c.SIGNUP_ALLOWED_EMAIL_DOMAINS.trim().toLowerCase();
+    const allowedEmailDomains: AllowedEmailDomains =
+      raw === ALLOW_ALL
+        ? ALLOW_ALL
+        : raw
+            .split(",")
+            .map((domain) => domain.trim())
+            .filter((domain) => domain.length > 0);
+    return { allowedEmailDomains };
+  })
+  .refine(
+    (c) =>
+      c.allowedEmailDomains === ALLOW_ALL || c.allowedEmailDomains.length > 0,
+    {
+      message:
+        "SIGNUP_ALLOWED_EMAIL_DOMAINS must be `any` or a non-empty comma-separated list of domains",
+    },
+  );
+export type EmailAllowlistConfig = z.infer<typeof EmailAllowlistConfig>;
+
 const OneIdentityConfig = z
   .object({
     ONE_IDENTITY_CLIENT_ID: z.string(),
@@ -44,6 +74,7 @@ export type OneIdentityConfig = z.infer<typeof OneIdentityConfig>;
 const SignupManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(OneIdentityConfig)
+  .and(EmailAllowlistConfig)
   .and(SignupDbConfig)
   .and(KafkaConfig)
   .and(SignupTopicConfig)

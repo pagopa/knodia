@@ -27,6 +27,7 @@ import { createLogger } from "@knodia/logger";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type {
+  EmailAllowlistConfig,
   OneIdentityConfig,
   SignupManagerConfig,
 } from "./config/config.ts";
@@ -46,7 +47,11 @@ export function buildApp({
   rateLimiter,
   signupDb,
 }: {
-  config: AuthConfig & LoggerConfig & OneIdentityConfig & SignupTopicConfig;
+  config: AuthConfig &
+    EmailAllowlistConfig &
+    LoggerConfig &
+    OneIdentityConfig &
+    SignupTopicConfig;
   kafkaProducer: Producer;
   rateLimiter: RateLimiter;
   signupDb: NodePgDatabase;
@@ -95,6 +100,7 @@ export function buildApp({
       producer: kafkaProducer,
       topic: config.signupTopic,
     }),
+    config.allowedEmailDomains,
   );
 
   // Public routes (no auth required)

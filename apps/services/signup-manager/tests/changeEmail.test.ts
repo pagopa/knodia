@@ -91,6 +91,29 @@ describe("POST /user/changeEmail (changeEmail)", () => {
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
+  it("should return a generic 403 when the new email domain is not in the allowlist", async () => {
+    const signupUser = makeSignupUser(
+      {},
+      { spidCode: validUISignupSessionTokenClaims.spidCode },
+    );
+    await seedSignupUser(signupUser);
+
+    const response = await injectSignupAppRequest()
+      .post("/user/changeEmail")
+      .body({ email: "nuova@gmail.com" });
+
+    expect(response.statusCode).toBe(403);
+
+    const problem = response.json();
+    expect(problem.errors?.[0]?.code).toBe("011-0010");
+    const serialized = JSON.stringify(problem).toLowerCase();
+    expect(serialized).not.toContain("domain");
+    expect(serialized).not.toContain("gmail");
+
+    await expect(getAllEmailChangeRequests()).resolves.toHaveLength(0);
+    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
+  });
+
   it("should return 409 when the signup user is not onboarded", async () => {
     const response = await injectSignupAppRequest()
       .post("/user/changeEmail")
