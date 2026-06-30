@@ -23,17 +23,19 @@ export const Route = createFileRoute("/_layout/_authenticated")({
 function AuthenticatedLayout() {
   const router = useRouter();
   const { data } = useSuspenseQuery(getCurrentSignupUserQuery());
-  const status = data.onboardingStatus;
-  const previousStatus = useRef(status);
+  // Route context is a match-time snapshot, so re-run the guards on any user change to refresh it.
+  const key =
+    data.onboardingStatus === "NOT_COMPLETED"
+      ? data.onboardingStatus
+      : `${data.onboardingStatus}|${data.email}`;
+  const previousKey = useRef(key);
 
-  // When the status changes in another tab (the user query refetches on focus),
-  // re-run the route guards so beforeLoad redirects from the current page.
   useEffect(() => {
-    if (previousStatus.current !== status) {
-      previousStatus.current = status;
+    if (previousKey.current !== key) {
+      previousKey.current = key;
       void router.invalidate();
     }
-  }, [status, router]);
+  }, [key, router]);
 
   return <Outlet />;
 }

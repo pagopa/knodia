@@ -1,4 +1,6 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import {
+  type SignupGeneratedEntities,
   type SignupUser,
   SignupUserStatus,
   SuspensionReason,
@@ -7,6 +9,8 @@ import { match } from "ts-pattern";
 
 import {
   type API_CurrentSignupUser,
+  type API_KnodeAssignment,
+  type API_OnboardedStatus,
   API_OnboardingStatus,
   API_SuspensionReason,
 } from "./api.ts";
@@ -42,13 +46,22 @@ export function toAPI_CurrentSignupUser(
 
   return {
     email: signupUser.email,
+    knodes: toAPI_KnodeAssignments(signupUser.generatedEntities),
     onboardingStatus: toAPI_OnboardingStatus(signupUser.status),
   };
 }
 
-function toAPI_OnboardingStatus(
-  status: SignupUserStatus,
-): API_OnboardingStatus {
+function toAPI_KnodeAssignments(
+  generatedEntities: SignupGeneratedEntities,
+): API_KnodeAssignment[] {
+  return KnodeId.options.map((knode) => ({
+    knode,
+    organizationName: generatedEntities[knode].organizationName,
+    username: generatedEntities[knode].userName,
+  }));
+}
+
+function toAPI_OnboardingStatus(status: SignupUserStatus): API_OnboardedStatus {
   return match(status)
     .with(SignupUserStatus.enum.Active, () => API_OnboardingStatus.enum.ACTIVE)
     .with(

@@ -11,6 +11,10 @@ const createTestRouter = (isAuthenticated: boolean) => {
   const queryClient = new QueryClient();
 
   queryClient.setQueryData(getCurrentSignupUserQuery().queryKey, {
+    email: "user@example.com",
+    knodes: [
+      { knode: "Orion", organizationName: "Example Org", username: "user" },
+    ],
     onboardingStatus: "ACTIVE",
   });
 

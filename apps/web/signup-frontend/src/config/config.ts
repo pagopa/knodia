@@ -15,10 +15,15 @@
 import { z } from "zod";
 
 const KnodiaSignupFrontendConfig = z.object({
+  KNODIA_ORG_COMPANY_DETAILS_URL: z
+    .string()
+    .min(1, "KNODIA_ORG_COMPANY_DETAILS_URL is required"),
   KNODIA_ORG_URL: z.string().min(1, "KNODIA_ORG_URL is required"),
+  LYNX_PROTOTYPE_URL: z.string().min(1, "LYNX_PROTOTYPE_URL is required"),
   OIDC_SESSION_FLOW_START_URL: z
     .string()
     .min(1, "OIDC_SESSION_FLOW_START_URL is required"),
+  ORION_PROTOTYPE_URL: z.string().min(1, "ORION_PROTOTYPE_URL is required"),
   SIGNUP_MANAGER_URL: z.string().min(1, "SIGNUP_MANAGER_URL is required"),
 });
 
@@ -33,8 +38,13 @@ if (!parsed.success) {
 }
 
 export const config = {
+  knodiaOrgCompanyDetailsUrl: parsed.data.KNODIA_ORG_COMPANY_DETAILS_URL,
   knodiaOrgUrl: parsed.data.KNODIA_ORG_URL,
   oidcSessionFlowStartUrl: parsed.data.OIDC_SESSION_FLOW_START_URL,
+  prototypeUrls: {
+    Lynx: parsed.data.LYNX_PROTOTYPE_URL,
+    Orion: parsed.data.ORION_PROTOTYPE_URL,
+  },
   signupManagerUrl: parsed.data.SIGNUP_MANAGER_URL,
 };
 

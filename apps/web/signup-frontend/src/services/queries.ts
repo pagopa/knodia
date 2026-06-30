@@ -1,4 +1,5 @@
 import {
+  changeEmailMutation,
   confirmOnboardingMutation,
   deleteUserMutation,
   getCurrentSignupUserOptions,
@@ -14,6 +15,11 @@ export const getCurrentSignupUserQuery = () => ({
 
 export const confirmOnboardingMutationOptions = () =>
   confirmOnboardingMutation({
+    client,
+  });
+
+export const changeEmailMutationOptions = () =>
+  changeEmailMutation({
     client,
   });
 

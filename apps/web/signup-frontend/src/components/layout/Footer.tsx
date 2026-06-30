@@ -1,7 +1,21 @@
+import { Fragment } from "react";
+
 import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
 import logoD from "@/assets/logo-d.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
+import { Link } from "@/components/ui";
+import { APP_BASE_PATH } from "@/config/basepath";
+import { config } from "@/config/config";
+
+const LEGAL_LINKS = [
+  { href: `${APP_BASE_PATH}/privacy-policy`, label: "Privacy Policy" },
+  {
+    href: `${APP_BASE_PATH}/terms-and-conditions`,
+    label: "Terms & Conditions",
+  },
+  { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
+];
 
 export function Footer() {
   return (
@@ -17,10 +31,21 @@ export function Footer() {
             <span className="font-body text-[14px] leading-[20px] font-normal tracking-[0.35px] uppercase">
               © 2026 Knodia
             </span>
-            {/* TODO: turn these into links */}
-            <span className="text-style-caption whitespace-pre">
-              {`Privacy Policy   ·   Legal Notes   ·   Company Details`}
-            </span>
+            <div className="text-style-caption flex items-center gap-3">
+              {LEGAL_LINKS.map((link, index) => (
+                <Fragment key={link.href}>
+                  {index > 0 && <span aria-hidden>·</span>}
+                  <Link
+                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber"
+                    href={link.href}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {link.label}
+                  </Link>
+                </Fragment>
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex w-[219px] flex-col gap-[66px]">
