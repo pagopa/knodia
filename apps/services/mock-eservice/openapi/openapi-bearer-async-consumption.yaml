@@ -73,12 +73,77 @@ components:
         - status
         - title
       additionalProperties: false
+    UriScheme:
+      description: Identifier scheme URI accepted by Knodia mock e-services
+      type: string
+      enum:
+        - http://memberstate.ms/PIdentifier
+        - http://memberstate.ms/VAT
+    Address:
+      description: Address, modelled after Core Person Vocabulary 2.1.1 / Core
+        Business Vocabulary 2.2.0
+      type: object
+      properties:
+        adminUnitL1:
+          type: string
+        adminUnitL2:
+          type: string
+        fullAddress:
+          type: string
+        postCode:
+          type: string
+        postName:
+          type: string
+      required:
+        - adminUnitL1
+        - adminUnitL2
+        - fullAddress
+      additionalProperties: false
     CompanyUid:
       description: "Legal-entity identifier in the path: 11-digit Italian VAT number
         (Partita IVA)."
       example: "01229430085"
       type: string
       pattern: ^[0-9]{11}$
+    LegalIdentifier:
+      description: Unique identifier of a legal entity (Core Business Vocabulary 2.2.0)
+      type: object
+      properties:
+        notation:
+          $ref: "#/components/schemas/CompanyUid"
+        schemeName:
+          type: string
+        schemeURI:
+          $ref: "#/components/schemas/UriScheme"
+      required:
+        - notation
+        - schemeName
+        - schemeURI
+      additionalProperties: false
+    LegalEntityActivity:
+      description: Economic activity of the legal entity — ATECO 2025 classification
+        code (6-digit category level, with NACE Rev. 2.1 correspondence)
+      example: 43.22.07
+      type: string
+    LegalEntity:
+      description: Legal entity (company), modelled after Core Business Vocabulary 2.2.0
+      type: object
+      properties:
+        legalEntityActivity:
+          $ref: "#/components/schemas/LegalEntityActivity"
+        legalIdentifier:
+          $ref: "#/components/schemas/LegalIdentifier"
+        legalName:
+          type: string
+        registrationDate:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+      required:
+        - legalEntityActivity
+        - legalIdentifier
+        - legalName
+      additionalProperties: false
     CompanyAddressesRequest:
       description: Submission of a list of legal-entity identifiers to the Producer,
         to request their registered addresses (Cross-Border E-service 05,
@@ -117,6 +182,33 @@ components:
           $ref: "#/components/schemas/AsyncConsumptionRequestState"
       required:
         - state
+      additionalProperties: false
+    GetCompanyAddressesResult:
+      type: object
+      properties:
+        address:
+          allOf:
+            - $ref: "#/components/schemas/Address"
+        identifier:
+          $ref: "#/components/schemas/CompanyUid"
+        legalEntity:
+          allOf:
+            - $ref: "#/components/schemas/LegalEntity"
+      required:
+        - identifier
+      additionalProperties: false
+    GetCompanyAddressesResults:
+      description: List of addresses and legal entities returned by the Producer in
+        response to an asynchronous request (Cross-Border E-service 05, Request
+        company addresses).
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetCompanyAddressesResult"
+      required:
+        - results
       additionalProperties: false
   headers:
     RateLimitLimit:
@@ -299,6 +391,104 @@ paths:
             application/problem+json:
               schema:
                 description: Request Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "429":
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                description: Too Many Requests
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+            Retry-After:
+              $ref: "#/components/headers/RateLimitRetryAfter"
+  /legal-entities/address-requests/{requestId}/resources/{resourceId}:
+    get:
+      operationId: getCompanyAddressesResults
+      summary: Get company addresses results
+      tags:
+        - asyncCompanyAddresses
+      description: Get the results of a previously requested company addresses request
+        (Cross-Border E-service 05, Get company addresses). The Producer will
+        return the results of the request, including the addresses of the
+        requested companies. The Consumer must provide the resource ID obtained
+        from the previous request to retrieve the results.
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/AsyncConsumptionRequestId"
+          in: path
+          name: requestId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/AsyncConsumptionResourceId"
+          in: path
+          name: resourceId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCompanyAddressesResults"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimitLimit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/RateLimitRemaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/RateLimitReset"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
           headers:

@@ -5,12 +5,16 @@ import {
   findLegalEntityAddress,
 } from "../data/legalEntities.ts";
 import {
-  type API_Address,
   API_AsyncConsumptionRequestState,
   type API_CompanyUid,
-  type API_LegalEntity,
+  type API_GetCompanyAddressesResult,
+  type API_GetCompanyAddressesResults,
 } from "../models/api.ts";
-import { asyncCompanyAddressesRequestNotFound } from "../models/errors.ts";
+import {
+  asyncCompanyAddressesRequestNotFound,
+  asyncCompanyAddressesResultsNotFound,
+  resourceIdDoesNotBelongToAsyncRequest,
+} from "../models/errors.ts";
 
 export interface AsyncCompanyAddressesRequest {
   companyUids: API_CompanyUid[];
@@ -28,11 +32,7 @@ export const asyncCompanyAddressesRequests = new Map<
 
 export const asyncCompanyAddressesResults = new Map<
   string,
-  {
-    address?: API_Address;
-    legalEntity?: API_LegalEntity;
-    uidCompany: API_CompanyUid;
-  }[]
+  API_GetCompanyAddressesResult[]
 >();
 
 export function addAsyncCompanyAddressesRequest(
@@ -44,6 +44,15 @@ export function addAsyncCompanyAddressesRequest(
     finishDate: getMockFinishDate(requestId),
     id: requestId,
   });
+}
+
+export function assertResourceIdBelongsToRequest(
+  request: AsyncCompanyAddressesRequest,
+  resourceId: string,
+): void {
+  if (request.resourceId !== resourceId) {
+    throw resourceIdDoesNotBelongToAsyncRequest(request.id, resourceId);
+  }
 }
 
 export function getAsyncCompanyAddressesRequest(
@@ -64,6 +73,18 @@ export function getAsyncCompanyAddressesRequestState(
   return request.resourceId
     ? API_AsyncConsumptionRequestState.enum.COMPLETED
     : API_AsyncConsumptionRequestState.enum.PENDING;
+}
+
+export function getAsyncCompanyAddressesResults(
+  resourceId: string,
+): API_GetCompanyAddressesResults {
+  const results = asyncCompanyAddressesResults.get(resourceId);
+
+  if (results === undefined) {
+    throw asyncCompanyAddressesResultsNotFound(resourceId);
+  }
+
+  return { results };
 }
 
 export function resolveAsyncCompanyAddressesRequest(
@@ -93,8 +114,8 @@ function addAsyncCompanyAddressesResult(
 
     return {
       address,
+      identifier: uidCompany,
       legalEntity,
-      uidCompany,
     };
   });
 
