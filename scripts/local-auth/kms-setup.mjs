@@ -19,7 +19,11 @@ const kmsClient = new KMSClient({
 
 // KMS keys for knodia services (ui-session, internal, etc.), published in the JWKS
 // served by the local-jwks container for token validation.
-const jwksKids = ["alias/local-knodia-key", "alias/local-knodia-auth-server-key"];
+const jwksKids = [
+  "alias/local-knodia-key",
+  "alias/local-knodia-auth-server-key",
+  "alias/local-knodia-maintenance-key",
+];
 
 // Dedicated key the mock-eservice signs Knodia-JWT-Signature with. Kept out of the
 // JWKS — it's validated via the seeded producer keychain, not the platform JWKS.
