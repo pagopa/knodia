@@ -59,6 +59,9 @@ export type CurrentSignupUser = {
     onboardingStatus: 'NOT_COMPLETED';
 } | {
     email: string;
+    onboardingStatus: 'ONBOARDING_PENDING';
+} | {
+    email: string;
     knodes: Array<KnodeAssignment>;
     onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING';
 };
