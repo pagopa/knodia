@@ -4,10 +4,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import { APP_BASE_PATH } from "@/config/basepath";
 import { LOGIN_ROUTE } from "@/libs/auth";
+import { type OnboardingStatus } from "@/services/onboarding";
 import { getCurrentSignupUserQuery } from "@/services/queries";
 import { createTestRouterFromFiles } from "@/test/file-route-utils";
 
-const createTestRouter = (isAuthenticated: boolean) => {
+const createTestRouter = (
+  isAuthenticated: boolean,
+  onboardingStatus: OnboardingStatus = "ACTIVE",
+) => {
   const queryClient = new QueryClient();
 
   queryClient.setQueryData(getCurrentSignupUserQuery().queryKey, {
@@ -15,7 +19,7 @@ const createTestRouter = (isAuthenticated: boolean) => {
     knodes: [
       { knode: "Orion", organizationName: "Example Org", username: "user" },
     ],
-    onboardingStatus: "ACTIVE",
+    onboardingStatus,
   });
 
   return createTestRouterFromFiles({
@@ -51,5 +55,23 @@ describe("authenticated route", () => {
 
     expect(router.state.redirect).toBeUndefined();
     expect(router.state.location.pathname).toBe("/home");
+  });
+
+  it("redirects users still onboarding away from /home", async () => {
+    const router = createTestRouter(true, "NOT_COMPLETED");
+
+    await router.load();
+
+    expect(isRedirect(router.state.redirect)).toBe(true);
+    expect(router.state.redirect?.options.to).toBe("/registration");
+  });
+
+  it("redirects suspended users to /suspended", async () => {
+    const router = createTestRouter(true, "SUSPENDED");
+
+    await router.load();
+
+    expect(isRedirect(router.state.redirect)).toBe(true);
+    expect(router.state.redirect?.options.to).toBe("/suspended");
   });
 });
