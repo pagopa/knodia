@@ -5,7 +5,7 @@ import {
   AdminDisableUserCommand,
   AdminEnableUserCommand,
   AdminGetUserCommand,
-  AdminResetUserPasswordCommand,
+  AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -154,7 +154,7 @@ describe("updateUserEmail", () => {
 });
 
 describe("resetUserCredentials", () => {
-  it("resets the password of a user with established credentials", async () => {
+  it("flips an established user to FORCE_CHANGE_PASSWORD then resends via RESEND", async () => {
     const send = vi
       .spyOn(CognitoIdentityProviderClient.prototype, "send")
       .mockResolvedValueOnce({ UserStatus: "CONFIRMED" } as never)
@@ -164,14 +164,25 @@ describe("resetUserCredentials", () => {
       username: "mario.rossi",
     });
 
-    expect(send).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenCalledTimes(3);
 
     const getUser = send.mock.calls.at(0)?.at(0) as AdminGetUserCommand;
     expect(getUser).toBeInstanceOf(AdminGetUserCommand);
 
-    const reset = send.mock.calls.at(1)?.at(0) as AdminResetUserPasswordCommand;
-    expect(reset).toBeInstanceOf(AdminResetUserPasswordCommand);
-    expect(reset.input).toMatchObject({
+    const setPassword = send.mock.calls
+      .at(1)
+      ?.at(0) as AdminSetUserPasswordCommand;
+    expect(setPassword).toBeInstanceOf(AdminSetUserPasswordCommand);
+    expect(setPassword.input).toMatchObject({
+      Permanent: false,
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+
+    const resend = send.mock.calls.at(2)?.at(0) as AdminCreateUserCommand;
+    expect(resend).toBeInstanceOf(AdminCreateUserCommand);
+    expect(resend.input).toMatchObject({
+      MessageAction: "RESEND",
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
@@ -217,7 +228,7 @@ describe("resetUserCredentials", () => {
     expect(send).toHaveBeenCalledTimes(2);
   });
 
-  it("skips the reset when the user is already in RESET_REQUIRED", async () => {
+  it("flips a RESET_REQUIRED user to FORCE_CHANGE_PASSWORD then resends via RESEND", async () => {
     const send = vi
       .spyOn(CognitoIdentityProviderClient.prototype, "send")
       .mockResolvedValueOnce({ UserStatus: "RESET_REQUIRED" } as never)
@@ -227,8 +238,11 @@ describe("resetUserCredentials", () => {
       username: "mario.rossi",
     });
 
-    // Only AdminGetUser runs; no second reset email on an idempotent retry.
-    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(send.mock.calls.at(1)?.at(0)).toBeInstanceOf(
+      AdminSetUserPasswordCommand,
+    );
+    expect(send.mock.calls.at(2)?.at(0)).toBeInstanceOf(AdminCreateUserCommand);
   });
 
   it("swallows UserNotFoundException when the user no longer exists", async () => {

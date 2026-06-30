@@ -35,7 +35,6 @@ const TESTING_ORGANIZATION_ATTRIBUTE = {
   scheme: "knodia",
 } satisfies organizationProcessApi.Attribute;
 
-// eslint-disable-next-line max-lines-per-function -- one arm per event variant; the match grows with the union
 export async function handleSignupMessage(
   event: SignupEventV1,
   deps: SignupUpdaterDeps,

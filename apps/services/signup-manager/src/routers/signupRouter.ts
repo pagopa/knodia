@@ -27,7 +27,6 @@ interface SignupRouterOptions {
   signupService: SignupService;
 }
 
-// eslint-disable-next-line max-lines-per-function -- one block per route; grows as routes are added
 export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify,
   { signupService },

@@ -10,7 +10,7 @@ import {
   AdminEnableUserCommand,
   AdminGetUserCommand,
   AdminListGroupsForUserCommand,
-  AdminResetUserPasswordCommand,
+  AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
@@ -19,6 +19,7 @@ import {
   UserNotFoundException,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { randomBytes } from "node:crypto";
 import { match } from "ts-pattern";
 
 import type { CognitoIdmClientConfig } from "./config.ts";
@@ -207,7 +208,7 @@ export function buildCognitoIdmClient({
         );
 
         await match(UserStatus)
-          // Never logged in: resend the temporary credentials to the new address.
+          // Never logged in: Cognito can re-send fresh temporary credentials directly.
           .with("FORCE_CHANGE_PASSWORD", () =>
             client.send(
               new AdminCreateUserCommand({
@@ -217,14 +218,13 @@ export function buildCognitoIdmClient({
               }),
             ),
           )
-          // Already pending a reset (typically an idempotent Kafka retry): skip so a
-          // partial multi-knode failure doesn't re-send the reset email on every redelivery.
-          // TODO(KN-830): a corrective email change while still RESET_REQUIRED won't re-send the reset.
-          .with("RESET_REQUIRED", () => undefined)
-          // Reset; swallow NotAuthorizedException (non-resettable/disabled state).
-          // Other errors are transient (throttling, 5xx), so let them propagate and Kafka retries.
+          // RESEND only works on FORCE_CHANGE_PASSWORD: flip the user there with a throwaway
+          // temporary password, then let Cognito generate and email a fresh one via RESEND.
+          // Swallow NotAuthorizedException for non-resettable/disabled users; other errors are
+          // transient (throttling, 5xx), so let them propagate and Kafka retries.
           .with(
             "CONFIRMED",
+            "RESET_REQUIRED",
             "ARCHIVED",
             "COMPROMISED",
             "UNCONFIRMED",
@@ -232,14 +232,23 @@ export function buildCognitoIdmClient({
             "UNKNOWN",
             undefined,
             () =>
-              swallowCognitoError("NotAuthorizedException", () =>
-                client.send(
-                  new AdminResetUserPasswordCommand({
+              swallowCognitoError("NotAuthorizedException", async () => {
+                await client.send(
+                  new AdminSetUserPasswordCommand({
+                    Password: generateTemporaryPassword(),
+                    Permanent: false,
                     Username: input.username,
                     UserPoolId: cognitoUserPoolId,
                   }),
-                ),
-              ),
+                );
+                await client.send(
+                  new AdminCreateUserCommand({
+                    MessageAction: "RESEND",
+                    Username: input.username,
+                    UserPoolId: cognitoUserPoolId,
+                  }),
+                );
+              }),
           )
           .exhaustive();
       });
@@ -261,6 +270,12 @@ export function buildCognitoIdmClient({
       );
     },
   };
+}
+
+// Throwaway password: RESEND replaces it immediately and the user never sees it, so it only
+// has to satisfy the pool policy. The base64url suffix guarantees upper/lower/digit/symbol.
+function generateTemporaryPassword(): string {
+  return `${randomBytes(24).toString("base64url")}Aa1!`;
 }
 
 function getOrganizationGroupName(organizationId: OrganizationId) {
