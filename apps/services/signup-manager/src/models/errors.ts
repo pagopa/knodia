@@ -2,7 +2,8 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
+const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -15,6 +16,7 @@ const errorCodes = {
   SIGNUP_USER_NOT_FOUND: "0007",
   SIGNUP_USER_NOT_ACTIVE: "0008",
   SIGNUP_USER_NOT_SUSPENDED: "0009",
+  SIGNUP_USER_EMAIL_DOMAIN_NOT_ALLOWED: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -49,6 +51,17 @@ export function signupUserEmailChangeRequestCreationConflict() {
       "Email change request could not be created because related data changed concurrently. Please retry the email change request",
     status: HTTP_STATUS_CONFLICT,
     title: "Signup User Email Change Request Creation Conflict",
+  });
+}
+
+// Generic title/detail: there's no real benefit in revealing that the rejection
+// is domain-based. The dedicated code is for server-side observability.
+export function signupUserEmailDomainNotAllowed() {
+  return createApiError<ErrorCodes>({
+    code: "SIGNUP_USER_EMAIL_DOMAIN_NOT_ALLOWED",
+    detail: "The request cannot be completed",
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Forbidden",
   });
 }
 

@@ -5,6 +5,7 @@ import type {
   UISignupSessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { FastifyBaseLogger } from "fastify";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
@@ -23,6 +24,7 @@ import type {
   API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
 } from "../models/api.ts";
+import type { AllowedEmailDomains } from "../utils/emailDomainAllowlist.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
 import {
@@ -38,6 +40,7 @@ import {
   TERMS_AND_CONDITIONS_VERSION,
 } from "../utils/termsAcceptance.ts";
 import {
+  assertEmailDomainIsAllowed,
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIsActive,
   assertSignupUserIsOnboarded,
@@ -49,6 +52,7 @@ export type SignupService = ReturnType<typeof signupServiceBuilder>;
 export function signupServiceBuilder(
   signupDbService: SignupDbService,
   signupEventProducer: SignupEventProducer,
+  allowedEmailDomains: AllowedEmailDomains,
 ) {
   const retrieveCurrentActiveSignupUser = async (
     authData: UISignupSessionAuthData,
@@ -69,6 +73,8 @@ export function signupServiceBuilder(
       { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
       logger.info("Requesting email change for current signup user");
+
+      assertEmailDomainIsAllowed(email, allowedEmailDomains, logger);
 
       const currentSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
@@ -138,6 +144,8 @@ export function signupServiceBuilder(
         authData,
         signupDbService,
         signupEventProducer,
+        allowedEmailDomains,
+        logger,
       );
     },
     async deleteCurrentSignupUser({
@@ -278,11 +286,14 @@ async function createOnboardingPendingUser(
   authData: UISignupSessionAuthData,
   signupDbService: SignupDbService,
   signupEventProducer: SignupEventProducer,
+  allowedEmailDomains: AllowedEmailDomains,
+  logger: FastifyBaseLogger,
 ): Promise<void> {
   const now = new Date();
   const signupUserId = generateId<SignupUserId>();
   const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
 
+  assertEmailDomainIsAllowed(email, allowedEmailDomains, logger);
   await assertSignupUserEmailDoesNotExist(email, signupDbService);
 
   const { lynxOrganizationName, orionOrganizationName } =
