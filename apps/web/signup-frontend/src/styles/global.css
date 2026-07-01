@@ -1,194 +1,248 @@
 /* Fonts are self-hosted (no Google Fonts CDN). */
-@import '@fontsource-variable/instrument-sans';
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/manrope';
-@import '@fontsource/titillium-web/400.css';
-@import '@fontsource/titillium-web/600.css';
-@import 'tailwindcss';
+@import "@fontsource-variable/instrument-sans";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
+@import "@fontsource/titillium-web/400.css";
+@import "@fontsource/titillium-web/600.css";
+@import "tailwindcss";
 
 @theme {
-    --font-body: 'Instrument Sans Variable', sans-serif;
-    --font-heading: 'Instrument Sans Variable', sans-serif;
-    --font-caption: 'Titillium Web', sans-serif;
-    --font-inter: 'Inter Variable', sans-serif;
-    --font-manrope: 'Manrope Variable', sans-serif;
+  --font-body: "Instrument Sans Variable", sans-serif;
+  --font-heading: "Instrument Sans Variable", sans-serif;
+  --font-caption: "Titillium Web", sans-serif;
+  --font-inter: "Inter Variable", sans-serif;
+  --font-manrope: "Manrope Variable", sans-serif;
 
-    --color-primary-violet: #4e51e6;
-    --color-primary-violet-hover: #30318e;
-    --color-deep-violet: #002c6f;
-    --color-primary-violet-muted: #b8b9f5;
-    --color-primary-violet-60: #9597f0;
-    --color-neutral-black: #000000;
-    --color-neutral-white: #ffffff;
-    --color-neutral-gray-40: #9ca3af;
-    --color-neutral-medium-gray: #5e5e5e;
-    --color-neutral-graphite: #313030;
-    --color-neutral-surface-gray: #e5e5e8;
-    --color-secondary-soft-quartz: #ffe2d5;
-    --color-secondary-muted-amber: #f0b395;
-    --color-secondary-muted-amber-30: #ffb796;
-    --color-showcase-surface: #878787;
-    --color-showcase-accent: #1afff0;
-    --color-primary-violet-surface: #edeefd;
-    --color-header-panel-surface: #f8f8f8;
-    --color-primary-light-violet: #dcdcfa;
-    --color-hero-base: #0e162e;
-    --color-hero-mid: #1c2757;
-    --color-hero-end: #263f81;
+  --color-primary-violet: #4e51e6;
+  --color-primary-violet-hover: #30318e;
+  --color-deep-violet: #002c6f;
+  --color-primary-violet-muted: #b8b9f5;
+  --color-primary-violet-60: #9597f0;
+  --color-neutral-black: #000000;
+  --color-neutral-white: #ffffff;
+  --color-neutral-gray-40: #9ca3af;
+  --color-neutral-medium-gray: #5e5e5e;
+  --color-neutral-graphite: #313030;
+  --color-neutral-surface-gray: #e5e5e8;
+  --color-secondary-soft-quartz: #ffe2d5;
+  --color-secondary-muted-amber: #f0b395;
+  --color-secondary-muted-amber-30: #ffb796;
+  --color-showcase-surface: #878787;
+  --color-showcase-accent: #1afff0;
+  --color-primary-violet-surface: #edeefd;
+  --color-header-panel-surface: #f8f8f8;
+  --color-primary-light-violet: #dcdcfa;
+  --color-hero-base: #0e162e;
+  --color-hero-mid: #1c2757;
+  --color-hero-end: #263f81;
 
-    --radius-button: 8px;
-    --radius-feature: 16px;
-    --radius-showcase: 32px;
-    --border-button: 2px;
+  --radius-button: 8px;
+  --radius-feature: 16px;
+  --radius-showcase: 32px;
+  --border-button: 2px;
 
-    --text-button-sm: 16px;
-    --text-button-md: 18px;
-    --text-heading-md: 28px;
-    --text-heading-lg: 40px;
-    --text-hero-sm: 44px;
-    --text-hero-lg: 64px;
-    --text-intro-sm: 17px;
-    --text-intro-lg: 22px;
-    --leading-button-sm: 24px;
-    --leading-button-md: 28px;
-    --leading-heading-md: 36px;
-    --leading-heading-lg: 48px;
-    --leading-hero-sm: 52px;
-    --leading-hero-lg: 80px;
-    --leading-intro-sm: 24.375px;
-    --leading-intro-lg: 32px;
-    --tracking-hero-sm: -0.7px;
-    --tracking-hero-lg: 0px;
+  --text-button-sm: 16px;
+  --text-button-md: 18px;
+  --text-heading-md: 28px;
+  --text-heading-lg: 40px;
+  --text-hero-sm: 44px;
+  --text-hero-lg: 64px;
+  --text-intro-sm: 17px;
+  --text-intro-lg: 22px;
+  --leading-button-sm: 24px;
+  --leading-button-md: 28px;
+  --leading-heading-md: 36px;
+  --leading-heading-lg: 48px;
+  --leading-hero-sm: 52px;
+  --leading-hero-lg: 80px;
+  --leading-intro-sm: 24.375px;
+  --leading-intro-lg: 32px;
+  --tracking-hero-sm: -0.7px;
+  --tracking-hero-lg: 0px;
 
-    --button-height: 48px;
-    --button-padding-x: 16px;
-    --button-gap: 8px;
-    --button-gap-sm: 4px;
-    --button-icon-size: 24px;
-    --button-icon-size-sm: 16px;
+  --button-height: 48px;
+  --button-padding-x: 16px;
+  --button-gap: 8px;
+  --button-gap-sm: 4px;
+  --button-icon-size: 24px;
+  --button-icon-size-sm: 16px;
 
-    --header-shell-max: 1440px;
-    --header-height: 88px;
-    --header-inline-padding: 141px;
-    --header-logo-width: 158px;
-    --header-logo-height: 56px;
-    --color-header-mobile-divider: #d2d5ef;
+  --header-shell-max: 1440px;
+  --header-height: 88px;
+  --header-inline-padding: 141px;
+  --header-logo-width: 158px;
+  --header-logo-height: 56px;
+  --color-header-mobile-divider: #d2d5ef;
 
-    --color-input-border: #636b82;
-    --color-input-label: #555c70;
-    --color-input-text: #0e0f13;
-    --color-status-error: #d13333;
-    --color-status-error-strong: #5d1313;
-    --color-status-error-surface: #ffd9d9;
-    --color-status-error-border: #ff6666;
-    --color-status-warning: #614c15;
-    --color-status-warning-surface: #fff5da;
-    --color-status-warning-border: #ffd56b;
-    --radius-card: 24px;
-    --radius-chip: 4px;
-    --radius-modal: 16px;
-    --shadow-card: 0px 4px 16px rgba(14, 15, 19, 0.1);
+  --color-input-border: #636b82;
+  --color-input-label: #555c70;
+  --color-input-text: #0e0f13;
+  --color-status-error: #d13333;
+  --color-status-error-strong: #5d1313;
+  --color-status-error-surface: #ffd9d9;
+  --color-status-error-border: #ff6666;
+  --color-status-warning: #614c15;
+  --color-status-warning-surface: #fff5da;
+  --color-status-warning-border: #ffd56b;
+  --radius-card: 24px;
+  --radius-chip: 4px;
+  --radius-modal: 16px;
+  --shadow-card: 0px 4px 16px rgba(14, 15, 19, 0.1);
 }
 
 /* Text styles */
 @utility text-style-hero {
-    font-family: var(--font-heading);
-    font-size: var(--text-hero-lg);
-    line-height: var(--leading-hero-lg);
-    font-weight: 600;
-    letter-spacing: var(--tracking-hero-lg);
+  font-family: var(--font-heading);
+  font-size: var(--text-hero-lg);
+  line-height: var(--leading-hero-lg);
+  font-weight: 600;
+  letter-spacing: var(--tracking-hero-lg);
 }
 
 @utility text-style-section-title {
-    font-family: var(--font-heading);
-    font-size: var(--text-heading-lg);
-    line-height: var(--leading-heading-lg);
-    font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: var(--text-heading-lg);
+  line-height: var(--leading-heading-lg);
+  font-weight: 400;
 }
 
 @utility text-style-subheading {
-    font-family: var(--font-heading);
-    font-size: var(--text-heading-md);
-    line-height: var(--leading-heading-md);
-    font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: var(--text-heading-md);
+  line-height: var(--leading-heading-md);
+  font-weight: 400;
 }
 
 @utility text-style-intro {
-    font-family: var(--font-heading);
-    font-size: var(--text-intro-lg);
-    line-height: var(--leading-intro-lg);
-    font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: var(--text-intro-lg);
+  line-height: var(--leading-intro-lg);
+  font-weight: 400;
 }
 
 @utility text-style-body {
-    font-family: var(--font-body);
-    font-size: 18px;
-    line-height: 28px;
-    font-weight: 400;
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
 }
 
 @utility text-style-small {
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
 }
 
 @utility text-style-caption {
-    font-family: var(--font-body);
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
 }
 
 @utility text-style-card-title {
-    font-family: var(--font-manrope);
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 700;
+  font-family: var(--font-manrope);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
 }
 
 @utility text-style-action {
-    font-family: var(--font-inter);
-    font-size: 18px;
-    line-height: 26px;
-    font-weight: 700;
+  font-family: var(--font-inter);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
 }
 
 @layer base {
-    html {
-        font-family: var(--font-body);
-        color: var(--color-neutral-graphite);
-        background-color: var(--color-neutral-white);
-    }
+  html {
+    font-family: var(--font-body);
+    color: var(--color-neutral-graphite);
+    background-color: var(--color-neutral-white);
+  }
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        background-color: inherit;
-        color: inherit;
-    }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: inherit;
+    color: inherit;
+  }
 
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-    }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-    a {
-        color: inherit;
-        text-decoration: none;
-    }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-    button,
-    input,
-    textarea,
-    select {
-        font: inherit;
-    }
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-    img,
-    svg {
-        display: block;
-    }
+  img,
+  svg {
+    display: block;
+  }
+}
+
+@layer components {
+  .privacy-policy-page__notice {
+    color: var(--color-neutral-graphite);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  .otnotice h2,
+  .otnotice h3,
+  .otnotice h4 {
+    @apply text-style-subheading;
+    margin: 0 0 24px;
+    color: var(--color-primary-violet);
+  }
+
+  .otnotice p {
+    @apply text-style-body;
+    margin: 0 0 24px;
+  }
+
+  .otnotice ul {
+    margin: 0 0 24px;
+    padding-left: 24px;
+    list-style: disc;
+  }
+
+  .otnotice ol {
+    margin: 0 0 24px;
+    padding-left: 24px;
+    list-style: decimal;
+  }
+
+  .otnotice li {
+    margin-bottom: 8px;
+  }
+
+  .otnotice a {
+    color: var(--color-primary-violet);
+    text-decoration: underline;
+  }
+
+  .otnotice .ot-privacy-notice-language-dropdown-container,
+  .otnotice .ot-digital-policy-language-dropdown-wrapper,
+  .otnotice .otnotice-language-dropdown-container,
+  .otnotice .otnotice__version,
+  .otnotice .otnotice-menu,
+  .otnotice .otnotice-menu-mobile,
+  .otnotice .otnotice-menu-mobile-container {
+    display: none !important;
+  }
 }

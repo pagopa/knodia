@@ -1,0 +1,27 @@
+meta {
+  name: Get Async Company Addresses Results
+  type: http
+}
+
+get {
+  url: {{host-mock-eservice}}/legal-entities/address-requests/:companyAddressesRequestId/resources/:companyAddressesResourceId
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+params:path {
+  companyAddressesRequestId: {{companyAddressesRequestId}}
+  companyAddressesResourceId: {{companyAddressesResourceId}}
+}
+
+script:pre-request {
+  if (!bru.getVar("access_token")) {
+    throw new Error(
+      "access_token is not set. Run authorization-server/Create E-service Access Token first — it populates the access_token var on success."
+    )
+  }
+}

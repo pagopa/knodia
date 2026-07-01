@@ -1,0 +1,28 @@
+{
+  "name": "@knodia/ses-email-sender",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    ".": "./src/emailSender.ts",
+    "./config": "./src/config.ts"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/nodemailer": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "catalog:",
+    "nodemailer": "catalog:",
+    "zod": "catalog:"
+  }
+}
