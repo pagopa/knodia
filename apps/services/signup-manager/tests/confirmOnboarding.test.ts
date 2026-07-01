@@ -207,7 +207,7 @@ describe("POST /user/confirmOnboarding — email domain allowlist", () => {
   it("should return a generic 403 when the email domain is not in the allowlist", async () => {
     const response = await injectSignupAppRequest()
       .post("/user/confirmOnboarding")
-      .body({ email: "mario.rossi@gmail.com" });
+      .body({ email: "mario.rossi@knodia.com" });
 
     expect(response.statusCode).toBe(403);
 
@@ -217,7 +217,7 @@ describe("POST /user/confirmOnboarding — email domain allowlist", () => {
     const serialized = JSON.stringify(problem).toLowerCase();
     expect(serialized).not.toContain("domain");
     expect(serialized).not.toContain("allowlist");
-    expect(serialized).not.toContain("gmail");
+    expect(serialized).not.toContain("knodia");
 
     await expect(getAllSignupUsers()).resolves.toHaveLength(0);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();

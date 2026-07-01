@@ -4,7 +4,7 @@ import { isEmailDomainAllowed } from "../src/utils/emailDomainAllowlist.ts";
 
 describe("isEmailDomainAllowed", () => {
   it("allows any email when the allowlist is the `any` sentinel", () => {
-    expect(isEmailDomainAllowed("whoever@gmail.com", "any")).toBe(true);
+    expect(isEmailDomainAllowed("whoever@example.com", "any")).toBe(true);
   });
 
   it("allows an email whose domain is an exact match", () => {
@@ -25,7 +25,7 @@ describe("isEmailDomainAllowed", () => {
 
   it("rejects a domain not in the allowlist", () => {
     expect(
-      isEmailDomainAllowed("mario@gmail.com", ["pagopa.it", "mail.pagopa.it"]),
+      isEmailDomainAllowed("mario@example.com", ["pagopa.it", "mail.pagopa.it"]),
     ).toBe(false);
   });
 

@@ -100,7 +100,7 @@ describe("POST /user/changeEmail (changeEmail)", () => {
 
     const response = await injectSignupAppRequest()
       .post("/user/changeEmail")
-      .body({ email: "nuova@gmail.com" });
+      .body({ email: "nuova@knodia.com" });
 
     expect(response.statusCode).toBe(403);
 
@@ -108,7 +108,7 @@ describe("POST /user/changeEmail (changeEmail)", () => {
     expect(problem.errors?.[0]?.code).toBe("011-0010");
     const serialized = JSON.stringify(problem).toLowerCase();
     expect(serialized).not.toContain("domain");
-    expect(serialized).not.toContain("gmail");
+    expect(serialized).not.toContain("knodia");
 
     await expect(getAllEmailChangeRequests()).resolves.toHaveLength(0);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
