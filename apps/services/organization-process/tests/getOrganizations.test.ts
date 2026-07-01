@@ -25,7 +25,7 @@ const mockOrganizations: Organization[] = [
   {
     ...getMockOrganization(0),
     id: generateId<OrganizationId>(),
-    name: "Alpha",
+    name: "%_\\ Alpha",
   },
   { ...getMockOrganization(1), id: generateId<OrganizationId>(), name: "Beta" },
   {
@@ -121,8 +121,8 @@ describe("GET /organizations (getOrganizations)", () => {
     },
     {
       expectedResult: [mockOrganizations[0]] as Organization[],
-      query: { ...defaultQuery, name: "ALPHA" },
-      testCase: "case-insensitive match (ALPHA → Alpha)",
+      query: { ...defaultQuery, name: "%_\\ ALPHA" },
+      testCase: "case-insensitive match (%_\\ ALPHA → %_\\ Alpha)",
       totalCount: 1,
     },
     {

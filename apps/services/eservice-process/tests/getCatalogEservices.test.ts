@@ -94,7 +94,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
       totalCount: 1,
     },
     {
-      body: { keywords: "2 knodia 2" },
+      body: { keywords: "%_\\ knodia 2" },
       expectedResult: [
         withActiveLatestVersion(mockEservices.at(1)!),
       ] as Eservice[],
