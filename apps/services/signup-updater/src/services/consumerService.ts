@@ -254,6 +254,9 @@ export async function handleSignupMessage(
 
       if (user === undefined) return;
 
+      // TODO(KN-848): dedup resend on Kafka retry — track last credential-send per
+      // user/knode so a reprocess doesn't email another temporary password. Same
+      // concern in the EmailChangeRequestedV1 handler.
       await forEachKnode(
         (knodeId) =>
           deps.knodeClients[knodeId].cognitoClient.resetUserCredentials({
