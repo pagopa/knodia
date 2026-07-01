@@ -38,9 +38,7 @@ describe("ResetPasswordsModal", () => {
     renderModal();
 
     expect(
-      screen.getByText(
-        `You will receive temporary passwords or a link to create new ones at ${EMAIL}.`,
-      ),
+      screen.getByText(`You will receive temporary passwords at ${EMAIL}.`),
     ).toBeVisible();
     expect(screen.getByRole("button", { name: "Reset" })).toBeEnabled();
   });
