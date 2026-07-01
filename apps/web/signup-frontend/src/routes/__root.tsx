@@ -2,6 +2,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
+  HeadContent,
   Outlet,
   useRouter,
 } from "@tanstack/react-router";
@@ -27,6 +28,7 @@ function RootLayout() {
         return router.buildLocation(href).href;
       }}
     >
+      <HeadContent />
       <Outlet />
       <TanStackDevtools
         plugins={[
