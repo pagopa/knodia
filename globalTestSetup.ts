@@ -11,6 +11,7 @@ import { createTestInfraNetwork } from "./packages/test-commons/src/testcontaine
 import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
 import { setupRedisTestContainer } from "./packages/test-commons/src/testcontainers/redis"
 import type { TestProject } from 'vitest/node'
+import "vitest"
 
 export default async function setup(project: TestProject) {
   const network = await createTestInfraNetwork();
