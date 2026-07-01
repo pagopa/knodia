@@ -245,7 +245,6 @@ export function signupServiceBuilder(
 
       await signupEventProducer.publishCredentialResetRequestedV1Event({
         occurredAt: new Date().toISOString(),
-        oneIdNonce: authData.oneIdNonce,
         signupUserId: currentSignupUser.signupUserId,
       });
     },

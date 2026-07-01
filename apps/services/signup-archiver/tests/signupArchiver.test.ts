@@ -58,7 +58,6 @@ function makeCredentialResetEvent(
   return {
     data: {
       occurredAt: "2026-06-09T13:00:00.000Z",
-      oneIdNonce: "nonce-reset-abc",
       signupUserId,
       ...overrides,
     },

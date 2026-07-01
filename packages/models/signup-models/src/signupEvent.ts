@@ -61,7 +61,6 @@ type MaintenanceUserReactivationRequestedV1 = z.infer<
 const CredentialResetRequestedV1 = z.object({
   data: z.strictObject({
     occurredAt: z.iso.datetime(),
-    oneIdNonce: z.string(),
     signupUserId: SignupUserId,
   }),
   type: z.literal("CredentialResetRequestedV1"),

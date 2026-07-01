@@ -47,7 +47,6 @@ describe("POST /user/resetCredentials (resetCredentials)", () => {
     expect(event).toEqual({
       data: {
         occurredAt: expect.any(String),
-        oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
         signupUserId: signupUser.signupUserId,
       },
       type: "CredentialResetRequestedV1",
