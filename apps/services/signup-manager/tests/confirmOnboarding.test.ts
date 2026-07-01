@@ -203,6 +203,27 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   });
 });
 
+describe("POST /user/confirmOnboarding — email domain allowlist", () => {
+  it("should return a generic 403 when the email domain is not in the allowlist", async () => {
+    const response = await injectSignupAppRequest()
+      .post("/user/confirmOnboarding")
+      .body({ email: "mario.rossi@knodia.com" });
+
+    expect(response.statusCode).toBe(403);
+
+    const problem = response.json();
+    expect(problem.errors?.[0]?.code).toBe("011-0010");
+    // The response must not reveal that the rejection is domain-based.
+    const serialized = JSON.stringify(problem).toLowerCase();
+    expect(serialized).not.toContain("domain");
+    expect(serialized).not.toContain("allowlist");
+    expect(serialized).not.toContain("knodia");
+
+    await expect(getAllSignupUsers()).resolves.toHaveLength(0);
+    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
+  });
+});
+
 describe("POST /user/confirmOnboarding — repeated request (publish retry)", () => {
   it("republishes for an existing OnboardingPending row instead of returning 409", async () => {
     const createdAt = new Date("2026-01-01T00:00:00.000Z");

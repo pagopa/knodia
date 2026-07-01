@@ -1,12 +1,10 @@
 import { listAttributes } from "@knodia/attribute-models";
 import { Banner, Modal } from "@knodia/ui-kit/ui";
 
+import { ORGS_PERSONAL_ATTRIBUTES_INFO } from "@/utils/attributeCopy";
 import { toSchemeRefKey } from "@/utils/schemeRef";
 
 import { DefinitionCard } from "./DefinitionCard";
-
-const ORGS_PERSONAL_ATTRIBUTES_INFO =
-  "In this prototype, each Organization has a unique identifying attribute. These attributes can be used, for testing purposes, to create E-Services accessible only to specific Organizations, by searching for and selecting the Organizations' names in the attribute group selector.";
 
 export function AttributesListModal() {
   return (

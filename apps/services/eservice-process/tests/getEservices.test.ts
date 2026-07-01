@@ -67,8 +67,8 @@ describe("GET /eservices (getEservices)", () => {
     },
     {
       expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
-      query: { ...defaultQuery, producerId, q: "KNODIA" },
-      testCase: "search query",
+      query: { ...defaultQuery, producerId, q: "%_\\ KNODIA" },
+      testCase: "search query with special characters",
       totalCount: 2,
     },
     {

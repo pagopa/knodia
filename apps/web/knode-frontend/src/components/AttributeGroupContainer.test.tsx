@@ -24,14 +24,24 @@ describe("AttributeGroupContainer", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders no documentation trigger for an attribute outside the catalog", () => {
-    renderWithProviders(
+  it("opens the shared org-unique description for an attribute outside the catalog", async () => {
+    const { user } = renderWithProviders(
       <AttributeGroupContainer
-        attributes={[{ code: "org-123", scheme: "knode-Lynx" }]}
+        attributes={[{ code: "Vega 001 Org", scheme: "Lynx" }]}
       />,
     );
 
-    expect(screen.getByText("org-123")).toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.getByText("Vega 001 Org")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Show description for Vega 001 Org",
+      }),
+    );
+
+    expect(screen.getByText("Attribute description")).toBeInTheDocument();
+    expect(
+      screen.getByText(/each Organization has a unique identifying attribute/),
+    ).toBeInTheDocument();
   });
 });

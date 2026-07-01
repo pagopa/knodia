@@ -12,8 +12,9 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
   createOrderByFilters,
-  escapeRegExp,
+  escapeSqlLike,
   getTableTotalCount,
+  ilikeEscaped,
   ilikeJsonB,
 } from "@knodia/db-readmodel-commons/utils";
 import {
@@ -36,7 +37,7 @@ import {
   EserviceVersionState,
   type FlatEservice,
 } from "@knodia/eservice-models";
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 
 import type {
   API_GetCatalogEserviceSearchParams,
@@ -271,10 +272,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                         column: readmodelEservice.description,
                         value: q,
                       }),
-                      ilike(
+                      ilikeEscaped(
                         // TODO: filter by category name instead of code when using real data
                         readmodelEserviceCategory.code,
-                        `%${escapeRegExp(q)}%`,
+                        `%${escapeSqlLike(q)}%`,
                       ),
                     )
                   : undefined,

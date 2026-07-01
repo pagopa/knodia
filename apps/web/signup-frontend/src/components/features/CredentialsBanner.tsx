@@ -4,11 +4,13 @@ import { Button } from "@/components/ui";
 interface CredentialsBannerProps {
   email: string;
   onChangeEmail: () => void;
+  onResetPasswords: () => void;
 }
 
 export function CredentialsBanner({
   email,
   onChangeEmail,
+  onResetPasswords,
 }: CredentialsBannerProps) {
   return (
     <div className="flex items-center gap-10 rounded-card bg-deep-violet p-12">
@@ -24,20 +26,30 @@ export function CredentialsBanner({
           You can now use them to access Orion Knode and Lynx Knode.
           <br />
           <br />
-          Have not received them or cannot find them anymore?
-          <br />
-          Access the prototype, go to Log in, then choose “Forgot your
-          password?” to request a new one.
+          Have not received them or cannot find them anymore? You can:
         </p>
-        <Button
-          className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
-          onPress={onChangeEmail}
-          variant="text"
-        >
-          Change email address
-          <ArrowForwardIcon className="size-6" />
-        </Button>
+        <BannerAction label="Reset passwords" onPress={onResetPasswords} />
+        <BannerAction label="Change email address" onPress={onChangeEmail} />
       </div>
     </div>
+  );
+}
+
+function BannerAction({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Button
+      className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
+      onPress={onPress}
+      variant="text"
+    >
+      {label}
+      <ArrowForwardIcon className="size-6" />
+    </Button>
   );
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getSchemeRefLabel,
   parseSchemeRefKeys,
   toSchemeRefKey,
   toSchemeRefOptions,
@@ -25,6 +26,18 @@ describe("parseSchemeRefKeys", () => {
 
   it("handles numeric keys by coercing them to strings", () => {
     expect(parseSchemeRefKeys([42])).toEqual([{ code: "", scheme: "42" }]);
+  });
+
+  it("preserves a '$' inside the code (org name) by splitting on the first separator", () => {
+    expect(parseSchemeRefKeys(["Lynx$A & B $ Partners"])).toEqual([
+      { code: "A & B $ Partners", scheme: "Lynx" },
+    ]);
+  });
+
+  it("round-trips an org name containing '$' through toSchemeRefKey", () => {
+    const ref = { code: "A & B $ Partners", scheme: "Lynx" };
+    const [parsed] = parseSchemeRefKeys([toSchemeRefKey(ref)]);
+    expect(parsed).toEqual(ref);
   });
 });
 
@@ -64,5 +77,21 @@ describe("toSchemeRefOptions", () => {
 
   it("returns an empty array for empty data", () => {
     expect(toSchemeRefOptions({})).toEqual([]);
+  });
+});
+
+describe("getSchemeRefLabel", () => {
+  it("uses the readable name for a standard attribute", () => {
+    expect(getSchemeRefLabel("knodia$testing_organization")).toBe(
+      "Testing Organization",
+    );
+    expect(getSchemeRefLabel("vc_territorial_units$nuts1")).toBe("NUTS 1");
+  });
+
+  it("falls back to the code (the org name) for an org unique attribute", () => {
+    // scheme = Knode ID, code = organization name → the label is the org name,
+    // derivable from the key alone, so chips survive the dropdown being filtered.
+    expect(getSchemeRefLabel("Lynx$Vega 001 Org")).toBe("Vega 001 Org");
+    expect(getSchemeRefLabel("Orion$Acme Corp")).toBe("Acme Corp");
   });
 });

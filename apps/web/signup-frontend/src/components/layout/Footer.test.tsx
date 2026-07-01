@@ -9,7 +9,7 @@ describe("Footer", () => {
 
     const links = [
       { href: "/ui/privacy-policy", name: "Privacy Policy" },
-      { href: "/ui/terms-and-conditions", name: "Terms & Conditions" },
+      { href: "/ui/terms-and-conditions", name: "Terms and Conditions" },
       { href: "https://knodia.org/company-details", name: "Company Details" },
     ];
 
