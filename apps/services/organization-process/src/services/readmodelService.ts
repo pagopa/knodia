@@ -5,8 +5,9 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
   createOrderByFilters,
-  escapeRegExp,
+  escapeSqlLike,
   getTableTotalCount,
+  ilikeEscaped,
 } from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelOrganization,
@@ -14,7 +15,7 @@ import {
 } from "@knodia/db-readmodel-organization";
 import { aggregateOrganizations } from "@knodia/db-readmodel-organization/converters";
 import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
-import { and, eq, ilike, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import type { API_GetOrganizationsQueryParams } from "../models/api.ts";
 
@@ -55,7 +56,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   ? inArray(readmodelOrganization.id, organizationId)
                   : undefined,
                 name
-                  ? ilike(readmodelOrganization.name, `%${escapeRegExp(name)}%`)
+                  ? ilikeEscaped(
+                      readmodelOrganization.name,
+                      `%${escapeSqlLike(name)}%`,
+                    )
                   : undefined,
               ),
             )
