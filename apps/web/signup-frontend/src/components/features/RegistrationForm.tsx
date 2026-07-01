@@ -100,7 +100,7 @@ function TermsLink() {
       target="_blank"
       variant="caption"
     >
-      Terms &amp; Conditions
+      Terms and Conditions
     </Link>
   );
 }

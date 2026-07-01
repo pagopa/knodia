@@ -34,7 +34,7 @@ describe("RegistrationForm", () => {
     ).toHaveAttribute("href", PRIVACY_POLICY_PATH);
 
     const termsLinks = screen.getAllByRole("link", {
-      name: "Terms & Conditions",
+      name: "Terms and Conditions",
     });
     expect(termsLinks).toHaveLength(2);
     for (const link of termsLinks) {

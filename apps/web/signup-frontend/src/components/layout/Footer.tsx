@@ -13,7 +13,7 @@ import {
 
 const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
-  { href: TERMS_AND_CONDITIONS_PATH, label: "Terms & Conditions" },
+  { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
   { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
 ];
 
