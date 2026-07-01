@@ -276,10 +276,10 @@ export function ilikeJsonB({
   const pattern = `%${escapeSqlLike(value)}%`;
 
   return sql`
-    exists (
-      select 1
-      from jsonb_each_text(${column}) as t(key, value)
-      where t.value ilike ${pattern}
+    EXISTS (
+      SELECT 1
+      FROM jsonb_each_text(${column}) AS t(key, value)
+      WHERE t.value ILIKE ${pattern} ESCAPE '\\'
     )
   `;
 }
