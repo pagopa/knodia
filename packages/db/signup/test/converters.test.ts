@@ -30,6 +30,7 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     suspendedAt: null,
     suspensionReason: null,
     termsAcceptedAt: new Date("2026-05-28T10:00:00Z"),
+    termsAcceptedVersion: 1,
     updatedAt: new Date("2026-05-28T10:00:00Z"),
     ...overrides,
   };
@@ -56,6 +57,12 @@ describe("toSignupUser", () => {
     const user = toSignupUser(baseRow({ termsAcceptedAt }));
     expect(user.termsAcceptedAt).toEqual(termsAcceptedAt);
     expect(toSignupUserSQL(user).termsAcceptedAt).toEqual(termsAcceptedAt);
+  });
+
+  it("round-trips termsAcceptedVersion through SQL and back", () => {
+    const user = toSignupUser(baseRow({ termsAcceptedVersion: 3 }));
+    expect(user.termsAcceptedVersion).toBe(3);
+    expect(toSignupUserSQL(user).termsAcceptedVersion).toBe(3);
   });
 
   it("coerces NULL optional columns to undefined", () => {

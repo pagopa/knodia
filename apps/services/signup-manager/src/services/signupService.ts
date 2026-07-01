@@ -19,6 +19,7 @@ import {
   SignupUserStatus,
   type SuspensionReason,
 } from "@knodia/signup-models";
+import { TERMS_DOCUMENT_VERSION } from "@knodia/terms-and-conditions-models";
 
 import type {
   API_ChangeEmailRequestBody,
@@ -322,6 +323,7 @@ async function createOnboardingPendingUser(
     status: SignupUserStatus.enum.OnboardingPending,
     // Same `now` as the digest and occurredAt: the single acceptance instant.
     termsAcceptedAt: now,
+    termsAcceptedVersion: TERMS_DOCUMENT_VERSION,
     updatedAt: now,
   };
 

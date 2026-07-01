@@ -115,6 +115,7 @@ export function makeSignupUser(
     name: "Seed",
     signupUserId: seed,
     termsAcceptedAt: baseDate,
+    termsAcceptedVersion: 1,
     updatedAt: baseDate,
     ...overrides,
     // The schema requires exactly one identifier, so default to SPID when the

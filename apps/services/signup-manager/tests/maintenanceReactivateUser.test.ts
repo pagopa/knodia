@@ -54,6 +54,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (maintenanceReactivat
       suspendedAt: null,
       suspensionReason: null,
       termsAcceptedAt: signupUser.termsAcceptedAt,
+      termsAcceptedVersion: signupUser.termsAcceptedVersion,
       updatedAt: expect.any(Date),
     });
 

@@ -2040,6 +2040,9 @@ importers:
       '@knodia/signup-models':
         specifier: workspace:*
         version: link:../../../packages/models/signup-models
+      '@knodia/terms-and-conditions-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/terms-and-conditions-models
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator

@@ -46,6 +46,9 @@ const SignupUserBase = z.strictObject({
   // Legal acceptance instant; separate from createdAt because it diverges once
   // re-acceptance of future T&C versions exists.
   termsAcceptedAt: z.coerce.date(),
+  // Document version the user accepted: which frozen T&C text they agreed to, recorded
+  // per acceptance and independent of the current version.
+  termsAcceptedVersion: z.number().int().positive(),
   updatedAt: z.coerce.date(),
 });
 

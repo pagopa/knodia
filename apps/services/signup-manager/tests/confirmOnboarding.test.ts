@@ -46,6 +46,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       suspendedAt: null,
       suspensionReason: null,
       termsAcceptedAt: expect.any(Date),
+      termsAcceptedVersion: 1,
       updatedAt: expect.any(Date),
     });
 
