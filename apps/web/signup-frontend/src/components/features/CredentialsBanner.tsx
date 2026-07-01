@@ -26,10 +26,7 @@ export function CredentialsBanner({
           You can now use them to access Orion Knode and Lynx Knode.
           <br />
           <br />
-          Have not received them or cannot find them anymore?
-          <br />
-          Access the prototype, go to Log in, then choose “Forgot your
-          password?” to request a new one.
+          Have not received them or cannot find them anymore? You can:
         </p>
         <BannerAction label="Reset passwords" onPress={onResetPasswords} />
         <BannerAction label="Change email address" onPress={onChangeEmail} />
