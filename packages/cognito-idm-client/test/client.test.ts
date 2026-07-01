@@ -179,6 +179,15 @@ describe("resetUserCredentials", () => {
       UserPoolId: cognitoUserPoolId,
     });
 
+    // Throwaway must satisfy Cognito's policy: upper/lower/digit/symbol, only accepted chars.
+    const password = setPassword.input.Password ?? "";
+    expect(password.length).toBeGreaterThanOrEqual(8);
+    expect(password).toMatch(/[A-Z]/);
+    expect(password).toMatch(/[a-z]/);
+    expect(password).toMatch(/[0-9]/);
+    expect(password).toMatch(/[^A-Za-z0-9]/);
+    expect(password).toMatch(/^[A-Za-z0-9_!-]+$/);
+
     const resend = send.mock.calls.at(2)?.at(0) as AdminCreateUserCommand;
     expect(resend).toBeInstanceOf(AdminCreateUserCommand);
     expect(resend.input).toMatchObject({
