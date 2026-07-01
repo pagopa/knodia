@@ -208,14 +208,16 @@ export function buildCognitoIdmClient({
         );
 
         await match(UserStatus)
-          // Never logged in: Cognito can re-send fresh temporary credentials directly.
+          // Never logged in: RESEND directly. Swallow NotAuthorizedException for a disabled/suspended user.
           .with("FORCE_CHANGE_PASSWORD", () =>
-            client.send(
-              new AdminCreateUserCommand({
-                MessageAction: "RESEND",
-                Username: input.username,
-                UserPoolId: cognitoUserPoolId,
-              }),
+            swallowCognitoError("NotAuthorizedException", () =>
+              client.send(
+                new AdminCreateUserCommand({
+                  MessageAction: "RESEND",
+                  Username: input.username,
+                  UserPoolId: cognitoUserPoolId,
+                }),
+              ),
             ),
           )
           // RESEND only works on FORCE_CHANGE_PASSWORD: flip the user there with a throwaway

@@ -209,6 +209,25 @@ describe("resetUserCredentials", () => {
     });
   });
 
+  it("swallows NotAuthorizedException when a never-logged-in user is disabled", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValueOnce({ UserStatus: "FORCE_CHANGE_PASSWORD" } as never)
+      .mockRejectedValue(
+        Object.assign(new Error("User is disabled"), {
+          name: "NotAuthorizedException",
+        }),
+      );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).resetUserCredentials({
+        username: "mario.rossi",
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
   it("swallows NotAuthorizedException when the user is not in a resettable state", async () => {
     const send = vi
       .spyOn(CognitoIdentityProviderClient.prototype, "send")
