@@ -3,6 +3,7 @@ import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
   Button,
+  ButtonContext,
   Collection,
   composeRenderProps,
   Group,
@@ -53,6 +54,9 @@ interface MultiSelectComboBoxProps<T extends object> extends Omit<
   AriaComboBoxProps<T, "multiple">,
   "children" | "className" | "onChange" | "value"
 > {
+  /** Trailing control rendered next to the input row (e.g. a CTA button),
+   * so it aligns with the field rather than the label above or chips below. */
+  action?: React.ReactNode;
   children: (item: T) => React.ReactNode;
   /** Layout classes applied to the whole component (field + chip row). */
   className?: string;
@@ -80,6 +84,7 @@ interface MultiSelectComboBoxProps<T extends object> extends Omit<
 type MultiSelectComboBoxVariants = VariantProps<typeof fieldSizeStyles>;
 
 export function MultiSelectComboBox<T extends object>({
+  action,
   label,
   description,
   errorMessage,
@@ -132,29 +137,36 @@ export function MultiSelectComboBox<T extends object>({
         value={value}
       >
         {label && <Label>{label}</Label>}
-        <Group
-          className={composeRenderProps(
-            fieldSizeStyles({ size }),
-            (groupClassName, renderProps) =>
-              fieldGroupStyles({
-                ...renderProps,
-                isInvalid,
-                className: groupClassName,
-              }),
-          )}
-          ref={groupRef}
-        >
-          <Input
-            className={fieldInputStyles()}
-            placeholder={placeholder ?? "Search..."}
-          />
-          <Button className="outline-none">
-            <CaretDownIcon
-              aria-hidden
-              className="w-5 h-5 text-primary-light-low-contrast"
+        {/* The action sits on the input's row (not the label above or the chips
+            below), so it stays aligned with the field as chips grow. */}
+        <div className="flex items-center gap-4">
+          <Group
+            className={composeRenderProps(
+              fieldSizeStyles({ size }),
+              (groupClassName, renderProps) =>
+                fieldGroupStyles({
+                  ...renderProps,
+                  isInvalid,
+                  className: twMerge("flex-1 min-w-0", groupClassName),
+                }),
+            )}
+            ref={groupRef}
+          >
+            <Input
+              className={fieldInputStyles()}
+              placeholder={placeholder ?? "Search..."}
             />
-          </Button>
-        </Group>
+            <Button className="outline-none">
+              <CaretDownIcon
+                aria-hidden
+                className="w-5 h-5 text-primary-light-low-contrast"
+              />
+            </Button>
+          </Group>
+          {/* Reset ButtonContext: AriaComboBox provides its trigger props to
+              every descendant Button, which would hijack the action button. */}
+          <ButtonContext.Provider value={{}}>{action}</ButtonContext.Provider>
+        </div>
         {description && <Description>{description}</Description>}
         <FieldError>{errorMessage}</FieldError>
         <Popover

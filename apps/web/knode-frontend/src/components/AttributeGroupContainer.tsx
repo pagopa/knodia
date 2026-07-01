@@ -10,6 +10,7 @@ import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import type { SchemeRef } from "@/types/schemeRef";
 
+import { ORGS_PERSONAL_ATTRIBUTES_INFO } from "@/utils/attributeCopy";
 import { toSchemeRefKey } from "@/utils/schemeRef";
 
 import { AttributeDescriptionModal } from "./AttributeDescriptionModal";
@@ -34,6 +35,12 @@ export function AttributeGroupContainer({
     >
       {attributes.map((attribute, index) => {
         const resolved = getAttribute(attribute);
+        // Org-unique attributes are not in the catalogue: fall back to the org
+        // name (encoded as the code) and the shared explanatory copy, so every
+        // attribute — standard or org-unique — exposes a description.
+        const name = resolved?.name ?? attribute.code;
+        const description =
+          resolved?.description ?? ORGS_PERSONAL_ATTRIBUTES_INFO;
         return (
           <Fragment key={toSchemeRefKey(attribute)}>
             {index > 0 && (
@@ -44,21 +51,23 @@ export function AttributeGroupContainer({
             <span
               className={`flex items-center gap-2 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
             >
-              {resolved?.name ?? attribute.code}
-              {resolved && (
-                <DialogTrigger>
-                  <TooltipTrigger>
-                    <InteractiveIcon
-                      aria-label={`Show description for ${resolved.name}`}
-                      className="hover:cursor-pointer"
-                    >
-                      <BookOpenTextIcon size={20} />
-                    </InteractiveIcon>
-                    <Tooltip>Show description</Tooltip>
-                  </TooltipTrigger>
-                  <AttributeDescriptionModal attribute={resolved} />
-                </DialogTrigger>
-              )}
+              {name}
+              <DialogTrigger>
+                <TooltipTrigger>
+                  <InteractiveIcon
+                    aria-label={`Show description for ${name}`}
+                    className="hover:cursor-pointer"
+                  >
+                    <BookOpenTextIcon size={20} />
+                  </InteractiveIcon>
+                  <Tooltip>Show description</Tooltip>
+                </TooltipTrigger>
+                <AttributeDescriptionModal
+                  description={description}
+                  name={name}
+                  variant={resolved ? "definition" : "info"}
+                />
+              </DialogTrigger>
             </span>
           </Fragment>
         );
