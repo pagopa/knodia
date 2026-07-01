@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type {
-  InternalAuthData,
+  MaintenanceAuthData,
   UISignupSessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -199,7 +199,7 @@ export function signupServiceBuilder(
       }: {
         signupUserId: SignupUserId;
       },
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<MaintenanceAuthData>,
     ) {
       logger.info(
         `Requesting maintenance deletion for signup user ${signupUserId}`,
@@ -218,9 +218,9 @@ export function signupServiceBuilder(
         signupUserId,
       });
     },
-    async reactivateUser(
+    async maintenanceReactivateUser(
       { signupUserId }: { signupUserId: SignupUserId },
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<MaintenanceAuthData>,
     ) {
       logger.info(
         `Requesting maintenance reactivation for signup user ${signupUserId}`,

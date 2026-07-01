@@ -10,7 +10,7 @@ import {
   validUISignupSessionTokenClaims,
 } from "./utils.ts";
 
-describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", () => {
+describe("POST /maintenance/users/:signupUserId/reactivate (maintenanceReactivateUser)", () => {
   it("should return 204 on successful reactivation request", async () => {
     const signupUser = makeSignupUser(
       {
@@ -25,7 +25,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post(`/maintenance/users/${signupUser.signupUserId}/reactivate`);
 
     expect(response.statusCode).toBe(204);
@@ -84,10 +84,10 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     });
   });
 
-  it("should not be rate limited for internal maintenance calls", async () => {
+  it("should not be rate limited for maintenance calls", async () => {
     for (let i = 0; i < 10; i++) {
       const response = await injectSignupAppRequest({
-        type: "internal",
+        type: "maintenance",
       }).post(
         "/maintenance/users/00000000-0000-0000-0000-000000000000/reactivate",
       );
@@ -100,7 +100,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
 
   it("should return 400 when the signupUserId is not a valid UUID", async () => {
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post("/maintenance/users/invalid-id/reactivate");
 
     expect(response.statusCode).toBe(400);
@@ -117,7 +117,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post(`/maintenance/users/${signupUser.signupUserId}/reactivate`);
 
     expect(response.statusCode).toBe(409);
@@ -134,14 +134,14 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post(`/maintenance/users/${signupUser.signupUserId}/reactivate`);
 
     expect(response.statusCode).toBe(409);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should return 403 when the token is not an internal token", async () => {
+  it("should return 403 when the token is not a maintenance token", async () => {
     const signupUser = makeSignupUser({
       status: "Suspended",
       suspendedAt: new Date(),
@@ -160,7 +160,7 @@ describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", ()
 
   it("should return 409 when the signup user is not onboarded", async () => {
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post(
       "/maintenance/users/00000000-0000-0000-0000-000000000000/reactivate",
     );
