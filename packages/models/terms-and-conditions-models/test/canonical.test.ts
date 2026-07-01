@@ -9,7 +9,7 @@ const doc: TermsDocument = {
     {
       content: [
         { text: "Versione " },
-        { placeholder: "version" },
+        { placeholder: "knodiaVersion" },
         { text: " del " },
         { placeholder: "date" },
         { text: "." },
@@ -30,7 +30,7 @@ const doc: TermsDocument = {
   ],
 };
 
-const values = { date: "25 giugno 2026", version: "ver. 1" };
+const values = { date: "25 giugno 2026", knodiaVersion: "ver. 1" };
 
 describe("toAcceptedText", () => {
   it("substitutes placeholders and concatenates fragments in reading order", () => {

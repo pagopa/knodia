@@ -6,7 +6,7 @@
       "type": "paragraph",
       "content": [
         { "text": "These terms and conditions (hereinafter, \"T&Cs\") govern the trial for the pre-release version of Knodia " },
-        { "placeholder": "version" },
+        { "placeholder": "knodiaVersion" },
         { "text": " (\"" },
         { "text": "Platform", "bold": true },
         { "text": "\") by and between PagoPA S.p.A., with registered office at Piazza Colonna 370, Rome (RM), VAT number and registration number with the Register of Companies 15376371009 (\"" },

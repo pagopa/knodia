@@ -7,7 +7,7 @@ const TextFragment = z.strictObject({
   text: z.string(),
 });
 
-export const PlaceholderKind = z.enum(["version", "date"]);
+export const PlaceholderKind = z.enum(["knodiaVersion", "date"]);
 export type PlaceholderKind = z.infer<typeof PlaceholderKind>;
 
 // No inline value: substituted identically on render and digest, so they can't diverge.

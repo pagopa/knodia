@@ -6,7 +6,7 @@
       "type": "paragraph",
       "content": [
         { "text": "I presenti termini e condizioni (di seguito, T&C) disciplinano la sperimentazione per la versione pre-release Knodia " },
-        { "placeholder": "version" },
+        { "placeholder": "knodiaVersion" },
         { "text": " (\"" },
         { "text": "Piattaforma", "bold": true },
         { "text": "\") da e tra PagoPA S.p.A., con sede legale in Piazza Colonna 370, Roma (RM), partita IVA e numero di iscrizione al Registro delle Imprese 15376371009 (\"" },

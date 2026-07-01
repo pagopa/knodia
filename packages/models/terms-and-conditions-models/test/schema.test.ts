@@ -9,7 +9,7 @@ describe("TermsDocument schema", () => {
         { content: [{ text: "Art. 1" }], level: 2, type: "heading" },
         {
           content: [
-            { placeholder: PlaceholderKind.enum.version },
+            { placeholder: PlaceholderKind.enum.knodiaVersion },
             { email: "info@knodia.org" },
           ],
           marker: "a)",

@@ -8,7 +8,7 @@ import {
 
 interface TermsValues {
   date: string;
-  version: string;
+  knodiaVersion: string;
 }
 
 // This text is hashed at acceptance (legal proof), so the exact bytes must stay
@@ -33,7 +33,10 @@ export function toAcceptedText(
 
 function fragmentText(fragment: Fragment, values: TermsValues): string {
   return match(fragment)
-    .with({ placeholder: PlaceholderKind.enum.version }, () => values.version)
+    .with(
+      { placeholder: PlaceholderKind.enum.knodiaVersion },
+      () => values.knodiaVersion,
+    )
     .with({ placeholder: PlaceholderKind.enum.date }, () => values.date)
     .with({ email: P.string }, (f) => f.email)
     .with({ text: P.string }, (f) => f.text)
