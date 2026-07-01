@@ -17,6 +17,7 @@ export function ProductionEserviceCard({
   return (
     <EserviceCard>
       <EserviceCardHeader
+        headingLevel={2}
         id={eservice.id}
         title={eservice.name.en}
         to="/production/e-services/$id"
