@@ -7,4 +7,5 @@ export { Link } from "./Link";
 export { Loader } from "./Loader";
 export { Modal } from "./Modal";
 export { Radio, RadioGroup } from "./RadioGroup";
+export { Tab, TabList, TabPanel, Tabs } from "./Tabs";
 export { TextField } from "./TextField";
