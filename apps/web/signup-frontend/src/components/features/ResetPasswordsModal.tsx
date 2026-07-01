@@ -37,7 +37,12 @@ function ResetPasswordsDialog({
   return (
     <Modal
       actionLabel="Reset"
-      description={`You will receive temporary passwords at ${email}.`}
+      description={
+        <p className="text-style-body text-neutral-medium-gray">
+          You will receive temporary passwords at{" "}
+          <span className="font-bold">{email}</span>.
+        </p>
+      }
       errorMessage={
         resetCredentials.isError ? GENERIC_ERROR_MESSAGE : undefined
       }

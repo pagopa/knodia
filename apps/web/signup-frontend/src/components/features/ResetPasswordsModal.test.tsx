@@ -37,9 +37,11 @@ describe("ResetPasswordsModal", () => {
   it("renders the copy with the caller email and the action enabled", () => {
     renderModal();
 
-    expect(
-      screen.getByText(`You will receive temporary passwords at ${EMAIL}.`),
-    ).toBeVisible();
+    const boldEmail = screen.getByText(EMAIL);
+    expect(boldEmail).toHaveClass("font-bold");
+    expect(boldEmail.closest("p")).toHaveTextContent(
+      `You will receive temporary passwords at ${EMAIL}.`,
+    );
     expect(screen.getByRole("button", { name: "Reset" })).toBeEnabled();
   });
 
