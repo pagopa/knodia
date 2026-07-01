@@ -194,7 +194,7 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
         { tokenType: "maintenance" },
       ]);
 
-      await signupService.reactivateUser(
+      await signupService.maintenanceReactivateUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),
         },

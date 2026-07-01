@@ -10,7 +10,7 @@ import {
   validUISignupSessionTokenClaims,
 } from "./utils.ts";
 
-describe("POST /maintenance/users/:signupUserId/reactivate (reactivateUser)", () => {
+describe("POST /maintenance/users/:signupUserId/reactivate (maintenanceReactivateUser)", () => {
   it("should return 204 on successful reactivation request", async () => {
     const signupUser = makeSignupUser(
       {

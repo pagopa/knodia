@@ -197,7 +197,7 @@ export function signupServiceBuilder(
         signupUserId,
       });
     },
-    async reactivateUser(
+    async maintenanceReactivateUser(
       { signupUserId }: { signupUserId: SignupUserId },
       { logger }: AuthorizedContext<MaintenanceAuthData>,
     ) {
