@@ -16,6 +16,7 @@
     "@fontsource/titillium-web": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
+    "@knodia/terms-and-conditions-models": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
