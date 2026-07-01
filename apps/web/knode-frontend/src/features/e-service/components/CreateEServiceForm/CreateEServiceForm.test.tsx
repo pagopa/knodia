@@ -1,5 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
+import { within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
@@ -44,8 +45,8 @@ const TEST_TEMPLATE: bffApi.EserviceTemplateDetails = {
   name: { en: "Citizen Residence Data Provider" },
 };
 
-// Disambiguates the attributes <Select> trigger from the "Attributes list" doc
-// button — both expose an accessible name containing "Attributes".
+// Disambiguates the attributes field's dropdown trigger from the "Attributes
+// list" doc button — both expose an accessible name containing "Attributes".
 const attributesSelectName = (name: string) =>
   name.includes("Attributes") && name !== "Attributes list";
 
@@ -148,10 +149,12 @@ async function fillTechnicalStep(
 async function fillTemplateAttributesStep(
   user: ReturnType<typeof renderWizard>["user"],
 ) {
-  expect(screen.getByText("NUTS 2 or NUTS 1")).toBeInTheDocument();
+  // Template attributes are locked: shown as read-only chips with no remove control.
+  expect(screen.getByText("NUTS 2")).toBeInTheDocument();
+  expect(screen.getByText("NUTS 1")).toBeInTheDocument();
   expect(
-    screen.getByRole("button", { name: attributesSelectName }),
-  ).toBeDisabled();
+    screen.queryByRole("button", { name: /^Remove/i }),
+  ).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Next" }));
   await waitFor(() => {
@@ -583,38 +586,89 @@ describe("CreateEServiceForm — publish flow", () => {
   });
 });
 
-describe("CreateEServiceForm — multi-select trigger text", () => {
-  it("joins selected attributes within a group with 'or'", async () => {
+describe("CreateEServiceForm — attribute multi-select (KN-814)", () => {
+  const chips = () =>
+    screen.getByRole("grid", { name: /attributes \(selected\)/i });
+
+  it("lists the standard set and other-knode organizations, and selecting them adds chips", async () => {
     const { user } = renderWizard();
 
     await fillGeneralStep(user);
     await fillTechnicalStep(user);
     await fillDocsStep(user);
 
-    const attrSelect = screen.getByRole("button", {
-      name: attributesSelectName,
-    });
+    await user.click(screen.getByRole("combobox", { name: /attributes/i }));
+    const listbox = await screen.findByRole("listbox");
 
-    await user.click(attrSelect);
+    // An other-knode org (label = org name) and a standard attribute both appear.
     await waitFor(() => {
-      expect(screen.getByRole("listbox")).toBeInTheDocument();
+      expect(
+        within(listbox).getByRole("option", { name: "Vega 001 Org" }),
+      ).toBeInTheDocument();
     });
+    expect(
+      within(listbox).getByRole("option", { name: "Testing Organization" }),
+    ).toBeInTheDocument();
 
-    const options = screen.getAllByRole("option");
-    expect(options.length).toBeGreaterThanOrEqual(2);
-    await user.click(options[0] as HTMLElement);
-    await user.click(options[1] as HTMLElement);
+    await user.click(
+      within(listbox).getByRole("option", { name: "Vega 001 Org" }),
+    );
+    await user.click(
+      within(listbox).getByRole("option", { name: "Testing Organization" }),
+    );
 
     await user.keyboard("{Escape}");
     await waitFor(() => {
       expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     });
 
-    expect(attrSelect).toHaveAccessibleName(/\bor\b/i);
-    expect(attrSelect).not.toHaveAccessibleName(/\band\b/i);
+    // Both selections render as chips, the org chip labelled by the org name.
+    expect(within(chips()).getByText("Vega 001 Org")).toBeInTheDocument();
+    expect(
+      within(chips()).getByText("Testing Organization"),
+    ).toBeInTheDocument();
   });
 
-  it("joins selected categories on GeneralStep with 'and' (regression guard)", async () => {
+  // Chips persisting while the dropdown filter excludes them is not asserted
+  // here: jsdom models the react-aria combobox reopen+type interaction
+  // unfaithfully (chips query differently while the menu is open). The behaviour
+  // holds because chip labels derive from the form value via `getSchemeRefLabel`,
+  // not from the current (filtered) collection.
+
+  it("degrades to the standard set when the remote knode fails", async () => {
+    server.use(
+      http.get(`${BASE_URL}/organizations`, () =>
+        HttpResponse.json(
+          {
+            correlationId: "test",
+            status: 500,
+            title: "Internal Server Error",
+          },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    const { user } = renderWizard();
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+    await fillDocsStep(user);
+
+    // Standard attributes remain selectable; no remote orgs are offered.
+    await user.click(screen.getByRole("combobox", { name: /attributes/i }));
+    const listbox = await screen.findByRole("listbox");
+    expect(
+      within(listbox).getByRole("option", { name: "Testing Organization" }),
+    ).toBeInTheDocument();
+    expect(
+      within(listbox).queryByRole("option", { name: "Vega 001 Org" }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("CreateEServiceForm — categories multi-select (regression guard)", () => {
+  it("joins selected categories on GeneralStep with 'and'", async () => {
     const { user } = renderWizard();
 
     const categoriesSelect = screen.getByRole("button", {

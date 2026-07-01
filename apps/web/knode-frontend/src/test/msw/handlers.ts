@@ -11,6 +11,30 @@ export const handlers = [
       name: "Test Organization",
     }),
   ),
+  http.get(`${BASE_URL}/organizations`, ({ request }) => {
+    const name = new URL(request.url).searchParams.get("name")?.toLowerCase();
+    const organizations = [
+      {
+        attributes: [{ code: "Vega 001 Org", scheme: "Lynx" }],
+        id: "30000000-3000-1000-8000-000000000001",
+        knodeId: "Lynx",
+        name: "Vega 001 Org",
+      },
+      {
+        attributes: [{ code: "Sirius 002 Org", scheme: "Lynx" }],
+        id: "30000000-3000-1000-8000-000000000002",
+        knodeId: "Lynx",
+        name: "Sirius 002 Org",
+      },
+    ].filter((organization) =>
+      name ? organization.name.toLowerCase().includes(name) : true,
+    );
+
+    return HttpResponse.json({
+      pagination: { limit: 50, offset: 0, total: organizations.length },
+      results: organizations,
+    });
+  }),
 
   http.get(`${BASE_URL}/consumer/purposes/formSchemas/current`, () =>
     HttpResponse.json({

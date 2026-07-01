@@ -1,5 +1,6 @@
 import type { Key } from "react-aria-components";
 
+import { getAttribute } from "@knodia/attribute-models";
 import { SelectItem } from "@knodia/ui-kit/ui";
 
 import type { SchemeRef } from "@/types/schemeRef";
@@ -10,9 +11,22 @@ export { toSchemeRefKey };
 
 type SchemeRefDictionary = Record<string, Record<string, string>>;
 
+export function getSchemeRefLabel(key: string): string {
+  const ref = parseSchemeRefKey(key);
+  return getAttribute(ref)?.name ?? ref.code;
+}
+
 export function parseSchemeRefKey(key: string): SchemeRef {
-  const [scheme = "", code = ""] = key.split(SCHEME_REF_SEPARATOR);
-  return { code, scheme };
+  // Split on the first separator only: a code may itself contain "$" (org names
+  // are free text), and a greedy split would truncate it.
+  const separatorIndex = key.indexOf(SCHEME_REF_SEPARATOR);
+  if (separatorIndex === -1) {
+    return { code: "", scheme: key };
+  }
+  return {
+    code: key.slice(separatorIndex + 1),
+    scheme: key.slice(0, separatorIndex),
+  };
 }
 
 export function parseSchemeRefKeys(keys: Key[]): SchemeRef[] {
