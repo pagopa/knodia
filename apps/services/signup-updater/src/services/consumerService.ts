@@ -139,17 +139,16 @@ export async function handleSignupMessage(
         throw error;
       }
 
-      await forEachKnode(async (knodeId) => {
-        const username = user.generatedEntities[knodeId].userName;
-        const cognitoClient = deps.knodeClients[knodeId].cognitoClient;
-
-        await cognitoClient.updateUserEmail({
-          email: request.email,
-          username,
-        });
-        // Reset after the update so the credential message reaches the new address.
-        await cognitoClient.resetUserCredentials({ username });
-      }, logger);
+      // Update the email on every knode before resending, so the credential message reaches the new address.
+      await forEachKnode(
+        (knodeId) =>
+          deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
+            email: request.email,
+            username: user.generatedEntities[knodeId].userName,
+          }),
+        logger,
+      );
+      await resendCredentials(user, deps, logger);
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
     })
@@ -254,16 +253,7 @@ export async function handleSignupMessage(
 
       if (user === undefined) return;
 
-      // TODO(KN-848): dedup resend on Kafka retry — track last credential-send per
-      // user/knode so a reprocess doesn't email another temporary password. Same
-      // concern in the EmailChangeRequestedV1 handler.
-      await forEachKnode(
-        (knodeId) =>
-          deps.knodeClients[knodeId].cognitoClient.resetUserCredentials({
-            username: user.generatedEntities[knodeId].userName,
-          }),
-        logger,
-      );
+      await resendCredentials(user, deps, logger);
     })
     .exhaustive();
 }
@@ -404,6 +394,22 @@ async function provisionKnode(
     roles: [UserRole.enum.administrative, UserRole.enum.technical],
     username: entities.userName,
   });
+}
+
+// TODO(KN-848): dedup resend on Kafka retry — track last credential-send per user/knode
+// so a reprocess doesn't email another temporary password.
+async function resendCredentials(
+  user: SignupUser,
+  deps: SignupUpdaterDeps,
+  logger: Logger,
+): Promise<void> {
+  await forEachKnode(
+    (knodeId) =>
+      deps.knodeClients[knodeId].cognitoClient.resetUserCredentials({
+        username: user.generatedEntities[knodeId].userName,
+      }),
+    logger,
+  );
 }
 
 async function retrieveSignupUserOrLogMissingAndSkip(
