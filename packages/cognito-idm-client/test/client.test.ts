@@ -191,6 +191,7 @@ describe("resetUserCredentials", () => {
     const resend = send.mock.calls.at(2)?.at(0) as AdminCreateUserCommand;
     expect(resend).toBeInstanceOf(AdminCreateUserCommand);
     expect(resend.input).toMatchObject({
+      DesiredDeliveryMediums: ["EMAIL"],
       MessageAction: "RESEND",
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
@@ -212,6 +213,7 @@ describe("resetUserCredentials", () => {
     const resend = send.mock.calls.at(1)?.at(0) as AdminCreateUserCommand;
     expect(resend).toBeInstanceOf(AdminCreateUserCommand);
     expect(resend.input).toMatchObject({
+      DesiredDeliveryMediums: ["EMAIL"],
       MessageAction: "RESEND",
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,

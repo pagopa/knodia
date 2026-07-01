@@ -213,6 +213,7 @@ export function buildCognitoIdmClient({
             swallowCognitoError("NotAuthorizedException", () =>
               client.send(
                 new AdminCreateUserCommand({
+                  DesiredDeliveryMediums: ["EMAIL"],
                   MessageAction: "RESEND",
                   Username: input.username,
                   UserPoolId: cognitoUserPoolId,
@@ -247,6 +248,7 @@ export function buildCognitoIdmClient({
                 );
                 await client.send(
                   new AdminCreateUserCommand({
+                    DesiredDeliveryMediums: ["EMAIL"],
                     MessageAction: "RESEND",
                     Username: input.username,
                     UserPoolId: cognitoUserPoolId,
