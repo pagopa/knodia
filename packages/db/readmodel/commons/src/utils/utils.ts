@@ -327,7 +327,6 @@ export function escapeSqlLike(value: string): string {
 
 // Performs an ILIKE comparison with the ESCAPE clause, which tells Postgres
 // to interpret backslashes produced by escapeSqlLike as escape characters.
-// Without ESCAPE '\\', the \% and \_ sequences would not be treated as literals.
 export function ilikeEscaped(
   column: Column | SQL.Aliased,
   pattern: string,
