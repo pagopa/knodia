@@ -199,7 +199,7 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
   }
   // Maintenance uses a single shared key (one alias per env, knode-neutral).
   if (type === "maintenance") {
-    const alias = `alias/${baseEnv(targetEnv)}/app/maintenance-tokens`;
+    const alias = `alias/${baseEnv(targetEnv)}/signup/maintenance-tokens`;
     const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
     return KeyMetadata.KeyId;
   }
