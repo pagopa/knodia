@@ -224,6 +224,8 @@ export function buildCognitoIdmClient({
           // temporary password, then let Cognito generate and email a fresh one via RESEND.
           // Swallow NotAuthorizedException for non-resettable/disabled users; other errors are
           // transient (throttling, 5xx), so let them propagate and Kafka retries.
+          // Accepted remote risk: if the user is disabled between the two calls, RESEND's
+          // NotAuthorizedException is swallowed here — no email, no retry. Super rare.
           .with(
             "CONFIRMED",
             "RESET_REQUIRED",
