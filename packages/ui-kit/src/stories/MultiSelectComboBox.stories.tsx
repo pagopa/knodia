@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
-import { type Key } from "react-aria-components";
+import { DialogTrigger, type Key } from "react-aria-components";
 
+import { Button } from "../components/ui/Button";
+import { Modal } from "../components/ui/Modal";
 import {
   MultiSelectComboBox,
   MultiSelectComboBoxItem,
@@ -36,10 +39,12 @@ export default meta;
 type Story = StoryObj<typeof MultiSelectComboBox<Option>>;
 
 function MultiSelectComboBoxExample({
+  action,
   initialValue = [],
   isDisabled,
   isReadOnly,
 }: {
+  action?: React.ReactNode;
   initialValue?: Key[];
   isDisabled?: boolean;
   isReadOnly?: boolean;
@@ -85,6 +90,7 @@ function MultiSelectComboBoxExample({
 
   return (
     <MultiSelectComboBox<Option>
+      action={action}
       aria-label="Attributes"
       className="w-80"
       inputValue={inputValue}
@@ -109,6 +115,35 @@ function MultiSelectComboBoxExample({
 
 export const Default: Story = {
   render: () => <MultiSelectComboBoxExample />,
+};
+
+// The action sits on the input's row and keeps its own behavior: AriaComboBox
+// would otherwise hijack any descendant button as its dropdown trigger.
+export const WithAction: Story = {
+  render: () => (
+    <MultiSelectComboBoxExample
+      action={
+        <DialogTrigger>
+          <Button
+            className="shrink-0"
+            hierarchy="neutral"
+            kind="ghost"
+            size="lg"
+          >
+            <BookOpenTextIcon />
+            Attributes list
+          </Button>
+          <Modal isDismissable title="Attributes list">
+            <p>Attributes list modal content.</p>
+          </Modal>
+        </DialogTrigger>
+      }
+      initialValue={[
+        "vc_territorial_units:nuts1",
+        "vc_poc_attributes:companies_registries",
+      ]}
+    />
+  ),
 };
 
 export const Disabled: Story = {

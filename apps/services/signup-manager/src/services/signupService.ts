@@ -54,6 +54,19 @@ export function signupServiceBuilder(
   signupEventProducer: SignupEventProducer,
   allowedEmailDomains: AllowedEmailDomains,
 ) {
+  const retrieveCurrentActiveSignupUser = async (
+    authData: UISignupSessionAuthData,
+  ) => {
+    const user = await signupDbService.getUniqueSignupUserByIdentifiers({
+      fiscalNumber: authData.fiscalNumber,
+      personIdentifier: authData.personIdentifier,
+      spidCode: authData.spidCode,
+    });
+    assertSignupUserIsOnboarded(user);
+    assertSignupUserIsActive(user);
+    return user;
+  };
+
   return {
     async changeEmail(
       { email }: API_ChangeEmailRequestBody,
@@ -230,21 +243,26 @@ export function signupServiceBuilder(
         },
       );
     },
+    async resetCredentials({
+      authData,
+      logger,
+    }: AuthorizedContext<UISignupSessionAuthData>) {
+      logger.info("Requesting credential reset for current signup user");
+
+      const currentSignupUser = await retrieveCurrentActiveSignupUser(authData);
+
+      await signupEventProducer.publishCredentialResetRequestedV1Event({
+        occurredAt: new Date().toISOString(),
+        signupUserId: currentSignupUser.signupUserId,
+      });
+    },
     async suspendUser(
       { suspensionReason }: { suspensionReason: SuspensionReason },
       { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
       logger.info("Requesting suspension for current signup user");
 
-      const currentSignupUser =
-        await signupDbService.getUniqueSignupUserByIdentifiers({
-          fiscalNumber: authData.fiscalNumber,
-          personIdentifier: authData.personIdentifier,
-          spidCode: authData.spidCode,
-        });
-
-      assertSignupUserIsOnboarded(currentSignupUser);
-      assertSignupUserIsActive(currentSignupUser);
+      const currentSignupUser = await retrieveCurrentActiveSignupUser(authData);
 
       const now = new Date();
       await signupDbService.updateSignupUserSuspension({
