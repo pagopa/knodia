@@ -64,7 +64,7 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText("Email address"), "user@mail.com");
     await user.click(screen.getByRole("checkbox", { name: /I have read/ }));
     await user.click(
-      screen.getByRole("checkbox", { name: /Pursuant to articles/ }),
+      screen.getByRole("checkbox", { name: /Pursuant to Articles/ }),
     );
     await user.click(
       screen.getByRole("button", { name: "Request credentials" }),

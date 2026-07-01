@@ -70,8 +70,8 @@ export function RegistrationForm({
             isSelected={articlesAccepted}
             onChange={setArticlesAccepted}
           >
-            Pursuant to articles 1341 and 1342 of the Italian civil code, I
-            expressly approve articles 12 and 14 of Knodia’s <TermsLink />
+            Pursuant to Articles 1341 and 1342 of the Italian Civil Code, I
+            expressly approve Sections 12 and 14 of Knodia’s <TermsLink />
           </Checkbox>
         </div>
         <div className="flex items-start gap-8">
