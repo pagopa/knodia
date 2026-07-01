@@ -31,23 +31,28 @@ export function CredentialsBanner({
           Access the prototype, go to Log in, then choose “Forgot your
           password?” to request a new one.
         </p>
-        <Button
-          className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
-          onPress={onResetPasswords}
-          variant="text"
-        >
-          Reset passwords
-          <ArrowForwardIcon className="size-6" />
-        </Button>
-        <Button
-          className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
-          onPress={onChangeEmail}
-          variant="text"
-        >
-          Change email address
-          <ArrowForwardIcon className="size-6" />
-        </Button>
+        <BannerAction label="Reset passwords" onPress={onResetPasswords} />
+        <BannerAction label="Change email address" onPress={onChangeEmail} />
       </div>
     </div>
+  );
+}
+
+function BannerAction({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Button
+      className="gap-2 self-start text-secondary-muted-amber-30 hover:text-secondary-muted-amber-30"
+      onPress={onPress}
+      variant="text"
+    >
+      {label}
+      <ArrowForwardIcon className="size-6" />
+    </Button>
   );
 }
