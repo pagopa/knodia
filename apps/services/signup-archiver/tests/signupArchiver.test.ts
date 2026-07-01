@@ -50,6 +50,21 @@ let storeBytesIfAbsent: ReturnType<typeof vi.fn>;
 let logger: Logger;
 let deps: SignupArchiverDeps;
 
+function makeCredentialResetEvent(
+  overrides: Partial<
+    Extract<SignupEventV1, { type: "CredentialResetRequestedV1" }>["data"]
+  > = {},
+): Extract<SignupEventV1, { type: "CredentialResetRequestedV1" }> {
+  return {
+    data: {
+      occurredAt: "2026-06-09T13:00:00.000Z",
+      signupUserId,
+      ...overrides,
+    },
+    type: "CredentialResetRequestedV1",
+  };
+}
+
 function makeSuspensionEvent(
   overrides: Partial<
     Extract<SignupEventV1, { type: "SuspensionRequestedV1" }>["data"]
@@ -352,6 +367,14 @@ describe("handleSignupMessage - MaintenanceUserReactivationRequestedV1", () => {
     await expect(
       handleSignupMessage(makeUserReactivationEvent(), deps, logger),
     ).rejects.toThrow(/AccessDenied/);
+  });
+});
+
+describe("handleSignupMessage - CredentialResetRequestedV1", () => {
+  it("performs no archival action and never touches S3", async () => {
+    await handleSignupMessage(makeCredentialResetEvent(), deps, logger);
+
+    expect(storeBytesIfAbsent).not.toHaveBeenCalled();
   });
 });
 

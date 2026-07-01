@@ -516,6 +516,36 @@ function handleCreateGroup(req, res, payload) {
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
+    // RESEND needs a pending first sign-in (FORCE_CHANGE_PASSWORD); Cognito rejects it
+    // otherwise. Email delivery isn't simulated locally, only the state check.
+    if (payload.MessageAction === "RESEND") {
+      if (existing.UserStatus !== "FORCE_CHANGE_PASSWORD") {
+        console.log(
+          `[admin-create-user] RESEND rejected for ${sanitizeForLog(payload.Username)} in status ${existing.UserStatus}`,
+        );
+        writeJson(
+          res,
+          400,
+          {
+            __type: "UnsupportedUserStateException",
+            message: "User is not in a state to be resent an invitation.",
+          },
+          { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+        );
+        return;
+      }
+      console.log(
+        `[admin-create-user] RESEND temporary password for ${sanitizeForLog(payload.Username)}`,
+      );
+      writeJson(
+        res,
+        200,
+        { User: existing },
+        { "x-amz-target": req.headers["x-amz-target"] ?? "" },
+      );
+      return;
+    }
+
     console.log(`[admin-create-user] ${payload.Username} already exists`);
     writeJson(
       res,
@@ -594,7 +624,7 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
   });
 }
 
-function handleAdminResetUserPassword(req, res, payload) {
+function handleAdminSetUserPassword(req, res, payload) {
   const user = findUserByUsername(payload.Username);
 
   if (!user) {
@@ -607,11 +637,12 @@ function handleAdminResetUserPassword(req, res, payload) {
     return;
   }
 
-  user.UserStatus = "RESET_REQUIRED";
+  // Permanent: false sets a temporary password (FORCE_CHANGE_PASSWORD); true confirms.
+  user.UserStatus = payload.Permanent ? "CONFIRMED" : "FORCE_CHANGE_PASSWORD";
   user.UserLastModifiedDate = NOW_IN_SECONDS;
 
   console.log(
-    `[admin-reset-user-password] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+    `[admin-set-user-password] ${sanitizeForLog(payload.Username)} -> ${user.UserStatus} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -729,9 +760,9 @@ createServer(async (req, res) => {
       }
 
       if (
-        target === "AWSCognitoIdentityProviderService.AdminResetUserPassword"
+        target === "AWSCognitoIdentityProviderService.AdminSetUserPassword"
       ) {
-        handleAdminResetUserPassword(req, res, payload);
+        handleAdminSetUserPassword(req, res, payload);
         return;
       }
     }
