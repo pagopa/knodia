@@ -35,7 +35,6 @@ export function initEmailSender(
       subject: string;
       to: string;
     }): Promise<void> {
-      // nodemailer merges `ses` into the SESv2 SendEmail command input.
       await transporter.sendMail({
         attachments,
         from,
