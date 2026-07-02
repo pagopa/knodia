@@ -81,7 +81,12 @@ export function KeychainPublicKeysTable({
             <Cell className="body-md">{formatShortDate(key.createdAt)}</Cell>
             <Cell className="body-sm text-primary-light-high-contrast">
               <div className="flex items-center">
-                {key.kid} <CopyButton className="ml-2" textToCopy={key.kid} />
+                {key.kid}{" "}
+                <CopyButton
+                  aria-label={`Copy key ID ${key.kid}`}
+                  className="ml-2"
+                  textToCopy={key.kid}
+                />
               </div>
             </Cell>
             <Cell>
