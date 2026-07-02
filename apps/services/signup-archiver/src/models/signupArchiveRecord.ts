@@ -10,7 +10,7 @@ export const SignupArchiveRecord = z.discriminatedUnion("action", [
     date: z.iso.datetime(),
     identifier: z.string(),
     termsAcceptanceDigest: z.string().regex(/^[0-9a-f]{64}$/),
-    termsAcceptanceVersion: z.string(),
+    termsAcceptanceVersion: z.number().int().positive(),
   }),
   z.strictObject({
     action: z.literal("Deletion"),

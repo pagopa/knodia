@@ -36,10 +36,7 @@ import {
   signupUserNotFound,
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
-import {
-  computeTermsAcceptanceDigest,
-  TERMS_AND_CONDITIONS_VERSION,
-} from "../utils/termsAcceptance.ts";
+import { computeTermsAcceptanceDigest } from "../utils/termsAcceptance.ts";
 import {
   assertEmailDomainIsAllowed,
   assertSignupUserEmailDoesNotExist,
@@ -292,7 +289,10 @@ async function createOnboardingPendingUser(
 ): Promise<void> {
   const now = new Date();
   const signupUserId = generateId<SignupUserId>();
-  const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
+  const termsAcceptanceDigest = computeTermsAcceptanceDigest(
+    now,
+    TERMS_DOCUMENT_VERSION,
+  );
 
   assertEmailDomainIsAllowed(email, allowedEmailDomains, logger);
   await assertSignupUserEmailDoesNotExist(email, signupDbService);
@@ -342,7 +342,7 @@ async function createOnboardingPendingUser(
     oneIdNonce: authData.oneIdNonce,
     signupUserId,
     termsAcceptanceDigest,
-    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+    termsAcceptanceVersion: TERMS_DOCUMENT_VERSION,
   });
 }
 
@@ -407,10 +407,12 @@ async function resolveRepeatedConfirmOnboarding(
     occurredAt: existingSignupUser.termsAcceptedAt.toISOString(),
     oneIdNonce: authData.oneIdNonce,
     signupUserId: existingSignupUser.signupUserId,
-    // Re-derive from the stored instant so the republished digest matches the original.
+    // Re-derive from the stored instant and stored version so the republished digest matches
+    // the original even if the current document version has since advanced.
     termsAcceptanceDigest: computeTermsAcceptanceDigest(
       existingSignupUser.termsAcceptedAt,
+      existingSignupUser.termsAcceptedVersion,
     ),
-    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+    termsAcceptanceVersion: existingSignupUser.termsAcceptedVersion,
   });
 }

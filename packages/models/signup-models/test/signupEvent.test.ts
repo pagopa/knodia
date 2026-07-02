@@ -27,7 +27,7 @@ function validOnboardingData() {
     oneIdNonce: generateId(),
     signupUserId: generateId<SignupUserId>(),
     termsAcceptanceDigest: "a".repeat(64),
-    termsAcceptanceVersion: "1.0.0",
+    termsAcceptanceVersion: 1,
   };
 }
 
