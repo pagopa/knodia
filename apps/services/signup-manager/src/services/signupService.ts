@@ -19,6 +19,7 @@ import {
   SignupUserStatus,
   type SuspensionReason,
 } from "@knodia/signup-models";
+import { TERMS_DOCUMENT_VERSION } from "@knodia/terms-and-conditions-models";
 
 import type {
   API_ChangeEmailRequestBody,
@@ -320,6 +321,9 @@ async function createOnboardingPendingUser(
     signupUserId,
     spidCode: authData.spidCode,
     status: SignupUserStatus.enum.OnboardingPending,
+    // Same `now` as the digest and occurredAt: the single acceptance instant.
+    termsAcceptedAt: now,
+    termsAcceptedVersion: TERMS_DOCUMENT_VERSION,
     updatedAt: now,
   };
 
@@ -381,7 +385,7 @@ async function generateUniqueOrganizationNames(
  * The row is still OnboardingPending — either the OnboardingCompletedV1 publish
  * failed, or it succeeded but signup-updater hasn't provisioned the user yet. Either
  * way we re-emit the event (occurredAt and digest reproduced from the stored
- * createdAt) instead of returning 409 and stranding the user; a duplicate event is
+ * termsAcceptedAt) instead of returning 409 and stranding the user; a duplicate event is
  * harmless because the updater's provisioning is idempotent. Any other status is an
  * identity conflict.
  *
@@ -400,11 +404,12 @@ async function resolveRepeatedConfirmOnboarding(
   }
 
   await signupEventProducer.publishOnboardingCompletedV1Event({
-    occurredAt: existingSignupUser.createdAt.toISOString(),
+    occurredAt: existingSignupUser.termsAcceptedAt.toISOString(),
     oneIdNonce: authData.oneIdNonce,
     signupUserId: existingSignupUser.signupUserId,
+    // Re-derive from the stored instant so the republished digest matches the original.
     termsAcceptanceDigest: computeTermsAcceptanceDigest(
-      existingSignupUser.createdAt,
+      existingSignupUser.termsAcceptedAt,
     ),
     termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
   });

@@ -3,6 +3,7 @@ import {
   check,
   date,
   foreignKey,
+  integer,
   pgSchema,
   text,
   timestamp,
@@ -34,6 +35,10 @@ export const signupUser = schema.table(
     status: text("status").notNull(),
     suspendedAt: timestamp("suspended_at", { withTimezone: true }),
     suspensionReason: text("suspension_reason"),
+    termsAcceptedAt: timestamp("terms_accepted_at", {
+      withTimezone: true,
+    }).notNull(),
+    termsAcceptedVersion: integer("terms_accepted_version").notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
   },
   (table) => [
@@ -48,6 +53,10 @@ export const signupUser = schema.table(
     check(
       "signup_user_suspension_consistency",
       sql`(${table.status} = 'Suspended' AND ${table.suspendedAt} IS NOT NULL AND ${table.suspensionReason} IS NOT NULL) OR (${table.status} <> 'Suspended' AND ${table.suspendedAt} IS NULL AND ${table.suspensionReason} IS NULL)`,
+    ),
+    check(
+      "signup_user_terms_accepted_version_positive",
+      sql`${table.termsAcceptedVersion} > 0`,
     ),
   ],
 );

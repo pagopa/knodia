@@ -60,10 +60,12 @@ export type CurrentSignupUser = {
 } | {
     email: string;
     onboardingStatus: 'ONBOARDING_PENDING';
+    termsAcceptedAt: string;
 } | {
     email: string;
     knodes: Array<KnodeAssignment>;
     onboardingStatus: 'ACTIVE' | 'SUSPENDED' | 'DELETION_PENDING';
+    termsAcceptedAt: string;
 };
 
 export type GetStatusData = {

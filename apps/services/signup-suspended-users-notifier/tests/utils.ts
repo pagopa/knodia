@@ -44,6 +44,8 @@ function makeUser(overrides: Record<string, unknown> = {}): SignupUser {
     name: "Mario",
     signupUserId: id,
     status: SignupUserStatus.enum.Active,
+    termsAcceptedAt: new Date("2026-01-01T00:00:00Z"),
+    termsAcceptedVersion: 1,
     updatedAt: new Date("2026-01-01T00:00:00Z"),
     ...overrides,
   });

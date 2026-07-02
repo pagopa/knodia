@@ -45,8 +45,13 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       status: "OnboardingPending",
       suspendedAt: null,
       suspensionReason: null,
+      termsAcceptedAt: expect.any(Date),
+      termsAcceptedVersion: 1,
       updatedAt: expect.any(Date),
     });
+
+    // Single acceptance instant: termsAcceptedAt == createdAt for v1.
+    expect(signupUser?.termsAcceptedAt).toEqual(signupUser?.createdAt);
 
     expect(kafkaProducerMock.send).toHaveBeenCalledOnce();
     const [sendPayload] = kafkaProducerMock.send.mock.calls[0] ?? [];
@@ -227,11 +232,14 @@ describe("POST /user/confirmOnboarding — email domain allowlist", () => {
 describe("POST /user/confirmOnboarding — repeated request (publish retry)", () => {
   it("republishes for an existing OnboardingPending row instead of returning 409", async () => {
     const createdAt = new Date("2026-01-01T00:00:00.000Z");
+    // Distinct from createdAt on purpose: the republish must derive from termsAcceptedAt.
+    const termsAcceptedAt = new Date("2025-12-15T09:00:00.000Z");
     const pendingUser = makeSignupUser(
       {
         createdAt,
         email: validConfirmOnboardingBody.email,
         status: "OnboardingPending",
+        termsAcceptedAt,
       },
       { spidCode: validUISignupSessionTokenClaims.spidCode },
     );
@@ -255,8 +263,8 @@ describe("POST /user/confirmOnboarding — repeated request (publish retry)", ()
     );
 
     expect(event.data.signupUserId).toBe(pendingUser.signupUserId);
-    // occurredAt and digest derive from the stored createdAt (same as first attempt).
-    expect(event.data.occurredAt).toBe(createdAt.toISOString());
+    // occurredAt and digest derive from the stored acceptance instant, not createdAt.
+    expect(event.data.occurredAt).toBe(termsAcceptedAt.toISOString());
     expect(event.data.termsAcceptanceDigest).toBe(
       computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
     );
