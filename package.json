@@ -21,6 +21,7 @@
     "db:generate-schema": "turbo run db:generate-schema",
     "db:schema-normalize": "turbo run db:schema-normalize",
     "knip": "dotenvx run --env-file .env.test -- knip",
+    "consume-eservice": "node scripts/eservice-consumption/consume-eservice.ts",
     "generate-client-assertion": "node scripts/local-auth/generate-client-assertion.ts",
     "generate-dpop-proof": "node scripts/local-auth/generate-dpop-proof.ts",
     "generate-keypair": "node scripts/local-auth/generate-keypair.ts",
