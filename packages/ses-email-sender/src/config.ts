@@ -3,7 +3,7 @@ import { z } from "zod";
 export const SesEmailSenderConfig = z
   .object({
     AWS_REGION: z.string(),
-    SES_CONFIGURATION_SET: z.string().optional(),
+    SES_CONFIGURATION_SET: z.string(),
     SES_SENDER_LABEL: z.string().optional(),
     SES_SENDER_MAIL: z.email(),
   })

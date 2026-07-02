@@ -35,19 +35,16 @@ export function initEmailSender(
       subject: string;
       to: string;
     }): Promise<void> {
-      // nodemailer forwards `ses` to the SESv2 SendEmail command; ConfigurationSetName
-      // is only set when configured, otherwise the send is left untouched.
+      // nodemailer merges `ses` into the SESv2 SendEmail command input.
       const mailOptions: SendMailOptions & {
-        ses?: { ConfigurationSetName: string };
+        ses: { ConfigurationSetName: string };
       } = {
         attachments,
         from,
+        ses: { ConfigurationSetName: config.sesConfigurationSet },
         subject,
         text: body,
         to,
-        ...(config.sesConfigurationSet
-          ? { ses: { ConfigurationSetName: config.sesConfigurationSet } }
-          : {}),
       };
       await transporter.sendMail(mailOptions);
     },
