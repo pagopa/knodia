@@ -22,6 +22,7 @@ import {
 
 export const sesConfig: SesEmailSenderConfig = {
   awsRegion: "eu-south-1",
+  sesConfigurationSet: "knodia-test",
   sesSenderLabel: "KNODIA",
   sesSenderMail: "noreply@knodia.test",
 };

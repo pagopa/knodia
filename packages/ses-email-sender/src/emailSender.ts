@@ -38,6 +38,7 @@ export function initEmailSender(
       await transporter.sendMail({
         attachments,
         from,
+        ses: { ConfigurationSetName: config.sesConfigurationSet },
         subject,
         text: body,
         to,
