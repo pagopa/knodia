@@ -10,7 +10,7 @@ const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
 
 // Hardcoded configuration for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
-const ORG_ID = "00000000-0000-4000-8000-000000000002";
+const ORG_ID = "00000000-0000-4000-8000-000000000004";
 const ROLES = ["administrative", "technical"];
 
 // ui-session operator username shown in the UI; per POC org so `--org` logins
@@ -27,6 +27,7 @@ const ORG_USERNAMES = {
   "00000000-0000-4000-8000-000000000107": "supervisory_body_orion_admin",
 };
 const INTERNAL_SUB = "local-internal-service";
+const MAINTENANCE_SUB = "maintenance-operator";
 
 // Placeholder IDs for external-ui-session tokens (replace with real values for testing)
 const EXTERNAL_AGREEMENT_ID = "00000000-0000-4000-8000-000000000010";
@@ -89,9 +90,23 @@ function getAudience(targetEnv, type) {
       ? ["signalhub.test.knodia.org", "k2o-gateway.test.knodia.org"]
       : [`signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`, `k2o-gateway.${targetEnv.replace("dev-", "")}.dev.knodia.com`];
   }
+  // Maintenance tokens are knode-neutral: signed with a single shared key and
+  // accepted on the signup domain, which sits outside the knodes. The knode in
+  // `targetEnv` is ignored.
+  if (type === "maintenance") {
+    return targetEnv === "local"
+      ? "local.knodia.test/maintenance"
+      : `signup.${baseEnv(targetEnv)}.knodia.com/maintenance`;
+  }
   return targetEnv === "local"
     ? `local.knodia.test/${type}`
     : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
+}
+
+// Strips the knode suffix from a target env ("dev-lynx" -> "dev"), for tokens
+// that aren't bound to a single knode.
+function baseEnv(targetEnv) {
+  return targetEnv.split("-")[0];
 }
 
 function getClaims(targetEnv, type, orgId, subjectId) {
@@ -109,6 +124,8 @@ function getClaims(targetEnv, type, orgId, subjectId) {
       };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
+    case "maintenance":
+      return { sub: MAINTENANCE_SUB, type, aud };
     case "external-ui-session":
       return {
         sub: randomUUID(),
@@ -162,18 +179,29 @@ function getClaims(targetEnv, type, orgId, subjectId) {
 function getEnvVarName(targetEnv, type) {
   const base = type === "ui-session" ? "UI_SESSION_JWT"
     : type === "internal" ? "INTERNAL_JWT"
+    : type === "maintenance" ? "MAINTENANCE_JWT"
     : type === "knode-api" ? "KNODE_API_JWT"
     : type === "ui-signup-session" ? "UI_SIGNUP_SESSION_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
-  return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
+  // Maintenance is knode-neutral, so its env var doesn't carry the knode.
+  const envPrefix = type === "maintenance" ? baseEnv(targetEnv) : targetEnv;
+  return `${envPrefix.toUpperCase().replaceAll("-", "_")}_${base}`;
 }
 
 async function resolveKeyId(kmsClient, targetEnv, type) {
   if (targetEnv === "local") {
     return type === "knode-api"
       ? "alias/local-knodia-auth-server-key"
+      : type === "maintenance"
+      ? "alias/local-knodia-maintenance-key"
       : "alias/local-knodia-key";
+  }
+  // Maintenance uses a single shared key (one alias per env, knode-neutral).
+  if (type === "maintenance") {
+    const alias = `alias/${baseEnv(targetEnv)}/signup/maintenance-tokens`;
+    const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
+    return KeyMetadata.KeyId;
   }
   const keyName = type === "internal" ? "internal"
     : type === "knode-api" ? "auth-server"

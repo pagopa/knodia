@@ -3,7 +3,11 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eq, ilike } from "drizzle-orm";
+import {
+  escapeSqlLike,
+  ilikeEscaped,
+} from "@knodia/db-readmodel-commons/utils";
+import { eq } from "drizzle-orm";
 
 import { aggregateOrganization } from "../converters/index.ts";
 import {
@@ -51,7 +55,7 @@ export function organizationReadmodelServiceBuilder(
             readmodelOrganization.id,
           ),
         )
-        .where(ilike(readmodelOrganization.name, name));
+        .where(ilikeEscaped(readmodelOrganization.name, escapeSqlLike(name)));
 
       return aggregateOrganization(queryRes);
     },

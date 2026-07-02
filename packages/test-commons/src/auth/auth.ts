@@ -5,6 +5,7 @@ import {
   type ExternalUISessionTokenClaims,
   type InternalTokenClaims,
   type KnodeApiAccessTokenClaims,
+  type MaintenanceTokenClaims,
   selectSignupIdentifier,
   type UISessionTokenClaims,
   type UISignupSessionTokenClaims,
@@ -92,7 +93,8 @@ export type TestToken =
       userId?: UserId;
       username?: string;
     }
-  | { type: "internal" };
+  | { type: "internal" }
+  | { type: "maintenance" };
 
 /**
  * Creates an unsecured JWT (`alg: "none"`) from test claims.
@@ -111,6 +113,7 @@ export function createTestTokenPayload(spec: TestToken): string {
         }),
     )
     .with({ type: "internal" }, getTestInternalTokenClaims)
+    .with({ type: "maintenance" }, getTestMaintenanceTokenClaims)
     .with({ type: "external-ui-session" }, (props) =>
       getTestExternalUISessionTokenClaims(props),
     )
@@ -204,6 +207,18 @@ export function getTestKnodeApiTokenClaims(
     },
     sub: keychainId,
     type: "knode-api",
+  };
+}
+
+export function getTestMaintenanceTokenClaims(): MaintenanceTokenClaims {
+  return {
+    aud: "test-audience",
+    exp: 9999999999,
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    sub: "test-maintenance-operator",
+    type: "maintenance",
   };
 }
 

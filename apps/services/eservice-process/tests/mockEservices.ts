@@ -36,7 +36,7 @@ export const mockEservices: Eservice[] = [
   {
     ...getMockEservice({ seed: 1 }),
     description: {
-      en: "2 knodia 2",
+      en: "2 %_\\ knodia 2",
     },
     mode: EserviceMode.enum.ProvideData,
     name: {
@@ -81,7 +81,7 @@ export const mockEservices: Eservice[] = [
     categories: [
       {
         ...getMockEserviceCategory(0),
-        code: "3 knodia 3",
+        code: "3 %_\\ knodia 3",
       },
     ],
     mode: EserviceMode.enum.ReceiveData,

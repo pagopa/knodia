@@ -183,20 +183,46 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
     url: "/user/suspend",
   });
 
+  fastify.route({
+    handler: async (_req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-signup-session" },
+      ]);
+
+      await signupService.resetCredentials(ctx);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Request credential reset for the caller user",
+      operationId: "resetCredentials",
+      response: {
+        204: z.undefined().meta({
+          description: "Credential reset requested successfully",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+        429: API_Problem.meta({ description: "Too Many Requests" }),
+      },
+      tags: [apiTags.signup],
+    },
+    url: "/user/resetCredentials",
+  });
+
   /**
-   * Internal maintenance endpoints: no ui-signup-session auth data is
-   * available, so the rate limiter key cannot be derived and rate limiting
-   * is intentionally skipped.
+   * Maintenance endpoints: no ui-signup-session auth data is available, so the
+   * rate limiter key cannot be derived and rate limiting is intentionally skipped.
    */
 
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "maintenance" },
       ]);
 
-      // TODO: KN-798 - Replace internal token with maintenance token
-      await signupService.reactivateUser(
+      await signupService.maintenanceReactivateUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),
         },
@@ -227,10 +253,9 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "maintenance" },
       ]);
 
-      // TODO: KN-798 - Replace internal token with maintenance token
       await signupService.maintenanceDeleteUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),

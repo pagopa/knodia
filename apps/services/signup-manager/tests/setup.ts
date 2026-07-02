@@ -31,6 +31,9 @@ const oneIdentityMockConfig = {
 export const signupManagerTestConfig: Parameters<typeof buildApp>[0]["config"] =
   {
     acceptedAudiences: ["test-audience"],
+    // Restricted to the domain used by every test fixture, so the gate is
+    // active (allowing the rejection tests) without breaking the success paths.
+    allowedEmailDomains: ["example.com"],
     isProduction: false,
     logLevel: "silent",
     nodeEnv: "test",

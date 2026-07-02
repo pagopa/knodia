@@ -1,14 +1,32 @@
 import type { SignupDbService } from "@knodia/db-signup/services";
+import type { FastifyBaseLogger } from "fastify";
 
 import { type SignupUser, SignupUserStatus } from "@knodia/signup-models";
 import { match } from "ts-pattern";
 
 import {
   signupUserEmailAlreadyInUse,
+  signupUserEmailDomainNotAllowed,
   signupUserNotActive,
   signupUserNotOnboarded,
   signupUserNotSuspended,
 } from "../models/errors.ts";
+import {
+  type AllowedEmailDomains,
+  isEmailDomainAllowed,
+} from "./emailDomainAllowlist.ts";
+
+export function assertEmailDomainIsAllowed(
+  email: string,
+  allowedEmailDomains: AllowedEmailDomains,
+  logger: FastifyBaseLogger,
+): void {
+  if (!isEmailDomainAllowed(email, allowedEmailDomains)) {
+    // Don't log the email/domain: it's user-entered and may be PII.
+    logger.warn("Rejected an email whose domain is not in the allowlist");
+    throw signupUserEmailDomainNotAllowed();
+  }
+}
 
 export async function assertSignupUserEmailDoesNotExist(
   email: string,
