@@ -3,7 +3,12 @@
   "tags": ["-knipignore"],
   "includeEntryExports": true,
   "ignoreIssues": {
-    "packages/models/common-models/src/ids/brandedIds.ts": ["exports", "types"]
+    "packages/models/common-models/src/ids/brandedIds.ts": ["exports", "types"],
+    "packages/models/terms-and-conditions-models/src/schema.ts": ["exports", "types"],
+    "packages/models/terms-and-conditions-models/src/canonical.ts": ["exports"],
+    "packages/models/terms-and-conditions-models/src/date.ts": ["exports", "types"],
+    "packages/models/terms-and-conditions-models/src/version.ts": ["exports"],
+    "packages/models/terms-and-conditions-models/src/content.ts": ["exports"]
   },
   "workspaces": {
     ".": {
