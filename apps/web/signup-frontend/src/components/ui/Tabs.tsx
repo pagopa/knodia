@@ -34,7 +34,7 @@ const tabList = tv({
 });
 
 const tab = tv({
-  base: "text-style-small box-border inline-flex min-h-12 items-center justify-center border-b-2 border-transparent px-6 text-center text-neutral-graphite transition [-webkit-tap-highlight-color:transparent]",
+  base: "text-style-small box-border inline-flex min-h-12 items-center justify-center border-b-2 border-transparent px-6 text-center text-neutral-graphite transition [-webkit-tap-highlight-color:transparent] hover:cursor-pointer",
   compoundVariants: [
     {
       class: "hover:text-primary-violet",
