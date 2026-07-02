@@ -40,7 +40,7 @@ describe("ResetPasswordsModal", () => {
     const boldEmail = screen.getByText(EMAIL);
     expect(boldEmail).toHaveClass("font-bold");
     expect(boldEmail.closest("p")).toHaveTextContent(
-      `You will receive temporary passwords at ${EMAIL}.`,
+      `You will receive new passwords at ${EMAIL}.`,
     );
     expect(screen.getByRole("button", { name: "Reset" })).toBeEnabled();
   });
