@@ -1,5 +1,5 @@
 import { SendEmailCommand, SESv2Client } from "@aws-sdk/client-sesv2";
-import nodemailer, { type SendMailOptions } from "nodemailer";
+import nodemailer from "nodemailer";
 
 import type { SesEmailSenderConfig } from "./config.ts";
 
@@ -36,17 +36,14 @@ export function initEmailSender(
       to: string;
     }): Promise<void> {
       // nodemailer merges `ses` into the SESv2 SendEmail command input.
-      const mailOptions: SendMailOptions & {
-        ses: { ConfigurationSetName: string };
-      } = {
+      await transporter.sendMail({
         attachments,
         from,
         ses: { ConfigurationSetName: config.sesConfigurationSet },
         subject,
         text: body,
         to,
-      };
-      await transporter.sendMail(mailOptions);
+      });
     },
   };
 }
