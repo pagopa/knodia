@@ -29,7 +29,7 @@ for (let attempt = 0; attempt < 30 && !resourceId; attempt++) {
   const state = (await callEservice(env.eservice, `/legal-entities/address-requests/${requestId}`, access_token)).body;
   log(`  state: ${state.state}`);
   if (state.state === "COMPLETED") resourceId = state.resourceId;
-  else await sleep(2000);
+  else await sleep(5000);
 }
 if (!resourceId) throw new Error(`Request ${requestId} did not complete in time`);
 
