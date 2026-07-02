@@ -94,7 +94,7 @@ export function KeychainTable({
             <Cell>
               <div className="flex justify-end">
                 <ButtonLinkWithPreload
-                  aria-label="Go to keychain"
+                  aria-label={`Go to keychain ${keychain.name.en}`}
                   hierarchy="neutral"
                   kind="outlined"
                   params={{ id: keychain.id }}
