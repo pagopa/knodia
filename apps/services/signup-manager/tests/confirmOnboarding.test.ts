@@ -1,10 +1,8 @@
 import { OnboardingCompletedV1 } from "@knodia/signup-models";
+import { TERMS_DOCUMENT_VERSION } from "@knodia/terms-and-conditions-models";
 import { describe, expect, it } from "vitest";
 
-import {
-  computeTermsAcceptanceDigest,
-  TERMS_AND_CONDITIONS_VERSION,
-} from "../src/utils/termsAcceptance.ts";
+import { computeTermsAcceptanceDigest } from "../src/utils/termsAcceptance.ts";
 import { kafkaProducerMock } from "./setup.ts";
 import {
   getAllSignupUsers,
@@ -45,8 +43,13 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       status: "OnboardingPending",
       suspendedAt: null,
       suspensionReason: null,
+      termsAcceptedAt: expect.any(Date),
+      termsAcceptedVersion: 1,
       updatedAt: expect.any(Date),
     });
+
+    // Single acceptance instant: termsAcceptedAt == createdAt for v1.
+    expect(signupUser?.termsAcceptedAt).toEqual(signupUser?.createdAt);
 
     expect(kafkaProducerMock.send).toHaveBeenCalledOnce();
     const [sendPayload] = kafkaProducerMock.send.mock.calls[0] ?? [];
@@ -69,7 +72,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
         oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
         signupUserId: signupUser?.signupUserId,
         termsAcceptanceDigest: expect.any(String),
-        termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+        termsAcceptanceVersion: TERMS_DOCUMENT_VERSION,
       },
       type: "OnboardingCompletedV1",
     });
@@ -77,7 +80,10 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     // The acceptance instant travels in the message (not the DB); the digest is
     // derived from it, so it must match a recomputation over occurredAt.
     expect(event.data.termsAcceptanceDigest).toBe(
-      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+      computeTermsAcceptanceDigest(
+        new Date(event.data.occurredAt),
+        event.data.termsAcceptanceVersion,
+      ),
     );
   });
 
@@ -203,14 +209,38 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
   });
 });
 
+describe("POST /user/confirmOnboarding — email domain allowlist", () => {
+  it("should return a generic 403 when the email domain is not in the allowlist", async () => {
+    const response = await injectSignupAppRequest()
+      .post("/user/confirmOnboarding")
+      .body({ email: "mario.rossi@knodia.com" });
+
+    expect(response.statusCode).toBe(403);
+
+    const problem = response.json();
+    expect(problem.errors?.[0]?.code).toBe("011-0010");
+    // The response must not reveal that the rejection is domain-based.
+    const serialized = JSON.stringify(problem).toLowerCase();
+    expect(serialized).not.toContain("domain");
+    expect(serialized).not.toContain("allowlist");
+    expect(serialized).not.toContain("knodia");
+
+    await expect(getAllSignupUsers()).resolves.toHaveLength(0);
+    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
+  });
+});
+
 describe("POST /user/confirmOnboarding — repeated request (publish retry)", () => {
   it("republishes for an existing OnboardingPending row instead of returning 409", async () => {
     const createdAt = new Date("2026-01-01T00:00:00.000Z");
+    // Distinct from createdAt on purpose: the republish must derive from termsAcceptedAt.
+    const termsAcceptedAt = new Date("2025-12-15T09:00:00.000Z");
     const pendingUser = makeSignupUser(
       {
         createdAt,
         email: validConfirmOnboardingBody.email,
         status: "OnboardingPending",
+        termsAcceptedAt,
       },
       { spidCode: validUISignupSessionTokenClaims.spidCode },
     );
@@ -234,10 +264,17 @@ describe("POST /user/confirmOnboarding — repeated request (publish retry)", ()
     );
 
     expect(event.data.signupUserId).toBe(pendingUser.signupUserId);
-    // occurredAt and digest derive from the stored createdAt (same as first attempt).
-    expect(event.data.occurredAt).toBe(createdAt.toISOString());
+    // occurredAt, version and digest derive from the stored row, not from createdAt or the
+    // current constant, so a later version bump can't alter a re-emitted acceptance.
+    expect(event.data.occurredAt).toBe(termsAcceptedAt.toISOString());
+    expect(event.data.termsAcceptanceVersion).toBe(
+      pendingUser.termsAcceptedVersion,
+    );
     expect(event.data.termsAcceptanceDigest).toBe(
-      computeTermsAcceptanceDigest(new Date(event.data.occurredAt)),
+      computeTermsAcceptanceDigest(
+        new Date(event.data.occurredAt),
+        event.data.termsAcceptanceVersion,
+      ),
     );
   });
 });

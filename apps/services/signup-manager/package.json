@@ -34,6 +34,7 @@
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/signup-models": "workspace:*",
+    "@knodia/terms-and-conditions-models": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "axios": "catalog:",
     "drizzle-orm": "catalog:",

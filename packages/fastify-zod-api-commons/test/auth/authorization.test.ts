@@ -5,6 +5,7 @@ import {
   getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestKnodeApiTokenClaims,
+  getTestMaintenanceTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
 import { createTestLogger } from "@knodia/test-commons/utils";
@@ -15,6 +16,7 @@ import {
   extractAuthDataFromToken,
   type InternalAuthData,
   type KnodeApiAuthData,
+  type MaintenanceAuthData,
   type UISessionAuthData,
 } from "../../src/auth/authData.ts";
 import { validateAuthorization } from "../../src/auth/authorization.ts";
@@ -34,6 +36,9 @@ const externalUISessionAuthData = extractAuthDataFromToken(
   getTestExternalUISessionTokenClaims(),
 );
 const knodeApiAuthData = extractAuthDataFromToken(getTestKnodeApiTokenClaims());
+const maintenanceAuthData = extractAuthDataFromToken(
+  getTestMaintenanceTokenClaims(),
+);
 
 const { logger } = createTestLogger();
 
@@ -76,6 +81,28 @@ describe("validateAuthorization", () => {
         ]),
       ).toThrow(
         forbiddenError(`Invalid token type "internal" for this operation`),
+      );
+    });
+  });
+
+  describe("maintenance token", () => {
+    it("succeeds when maintenance is admitted", () => {
+      const ctx = buildCtx(maintenanceAuthData);
+
+      const result = validateAuthorization(ctx, [{ tokenType: "maintenance" }]);
+      const resultAuthData: MaintenanceAuthData = result.authData;
+      // ^ Type narrowing check: result.authData is MaintenanceAuthData
+      expect(resultAuthData).toEqual(maintenanceAuthData);
+      expect(result.authData.tokenType).toBe("maintenance");
+    });
+
+    it("throws forbidden (403) when maintenance is not admitted", () => {
+      const ctx = buildCtx(maintenanceAuthData);
+
+      expect(() =>
+        validateAuthorization(ctx, [{ tokenType: "internal" }]),
+      ).toThrow(
+        forbiddenError(`Invalid token type "maintenance" for this operation`),
       );
     });
   });

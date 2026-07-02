@@ -67,6 +67,8 @@ export function toSignupUser(sql: SignupUserSQL): SignupUser {
     signupUserId: sql.signupUserId,
     spidCode: sql.spidCode ?? undefined,
     status: sql.status,
+    termsAcceptedAt: sql.termsAcceptedAt,
+    termsAcceptedVersion: sql.termsAcceptedVersion,
     ...(sql.status === SignupUserStatus.enum.Suspended && {
       suspendedAt: sql.suspendedAt,
       suspensionReason: sql.suspensionReason,
@@ -100,6 +102,8 @@ export function toSignupUserSQL(user: SignupUser): NewSignupUser {
     signupUserId: user.signupUserId,
     spidCode: user.spidCode,
     status: user.status,
+    termsAcceptedAt: user.termsAcceptedAt,
+    termsAcceptedVersion: user.termsAcceptedVersion,
     updatedAt: user.updatedAt,
     ...(user.status === SignupUserStatus.enum.Suspended && {
       suspendedAt: user.suspendedAt,

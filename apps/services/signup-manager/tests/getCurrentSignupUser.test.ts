@@ -57,6 +57,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
       email: signupUser.email,
       knodes: expectedKnodes(signupUser),
       onboardingStatus: "ACTIVE",
+      termsAcceptedAt: signupUser.termsAcceptedAt.toISOString(),
     });
   });
 
@@ -76,6 +77,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     expect(response.json()).toEqual({
       email: signupUser.email,
       onboardingStatus: "ONBOARDING_PENDING",
+      termsAcceptedAt: signupUser.termsAcceptedAt.toISOString(),
     });
   });
 
@@ -99,6 +101,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
       email: signupUser.email,
       knodes: expectedKnodes(signupUser),
       onboardingStatus: "SUSPENDED",
+      termsAcceptedAt: signupUser.termsAcceptedAt.toISOString(),
     });
   });
 
@@ -119,6 +122,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
       email: signupUser.email,
       knodes: expectedKnodes(signupUser),
       onboardingStatus: "DELETION_PENDING",
+      termsAcceptedAt: signupUser.termsAcceptedAt.toISOString(),
     });
   });
 
@@ -161,6 +165,7 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
       email: signupUser.email,
       knodes: expectedKnodes(signupUser),
       onboardingStatus: "ACTIVE",
+      termsAcceptedAt: signupUser.termsAcceptedAt.toISOString(),
     });
   });
 

@@ -49,6 +49,7 @@ export function toAPI_CurrentSignupUser(
       // Provisioning still in progress: knodes don't exist yet, only the email.
       email: user.email,
       onboardingStatus: API_OnboardingStatus.enum.ONBOARDING_PENDING,
+      termsAcceptedAt: user.termsAcceptedAt.toISOString(),
     }))
     .with(
       { status: SignupUserStatus.enum.Active },
@@ -58,6 +59,7 @@ export function toAPI_CurrentSignupUser(
         email: user.email,
         knodes: toAPI_KnodeAssignments(user.generatedEntities),
         onboardingStatus: toAPI_OnboardedStatus(user.status),
+        termsAcceptedAt: user.termsAcceptedAt.toISOString(),
       }),
     )
     .exhaustive();

@@ -11,7 +11,7 @@ export const OnboardingCompletedV1 = z.object({
     // Onboarding-only: future action variants (suspension, deletion) carry
     // occurredAt + oneIdNonce + signupUserId but not the T&C consent fields.
     termsAcceptanceDigest: z.string().regex(/^[0-9a-f]{64}$/),
-    termsAcceptanceVersion: z.string(),
+    termsAcceptanceVersion: z.number().int().positive(),
   }),
   type: z.literal("OnboardingCompletedV1"),
 });

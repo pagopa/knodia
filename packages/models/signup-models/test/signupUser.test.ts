@@ -16,6 +16,8 @@ const baseRecord = {
   signupUserId: generateId<SignupUserId>(),
   spidCode: "SPID-XYZ-1",
   status: "Active" as SignupUserStatus,
+  termsAcceptedAt: new Date("2026-05-28T10:00:00Z"),
+  termsAcceptedVersion: 1,
   updatedAt: new Date("2026-05-28T10:00:00Z"),
 };
 

@@ -1,10 +1,11 @@
 /* eslint-disable max-lines-per-function */
 import type { SignupDbService } from "@knodia/db-signup/services";
 import type {
-  InternalAuthData,
+  MaintenanceAuthData,
   UISignupSessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { FastifyBaseLogger } from "fastify";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
@@ -18,11 +19,13 @@ import {
   SignupUserStatus,
   type SuspensionReason,
 } from "@knodia/signup-models";
+import { TERMS_DOCUMENT_VERSION } from "@knodia/terms-and-conditions-models";
 
 import type {
   API_ChangeEmailRequestBody,
   API_ConfirmOnboardingRequestBody,
 } from "../models/api.ts";
+import type { AllowedEmailDomains } from "../utils/emailDomainAllowlist.ts";
 import type { SignupEventProducer } from "./signupEventProducer.ts";
 
 import {
@@ -33,11 +36,9 @@ import {
   signupUserNotFound,
 } from "../models/errors.ts";
 import { generateRandomOrgName, toUserName } from "../utils/nameGenerator.ts";
+import { computeTermsAcceptanceDigest } from "../utils/termsAcceptance.ts";
 import {
-  computeTermsAcceptanceDigest,
-  TERMS_AND_CONDITIONS_VERSION,
-} from "../utils/termsAcceptance.ts";
-import {
+  assertEmailDomainIsAllowed,
   assertSignupUserEmailDoesNotExist,
   assertSignupUserIsActive,
   assertSignupUserIsOnboarded,
@@ -49,6 +50,7 @@ export type SignupService = ReturnType<typeof signupServiceBuilder>;
 export function signupServiceBuilder(
   signupDbService: SignupDbService,
   signupEventProducer: SignupEventProducer,
+  allowedEmailDomains: AllowedEmailDomains,
 ) {
   const retrieveCurrentActiveSignupUser = async (
     authData: UISignupSessionAuthData,
@@ -69,6 +71,8 @@ export function signupServiceBuilder(
       { authData, logger }: AuthorizedContext<UISignupSessionAuthData>,
     ) {
       logger.info("Requesting email change for current signup user");
+
+      assertEmailDomainIsAllowed(email, allowedEmailDomains, logger);
 
       const currentSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
@@ -138,6 +142,8 @@ export function signupServiceBuilder(
         authData,
         signupDbService,
         signupEventProducer,
+        allowedEmailDomains,
+        logger,
       );
     },
     async deleteCurrentSignupUser({
@@ -191,7 +197,7 @@ export function signupServiceBuilder(
       }: {
         signupUserId: SignupUserId;
       },
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<MaintenanceAuthData>,
     ) {
       logger.info(
         `Requesting maintenance deletion for signup user ${signupUserId}`,
@@ -210,9 +216,9 @@ export function signupServiceBuilder(
         signupUserId,
       });
     },
-    async reactivateUser(
+    async maintenanceReactivateUser(
       { signupUserId }: { signupUserId: SignupUserId },
-      { logger }: AuthorizedContext<InternalAuthData>,
+      { logger }: AuthorizedContext<MaintenanceAuthData>,
     ) {
       logger.info(
         `Requesting maintenance reactivation for signup user ${signupUserId}`,
@@ -278,11 +284,17 @@ async function createOnboardingPendingUser(
   authData: UISignupSessionAuthData,
   signupDbService: SignupDbService,
   signupEventProducer: SignupEventProducer,
+  allowedEmailDomains: AllowedEmailDomains,
+  logger: FastifyBaseLogger,
 ): Promise<void> {
   const now = new Date();
   const signupUserId = generateId<SignupUserId>();
-  const termsAcceptanceDigest = computeTermsAcceptanceDigest(now);
+  const termsAcceptanceDigest = computeTermsAcceptanceDigest(
+    now,
+    TERMS_DOCUMENT_VERSION,
+  );
 
+  assertEmailDomainIsAllowed(email, allowedEmailDomains, logger);
   await assertSignupUserEmailDoesNotExist(email, signupDbService);
 
   const { lynxOrganizationName, orionOrganizationName } =
@@ -309,6 +321,9 @@ async function createOnboardingPendingUser(
     signupUserId,
     spidCode: authData.spidCode,
     status: SignupUserStatus.enum.OnboardingPending,
+    // Same `now` as the digest and occurredAt: the single acceptance instant.
+    termsAcceptedAt: now,
+    termsAcceptedVersion: TERMS_DOCUMENT_VERSION,
     updatedAt: now,
   };
 
@@ -327,7 +342,7 @@ async function createOnboardingPendingUser(
     oneIdNonce: authData.oneIdNonce,
     signupUserId,
     termsAcceptanceDigest,
-    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+    termsAcceptanceVersion: TERMS_DOCUMENT_VERSION,
   });
 }
 
@@ -370,7 +385,7 @@ async function generateUniqueOrganizationNames(
  * The row is still OnboardingPending — either the OnboardingCompletedV1 publish
  * failed, or it succeeded but signup-updater hasn't provisioned the user yet. Either
  * way we re-emit the event (occurredAt and digest reproduced from the stored
- * createdAt) instead of returning 409 and stranding the user; a duplicate event is
+ * termsAcceptedAt) instead of returning 409 and stranding the user; a duplicate event is
  * harmless because the updater's provisioning is idempotent. Any other status is an
  * identity conflict.
  *
@@ -389,12 +404,15 @@ async function resolveRepeatedConfirmOnboarding(
   }
 
   await signupEventProducer.publishOnboardingCompletedV1Event({
-    occurredAt: existingSignupUser.createdAt.toISOString(),
+    occurredAt: existingSignupUser.termsAcceptedAt.toISOString(),
     oneIdNonce: authData.oneIdNonce,
     signupUserId: existingSignupUser.signupUserId,
+    // Re-derive from the stored instant and stored version so the republished digest matches
+    // the original even if the current document version has since advanced.
     termsAcceptanceDigest: computeTermsAcceptanceDigest(
-      existingSignupUser.createdAt,
+      existingSignupUser.termsAcceptedAt,
+      existingSignupUser.termsAcceptedVersion,
     ),
-    termsAcceptanceVersion: TERMS_AND_CONDITIONS_VERSION,
+    termsAcceptanceVersion: existingSignupUser.termsAcceptedVersion,
   });
 }

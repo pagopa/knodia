@@ -212,19 +212,17 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   });
 
   /**
-   * Internal maintenance endpoints: no ui-signup-session auth data is
-   * available, so the rate limiter key cannot be derived and rate limiting
-   * is intentionally skipped.
+   * Maintenance endpoints: no ui-signup-session auth data is available, so the
+   * rate limiter key cannot be derived and rate limiting is intentionally skipped.
    */
 
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "maintenance" },
       ]);
 
-      // TODO: KN-798 - Replace internal token with maintenance token
-      await signupService.reactivateUser(
+      await signupService.maintenanceReactivateUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),
         },
@@ -255,10 +253,9 @@ export const signupRouter: FastifyPluginAsyncZod<SignupRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "maintenance" },
       ]);
 
-      // TODO: KN-798 - Replace internal token with maintenance token
       await signupService.maintenanceDeleteUser(
         {
           signupUserId: unsafeBrandId(req.params.signupUserId),

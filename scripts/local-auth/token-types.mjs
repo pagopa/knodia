@@ -4,6 +4,7 @@
 export const TOKEN_TYPES = [
   "ui-session",
   "internal",
+  "maintenance",
   "external-ui-session",
   "knode-api",
   "ui-signup-session",

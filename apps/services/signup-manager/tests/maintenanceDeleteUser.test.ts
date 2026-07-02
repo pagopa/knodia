@@ -17,7 +17,7 @@ describe("POST /maintenance/users/:signupUserId/delete (maintenanceDeleteUser)",
       await seedSignupUser(signupUser);
 
       const response = await injectSignupAppRequest({
-        type: "internal",
+        type: "maintenance",
       }).post(`/maintenance/users/${signupUser.signupUserId}/delete`);
 
       expect(response.statusCode).toBe(204);
@@ -50,7 +50,7 @@ describe("POST /maintenance/users/:signupUserId/delete (maintenanceDeleteUser)",
 
   it("should return 400 when the signupUserId is not a valid UUID", async () => {
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post("/maintenance/users/invalid-id/delete");
 
     expect(response.statusCode).toBe(400);
@@ -59,14 +59,14 @@ describe("POST /maintenance/users/:signupUserId/delete (maintenanceDeleteUser)",
 
   it("should return 404 when the signup user does not exist", async () => {
     const response = await injectSignupAppRequest({
-      type: "internal",
+      type: "maintenance",
     }).post("/maintenance/users/00000000-0000-0000-0000-000000000000/delete");
 
     expect(response.statusCode).toBe(404);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should return 403 when the token is not an internal token", async () => {
+  it("should return 403 when the token is not a maintenance token", async () => {
     const signupUser = makeSignupUser();
     await seedSignupUser(signupUser);
 
@@ -79,10 +79,10 @@ describe("POST /maintenance/users/:signupUserId/delete (maintenanceDeleteUser)",
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should not be rate limited for internal maintenance calls", async () => {
+  it("should not be rate limited for maintenance calls", async () => {
     for (let i = 0; i < 10; i++) {
       const response = await injectSignupAppRequest({
-        type: "internal",
+        type: "maintenance",
       }).post("/maintenance/users/00000000-0000-0000-0000-000000000000/delete");
 
       expect(response.statusCode).toBe(404);

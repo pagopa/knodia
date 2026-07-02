@@ -44,6 +44,8 @@ function makeSuspended(
     status: SignupUserStatus.enum.Suspended,
     suspendedAt: new Date("2026-03-01T10:00:00Z"),
     suspensionReason: SuspensionReason.enum.AccuracyContested,
+    termsAcceptedAt: new Date("2026-01-10T08:30:00Z"),
+    termsAcceptedVersion: 1,
     updatedAt: new Date("2026-03-01T10:00:00Z"),
     ...overrides,
   };

@@ -2044,7 +2044,7 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-signup-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-signup-session,local.knodia.test/maintenance"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ONE_IDENTITY_CLIENT_ID: local-oi-client-id
       ONE_IDENTITY_CLIENT_SECRET: local-oi-client-secret
@@ -2058,6 +2058,7 @@ services:
       UI_SIGNUP_SESSION_JWT_ISSUER: "local-knodia"
       UI_SIGNUP_SESSION_JWT_KID: "alias/local-knodia-key"
       UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "300"
+      SIGNUP_ALLOWED_EMAIL_DOMAINS: any
       SIGNUP_DB_USER: local_signup_manager_user
       SIGNUP_DB_PASSWORD: local_signup_manager_user
       SIGNUP_DB_HOST: postgres

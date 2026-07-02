@@ -39,7 +39,7 @@ function makeOnboardingEvent(
       oneIdNonce: "nonce-abc",
       signupUserId,
       termsAcceptanceDigest: digest,
-      termsAcceptanceVersion: "v1",
+      termsAcceptanceVersion: 1,
       ...overrides,
     },
     type: "OnboardingCompletedV1",
@@ -154,7 +154,7 @@ describe("handleSignupMessage - OnboardingCompletedV1", () => {
       date: "2026-06-09T10:00:00.000Z",
       identifier: "nonce-abc",
       termsAcceptanceDigest: digest,
-      termsAcceptanceVersion: "v1",
+      termsAcceptanceVersion: 1,
     });
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining("Archived Onboarding"),

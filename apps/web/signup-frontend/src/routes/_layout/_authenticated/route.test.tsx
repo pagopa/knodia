@@ -20,6 +20,7 @@ const createTestRouter = (
       { knode: "Orion", organizationName: "Example Org", username: "user" },
     ],
     onboardingStatus,
+    termsAcceptedAt: "2026-01-01T00:00:00.000Z",
   });
 
   return createTestRouterFromFiles({
