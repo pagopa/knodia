@@ -7,6 +7,7 @@ import { initEmailSender } from "../src/emailSender.ts";
 
 export const config: SesEmailSenderConfig = {
   awsRegion: "eu-south-1",
+  sesConfigurationSet: "knodia-test",
   sesSenderLabel: "KNODIA",
   sesSenderMail: "noreply@knodia.example",
 };

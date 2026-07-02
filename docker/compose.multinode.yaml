@@ -2161,6 +2161,7 @@ services:
       AWS_ENDPOINT_URL_SESV2: http://ses-mock:8005
       SES_SENDER_MAIL: noreply@knodia.local
       SES_SENDER_LABEL: KNODIA
+      SES_CONFIGURATION_SET: knodia-local
       SUSPENDED_USERS_NOTIFICATION_RECIPIENT: dpo@pagopa.it
     depends_on:
       flyway-signup:

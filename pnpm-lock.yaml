@@ -2413,6 +2413,9 @@ importers:
       '@knodia/signup-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/signup-manager-client
+      '@knodia/terms-and-conditions-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/terms-and-conditions-models
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))

@@ -3,11 +3,13 @@ import { z } from "zod";
 export const SesEmailSenderConfig = z
   .object({
     AWS_REGION: z.string(),
+    SES_CONFIGURATION_SET: z.string().regex(/^[a-zA-Z0-9_-]{1,64}$/),
     SES_SENDER_LABEL: z.string().optional(),
     SES_SENDER_MAIL: z.email(),
   })
   .transform((c) => ({
     awsRegion: c.AWS_REGION,
+    sesConfigurationSet: c.SES_CONFIGURATION_SET,
     sesSenderLabel: c.SES_SENDER_LABEL,
     sesSenderMail: c.SES_SENDER_MAIL,
   }));
