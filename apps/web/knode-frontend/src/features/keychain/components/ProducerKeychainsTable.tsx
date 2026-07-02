@@ -65,6 +65,7 @@ export function ProducerKeychainsTable({
               <div className="flex justify-end items-center gap-2">
                 {rowActions?.(keychain)}
                 <ButtonLinkWithPreload
+                  aria-label="Go to keychain"
                   hierarchy="neutral"
                   kind="outlined"
                   params={{ id: keychain.id }}
