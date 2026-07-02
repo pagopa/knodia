@@ -86,7 +86,7 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
   return (
     <Modal
       actionLabel="Change"
-      description="Changing your email address will reset your passwords. We will send new temporary passwords to your new email address."
+      description="Changing your email address will reset your passwords. We will send new passwords to your new email address."
       errorMessage={bannerError}
       isActionDisabled={!isEmailValid || isApplying}
       isCancelDisabled={isApplying}

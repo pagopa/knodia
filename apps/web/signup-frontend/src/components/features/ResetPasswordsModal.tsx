@@ -39,7 +39,7 @@ function ResetPasswordsDialog({
       actionLabel="Reset"
       description={
         <p className="text-style-body text-neutral-medium-gray">
-          You will receive temporary passwords at{" "}
+          You will receive new passwords at{" "}
           <span className="font-bold">{email}</span>.
         </p>
       }
