@@ -96,6 +96,7 @@ export function AttributesStep() {
 
                       {!areDefinedByTemplate && groupIndex > 0 && (
                         <Button
+                          aria-label={`Delete Group ${groupIndex + 1}`}
                           hierarchy="danger"
                           kind="tonal"
                           onPress={() => handleRemoveGroup(groupIndex)}
