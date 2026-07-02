@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 #
 # Seeds every POC use-case user (UC01/02/03) across the two knode pools by
-# calling seed-cognito-user.sh once per user. Idempotent (create-or-update).
+# calling seed-cognito-user.sh once per user. Idempotent.
 #
-# Org ids and usernames mirror scripts/seed/sql/{lynx,orion}/mock-poc-*-organizations.sql
-# and scripts/local-auth/local-cognito.mjs. All POC users hold both roles — the
-# demos don't cover role-based behaviour. Emails are placeholders (no real inbox).
-#
-# Pool ids per env come from pagopa/knodia-deployment
-# commons/knodes/<env>/values-commons-{lynx,orion}.yaml (cognito.userPoolId).
+# Org ids/names and usernames mirror scripts/seed/sql/{lynx,orion}/mock-poc-*-organizations.sql.
+# All POC users hold both roles — the demos don't cover role-based behaviour.
 #
 # Example:
 #   ./scripts/seed/seed-poc-users.sh \
@@ -45,18 +41,19 @@ for v in LYNX_POOL_ID ORION_POOL_ID PASSWORD; do
   if [ -z "${!v:-}" ]; then echo "Missing required --${v//_/-}" | tr '[:upper:]' '[:lower:]' >&2; usage; fi
 done
 
-# knode|username|org-id-suffix (suffix appended to ORG_PREFIX)
+# knode|username|org-id-suffix|org-name (suffix appended to ORG_PREFIX; name is the
+# group description, matching the org name in the SQL seed)
 POC_USERS="
-lynx|student_registry_lynx_admin|03
-lynx|business_booklet_lynx_admin|01
-lynx|system_serc_lynx_admin|05
-orion|academy_orion_admin|04
-orion|construction_companies_registry_orion_admin|02
-orion|supervisory_body_orion_admin|07
-orion|system_serc_orion_admin|06
+lynx|student_registry_lynx_admin|03|Student Registry Lynx
+lynx|business_booklet_lynx_admin|01|Business Booklet Lynx
+lynx|system_serc_lynx_admin|05|System SERC Lynx
+orion|academy_orion_admin|04|Academy Orion
+orion|construction_companies_registry_orion_admin|02|Construction Companies Registry Orion
+orion|supervisory_body_orion_admin|07|Supervisory Body Orion
+orion|system_serc_orion_admin|06|System SERC Orion
 "
 
-echo "$POC_USERS" | while IFS='|' read -r knode username suffix; do
+echo "$POC_USERS" | while IFS='|' read -r knode username suffix orgname; do
   [ -z "$username" ] && continue
   case "$knode" in
     lynx) pool="$LYNX_POOL_ID";;
@@ -68,6 +65,7 @@ echo "$POC_USERS" | while IFS='|' read -r knode username suffix; do
     --email "${username}@poc.knodia.dev" \
     --roles "$ROLES" \
     --org-id "${ORG_PREFIX}${suffix}" \
+    --org-description "$orgname" \
     --password "$PASSWORD" \
     --region "$REGION"
 done

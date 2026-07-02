@@ -1,16 +1,8 @@
 #!/usr/bin/env bash
 #
-# Seeds a single Cognito user into a knode's user-registry pool: creates (or
-# updates) the user with an email and custom:roles, ensures the org group exists,
-# adds the user to it, and sets a permanent password. Idempotent — safe to re-run.
-#
-# Remote envs (dev/test): the pools live per knode/env; ids come from
-# pagopa/knodia-deployment commons/knodes/<env>/values-commons-{orion,lynx}.yaml
-# (cognito.userPoolId). Needs AWS creds with cognito-idp admin permissions on the
-# target account.
-#
-# organization-process requires an email on every operator, so --email is
-# mandatory: a user without it makes the BFF keychain/operator reads 500.
+# Seeds one Cognito user into a knode user-registry pool: creates the org group
+# if missing, creates or updates the user with email + custom:roles, adds it to
+# the group, sets a permanent password. Idempotent.
 #
 # Example:
 #   ./scripts/seed/seed-cognito-user.sh \
@@ -23,16 +15,19 @@
 set -euo pipefail
 
 REGION="eu-south-1"
+ORG_DESCRIPTION=""
 
 usage() {
   cat >&2 <<'EOF'
 Usage: seed-cognito-user.sh --user-pool-id <id> --username <u> --email <e> \
-         --roles <r1,r2,...> --org-id <uuid> --password <pw> [--region <aws-region>]
+         --roles <r1,r2,...> --org-id <uuid> --password <pw> \
+         [--org-description <text>] [--region <aws-region>]
 
-  --roles     comma-separated (e.g. administrative,technical)
-  --org-id    organization UUID; the user is added to group org:<org-id>
-              (created if it does not exist yet)
-  --region    defaults to eu-south-1
+  --roles            comma-separated (e.g. administrative,technical)
+  --org-id           organization UUID; the user is added to group org:<org-id>
+                     (created if it does not exist yet)
+  --org-description  description set on the group when it is created
+  --region           defaults to eu-south-1
 EOF
   exit 1
 }
@@ -45,6 +40,7 @@ while [ $# -gt 0 ]; do
     --roles) ROLES="$2"; shift 2;;
     --org-id) ORG_ID="$2"; shift 2;;
     --password) PASSWORD="$2"; shift 2;;
+    --org-description) ORG_DESCRIPTION="$2"; shift 2;;
     --region) REGION="$2"; shift 2;;
     *) echo "Unknown argument: $1" >&2; usage;;
   esac
@@ -59,7 +55,8 @@ aws() { command aws --region "$REGION" "$@"; }
 
 # 1) Ensure the org group exists (create-group is not idempotent; ignore if present).
 if ! aws cognito-idp get-group --user-pool-id "$USER_POOL_ID" --group-name "$GROUP" >/dev/null 2>&1; then
-  aws cognito-idp create-group --user-pool-id "$USER_POOL_ID" --group-name "$GROUP" >/dev/null
+  aws cognito-idp create-group --user-pool-id "$USER_POOL_ID" --group-name "$GROUP" \
+    ${ORG_DESCRIPTION:+--description "$ORG_DESCRIPTION"} >/dev/null
   echo "Created group $GROUP"
 fi
 
