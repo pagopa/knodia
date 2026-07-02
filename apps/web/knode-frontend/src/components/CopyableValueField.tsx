@@ -23,7 +23,10 @@ export function CopyableValueField({
           {value}
         </dd>
       </dl>
-      <CopyButton textToCopy={value} />
+      <CopyButton
+        aria-label={`Copy ${label ? `${label} value` : "value"}`}
+        textToCopy={value}
+      />
     </div>
   );
 }

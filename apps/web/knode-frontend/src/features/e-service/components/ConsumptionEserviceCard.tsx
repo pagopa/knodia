@@ -24,6 +24,7 @@ export function ConsumptionEserviceCard({
         badge={
           eservice.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
         }
+        headingLevel={2}
         id={eservice.id}
         search={{ knodeId: eservice.knodeId }}
         title={eservice.name.en}
