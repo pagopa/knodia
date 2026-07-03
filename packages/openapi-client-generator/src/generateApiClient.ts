@@ -9,9 +9,6 @@ export function generateApiClient(
     output: {
       importFileExtension: ".ts",
       path: "./src/generated",
-      // spawns the prettier binary from PATH — provided by the workspace-root
-      // devDependency, since hey-api no longer bundles prettier
-      postProcess: ["prettier"],
       tsConfigPath: "./tsconfig.json",
     },
     plugins: [

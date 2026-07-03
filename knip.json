@@ -12,7 +12,6 @@
   },
   "workspaces": {
     ".": {
-      "ignoreDependencies": ["prettier"],
       "ignore": [
         "docker/multinode/env-*.js",
         "poc-use-cases/**",

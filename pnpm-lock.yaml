@@ -276,9 +276,6 @@ catalogs:
     pino-pretty:
       specifier: 13.1.3
       version: 13.1.3
-    prettier:
-      specifier: 3.7.4
-      version: 3.7.4
     rate-limiter-flexible:
       specifier: 11.1.0
       version: 11.1.0
@@ -362,9 +359,6 @@ importers:
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.7.4
       turbo:
         specifier: 'catalog:'
         version: 2.9.14
