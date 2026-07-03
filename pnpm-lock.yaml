@@ -79,8 +79,8 @@ catalogs:
       specifier: 5.2.8
       version: 5.2.8
     '@hey-api/openapi-ts':
-      specifier: 0.97.3
-      version: 0.97.3
+      specifier: 0.99.0
+      version: 0.99.0
     '@pagopa/eslint-config':
       specifier: 5.1.1
       version: 5.1.1
@@ -276,6 +276,9 @@ catalogs:
     pino-pretty:
       specifier: 13.1.3
       version: 13.1.3
+    prettier:
+      specifier: 3.7.4
+      version: 3.7.4
     rate-limiter-flexible:
       specifier: 11.1.0
       version: 11.1.0
@@ -4278,7 +4281,7 @@ importers:
     devDependencies:
       '@hey-api/openapi-ts':
         specifier: 'catalog:'
-        version: 0.97.3(typescript@5.9.3)
+        version: 0.99.0(typescript@5.9.3)
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -4288,6 +4291,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.7.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -5714,24 +5720,24 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  '@hey-api/codegen-core@0.8.2':
-    resolution: {integrity: sha512-R2NMf3wq97rh1mjz33WJQU8svz3F0RYUjvx/QzXucjpSqQ3O5huTdDjErG4fMxSr1X+X56NuDrqtGfHmo1TRUQ==}
-    engines: {node: '>=22.13.0'}
+  '@hey-api/codegen-core@0.9.1':
+    resolution: {integrity: sha512-s97jL1dgTMuiMHv2BZ1X4Tgd99Mf9GOvGdNqNcGwIMmnR+PgYNoraj4Zvp134MKsNCap/m7k0r0vKKnl56pj4w==}
+    engines: {node: '>=22.18.0'}
 
-  '@hey-api/json-schema-ref-parser@1.4.2':
-    resolution: {integrity: sha512-ZhCFSKI2ipZHEbgmtUHdyddvRU3wJ4elgCfYUC7T7hZa4EivSrVflTQf2w+v3TuaYxR1Y2V2kq3otqTttrrK8Q==}
-    engines: {node: '>=22.13.0'}
+  '@hey-api/json-schema-ref-parser@1.4.4':
+    resolution: {integrity: sha512-otmd+zCxbYVBIp/mlMTnGkvlNYLkVKgs3VOIq0kSnenhB1+fRwLPQIeSwyWM6E51oXhUedkYjVsVpkVexeuJOA==}
+    engines: {node: '>=22.18.0'}
 
-  '@hey-api/openapi-ts@0.97.3':
-    resolution: {integrity: sha512-4sR6/E/POuy7aPZW9DDjhObzZCq7eSJWiW0+epXeKNczoTWEwdOyWFy9Ca/CnXYlZ3oJsrv0ZD0OO+YuczT7CA==}
-    engines: {node: '>=22.13.0'}
+  '@hey-api/openapi-ts@0.99.0':
+    resolution: {integrity: sha512-SePU/5oEWWkvUBYmvzdYRctseoLuskyhs4ET0RvLIcmzc8yLQoA2R+KtBIQ8bPsoSUB0m4E5SmBnl6aGSA0szQ==}
+    engines: {node: '>=22.18.0'}
     hasBin: true
     peerDependencies:
       typescript: '>=5.5.3 || >=6.0.0 || 6.0.1-rc'
 
-  '@hey-api/shared@0.4.5':
-    resolution: {integrity: sha512-au4eHpBXAe1du0iMp6ESYuEaMS2jsoEyrbcT246btRhI9rMeQFEs7ZjtcMGXGsxhpaR38A8cPGNHx7QOrWAdMw==}
-    engines: {node: '>=22.13.0'}
+  '@hey-api/shared@0.5.0':
+    resolution: {integrity: sha512-JN/j4Ebh4cJGYIQ5cwWuqe7GeSUyQoz7oC51WqyhKOcrejK6DKZMDkshc5d1eKTRuRL+rjozuRcoUaZZn2DGPw==}
+    engines: {node: '>=22.18.0'}
 
   '@hey-api/spec-types@0.2.0':
     resolution: {integrity: sha512-ibQ8Is7evMavzr8GNyJCcTg975d8DpaMUyLmOrQ85UBdy1l6t1KuRAwgChAbesJsIlNV6gjmlXruWyegDX18Fg==}
@@ -7791,9 +7797,9 @@ packages:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
 
-  commander@14.0.3:
-    resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
-    engines: {node: '>=20'}
+  commander@15.0.0:
+    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+    engines: {node: '>=22.12.0'}
 
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
@@ -9887,8 +9893,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.7.4:
-    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+  semver@7.8.4:
+    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -12230,7 +12236,7 @@ snapshots:
       protobufjs: 7.5.4
       yargs: 17.7.2
 
-  '@hey-api/codegen-core@0.8.2':
+  '@hey-api/codegen-core@0.9.1':
     dependencies:
       '@hey-api/types': 0.1.4
       ansi-colors: 4.1.3
@@ -12239,38 +12245,38 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@hey-api/json-schema-ref-parser@1.4.2':
+  '@hey-api/json-schema-ref-parser@1.4.4':
     dependencies:
       '@jsdevtools/ono': 7.1.3
       '@types/json-schema': 7.0.15
-      js-yaml: 4.1.1
+      js-yaml: 4.2.0
 
-  '@hey-api/openapi-ts@0.97.3(typescript@5.9.3)':
+  '@hey-api/openapi-ts@0.99.0(typescript@5.9.3)':
     dependencies:
-      '@hey-api/codegen-core': 0.8.2
-      '@hey-api/json-schema-ref-parser': 1.4.2
-      '@hey-api/shared': 0.4.5
+      '@hey-api/codegen-core': 0.9.1
+      '@hey-api/json-schema-ref-parser': 1.4.4
+      '@hey-api/shared': 0.5.0
       '@hey-api/spec-types': 0.2.0
       '@hey-api/types': 0.1.4
       '@lukeed/ms': 2.0.2
       ansi-colors: 4.1.3
       color-support: 1.1.3
-      commander: 14.0.3
+      commander: 15.0.0
       get-tsconfig: 4.14.0
       typescript: 5.9.3
     transitivePeerDependencies:
       - magicast
 
-  '@hey-api/shared@0.4.5':
+  '@hey-api/shared@0.5.0':
     dependencies:
-      '@hey-api/codegen-core': 0.8.2
-      '@hey-api/json-schema-ref-parser': 1.4.2
+      '@hey-api/codegen-core': 0.9.1
+      '@hey-api/json-schema-ref-parser': 1.4.4
       '@hey-api/spec-types': 0.2.0
       '@hey-api/types': 0.1.4
       ansi-colors: 4.1.3
       cross-spawn: 7.0.6
       open: 11.0.0
-      semver: 7.7.4
+      semver: 7.8.4
     transitivePeerDependencies:
       - magicast
 
@@ -14706,7 +14712,7 @@ snapshots:
 
   commander@11.1.0: {}
 
-  commander@14.0.3: {}
+  commander@15.0.0: {}
 
   commondir@1.0.1: {}
 
@@ -16917,7 +16923,7 @@ snapshots:
 
   semver@7.7.3: {}
 
-  semver@7.7.4: {}
+  semver@7.8.4: {}
 
   seroval-plugins@1.3.3(seroval@1.3.2):
     dependencies:

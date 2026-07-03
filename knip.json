@@ -71,6 +71,9 @@
     },
     "packages/ui-kit": {
       "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]
+    },
+    "packages/openapi-client-generator": {
+      "ignoreDependencies": ["prettier"]
     }
   }
 }
