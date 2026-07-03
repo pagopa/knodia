@@ -362,6 +362,9 @@ importers:
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.7.4
       turbo:
         specifier: 'catalog:'
         version: 2.9.14
@@ -4291,9 +4294,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.7.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

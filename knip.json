@@ -12,6 +12,7 @@
   },
   "workspaces": {
     ".": {
+      "ignoreDependencies": ["prettier"],
       "ignore": [
         "docker/multinode/env-*.js",
         "poc-use-cases/**",
@@ -71,9 +72,6 @@
     },
     "packages/ui-kit": {
       "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]
-    },
-    "packages/openapi-client-generator": {
-      "ignoreDependencies": ["prettier"]
     }
   }
 }

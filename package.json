@@ -42,6 +42,7 @@
     "@dotenvx/dotenvx": "catalog:",
     "@types/node": "catalog:",
     "knip": "catalog:",
+    "prettier": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"
   },

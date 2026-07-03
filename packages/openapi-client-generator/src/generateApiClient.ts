@@ -1,12 +1,4 @@
 import { createClient, type UserConfig } from "@hey-api/openapi-ts";
-import { createRequire } from "node:module";
-
-// hey-api no longer bundles prettier (`output.format` was removed in favor of
-// `postProcess`, which spawns the binary from PATH) — resolve it from this
-// package's dependencies so client packages don't each need to install it
-const prettierBin = createRequire(import.meta.url).resolve(
-  "prettier/bin/prettier.cjs",
-);
 
 export function generateApiClient(
   openapiPath: string,
@@ -17,13 +9,9 @@ export function generateApiClient(
     output: {
       importFileExtension: ".ts",
       path: "./src/generated",
-      postProcess: [
-        {
-          args: [prettierBin, "--write", "{{path}}"],
-          command: "node",
-          name: "prettier",
-        },
-      ],
+      // spawns the prettier binary from PATH — provided by the workspace-root
+      // devDependency, since hey-api no longer bundles prettier
+      postProcess: ["prettier"],
       tsConfigPath: "./tsconfig.json",
     },
     plugins: [
