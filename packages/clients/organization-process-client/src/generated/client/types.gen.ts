@@ -7,20 +7,21 @@ import type {
   AxiosResponse,
   AxiosStatic,
   CreateAxiosDefaults,
-} from 'axios';
+} from "axios";
 
-import type { Auth } from '../core/auth.gen.ts';
+import type { Auth } from "../core/auth.gen.ts";
 import type {
   ServerSentEventsOptions,
   ServerSentEventsResult,
-} from '../core/serverSentEvents.gen.ts';
+} from "../core/serverSentEvents.gen.ts";
 import type {
   Client as CoreClient,
   Config as CoreConfig,
-} from '../core/types.gen.ts';
+} from "../core/types.gen.ts";
 
 export interface Config<T extends ClientOptions = ClientOptions>
-  extends Omit<CreateAxiosDefaults, 'auth' | 'baseURL' | 'headers' | 'method'>,
+  extends
+    Omit<CreateAxiosDefaults, "auth" | "baseURL" | "headers" | "method">,
     CoreConfig {
   /**
    * Axios implementation. You can use this option to provide either an
@@ -32,7 +33,7 @@ export interface Config<T extends ClientOptions = ClientOptions>
   /**
    * Base URL for all requests made by this client.
    */
-  baseURL?: T['baseURL'];
+  baseURL?: T["baseURL"];
   /**
    * An object containing any HTTP headers that you want to pre-populate your
    * `Headers` object with.
@@ -56,23 +57,26 @@ export interface Config<T extends ClientOptions = ClientOptions>
    *
    * @default false
    */
-  throwOnError?: T['throwOnError'];
+  throwOnError?: T["throwOnError"];
 }
 
 export interface RequestOptions<
   TData = unknown,
   ThrowOnError extends boolean = boolean,
   Url extends string = string,
-> extends Config<{
+>
+  extends
+    Config<{
       throwOnError: ThrowOnError;
     }>,
     Pick<
       ServerSentEventsOptions<TData>,
-      | 'onSseError'
-      | 'onSseEvent'
-      | 'sseDefaultRetryDelay'
-      | 'sseMaxRetryAttempts'
-      | 'sseMaxRetryDelay'
+      | "onRequest"
+      | "onSseError"
+      | "onSseEvent"
+      | "sseDefaultRetryDelay"
+      | "sseMaxRetryAttempts"
+      | "sseMaxRetryDelay"
     > {
   /**
    * Any body that you want to add to your request.
@@ -107,7 +111,9 @@ export type RequestResult<
   : Promise<
       | (AxiosResponse<
           TData extends Record<string, unknown> ? TData[keyof TData] : TData
-        > & { error: undefined })
+        > & {
+          error: undefined;
+        })
       | (AxiosError<
           TError extends Record<string, unknown> ? TError[keyof TError] : TError
         > & {
@@ -123,35 +129,39 @@ type MethodFn = <
   TError = unknown,
   ThrowOnError extends boolean = false,
 >(
-  options: Omit<RequestOptions<TData, ThrowOnError>, 'method'>,
+  options: Omit<RequestOptions<TData, ThrowOnError>, "method">,
 ) => RequestResult<TData, TError, ThrowOnError>;
 
 type SseFn = <
   TData = unknown,
-  TError = unknown,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _TError = unknown,
   ThrowOnError extends boolean = false,
 >(
-  options: Omit<RequestOptions<TData, ThrowOnError>, 'method'>,
-) => Promise<ServerSentEventsResult<TData, TError>>;
+  options: Omit<RequestOptions<never, ThrowOnError>, "method">,
+) => Promise<ServerSentEventsResult<TData>>;
 
 type RequestFn = <
   TData = unknown,
   TError = unknown,
   ThrowOnError extends boolean = false,
 >(
-  options: Omit<RequestOptions<TData, ThrowOnError>, 'method'> &
-    Pick<Required<RequestOptions<TData, ThrowOnError>>, 'method'>,
+  options: Omit<RequestOptions<TData, ThrowOnError>, "method"> &
+    Pick<Required<RequestOptions<TData, ThrowOnError>>, "method">,
 ) => RequestResult<TData, TError, ThrowOnError>;
 
 type BuildUrlFn = <
   TData extends {
-    body?: unknown;
     path?: Record<string, unknown>;
     query?: Record<string, unknown>;
     url: string;
   },
 >(
-  options: TData & Options<TData>,
+  options: TData &
+    Pick<
+      RequestOptions<unknown, boolean>,
+      "axios" | "baseURL" | "paramsSerializer" | "querySerializer"
+    >,
 ) => string;
 
 export type Client = CoreClient<
@@ -192,6 +202,6 @@ export type Options<
   TResponse = unknown,
 > = OmitKeys<
   RequestOptions<TResponse, ThrowOnError>,
-  'body' | 'path' | 'query' | 'url'
+  "body" | "path" | "query" | "url"
 > &
-  ([TData] extends [never] ? unknown : Omit<TData, 'url'>);
+  ([TData] extends [never] ? unknown : Omit<TData, "url">);

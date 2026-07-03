@@ -14,15 +14,18 @@ export type JsonValue =
 /**
  * Replacer that converts non-JSON values (bigint, Date, etc.) to safe substitutes.
  */
-export const queryKeyJsonReplacer = (_key: string, value: unknown) => {
+export const queryKeyJsonReplacer = (
+  _key: string,
+  value: unknown,
+): unknown | undefined => {
   if (
     value === undefined ||
-    typeof value === 'function' ||
-    typeof value === 'symbol'
+    typeof value === "function" ||
+    typeof value === "symbol"
   ) {
     return undefined;
   }
-  if (typeof value === 'bigint') {
+  if (typeof value === "bigint") {
     return value.toString();
   }
   if (value instanceof Date) {
@@ -50,7 +53,7 @@ export const stringifyToJsonValue = (input: unknown): JsonValue | undefined => {
  * Detects plain objects (including objects with a null prototype).
  */
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
-  if (value === null || typeof value !== 'object') {
+  if (value === null || typeof value !== "object") {
     return false;
   }
   const prototype = Object.getPrototypeOf(value as object);
@@ -94,22 +97,22 @@ export const serializeQueryKeyValue = (
   }
 
   if (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
   ) {
     return value;
   }
 
   if (
     value === undefined ||
-    typeof value === 'function' ||
-    typeof value === 'symbol'
+    typeof value === "function" ||
+    typeof value === "symbol"
   ) {
     return undefined;
   }
 
-  if (typeof value === 'bigint') {
+  if (typeof value === "bigint") {
     return value.toString();
   }
 
@@ -122,7 +125,7 @@ export const serializeQueryKeyValue = (
   }
 
   if (
-    typeof URLSearchParams !== 'undefined' &&
+    typeof URLSearchParams !== "undefined" &&
     value instanceof URLSearchParams
   ) {
     return serializeSearchParams(value);
