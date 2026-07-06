@@ -1,10 +1,12 @@
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserAttributesCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
   AdminEnableUserCommand,
   AdminGetUserCommand,
+  AdminRemoveUserFromGroupCommand,
   AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
@@ -311,6 +313,93 @@ describe("deleteOrganizationUser", () => {
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
+  });
+});
+
+describe("disableAndRedactOrganizationUser", () => {
+  it("disables the user, deletes the provisioned attributes, and removes the org membership", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+    const organizationId = generateId<OrganizationId>();
+
+    await buildCognitoIdmClient({
+      cognitoUserPoolId,
+    }).disableAndRedactOrganizationUser({
+      organizationId,
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledTimes(3);
+
+    const disable = send.mock.calls.at(0)?.at(0) as AdminDisableUserCommand;
+    expect(disable).toBeInstanceOf(AdminDisableUserCommand);
+    expect(disable.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+
+    const deleteAttributes = send.mock.calls
+      .at(1)
+      ?.at(0) as AdminDeleteUserAttributesCommand;
+    expect(deleteAttributes).toBeInstanceOf(AdminDeleteUserAttributesCommand);
+    expect(deleteAttributes.input).toMatchObject({
+      UserAttributeNames: [
+        "email",
+        "email_verified",
+        "given_name",
+        "family_name",
+        "custom:roles",
+      ],
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+
+    const removeFromGroup = send.mock.calls
+      .at(2)
+      ?.at(0) as AdminRemoveUserFromGroupCommand;
+    expect(removeFromGroup).toBeInstanceOf(AdminRemoveUserFromGroupCommand);
+    expect(removeFromGroup.input).toMatchObject({
+      GroupName: `org:${organizationId}`,
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("attempts every sub-step even when one fails, and rethrows the failure", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockImplementation((command) =>
+        command instanceof AdminDeleteUserAttributesCommand
+          ? Promise.reject(new Error("boom"))
+          : Promise.resolve(undefined as never),
+      );
+
+    await expect(
+      buildCognitoIdmClient({
+        cognitoUserPoolId,
+      }).disableAndRedactOrganizationUser({
+        organizationId: generateId<OrganizationId>(),
+        username: "u",
+      }),
+    ).rejects.toThrow("boom");
+
+    expect(send).toHaveBeenCalledTimes(3);
+  });
+
+  it("aggregates multiple sub-step failures", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({
+        cognitoUserPoolId,
+      }).disableAndRedactOrganizationUser({
+        organizationId: generateId<OrganizationId>(),
+        username: "u",
+      }),
+    ).rejects.toBeInstanceOf(AggregateError);
   });
 });
 

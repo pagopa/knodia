@@ -196,9 +196,10 @@ export async function handleSignupMessage(
           return;
         }
 
-        for (const knodeId of KnodeId.options) {
-          await deleteKnodeUser(knodeId, user, deps, logger);
-        }
+        await forEachKnode(
+          (knodeId) => deleteKnodeUser(knodeId, user, deps, logger),
+          logger,
+        );
 
         // Hard-deletes the row and writes the deletion-registry entry; idempotent
         // under at-least-once, so a crash before the offset commits replays safely.
@@ -301,9 +302,25 @@ async function deleteKnodeUser(
     `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
   );
 
-  // Idempotent inside the client: a missing user (UserNotFoundException) is
-  // swallowed, so a replay after a partial deletion is safe.
-  await cognitoClient.deleteOrganizationUser({ username: entities.userName });
+  try {
+    // Idempotent inside the client: a missing user (UserNotFoundException) is
+    // swallowed, so a replay after a partial deletion is safe.
+    await cognitoClient.deleteOrganizationUser({ username: entities.userName });
+  } catch (error) {
+    // AdminDeleteUser can fail deterministically on a corrupted record (seen on
+    // dev: InternalErrorException on every retry, from SDK, CLI and console),
+    // so retrying the delete would redeliver forever and stall the partition.
+    // Redact the user in place instead so no PII remains and the saga
+    // completes; a fallback failure propagates and keeps the retry visible.
+    logger.warn(
+      { err: error, knodeId },
+      `Cognito delete failed for signup user ${user.signupUserId} on ${knodeId}; falling back to disable and redact`,
+    );
+    await cognitoClient.disableAndRedactOrganizationUser({
+      organizationId: externalOrganizationId(user.signupUserId, knodeId),
+      username: entities.userName,
+    });
+  }
 }
 
 async function forEachKnode(

@@ -47,6 +47,7 @@ import { handleSignupMessage } from "../src/services/consumerService.ts";
 import { externalOrganizationId } from "../src/utils/externalOrganizationId.ts";
 
 const cognitoCreateUserMock = vi.fn();
+const cognitoDisableAndRedactUserMock = vi.fn();
 const cognitoDisableUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
 const cognitoResetUserCredentialsMock = vi.fn();
@@ -71,6 +72,7 @@ function buildDeps(): SignupUpdaterDeps {
     cognitoClient: {
       createOrganizationUser: cognitoCreateUserMock,
       deleteOrganizationUser: cognitoDeleteUserMock,
+      disableAndRedactOrganizationUser: cognitoDisableAndRedactUserMock,
       disableUser: cognitoDisableUserMock,
       resetUserCredentials: cognitoResetUserCredentialsMock,
       updateUserEmail: cognitoUpdateUserEmailMock,
@@ -933,6 +935,7 @@ describe("handleSignupMessage — MaintenanceUserReactivationRequestedV1", () =>
 describe("handleSignupMessage — DeletionRequestedV1", () => {
   beforeEach(() => {
     cognitoDeleteUserMock.mockReset();
+    cognitoDisableAndRedactUserMock.mockReset();
     getSignupUserByIdMock.mockReset();
     getSignupUserDeletionMock.mockReset();
     completeSignupUserDeletionMock.mockReset();
@@ -961,6 +964,7 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     expect(cognitoDeleteUserMock.mock.calls.at(1)?.at(0)).toEqual({
       username: "mario.rossi.lynx",
     });
+    expect(cognitoDisableAndRedactUserMock).not.toHaveBeenCalled();
 
     expect(completeSignupUserDeletionMock).toHaveBeenCalledTimes(1);
     expect(completeSignupUserDeletionMock).toHaveBeenCalledWith(
@@ -1029,12 +1033,52 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
   });
 
-  it("rethrows a Cognito user deletion error so the message is redelivered, without completing", async () => {
+  it("falls back to disable + redact on the knode whose Cognito delete fails, and still completes the deletion", async () => {
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
+    getSignupUserByIdMock.mockResolvedValue(user);
+    // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
+    cognitoDeleteUserMock
+      .mockRejectedValueOnce(
+        Object.assign(new Error("Internal server error."), {
+          name: "InternalErrorException",
+        }),
+      )
+      .mockResolvedValueOnce(undefined);
+    cognitoDisableAndRedactUserMock.mockResolvedValue(undefined);
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(cognitoDisableAndRedactUserMock).toHaveBeenCalledExactlyOnceWith({
+      organizationId: externalOrganizationId(user.signupUserId, "Orion"),
+      username: "mario.rossi.orion",
+    });
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ err: expect.any(Error), knodeId: "Orion" }),
+      expect.stringContaining("falling back to disable and redact"),
+    );
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledExactlyOnceWith(
+      user.signupUserId,
+    );
+  });
+
+  it("rethrows when the fallback fails too, so the message is redelivered without completing", async () => {
     const user = getMockSignupUser({
       status: SignupUserStatus.enum.DeletionPending,
     });
     getSignupUserByIdMock.mockResolvedValue(user);
     cognitoDeleteUserMock.mockRejectedValue(new Error("Cognito unavailable"));
+    cognitoDisableAndRedactUserMock.mockRejectedValue(
+      new Error("redact failed"),
+    );
 
     await expect(
       handleSignupMessage(
@@ -1052,6 +1096,7 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
 describe("handleSignupMessage — MaintenanceUserDeletionRequestedV1", () => {
   beforeEach(() => {
     cognitoDeleteUserMock.mockReset();
+    cognitoDisableAndRedactUserMock.mockReset();
     getSignupUserByIdMock.mockReset();
     getSignupUserDeletionMock.mockReset();
     completeSignupUserDeletionMock.mockReset();

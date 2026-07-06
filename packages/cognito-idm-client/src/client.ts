@@ -5,11 +5,13 @@ import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserAttributesCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
   AdminEnableUserCommand,
   AdminGetUserCommand,
   AdminListGroupsForUserCommand,
+  AdminRemoveUserFromGroupCommand,
   AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
@@ -28,6 +30,16 @@ import type { IdmUser } from "./models.ts";
 import { toIdmUser } from "./converters.ts";
 
 export type CognitoIdmClient = ReturnType<typeof buildCognitoIdmClient>;
+
+// Must stay in sync with the attributes createOrganizationUser sets: deleting
+// them leaves a redacted user carrying nothing but its username.
+const PROVISIONED_USER_ATTRIBUTES = [
+  "email",
+  "email_verified",
+  "given_name",
+  "family_name",
+  "custom:roles",
+];
 
 export function buildCognitoIdmClient({
   cognitoUserPoolId,
@@ -122,6 +134,50 @@ export function buildCognitoIdmClient({
           }),
         ),
       );
+    },
+
+    // Fallback for records whose AdminDeleteUser fails deterministically (seen
+    // on dev: a corrupted record 500s on every attempt, from SDK, CLI and
+    // console alike): redact the user in place — disabled, PII attributes and
+    // roles stripped, org membership removed — so only the username remains.
+    // Every sub-step is attempted even if another fails; any failure rethrows
+    // so the caller retries until the redaction is guaranteed.
+    async disableAndRedactOrganizationUser(input: {
+      organizationId: OrganizationId;
+      username: string;
+    }): Promise<void> {
+      const results = await Promise.allSettled([
+        client.send(
+          new AdminDisableUserCommand({
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+        client.send(
+          new AdminDeleteUserAttributesCommand({
+            UserAttributeNames: PROVISIONED_USER_ATTRIBUTES,
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+        client.send(
+          new AdminRemoveUserFromGroupCommand({
+            GroupName: getOrganizationGroupName(input.organizationId),
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+      ]);
+
+      const failures = results.filter((r) => r.status === "rejected");
+
+      if (failures.length === 0) return;
+
+      if (failures.length === 1) {
+        throw failures[0]?.reason;
+      }
+
+      throw new AggregateError(failures.map((failure) => failure.reason));
     },
 
     async disableUser(input: { username: string }): Promise<void> {
