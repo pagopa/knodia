@@ -59,7 +59,7 @@ export function ProducerAgreementDetail({
           />
         )}
 
-      <div className="flex flex-col gap-4">
+      <div className="mt-10 flex flex-col gap-4">
         <SettingsCard label="E-Service">
           <span className="flex items-center gap-6">
             <RouterLink
