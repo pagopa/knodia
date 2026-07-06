@@ -45,6 +45,7 @@ export function EserviceCardFooter({
 export function EserviceCardHeader({
   badge,
   description,
+  headingLevel = 3,
   id,
   search,
   title,
@@ -52,17 +53,22 @@ export function EserviceCardHeader({
 }: {
   badge?: React.ReactNode;
   description?: string;
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
   id: string;
   search?: { knodeId: string };
   title: string;
   to: string;
 }) {
+  const HeadingTag = `h${headingLevel}` as const;
+
   return (
     <header
       className={`flex gap-10 ${description ? "items-start" : "items-center"}`}
     >
       <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="min-w-0 title-md-em truncate">{title}</h3>
+        <HeadingTag className="min-w-0 title-md-em truncate">
+          {title}
+        </HeadingTag>
         {description && (
           <p className="body-md text-primary-light-low-contrast line-clamp-2">
             {description}

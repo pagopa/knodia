@@ -310,7 +310,7 @@ export const buttonStyles = tv({
       kind: "outlined",
       hierarchy: "danger",
       class:
-        "border-error-200 text-error-600 hover:border-error-400 hover:bg-error-50 pressed:bg-error-50",
+        "border-error-200 text-error-700 hover:border-error-400 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "outlined",
@@ -330,7 +330,7 @@ export const buttonStyles = tv({
       kind: "tonal",
       hierarchy: "danger",
       class:
-        "bg-button-tonal-danger-bg hover:bg-button-tonal-danger-bg-hover pressed:bg-button-tonal-danger-bg-hover text-error-600 border-button-tonal-danger-border",
+        "bg-button-tonal-danger-bg hover:bg-button-tonal-danger-bg-hover pressed:bg-button-tonal-danger-bg-hover text-error-700 border-button-tonal-danger-border",
     },
     {
       kind: "tonal",
@@ -348,7 +348,7 @@ export const buttonStyles = tv({
     {
       kind: "ghost",
       hierarchy: "danger",
-      class: "text-error-600 hover:bg-error-50 pressed:bg-error-50",
+      class: "text-error-700 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "ghost",
@@ -365,7 +365,7 @@ export const buttonStyles = tv({
     {
       kind: "elevated",
       hierarchy: "danger",
-      class: "text-error-600 hover:bg-error-50 pressed:bg-error-50",
+      class: "text-error-700 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "elevated",
