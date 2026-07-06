@@ -108,6 +108,16 @@ export async function verifyIntegrityRest02(response: EserviceResponse, k2oUrl: 
   const pem = Buffer.from(((await keyResponse.json()) as { encodedPem: string }).encodedPem, "base64").toString();
   const verifier = createVerify("RSA-SHA256").update(`${header}.${payload}`);
   if (!verifier.verify(createPublicKey(pem), Buffer.from(signature, "base64url"))) throw new Error("Knodia-JWT-Signature verification failed");
+
+  // signed_headers binds the covered response headers, so a valid signature
+  // can't be reused for a different response.
+  const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as { exp: number; signed_headers: Record<string, string>[] };
+  const signedHeaders: Record<string, string> = Object.assign({}, ...claims.signed_headers);
+  if (!signedHeaders.digest) throw new Error("Knodia-JWT-Signature does not cover the Digest header");
+  for (const [name, value] of Object.entries(signedHeaders)) {
+    if (response.headers.get(name) !== value) throw new Error(`Knodia-JWT-Signature "${name}" mismatch:\n  signed: ${value}\n  actual: ${response.headers.get(name)}`);
+  }
+  if (claims.exp <= Date.now() / 1000) throw new Error("Knodia-JWT-Signature is expired");
 }
 
 // Exit with a clear message if a required flag is missing.
