@@ -315,7 +315,10 @@ async function forEachKnode(
       try {
         await action(knodeId);
       } catch (error) {
-        logger.error({ error, knodeId }, `Knode action failed on ${knodeId}`);
+        logger.error(
+          { err: error, knodeId },
+          `Knode action failed on ${knodeId}`,
+        );
         throw error;
       }
     }),
