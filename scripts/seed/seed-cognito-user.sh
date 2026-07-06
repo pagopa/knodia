@@ -47,7 +47,7 @@ while [ $# -gt 0 ]; do
 done
 
 for v in USER_POOL_ID USERNAME EMAIL ROLES ORG_ID PASSWORD; do
-  if [ -z "${!v:-}" ]; then echo "Missing required --${v//_/-}" >&2; usage; fi
+  if [ -z "${!v:-}" ]; then echo "Missing required --${v//_/-}" | tr '[:upper:]' '[:lower:]' >&2; usage; fi
 done
 
 GROUP="org:${ORG_ID}"

@@ -58,6 +58,7 @@ echo "$POC_USERS" | while IFS='|' read -r knode username suffix orgname; do
   case "$knode" in
     lynx) pool="$LYNX_POOL_ID";;
     orion) pool="$ORION_POOL_ID";;
+    *) echo "Unknown knode '$knode' in POC_USERS" >&2; exit 1;;
   esac
   "$SEED_USER" \
     --user-pool-id "$pool" \
