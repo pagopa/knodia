@@ -6,8 +6,16 @@ export class InternalError<T> extends Error {
   public code: T;
   public detail: string;
 
-  constructor({ code, detail }: { code: T; detail: string }) {
-    super(detail);
+  constructor({
+    cause,
+    code,
+    detail,
+  }: {
+    cause?: unknown;
+    code: T;
+    detail: string;
+  }) {
+    super(detail, { cause });
     this.code = code;
     this.detail = detail;
   }
@@ -26,8 +34,10 @@ export function kafkaMessageProcessError(
   topic: string,
   partition: number,
   offset: string,
+  cause: unknown,
 ): InternalError<CommonInternalErrors> {
   return new InternalError({
+    cause,
     code: "KAFKA_MESSAGE_PROCESS_ERROR",
     detail: `Error handling Kafka message. Topic: ${topic}. Partition number: ${partition}. Offset: ${offset}`,
   });

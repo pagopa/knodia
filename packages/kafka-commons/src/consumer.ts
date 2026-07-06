@@ -74,6 +74,7 @@ export async function runConsumer(
             payload.topic,
             payload.partition,
             payload.message.offset,
+            e,
           );
           // Log under `err` so pino's default error serializer emits
           // message/stack/cause — `{ e }` would serialize an Error as `{}`.
