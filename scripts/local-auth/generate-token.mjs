@@ -56,7 +56,10 @@ const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
 import { TOKEN_TYPES } from "./token-types.mjs";
 
-const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
+const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion", "dev-signup"];
+
+// Tokens for the signup domain, which sits outside the knodes.
+const SIGNUP_DOMAIN_TYPES = ["maintenance", "ui-signup-session"];
 
 const { values: args } = parseArgs({
   options: {
@@ -84,19 +87,28 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
   process.exit(1);
 }
 
+// On dev, signup-domain tokens are knode-neutral (single shared key, signup
+// host): they must target dev-signup, and knode-bound tokens must not.
+if (targetEnv !== "local" && SIGNUP_DOMAIN_TYPES.includes(type) !== (targetEnv === "dev-signup")) {
+  console.error(
+    SIGNUP_DOMAIN_TYPES.includes(type)
+      ? `--type ${type} is knode-neutral: use --env dev-signup`
+      : `--type ${type} is knode-bound: use --env dev-lynx or dev-orion`,
+  );
+  process.exit(1);
+}
+
 function getAudience(targetEnv, type) {
   if (type === "knode-api") {
     return targetEnv === "local"
       ? ["signalhub.test.knodia.org", "k2o-gateway.test.knodia.org"]
       : [`signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`, `k2o-gateway.${targetEnv.replace("dev-", "")}.dev.knodia.com`];
   }
-  // Maintenance tokens are knode-neutral: signed with a single shared key and
-  // accepted on the signup domain, which sits outside the knodes. The knode in
-  // `targetEnv` is ignored.
-  if (type === "maintenance") {
+  // Signup-domain tokens are accepted on the signup host, not the knode apps.
+  if (SIGNUP_DOMAIN_TYPES.includes(type)) {
     return targetEnv === "local"
-      ? "local.knodia.test/maintenance"
-      : `signup.${baseEnv(targetEnv)}.knodia.com/maintenance`;
+      ? `local.knodia.test/${type}`
+      : `signup.${baseEnv(targetEnv)}.knodia.com/${type}`;
   }
   return targetEnv === "local"
     ? `local.knodia.test/${type}`
@@ -184,8 +196,8 @@ function getEnvVarName(targetEnv, type) {
     : type === "ui-signup-session" ? "UI_SIGNUP_SESSION_JWT"
     : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
-  // Maintenance is knode-neutral, so its env var doesn't carry the knode.
-  const envPrefix = type === "maintenance" ? baseEnv(targetEnv) : targetEnv;
+  // Signup-domain tokens are knode-neutral, so their env var doesn't carry the knode.
+  const envPrefix = SIGNUP_DOMAIN_TYPES.includes(type) ? baseEnv(targetEnv) : targetEnv;
   return `${envPrefix.toUpperCase().replaceAll("-", "_")}_${base}`;
 }
 
@@ -197,15 +209,15 @@ async function resolveKeyId(kmsClient, targetEnv, type) {
       ? "alias/local-knodia-maintenance-key"
       : "alias/local-knodia-key";
   }
-  // Maintenance uses a single shared key (one alias per env, knode-neutral).
-  if (type === "maintenance") {
-    const alias = `alias/${baseEnv(targetEnv)}/signup/maintenance-tokens`;
+  // Signup-domain keys are shared across knodes, under alias/<env>/signup/.
+  if (SIGNUP_DOMAIN_TYPES.includes(type)) {
+    const keyName = type === "maintenance" ? "maintenance" : "ui-session";
+    const alias = `alias/${baseEnv(targetEnv)}/signup/${keyName}-tokens`;
     const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
     return KeyMetadata.KeyId;
   }
   const keyName = type === "internal" ? "internal"
     : type === "knode-api" ? "auth-server"
-    : type === "ui-signup-session" ? "ui-signup-session"
     : "bff-session";
   const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
   const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
