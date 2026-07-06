@@ -19,8 +19,7 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",
