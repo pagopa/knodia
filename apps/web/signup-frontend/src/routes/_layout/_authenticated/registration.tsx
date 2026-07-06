@@ -101,21 +101,32 @@ function RouteComponent() {
         />
         <div className="absolute inset-0 bg-neutral-white/60" />
       </div>
-      {confirmOnboarding.isPending || isOnboardingPending(onboardingStatus) ? (
-        <div className="relative m-auto">
-          <CreatingCredentialsLoader />
-        </div>
-      ) : (
-        <div className="relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[109px]">
-          <RegistrationForm
-            errorMessage={errorMessage}
-            onSubmit={(email) => {
-              setErrorMessage(undefined);
-              confirmOnboarding.mutate({ body: { email } });
-            }}
-          />
-        </div>
-      )}
+      {/* Toggle visibility instead of unmounting the form: a recoverable error
+          (e.g. email already in use) must not wipe the entered email + consents. */}
+      <div
+        className={
+          confirmOnboarding.isPending || isOnboardingPending(onboardingStatus)
+            ? "relative m-auto"
+            : "hidden"
+        }
+      >
+        <CreatingCredentialsLoader />
+      </div>
+      <div
+        className={
+          confirmOnboarding.isPending || isOnboardingPending(onboardingStatus)
+            ? "hidden"
+            : "relative mx-auto w-full max-w-(--header-shell-max) px-(--header-inline-padding) pt-[109px]"
+        }
+      >
+        <RegistrationForm
+          errorMessage={errorMessage}
+          onSubmit={(email) => {
+            setErrorMessage(undefined);
+            confirmOnboarding.mutate({ body: { email } });
+          }}
+        />
+      </div>
     </section>
   );
 }
