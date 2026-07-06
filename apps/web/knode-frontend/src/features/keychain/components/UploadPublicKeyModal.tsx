@@ -20,6 +20,15 @@ interface Props {
   onClose: () => void;
 }
 
+interface UploadPublicKeyFormProps {
+  keychain: SupportedKeychain;
+  onClose: () => void;
+}
+
+const modalTitle = "Upload public key";
+const modalDescription =
+  "To sign your private key, upload the matching public key.";
+
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
   isKeychainMember,
@@ -27,41 +36,12 @@ export function UploadPublicKeyModal({
   keychain,
   onClose,
 }: Props) {
-  function handleClose() {
-    form.reset();
-    onClose();
-  }
-
-  const { isError, isPending, mutate } = useUploadKeychainKey(keychain);
-
-  function handleUploadKey(seed: PublicKeyUploadFormValues) {
-    mutate(
-      { encodedPem: btoa(seed.pem), name: { en: seed.name } },
-      { onSuccess: handleClose },
-    );
-  }
-
-  const form = useForm({
-    defaultValues: publicKeyUploadFormDefaultValues,
-    onSubmit: async ({ value }) => {
-      handleUploadKey(value);
-    },
-    validationLogic: revalidateLogic(),
-    validators: {
-      onDynamic: publicKeyUploadFormSchema,
-    },
-  });
-
-  const modalTitle = "Upload public key";
-  const modalDescription =
-    "To sign your private key, upload the matching public key.";
-
   if (!isKeychainMember) {
     return (
       <Modal
         description={modalDescription}
         isOpen={isOpen}
-        onOpenChange={handleClose}
+        onOpenChange={onClose}
         title={modalTitle}
       >
         <Banner
@@ -80,7 +60,7 @@ export function UploadPublicKeyModal({
       <Modal
         description={modalDescription}
         isOpen={isOpen}
-        onOpenChange={handleClose}
+        onOpenChange={onClose}
         title={modalTitle}
       >
         <Banner kind="warning" size="md" title="Maximum number of keys reached">
@@ -91,18 +71,44 @@ export function UploadPublicKeyModal({
     );
   }
 
+  return isOpen ? (
+    <UploadPublicKeyForm keychain={keychain} onClose={onClose} />
+  ) : null;
+}
+
+function UploadPublicKeyForm({ keychain, onClose }: UploadPublicKeyFormProps) {
+  const { isError, isPending, mutate } = useUploadKeychainKey(keychain);
+
+  function handleUploadKey(seed: PublicKeyUploadFormValues) {
+    mutate(
+      { encodedPem: btoa(seed.pem), name: { en: seed.name } },
+      { onSuccess: onClose },
+    );
+  }
+
+  const form = useForm({
+    defaultValues: publicKeyUploadFormDefaultValues,
+    onSubmit: async ({ value }) => {
+      handleUploadKey(value);
+    },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: publicKeyUploadFormSchema,
+    },
+  });
+
   return (
     <Modal
       actionLabel="Upload"
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
       description={modalDescription}
-      isOpen={isOpen}
+      isOpen
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
         if (!open) {
-          handleClose();
+          onClose();
         }
       }}
       showErrorBanner={isError}
