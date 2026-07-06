@@ -2425,6 +2425,9 @@ importers:
       '@tanstack/react-devtools':
         specifier: 'catalog:'
         version: 0.9.0(@types/react-dom@19.2.3(@types/react@19.2.5))(@types/react@19.2.5)(csstype@3.2.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)
+      '@tanstack/react-form':
+        specifier: 'catalog:'
+        version: 1.28.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.90.16(react@19.2.0)
