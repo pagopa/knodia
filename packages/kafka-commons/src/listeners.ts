@@ -39,11 +39,11 @@ async function handleExit(
   onShutdown?: () => Promise<void>,
 ) {
   try {
-    if (e) logger.error(`Error ${type} intercepted; Error detail: ${e}`);
+    if (e) logger.error({ err: e }, `Error ${type} intercepted`);
     await consumerOrProducer.disconnect();
     logger.debug("Consumer/Producer disconnected successfully");
   } catch (err) {
-    logger.error(`Error during disconnect on ${type}: ${err}`);
+    logger.error({ err }, `Error during disconnect on ${type}`);
   } finally {
     await processExitAndDisconnect({ logger, onShutdown });
   }
