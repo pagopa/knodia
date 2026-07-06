@@ -7,9 +7,7 @@ export function generateApiClient(
   createClient({
     input: openapiPath,
     output: {
-      format: "prettier",
       importFileExtension: ".ts",
-      lint: "eslint",
       path: "./src/generated",
       tsConfigPath: "./tsconfig.json",
     },
