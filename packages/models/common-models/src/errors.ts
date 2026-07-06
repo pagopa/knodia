@@ -28,10 +28,14 @@ export function kafkaMessageProcessError(
   offset: string,
   cause: unknown,
 ): InternalError<CommonInternalErrors> {
-  return new InternalError({
+  const error = new InternalError<CommonInternalErrors>({
     code: "KAFKA_MESSAGE_PROCESS_ERROR",
     detail: `Error handling Kafka message. Topic: ${topic}. Partition number: ${partition}. Offset: ${offset}. Cause: ${cause instanceof Error ? cause.message : String(cause)}`,
   });
+  // Chain the root cause on the instance (Error supports `cause`) so the whole
+  // chain survives to any downstream catcher, without touching the shared class.
+  error.cause = cause;
+  return error;
 }
 
 export function missingKafkaMessageDataError(
