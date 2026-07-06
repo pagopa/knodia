@@ -75,7 +75,9 @@ export async function runConsumer(
             payload.partition,
             payload.message.offset,
           );
-          logger.error({ e }, kafkaMessageProcessErr.detail);
+          // Log under `err` so pino's default error serializer emits
+          // message/stack/cause — `{ e }` would serialize an Error as `{}`.
+          logger.error({ err: e }, kafkaMessageProcessErr.detail);
 
           throw kafkaMessageProcessErr;
         }
