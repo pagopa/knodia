@@ -270,27 +270,30 @@ export const getProducerEservicesInfiniteQueryKey = (options: Options<GetProduce
 /**
  * Retrieve a paginated list of E-services produced by the logged-in user's organization
  */
-export const getProducerEservicesInfiniteOptions = (options: Options<GetProducerEservicesData>) => infiniteQueryOptions<GetProducerEservicesResponse, AxiosError<GetProducerEservicesError>, InfiniteData<GetProducerEservicesResponse>, QueryKey<Options<GetProducerEservicesData>>, number | Pick<QueryKey<Options<GetProducerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerEservices({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerEservicesInfiniteQueryKey(options)
-});
+export const getProducerEservicesInfiniteOptions = (options: Options<GetProducerEservicesData>) => {
+    const opts = infiniteQueryOptions<GetProducerEservicesResponse, AxiosError<GetProducerEservicesError>, InfiniteData<GetProducerEservicesResponse>, QueryKey<Options<GetProducerEservicesData>>, number | Pick<QueryKey<Options<GetProducerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerEservices({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerEservicesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a new E-service
@@ -455,27 +458,30 @@ export const getConsumerKeychainKeysInfiniteQueryKey = (options: Options<GetCons
 /**
  * Retrieve keys of a Consumer Keychain
  */
-export const getConsumerKeychainKeysInfiniteOptions = (options: Options<GetConsumerKeychainKeysData>) => infiniteQueryOptions<GetConsumerKeychainKeysResponse, AxiosError<GetConsumerKeychainKeysError>, InfiniteData<GetConsumerKeychainKeysResponse>, QueryKey<Options<GetConsumerKeychainKeysData>>, number | Pick<QueryKey<Options<GetConsumerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychainKeys({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainKeysInfiniteQueryKey(options)
-});
+export const getConsumerKeychainKeysInfiniteOptions = (options: Options<GetConsumerKeychainKeysData>) => {
+    const opts = infiniteQueryOptions<GetConsumerKeychainKeysResponse, AxiosError<GetConsumerKeychainKeysError>, InfiniteData<GetConsumerKeychainKeysResponse>, QueryKey<Options<GetConsumerKeychainKeysData>>, number | Pick<QueryKey<Options<GetConsumerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerKeychainKeys({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerKeychainKeysInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Upload a key to a Consumer Keychain
@@ -552,27 +558,30 @@ export const getConsumerKeychainsInfiniteQueryKey = (options: Options<GetConsume
 /**
  * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
-export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumerKeychainsData>) => infiniteQueryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, InfiniteData<GetConsumerKeychainsResponse>, QueryKey<Options<GetConsumerKeychainsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychains({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainsInfiniteQueryKey(options)
-});
+export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumerKeychainsData>) => {
+    const opts = infiniteQueryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, InfiniteData<GetConsumerKeychainsResponse>, QueryKey<Options<GetConsumerKeychainsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerKeychains({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerKeychainsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a new Consumer Keychain
@@ -666,27 +675,30 @@ export const getConsumerKeychainMembersInfiniteQueryKey = (options: Options<GetC
 /**
  * Retrieve members of a Consumer Keychain
  */
-export const getConsumerKeychainMembersInfiniteOptions = (options: Options<GetConsumerKeychainMembersData>) => infiniteQueryOptions<GetConsumerKeychainMembersResponse, AxiosError<GetConsumerKeychainMembersError>, InfiniteData<GetConsumerKeychainMembersResponse>, QueryKey<Options<GetConsumerKeychainMembersData>>, number | Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychainMembers({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainMembersInfiniteQueryKey(options)
-});
+export const getConsumerKeychainMembersInfiniteOptions = (options: Options<GetConsumerKeychainMembersData>) => {
+    const opts = infiniteQueryOptions<GetConsumerKeychainMembersResponse, AxiosError<GetConsumerKeychainMembersError>, InfiniteData<GetConsumerKeychainMembersResponse>, QueryKey<Options<GetConsumerKeychainMembersData>>, number | Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerKeychainMembers({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerKeychainMembersInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Add a member to a Consumer Keychain
@@ -763,27 +775,30 @@ export const getConsumerKeychainOptionsInfiniteQueryKey = (options: Options<GetC
 /**
  * Retrieve Consumer Keychain options for combobox selection
  */
-export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetConsumerKeychainOptionsData>) => infiniteQueryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, InfiniteData<GetConsumerKeychainOptionsResponse>, QueryKey<Options<GetConsumerKeychainOptionsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychainOptions({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainOptionsInfiniteQueryKey(options)
-});
+export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetConsumerKeychainOptionsData>) => {
+    const opts = infiniteQueryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, InfiniteData<GetConsumerKeychainOptionsResponse>, QueryKey<Options<GetConsumerKeychainOptionsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerKeychainOptions({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerKeychainOptionsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 export const getConsumerKeychainPurposesQueryKey = (options: Options<GetConsumerKeychainPurposesData>) => createQueryKey('getConsumerKeychainPurposes', options);
 
@@ -808,27 +823,30 @@ export const getConsumerKeychainPurposesInfiniteQueryKey = (options: Options<Get
 /**
  * Retrieve Purposes linked to a Consumer Keychain
  */
-export const getConsumerKeychainPurposesInfiniteOptions = (options: Options<GetConsumerKeychainPurposesData>) => infiniteQueryOptions<GetConsumerKeychainPurposesResponse, AxiosError<GetConsumerKeychainPurposesError>, InfiniteData<GetConsumerKeychainPurposesResponse>, QueryKey<Options<GetConsumerKeychainPurposesData>>, number | Pick<QueryKey<Options<GetConsumerKeychainPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychainPurposes({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainPurposesInfiniteQueryKey(options)
-});
+export const getConsumerKeychainPurposesInfiniteOptions = (options: Options<GetConsumerKeychainPurposesData>) => {
+    const opts = infiniteQueryOptions<GetConsumerKeychainPurposesResponse, AxiosError<GetConsumerKeychainPurposesError>, InfiniteData<GetConsumerKeychainPurposesResponse>, QueryKey<Options<GetConsumerKeychainPurposesData>>, number | Pick<QueryKey<Options<GetConsumerKeychainPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerKeychainPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerKeychainPurposes({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerKeychainPurposesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Link a Purpose to a Consumer Keychain
@@ -905,27 +923,30 @@ export const getKnodeApiKeychainsInfiniteQueryKey = (options: Options<GetKnodeAp
 /**
  * Retrieve a paginated list of Knode API Keychains owned by the current user organization
  */
-export const getKnodeApiKeychainsInfiniteOptions = (options: Options<GetKnodeApiKeychainsData>) => infiniteQueryOptions<GetKnodeApiKeychainsResponse, AxiosError<GetKnodeApiKeychainsError>, InfiniteData<GetKnodeApiKeychainsResponse>, QueryKey<Options<GetKnodeApiKeychainsData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetKnodeApiKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getKnodeApiKeychains({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getKnodeApiKeychainsInfiniteQueryKey(options)
-});
+export const getKnodeApiKeychainsInfiniteOptions = (options: Options<GetKnodeApiKeychainsData>) => {
+    const opts = infiniteQueryOptions<GetKnodeApiKeychainsResponse, AxiosError<GetKnodeApiKeychainsError>, InfiniteData<GetKnodeApiKeychainsResponse>, QueryKey<Options<GetKnodeApiKeychainsData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetKnodeApiKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getKnodeApiKeychains({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getKnodeApiKeychainsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a new Knode API Keychain
@@ -1019,27 +1040,30 @@ export const getKnodeApiKeychainKeysInfiniteQueryKey = (options: Options<GetKnod
 /**
  * Retrieve keys of a Knode API Keychain
  */
-export const getKnodeApiKeychainKeysInfiniteOptions = (options: Options<GetKnodeApiKeychainKeysData>) => infiniteQueryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, InfiniteData<GetKnodeApiKeychainKeysResponse>, QueryKey<Options<GetKnodeApiKeychainKeysData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getKnodeApiKeychainKeys({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getKnodeApiKeychainKeysInfiniteQueryKey(options)
-});
+export const getKnodeApiKeychainKeysInfiniteOptions = (options: Options<GetKnodeApiKeychainKeysData>) => {
+    const opts = infiniteQueryOptions<GetKnodeApiKeychainKeysResponse, AxiosError<GetKnodeApiKeychainKeysError>, InfiniteData<GetKnodeApiKeychainKeysResponse>, QueryKey<Options<GetKnodeApiKeychainKeysData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetKnodeApiKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getKnodeApiKeychainKeys({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getKnodeApiKeychainKeysInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Upload a key to a Knode API Keychain
@@ -1116,27 +1140,30 @@ export const getKnodeApiKeychainMembersInfiniteQueryKey = (options: Options<GetK
 /**
  * Retrieve members of a Knode API Keychain
  */
-export const getKnodeApiKeychainMembersInfiniteOptions = (options: Options<GetKnodeApiKeychainMembersData>) => infiniteQueryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, InfiniteData<GetKnodeApiKeychainMembersResponse>, QueryKey<Options<GetKnodeApiKeychainMembersData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getKnodeApiKeychainMembers({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getKnodeApiKeychainMembersInfiniteQueryKey(options)
-});
+export const getKnodeApiKeychainMembersInfiniteOptions = (options: Options<GetKnodeApiKeychainMembersData>) => {
+    const opts = infiniteQueryOptions<GetKnodeApiKeychainMembersResponse, AxiosError<GetKnodeApiKeychainMembersError>, InfiniteData<GetKnodeApiKeychainMembersResponse>, QueryKey<Options<GetKnodeApiKeychainMembersData>>, number | Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetKnodeApiKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getKnodeApiKeychainMembers({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getKnodeApiKeychainMembersInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Add a member to a Knode API Keychain
@@ -1213,27 +1240,30 @@ export const getProducerKeychainsInfiniteQueryKey = (options: Options<GetProduce
 /**
  * Retrieve a paginated list of Producer Keychains owned by the current user organization
  */
-export const getProducerKeychainsInfiniteOptions = (options: Options<GetProducerKeychainsData>) => infiniteQueryOptions<GetProducerKeychainsResponse, AxiosError<GetProducerKeychainsError>, InfiniteData<GetProducerKeychainsResponse>, QueryKey<Options<GetProducerKeychainsData>>, number | Pick<QueryKey<Options<GetProducerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerKeychains({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerKeychainsInfiniteQueryKey(options)
-});
+export const getProducerKeychainsInfiniteOptions = (options: Options<GetProducerKeychainsData>) => {
+    const opts = infiniteQueryOptions<GetProducerKeychainsResponse, AxiosError<GetProducerKeychainsError>, InfiniteData<GetProducerKeychainsResponse>, QueryKey<Options<GetProducerKeychainsData>>, number | Pick<QueryKey<Options<GetProducerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerKeychains({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerKeychainsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a new Producer Keychain
@@ -1327,27 +1357,30 @@ export const getProducerKeychainMembersInfiniteQueryKey = (options: Options<GetP
 /**
  * Retrieve members of a Producer Keychain
  */
-export const getProducerKeychainMembersInfiniteOptions = (options: Options<GetProducerKeychainMembersData>) => infiniteQueryOptions<GetProducerKeychainMembersResponse, AxiosError<GetProducerKeychainMembersError>, InfiniteData<GetProducerKeychainMembersResponse>, QueryKey<Options<GetProducerKeychainMembersData>>, number | Pick<QueryKey<Options<GetProducerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerKeychainMembers({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerKeychainMembersInfiniteQueryKey(options)
-});
+export const getProducerKeychainMembersInfiniteOptions = (options: Options<GetProducerKeychainMembersData>) => {
+    const opts = infiniteQueryOptions<GetProducerKeychainMembersResponse, AxiosError<GetProducerKeychainMembersError>, InfiniteData<GetProducerKeychainMembersResponse>, QueryKey<Options<GetProducerKeychainMembersData>>, number | Pick<QueryKey<Options<GetProducerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerKeychainMembers({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerKeychainMembersInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Add a member to a Producer Keychain
@@ -1424,27 +1457,30 @@ export const getProducerKeychainKeysInfiniteQueryKey = (options: Options<GetProd
 /**
  * Retrieve keys of a Producer Keychain
  */
-export const getProducerKeychainKeysInfiniteOptions = (options: Options<GetProducerKeychainKeysData>) => infiniteQueryOptions<GetProducerKeychainKeysResponse, AxiosError<GetProducerKeychainKeysError>, InfiniteData<GetProducerKeychainKeysResponse>, QueryKey<Options<GetProducerKeychainKeysData>>, number | Pick<QueryKey<Options<GetProducerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerKeychainKeys({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerKeychainKeysInfiniteQueryKey(options)
-});
+export const getProducerKeychainKeysInfiniteOptions = (options: Options<GetProducerKeychainKeysData>) => {
+    const opts = infiniteQueryOptions<GetProducerKeychainKeysResponse, AxiosError<GetProducerKeychainKeysError>, InfiniteData<GetProducerKeychainKeysResponse>, QueryKey<Options<GetProducerKeychainKeysData>>, number | Pick<QueryKey<Options<GetProducerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerKeychainKeysData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerKeychainKeys({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerKeychainKeysInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Upload a key to a Producer Keychain
@@ -1521,27 +1557,30 @@ export const getProducerKeychainEservicesInfiniteQueryKey = (options: Options<Ge
 /**
  * Retrieve E-services linked to a Producer Keychain
  */
-export const getProducerKeychainEservicesInfiniteOptions = (options: Options<GetProducerKeychainEservicesData>) => infiniteQueryOptions<GetProducerKeychainEservicesResponse, AxiosError<GetProducerKeychainEservicesError>, InfiniteData<GetProducerKeychainEservicesResponse>, QueryKey<Options<GetProducerKeychainEservicesData>>, number | Pick<QueryKey<Options<GetProducerKeychainEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerKeychainEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerKeychainEservices({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerKeychainEservicesInfiniteQueryKey(options)
-});
+export const getProducerKeychainEservicesInfiniteOptions = (options: Options<GetProducerKeychainEservicesData>) => {
+    const opts = infiniteQueryOptions<GetProducerKeychainEservicesResponse, AxiosError<GetProducerKeychainEservicesError>, InfiniteData<GetProducerKeychainEservicesResponse>, QueryKey<Options<GetProducerKeychainEservicesData>>, number | Pick<QueryKey<Options<GetProducerKeychainEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerKeychainEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerKeychainEservices({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerKeychainEservicesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Link an E-service to a Producer Keychain
@@ -1618,27 +1657,30 @@ export const getOrganizationsInfiniteQueryKey = (options: Options<GetOrganizatio
 /**
  * Retrieve a list of Organizations owned by a Knode, optionally filtered by name
  */
-export const getOrganizationsInfiniteOptions = (options: Options<GetOrganizationsData>) => infiniteQueryOptions<GetOrganizationsResponse, AxiosError<GetOrganizationsError>, InfiniteData<GetOrganizationsResponse>, QueryKey<Options<GetOrganizationsData>>, number | Pick<QueryKey<Options<GetOrganizationsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetOrganizationsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getOrganizations({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getOrganizationsInfiniteQueryKey(options)
-});
+export const getOrganizationsInfiniteOptions = (options: Options<GetOrganizationsData>) => {
+    const opts = infiniteQueryOptions<GetOrganizationsResponse, AxiosError<GetOrganizationsError>, InfiniteData<GetOrganizationsResponse>, QueryKey<Options<GetOrganizationsData>>, number | Pick<QueryKey<Options<GetOrganizationsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetOrganizationsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getOrganizations({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getOrganizationsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Search for E-services
@@ -1746,27 +1788,30 @@ export const getConsumerEservicesInfiniteQueryKey = (options: Options<GetConsume
  *
  * Retrieve E-services
  */
-export const getConsumerEservicesInfiniteOptions = (options: Options<GetConsumerEservicesData>) => infiniteQueryOptions<GetConsumerEservicesResponse, AxiosError<GetConsumerEservicesError>, InfiniteData<GetConsumerEservicesResponse>, QueryKey<Options<GetConsumerEservicesData>>, number | Pick<QueryKey<Options<GetConsumerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerEservices({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerEservicesInfiniteQueryKey(options)
-});
+export const getConsumerEservicesInfiniteOptions = (options: Options<GetConsumerEservicesData>) => {
+    const opts = infiniteQueryOptions<GetConsumerEservicesResponse, AxiosError<GetConsumerEservicesError>, InfiniteData<GetConsumerEservicesResponse>, QueryKey<Options<GetConsumerEservicesData>>, number | Pick<QueryKey<Options<GetConsumerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerEservicesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerEservices({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerEservicesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 export const getConsumerAgreementsQueryKey = (options?: Options<GetConsumerAgreementsData>) => createQueryKey('getConsumerAgreements', options);
 
@@ -1791,27 +1836,30 @@ export const getConsumerAgreementsInfiniteQueryKey = (options?: Options<GetConsu
 /**
  * Retrieve a paginated list of Consumer Agreements, optionally filtered by state
  */
-export const getConsumerAgreementsInfiniteOptions = (options?: Options<GetConsumerAgreementsData>) => infiniteQueryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, InfiniteData<GetConsumerAgreementsResponse>, QueryKey<Options<GetConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerAgreements({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerAgreementsInfiniteQueryKey(options)
-});
+export const getConsumerAgreementsInfiniteOptions = (options?: Options<GetConsumerAgreementsData>) => {
+    const opts = infiniteQueryOptions<GetConsumerAgreementsResponse, AxiosError<GetConsumerAgreementsError>, InfiniteData<GetConsumerAgreementsResponse>, QueryKey<Options<GetConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerAgreements({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerAgreementsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a consumer Agreement
@@ -1873,27 +1921,30 @@ export const getPendingConsumerAgreementsInfiniteQueryKey = (options: Options<Ge
 /**
  * Retrieve a paginated list of Consumer Agreements pending action
  */
-export const getPendingConsumerAgreementsInfiniteOptions = (options: Options<GetPendingConsumerAgreementsData>) => infiniteQueryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, InfiniteData<GetPendingConsumerAgreementsResponse>, QueryKey<Options<GetPendingConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getPendingConsumerAgreements({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getPendingConsumerAgreementsInfiniteQueryKey(options)
-});
+export const getPendingConsumerAgreementsInfiniteOptions = (options: Options<GetPendingConsumerAgreementsData>) => {
+    const opts = infiniteQueryOptions<GetPendingConsumerAgreementsResponse, AxiosError<GetPendingConsumerAgreementsError>, InfiniteData<GetPendingConsumerAgreementsResponse>, QueryKey<Options<GetPendingConsumerAgreementsData>>, number | Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetPendingConsumerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getPendingConsumerAgreements({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getPendingConsumerAgreementsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create an Agreement activation magic link
@@ -1992,27 +2043,30 @@ export const getConsumerPurposesInfiniteQueryKey = (options: Options<GetConsumer
  *
  * Retrieve a paginated list of Purposes created by the logged-in consumer
  */
-export const getConsumerPurposesInfiniteOptions = (options: Options<GetConsumerPurposesData>) => infiniteQueryOptions<GetConsumerPurposesResponse, AxiosError<GetConsumerPurposesError>, InfiniteData<GetConsumerPurposesResponse>, QueryKey<Options<GetConsumerPurposesData>>, number | Pick<QueryKey<Options<GetConsumerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerPurposes({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerPurposesInfiniteQueryKey(options)
-});
+export const getConsumerPurposesInfiniteOptions = (options: Options<GetConsumerPurposesData>) => {
+    const opts = infiniteQueryOptions<GetConsumerPurposesResponse, AxiosError<GetConsumerPurposesError>, InfiniteData<GetConsumerPurposesResponse>, QueryKey<Options<GetConsumerPurposesData>>, number | Pick<QueryKey<Options<GetConsumerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetConsumerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getConsumerPurposes({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getConsumerPurposesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 /**
  * Create a consumer Purpose
@@ -2165,27 +2219,30 @@ export const getProducerAgreementsInfiniteQueryKey = (options: Options<GetProduc
 /**
  * Retrieve a paginated list of Agreements produced by the logged-in user's organization
  */
-export const getProducerAgreementsInfiniteOptions = (options: Options<GetProducerAgreementsData>) => infiniteQueryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, InfiniteData<GetProducerAgreementsResponse>, QueryKey<Options<GetProducerAgreementsData>>, number | Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerAgreements({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerAgreementsInfiniteQueryKey(options)
-});
+export const getProducerAgreementsInfiniteOptions = (options: Options<GetProducerAgreementsData>) => {
+    const opts = infiniteQueryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, InfiniteData<GetProducerAgreementsResponse>, QueryKey<Options<GetProducerAgreementsData>>, number | Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerAgreements({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerAgreementsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 export const getProducerAgreementDetailsQueryKey = (options: Options<GetProducerAgreementDetailsData>) => createQueryKey('getProducerAgreementDetails', options);
 
@@ -2266,27 +2323,30 @@ export const getProducerPurposesInfiniteQueryKey = (options: Options<GetProducer
  *
  * Retrieve a paginated list of Purposes for the logged-in producer's E-services
  */
-export const getProducerPurposesInfiniteOptions = (options: Options<GetProducerPurposesData>) => infiniteQueryOptions<GetProducerPurposesResponse, AxiosError<GetProducerPurposesError>, InfiniteData<GetProducerPurposesResponse>, QueryKey<Options<GetProducerPurposesData>>, number | Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerPurposes({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerPurposesInfiniteQueryKey(options)
-});
+export const getProducerPurposesInfiniteOptions = (options: Options<GetProducerPurposesData>) => {
+    const opts = infiniteQueryOptions<GetProducerPurposesResponse, AxiosError<GetProducerPurposesError>, InfiniteData<GetProducerPurposesResponse>, QueryKey<Options<GetProducerPurposesData>>, number | Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getProducerPurposes({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getProducerPurposesInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
 
 export const getProducerPurposeDetailsQueryKey = (options: Options<GetProducerPurposeDetailsData>) => createQueryKey('getProducerPurposeDetails', options);
 
