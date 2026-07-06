@@ -7,13 +7,18 @@
 //     --keychain-id <uuid> --purpose-id <uuid> --key <private-key.pem> \
 //     --endpoint /natural-persons/RMNLNR03H12H501Z \
 //     [--method POST] [--body '<json>'] \
-//     [--auth dpop --dpop-key <es256-key.pem> [--dpop-alg ES256]]
+//     [--auth dpop --dpop-key <es256-key.pem> [--dpop-alg ES256]] \
+//     [--knode-id <Orion|Lynx> --knode-api-keychain-id <uuid> --knode-api-key <pem> [--knode-api-auth <url>]]
+//
+// Signed (Integrity REST 02) responses are verified when the Knode API flags
+// are provided — the producer key is fetched from the producer knode's
+// k2o-gateway, which requires a knode API token.
 //
 // stdout: the e-service JSON response. stderr: progress logs.
 
 import { parseArgs } from "node:util";
 
-import { callEservice, type Dpop, log, mintAccessToken, print, requireArgs, urls } from "./lib.ts";
+import { callEservice, type Dpop, log, mintAccessToken, mintKnodeApiToken, print, requireArgs, urls, verifyIntegrityRest02 } from "./lib.ts";
 
 const { values: args } = parseArgs({
   options: {
@@ -25,6 +30,10 @@ const { values: args } = parseArgs({
     env: { type: "string" },
     key: { type: "string" },
     "keychain-id": { type: "string" },
+    "knode-api-auth": { type: "string" },
+    "knode-api-key": { type: "string" },
+    "knode-api-keychain-id": { type: "string" },
+    "knode-id": { type: "string" },
     method: { type: "string" },
     "purpose-id": { type: "string" },
   },
@@ -46,4 +55,16 @@ const response = await callEservice(env.eservice, args.endpoint!, access_token, 
   method: args.method ?? "GET",
 });
 log(`${args.method ?? "GET"} ${args.endpoint} → ${response.status}`);
+
+if (response.headers.get("knodia-jwt-signature")) {
+  if (args["knode-id"]) {
+    requireArgs(args, ["knode-api-keychain-id", "knode-api-key"]);
+    const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"]!, args["knode-id"]!, args["knode-api-key"]!);
+    await verifyIntegrityRest02(response, env.k2o, knodeApiToken);
+    log("Integrity REST 02 verification passed");
+  } else {
+    log("Response is signed (Integrity REST 02) but NOT verified — pass --knode-id, --knode-api-keychain-id and --knode-api-key to verify");
+  }
+}
+
 print(response.body);

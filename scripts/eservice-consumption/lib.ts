@@ -92,8 +92,10 @@ export async function callEservice(eserviceUrl: string, endpoint: string, access
 }
 
 // Verify an Integrity REST 02 signed response: the Digest header matches the
-// body and the Knodia-JWT-Signature verifies against the producer key fetched
-// from the producer knode's k2o-gateway.
+// body, the Knodia-JWT-Signature verifies against the producer key fetched
+// from the producer knode's k2o-gateway, and the signature payload binds the
+// response headers it covers (signed_headers), so a signature can't be reused
+// for a different response.
 export async function verifyIntegrityRest02(response: EserviceResponse, k2oUrl: string, knodeApiToken: string): Promise<void> {
   const signatureJwt = response.headers.get("knodia-jwt-signature");
   const digest = response.headers.get("digest");
@@ -108,6 +110,15 @@ export async function verifyIntegrityRest02(response: EserviceResponse, k2oUrl: 
   const pem = Buffer.from(((await keyResponse.json()) as { encodedPem: string }).encodedPem, "base64").toString();
   const verifier = createVerify("RSA-SHA256").update(`${header}.${payload}`);
   if (!verifier.verify(createPublicKey(pem), Buffer.from(signature, "base64url"))) throw new Error("Knodia-JWT-Signature verification failed");
+
+  const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as { exp: number; signed_headers: Record<string, string>[] };
+  const signedHeaders: Record<string, string> = Object.assign({}, ...claims.signed_headers);
+  if (!signedHeaders.digest) throw new Error("Knodia-JWT-Signature payload does not cover the Digest header");
+  for (const [name, signed] of Object.entries(signedHeaders)) {
+    const actual = response.headers.get(name);
+    if (actual !== signed) throw new Error(`Knodia-JWT-Signature signed header "${name}" mismatch:\n  signed: ${signed}\n  actual: ${actual}`);
+  }
+  if (claims.exp <= Math.floor(Date.now() / 1000)) throw new Error("Knodia-JWT-Signature is expired");
 }
 
 // Exit with a clear message if a required flag is missing.
