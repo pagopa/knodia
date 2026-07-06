@@ -115,7 +115,10 @@ export async function verifyIntegrityRest02(response: EserviceResponse, k2oUrl: 
   const signedHeaders: Record<string, string> = Object.assign({}, ...claims.signed_headers);
   if (!signedHeaders.digest) throw new Error("Knodia-JWT-Signature does not cover the Digest header");
   for (const [name, value] of Object.entries(signedHeaders)) {
-    if (response.headers.get(name) !== value) throw new Error(`Knodia-JWT-Signature "${name}" mismatch:\n  signed: ${value}\n  actual: ${response.headers.get(name)}`);
+    // Skip headers not echoed on the response (e.g. x-correlation-id is
+    // signed from the request context but never sent back as a header).
+    const actual = response.headers.get(name);
+    if (actual !== null && actual !== value) throw new Error(`Knodia-JWT-Signature "${name}" mismatch:\n  signed: ${value}\n  actual: ${actual}`);
   }
   if (claims.exp <= Date.now() / 1000) throw new Error("Knodia-JWT-Signature is expired");
 }
