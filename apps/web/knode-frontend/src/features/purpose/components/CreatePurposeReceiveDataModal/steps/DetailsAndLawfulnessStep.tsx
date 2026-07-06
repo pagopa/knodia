@@ -1,6 +1,7 @@
 import { Button } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 
+import { ServiceCard, ServiceCardHeader } from "@/components/ServiceCard";
 import { useStepsContext } from "@/contexts/steps";
 import { DetailsFieldsSection } from "@/features/purpose/components/CreatePurposeModal/steps/DetailsFieldsSection";
 import { useDetailsStepForm } from "@/features/purpose/contexts/usePurposeFormContext";
@@ -67,28 +68,23 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
                 </p>
               ) : (
                 purposeFormOptions.map((option) => (
-                  <button
-                    className="rounded-card border-card-border shadow-card hover:border-primary-light-high-contrast hover:bg-neutral-50 flex cursor-pointer items-center justify-between gap-4 border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!canSubmit}
-                    key={option.id}
-                    onClick={() => void handleSelect(option.id)}
-                    type="button"
-                  >
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <span className="body-lg-em text-primary-light-high-contrast">
-                        Lawfulness of {option.name.en}
-                      </span>
-                      <span className="body-md text-primary-light-low-contrast">
-                        {option.description.en}
-                      </span>
-                    </div>
-                    <span
-                      aria-hidden
-                      className="border-card-border flex size-10 shrink-0 items-center justify-center rounded-lg border"
+                  <ServiceCard key={option.id}>
+                    <ServiceCardHeader
+                      description={option.description.en}
+                      title={`Lawfulness of ${option.name.en}`}
                     >
-                      <ArrowRightIcon size={20} />
-                    </span>
-                  </button>
+                      <Button
+                        aria-label={`Select lawfulness of ${option.name.en}`}
+                        hierarchy="neutral"
+                        isDisabled={!canSubmit}
+                        kind="outlined"
+                        onPress={() => void handleSelect(option.id)}
+                        size="icon-md"
+                      >
+                        <ArrowRightIcon />
+                      </Button>
+                    </ServiceCardHeader>
+                  </ServiceCard>
                 ))
               )}
             </div>
