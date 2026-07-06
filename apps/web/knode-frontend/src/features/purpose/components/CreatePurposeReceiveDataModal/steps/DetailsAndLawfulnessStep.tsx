@@ -71,6 +71,7 @@ export function DetailsAndLawfulnessStep({ onCancel }: Props) {
                   <ServiceCard key={option.id}>
                     <ServiceCardHeader
                       description={option.description.en}
+                      headingLevel={4}
                       title={`Lawfulness of ${option.name.en}`}
                     >
                       <Button
