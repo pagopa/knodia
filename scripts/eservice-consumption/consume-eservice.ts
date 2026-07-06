@@ -10,9 +10,8 @@
 //     [--auth dpop --dpop-key <es256-key.pem> [--dpop-alg ES256]] \
 //     [--knode-id <Orion|Lynx> --knode-api-keychain-id <uuid> --knode-api-key <pem> [--knode-api-auth <url>]]
 //
-// Signed (Integrity REST 02) responses are verified when the Knode API flags
-// are provided — the producer key is fetched from the producer knode's
-// k2o-gateway, which requires a knode API token.
+// With the Knode API flags, the response's Integrity REST 02 signature is
+// verified (the producer key is fetched from the producer knode's k2o-gateway).
 //
 // stdout: the e-service JSON response. stderr: progress logs.
 
@@ -56,15 +55,11 @@ const response = await callEservice(env.eservice, args.endpoint!, access_token, 
 });
 log(`${args.method ?? "GET"} ${args.endpoint} → ${response.status}`);
 
-if (response.headers.get("knodia-jwt-signature")) {
-  if (args["knode-id"]) {
-    requireArgs(args, ["knode-api-keychain-id", "knode-api-key"]);
-    const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"]!, args["knode-id"]!, args["knode-api-key"]!);
-    await verifyIntegrityRest02(response, env.k2o, knodeApiToken);
-    log("Integrity REST 02 verification passed");
-  } else {
-    log("Response is signed (Integrity REST 02) but NOT verified — pass --knode-id, --knode-api-keychain-id and --knode-api-key to verify");
-  }
+if (args["knode-id"]) {
+  requireArgs(args, ["knode-api-keychain-id", "knode-api-key"]);
+  const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"]!, args["knode-id"]!, args["knode-api-key"]!);
+  await verifyIntegrityRest02(response, env.k2o, knodeApiToken);
+  log("Integrity REST 02 verification passed");
 }
 
 print(response.body);
