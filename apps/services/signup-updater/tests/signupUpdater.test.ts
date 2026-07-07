@@ -55,6 +55,7 @@ const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
 const updateSignupUserEmailMock = vi.fn();
 const cognitoDeleteUserMock = vi.fn();
+const cognitoDeleteGroupMock = vi.fn();
 const getSignupUserByIdMock = vi.fn();
 const getSignupUserDeletionMock = vi.fn();
 const completeSignupUserDeletionMock = vi.fn();
@@ -71,6 +72,7 @@ function buildDeps(): SignupUpdaterDeps {
   const node = {
     cognitoClient: {
       createOrganizationUser: cognitoCreateUserMock,
+      deleteOrganizationGroup: cognitoDeleteGroupMock,
       deleteOrganizationUser: cognitoDeleteUserMock,
       disableAndRedactOrganizationUser: cognitoDisableAndRedactUserMock,
       disableUser: cognitoDisableUserMock,
@@ -931,6 +933,7 @@ describe("handleSignupMessage — MaintenanceUserReactivationRequestedV1", () =>
 
 describe("handleSignupMessage — DeletionRequestedV1", () => {
   beforeEach(() => {
+    cognitoDeleteGroupMock.mockReset();
     cognitoDeleteUserMock.mockReset();
     cognitoDisableAndRedactUserMock.mockReset();
     getSignupUserByIdMock.mockReset();
@@ -962,6 +965,14 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
       username: "mario.rossi.lynx",
     });
     expect(cognitoDisableAndRedactUserMock).not.toHaveBeenCalled();
+
+    expect(cognitoDeleteGroupMock).toHaveBeenCalledTimes(2);
+    expect(cognitoDeleteGroupMock.mock.calls.at(0)?.at(0)).toEqual({
+      organizationId: externalOrganizationId(user.signupUserId, "Orion"),
+    });
+    expect(cognitoDeleteGroupMock.mock.calls.at(1)?.at(0)).toEqual({
+      organizationId: externalOrganizationId(user.signupUserId, "Lynx"),
+    });
 
     expect(completeSignupUserDeletionMock).toHaveBeenCalledTimes(1);
     expect(completeSignupUserDeletionMock).toHaveBeenCalledWith(
@@ -1062,6 +1073,11 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
       expect.objectContaining({ err: expect.any(Error), knodeId: "Orion" }),
       expect.stringContaining("falling back to disable and redact"),
     );
+    // The group is dropped on the fallback knode too: the redaction emptied it.
+    expect(cognitoDeleteGroupMock).toHaveBeenCalledTimes(2);
+    expect(cognitoDeleteGroupMock).toHaveBeenCalledWith({
+      organizationId: externalOrganizationId(user.signupUserId, "Orion"),
+    });
     expect(completeSignupUserDeletionMock).toHaveBeenCalledExactlyOnceWith(
       user.signupUserId,
     );
@@ -1086,12 +1102,14 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
       ),
     ).rejects.toBeDefined();
 
+    expect(cognitoDeleteGroupMock).not.toHaveBeenCalled();
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
   });
 });
 
 describe("handleSignupMessage — MaintenanceUserDeletionRequestedV1", () => {
   beforeEach(() => {
+    cognitoDeleteGroupMock.mockReset();
     cognitoDeleteUserMock.mockReset();
     cognitoDisableAndRedactUserMock.mockReset();
     getSignupUserByIdMock.mockReset();

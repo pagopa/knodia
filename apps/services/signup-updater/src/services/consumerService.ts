@@ -301,6 +301,7 @@ async function deleteKnodeUser(
 ): Promise<void> {
   const entities = user.generatedEntities[knodeId];
   const { cognitoClient } = deps.knodeClients[knodeId];
+  const organizationId = externalOrganizationId(user.signupUserId, knodeId);
 
   logger.info(
     `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
@@ -318,10 +319,15 @@ async function deleteKnodeUser(
       `Cognito delete failed for signup user ${user.signupUserId} on ${knodeId}; falling back to disable and redact`,
     );
     await cognitoClient.disableAndRedactOrganizationUser({
-      organizationId: externalOrganizationId(user.signupUserId, knodeId),
+      organizationId,
       username: entities.userName,
     });
   }
+
+  // The group is exclusive to this signup user (one per deterministic org id)
+  // and each pool caps groups at 10000, so leaving it behind would eventually
+  // exhaust the pool.
+  await cognitoClient.deleteOrganizationGroup({ organizationId });
 }
 
 async function forEachKnode(

@@ -11,6 +11,7 @@ import {
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
+  DeleteGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { UserRole } from "@knodia/common-models/auth";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
@@ -307,6 +308,53 @@ describe("deleteOrganizationUser", () => {
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
+  });
+});
+
+describe("deleteOrganizationGroup", () => {
+  it("deletes the org group via DeleteGroup", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+    const organizationId = generateId<OrganizationId>();
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+      organizationId,
+    });
+
+    expect(send).toHaveBeenCalledTimes(1);
+    const deleteGroup = send.mock.calls.at(0)?.at(0) as DeleteGroupCommand;
+    expect(deleteGroup).toBeInstanceOf(DeleteGroupCommand);
+    expect(deleteGroup.input).toMatchObject({
+      GroupName: `org:${organizationId}`,
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("is idempotent: swallows ResourceNotFoundException", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("group gone"), {
+        name: "ResourceNotFoundException",
+      }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+        organizationId: generateId<OrganizationId>(),
+      }),
+    ).resolves.toBeUndefined();
+  });
+
+  it("rethrows non-ignored errors", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+        organizationId: generateId<OrganizationId>(),
+      }),
+    ).rejects.toThrow("boom");
   });
 });
 
