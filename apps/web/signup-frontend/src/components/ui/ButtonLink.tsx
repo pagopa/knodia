@@ -8,7 +8,7 @@ import { type VariantProps } from "tailwind-variants";
 
 import { buttonStyles } from "./styles";
 
-export type ButtonLinkProps = ButtonLinkVariants & RACLinkProps;
+type ButtonLinkProps = ButtonLinkVariants & RACLinkProps;
 
 type ButtonLinkVariants = VariantProps<typeof buttonStyles>;
 
