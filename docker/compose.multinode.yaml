@@ -78,7 +78,7 @@ services:
   seed:
     security_opt:
       - no-new-privileges:true
-    image: amazon/aws-cli:2.34.25
+    image: amazon/aws-cli:2.34.25@sha256:3810b288da2dfde82de6d46b136c7f5d4a16fef01fc2135e0c8ec9e52c9d7ebb
     container_name: knodia-multinode-seed
     depends_on:
       flyway-orion:
@@ -135,7 +135,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: confluentinc/cp-kafka:8.1.1
+    image: confluentinc/cp-kafka:8.1.1@sha256:d20bd62f01826c454e88530efc6d73654cb4697182f37206742b96c7b947236e
     container_name: knodia-multinode-kafka
     ports:
       - 9092:9092
@@ -174,7 +174,7 @@ services:
   kafka-setup:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:8.1.1
+    image: confluentinc/cp-kafka:8.1.1@sha256:d20bd62f01826c454e88530efc6d73654cb4697182f37206742b96c7b947236e
     container_name: knodia-multinode-kafka-setup
     depends_on:
       kafka:
@@ -218,7 +218,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: quay.io/debezium/connect:3.4.1.Final
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:09443e62955559450f761eceb393008ec0ab0b72c6ad35981eee4f87439dc4d4
     container_name: knodia-multinode-debezium-connect
     mem_limit: 768m
     ports:
@@ -345,7 +345,7 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-pgadmin
-    image: dpage/pgadmin4:9
+    image: dpage/pgadmin4:9@sha256:40fa840c5bb7c8463957f1255b01283732c2d8c9396a956d180f8e6c296753b3
     ports:
       - 5050:80
     environment:
@@ -2242,7 +2242,7 @@ services:
   dynamodb-local:
     security_opt:
       - no-new-privileges:true
-    image: amazon/dynamodb-local:3.3.0
+    image: amazon/dynamodb-local:3.3.0@sha256:d89f8fcc6b1a39cb35976c248ed42a28c66ae00dc043099210f5571e42648ab4
     container_name: knodia-multinode-dynamodb-local
     ports:
       - 8085:8000
@@ -2257,7 +2257,7 @@ services:
   dynamodb-setup:
     security_opt:
       - no-new-privileges:true
-    image: amazon/aws-cli:2.34.25
+    image: amazon/aws-cli:2.34.25@sha256:3810b288da2dfde82de6d46b136c7f5d4a16fef01fc2135e0c8ec9e52c9d7ebb
     container_name: knodia-multinode-dynamodb-setup
     depends_on:
       dynamodb-local:
