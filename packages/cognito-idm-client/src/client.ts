@@ -178,12 +178,16 @@ export function buildCognitoIdmClient({
             UserPoolId: cognitoUserPoolId,
           }),
         ),
-        client.send(
-          new AdminRemoveUserFromGroupCommand({
-            GroupName: getOrganizationGroupName(input.organizationId),
-            Username: input.username,
-            UserPoolId: cognitoUserPoolId,
-          }),
+        // Swallow ResourceNotFoundException: a prior attempt may have already
+        // deleted the group, and this fallback must stay idempotent on replay.
+        swallowCognitoError("ResourceNotFoundException", () =>
+          client.send(
+            new AdminRemoveUserFromGroupCommand({
+              GroupName: getOrganizationGroupName(input.organizationId),
+              Username: input.username,
+              UserPoolId: cognitoUserPoolId,
+            }),
+          ),
         ),
       ]);
 
