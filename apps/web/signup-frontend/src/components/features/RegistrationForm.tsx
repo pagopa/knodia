@@ -14,11 +14,13 @@ import {
 
 interface RegistrationFormProps {
   errorMessage?: string;
+  onEmailChange?: () => void;
   onSubmit: (email: string) => void;
 }
 
 export function RegistrationForm({
   errorMessage,
+  onEmailChange,
   onSubmit,
 }: RegistrationFormProps) {
   const form = useForm({
@@ -103,7 +105,10 @@ export function RegistrationForm({
                 label="Email address"
                 name={field.name}
                 onBlur={field.handleBlur}
-                onChange={field.handleChange}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  onEmailChange?.();
+                }}
                 type="email"
                 value={field.state.value}
               />

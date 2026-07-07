@@ -121,6 +121,7 @@ function RouteComponent() {
       >
         <RegistrationForm
           errorMessage={errorMessage}
+          onEmailChange={() => setErrorMessage(undefined)}
           onSubmit={(email) => {
             setErrorMessage(undefined);
             confirmOnboarding.mutate({ body: { email } });
