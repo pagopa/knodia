@@ -130,6 +130,7 @@ export async function handleSignupMessage(
          */
         if (isPgUniqueViolation(error)) {
           logger.error(
+            { err: error },
             `Failed to update email for signup user ${signupUserId}: requested email is already associated with another signup user. Keeping email change request ${emailChangeRequestId} pending for recovery.`,
           );
           throw genericInternalError(
@@ -382,6 +383,7 @@ async function provisionKnode(
   } catch (error) {
     if (isDuplicateOrganizationNameConflict(error)) {
       logger.error(
+        { err: error },
         `Skipping provisioning for signup user ${user.signupUserId} on ${knodeId}: organization name "${entities.organizationName}" already taken by another organization. Committing the offset to avoid blocking the partition; recover by fixing the name in the signup DB and reprocessing the topic from this offset.`,
       );
       return;
@@ -391,8 +393,6 @@ async function provisionKnode(
 
   await cognitoClient.createOrganizationUser({
     email: user.email,
-    familyName: user.familyName,
-    givenName: user.name,
     organizationId,
     roles: [UserRole.enum.administrative, UserRole.enum.technical],
     username: entities.userName,
