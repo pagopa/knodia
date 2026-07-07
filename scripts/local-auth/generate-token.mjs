@@ -70,29 +70,26 @@ const { values: args } = parseArgs({
 });
 
 const type = args.type;
-const targetEnv = args.env;
+const isSignupDomainType = type in SIGNUP_DOMAIN_KEY_NAMES;
+// Signup-domain tokens are knode-neutral (single shared key, signup host):
+// any dev knode env folds into dev-signup.
+const targetEnv =
+  isSignupDomainType && args.env !== "local" ? "dev-signup" : args.env;
 const orgId = args.org ?? ORG_ID;
 // A dedicated org (e.g. a POC org) is seeded with an operator whose id equals the
 // org id, so a ui-session for that org must carry that sub or keychain operations
 // won't authorize the caller. Override explicitly with --user when needed.
 const subjectId = args.user ?? (args.org !== undefined ? orgId : USER_ID);
 
-if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
+if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(args.env)) {
   console.error(
     `Usage: node generate-token.mjs [--type ${TOKEN_TYPES.join("|")}] [--env ${TARGET_ENVIRONMENTS.join("|")}] [--org <organizationId>] [--user <userId>]`,
   );
   process.exit(1);
 }
 
-// On dev, signup-domain tokens are knode-neutral (single shared key, signup
-// host): they must target dev-signup, and knode-bound tokens must not.
-const isSignupDomainType = type in SIGNUP_DOMAIN_KEY_NAMES;
-if (targetEnv !== "local" && isSignupDomainType !== (targetEnv === "dev-signup")) {
-  console.error(
-    isSignupDomainType
-      ? `--type ${type} is knode-neutral: use --env dev-signup`
-      : `--type ${type} is knode-bound: use --env dev-lynx or dev-orion`,
-  );
+if (targetEnv === "dev-signup" && !isSignupDomainType) {
+  console.error(`--type ${type} is knode-bound: use --env dev-lynx or dev-orion`);
   process.exit(1);
 }
 
