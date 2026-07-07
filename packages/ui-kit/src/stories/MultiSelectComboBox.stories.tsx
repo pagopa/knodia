@@ -9,34 +9,33 @@ import { Modal } from "../components/ui/Modal";
 import {
   MultiSelectComboBox,
   MultiSelectComboBoxItem,
-  type MultiSelectComboBoxTag,
 } from "../components/ui/MultiSelectComboBox";
 
 interface Option {
   id: string;
-  name: string;
+  label: string;
 }
 
 const OPTIONS: Option[] = [
-  { id: "knodia:testing_organization", name: "Testing Organization" },
-  { id: "vc_territorial_units:nuts1", name: "NUTS 1" },
-  { id: "vc_territorial_units:nuts2", name: "NUTS 2" },
-  { id: "vc_territorial_units:nuts3", name: "NUTS 3" },
+  { id: "knodia:testing_organization", label: "Testing Organization" },
+  { id: "vc_territorial_units:nuts1", label: "NUTS 1" },
+  { id: "vc_territorial_units:nuts2", label: "NUTS 2" },
+  { id: "vc_territorial_units:nuts3", label: "NUTS 3" },
   {
     id: "vc_poc_attributes:companies_registries",
-    name: "Companies Registries",
+    label: "Companies Registries",
   },
-  { id: "vc_poc_attributes:training_institutes", name: "Training Institutes" },
+  { id: "vc_poc_attributes:training_institutes", label: "Training Institutes" },
 ];
 
-const meta: Meta<typeof MultiSelectComboBox<Option>> = {
+const meta: Meta<typeof MultiSelectComboBox> = {
   title: "Components/ui/MultiSelectComboBox",
   component: MultiSelectComboBox,
   parameters: { layout: "centered" },
 };
 
 export default meta;
-type Story = StoryObj<typeof MultiSelectComboBox<Option>>;
+type Story = StoryObj<typeof MultiSelectComboBox>;
 
 function MultiSelectComboBoxExample({
   action,
@@ -51,65 +50,42 @@ function MultiSelectComboBoxExample({
 }) {
   const [inputValue, setInputValue] = useState("");
   const [value, setValue] = useState<Key[]>(initialValue);
-  // Label cache populated at selection time, so chips survive filtering.
-  const [labels, setLabels] = useState<Record<string, string>>(() =>
-    Object.fromEntries(
-      initialValue.flatMap((key) => {
-        const found = OPTIONS.find((o) => o.id === key);
-        return found ? [[String(key), found.name]] : [];
-      }),
-    ),
-  );
 
   const items = useMemo(
     () =>
       OPTIONS.filter((o) =>
-        o.name.toLowerCase().includes(inputValue.toLowerCase()),
+        o.label.toLowerCase().includes(inputValue.toLowerCase()),
       ),
     [inputValue],
   );
 
   const handleChange = (keys: Key[]) => {
     setValue(keys);
-    setLabels((prev) => {
-      const next = { ...prev };
-      for (const key of keys) {
-        if (next[String(key)] === undefined) {
-          const found = OPTIONS.find((o) => o.id === key);
-          if (found) next[String(key)] = found.name;
-        }
-      }
-      return next;
-    });
   };
 
-  const selectedTags: MultiSelectComboBoxTag[] = value.map((key) => ({
-    key,
-    label: labels[String(key)] ?? String(key),
-  }));
-
   return (
-    <MultiSelectComboBox<Option>
-      action={action}
-      aria-label="Attributes"
-      className="w-80"
-      inputValue={inputValue}
-      isDisabled={isDisabled}
-      isReadOnly={isReadOnly}
-      items={items}
-      label="Attributes"
-      onChange={handleChange}
-      onInputChange={setInputValue}
-      placeholder="Type to search..."
-      selectedTags={selectedTags}
-      value={value}
-    >
-      {(item) => (
-        <MultiSelectComboBoxItem id={item.id}>
-          {item.name}
-        </MultiSelectComboBoxItem>
-      )}
-    </MultiSelectComboBox>
+    <>
+      <MultiSelectComboBox
+        action={action}
+        aria-label="Attributes"
+        className="w-80"
+        inputValue={inputValue}
+        isDisabled={isDisabled}
+        isReadOnly={isReadOnly}
+        items={items}
+        label="Attributes"
+        onChange={handleChange}
+        onInputChange={setInputValue}
+        placeholder="Type to search..."
+        value={value}
+      >
+        {(item) => (
+          <MultiSelectComboBoxItem id={item.id}>
+            {item.label}
+          </MultiSelectComboBoxItem>
+        )}
+      </MultiSelectComboBox>
+    </>
   );
 }
 
