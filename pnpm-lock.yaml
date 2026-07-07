@@ -3223,6 +3223,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../models/attribute-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../../../models/category-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../models/common-models
@@ -3919,6 +3922,10 @@ importers:
         version: 5.9.3
 
   packages/models/category-models:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -3975,6 +3982,9 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../attribute-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../category-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
@@ -4388,6 +4398,9 @@ importers:
       '@knodia/authorization-models':
         specifier: workspace:*
         version: link:../models/authorization-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../models/category-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
