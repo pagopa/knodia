@@ -105,7 +105,7 @@ export function signalHubServiceBuilder(
         await signalHubDbService.insertSignal(signal);
       } catch (error) {
         logger.error(
-          { error },
+          { err: error },
           `Failed to insert signal ${signalId} for E-service ${eserviceId}`,
         );
         if (isPgUniqueViolation(error)) {

@@ -6,7 +6,7 @@ import { DialogTrigger } from "react-aria-components";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 
-// TODO: Replace mocked contact info (email and notes) with real data from the API when available
+// TODO(KN-884): replace mocked contact info (email and notes) with real data when the contacts API is available
 export function OrganizationContactPopover({
   organization,
 }: {
@@ -44,11 +44,11 @@ export function OrganizationContactPopover({
         <dl className="body-sm flex flex-col gap-1">
           <div className="flex gap-2">
             <dt>E-mail address:</dt>
-            <dd className="body-sm-em">contact@example.com</dd>
+            <dd className="body-sm-em">-</dd>
           </div>
           <div className="flex gap-2">
             <dt>Notes:</dt>
-            <dd className="body-sm-em">—</dd>
+            <dd className="body-sm-em">-</dd>
           </div>
         </dl>
       </Popover>
