@@ -275,7 +275,6 @@ describe("handleSignupMessage — OnboardingCompletedV1 provisioning", () => {
     );
 
     expect(createOrganizationMock).toHaveBeenCalledTimes(2);
-    // KnodeId.options is ["Orion", "Lynx"], so the first call is Orion.
     const orionCall = createOrganizationMock.mock.calls.at(0)?.at(0);
     expect(orionCall?.body).toEqual({
       attributes: [

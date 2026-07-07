@@ -31,8 +31,7 @@ import { toIdmUser } from "./converters.ts";
 
 export type CognitoIdmClient = ReturnType<typeof buildCognitoIdmClient>;
 
-// Must stay in sync with the attributes createOrganizationUser sets: deleting
-// them leaves a redacted user carrying nothing but its username.
+// Must stay in sync with the attributes createOrganizationUser sets.
 const PROVISIONED_USER_ATTRIBUTES = [
   "email",
   "email_verified",
@@ -136,12 +135,9 @@ export function buildCognitoIdmClient({
       );
     },
 
-    // Fallback for records whose AdminDeleteUser fails deterministically (seen
-    // on dev: a corrupted record 500s on every attempt, from SDK, CLI and
-    // console alike): redact the user in place — disabled, PII attributes and
-    // roles stripped, org membership removed — so only the username remains.
-    // Every sub-step is attempted even if another fails; any failure rethrows
-    // so the caller retries until the redaction is guaranteed.
+    // Fallback when AdminDeleteUser fails on a corrupted record: leave the user
+    // disabled with only its username. Any sub-step failure rethrows so the
+    // caller retries until the redaction is guaranteed.
     async disableAndRedactOrganizationUser(input: {
       organizationId: OrganizationId;
       username: string;

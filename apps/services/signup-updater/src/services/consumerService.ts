@@ -307,11 +307,8 @@ async function deleteKnodeUser(
     // swallowed, so a replay after a partial deletion is safe.
     await cognitoClient.deleteOrganizationUser({ username: entities.userName });
   } catch (error) {
-    // AdminDeleteUser can fail deterministically on a corrupted record (seen on
-    // dev: InternalErrorException on every retry, from SDK, CLI and console),
-    // so retrying the delete would redeliver forever and stall the partition.
-    // Redact the user in place instead so no PII remains and the saga
-    // completes; a fallback failure propagates and keeps the retry visible.
+    // A corrupted record can fail AdminDeleteUser forever (seen on dev): redact
+    // in place instead of stalling the partition on endless redeliveries.
     logger.warn(
       { err: error, knodeId },
       `Cognito delete failed for signup user ${user.signupUserId} on ${knodeId}; falling back to disable and redact`,
