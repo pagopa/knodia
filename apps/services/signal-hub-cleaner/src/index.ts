@@ -23,11 +23,6 @@ try {
   await signalHubService.cleanup(config.signalsRetentionHours);
   await shutdown("Signals cleanup finished", 0);
 } catch (error) {
-  if (error instanceof Error) {
-    logger.error(`Error during signals cleanup: ${error.message}`);
-  } else {
-    logger.error(`Unknown error during signals cleanup: ${error}`);
-  }
-
+  logger.error({ err: error }, "Error during signals cleanup");
   await shutdown("Signals cleanup failed", 1);
 }
