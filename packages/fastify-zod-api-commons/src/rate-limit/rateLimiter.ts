@@ -167,9 +167,9 @@ export function initRedisRateLimiter({
           };
         }
 
-        const message = err instanceof Error ? err.message : String(err);
         logger.warn(
-          `Rate limiter degraded, allowing request through for key=${rateLimitKey}: ${message}`,
+          { err },
+          `Rate limiter degraded, allowing request through for key=${rateLimitKey}`,
         );
         return failOpenStatus;
       }
