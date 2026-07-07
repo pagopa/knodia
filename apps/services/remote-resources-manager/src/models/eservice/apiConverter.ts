@@ -86,10 +86,10 @@ export const toAPI_EserviceDetails = (
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
   producer: {
-    email: "info@example.com", // TODO: retrieve real data from producer knode
+    email: "-", // TODO(KN-884): retrieve real data from producer knode
     id: producer.id,
     name: producer.name,
-    notes: "Notes", // TODO: retrieve real data from producer knode
+    notes: "-", // TODO(KN-884): retrieve real data from producer knode
   },
   updatedAt: eservice.updatedAt,
 });

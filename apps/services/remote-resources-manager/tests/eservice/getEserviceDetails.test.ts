@@ -134,10 +134,10 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(body).toEqual({
       ...expectedApiDetail,
       producer: {
-        email: "info@example.com",
+        email: "-",
         id: k2kOrganization.id,
         name: k2kOrganization.name,
-        notes: "Notes",
+        notes: "-",
       },
     });
   });

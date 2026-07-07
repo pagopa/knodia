@@ -33,10 +33,8 @@ describe("DetailsAndAttributesPage", () => {
       expect(screen.getByText("Contacts")).toBeInTheDocument();
     });
 
-    expect(screen.getByLabelText("E-mail address")).toHaveValue(
-      "info@example.com",
-    );
-    expect(screen.getByLabelText("Notes")).toHaveValue("Notes");
+    expect(screen.getByLabelText("E-mail address")).toHaveValue("-");
+    expect(screen.getByLabelText("Notes")).toHaveValue("-");
   });
 
   it("renders the Attributes section with resolved attribute names", async () => {
