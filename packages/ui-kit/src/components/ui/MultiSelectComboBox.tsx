@@ -36,11 +36,6 @@ import {
 // the two dropdowns can't drift.
 export { ComboBoxItem as MultiSelectComboBoxItem } from "./ComboBox";
 
-export interface MultiSelectComboBoxOption {
-  id: string;
-  label: string;
-}
-
 // react-aria-components does not re-export LoadingState; mirror the
 // react-stately union used by the async-list driving the infinite scroll.
 type LoadingState =
@@ -50,6 +45,11 @@ type LoadingState =
   | "loading"
   | "loadingMore"
   | "sorting";
+
+interface MultiSelectComboBoxOption {
+  id: string;
+  label: string;
+}
 
 interface MultiSelectComboBoxProps extends Omit<
   AriaComboBoxProps<MultiSelectComboBoxOption, "multiple">,
