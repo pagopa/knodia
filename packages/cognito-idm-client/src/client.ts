@@ -66,8 +66,6 @@ export function buildCognitoIdmClient({
 
     async createOrganizationUser(input: {
       email: string;
-      familyName: string;
-      givenName: string;
       organizationId: OrganizationId;
       roles: UserRole[];
       username: string;
@@ -92,8 +90,6 @@ export function buildCognitoIdmClient({
             UserAttributes: [
               { Name: "email", Value: input.email },
               { Name: "email_verified", Value: "true" },
-              { Name: "given_name", Value: input.givenName },
-              { Name: "family_name", Value: input.familyName },
               { Name: "custom:roles", Value: input.roles.join(",") },
             ],
             Username: input.username,

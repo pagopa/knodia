@@ -30,7 +30,7 @@ export function kafkaMessageProcessError(
 ): InternalError<CommonInternalErrors> {
   return new InternalError({
     code: "KAFKA_MESSAGE_PROCESS_ERROR",
-    detail: `Error handling Kafka message. Topic: ${topic}. Partition number: ${partition}. Offset: ${offset}. Cause: ${cause instanceof Error ? cause.message : JSON.stringify(cause)}`,
+    detail: `Error handling Kafka message. Topic: ${topic}. Partition number: ${partition}. Offset: ${offset}. Cause: ${cause instanceof Error ? cause.message : String(cause)}`,
   });
 }
 

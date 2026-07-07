@@ -85,7 +85,7 @@ export async function runConsumer(
       },
     });
   } catch (e) {
-    logger.error(`Generic error occurs during consumer initialization: ${e}`);
+    logger.error({ err: e }, "Generic error during consumer initialization");
     await processExitAndDisconnect({ logger, onShutdown });
   }
 }
