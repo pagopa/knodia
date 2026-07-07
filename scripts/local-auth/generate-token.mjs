@@ -54,12 +54,9 @@ const SIGNUP_DATE_OF_BIRTH = "1980-01-01";
 const SIGNUP_SPID_CODE = "SPID-001";
 const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
-import { TOKEN_TYPES } from "./token-types.mjs";
+import { SIGNUP_DOMAIN_KEY_NAMES, TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion", "dev-signup"];
-
-// Tokens for the signup domain, which sits outside the knodes: type -> KMS key name.
-const SIGNUP_DOMAIN_KEY_NAMES = { maintenance: "maintenance", "ui-signup-session": "ui-session" };
 
 const { values: args } = parseArgs({
   options: {

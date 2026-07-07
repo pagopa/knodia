@@ -9,3 +9,10 @@ export const TOKEN_TYPES = [
   "knode-api",
   "ui-signup-session",
 ];
+
+// Tokens for the signup domain, which sits outside the knodes: type -> KMS key
+// name. On dev these are knode-neutral and target the dev-signup env.
+export const SIGNUP_DOMAIN_KEY_NAMES = {
+  maintenance: "maintenance",
+  "ui-signup-session": "ui-session",
+};
