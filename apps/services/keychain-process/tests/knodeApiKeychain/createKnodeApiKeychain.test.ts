@@ -11,6 +11,7 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
+import { getMockKnodeApiKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -18,6 +19,7 @@ import {
   type API_KeychainSeed,
 } from "../../src/models/api.ts";
 import { toAPI_Keychain } from "../../src/models/apiConverter.ts";
+import { knodeApiKeychainWriterService } from "../setup.ts";
 import { getAllKeychainEvents, injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -72,6 +74,50 @@ describe("POST /knodeApiKeychains (createKnodeApiKeychain)", () => {
       },
       type: "KnodeApiKeychainCreatedV1",
     });
+  });
+
+  it("should return 409 if a knode API keychain with the same name already exists for the same owner", async () => {
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      {
+        ...getMockKnodeApiKeychain(),
+        name: body.name,
+        ownerId: TEST_ORGANIZATION_ID,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/knodeApiKeychains")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if the existing knode API keychain name differs only by case", async () => {
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      {
+        ...getMockKnodeApiKeychain(),
+        name: { en: body.name.en.toUpperCase() },
+        ownerId: TEST_ORGANIZATION_ID,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/knodeApiKeychains")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should succeed if a knode API keychain with the same name exists for a different owner", async () => {
+    await knodeApiKeychainWriterService.upsertKnodeApiKeychain(
+      { ...getMockKnodeApiKeychain(), name: body.name },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/knodeApiKeychains")
+      .body(body);
+    expect(response.statusCode).toBe(201);
   });
 
   it.each([

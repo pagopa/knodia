@@ -31,5 +31,5 @@ vars:post-response {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  bru.setVar("randomName", `Test Knode API Keychain ${random}`)
+  bru.setVar("randomName", bru.getEnvVar("fixedName") || `Test Knode API Keychain ${random}`)
 }

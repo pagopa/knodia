@@ -1570,6 +1570,10 @@ export type CreateEserviceErrors = {
      */
     403: Problem;
     /**
+     * Conflict
+     */
+    409: Problem;
+    /**
      * Too Many Requests
      */
     429: Problem;
@@ -1610,6 +1614,10 @@ export type CreateEserviceFromTemplateErrors = {
      * E-service template not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
     /**
      * Too Many Requests
      */
@@ -2166,6 +2174,10 @@ export type CreateConsumerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
     /**
      * Too Many Requests
      */
@@ -2811,6 +2823,10 @@ export type CreateKnodeApiKeychainErrors = {
      */
     403: Problem;
     /**
+     * Conflict
+     */
+    409: Problem;
+    /**
      * Too Many Requests
      */
     429: Problem;
@@ -3400,6 +3416,10 @@ export type CreateProducerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
     /**
      * Too Many Requests
      */

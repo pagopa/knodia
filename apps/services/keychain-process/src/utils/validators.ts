@@ -12,19 +12,22 @@ import type {
 } from "@knodia/common-models/ids";
 import type { Eservice } from "@knodia/eservice-models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
-import type { KeychainUser } from "@knodia/keychain-models";
+import type { KeychainUser, LocalizedName } from "@knodia/keychain-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { UserRole } from "@knodia/common-models/auth";
 import { isX509Certificate } from "@knodia/crypto";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
+import { match } from "ts-pattern";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  duplicateKeychainName,
   eserviceAlreadyLinkedToProducerKeychain,
   invalidUserRole,
   keyAlreadyExists,
+  type KeychainKind,
   keychainMemberNotFound,
   notAllowedCertificate,
   purposeAlreadyLinkedToConsumerKeychain,
@@ -49,6 +52,34 @@ export async function assertEserviceIsNotLinkedToProducerKeychain(
       producerKeychainId,
       eserviceId,
     );
+  }
+}
+
+export async function assertKeychainNameIsUnique({
+  kind,
+  name,
+  ownerId,
+  readmodelService,
+}: {
+  kind: KeychainKind;
+  name: LocalizedName;
+  ownerId: OrganizationId;
+  readmodelService: ReadmodelService;
+}): Promise<void> {
+  const exists = await match(kind)
+    .with("Consumer", () =>
+      readmodelService.consumerKeychainWithNameExists({ name, ownerId }),
+    )
+    .with("Knode API", () =>
+      readmodelService.knodeApiKeychainWithNameExists({ name, ownerId }),
+    )
+    .with("Producer", () =>
+      readmodelService.producerKeychainWithNameExists({ name, ownerId }),
+    )
+    .exhaustive();
+
+  if (exists) {
+    throw duplicateKeychainName({ kind, name, ownerId });
   }
 }
 

@@ -2,6 +2,7 @@ import type {
   EserviceId,
   EserviceInterfaceId,
   EserviceVersionId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -9,10 +10,14 @@ import type {
   EserviceInterface,
   EserviceVersion,
   FlatEservice,
+  LocalizedName,
 } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { assertSQLFiltersAreDefined } from "@knodia/db-readmodel-commons/utils";
+import {
+  assertSQLFiltersAreDefined,
+  ilikeJsonBExact,
+} from "@knodia/db-readmodel-commons/utils";
 import { and, eq, type SQL } from "drizzle-orm";
 
 import {
@@ -32,6 +37,26 @@ import {
 
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
+    async eserviceWithNameExists({
+      name,
+      producerId,
+    }: {
+      name: LocalizedName;
+      producerId: OrganizationId;
+    }): Promise<boolean> {
+      const queryRes = await readmodelDb
+        .select({ id: readmodelEservice.id })
+        .from(readmodelEservice)
+        .where(
+          and(
+            eq(readmodelEservice.producerId, producerId),
+            ilikeJsonBExact({ column: readmodelEservice.name, value: name.en }),
+          ),
+        )
+        .limit(1);
+
+      return queryRes.length > 0;
+    },
     async getEserviceByFilter(
       filters: SQL | undefined,
     ): Promise<undefined | WithMetadata<Eservice>> {

@@ -71,6 +71,7 @@ import {
   updateKeychain,
 } from "../utils/utils.ts";
 import {
+  assertKeychainNameIsUnique,
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
   assertPurposeIsNotLinkedToConsumerKeychain,
@@ -136,6 +137,13 @@ export function consumerKeychainServiceBuilder(
       logger.info(
         `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId}`,
       );
+
+      await assertKeychainNameIsUnique({
+        kind: "Consumer",
+        name: seed.name,
+        ownerId,
+        readmodelService,
+      });
 
       const now = new Date();
 

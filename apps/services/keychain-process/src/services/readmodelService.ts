@@ -4,6 +4,7 @@ import type {
   EserviceId,
   KeyId,
   KnodeApiKeychainId,
+  OrganizationId,
   ProducerKeychainId,
 } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
@@ -13,6 +14,7 @@ import type {
   FlatKnodeApiKeychain,
   FlatProducerKeychain,
   KeychainKey,
+  LocalizedName,
   ProducerKeychainEservice,
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -21,6 +23,7 @@ import {
   createOrderByFilters,
   getTableTotalCount,
   ilikeJsonB,
+  ilikeJsonBExact,
 } from "@knodia/db-readmodel-commons/utils";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import {
@@ -94,6 +97,29 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .select({ kid: readmodelProducerKeychainKey.kid })
         .from(readmodelProducerKeychainKey)
         .where(eq(readmodelProducerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
+    async consumerKeychainWithNameExists({
+      name,
+      ownerId,
+    }: {
+      name: LocalizedName;
+      ownerId: OrganizationId;
+    }): Promise<boolean> {
+      const queryResult = await readmodelDb
+        .select({ id: readmodelConsumerKeychain.id })
+        .from(readmodelConsumerKeychain)
+        .where(
+          and(
+            eq(readmodelConsumerKeychain.ownerId, ownerId),
+            ilikeJsonBExact({
+              column: readmodelConsumerKeychain.name,
+              value: name.en,
+            }),
+          ),
+        )
         .limit(1);
 
       return queryResult.length > 0;
@@ -597,6 +623,52 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           totalCount,
         };
       });
+    },
+    async knodeApiKeychainWithNameExists({
+      name,
+      ownerId,
+    }: {
+      name: LocalizedName;
+      ownerId: OrganizationId;
+    }): Promise<boolean> {
+      const queryResult = await readmodelDb
+        .select({ id: readmodelKnodeApiKeychain.id })
+        .from(readmodelKnodeApiKeychain)
+        .where(
+          and(
+            eq(readmodelKnodeApiKeychain.ownerId, ownerId),
+            ilikeJsonBExact({
+              column: readmodelKnodeApiKeychain.name,
+              value: name.en,
+            }),
+          ),
+        )
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
+    async producerKeychainWithNameExists({
+      name,
+      ownerId,
+    }: {
+      name: LocalizedName;
+      ownerId: OrganizationId;
+    }): Promise<boolean> {
+      const queryResult = await readmodelDb
+        .select({ id: readmodelProducerKeychain.id })
+        .from(readmodelProducerKeychain)
+        .where(
+          and(
+            eq(readmodelProducerKeychain.ownerId, ownerId),
+            ilikeJsonBExact({
+              column: readmodelProducerKeychain.name,
+              value: name.en,
+            }),
+          ),
+        )
+        .limit(1);
+
+      return queryResult.length > 0;
     },
   };
 }

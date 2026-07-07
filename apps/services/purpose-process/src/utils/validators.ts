@@ -1,4 +1,7 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type {
+  ExternalId,
+  ExternalResource,
+} from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   KnodeId,
@@ -14,15 +17,19 @@ import {
   type ReceiveDataConfig,
 } from "@knodia/eservice-models";
 import {
+  type LocalizedPurposeName,
   type Purpose,
   PurposeActor,
   PurposeState,
 } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 
+import type { ReadmodelService } from "../services/readmodelService.ts";
+
 import {
   agreementNotInExpectedStates,
   dailyCallsExceedLimit,
+  duplicatePurposeName,
   eserviceModeNotAllowed,
   eserviceVersionNotInExpectedStates,
   organizationNotPurposeProducer,
@@ -182,6 +189,33 @@ export function assertPurposeIsSuspended(purpose: Purpose): void {
       allowedStates: [PurposeState.enum.Suspended],
       purposeId: purpose.id,
       state: purpose.state,
+    });
+  }
+}
+
+export async function assertPurposeNameIsUnique({
+  consumer,
+  eserviceId,
+  name,
+  readmodelService,
+}: {
+  consumer: ExternalResource<OrganizationId>;
+  eserviceId: EserviceId;
+  name: LocalizedPurposeName;
+  readmodelService: ReadmodelService;
+}): Promise<void> {
+  const exists = await readmodelService.purposeWithNameExists({
+    consumerId: consumer.id,
+    consumerKnodeId: consumer.knodeId,
+    eserviceId,
+    name,
+  });
+  if (exists) {
+    throw duplicatePurposeName({
+      consumerId: consumer.id,
+      consumerKnodeId: consumer.knodeId,
+      eserviceId,
+      name,
     });
   }
 }

@@ -331,6 +331,50 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(409);
   });
 
+  it("should return 409 if an e-service with the same name already exists for the same producer", async () => {
+    await eserviceWriterService.upsertEservice(
+      {
+        ...mockEservices[0]!,
+        name: body.name,
+        producerId: TEST_ORGANIZATION_ID,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if the existing e-service name differs only by case", async () => {
+    await eserviceWriterService.upsertEservice(
+      {
+        ...mockEservices[0]!,
+        name: { en: body.name.en.toUpperCase() },
+        producerId: TEST_ORGANIZATION_ID,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should succeed if an e-service with the same name exists for a different producer", async () => {
+    await eserviceWriterService.upsertEservice(
+      { ...mockEservices[0]!, name: body.name },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body(body);
+    expect(response.statusCode).toBe(201);
+  });
+
   it("should return 404 if the template does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")

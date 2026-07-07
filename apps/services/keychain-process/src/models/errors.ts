@@ -4,11 +4,17 @@ import type {
   EserviceId,
   KeyId,
   KnodeApiKeychainId,
+  OrganizationId,
   ProducerKeychainId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
-import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
+import type {
+  ConsumerKeychainPurpose,
+  LocalizedName,
+} from "@knodia/keychain-models";
+
+export type KeychainKind = "Consumer" | "Knode API" | "Producer";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -42,6 +48,7 @@ const errorCodes = {
   PRODUCER_KEYCHAIN_ESERVICE_NOT_FOUND: "0017",
   ESERVICE_NOT_FOUND: "0018",
   PRODUCER_KEY_NOT_FOUND: "0019",
+  DUPLICATE_KEYCHAIN_NAME: "0020",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -69,6 +76,23 @@ export function consumerKeychainPurposeNotFound({
     detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is not linked to Consumer Keychain with id ${consumerKeychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Purpose Not Found",
+  });
+}
+
+export function duplicateKeychainName({
+  kind,
+  name,
+  ownerId,
+}: {
+  kind: KeychainKind;
+  name: LocalizedName;
+  ownerId: OrganizationId;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "DUPLICATE_KEYCHAIN_NAME",
+    detail: `A ${kind} Keychain named "${name.en}" already exists for Owner = ${ownerId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Duplicate Keychain Name",
   });
 }
 

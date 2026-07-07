@@ -66,6 +66,7 @@ import {
 } from "../utils/utils.ts";
 import {
   assertCategoriesCanBeUpdated,
+  assertEserviceNameIsUnique,
   assertEserviceVersionIsActive,
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
@@ -132,6 +133,7 @@ export function eserviceServiceBuilder(
       );
 
       await assertOrganizationExists(producerId, readmodelService);
+      await assertEserviceNameIsUnique(seed.name, producerId, readmodelService);
 
       const { categories, mode, requiredAttributes, template } =
         resolveTemplateFixedFields(seed);

@@ -273,8 +273,22 @@ export function ilikeJsonB({
   column: PgColumn;
   value: string;
 }): SQL {
-  const pattern = `%${escapeSqlLike(value)}%`;
+  return jsonbAnyValueIlike(column, `%${escapeSqlLike(value)}%`);
+}
 
+// Exact (but case-insensitive) match against the values of a localized jsonb
+// column, unlike ilikeJsonB which is a contains match.
+export function ilikeJsonBExact({
+  column,
+  value,
+}: {
+  column: PgColumn;
+  value: string;
+}): SQL {
+  return jsonbAnyValueIlike(column, escapeSqlLike(value));
+}
+
+function jsonbAnyValueIlike(column: PgColumn, pattern: string): SQL {
   return sql`
     EXISTS (
       SELECT 1

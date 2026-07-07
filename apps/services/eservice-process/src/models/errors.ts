@@ -11,6 +11,7 @@ import type {
   Eservice,
   EserviceMode,
   EserviceVersionState,
+  LocalizedName,
 } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -44,6 +45,7 @@ const errorCodes = {
   ESERVICE_TEMPLATE_INSTANCE_CANNOT_BE_UPDATED: "0012",
   ESERVICE_TOKEN_CLAIM_MISMATCH: "0013",
   ESERVICE_MODE_NOT_ALLOWED: "0014",
+  DUPLICATE_ESERVICE_NAME: "0015",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -65,6 +67,18 @@ export function eserviceTokenClaimMismatch(
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "eservice-process",
 });
+
+export function duplicateEserviceName(
+  name: LocalizedName,
+  producerId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "DUPLICATE_ESERVICE_NAME",
+    detail: `An E-service named "${name.en}" already exists for Producer = ${producerId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Duplicate E-service Name",
+  });
+}
 
 export function duplicateInterfaceId(interfaceId: EserviceInterfaceId) {
   return createApiError<ErrorCodes>({

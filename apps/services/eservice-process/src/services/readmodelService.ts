@@ -36,6 +36,7 @@ import {
   type EserviceInterface,
   EserviceVersionState,
   type FlatEservice,
+  type LocalizedName,
 } from "@knodia/eservice-models";
 import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 
@@ -69,6 +70,12 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       .as("latestVersion");
 
   return {
+    async eserviceWithNameExists(query: {
+      name: LocalizedName;
+      producerId: OrganizationId;
+    }): Promise<boolean> {
+      return await eserviceReadmodelService.eserviceWithNameExists(query);
+    },
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,

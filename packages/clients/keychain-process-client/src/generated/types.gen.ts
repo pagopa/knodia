@@ -307,6 +307,10 @@ export type CreateConsumerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
@@ -1126,6 +1130,10 @@ export type CreateKnodeApiKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateKnodeApiKeychainError = CreateKnodeApiKeychainErrors[keyof CreateKnodeApiKeychainErrors];
@@ -1750,6 +1758,10 @@ export type CreateProducerKeychainErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateProducerKeychainError = CreateProducerKeychainErrors[keyof CreateProducerKeychainErrors];

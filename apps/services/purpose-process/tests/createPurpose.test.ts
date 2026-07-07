@@ -20,6 +20,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
   getMockEservice,
+  getMockPurpose,
   MOCK_PURPOSE_FORM_ANSWERS,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -31,7 +32,11 @@ type API_PurposeSeedProvideData = Extract<
   { eserviceMode: "ProvideData" }
 >;
 
-import { agreementWriterService, eserviceWriterService } from "./setup.ts";
+import {
+  agreementWriterService,
+  eserviceWriterService,
+  purposeWriterService,
+} from "./setup.ts";
 import {
   getAllPurposeEvents,
   injectAppRequest,
@@ -404,6 +409,80 @@ describe("POST /purposes (createPurpose)", () => {
       expect(response.statusCode).toBe(409);
     },
   );
+
+  it("should return 409 if a purpose with the same name already exists for the same consumer and e-service", async () => {
+    await setupEserviceAndAgreement();
+    await purposeWriterService.upsertPurpose(
+      {
+        ...getMockPurpose(80),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        eserviceId: eservice.id,
+        name: body.name,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if the existing purpose name differs only by case", async () => {
+    await setupEserviceAndAgreement();
+    await purposeWriterService.upsertPurpose(
+      {
+        ...getMockPurpose(81),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        eserviceId: eservice.id,
+        name: { en: body.name.en.toUpperCase() },
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should succeed if a purpose with the same name exists for a different e-service", async () => {
+    await setupEserviceAndAgreement();
+    await purposeWriterService.upsertPurpose(
+      {
+        ...getMockPurpose(82),
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        name: body.name,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body(body);
+    expect(response.statusCode).toBe(201);
+  });
+
+  it("should succeed if a purpose with the same name exists for a different consumer", async () => {
+    await setupEserviceAndAgreement();
+    await purposeWriterService.upsertPurpose(
+      {
+        ...getMockPurpose(83),
+        consumer: {
+          id: generateExternalId<OrganizationId>(),
+          knodeId: consumerKnodeId,
+        },
+        eserviceId: eservice.id,
+        name: body.name,
+      },
+      0,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body(body);
+    expect(response.statusCode).toBe(201);
+  });
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],

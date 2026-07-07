@@ -11,7 +11,11 @@ import type {
   EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";
-import type { PurposeActor, PurposeState } from "@knodia/purpose-models";
+import type {
+  LocalizedPurposeName,
+  PurposeActor,
+  PurposeState,
+} from "@knodia/purpose-models";
 import type { ErrorObject } from "ajv";
 
 import {
@@ -46,6 +50,7 @@ const errorCodes = {
   RECEIVE_DATA_CONFIG_MISSING: "0013",
   DAILY_CALLS_EXCEED_LIMIT: "0014",
   ESERVICE_LATEST_VERSION_NOT_FOUND: "0015",
+  DUPLICATE_PURPOSE_NAME: "0016",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -101,6 +106,25 @@ export function dailyCallsExceedLimit(
     detail: `dailyCalls ${dailyCalls} exceeds the per-consumer limit of ${maxDailyCallsPerConsumer} for E-service ${eserviceId}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Daily Calls Exceed Limit",
+  });
+}
+
+export function duplicatePurposeName({
+  consumerId,
+  consumerKnodeId,
+  eserviceId,
+  name,
+}: {
+  consumerId: ExternalId<OrganizationId>;
+  consumerKnodeId: KnodeId;
+  eserviceId: EserviceId;
+  name: LocalizedPurposeName;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "DUPLICATE_PURPOSE_NAME",
+    detail: `A Purpose named "${name.en}" already exists for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Duplicate Purpose Name",
   });
 }
 

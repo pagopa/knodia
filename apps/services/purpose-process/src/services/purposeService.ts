@@ -66,6 +66,7 @@ import {
   assertPurposeCanBeReactivatedBy,
   assertPurposeCanBeSuspendedBy,
   assertPurposeIsSuspended,
+  assertPurposeNameIsUnique,
   assertReceiveDataConfigIsDefined,
 } from "../utils/validators.ts";
 
@@ -182,6 +183,13 @@ export function purposeServiceBuilder(
         consumerId: seed.consumer.id,
         consumerKnodeId: seed.consumer.knodeId,
         eserviceId: seed.eserviceId,
+      });
+
+      await assertPurposeNameIsUnique({
+        consumer: seed.consumer,
+        eserviceId: seed.eserviceId,
+        name: seed.name,
+        readmodelService,
       });
 
       // Form answers come from the request body in ProvideData mode and from

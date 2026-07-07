@@ -67,6 +67,7 @@ import {
 } from "../utils/utils.ts";
 import {
   assertEserviceIsNotLinkedToProducerKeychain,
+  assertKeychainNameIsUnique,
   assertOrganizationIsEserviceProducer,
   assertOrganizationIsKeychainOwner,
   assertUserIsAllowedToDownloadKey,
@@ -130,6 +131,13 @@ export function producerKeychainServiceBuilder(
       logger.info(
         `Creating Producer Keychain ${producerKeychainId} for owner ${ownerId}`,
       );
+
+      await assertKeychainNameIsUnique({
+        kind: "Producer",
+        name: seed.name,
+        ownerId,
+        readmodelService,
+      });
 
       const now = new Date();
 

@@ -11,11 +11,13 @@ import {
   type EserviceCategory,
   type EserviceVersion,
   EserviceVersionState,
+  type LocalizedName,
 } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  duplicateEserviceName,
   eserviceTemplateInstanceFieldsCannotBeUpdated,
   eserviceTokenClaimMismatch,
   eserviceVersionNotInExpectedStates,
@@ -75,6 +77,20 @@ export const assertValidCategories = (
     }
   }
 };
+
+export async function assertEserviceNameIsUnique(
+  name: LocalizedName,
+  producerId: OrganizationId,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  const exists = await readmodelService.eserviceWithNameExists({
+    name,
+    producerId,
+  });
+  if (exists) {
+    throw duplicateEserviceName(name, producerId);
+  }
+}
 
 export async function assertOrganizationExists(
   organizationId: OrganizationId,

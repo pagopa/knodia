@@ -59,6 +59,7 @@ import {
   updateKeychain,
 } from "../utils/utils.ts";
 import {
+  assertKeychainNameIsUnique,
   assertOrganizationIsKeychainOwner,
   assertUserIsAllowedToDownloadKey,
 } from "../utils/validators.ts";
@@ -120,6 +121,13 @@ export function knodeApiKeychainServiceBuilder(
       logger.info(
         `Creating Knode API Keychain ${knodeApiKeychainId} for owner ${ownerId}`,
       );
+
+      await assertKeychainNameIsUnique({
+        kind: "Knode API",
+        name: seed.name,
+        ownerId,
+        readmodelService,
+      });
 
       const now = new Date();
       const knodeApiKeychain: KnodeApiKeychain = {

@@ -11,7 +11,7 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type { Eservice } from "@knodia/eservice-models";
-import type { Purpose } from "@knodia/purpose-models";
+import type { LocalizedPurposeName, Purpose } from "@knodia/purpose-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -199,6 +199,14 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         );
 
       return result.at(0)?.totalDailyCalls ?? 0;
+    },
+    async purposeWithNameExists(query: {
+      consumerId: ExternalId<OrganizationId>;
+      consumerKnodeId: KnodeId;
+      eserviceId: EserviceId;
+      name: LocalizedPurposeName;
+    }): Promise<boolean> {
+      return await purposeReadmodelService.purposeWithNameExists(query);
     },
   };
 }
