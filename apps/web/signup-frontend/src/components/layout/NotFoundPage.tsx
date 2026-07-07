@@ -4,7 +4,7 @@ import { PageLayout } from "./PageLayout";
 export function NotFoundPage() {
   return (
     <PageLayout>
-      <section className="bg-primary-violet-surface flex-1 flex items-center justify-center">
+      <section className="bg-primary-violet-surface flex-1 flex items-center justify-center pt-63.5 pb-41.5">
         <div className="mx-auto max-w-172 px-12 text-center">
           <h1 className="text-style-section-title text-neutral-graphite">
             Looking for something specific?

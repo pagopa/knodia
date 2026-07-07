@@ -5,7 +5,6 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 
-import { NotFoundPage } from "@/components/layout/NotFoundPage";
 import { APP_BASE_PATH } from "@/config/basepath";
 import { type AuthContext } from "@/contexts/auth";
 import { queryClient } from "@/libs/tanstack-query";
@@ -23,7 +22,6 @@ export const router = createRouter({
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider
     queryClient,
   },
-  defaultNotFoundComponent: NotFoundPage,
   defaultPreload: "intent",
   // Since we're using React Query, we don't want loader calls to ever be stale
   // This will ensure that the loader is always called when the route is preloaded or visited
