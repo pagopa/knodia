@@ -10,13 +10,14 @@ export function NotFoundPage() {
             Looking for something specific?
           </h1>
           <p className="text-style-intro text-neutral-graphite mt-6">
-            We couldn’t find this page: the link might be broken on the page may
-            have been moved. <br />
+            We couldn't find this page: the link might be broken or the page may
+            have been moved.
+            <br />
             You can continue from here.
           </p>
 
           <div className="mt-12">
-            <ButtonLink to={"/home"}>Go to the homepage</ButtonLink>
+            <ButtonLink to="/home">Go to the homepage</ButtonLink>
           </div>
 
           <p className="text-style-small text-neutral-graphite mt-6">

@@ -12,7 +12,7 @@ export type ButtonLinkProps = ButtonLinkVariants & RACLinkProps;
 
 type ButtonLinkVariants = VariantProps<typeof buttonStyles>;
 
-function ButtonLinkInternal({ children, ...props }: ButtonLinkProps) {
+function ButtonLinkInternal({ children, variant, ...props }: ButtonLinkProps) {
   return (
     <RACLink
       {...props}
@@ -20,6 +20,7 @@ function ButtonLinkInternal({ children, ...props }: ButtonLinkProps) {
         buttonStyles({
           ...renderProps,
           className,
+          variant,
         }),
       )}
     >
