@@ -8,11 +8,13 @@ export function ServiceCard({ children }: { children: React.ReactNode }) {
 
 export function ServiceCardHeader({
   children,
+  clampText = false,
   description,
   headingLevel = 3,
   title,
 }: {
   children?: React.ReactNode;
+  clampText?: boolean;
   description?: string;
   headingLevel?: 2 | 3 | 4 | 5 | 6;
   title: string;
@@ -24,11 +26,15 @@ export function ServiceCardHeader({
       className={`flex gap-10 ${description ? "items-start" : "items-center"}`}
     >
       <div className="flex min-w-0 flex-1 flex-col">
-        <HeadingTag className="min-w-0 title-md-em truncate">
+        <HeadingTag
+          className={`min-w-0 title-md-em ${clampText ? "truncate" : ""}`}
+        >
           {title}
         </HeadingTag>
         {description && (
-          <p className="body-md text-primary-light-low-contrast line-clamp-2">
+          <p
+            className={`body-md text-primary-light-low-contrast ${clampText ? "line-clamp-2" : ""}`}
+          >
             {description}
           </p>
         )}

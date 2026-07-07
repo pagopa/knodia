@@ -54,6 +54,7 @@ export function EserviceCardHeader({
 }) {
   return (
     <ServiceCardHeader
+      clampText
       description={description}
       headingLevel={headingLevel}
       title={title}
