@@ -184,7 +184,7 @@ function GeneralInfoSection({
           </p>
         </div>
         {categories && categories.length > 0 && (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {categories.map((category) => (
               <Chip
                 key={`${category.scheme}$${category.code}`}
