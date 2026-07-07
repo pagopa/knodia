@@ -81,7 +81,7 @@ function UploadPublicKeyForm({ keychain, onClose }: UploadPublicKeyFormProps) {
 
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
     mutate(
-      { encodedPem: btoa(seed.pem), name: { en: seed.name } },
+      { encodedPem: btoa(seed.pem), name: { en: seed.name.trim() } },
       { onSuccess: onClose },
     );
   }

@@ -69,8 +69,8 @@ export function EditEServiceModal({
     onSubmit: ({ value }) => {
       const body: bffApi.EservicePatch = {
         categories: isTemplateInstance ? undefined : value.categories,
-        description: { en: value.description },
-        name: { en: value.name },
+        description: { en: value.description.trim() },
+        name: { en: value.name.trim() },
       };
       updateEservice({ body, path: { eserviceId: eservice.id } });
     },
