@@ -32,13 +32,9 @@ export function DetailsAndAttributesPage() {
           title="Contacts"
         >
           <div className="flex flex-col gap-6">
-            {/* TODO: Replace with real data when contacts API is available */}
-            <TextField
-              isReadOnly
-              label="E-mail address"
-              value="info@example.com"
-            />
-            <TextField isReadOnly label="Notes" value="Notes" />
+            {/* TODO(KN-884): replace with real data when contacts API is available */}
+            <TextField isReadOnly label="E-mail address" value="-" />
+            <TextField isReadOnly label="Notes" value="-" />
           </div>
         </Section>
 

@@ -49,9 +49,7 @@ export async function startSignalHubMockScheduler(
     try {
       await emitNow();
     } catch (err) {
-      deps.logger.error(
-        `Signal Hub emit failed: ${err instanceof Error ? err.message : String(err)}. Scheduling next.`,
-      );
+      deps.logger.error({ err }, "Signal Hub emit failed. Scheduling next.");
     }
     scheduleNext();
   };

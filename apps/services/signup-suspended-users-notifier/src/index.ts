@@ -35,11 +35,6 @@ try {
   });
   await shutdown("Suspended-users notification finished", 0);
 } catch (error) {
-  if (error instanceof Error) {
-    logger.error(`Error during suspended-users notification: ${error.message}`);
-  } else {
-    logger.error(`Unknown error during suspended-users notification: ${error}`);
-  }
-
+  logger.error({ err: error }, "Error during suspended-users notification");
   await shutdown("Suspended-users notification failed", 1);
 }
