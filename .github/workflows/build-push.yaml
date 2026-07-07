@@ -9,7 +9,7 @@ on:
     paths:
       - "apps/**"
       - "collections/**"
-      - "migrations/**"
+      - "migration/**"
       - "packages/**"
       - "terraform/**"
       - ".github/workflows/build-push.yaml"
