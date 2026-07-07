@@ -48,7 +48,7 @@ services:
   seed:
     security_opt:
       - no-new-privileges:true
-    image: amazon/aws-cli:2.34.25
+    image: amazon/aws-cli:2.34.25@sha256:3810b288da2dfde82de6d46b136c7f5d4a16fef01fc2135e0c8ec9e52c9d7ebb
     container_name: knodia-seed
     depends_on:
       flyway:
@@ -92,7 +92,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:8.1.1
+    image: confluentinc/cp-kafka:8.1.1@sha256:d20bd62f01826c454e88530efc6d73654cb4697182f37206742b96c7b947236e
     container_name: knodia-kafka
     ports:
       - 9092:9092
@@ -131,7 +131,7 @@ services:
   kafka-setup:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:8.1.1
+    image: confluentinc/cp-kafka:8.1.1@sha256:d20bd62f01826c454e88530efc6d73654cb4697182f37206742b96c7b947236e
     container_name: knodia-kafka-setup
     depends_on:
       kafka:
@@ -154,7 +154,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: quay.io/debezium/connect:3.4.1.Final
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:09443e62955559450f761eceb393008ec0ab0b72c6ad35981eee4f87439dc4d4
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -334,7 +334,7 @@ services:
   dynamodb-local:
     security_opt:
       - no-new-privileges:true
-    image: amazon/dynamodb-local:3.3.0
+    image: amazon/dynamodb-local:3.3.0@sha256:d89f8fcc6b1a39cb35976c248ed42a28c66ae00dc043099210f5571e42648ab4
     container_name: knodia-dynamodb-local
     ports:
       - 8085:8000
@@ -349,7 +349,7 @@ services:
   dynamodb-setup:
     security_opt:
       - no-new-privileges:true
-    image: amazon/aws-cli:2.34.25
+    image: amazon/aws-cli:2.34.25@sha256:3810b288da2dfde82de6d46b136c7f5d4a16fef01fc2135e0c8ec9e52c9d7ebb
     container_name: knodia-dynamodb-setup
     depends_on:
       dynamodb-local:
