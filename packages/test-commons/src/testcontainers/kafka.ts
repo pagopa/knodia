@@ -6,7 +6,12 @@ import type {
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
-import { initKafka, initKafkaAdmin, runConsumer } from "@knodia/kafka-commons";
+import {
+  createKafkaProducer,
+  initKafka,
+  initKafkaAdmin,
+  runConsumer,
+} from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 
 import { createTestLogger } from "../utils/logger.ts";
@@ -69,7 +74,7 @@ export async function setupKafkaTestProducerAndConsumer(
   await admin.createTopics({ topics: [{ topic: topicName }] });
   await admin.disconnect();
 
-  const producer = kafka.producer();
+  const producer = createKafkaProducer(kafka);
   await producer.connect();
 
   const kafkaConfig: KafkaConsumerConfig = {

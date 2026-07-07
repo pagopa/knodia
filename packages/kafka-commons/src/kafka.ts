@@ -9,6 +9,8 @@ import {
 
 import type { KafkaConfig } from "./config/config.ts";
 
+import { pinoKafkaLogger } from "./utils/kafkaLogger.ts";
+
 type MskAuth = NonNullable<KafkaConfig["mskAuth"]>;
 
 export async function initKafka(
@@ -30,10 +32,21 @@ export async function initKafka(
       }
     : {};
 
+  // The kafkaJS block routes the client's logs through pino (KN-869) but switches the
+  // client into KafkaJS-compat mode, which overrides some librdkafka defaults. We restore
+  // them to keep this log-only: the common ones here, producer/consumer-specific ones in
+  // their files. SASL stays librdkafka-flat (no kafkaJS form for the MSK callback).
   return new KafkaJS.Kafka({
-    "bootstrap.servers": config.kafkaBrokers,
-    "client.id": config.kafkaClientId,
-    log_level: config.kafkaLogLevel,
+    kafkaJS: {
+      brokers: config.kafkaBrokers.split(",").map((b) => b.trim()),
+      clientId: config.kafkaClientId,
+      logger: pinoKafkaLogger(logger),
+      logLevel: config.kafkaLogLevel,
+    },
+    "retry.backoff.max.ms": 1000,
+    "retry.backoff.ms": 100,
+    "socket.connection.setup.timeout.ms": 30000,
+    "socket.timeout.ms": 60000,
     ...saslConfigs,
   });
 }

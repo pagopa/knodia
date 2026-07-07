@@ -43,10 +43,16 @@ export async function runConsumer(
     const kafka = await initKafka(config, logger);
 
     const consumer = kafka.consumer({
+      // Consumer librdkafka defaults restored after KafkaJS-compat mode overrides them
+      // (see kafka.ts).
+      "allow.auto.create.topics": false,
       "auto.offset.reset": config.topicStartingOffset,
       "enable.auto.commit": false,
+      "fetch.message.max.bytes": 1048576,
       "group.id": config.kafkaGroupId,
+      "partition.assignment.strategy": "range,roundrobin",
       "retry.backoff.max.ms": 3000,
+      "session.timeout.ms": 45000,
     });
 
     errorEventsListener(consumer, logger, onShutdown);
