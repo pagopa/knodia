@@ -27,7 +27,7 @@ interface UploadPublicKeyFormProps {
 
 const modalTitle = "Upload public key";
 const modalDescription =
-  "To sign your private key, upload the matching public key.";
+  "To sign with your private key, upload the matching public key.";
 
 export function UploadPublicKeyModal({
   hasReachedMaxKeys,
