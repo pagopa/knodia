@@ -324,9 +324,8 @@ async function deleteKnodeUser(
     });
   }
 
-  // The group is exclusive to this signup user (one per deterministic org id)
-  // and each pool caps groups at 10000, so leaving it behind would eventually
-  // exhaust the pool.
+  // Safe to drop the whole group: it's exclusive to this signup user (one per
+  // deterministic org id).
   await cognitoClient.deleteOrganizationGroup({ organizationId });
 }
 
