@@ -393,8 +393,6 @@ async function provisionKnode(
 
   await cognitoClient.createOrganizationUser({
     email: user.email,
-    familyName: user.familyName,
-    givenName: user.name,
     organizationId,
     roles: [UserRole.enum.administrative, UserRole.enum.technical],
     username: entities.userName,
