@@ -302,8 +302,6 @@ describe("handleSignupMessage — OnboardingCompletedV1 provisioning", () => {
     expect(cognitoCreateUserMock).toHaveBeenCalledTimes(2);
     expect(cognitoCreateUserMock.mock.calls.at(0)?.at(0)).toMatchObject({
       email: "mario.rossi@example.org",
-      familyName: "Rossi",
-      givenName: "Mario",
       organizationId: orionOrgId,
       roles: ["administrative", "technical"],
       username: "mario.rossi.orion",

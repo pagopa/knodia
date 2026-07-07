@@ -35,8 +35,6 @@ export type CognitoIdmClient = ReturnType<typeof buildCognitoIdmClient>;
 const PROVISIONED_USER_ATTRIBUTES = [
   "email",
   "email_verified",
-  "given_name",
-  "family_name",
   "custom:roles",
 ] as const;
 
@@ -79,8 +77,6 @@ export function buildCognitoIdmClient({
 
     async createOrganizationUser(input: {
       email: string;
-      familyName: string;
-      givenName: string;
       organizationId: OrganizationId;
       roles: UserRole[];
       username: string;
@@ -93,8 +89,6 @@ export function buildCognitoIdmClient({
         "custom:roles": input.roles.join(","),
         email: input.email,
         email_verified: "true",
-        family_name: input.familyName,
-        given_name: input.givenName,
       };
 
       await swallowCognitoError("GroupExistsException", () =>

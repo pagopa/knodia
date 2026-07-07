@@ -33,8 +33,6 @@ describe("createOrganizationUser", () => {
 
     await buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
       email: "mario.rossi@example.org",
-      familyName: "Rossi",
-      givenName: "Mario",
       organizationId,
       roles: [UserRole.enum.administrative, UserRole.enum.technical],
       username: "mario.rossi",
@@ -63,11 +61,11 @@ describe("createOrganizationUser", () => {
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
-    expect(createUser.input.UserAttributes).toEqual(
-      expect.arrayContaining([
-        { Name: "custom:roles", Value: "administrative,technical" },
-      ]),
-    );
+    expect(createUser.input.UserAttributes).toEqual([
+      { Name: "email", Value: "mario.rossi@example.org" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ]);
 
     const addToGroup = membershipCall.at(0) as AdminAddUserToGroupCommand;
     expect(addToGroup).toBeInstanceOf(AdminAddUserToGroupCommand);
@@ -95,8 +93,6 @@ describe("createOrganizationUser", () => {
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
         email: "a@b.co",
-        familyName: "F",
-        givenName: "G",
         organizationId: generateId<OrganizationId>(),
         roles: [UserRole.enum.technical],
         username: "u",
@@ -114,8 +110,6 @@ describe("createOrganizationUser", () => {
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
         email: "a@b.co",
-        familyName: "F",
-        givenName: "G",
         organizationId: generateId<OrganizationId>(),
         roles: [UserRole.enum.technical],
         username: "u",
@@ -344,13 +338,7 @@ describe("disableAndRedactOrganizationUser", () => {
       ?.at(0) as AdminDeleteUserAttributesCommand;
     expect(deleteAttributes).toBeInstanceOf(AdminDeleteUserAttributesCommand);
     expect(deleteAttributes.input).toMatchObject({
-      UserAttributeNames: [
-        "email",
-        "email_verified",
-        "given_name",
-        "family_name",
-        "custom:roles",
-      ],
+      UserAttributeNames: ["email", "email_verified", "custom:roles"],
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
