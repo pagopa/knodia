@@ -21,6 +21,7 @@ import {
   UserNotFoundException,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { rethrowSettledFailures } from "@knodia/common-models/utils";
 import { randomBytes } from "node:crypto";
 import { match } from "ts-pattern";
 
@@ -31,14 +32,15 @@ import { toIdmUser } from "./converters.ts";
 
 export type CognitoIdmClient = ReturnType<typeof buildCognitoIdmClient>;
 
-// Must stay in sync with the attributes createOrganizationUser sets.
 const PROVISIONED_USER_ATTRIBUTES = [
   "email",
   "email_verified",
   "given_name",
   "family_name",
   "custom:roles",
-];
+] as const;
+
+type ProvisionedUserAttribute = (typeof PROVISIONED_USER_ATTRIBUTES)[number];
 
 export function buildCognitoIdmClient({
   cognitoUserPoolId,
@@ -85,6 +87,16 @@ export function buildCognitoIdmClient({
     }): Promise<void> {
       const groupName = getOrganizationGroupName(input.organizationId);
 
+      // The Record over PROVISIONED_USER_ATTRIBUTES guarantees the redaction
+      // fallback deletes exactly what provisioning sets.
+      const attributeValues: Record<ProvisionedUserAttribute, string> = {
+        "custom:roles": input.roles.join(","),
+        email: input.email,
+        email_verified: "true",
+        family_name: input.familyName,
+        given_name: input.givenName,
+      };
+
       await swallowCognitoError("GroupExistsException", () =>
         client.send(
           new CreateGroupCommand({
@@ -100,13 +112,10 @@ export function buildCognitoIdmClient({
         client.send(
           new AdminCreateUserCommand({
             DesiredDeliveryMediums: ["EMAIL"],
-            UserAttributes: [
-              { Name: "email", Value: input.email },
-              { Name: "email_verified", Value: "true" },
-              { Name: "given_name", Value: input.givenName },
-              { Name: "family_name", Value: input.familyName },
-              { Name: "custom:roles", Value: input.roles.join(",") },
-            ],
+            UserAttributes: PROVISIONED_USER_ATTRIBUTES.map((name) => ({
+              Name: name,
+              Value: attributeValues[name],
+            })),
             Username: input.username,
             UserPoolId: cognitoUserPoolId,
           }),
@@ -151,7 +160,7 @@ export function buildCognitoIdmClient({
         ),
         client.send(
           new AdminDeleteUserAttributesCommand({
-            UserAttributeNames: PROVISIONED_USER_ATTRIBUTES,
+            UserAttributeNames: [...PROVISIONED_USER_ATTRIBUTES],
             Username: input.username,
             UserPoolId: cognitoUserPoolId,
           }),
@@ -165,15 +174,7 @@ export function buildCognitoIdmClient({
         ),
       ]);
 
-      const failures = results.filter((r) => r.status === "rejected");
-
-      if (failures.length === 0) return;
-
-      if (failures.length === 1) {
-        throw failures[0]?.reason;
-      }
-
-      throw new AggregateError(failures.map((failure) => failure.reason));
+      rethrowSettledFailures(results);
     },
 
     async disableUser(input: { username: string }): Promise<void> {

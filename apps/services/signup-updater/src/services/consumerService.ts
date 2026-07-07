@@ -10,7 +10,10 @@ import {
   type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { isPgUniqueViolation } from "@knodia/common-models/utils";
+import {
+  isPgUniqueViolation,
+  rethrowSettledFailures,
+} from "@knodia/common-models/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -338,15 +341,7 @@ async function forEachKnode(
     }),
   );
 
-  const failures = results.filter((r) => r.status === "rejected");
-
-  if (failures.length === 0) return;
-
-  if (failures.length === 1) {
-    throw failures[0]?.reason;
-  }
-
-  throw new AggregateError(failures.map((failure) => failure.reason));
+  rethrowSettledFailures(results);
 }
 
 // A 409 here means the org name is already taken by a different organization.
