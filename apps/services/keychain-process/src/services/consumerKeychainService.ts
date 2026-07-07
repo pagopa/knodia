@@ -534,6 +534,21 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
+      // Skip when unchanged or a case-only rename — the lookup would match
+      // this keychain itself and reject the update.
+      if (
+        update.name !== undefined &&
+        update.name.en.toLowerCase() !==
+          consumerKeychain.data.name.en.toLowerCase()
+      ) {
+        await assertKeychainNameIsUnique({
+          kind: "Consumer",
+          name: update.name,
+          ownerId: consumerKeychain.data.ownerId,
+          readmodelService,
+        });
+      }
+
       const updatedConsumerKeychain = updateKeychain(
         consumerKeychain.data,
         update,

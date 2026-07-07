@@ -446,6 +446,10 @@ export type UpdateConsumerKeychainErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
@@ -1269,6 +1273,10 @@ export type UpdateKnodeApiKeychainErrors = {
      * Knode API Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateKnodeApiKeychainError = UpdateKnodeApiKeychainErrors[keyof UpdateKnodeApiKeychainErrors];
@@ -1897,6 +1905,10 @@ export type UpdateProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type UpdateProducerKeychainError = UpdateProducerKeychainErrors[keyof UpdateProducerKeychainErrors];

@@ -136,6 +136,39 @@ describe("PATCH /knodeApiKeychains/:knodeApiKeychainId (KnodeApiKeychainPatch)",
     expect(response.statusCode).toBe(403);
   });
 
+  it("should return 409 if renaming to the name of another knode API keychain of the same owner", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+    const other = {
+      ...getMockKnodeApiKeychain(1),
+      ownerId: knodeApiKeychain.ownerId,
+    };
+    await seedKnodeApiKeychain(other);
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[0]!,
+      organizationId: knodeApiKeychain.ownerId,
+      type: "ui-session",
+    })
+      .patch(`/knodeApiKeychains/${knodeApiKeychain.id}`)
+      .body({ name: { en: other.name.en } });
+
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should allow a case-only rename of the knode API keychain's own name", async () => {
+    await seedKnodeApiKeychain(knodeApiKeychain);
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[0]!,
+      organizationId: knodeApiKeychain.ownerId,
+      type: "ui-session",
+    })
+      .patch(`/knodeApiKeychains/${knodeApiKeychain.id}`)
+      .body({ name: { en: knodeApiKeychain.name.en.toUpperCase() } });
+
+    expect(response.statusCode).toBe(200);
+  });
+
   it("should return 404 if the Knode API keychain does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .patch(`/knodeApiKeychains/${generateId()}`)

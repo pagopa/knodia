@@ -156,6 +156,31 @@ describe("PATCH /producerKeychains/:producerKeychainId (ProducerKeychainPatch)",
     expect(response.statusCode).toBe(403);
   });
 
+  it("should return 409 if renaming to the name of another producer keychain of the same owner", async () => {
+    await seedProducerKeychain(producerKeychain);
+    const other = {
+      ...getMockProducerKeychain(1),
+      ownerId: producerKeychain.ownerId,
+    };
+    await seedProducerKeychain(other);
+
+    const response = await updateProducerKeychain({
+      requestBody: { name: { en: other.name.en } },
+    });
+
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should allow a case-only rename of the producer keychain's own name", async () => {
+    await seedProducerKeychain(producerKeychain);
+
+    const response = await updateProducerKeychain({
+      requestBody: { name: { en: producerKeychain.name.en.toUpperCase() } },
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
   it("should return 404 if the producer keychain does not exist", async () => {
     const response = await updateProducerKeychain({
       producerKeychainId: generateId<ProducerKeychainId>(),

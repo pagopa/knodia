@@ -2308,6 +2308,10 @@ export type UpdateConsumerKeychainErrors = {
      */
     404: Problem;
     /**
+     * Conflict
+     */
+    409: Problem;
+    /**
      * Too Many Requests
      */
     429: Problem;
@@ -2956,6 +2960,10 @@ export type UpdateKnodeApiKeychainErrors = {
      */
     404: Problem;
     /**
+     * Conflict
+     */
+    409: Problem;
+    /**
      * Too Many Requests
      */
     429: Problem;
@@ -3549,6 +3557,10 @@ export type UpdateProducerKeychainErrors = {
      * Producer Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
     /**
      * Too Many Requests
      */

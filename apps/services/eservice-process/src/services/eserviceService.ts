@@ -392,6 +392,20 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
+      // Case-insensitive guard: skip the check when the name is unchanged
+      // (or a case-only rename), otherwise the lookup would match the
+      // e-service itself and reject the update.
+      if (
+        update.name !== undefined &&
+        update.name.en.toLowerCase() !== eservice.name.en.toLowerCase()
+      ) {
+        await assertEserviceNameIsUnique(
+          update.name,
+          eservice.producerId,
+          readmodelService,
+        );
+      }
+
       if (update.categories !== undefined) {
         assertCategoriesCanBeUpdated(eservice);
         assertValidCategories(update.categories);

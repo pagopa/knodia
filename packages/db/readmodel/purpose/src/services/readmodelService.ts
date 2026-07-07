@@ -29,9 +29,6 @@ export function purposeReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return aggregatePurpose(queryRes);
     },
-    // Returns a bare existence flag instead of the aggregated purpose because
-    // the name match may hit multiple rows (duplicates created before the
-    // uniqueness check existed), which the aggregator would reject.
     async purposeWithNameExists({
       consumerId,
       consumerKnodeId,

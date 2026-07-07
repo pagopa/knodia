@@ -752,6 +752,14 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     delete:
       operationId: deleteConsumerKeychain
       tags:
@@ -1978,6 +1986,14 @@ paths:
                 description: Knode API Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     delete:
       operationId: deleteKnodeApiKeychain
       tags:
@@ -2909,6 +2925,14 @@ paths:
             application/problem+json:
               schema:
                 description: Producer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     delete:

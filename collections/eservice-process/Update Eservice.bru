@@ -22,7 +22,7 @@ headers {
 body:json {
   {
     "name": {
-      "en": "Updated name"
+      "en": "{{updatedEserviceName}}"
     },
     "description": {
       "en": "Updated description"
@@ -34,4 +34,8 @@ body:json {
       }
     ]
   }
+}
+
+script:pre-request {
+  bru.setVar("updatedEserviceName", bru.getEnvVar("fixedName") || "Updated name")
 }

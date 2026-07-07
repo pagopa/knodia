@@ -30,5 +30,5 @@ body:json {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  bru.setVar("updatedConsumerKeychainName", `Updated Consumer Keychain ${random}`)
+  bru.setVar("updatedConsumerKeychainName", bru.getEnvVar("fixedName") || `Updated Consumer Keychain ${random}`)
 }

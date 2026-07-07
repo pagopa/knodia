@@ -509,6 +509,21 @@ export function producerKeychainServiceBuilder(
         readmodelService,
       );
 
+      // Skip when unchanged or a case-only rename — the lookup would match
+      // this keychain itself and reject the update.
+      if (
+        update.name !== undefined &&
+        update.name.en.toLowerCase() !==
+          producerKeychain.data.name.en.toLowerCase()
+      ) {
+        await assertKeychainNameIsUnique({
+          kind: "Producer",
+          name: update.name,
+          ownerId: producerKeychain.data.ownerId,
+          readmodelService,
+        });
+      }
+
       const updatedProducerKeychain = updateKeychain(
         producerKeychain.data,
         update,

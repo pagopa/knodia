@@ -217,6 +217,39 @@ describe("PATCH /eservices/:eserviceId (updateEservice) - error cases", () => {
     expect(response.statusCode).toBe(409);
   });
 
+  it("should return 409 if renaming to the name of another e-service of the same producer", async () => {
+    const eservice = makeEserviceWithVersionState(
+      EserviceVersionState.enum.Active,
+      211,
+    );
+    const other = makeEserviceWithVersionState(
+      EserviceVersionState.enum.Active,
+      212,
+    );
+    await seedEservice(eservice);
+    await seedEservice(other);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .patch(`/eservices/${eservice.id}`)
+      .body({ name: { en: other.name.en } });
+
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should allow a case-only rename of the e-service's own name", async () => {
+    const eservice = makeEserviceWithVersionState(
+      EserviceVersionState.enum.Active,
+      213,
+    );
+    await seedEservice(eservice);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .patch(`/eservices/${eservice.id}`)
+      .body({ name: { en: eservice.name.en.toUpperCase() } });
+
+    expect(response.statusCode).toBe(200);
+  });
+
   it("should return 403 if caller is not the producer", async () => {
     const eservice = makeEserviceWithVersionState(
       EserviceVersionState.enum.Active,
