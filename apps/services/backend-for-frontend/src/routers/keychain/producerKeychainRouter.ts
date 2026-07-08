@@ -627,12 +627,14 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
 
       const content = Buffer.from(key.encodedPem, "base64");
 
-      sendFileDownload(
-        res,
+      const fileName = `public_key_${keyId}.pem`;
+      sendFileDownload({
         content,
-        `public_key_${keyId}.pem`,
-        "text/plain; charset=utf-8",
-      );
+        contentType: "text/plain; charset=utf-8",
+        fileName,
+        filePrettyName: fileName,
+        res,
+      });
     },
     method: "GET",
     schema: {

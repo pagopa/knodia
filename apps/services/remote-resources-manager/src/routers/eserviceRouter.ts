@@ -195,7 +195,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           ctx,
         );
 
-      sendFileDownload(res, buffer, fileName, contentType);
+      sendFileDownload({
+        content: buffer,
+        contentType,
+        fileName,
+        filePrettyName: fileName,
+        res,
+      });
     },
     method: "GET",
     schema: {

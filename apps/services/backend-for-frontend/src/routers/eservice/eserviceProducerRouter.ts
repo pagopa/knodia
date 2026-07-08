@@ -582,7 +582,13 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         key: data.path,
       });
 
-      sendFileDownload(res, content, data.name, data.contentType);
+      sendFileDownload({
+        content,
+        contentType: data.contentType,
+        fileName: data.name,
+        filePrettyName: data.prettyName.en,
+        res,
+      });
     },
     method: "GET",
     schema: {

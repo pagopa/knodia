@@ -40,13 +40,29 @@ export function sanitizeFileName(fileName: string): string {
   return cleaned === "" || /^\.+$/.test(cleaned) ? FALLBACK_FILE_NAME : cleaned;
 }
 
-export function sendFileDownload(
-  res: FastifyReply,
-  content: Buffer | string,
-  fileName: string,
-  contentType: string,
-): void {
-  const safeName = sanitizeFileName(fileName);
+export function sendFileDownload({
+  content,
+  contentType,
+  fileName,
+  filePrettyName,
+  res,
+}: {
+  content: Buffer | string;
+  contentType: string;
+  fileName: string;
+  filePrettyName: string;
+  res: FastifyReply;
+}): void {
+  const extDotIndex = fileName.lastIndexOf(".");
+  const ext = extDotIndex > 0 ? fileName.slice(extDotIndex) : "";
+
+  const prettyNameDotIndex = filePrettyName.lastIndexOf(".");
+  const prettyNameBase =
+    prettyNameDotIndex > 0
+      ? filePrettyName.slice(0, prettyNameDotIndex)
+      : filePrettyName;
+
+  const safeName = sanitizeFileName(`${prettyNameBase}${ext}`);
   const asciiFallback = safeName.replace(NON_ASCII_PRINTABLE, "_");
   res.raw.writeHead(200, {
     "Content-Disposition": `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeRFC5987(safeName)}`,

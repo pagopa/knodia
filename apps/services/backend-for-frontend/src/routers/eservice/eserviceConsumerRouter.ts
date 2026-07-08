@@ -313,12 +313,13 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           : undefined,
       );
 
-      sendFileDownload(
-        res,
-        Buffer.from(blob as unknown as ArrayBuffer),
-        fileName,
+      sendFileDownload({
+        content: Buffer.from(blob as unknown as ArrayBuffer),
         contentType,
-      );
+        fileName,
+        filePrettyName: fileName,
+        res,
+      });
     },
     method: "GET",
     schema: {
