@@ -41,6 +41,12 @@ const PROVISIONED_USER_ATTRIBUTES = [
 
 type ProvisionedUserAttribute = (typeof PROVISIONED_USER_ATTRIBUTES)[number];
 
+// email_verified is non-mutable (Cognito rejects deleting it) and not PII, so
+// redaction skips it and strips only the rest of the provisioned attributes.
+const REDACTED_USER_ATTRIBUTES = PROVISIONED_USER_ATTRIBUTES.filter(
+  (name) => name !== "email_verified",
+);
+
 export function buildCognitoIdmClient({
   cognitoUserPoolId,
 }: CognitoIdmClientConfig) {
@@ -173,7 +179,7 @@ export function buildCognitoIdmClient({
         ),
         client.send(
           new AdminDeleteUserAttributesCommand({
-            UserAttributeNames: [...PROVISIONED_USER_ATTRIBUTES],
+            UserAttributeNames: REDACTED_USER_ATTRIBUTES,
             Username: input.username,
             UserPoolId: cognitoUserPoolId,
           }),
