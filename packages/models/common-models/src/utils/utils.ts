@@ -34,3 +34,21 @@ export function isPgUniqueViolation(error: unknown): boolean {
     error.cause.code === PG_UNIQUE_VIOLATION
   );
 }
+
+/**
+ * Rethrows the failures of settled promises: the single reason when one
+ * failed, an AggregateError when several did. No-op when all fulfilled.
+ */
+export function rethrowSettledFailures(
+  results: readonly PromiseSettledResult<unknown>[],
+): void {
+  const failures = results.filter((r) => r.status === "rejected");
+
+  if (failures.length === 0) return;
+
+  if (failures.length === 1) {
+    throw failures[0]?.reason;
+  }
+
+  throw new AggregateError(failures.map((failure) => failure.reason));
+}

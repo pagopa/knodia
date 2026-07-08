@@ -491,6 +491,22 @@ function handleCreateGroup(req, res, payload) {
   );
 }
 
+function handleDeleteGroup(req, res, payload) {
+  // Groups only exist as membership strings on users; deleting the group
+  // drops it from every member, like real Cognito does.
+  for (const user of MOCK_USERS) {
+    user.Groups = (user.Groups ?? []).filter((g) => g !== payload.GroupName);
+  }
+
+  console.log(
+    `[delete-group] ${sanitizeForLog(payload.GroupName)} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
@@ -578,6 +594,21 @@ function handleAdminAddUserToGroup(req, res, payload) {
   });
 }
 
+function handleAdminRemoveUserFromGroup(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Groups = (user.Groups ?? []).filter((g) => g !== payload.GroupName);
+  }
+
+  console.log(
+    `[admin-remove-user-from-group] ${sanitizeForLog(payload.Username)} -x- ${sanitizeForLog(payload.GroupName)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminUpdateUserAttributes(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   if (user) {
@@ -595,6 +626,25 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
 
   console.log(
     `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminDeleteUserAttributes(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    const names = payload.UserAttributeNames ?? [];
+    user.Attributes = (user.Attributes ?? []).filter(
+      (attribute) => !names.includes(attribute.Name),
+    );
+    user.UserLastModifiedDate = NOW_IN_SECONDS;
+  }
+
+  console.log(
+    `[admin-delete-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -719,6 +769,11 @@ createServer(async (req, res) => {
         return;
       }
 
+      if (target === "AWSCognitoIdentityProviderService.DeleteGroup") {
+        handleDeleteGroup(req, res, payload);
+        return;
+      }
+
       if (target === "AWSCognitoIdentityProviderService.AdminCreateUser") {
         handleAdminCreateUser(req, res, payload);
         return;
@@ -730,10 +785,25 @@ createServer(async (req, res) => {
       }
 
       if (
+        target === "AWSCognitoIdentityProviderService.AdminRemoveUserFromGroup"
+      ) {
+        handleAdminRemoveUserFromGroup(req, res, payload);
+        return;
+      }
+
+      if (
         target ===
         "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
       ) {
         handleAdminUpdateUserAttributes(req, res, payload);
+        return;
+      }
+
+      if (
+        target ===
+        "AWSCognitoIdentityProviderService.AdminDeleteUserAttributes"
+      ) {
+        handleAdminDeleteUserAttributes(req, res, payload);
         return;
       }
 

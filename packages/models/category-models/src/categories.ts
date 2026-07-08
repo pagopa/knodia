@@ -1,9 +1,4 @@
-interface Category {
-  code: string;
-  description: string;
-  name: string;
-  scheme: string;
-}
+import z from "zod";
 
 export const categories = {
   vc_example_eservice_categories: {
@@ -61,10 +56,10 @@ const categoryDescriptions = {
   },
 } as const satisfies { [S in CategoryScheme]: Record<CategoryCode<S>, string> };
 
-export function getCategory(
-  scheme: string,
-  code: string,
-): Category | undefined {
+export function getCategory({
+  code,
+  scheme,
+}: CategoryId): Category | undefined {
   const c: Record<string, Record<string, string>> = categories;
   const d: Record<string, Record<string, string>> = categoryDescriptions;
   const name = c[scheme]?.[code];
@@ -72,13 +67,29 @@ export function getCategory(
   if (name === undefined || description === undefined) {
     return undefined;
   }
-  return { code, description, name, scheme };
+  return { description, id: { code, scheme }, name };
 }
+
+// A category is a reference into an external dictionary, not a Knodia-owned
+// entity, so it is identified by the (scheme, code) pair that locates it in
+// that dictionary rather than by a UUID. Mirrors AttributeId.
+export const CategoryId = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type CategoryId = z.infer<typeof CategoryId>;
+
+export const Category = z.strictObject({
+  description: z.string(),
+  id: CategoryId,
+  name: z.string(),
+});
+export type Category = z.infer<typeof Category>;
 
 const allCategories: Category[] = Object.entries(categories).flatMap(
   ([scheme, codes]) =>
     Object.keys(codes)
-      .map((code) => getCategory(scheme, code))
+      .map((code) => getCategory({ code, scheme }))
       .filter((category): category is Category => category !== undefined),
 );
 

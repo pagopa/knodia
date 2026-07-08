@@ -7,6 +7,7 @@ import { useAuthContext } from "@/contexts/auth";
 import { Header } from "./Header";
 
 vi.mock("@tanstack/react-router", () => ({
+  createLink: (component: React.ComponentType) => component,
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }));
 
