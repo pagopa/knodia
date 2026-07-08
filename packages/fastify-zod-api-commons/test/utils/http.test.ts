@@ -1,12 +1,12 @@
 import type { FastifyReply } from "fastify";
 
-import { describe, expect, it, vi } from "vitest";
-
 import {
   parseContentDispositionFileName,
   sanitizeFileName,
-  sendFileDownload,
-} from "../../src/utils/http.ts";
+} from "@knodia/common-models/utils";
+import { describe, expect, it, vi } from "vitest";
+
+import { sendFileDownload } from "../../src/utils/http.ts";
 
 describe("sanitizeFileName", () => {
   it("strips path components, keeping only the base name", () => {
@@ -50,10 +50,17 @@ describe("sendFileDownload", () => {
   it("emits an ASCII fallback plus an RFC 5987 filename* parameter", () => {
     const { end, res, writeHead } = mockReply();
 
-    sendFileDownload(res, "content", "specifica-è.json", "application/json");
+    const prettyName = "specifica-è.v2";
+    sendFileDownload({
+      content: "content",
+      contentType: "application/json",
+      fileName: "test.json",
+      filePrettyName: prettyName,
+      res,
+    });
 
     expect(contentDispositionOf(writeHead)).toBe(
-      "attachment; filename=\"specifica-_.json\"; filename*=UTF-8''specifica-%C3%A8.json",
+      "attachment; filename=\"specifica-_.v2.json\"; filename*=UTF-8''specifica-%C3%A8.v2.json",
     );
     expect(end).toHaveBeenCalledWith("content");
   });
@@ -61,7 +68,14 @@ describe("sendFileDownload", () => {
   it("neutralizes quote injection in the filename", () => {
     const { res, writeHead } = mockReply();
 
-    sendFileDownload(res, "content", 'spec "v2".yaml', "application/yaml");
+    const prettyName = 'spec "v2"';
+    sendFileDownload({
+      content: "content",
+      contentType: "application/yaml",
+      fileName: `${prettyName}.yaml`,
+      filePrettyName: prettyName,
+      res,
+    });
 
     expect(contentDispositionOf(writeHead)).toBe(
       "attachment; filename=\"spec v2.yaml\"; filename*=UTF-8''spec%20v2.yaml",
@@ -71,12 +85,14 @@ describe("sendFileDownload", () => {
   it("neutralizes CRLF header injection", () => {
     const { res, writeHead } = mockReply();
 
-    sendFileDownload(
+    const prettyName = "evil\r\nSet-Cookie: pwned";
+    sendFileDownload({
+      content: "content",
+      contentType: "application/yaml",
+      fileName: `${prettyName}.yaml`,
+      filePrettyName: prettyName,
       res,
-      "content",
-      "evil\r\nSet-Cookie: pwned.yaml",
-      "application/yaml",
-    );
+    });
 
     // CR/LF are stripped, so the residual text stays inside the quoted filename
     // and the header is a single safe line.
@@ -84,6 +100,26 @@ describe("sendFileDownload", () => {
       "attachment; filename=\"evilSet-Cookie: pwned.yaml\"; filename*=UTF-8''evilSet-Cookie%3A%20pwned.yaml",
     );
   });
+
+  it.each([undefined, ""])(
+    "falls back to the original fileName when filePrettyName is undefined or is empty",
+    (filePrettyName) => {
+      const { end, res, writeHead } = mockReply();
+
+      sendFileDownload({
+        content: "content",
+        contentType: "application/json",
+        fileName: "test.json",
+        filePrettyName,
+        res,
+      });
+
+      expect(contentDispositionOf(writeHead)).toBe(
+        "attachment; filename=\"test.json\"; filename*=UTF-8''test.json",
+      );
+      expect(end).toHaveBeenCalledWith("content");
+    },
+  );
 });
 
 describe("parseContentDispositionFileName", () => {
@@ -111,7 +147,14 @@ describe("parseContentDispositionFileName", () => {
       raw: { end: vi.fn(), writeHead },
     } as unknown as FastifyReply;
 
-    sendFileDownload(res, "content", 'spec "v2".yaml', "application/yaml");
+    const prettyName = 'spec "v2"';
+    sendFileDownload({
+      content: "content",
+      contentType: "application/yaml",
+      fileName: `${prettyName}.yaml`,
+      filePrettyName: prettyName,
+      res,
+    });
     const header = writeHead.mock.calls.at(0)?.[1]["Content-Disposition"];
 
     expect(parseContentDispositionFileName(header)).toBe("spec v2.yaml");

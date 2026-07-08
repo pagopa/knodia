@@ -266,7 +266,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         key: metadata.path,
       });
 
-      sendFileDownload(res, content, metadata.name, metadata.contentType);
+      sendFileDownload({
+        content,
+        contentType: metadata.contentType,
+        fileName: metadata.name,
+        filePrettyName: metadata.prettyName.en,
+        res,
+      });
     },
     method: "GET",
     schema: {
