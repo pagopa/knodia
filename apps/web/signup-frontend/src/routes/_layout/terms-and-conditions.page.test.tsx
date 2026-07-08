@@ -14,6 +14,7 @@ vi.mock("@tanstack/react-router", () => ({
     useNavigate: () => hoisted.navigate,
     useSearch: () => hoisted.search,
   }),
+  createLink: (component: React.ComponentType) => component,
 }));
 
 vi.mock("@/contexts/auth", () => ({

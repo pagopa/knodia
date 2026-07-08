@@ -9,7 +9,7 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { type EserviceId } from "@knodia/common-models/ids";
-import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
+import { parseContentDispositionFileName } from "@knodia/common-models/utils";
 import {
   assertEntityExists,
   getExternalEntitiesMap,
