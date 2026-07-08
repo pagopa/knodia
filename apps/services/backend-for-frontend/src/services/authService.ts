@@ -305,6 +305,11 @@ export function authServiceBuilder({
       uiSessionToken: string;
     }> {
       const claims = await validateCognitoToken(cognitoToken);
+      // The Cognito token stays valid for its own TTL (~1h) after the user is
+      // deleted/disabled, so a client can keep exchanging it for fresh sessions.
+      // Re-check the user here, like the refresh path does, or a removed user
+      // stays logged in until their Cognito token expires.
+      await assertCognitoUserIsEnabled(claims);
       await rateLimit(claims.organizationId);
       return generateTokenPairFromClaims(claims);
     },

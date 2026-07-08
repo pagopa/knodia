@@ -130,6 +130,13 @@ function setupValidCognitoToken(
     payload: makeCognitoPayload(payloadOverrides),
     protectedHeader: { alg: "RS256" },
   });
+  mockGetUserById.mockResolvedValue({
+    email: "test-user@example.com",
+    enabled: true,
+    id: TEST_USER_ID,
+    roles: ["administrative", "technical"],
+    username: "test-user",
+  });
 }
 
 function setupValidRefreshToken(overrides: Record<string, unknown> = {}) {
@@ -226,6 +233,42 @@ describe("auth integration", () => {
       expect(uiPayload.roles).toEqual(["administrative", "technical"]);
       expect(uiPayload.username).toBe("test-user");
       expect(uiPayload.type).toBe("ui-session");
+    });
+
+    it("returns 401 when the Cognito user does not exist", async () => {
+      setupValidCognitoToken();
+      mockGetUserById.mockResolvedValue(undefined);
+
+      const response = await injectWithAllowedOrigin({
+        method: "POST",
+        payload: { oidcToken: "valid-cognito-token" },
+        url: "/auth/uiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(mockGetUserById).toHaveBeenCalledWith("test-user");
+      expect(mockKmsSend).not.toHaveBeenCalled();
+    });
+
+    it("returns 401 when the Cognito user is disabled", async () => {
+      setupValidCognitoToken();
+      mockGetUserById.mockResolvedValue({
+        email: "test-user@example.com",
+        enabled: false,
+        id: TEST_USER_ID,
+        roles: ["administrative", "technical"],
+        username: "test-user",
+      });
+
+      const response = await injectWithAllowedOrigin({
+        method: "POST",
+        payload: { oidcToken: "valid-cognito-token" },
+        url: "/auth/uiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(mockGetUserById).toHaveBeenCalledWith("test-user");
+      expect(mockKmsSend).not.toHaveBeenCalled();
     });
 
     it("sets HttpOnly refresh cookie on successful login", async () => {
