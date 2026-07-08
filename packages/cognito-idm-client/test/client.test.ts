@@ -12,6 +12,7 @@ import {
   CognitoIdentityProviderClient,
   CreateGroupCommand,
   DeleteGroupCommand,
+  InternalErrorException,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { UserRole } from "@knodia/common-models/auth";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
@@ -484,15 +485,19 @@ describe("disableUser", () => {
   });
 
   it("rethrows non-ignored errors", async () => {
+    const failure = new InternalErrorException({
+      $metadata: { httpStatusCode: 500 },
+      message: "Internal server error.",
+    });
     vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
-      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+      failure,
     );
 
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
         username: "u",
       }),
-    ).rejects.toThrow("boom");
+    ).rejects.toBe(failure);
   });
 });
 

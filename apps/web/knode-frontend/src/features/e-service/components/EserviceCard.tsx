@@ -4,17 +4,10 @@ import { Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
+import { ServiceCardHeader } from "@/components/ServiceCard";
 
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
-
-export function EserviceCard({ children }: { children: React.ReactNode }) {
-  return (
-    <article className="p-4 flex flex-col gap-4 rounded-eservice-card shadow-eservice-card border border-eservice-card-border">
-      {children}
-    </article>
-  );
-}
 
 export function EserviceCardFooter({
   children,
@@ -59,36 +52,25 @@ export function EserviceCardHeader({
   title: string;
   to: string;
 }) {
-  const HeadingTag = `h${headingLevel}` as const;
-
   return (
-    <header
-      className={`flex gap-10 ${description ? "items-start" : "items-center"}`}
+    <ServiceCardHeader
+      clampText
+      description={description}
+      headingLevel={headingLevel}
+      title={title}
     >
-      <div className="flex min-w-0 flex-1 flex-col">
-        <HeadingTag className="min-w-0 title-md-em truncate">
-          {title}
-        </HeadingTag>
-        {description && (
-          <p className="body-md text-primary-light-low-contrast line-clamp-2">
-            {description}
-          </p>
-        )}
-      </div>
-      <div className="flex items-center gap-4">
-        {badge}
-        <ButtonLinkWithPreload
-          aria-label="Go to e-service"
-          hierarchy="neutral"
-          kind="outlined"
-          params={{ id }}
-          search={search}
-          size="icon-md"
-          to={to}
-        >
-          <ArrowRightIcon />
-        </ButtonLinkWithPreload>
-      </div>
-    </header>
+      {badge}
+      <ButtonLinkWithPreload
+        aria-label="Go to e-service"
+        hierarchy="neutral"
+        kind="outlined"
+        params={{ id }}
+        search={search}
+        size="icon-md"
+        to={to}
+      >
+        <ArrowRightIcon />
+      </ButtonLinkWithPreload>
+    </ServiceCardHeader>
   );
 }
