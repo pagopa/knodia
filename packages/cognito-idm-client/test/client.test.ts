@@ -338,7 +338,8 @@ describe("disableAndRedactOrganizationUser", () => {
       ?.at(0) as AdminDeleteUserAttributesCommand;
     expect(deleteAttributes).toBeInstanceOf(AdminDeleteUserAttributesCommand);
     expect(deleteAttributes.input).toMatchObject({
-      UserAttributeNames: ["email", "email_verified", "custom:roles"],
+      // email_verified is non-mutable in Cognito, so redaction must not try to delete it.
+      UserAttributeNames: ["email", "custom:roles"],
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
