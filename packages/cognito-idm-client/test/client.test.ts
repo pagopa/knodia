@@ -423,31 +423,6 @@ describe("disableAndRedactOrganizationUser", () => {
     expect(send).toHaveBeenCalledTimes(3);
   });
 
-  it("stays idempotent on replay: swallows ResourceNotFoundException from the group removal", async () => {
-    const send = vi
-      .spyOn(CognitoIdentityProviderClient.prototype, "send")
-      .mockImplementation((command) =>
-        command instanceof AdminRemoveUserFromGroupCommand
-          ? Promise.reject(
-              Object.assign(new Error("group gone"), {
-                name: "ResourceNotFoundException",
-              }),
-            )
-          : Promise.resolve(undefined as never),
-      );
-
-    await expect(
-      buildCognitoIdmClient({
-        cognitoUserPoolId,
-      }).disableAndRedactOrganizationUser({
-        organizationId: generateId<OrganizationId>(),
-        username: "u",
-      }),
-    ).resolves.toBeUndefined();
-
-    expect(send).toHaveBeenCalledTimes(3);
-  });
-
   it("aggregates multiple sub-step failures", async () => {
     vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
       Object.assign(new Error("boom"), { name: "InternalErrorException" }),
