@@ -1056,7 +1056,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -1835,7 +1835,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -2057,7 +2057,7 @@ services:
       UI_SIGNUP_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-signup-session"
       UI_SIGNUP_SESSION_JWT_ISSUER: "local-knodia"
       UI_SIGNUP_SESSION_JWT_KID: "alias/local-knodia-key"
-      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "300"
+      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "3600"
       SIGNUP_ALLOWED_EMAIL_DOMAINS: any
       SIGNUP_DB_USER: local_signup_manager_user
       SIGNUP_DB_PASSWORD: local_signup_manager_user
