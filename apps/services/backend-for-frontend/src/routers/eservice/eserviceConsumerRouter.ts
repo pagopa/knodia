@@ -4,12 +4,10 @@ import { requestContext } from "@fastify/request-context";
 import { API_AgreementState } from "@knodia/agreement-models/api";
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { API_FileDownload } from "@knodia/common-models/api";
+import { parseContentDispositionFileName } from "@knodia/common-models/utils";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  parseContentDispositionFileName,
-  sendFileDownload,
-} from "@knodia/fastify-zod-api-commons/http";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,

@@ -1,12 +1,12 @@
 import type { FastifyReply } from "fastify";
 
-import { describe, expect, it, vi } from "vitest";
-
 import {
   parseContentDispositionFileName,
   sanitizeFileName,
-  sendFileDownload,
-} from "../../src/utils/http.ts";
+} from "@knodia/common-models/utils";
+import { describe, expect, it, vi } from "vitest";
+
+import { sendFileDownload } from "../../src/utils/http.ts";
 
 describe("sanitizeFileName", () => {
   it("strips path components, keeping only the base name", () => {

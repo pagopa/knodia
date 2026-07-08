@@ -1,6 +1,6 @@
 import type { AxiosHeaderValue } from "axios";
 
-import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
+import { parseContentDispositionFileName } from "@knodia/common-models/utils";
 
 export const downloadFile = (file: File | null | undefined) => {
   if (!file) return;
