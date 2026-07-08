@@ -23,7 +23,7 @@
     "./types": "./src/types.ts",
     "./services": "./src/services.ts",
     "./targetKnodeUrls": "./src/targetKnodeUrls.ts",
-    "./utils": "./src/utils.ts"
+    "./utils": "./src/utils/index.ts"
   },
   "dependencies": {
     "ts-pattern": "catalog:",
