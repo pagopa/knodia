@@ -1,4 +1,6 @@
+import { revalidateLogic, useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { type AxiosError } from "axios";
 import { useEffect, useState } from "react";
 
 import { Modal, TextField } from "@/components/ui";
@@ -11,7 +13,12 @@ import {
   changeEmailMutationOptions,
   getCurrentSignupUserQuery,
 } from "@/services/queries";
-import { emailSchema } from "@/utils/validation";
+import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
+
+import {
+  changeEmailFormDefaultValues,
+  changeEmailFormSchema,
+} from "./change-email-form";
 
 const POLL_INTERVAL_MS = 1000;
 const POLL_TIMEOUT_MS = 30_000;
@@ -33,23 +40,42 @@ export function ChangeEmailModal({
 }
 
 function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
-  const [email, setEmail] = useState("");
-  // Email-in-use shows inline on the field; every other failure shows in the modal banner.
-  const [fieldError, setFieldError] = useState<string>();
+  // Modal-level failures show in the banner; the email-in-use error is a field
+  // error owned by the form (set as an onServer error, auto-cleared on change).
   const [bannerError, setBannerError] = useState<string>();
   // True from submit until the change is confirmed applied, not just while in flight.
   const [isApplying, setIsApplying] = useState(false);
-  const isEmailValid = emailSchema.safeParse(email).success;
 
-  const changeEmail = useMutation({
-    ...changeEmailMutationOptions(),
-    onError: (error) => {
-      const message = changeEmailErrorMessage(error);
-      if (isEmailAlreadyInUseError(error)) setFieldError(message);
-      else setBannerError(message);
-      setIsApplying(false);
+  const changeEmail = useMutation(changeEmailMutationOptions());
+
+  const form = useForm({
+    defaultValues: changeEmailFormDefaultValues,
+    onSubmit: async ({ formApi, value }) => {
+      setBannerError(undefined);
+      setIsApplying(true);
+      try {
+        await changeEmail.mutateAsync({ body: { email: value.email } });
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        const message = changeEmailErrorMessage(axiosError);
+        if (isEmailAlreadyInUseError(axiosError)) {
+          formApi.setFieldMeta("email", (prev) => ({
+            ...prev,
+            errorMap: { ...prev.errorMap, onServer: { message } },
+          }));
+        } else {
+          setBannerError(message);
+        }
+        setIsApplying(false);
+      }
     },
+    validationLogic: revalidateLogic(),
+    validators: { onDynamic: changeEmailFormSchema },
   });
+
+  // Reactive submitted email for the polling/close logic (the field is locked
+  // while applying, so this value stays fixed for the duration of the poll).
+  const email = useStore(form.store, (state) => state.values.email);
 
   // The 204 only acks the request, so poll the current user until the new email
   // lands; gate on the ack so we don't poll while the request is still in flight.
@@ -88,32 +114,45 @@ function ChangeEmailModalContent({ onClose }: { onClose: () => void }) {
       actionLabel="Change"
       description="Changing your email address will reset your passwords. We will send new passwords to your new email address."
       errorMessage={bannerError}
-      isActionDisabled={!isEmailValid || isApplying}
+      isActionDisabled={isApplying}
       isCancelDisabled={isApplying}
       isOpen
-      onConfirm={() => {
-        setFieldError(undefined);
-        setBannerError(undefined);
-        setIsApplying(true);
-        changeEmail.mutate({ body: { email } });
-      }}
+      onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
         if (!open && !isApplying) onClose();
       }}
       title="Change email address"
     >
-      <TextField
-        errorMessage={fieldError}
-        isDisabled={isApplying}
-        label="New email address"
-        onChange={(value) => {
-          setEmail(value);
-          setFieldError(undefined);
-          setBannerError(undefined);
+      <form
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void form.handleSubmit();
         }}
-        type="email"
-        value={email}
-      />
+      >
+        <form.Field name="email">
+          {(field) => (
+            <TextField
+              errorMessage={getFieldErrorMessage(field.state.meta.errors)}
+              isDisabled={isApplying}
+              isInvalid={!field.state.meta.isValid}
+              label="New email address"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(value) => {
+                field.handleChange(value);
+                // The field has no validators, so revalidateLogic never clears
+                // the server error on its own; drop it as the user retypes.
+                field.setErrorMap({ onServer: undefined });
+                setBannerError(undefined);
+              }}
+              type="email"
+              value={field.state.value}
+            />
+          )}
+        </form.Field>
+      </form>
     </Modal>
   );
 }

@@ -1,6 +1,6 @@
 import { type signupManagerApi } from "@knodia/signup-manager-client";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 
 import { Modal, Radio, RadioGroup } from "@/components/ui";
 import { useNavigateAfterSignupChange } from "@/hooks/useNavigateAfterSignupChange";
@@ -33,7 +33,9 @@ const RESTRICTION_REASONS = [
   },
 ] as const satisfies readonly { label: string; value: SuspensionReason }[];
 
-const DEFAULT_REASON = RESTRICTION_REASONS[0].value;
+const restrictionFormDefaultValues: { reason: SuspensionReason } = {
+  reason: RESTRICTION_REASONS[0].value,
+};
 
 interface RequestRestrictionDialogProps {
   onOpenChange: (isOpen: boolean) => void;
@@ -57,11 +59,16 @@ function RequestRestrictionDialog({
   onOpenChange,
 }: RequestRestrictionDialogProps) {
   const navigateAfterChange = useNavigateAfterSignupChange();
-  const [reason, setReason] = useState<SuspensionReason>(DEFAULT_REASON);
 
   const suspendUser = useMutation({
     ...suspendUserMutationOptions(),
     onSuccess: () => navigateAfterChange("/suspended"),
+  });
+
+  const form = useForm({
+    defaultValues: restrictionFormDefaultValues,
+    onSubmit: ({ value }) =>
+      suspendUser.mutate({ body: { suspensionReason: value.reason } }),
   });
 
   return (
@@ -72,23 +79,36 @@ function RequestRestrictionDialog({
       isActionDisabled={suspendUser.isPending}
       isCancelDisabled={suspendUser.isPending}
       isOpen
-      onConfirm={() =>
-        suspendUser.mutate({ body: { suspensionReason: reason } })
-      }
+      onConfirm={() => void form.handleSubmit()}
       onOpenChange={onOpenChange}
       title="Request restriction of processing"
     >
-      <RadioGroup
-        label="Please select the reason for your request, under Article 18 of the GDPR."
-        onChange={(value) => setReason(value as SuspensionReason)}
-        value={reason}
+      <form
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void form.handleSubmit();
+        }}
       >
-        {RESTRICTION_REASONS.map((option) => (
-          <Radio key={option.value} value={option.value}>
-            {option.label}
-          </Radio>
-        ))}
-      </RadioGroup>
+        <form.Field name="reason">
+          {(field) => (
+            <RadioGroup
+              label="Please select the reason for your request, under Article 18 of the GDPR."
+              onChange={(value) =>
+                field.handleChange(value as SuspensionReason)
+              }
+              value={field.state.value}
+            >
+              {RESTRICTION_REASONS.map((option) => (
+                <Radio key={option.value} value={option.value}>
+                  {option.label}
+                </Radio>
+              ))}
+            </RadioGroup>
+          )}
+        </form.Field>
+      </form>
     </Modal>
   );
 }
