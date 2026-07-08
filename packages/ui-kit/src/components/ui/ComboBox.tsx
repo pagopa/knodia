@@ -53,6 +53,8 @@ export function ComboBox<T extends object>({
   size,
   isInvalid = false,
   isClearable = false,
+  // Open the dropdown on focus (matching the multi-select), not only on typing.
+  menuTrigger = "focus",
   placeholder,
   renderEmptyState = ComboBoxEmptyState,
   ...props
@@ -79,6 +81,7 @@ export function ComboBox<T extends object>({
         "group flex flex-col gap-1 w-full min-w-0 relative font-sans",
       )}
       isInvalid={isInvalid}
+      menuTrigger={menuTrigger}
     >
       {label && <Label>{label}</Label>}
       <Group
