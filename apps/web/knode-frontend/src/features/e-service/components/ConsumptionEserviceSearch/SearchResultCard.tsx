@@ -4,13 +4,10 @@ import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { ServiceCard } from "@/components/ServiceCard";
 
 import { CategoryChip } from "../CategoryChip";
-import {
-  EserviceCard,
-  EserviceCardFooter,
-  EserviceCardHeader,
-} from "../EserviceCard";
+import { EserviceCardFooter, EserviceCardHeader } from "../EserviceCard";
 
 export function SearchResultCard({
   eservice,
@@ -20,7 +17,7 @@ export function SearchResultCard({
   knodeId: string;
 }) {
   return (
-    <EserviceCard>
+    <ServiceCard>
       <EserviceCardHeader
         description={eservice.description}
         id={eservice.id}
@@ -53,7 +50,7 @@ export function SearchResultCard({
           />
         ))}
       </EserviceCardFooter>
-    </EserviceCard>
+    </ServiceCard>
   );
 }
 

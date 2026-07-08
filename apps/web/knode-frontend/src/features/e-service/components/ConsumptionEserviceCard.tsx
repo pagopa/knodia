@@ -5,13 +5,10 @@ import { match } from "ts-pattern";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
+import { ServiceCard } from "@/components/ServiceCard";
 
 import { CategoryChip } from "./CategoryChip";
-import {
-  EserviceCard,
-  EserviceCardFooter,
-  EserviceCardHeader,
-} from "./EserviceCard";
+import { EserviceCardFooter, EserviceCardHeader } from "./EserviceCard";
 
 export function ConsumptionEserviceCard({
   eservice,
@@ -19,7 +16,7 @@ export function ConsumptionEserviceCard({
   eservice: bffApi.ConsumerEservice;
 }) {
   return (
-    <EserviceCard>
+    <ServiceCard>
       <EserviceCardHeader
         badge={
           eservice.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
@@ -59,7 +56,7 @@ export function ConsumptionEserviceCard({
           />
         ))}
       </EserviceCardFooter>
-    </EserviceCard>
+    </ServiceCard>
   );
 }
 
