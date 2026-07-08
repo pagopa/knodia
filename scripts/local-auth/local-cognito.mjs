@@ -491,6 +491,22 @@ function handleCreateGroup(req, res, payload) {
   );
 }
 
+function handleDeleteGroup(req, res, payload) {
+  // Groups only exist as membership strings on users; deleting the group
+  // drops it from every member, like real Cognito does.
+  for (const user of MOCK_USERS) {
+    user.Groups = (user.Groups ?? []).filter((g) => g !== payload.GroupName);
+  }
+
+  console.log(
+    `[delete-group] ${sanitizeForLog(payload.GroupName)} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
@@ -750,6 +766,11 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.CreateGroup") {
         handleCreateGroup(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.DeleteGroup") {
+        handleDeleteGroup(req, res, payload);
         return;
       }
 
