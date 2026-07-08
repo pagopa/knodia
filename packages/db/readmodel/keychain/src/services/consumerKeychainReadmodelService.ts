@@ -25,11 +25,24 @@ import {
   aggregateFlatConsumerKeychain,
 } from "../converters/consumerKeychainAggregators.ts";
 import { toConsumerKeychainPurpose } from "../converters/consumerKeychainConverters.ts";
+import {
+  keychainWithNameExists,
+  type KeychainWithNameExistsQuery,
+} from "./keychainNameQuery.ts";
 
 export function consumerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
 ) {
   return {
+    async consumerKeychainWithNameExists(
+      query: KeychainWithNameExistsQuery,
+    ): Promise<boolean> {
+      return await keychainWithNameExists(
+        readmodelDb,
+        readmodelConsumerKeychain,
+        query,
+      );
+    },
     async getConsumerKeychainById(
       consumerKeychainId: ConsumerKeychainId,
     ): Promise<undefined | WithMetadata<ConsumerKeychain>> {

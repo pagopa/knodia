@@ -23,7 +23,6 @@ import {
   createOrderByFilters,
   getTableTotalCount,
   ilikeJsonB,
-  ilikeJsonBExact,
 } from "@knodia/db-readmodel-commons/utils";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import {
@@ -46,6 +45,7 @@ import {
 } from "@knodia/db-readmodel-keychain/converters";
 import {
   consumerKeychainReadmodelServiceBuilder,
+  type KeychainId,
   knodeApiKeychainReadmodelServiceBuilder,
   producerKeychainReadmodelServiceBuilder,
 } from "@knodia/db-readmodel-keychain/services";
@@ -101,28 +101,14 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return queryResult.length > 0;
     },
-    async consumerKeychainWithNameExists({
-      name,
-      ownerId,
-    }: {
+    async consumerKeychainWithNameExists(query: {
+      excludeKeychainId?: KeychainId;
       name: LocalizedName;
       ownerId: OrganizationId;
     }): Promise<boolean> {
-      const queryResult = await readmodelDb
-        .select({ id: readmodelConsumerKeychain.id })
-        .from(readmodelConsumerKeychain)
-        .where(
-          and(
-            eq(readmodelConsumerKeychain.ownerId, ownerId),
-            ilikeJsonBExact({
-              column: readmodelConsumerKeychain.name,
-              value: name.en,
-            }),
-          ),
-        )
-        .limit(1);
-
-      return queryResult.length > 0;
+      return await consumerKeychainReadmodelService.consumerKeychainWithNameExists(
+        query,
+      );
     },
     async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getConsumerKeychainById(
@@ -624,51 +610,23 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         };
       });
     },
-    async knodeApiKeychainWithNameExists({
-      name,
-      ownerId,
-    }: {
+    async knodeApiKeychainWithNameExists(query: {
+      excludeKeychainId?: KeychainId;
       name: LocalizedName;
       ownerId: OrganizationId;
     }): Promise<boolean> {
-      const queryResult = await readmodelDb
-        .select({ id: readmodelKnodeApiKeychain.id })
-        .from(readmodelKnodeApiKeychain)
-        .where(
-          and(
-            eq(readmodelKnodeApiKeychain.ownerId, ownerId),
-            ilikeJsonBExact({
-              column: readmodelKnodeApiKeychain.name,
-              value: name.en,
-            }),
-          ),
-        )
-        .limit(1);
-
-      return queryResult.length > 0;
+      return await knodeApiKeychainReadmodelService.knodeApiKeychainWithNameExists(
+        query,
+      );
     },
-    async producerKeychainWithNameExists({
-      name,
-      ownerId,
-    }: {
+    async producerKeychainWithNameExists(query: {
+      excludeKeychainId?: KeychainId;
       name: LocalizedName;
       ownerId: OrganizationId;
     }): Promise<boolean> {
-      const queryResult = await readmodelDb
-        .select({ id: readmodelProducerKeychain.id })
-        .from(readmodelProducerKeychain)
-        .where(
-          and(
-            eq(readmodelProducerKeychain.ownerId, ownerId),
-            ilikeJsonBExact({
-              column: readmodelProducerKeychain.name,
-              value: name.en,
-            }),
-          ),
-        )
-        .limit(1);
-
-      return queryResult.length > 0;
+      return await producerKeychainReadmodelService.producerKeychainWithNameExists(
+        query,
+      );
     },
   };
 }

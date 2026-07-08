@@ -273,22 +273,8 @@ export function ilikeJsonB({
   column: PgColumn;
   value: string;
 }): SQL {
-  return jsonbAnyValueIlike(column, `%${escapeSqlLike(value)}%`);
-}
+  const pattern = `%${escapeSqlLike(value)}%`;
 
-// Exact (but case-insensitive) match against the values of a localized jsonb
-// column, unlike ilikeJsonB which is a contains match.
-export function ilikeJsonBExact({
-  column,
-  value,
-}: {
-  column: PgColumn;
-  value: string;
-}): SQL {
-  return jsonbAnyValueIlike(column, escapeSqlLike(value));
-}
-
-function jsonbAnyValueIlike(column: PgColumn, pattern: string): SQL {
   return sql`
     EXISTS (
       SELECT 1
@@ -296,6 +282,19 @@ function jsonbAnyValueIlike(column: PgColumn, pattern: string): SQL {
       WHERE t.value ILIKE ${pattern} ESCAPE '\\'
     )
   `;
+}
+
+// Exact (but case-insensitive) match on the `en` value of a localized jsonb
+// column, unlike ilikeJsonB which is a contains match over every locale.
+// LocalizedText only carries `en` today; revisit if more locales are added.
+export function ilikeJsonBExact({
+  column,
+  value,
+}: {
+  column: PgColumn;
+  value: string;
+}): SQL {
+  return sql`${column} ->> 'en' ILIKE ${escapeSqlLike(value)} ESCAPE '\\'`;
 }
 
 export const updateMetadataVersionInTables = async <

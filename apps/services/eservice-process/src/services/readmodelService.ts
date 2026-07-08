@@ -71,6 +71,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
   return {
     async eserviceWithNameExists(query: {
+      excludeEserviceId?: EserviceId;
       name: LocalizedName;
       producerId: OrganizationId;
     }): Promise<boolean> {

@@ -17,6 +17,10 @@ import {
   readmodelKnodeApiKeychainKey,
   readmodelKnodeApiKeychainUser,
 } from "../knodeApiKeychain.ts";
+import {
+  keychainWithNameExists,
+  type KeychainWithNameExistsQuery,
+} from "./keychainNameQuery.ts";
 
 export function knodeApiKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
@@ -61,6 +65,15 @@ export function knodeApiKeychainReadmodelServiceBuilder(
         .where(eq(readmodelKnodeApiKeychain.id, knodeApiKeychainId));
 
       return aggregateKnodeApiKeychain(queryRes);
+    },
+    async knodeApiKeychainWithNameExists(
+      query: KeychainWithNameExistsQuery,
+    ): Promise<boolean> {
+      return await keychainWithNameExists(
+        readmodelDb,
+        readmodelKnodeApiKeychain,
+        query,
+      );
     },
   };
 }

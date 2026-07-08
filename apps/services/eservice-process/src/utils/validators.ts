@@ -78,12 +78,19 @@ export const assertValidCategories = (
   }
 };
 
-export async function assertEserviceNameIsUnique(
-  name: LocalizedName,
-  producerId: OrganizationId,
-  readmodelService: ReadmodelService,
-): Promise<void> {
+export async function assertEserviceNameIsUnique({
+  excludeEserviceId,
+  name,
+  producerId,
+  readmodelService,
+}: {
+  excludeEserviceId?: EserviceId;
+  name: LocalizedName;
+  producerId: OrganizationId;
+  readmodelService: ReadmodelService;
+}): Promise<void> {
   const exists = await readmodelService.eserviceWithNameExists({
+    excludeEserviceId,
     name,
     producerId,
   });

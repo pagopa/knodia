@@ -18,7 +18,7 @@ import {
   assertSQLFiltersAreDefined,
   ilikeJsonBExact,
 } from "@knodia/db-readmodel-commons/utils";
-import { and, eq, type SQL } from "drizzle-orm";
+import { and, eq, ne, type SQL } from "drizzle-orm";
 
 import {
   aggregateEservice,
@@ -38,9 +38,11 @@ import {
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async eserviceWithNameExists({
+      excludeEserviceId,
       name,
       producerId,
     }: {
+      excludeEserviceId?: EserviceId;
       name: LocalizedName;
       producerId: OrganizationId;
     }): Promise<boolean> {
@@ -51,6 +53,9 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           and(
             eq(readmodelEservice.producerId, producerId),
             ilikeJsonBExact({ column: readmodelEservice.name, value: name.en }),
+            excludeEserviceId
+              ? ne(readmodelEservice.id, excludeEserviceId)
+              : undefined,
           ),
         )
         .limit(1);

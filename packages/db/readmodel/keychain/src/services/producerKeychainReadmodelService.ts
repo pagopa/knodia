@@ -27,6 +27,10 @@ import {
   readmodelProducerKeychainKey,
   readmodelProducerKeychainUser,
 } from "../producerKeychain.ts";
+import {
+  keychainWithNameExists,
+  type KeychainWithNameExistsQuery,
+} from "./keychainNameQuery.ts";
 
 export function producerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
@@ -105,6 +109,15 @@ export function producerKeychainReadmodelServiceBuilder(
       return producerKeychainEservice
         ? toProducerKeychainEservice(producerKeychainEservice)
         : undefined;
+    },
+    async producerKeychainWithNameExists(
+      query: KeychainWithNameExistsQuery,
+    ): Promise<boolean> {
+      return await keychainWithNameExists(
+        readmodelDb,
+        readmodelProducerKeychain,
+        query,
+      );
     },
   };
 }

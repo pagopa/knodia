@@ -383,14 +383,9 @@ export function knodeApiKeychainServiceBuilder(
         readmodelService,
       );
 
-      // Skip when unchanged or a case-only rename — the lookup would match
-      // this keychain itself and reject the update.
-      if (
-        update.name !== undefined &&
-        update.name.en.toLowerCase() !==
-          knodeApiKeychain.data.name.en.toLowerCase()
-      ) {
+      if (update.name !== undefined) {
         await assertKeychainNameIsUnique({
+          excludeKeychainId: knodeApiKeychainId,
           kind: "Knode API",
           name: update.name,
           ownerId: knodeApiKeychain.data.ownerId,

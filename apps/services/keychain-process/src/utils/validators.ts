@@ -10,6 +10,7 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { KeychainId } from "@knodia/db-readmodel-keychain/services";
 import type { Eservice } from "@knodia/eservice-models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { KeychainUser, LocalizedName } from "@knodia/keychain-models";
@@ -56,25 +57,28 @@ export async function assertEserviceIsNotLinkedToProducerKeychain(
 }
 
 export async function assertKeychainNameIsUnique({
+  excludeKeychainId,
   kind,
   name,
   ownerId,
   readmodelService,
 }: {
+  excludeKeychainId?: KeychainId;
   kind: KeychainKind;
   name: LocalizedName;
   ownerId: OrganizationId;
   readmodelService: ReadmodelService;
 }): Promise<void> {
+  const query = { excludeKeychainId, name, ownerId };
   const exists = await match(kind)
     .with("Consumer", () =>
-      readmodelService.consumerKeychainWithNameExists({ name, ownerId }),
+      readmodelService.consumerKeychainWithNameExists(query),
     )
     .with("Knode API", () =>
-      readmodelService.knodeApiKeychainWithNameExists({ name, ownerId }),
+      readmodelService.knodeApiKeychainWithNameExists(query),
     )
     .with("Producer", () =>
-      readmodelService.producerKeychainWithNameExists({ name, ownerId }),
+      readmodelService.producerKeychainWithNameExists(query),
     )
     .exhaustive();
 

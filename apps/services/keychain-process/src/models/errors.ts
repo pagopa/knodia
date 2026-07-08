@@ -14,11 +14,11 @@ import type {
   LocalizedName,
 } from "@knodia/keychain-models";
 
-export type KeychainKind = "Consumer" | "Knode API" | "Producer";
-
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
+
+export type KeychainKind = "Consumer" | "Knode API" | "Producer";
 
 const {
   HTTP_STATUS_BAD_REQUEST,

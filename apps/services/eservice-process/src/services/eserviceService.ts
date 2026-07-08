@@ -133,7 +133,11 @@ export function eserviceServiceBuilder(
       );
 
       await assertOrganizationExists(producerId, readmodelService);
-      await assertEserviceNameIsUnique(seed.name, producerId, readmodelService);
+      await assertEserviceNameIsUnique({
+        name: seed.name,
+        producerId,
+        readmodelService,
+      });
 
       const { categories, mode, requiredAttributes, template } =
         resolveTemplateFixedFields(seed);
@@ -392,18 +396,13 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      // Case-insensitive guard: skip the check when the name is unchanged
-      // (or a case-only rename), otherwise the lookup would match the
-      // e-service itself and reject the update.
-      if (
-        update.name !== undefined &&
-        update.name.en.toLowerCase() !== eservice.name.en.toLowerCase()
-      ) {
-        await assertEserviceNameIsUnique(
-          update.name,
-          eservice.producerId,
+      if (update.name !== undefined) {
+        await assertEserviceNameIsUnique({
+          excludeEserviceId: eservice.id,
+          name: update.name,
+          producerId: eservice.producerId,
           readmodelService,
-        );
+        });
       }
 
       if (update.categories !== undefined) {
