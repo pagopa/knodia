@@ -5,6 +5,7 @@ import { Banner, Button, Loader } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
+import { ServiceCard, ServiceCardHeader } from "@/components/ServiceCard";
 import { StepHeader } from "@/components/StepHeader";
 import { purposeTemplatesQuery } from "@/features/purpose/services/queries";
 import { FullPageModal } from "@/layouts/FullPageModal";
@@ -84,25 +85,22 @@ function TemplateCard({
   template: bffApi.PurposeTemplate;
 }) {
   return (
-    <article className="flex items-start gap-10 rounded-card border border-card-border shadow-card p-4">
-      <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="title-md-em text-primary-light-high-contrast">
-          {template.name.en}
-        </h3>
-        <p className="body-md text-primary-light-low-contrast">
-          {template.description.en}
-        </p>
-      </div>
-      <Button
-        aria-label={`Use template ${template.name.en}`}
-        hierarchy="neutral"
-        kind="outlined"
-        onPress={onSelect}
-        size="icon-md"
+    <ServiceCard>
+      <ServiceCardHeader
+        description={template.description.en}
+        title={template.name.en}
       >
-        <ArrowRightIcon />
-      </Button>
-    </article>
+        <Button
+          aria-label={`Use template ${template.name.en}`}
+          hierarchy="neutral"
+          kind="outlined"
+          onPress={onSelect}
+          size="icon-md"
+        >
+          <ArrowRightIcon />
+        </Button>
+      </ServiceCardHeader>
+    </ServiceCard>
   );
 }
 
