@@ -1,5 +1,5 @@
-import { genericInternalError } from "./errors.ts";
-import { PG_UNIQUE_VIOLATION } from "./pgErrorCodes.ts";
+import { genericInternalError } from "../errors.ts";
+import { PG_UNIQUE_VIOLATION } from "../pgErrorCodes.ts";
 
 /**
  * Used in protobuf converters to assert that a value is defined.
