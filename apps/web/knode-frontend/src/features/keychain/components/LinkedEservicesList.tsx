@@ -4,9 +4,9 @@ import { Banner, Loader } from "@knodia/ui-kit/ui";
 import { SelectionIcon } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 
+import { ServiceCard } from "@/components/ServiceCard";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
-  EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
 } from "@/features/e-service/components/EserviceCard";
@@ -45,7 +45,7 @@ export function LinkedEservicesList({
     <ul className="flex flex-col gap-4" role="list">
       {eservices.map((eservice) => (
         <li key={eservice.id}>
-          <EserviceCard>
+          <ServiceCard>
             <EserviceCardHeader
               id={eservice.id}
               title={eservice.name.en}
@@ -60,7 +60,7 @@ export function LinkedEservicesList({
                 />
               ))}
             </EserviceCardFooter>
-          </EserviceCard>
+          </ServiceCard>
         </li>
       ))}
     </ul>

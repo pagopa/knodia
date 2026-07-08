@@ -5,9 +5,9 @@ import { SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
+import { ServiceCard } from "@/components/ServiceCard";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
-  EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
 } from "@/features/e-service/components/EserviceCard";
@@ -42,7 +42,7 @@ function PendingAgreementCard({
   agreement: bffApi.PendingConsumerAgreement;
 }) {
   return (
-    <EserviceCard>
+    <ServiceCard>
       <EserviceCardHeader
         badge={
           agreement.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
@@ -72,6 +72,6 @@ function PendingAgreementCard({
           />
         ))}
       </EserviceCardFooter>
-    </EserviceCard>
+    </ServiceCard>
   );
 }
