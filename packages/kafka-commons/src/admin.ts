@@ -23,7 +23,8 @@ export async function checkTopicsExist(
     return true;
   } catch (e) {
     logger.error(
-      `Unable to subscribe to topics "${topicNames}"! Error during topic metadata fetch: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
+      { err: e },
+      `Unable to subscribe to topics "${topicNames}": topic metadata fetch failed`,
     );
     return false;
   } finally {

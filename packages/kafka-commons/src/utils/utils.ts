@@ -70,7 +70,10 @@ export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
   try {
     return KafkaMessageEnvelope(event).decode(message);
   } catch (error) {
-    throw new Error("Invalid message: " + JSON.stringify(error));
+    throw new Error(
+      `Invalid message: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
   }
 }
 

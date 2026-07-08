@@ -195,7 +195,14 @@ describe("initRedisRateLimiter", () => {
       remainingRequests: MAX_REQUESTS,
       resetMs: buildRateLimiterConfig().rateLimiterTimeWindowSeconds * 1_000,
     });
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("timed out"));
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        err: expect.objectContaining({
+          message: expect.stringContaining("timed out"),
+        }),
+      }),
+      expect.stringContaining("Rate limiter degraded"),
+    );
   });
 
   it("degrades after disconnect", async () => {
