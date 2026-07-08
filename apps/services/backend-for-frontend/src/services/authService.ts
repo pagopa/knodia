@@ -55,6 +55,12 @@ interface AuthServiceBuilderOptions {
 
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
+// Claims proven to belong to an existing, enabled Cognito user. Only
+// assertCognitoUserIsEnabled produces this brand, and generateTokenPairFromClaims
+// only accepts it — so a session pair can never be minted without the check.
+const EnabledUserClaims = ClaimsFromCognito.brand<"EnabledUserClaims">();
+type EnabledUserClaims = z.infer<typeof EnabledUserClaims>;
+
 export function authServiceBuilder({
   cognitoIdmClient,
   config,
@@ -100,7 +106,7 @@ export function authServiceBuilder({
   };
 
   async function generateTokenPairFromClaims(
-    claims: ClaimsFromCognito,
+    claims: EnabledUserClaims,
   ): Promise<{ refreshToken: string; uiSessionToken: string }> {
     const [uiSession, refresh] = await Promise.all([
       tokenGenerator.generateUISessionToken({
@@ -178,27 +184,25 @@ export function authServiceBuilder({
     }
   }
 
-  async function assertCognitoUserIsEnabled({
-    sub,
-    username,
-  }: {
-    sub: UserId;
-    username: string;
-  }): Promise<void> {
+  async function assertCognitoUserIsEnabled(
+    claims: ClaimsFromCognito,
+  ): Promise<EnabledUserClaims> {
     /*
      * We retrieve the user by username (not sub) because we want to use
      * AdminGetUser cognito command, which has higher RPM limits than ListUsers.
      */
-    const user = await cognitoIdmClient.getUserByUsername(username);
+    const user = await cognitoIdmClient.getUserByUsername(claims.username);
 
     if (!user || user.enabled !== true) {
       const { logger } = getContextValues(requestContext);
       logger.warn(
-        { sub },
-        "UI session refresh rejected: user does not exist or is disabled",
+        { sub: claims.sub },
+        "UI session rejected: user does not exist or is disabled",
       );
       throw unauthorizedError("User is disabled or does not exist");
     }
+
+    return EnabledUserClaims.parse(claims);
   }
 
   async function verifyRefreshTokenClaims(
@@ -306,12 +310,11 @@ export function authServiceBuilder({
     }> {
       const claims = await validateCognitoToken(cognitoToken);
       // The Cognito token stays valid for its own TTL (~1h) after the user is
-      // deleted/disabled, so a client can keep exchanging it for fresh sessions.
-      // Re-check the user here, like the refresh path does, or a removed user
-      // stays logged in until their Cognito token expires.
-      await assertCognitoUserIsEnabled(claims);
-      await rateLimit(claims.organizationId);
-      return generateTokenPairFromClaims(claims);
+      // deleted/disabled, so re-check here too — otherwise a removed user keeps
+      // exchanging it for fresh sessions until the Cognito token expires.
+      const enabledClaims = await assertCognitoUserIsEnabled(claims);
+      await rateLimit(enabledClaims.organizationId);
+      return generateTokenPairFromClaims(enabledClaims);
     },
 
     async refreshUISessionTokenPair(refreshToken: string): Promise<{
@@ -326,11 +329,11 @@ export function authServiceBuilder({
        * favors availability: if we consumed JTI first, a transient Cognito error
        * would burn the token, forcing legitimate users to re-login.
        */
-      await assertCognitoUserIsEnabled(claims);
+      const enabledClaims = await assertCognitoUserIsEnabled(claims);
       // See exchangeMagicLinkToken for why the store runs before rate-limit.
       await consumeSingleUseJti(refreshTokenStore, jti, exp, "Refresh token");
-      await rateLimit(claims.organizationId);
-      return generateTokenPairFromClaims(claims);
+      await rateLimit(enabledClaims.organizationId);
+      return generateTokenPairFromClaims(enabledClaims);
     },
 
     async revokeRefreshToken(refreshToken: string): Promise<void> {
