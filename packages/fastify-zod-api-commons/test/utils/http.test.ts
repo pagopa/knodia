@@ -50,17 +50,17 @@ describe("sendFileDownload", () => {
   it("emits an ASCII fallback plus an RFC 5987 filename* parameter", () => {
     const { end, res, writeHead } = mockReply();
 
-    const prettyName = "specifica-è";
+    const prettyName = "specifica-è.v2";
     sendFileDownload({
       content: "content",
       contentType: "application/json",
-      fileName: `${prettyName}.json`,
+      fileName: "test.json",
       filePrettyName: prettyName,
       res,
     });
 
     expect(contentDispositionOf(writeHead)).toBe(
-      "attachment; filename=\"specifica-_.json\"; filename*=UTF-8''specifica-%C3%A8.json",
+      "attachment; filename=\"specifica-_.v2.json\"; filename*=UTF-8''specifica-%C3%A8.v2.json",
     );
     expect(end).toHaveBeenCalledWith("content");
   });

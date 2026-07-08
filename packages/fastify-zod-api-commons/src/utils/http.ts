@@ -54,12 +54,11 @@ export function sendFileDownload({
   res: FastifyReply;
 }): void {
   const extDotIndex = fileName.lastIndexOf(".");
-  const ext = extDotIndex > 0 ? fileName.slice(extDotIndex) : "";
+  const ext = extDotIndex > 0 ? fileName.slice(extDotIndex).toLowerCase() : "";
 
-  const prettyNameDotIndex = filePrettyName.lastIndexOf(".");
   const prettyNameBase =
-    prettyNameDotIndex > 0
-      ? filePrettyName.slice(0, prettyNameDotIndex)
+    ext && filePrettyName.toLowerCase().endsWith(ext)
+      ? filePrettyName.slice(0, -ext.length)
       : filePrettyName;
 
   const safeName = sanitizeFileName(`${prettyNameBase}${ext}`);
