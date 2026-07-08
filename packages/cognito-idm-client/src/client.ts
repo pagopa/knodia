@@ -16,6 +16,7 @@ import {
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
+  DeleteGroupCommand,
   ListUsersCommand,
   ListUsersInGroupCommand,
   UserNotFoundException,
@@ -128,6 +129,24 @@ export function buildCognitoIdmClient({
           Username: input.username,
           UserPoolId: cognitoUserPoolId,
         }),
+      );
+    },
+
+    // Cognito deletes a group regardless of remaining members, so no
+    // membership cleanup is needed first.
+    async deleteOrganizationGroup(input: {
+      organizationId: OrganizationId;
+    }): Promise<void> {
+      // Idempotent for Kafka replays: a group already removed by a prior
+      // attempt makes DeleteGroup raise ResourceNotFoundException, which we
+      // swallow.
+      await swallowCognitoError("ResourceNotFoundException", () =>
+        client.send(
+          new DeleteGroupCommand({
+            GroupName: getOrganizationGroupName(input.organizationId),
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
       );
     },
 

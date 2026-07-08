@@ -301,6 +301,7 @@ async function deleteKnodeUser(
 ): Promise<void> {
   const entities = user.generatedEntities[knodeId];
   const { cognitoClient } = deps.knodeClients[knodeId];
+  const organizationId = externalOrganizationId(user.signupUserId, knodeId);
 
   logger.info(
     `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
@@ -318,9 +319,21 @@ async function deleteKnodeUser(
       `Cognito delete failed for signup user ${user.signupUserId} on ${knodeId}; falling back to disable and redact`,
     );
     await cognitoClient.disableAndRedactOrganizationUser({
-      organizationId: externalOrganizationId(user.signupUserId, knodeId),
+      organizationId,
       username: entities.userName,
     });
+  }
+
+  // Dropping the group (exclusive to this signup user) is best-effort cleanup:
+  // it carries no data beyond the org id, so a Cognito failure here must not
+  // stall the partition. Log and let the deletion complete.
+  try {
+    await cognitoClient.deleteOrganizationGroup({ organizationId });
+  } catch (error) {
+    logger.error(
+      { err: error, knodeId },
+      `Failed to delete Cognito org group for signup user ${user.signupUserId} on ${knodeId}; leaving it behind`,
+    );
   }
 }
 
