@@ -160,13 +160,16 @@ function LinkConsumerKeychainModal({
         if (!open) {
           form.reset();
           setAlreadyLinked(false);
+          // Modal stays mounted, so clear the search or the stale term keeps
+          // filtering the list on reopen.
+          setQ("");
           onClose();
         }
       }}
       showErrorBanner={isError}
       title="Link Keychain"
     >
-      {data?.pagination.total === 0 ? (
+      {debouncedQ === "" && data?.pagination.total === 0 ? (
         <Banner
           kind="informative"
           size="md"
