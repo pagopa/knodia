@@ -54,11 +54,11 @@ function RouteComponent() {
       query: { knodeId },
     });
 
-    downloadResponseAsFile(
-      response.data,
-      eservice.interfaceDocument.name,
-      response.headers["content-type"],
-    );
+    downloadResponseAsFile({
+      contentDisposition: response.headers["content-disposition"],
+      contentType: response.headers["content-type"],
+      data: response.data,
+    });
   }
 
   return (

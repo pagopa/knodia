@@ -247,11 +247,7 @@ function TemplateDocsStepContent({
         <DocumentRecap
           name={interfaceDocument.prettyName.en}
           onDownload={() =>
-            downloadTemplateInterface(
-              template.id,
-              template.knodeId,
-              interfaceDocument.name,
-            )
+            downloadTemplateInterface(template.id, template.knodeId)
           }
           showDownloadButton
         />
