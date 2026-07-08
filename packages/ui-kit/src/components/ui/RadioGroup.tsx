@@ -74,10 +74,6 @@ const radio = tv({
     isSelected: {
       true: "relative after:absolute after:inset-0.75 after:rounded-full after:bg-brand-light-mid-contrast",
     },
-
-    isDisabled: {
-      true: "opacity-30",
-    },
   },
 });
 
@@ -91,7 +87,7 @@ export function Radio({ description, ...props }: RadioProps) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "flex relative gap-2 items-start group label-md text-primary-light-high-contrast",
+        "flex relative gap-2 items-start group label-md text-primary-light-high-contrast disabled:cursor-not-allowed disabled:opacity-30",
       )}
     >
       {composeRenderProps(props.children, (children, renderProps) => (
