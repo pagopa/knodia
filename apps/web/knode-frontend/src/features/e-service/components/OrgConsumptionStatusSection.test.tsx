@@ -316,7 +316,7 @@ describe("OrgConsumptionStatusSection — Archived state", () => {
     state: "Archived",
   };
 
-  it("renders the archived card with label and descriptive text", () => {
+  it("invites requesting a new agreement when the e-service is still active", () => {
     renderSection({ agreement: archivedAgreement });
 
     expect(screen.getByText("Archived")).toBeInTheDocument();
@@ -325,6 +325,17 @@ describe("OrgConsumptionStatusSection — Archived state", () => {
         "You can't restore an archived Agreement. If your organization has the required attributes, you can request a new one.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("drops the request-a-new-one invitation when the e-service is also archived", () => {
+    renderSection({ agreement: archivedAgreement, eserviceState: "Archived" });
+
+    expect(
+      screen.getByText("You can't restore an archived Agreement."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/you can request a new one/),
+    ).not.toBeInTheDocument();
   });
 
   it("shows Purposes and Keychains sections for Archived state", () => {
