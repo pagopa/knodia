@@ -37,5 +37,6 @@ body:json {
 }
 
 script:pre-request {
-  bru.setVar("updatedEserviceName", bru.getEnvVar("fixedName") || "Updated name")
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("updatedEserviceName", bru.getEnvVar("fixedName") || `Updated name ${random}`)
 }
