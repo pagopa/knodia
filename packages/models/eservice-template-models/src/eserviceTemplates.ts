@@ -6,6 +6,7 @@ import {
 } from "@knodia/attribute-models";
 import {
   type CategoryCode,
+  CategoryId,
   type CategoryScheme,
 } from "@knodia/category-models";
 import {
@@ -14,7 +15,7 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
-import { EserviceCategory, EserviceMode } from "@knodia/eservice-models";
+import { EserviceMode } from "@knodia/eservice-models";
 import { readFileSync } from "node:fs";
 import z from "zod";
 
@@ -41,7 +42,7 @@ const EserviceTemplateInterface = z.strictObject({
 type EserviceTemplateInterface = z.infer<typeof EserviceTemplateInterface>;
 
 const EserviceTemplateEserviceFields = z.strictObject({
-  categories: z.array(EserviceCategory),
+  categories: z.array(CategoryId),
   interfaceDocument: EserviceTemplateInterface,
   mode: EserviceMode,
   requiredAttributes: z.array(AttributeGroup),
@@ -75,7 +76,7 @@ const mockedCategory = <
 >(
   scheme: S,
   code: C,
-): EserviceCategory => ({ code, scheme });
+): CategoryId => ({ code, scheme });
 
 const interfaceDocument = (
   name: string,

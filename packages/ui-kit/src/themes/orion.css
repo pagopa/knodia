@@ -298,10 +298,10 @@
   --letter-spacing-counter-card-label: var(--letter-spacing-label);
   --line-height-counter-card-label: var(--line-height-label);
 
-  /* E-service card */
-  --radius-eservice-card: 16px;
-  --color-eservice-card-border: var(--color-slate-100);
-  --shadow-eservice-card: 0 2px 4px 0
+  /* Service card */
+  --radius-service-card: 16px;
+  --color-service-card-border: var(--color-slate-100);
+  --shadow-service-card: 0 2px 4px 0
     color-mix(in srgb, var(--color-slate-700) 8%, transparent);
 }
 

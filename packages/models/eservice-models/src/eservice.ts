@@ -1,4 +1,5 @@
 import { AttributeGroup } from "@knodia/attribute-models";
+import { CategoryId } from "@knodia/category-models";
 import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   EserviceId,
@@ -94,12 +95,6 @@ export const EserviceVersion = z.strictObject({
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
-export const EserviceCategory = z.strictObject({
-  code: z.string(),
-  scheme: z.string(),
-});
-export type EserviceCategory = z.infer<typeof EserviceCategory>;
-
 export const PurposeFormOption = z.strictObject({
   description: LocalizedDescription,
   formAnswersJson: PurposeFormAnswers,
@@ -115,7 +110,7 @@ export const ReceiveDataConfig = z.strictObject({
 export type ReceiveDataConfig = z.infer<typeof ReceiveDataConfig>;
 
 export const Eservice = z.strictObject({
-  categories: z.array(EserviceCategory),
+  categories: z.array(CategoryId),
   createdAt: z.coerce.date(),
   description: LocalizedDescription,
   id: EserviceId,

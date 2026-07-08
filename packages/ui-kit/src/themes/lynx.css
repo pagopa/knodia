@@ -286,10 +286,10 @@
   --letter-spacing-counter-card-label: var(--letter-spacing-title-md);
   --line-height-counter-card-label: var(--line-height-title);
 
-  /* E-service card */
-  --radius-eservice-card: 0;
-  --color-eservice-card-border: var(--color-primary-light-decorative);
-  --shadow-eservice-card: none;
+  /* Service card */
+  --radius-service-card: 0;
+  --color-service-card-border: var(--color-primary-light-decorative);
+  --shadow-service-card: none;
 }
 
 @layer utilities {

@@ -190,8 +190,10 @@ function GeneralInfoSection({
                 key={`${category.scheme}$${category.code}`}
                 kind="neutral"
                 label={
-                  getCategory(category.scheme, category.code)?.name ??
-                  category.code
+                  getCategory({
+                    code: category.code,
+                    scheme: category.scheme,
+                  })?.name ?? category.code
                 }
                 type="light"
               />

@@ -12,6 +12,7 @@ import {
   type DpopProofHeader,
   type DpopProofPayload,
 } from "@knodia/authorization-models/dpop";
+import { CategoryId } from "@knodia/category-models";
 import {
   Algorithm,
   PublicKeyJwkES256,
@@ -31,7 +32,6 @@ import {
 import { dateToSeconds } from "@knodia/common-models/utils";
 import {
   Eservice,
-  EserviceCategory,
   EserviceVersion,
   type EserviceVersionState,
   type PurposeFormOption,
@@ -69,6 +69,10 @@ export function getMockAgreement({
       .generate(),
     state,
   };
+}
+
+export function getMockCategoryId(seed = 0) {
+  return zocker(CategoryId).setSeed(seed).generate();
 }
 
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
@@ -124,10 +128,6 @@ export function getMockEservice({
       ? { receiveDataConfig: { purposeFormOptions } }
       : { receiveDataConfig: undefined }),
   };
-}
-
-export function getMockEserviceCategory(seed = 0) {
-  return zocker(EserviceCategory).setSeed(seed).generate();
 }
 
 export function getMockEserviceVersion(seed = 0): EserviceVersion {
