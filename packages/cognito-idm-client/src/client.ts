@@ -5,11 +5,13 @@ import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserAttributesCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
   AdminEnableUserCommand,
   AdminGetUserCommand,
   AdminListGroupsForUserCommand,
+  AdminRemoveUserFromGroupCommand,
   AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
@@ -19,6 +21,7 @@ import {
   UserNotFoundException,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { rethrowSettledFailures } from "@knodia/common-models/utils";
 import { randomBytes } from "node:crypto";
 import { match } from "ts-pattern";
 
@@ -28,6 +31,20 @@ import type { IdmUser } from "./models.ts";
 import { toIdmUser } from "./converters.ts";
 
 export type CognitoIdmClient = ReturnType<typeof buildCognitoIdmClient>;
+
+const PROVISIONED_USER_ATTRIBUTES = [
+  "email",
+  "email_verified",
+  "custom:roles",
+] as const;
+
+type ProvisionedUserAttribute = (typeof PROVISIONED_USER_ATTRIBUTES)[number];
+
+// email_verified is non-mutable (Cognito rejects deleting it) and not PII, so
+// redaction skips it and strips only the rest of the provisioned attributes.
+const REDACTED_USER_ATTRIBUTES = PROVISIONED_USER_ATTRIBUTES.filter(
+  (name) => name !== "email_verified",
+);
 
 export function buildCognitoIdmClient({
   cognitoUserPoolId,
@@ -72,6 +89,14 @@ export function buildCognitoIdmClient({
     }): Promise<void> {
       const groupName = getOrganizationGroupName(input.organizationId);
 
+      // The Record over PROVISIONED_USER_ATTRIBUTES guarantees the redaction
+      // fallback deletes exactly what provisioning sets.
+      const attributeValues: Record<ProvisionedUserAttribute, string> = {
+        "custom:roles": input.roles.join(","),
+        email: input.email,
+        email_verified: "true",
+      };
+
       await swallowCognitoError("GroupExistsException", () =>
         client.send(
           new CreateGroupCommand({
@@ -87,11 +112,10 @@ export function buildCognitoIdmClient({
         client.send(
           new AdminCreateUserCommand({
             DesiredDeliveryMediums: ["EMAIL"],
-            UserAttributes: [
-              { Name: "email", Value: input.email },
-              { Name: "email_verified", Value: "true" },
-              { Name: "custom:roles", Value: input.roles.join(",") },
-            ],
+            UserAttributes: PROVISIONED_USER_ATTRIBUTES.map((name) => ({
+              Name: name,
+              Value: attributeValues[name],
+            })),
             Username: input.username,
             UserPoolId: cognitoUserPoolId,
           }),
@@ -118,6 +142,39 @@ export function buildCognitoIdmClient({
           }),
         ),
       );
+    },
+
+    // Fallback when AdminDeleteUser fails on a corrupted record: leave the user
+    // disabled with only its username. Any sub-step failure rethrows so the
+    // caller retries until the redaction is guaranteed.
+    async disableAndRedactOrganizationUser(input: {
+      organizationId: OrganizationId;
+      username: string;
+    }): Promise<void> {
+      const results = await Promise.allSettled([
+        client.send(
+          new AdminDisableUserCommand({
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+        client.send(
+          new AdminDeleteUserAttributesCommand({
+            UserAttributeNames: REDACTED_USER_ATTRIBUTES,
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+        client.send(
+          new AdminRemoveUserFromGroupCommand({
+            GroupName: getOrganizationGroupName(input.organizationId),
+            Username: input.username,
+            UserPoolId: cognitoUserPoolId,
+          }),
+        ),
+      ]);
+
+      rethrowSettledFailures(results);
     },
 
     async disableUser(input: { username: string }): Promise<void> {
