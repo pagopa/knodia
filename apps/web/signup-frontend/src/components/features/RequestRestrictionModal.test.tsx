@@ -13,6 +13,7 @@ const { mockNavigate, mockSuspendUser } = vi.hoisted(() => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
+  createLink: (component: React.ComponentType) => component,
   useNavigate: () => mockNavigate,
 }));
 

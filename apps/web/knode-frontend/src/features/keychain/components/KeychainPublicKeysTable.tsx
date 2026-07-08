@@ -166,11 +166,11 @@ function DownloadPublicKeyAction({
         )
         .exhaustive();
 
-      downloadResponseAsFile(
-        response.data,
-        `public_key_${keyId}.pem`,
-        response.headers["content-type"],
-      );
+      downloadResponseAsFile({
+        contentType: response.headers["content-type"],
+        data: response.data,
+        fileName: `public_key_${keyId}.pem`,
+      });
     } catch {
       toastQueue.add({
         description: "Retry later",

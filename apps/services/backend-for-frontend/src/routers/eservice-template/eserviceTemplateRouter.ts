@@ -128,12 +128,13 @@ export const eserviceTemplateRouter: FastifyPluginAsyncZod = async (
       const interfaceContent =
         retrieveEserviceTemplateInterfaceContent(eserviceTemplate);
 
-      sendFileDownload(
+      sendFileDownload({
+        content: interfaceContent,
+        contentType: interfaceDocument.contentType,
+        fileName: interfaceDocument.name,
+        filePrettyName: interfaceDocument.prettyName.en,
         res,
-        interfaceContent,
-        interfaceDocument.name,
-        interfaceDocument.contentType,
-      );
+      });
     },
     method: "GET",
     schema: {
