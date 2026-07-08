@@ -46,8 +46,7 @@ export function ConsumptionRequirementsSection({
             </ul>
           )}
 
-          {/* An archived E-service can no longer be consumed, so the attribute
-              status banner and its Request Agreement button are hidden. */}
+          {/* Archived E-service can't be consumed: hide the status banner and its button. */}
           {eserviceState !== "Archived" && (
             <Banner
               className="[&>div:last-child]:flex-1"
