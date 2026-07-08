@@ -14,7 +14,7 @@ import {
 import { KnodeId } from "../ids/ids.ts";
 import { UserId } from "../ids/userId.ts";
 import { NonEmptyArray } from "../types.ts";
-import { exactlyOneDefined } from "../utils.ts";
+import { exactlyOneDefined } from "../utils/utils.ts";
 import { UserRole } from "./roles.ts";
 
 export const BaseJwtClaims = z.object({
