@@ -59,6 +59,9 @@ export function getAttribute({
   return { description, id: { code, scheme }, name };
 }
 
+// An attribute is a reference into an external dictionary, not a Knodia-owned
+// entity, so it is identified by the (scheme, code) pair that locates it in
+// that dictionary rather than by a UUID. Mirrors CategoryId.
 export const AttributeId = z.strictObject({
   code: z.string(),
   scheme: z.string(),

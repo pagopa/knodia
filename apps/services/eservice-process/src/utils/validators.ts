@@ -5,10 +5,9 @@ import type {
 } from "@knodia/common-models/ids";
 import type { ExternalUISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
-import { getCategory } from "@knodia/category-models";
+import { type CategoryId, getCategory } from "@knodia/category-models";
 import {
   type Eservice,
-  type EserviceCategory,
   type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
@@ -67,10 +66,10 @@ export const assertEserviceVersionIsSuspended = (
 };
 
 export const assertValidCategories = (
-  categories: EserviceCategory[] | undefined,
+  categories: CategoryId[] | undefined,
 ): void => {
   for (const cat of categories ?? []) {
-    if (getCategory(cat.scheme, cat.code) === undefined) {
+    if (getCategory(cat) === undefined) {
       throw invalidCategory(cat.scheme, cat.code);
     }
   }

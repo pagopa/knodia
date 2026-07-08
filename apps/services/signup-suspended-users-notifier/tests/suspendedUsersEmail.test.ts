@@ -157,6 +157,15 @@ describe("buildSuspendedUsersEmailBody", () => {
     expect(body).toContain("25/06/2026");
     expect(body).not.toContain("@example.test");
   });
+
+  it("is a single line so Gmail doesn't trim the trailing sentence", () => {
+    const body = buildSuspendedUsersEmailBody(
+      2,
+      new Date("2026-06-25T06:00:00Z"),
+    );
+    expect(body).not.toContain("\n");
+    expect(body).toContain("ordinato dalla sospensione più recente");
+  });
 });
 
 describe("formatDateTime / formatDate", () => {

@@ -10,7 +10,10 @@ import {
   type SignupUserId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { isPgUniqueViolation } from "@knodia/common-models/utils";
+import {
+  isPgUniqueViolation,
+  rethrowSettledFailures,
+} from "@knodia/common-models/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -197,9 +200,10 @@ export async function handleSignupMessage(
           return;
         }
 
-        for (const knodeId of KnodeId.options) {
-          await deleteKnodeUser(knodeId, user, deps, logger);
-        }
+        await forEachKnode(
+          (knodeId) => deleteKnodeUser(knodeId, user, deps, logger),
+          logger,
+        );
 
         // Hard-deletes the row and writes the deletion-registry entry; idempotent
         // under at-least-once, so a crash before the offset commits replays safely.
@@ -297,14 +301,40 @@ async function deleteKnodeUser(
 ): Promise<void> {
   const entities = user.generatedEntities[knodeId];
   const { cognitoClient } = deps.knodeClients[knodeId];
+  const organizationId = externalOrganizationId(user.signupUserId, knodeId);
 
   logger.info(
     `Deleting Cognito user for signup user ${user.signupUserId} on ${knodeId}`,
   );
 
-  // Idempotent inside the client: a missing user (UserNotFoundException) is
-  // swallowed, so a replay after a partial deletion is safe.
-  await cognitoClient.deleteOrganizationUser({ username: entities.userName });
+  try {
+    // Idempotent inside the client: a missing user (UserNotFoundException) is
+    // swallowed, so a replay after a partial deletion is safe.
+    await cognitoClient.deleteOrganizationUser({ username: entities.userName });
+  } catch (error) {
+    // A corrupted record can fail AdminDeleteUser forever (seen on dev): redact
+    // in place instead of stalling the partition on endless redeliveries.
+    logger.warn(
+      { err: error, knodeId },
+      `Cognito delete failed for signup user ${user.signupUserId} on ${knodeId}; falling back to disable and redact`,
+    );
+    await cognitoClient.disableAndRedactOrganizationUser({
+      organizationId,
+      username: entities.userName,
+    });
+  }
+
+  // Dropping the group (exclusive to this signup user) is best-effort cleanup:
+  // it carries no data beyond the org id, so a Cognito failure here must not
+  // stall the partition. Log and let the deletion complete.
+  try {
+    await cognitoClient.deleteOrganizationGroup({ organizationId });
+  } catch (error) {
+    logger.error(
+      { err: error, knodeId },
+      `Failed to delete Cognito org group for signup user ${user.signupUserId} on ${knodeId}; leaving it behind`,
+    );
+  }
 }
 
 async function forEachKnode(
@@ -325,15 +355,7 @@ async function forEachKnode(
     }),
   );
 
-  const failures = results.filter((r) => r.status === "rejected");
-
-  if (failures.length === 0) return;
-
-  if (failures.length === 1) {
-    throw failures[0]?.reason;
-  }
-
-  throw new AggregateError(failures.map((failure) => failure.reason));
+  rethrowSettledFailures(results);
 }
 
 // A 409 here means the org name is already taken by a different organization.

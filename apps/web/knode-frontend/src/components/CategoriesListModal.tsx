@@ -12,7 +12,7 @@ export function CategoriesListModal() {
         {listCategories().map((category) => (
           <DefinitionCard
             description={category.description}
-            key={toSchemeRefKey(category)}
+            key={toSchemeRefKey(category.id)}
             name={category.name}
           />
         ))}
