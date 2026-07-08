@@ -58,6 +58,9 @@ function MultiSelectComboBoxExample({
       ),
     [inputValue],
   );
+  const selectedOptions = value
+    .map((key) => OPTIONS.find((item) => item.id === key))
+    .filter((item) => item != null);
 
   const handleChange = (keys: Key[]) => {
     setValue(keys);
@@ -77,6 +80,7 @@ function MultiSelectComboBoxExample({
         onChange={handleChange}
         onInputChange={setInputValue}
         placeholder="Type to search..."
+        selectedOptions={selectedOptions}
         value={value}
       >
         {(item) => (

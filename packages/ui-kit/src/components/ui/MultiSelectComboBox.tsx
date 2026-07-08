@@ -76,6 +76,9 @@ interface MultiSelectComboBoxProps extends Omit<
   /** Called when the list is scrolled near the end (infinite scroll). */
   onLoadMore?: () => void;
   placeholder?: string;
+  /** Stable selected option objects used to render chips when `items` is
+   * filtered or server-paginated and no longer contains every selected key. */
+  selectedOptions: MultiSelectComboBoxOption[];
   size?: MultiSelectComboBoxVariants["size"];
   value: Key[];
 }
@@ -99,6 +102,7 @@ export function MultiSelectComboBox({
   className,
   value,
   onChange,
+  selectedOptions,
   ...props
 }: MultiSelectComboBoxProps) {
   const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
@@ -160,7 +164,7 @@ export function MultiSelectComboBox({
         <FieldError>{errorMessage}</FieldError>
 
         <ComboBoxValue<MultiSelectComboBoxOption>>
-          {({ selectedItems, state }) => (
+          {({ state }) => (
             <TagGroup
               aria-label={label ? `${label} (selected)` : "Selected"}
               onRemove={(keys) => {
@@ -171,7 +175,11 @@ export function MultiSelectComboBox({
             >
               <TagList
                 className="flex flex-wrap gap-1"
-                items={selectedItems.filter((item) => item != null)}
+                items={value
+                  .map((key) =>
+                    selectedOptions.find((item) => item.id === String(key)),
+                  )
+                  .filter((item) => item != null)}
               >
                 {(tag) => (
                   <Tag isDisabled={isDisabled || isReadOnly}>{tag.label}</Tag>
