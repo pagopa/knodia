@@ -64,12 +64,11 @@ export function buildSuspendedUsersCsv(users: SuspendedSignupUser[]): string {
   return `\uFEFF${lines.join("\r\n")}\r\n`;
 }
 
+// Single line on purpose: Gmail trims a trailing line that repeats verbatim
+// across messages in a group thread. Folding everything into one line that
+// always carries the timestamp keeps each email's body unique.
 export function buildSuspendedUsersEmailBody(total: number, now: Date): string {
-  return [
-    `In allegato l'elenco degli utenti sospesi su Knodia, aggiornato al ${formatDateTime(now)} (Europe/Rome). Utenti totali: ${total}.`,
-    "",
-    "L'elenco è ordinato dalla sospensione più recente alla meno recente.",
-  ].join("\n");
+  return `In allegato l'elenco degli utenti sospesi su Knodia, ordinato dalla sospensione più recente alla meno recente. Utenti totali: ${total}, aggiornato al ${formatDateTime(now)} (Europe/Rome).`;
 }
 
 /** `gg/mm/aaaa` — birth date is a calendar date, formatted without a timezone. */
