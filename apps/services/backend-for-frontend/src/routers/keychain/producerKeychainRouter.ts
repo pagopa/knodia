@@ -632,7 +632,6 @@ export const producerKeychainRouter: FastifyPluginAsyncZod<
         content,
         contentType: "text/plain; charset=utf-8",
         fileName,
-        filePrettyName: fileName,
         res,
       });
     },

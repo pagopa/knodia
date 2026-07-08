@@ -315,7 +315,6 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         content: Buffer.from(blob as unknown as ArrayBuffer),
         contentType,
         fileName,
-        filePrettyName: fileName,
         res,
       });
     },

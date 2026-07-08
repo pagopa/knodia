@@ -199,7 +199,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         content: buffer,
         contentType,
         fileName,
-        filePrettyName: fileName,
         res,
       });
     },

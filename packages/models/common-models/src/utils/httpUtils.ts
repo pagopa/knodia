@@ -26,12 +26,16 @@ export function parseContentDispositionFileName(
   return token?.[1] ? sanitizeFileName(token[1].trim()) : FALLBACK_FILE_NAME;
 }
 
+export function removePathFromFileName(fileName: string): string {
+  return fileName.split(/[/\\]/).pop() ?? "";
+}
+
 /**
  * Strips any path component and header-breaking characters from a user-provided
  * file name, so it can safely be used in an S3 key or a Content-Disposition header.
  */
 export function sanitizeFileName(fileName: string): string {
-  const baseName = fileName.split(/[/\\]/).pop() ?? "";
+  const baseName = removePathFromFileName(fileName);
   // Prevent Content-Disposition header injection.
   const cleaned = baseName.replace(CONTROL_AND_QUOTE, "").trim();
   return cleaned === "" || /^\.+$/.test(cleaned) ? FALLBACK_FILE_NAME : cleaned;

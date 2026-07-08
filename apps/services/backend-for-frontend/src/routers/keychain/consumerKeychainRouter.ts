@@ -218,7 +218,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         content,
         contentType: "text/plain; charset=utf-8",
         fileName,
-        filePrettyName: fileName,
         res,
       });
     },

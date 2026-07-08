@@ -100,6 +100,26 @@ describe("sendFileDownload", () => {
       "attachment; filename=\"evilSet-Cookie: pwned.yaml\"; filename*=UTF-8''evilSet-Cookie%3A%20pwned.yaml",
     );
   });
+
+  it.each([undefined, ""])(
+    "falls back to the original fileName when filePrettyName is undefined or is empty",
+    (filePrettyName) => {
+      const { end, res, writeHead } = mockReply();
+
+      sendFileDownload({
+        content: "content",
+        contentType: "application/json",
+        fileName: "test.json",
+        filePrettyName,
+        res,
+      });
+
+      expect(contentDispositionOf(writeHead)).toBe(
+        "attachment; filename=\"test.json\"; filename*=UTF-8''test.json",
+      );
+      expect(end).toHaveBeenCalledWith("content");
+    },
+  );
 });
 
 describe("parseContentDispositionFileName", () => {
