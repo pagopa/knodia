@@ -1,4 +1,9 @@
-import { attributes } from "@knodia/attribute-models";
+import {
+  type Attribute,
+  attributes,
+  getAttributesFromGroups,
+  listAttributes,
+} from "@knodia/attribute-models";
 import { getOrganizationsOptions } from "@knodia/bff-client/tanstack-query";
 import { KnodeId } from "@knodia/common-models/ids";
 import {
@@ -66,6 +71,16 @@ export function AttributesStep() {
 
   const areDefinedByTemplate = template !== undefined;
 
+  // Template attributes are fixed, so the modal lists only their definitions
+  // (across all groups) instead of the full catalogue.
+  const templateAttributes = useMemo(
+    () =>
+      template
+        ? getAttributesFromGroups(template.eserviceFields.requiredAttributes)
+        : [],
+    [template],
+  );
+
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -115,6 +130,7 @@ export function AttributesStep() {
                     areDefinedByTemplate={areDefinedByTemplate}
                     form={form}
                     groupIndex={groupIndex}
+                    templateAttributes={templateAttributes}
                   />
                 </div>
               ))}
@@ -151,28 +167,43 @@ function AttributesField({
   areDefinedByTemplate,
   form,
   groupIndex,
+  templateAttributes,
 }: {
   areDefinedByTemplate: boolean;
   form: AttributesStepForm;
   groupIndex: number;
+  templateAttributes: readonly Attribute[];
 }) {
   // Template-defined attributes are locked into a read-only field; the searchable
   // picker (standard set + other-knode organizations) is for from-scratch creation.
   return areDefinedByTemplate ? (
-    <TemplateAttributesField form={form} groupIndex={groupIndex} />
+    <TemplateAttributesField
+      form={form}
+      groupIndex={groupIndex}
+      templateAttributes={templateAttributes}
+    />
   ) : (
     <SearchableAttributesField form={form} groupIndex={groupIndex} />
   );
 }
 
-function AttributesListCTA() {
+function AttributesListCTA({
+  attributes,
+  showOrgsPersonalAttributes,
+}: {
+  attributes: readonly Attribute[];
+  showOrgsPersonalAttributes?: boolean;
+}) {
   return (
     <DialogTrigger>
       <Button className="shrink-0" hierarchy="neutral" kind="ghost" size="lg">
         <BookOpenTextIcon />
         Attributes list
       </Button>
-      <AttributesListModal />
+      <AttributesListModal
+        attributes={attributes}
+        showOrgsPersonalAttributes={showOrgsPersonalAttributes}
+      />
     </DialogTrigger>
   );
 }
@@ -234,7 +265,12 @@ function SearchableAttributesField({
 
         return (
           <MultiSelectComboBox
-            action={<AttributesListCTA />}
+            action={
+              <AttributesListCTA
+                attributes={listAttributes()}
+                showOrgsPersonalAttributes
+              />
+            }
             errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
             inputValue={inputValue}
             isInvalid={!groupField.state.meta.isValid}
@@ -264,9 +300,11 @@ function SearchableAttributesField({
 function TemplateAttributesField({
   form,
   groupIndex,
+  templateAttributes,
 }: {
   form: AttributesStepForm;
   groupIndex: number;
+  templateAttributes: readonly Attribute[];
 }) {
   return (
     <form.Field name={`requiredAttributes[${groupIndex}]`}>
@@ -284,7 +322,7 @@ function TemplateAttributesField({
                   <Chip key={key} label={getSchemeRefLabel(key)} type="light" />
                 ))}
               </div>
-              <AttributesListCTA />
+              <AttributesListCTA attributes={templateAttributes} />
             </div>
           </div>
         );

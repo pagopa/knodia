@@ -1,3 +1,7 @@
+import {
+  getAttributesFromGroups,
+  listAttributes,
+} from "@knodia/attribute-models";
 import { Button } from "@knodia/ui-kit/ui";
 import { DialogTrigger } from "react-aria-components";
 import { describe, expect, it } from "vitest";
@@ -11,7 +15,10 @@ describe("AttributesListModal", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributesListModal />
+        <AttributesListModal
+          attributes={listAttributes()}
+          showOrgsPersonalAttributes
+        />
       </DialogTrigger>,
     );
 
@@ -29,11 +36,45 @@ describe("AttributesListModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("in template mode renders only the given attributes, without the section labels or the info banner", () => {
+    const templateAttributes = getAttributesFromGroups([
+      [{ code: "nuts1", scheme: "vc_territorial_units" }],
+    ]);
+
+    renderWithProviders(
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributesListModal attributes={templateAttributes} />
+      </DialogTrigger>,
+    );
+
+    expect(screen.getByText("Attributes list")).toBeInTheDocument();
+    expect(screen.getByText("NUTS 1")).toBeInTheDocument();
+
+    // only the template's attribute is shown, not the whole catalogue
+    expect(screen.queryByText("Testing Organization")).not.toBeInTheDocument();
+    expect(screen.getAllByText(/^Organizations/)).toHaveLength(1);
+
+    // no section labels and no misleading banner in the template flow
+    expect(screen.queryByText("Main attributes")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Orgs personal attributes"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        /each Organization has a unique identifying attribute/,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not render the modal until the trigger is opened", () => {
     renderWithProviders(
       <DialogTrigger>
         <Button>Open</Button>
-        <AttributesListModal />
+        <AttributesListModal
+          attributes={listAttributes()}
+          showOrgsPersonalAttributes
+        />
       </DialogTrigger>,
     );
 
@@ -44,7 +85,10 @@ describe("AttributesListModal", () => {
     const { user } = renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributesListModal />
+        <AttributesListModal
+          attributes={listAttributes()}
+          showOrgsPersonalAttributes
+        />
       </DialogTrigger>,
     );
 
