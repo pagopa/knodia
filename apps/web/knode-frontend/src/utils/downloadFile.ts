@@ -19,7 +19,7 @@ export const downloadResponseAsFile = ({
   data,
   fileName,
 }: {
-  contentDisposition?: AxiosHeaderValue | undefined;
+  contentDisposition?: AxiosHeaderValue;
   contentType: AxiosHeaderValue | undefined;
   data: unknown;
   fileName?: string;
