@@ -10,20 +10,18 @@ import {
 import { RegistrationForm } from "./RegistrationForm";
 
 describe("RegistrationForm", () => {
-  it("disables the submit button until a valid email is entered", async () => {
+  it("flags an invalid email on submit without calling onSubmit", async () => {
     const user = userEvent.setup();
-    render(<RegistrationForm onSubmit={vi.fn()} />);
+    const onSubmit = vi.fn();
+    render(<RegistrationForm onSubmit={onSubmit} />);
 
-    const submit = screen.getByRole("button", { name: "Request credentials" });
-    expect(submit).toBeDisabled();
+    await user.type(screen.getByLabelText("Email address"), "not-an-email");
+    await user.click(
+      screen.getByRole("button", { name: "Request credentials" }),
+    );
 
-    const input = screen.getByLabelText("Email address");
-    await user.type(input, "not-an-email");
-    expect(submit).toBeDisabled();
-
-    await user.clear(input);
-    await user.type(input, "user@mail.com");
-    expect(submit).toBeEnabled();
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText("Invalid email address")).toBeInTheDocument();
   });
 
   it("links to the privacy policy and terms & conditions pages", () => {
