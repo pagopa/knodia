@@ -189,10 +189,10 @@ function AttributesField({
 
 function AttributesListCTA({
   attributes,
-  showOrgsPersonalAttributes,
+  variant,
 }: {
   attributes: readonly Attribute[];
-  showOrgsPersonalAttributes?: boolean;
+  variant: "scratch" | "template";
 }) {
   return (
     <DialogTrigger>
@@ -200,10 +200,7 @@ function AttributesListCTA({
         <BookOpenTextIcon />
         Attributes list
       </Button>
-      <AttributesListModal
-        attributes={attributes}
-        showOrgsPersonalAttributes={showOrgsPersonalAttributes}
-      />
+      <AttributesListModal attributes={attributes} variant={variant} />
     </DialogTrigger>
   );
 }
@@ -268,7 +265,7 @@ function SearchableAttributesField({
             action={
               <AttributesListCTA
                 attributes={listAttributes()}
-                showOrgsPersonalAttributes
+                variant="scratch"
               />
             }
             errorMessage={getFieldErrorMessage(groupField.state.meta.errors)}
@@ -322,7 +319,10 @@ function TemplateAttributesField({
                   <Chip key={key} label={getSchemeRefLabel(key)} type="light" />
                 ))}
               </div>
-              <AttributesListCTA attributes={templateAttributes} />
+              <AttributesListCTA
+                attributes={templateAttributes}
+                variant="template"
+              />
             </div>
           </div>
         );

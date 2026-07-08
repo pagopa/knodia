@@ -15,10 +15,7 @@ describe("AttributesListModal", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributesListModal
-          attributes={listAttributes()}
-          showOrgsPersonalAttributes
-        />
+        <AttributesListModal attributes={listAttributes()} variant="scratch" />
       </DialogTrigger>,
     );
 
@@ -44,7 +41,10 @@ describe("AttributesListModal", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributesListModal attributes={templateAttributes} />
+        <AttributesListModal
+          attributes={templateAttributes}
+          variant="template"
+        />
       </DialogTrigger>,
     );
 
@@ -71,10 +71,7 @@ describe("AttributesListModal", () => {
     renderWithProviders(
       <DialogTrigger>
         <Button>Open</Button>
-        <AttributesListModal
-          attributes={listAttributes()}
-          showOrgsPersonalAttributes
-        />
+        <AttributesListModal attributes={listAttributes()} variant="scratch" />
       </DialogTrigger>,
     );
 
@@ -85,10 +82,7 @@ describe("AttributesListModal", () => {
     const { user } = renderWithProviders(
       <DialogTrigger defaultOpen>
         <Button>Open</Button>
-        <AttributesListModal
-          attributes={listAttributes()}
-          showOrgsPersonalAttributes
-        />
+        <AttributesListModal attributes={listAttributes()} variant="scratch" />
       </DialogTrigger>,
     );
 
