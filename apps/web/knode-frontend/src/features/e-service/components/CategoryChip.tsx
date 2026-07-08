@@ -8,6 +8,6 @@ export function CategoryChip({
   code: string;
   scheme: string;
 }) {
-  const label = getCategory(scheme, code)?.name ?? code;
+  const label = getCategory({ code, scheme })?.name ?? code;
   return <Chip kind="neutral" label={label} type="light" />;
 }
