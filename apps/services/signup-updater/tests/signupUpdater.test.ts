@@ -943,7 +943,7 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
     vi.mocked(logger.warn).mockReset();
   });
 
-  it("deletes the Cognito user on both nodes (leaving the orgs), then completes the deletion", async () => {
+  it("deletes the Cognito user and org group on both nodes (leaving the domain organizations), then completes the deletion", async () => {
     const user = getMockSignupUser({
       status: SignupUserStatus.enum.DeletionPending,
     });
@@ -1104,6 +1104,31 @@ describe("handleSignupMessage — DeletionRequestedV1", () => {
 
     expect(cognitoDeleteGroupMock).not.toHaveBeenCalled();
     expect(completeSignupUserDeletionMock).not.toHaveBeenCalled();
+  });
+
+  it("logs and still completes the deletion when dropping the org group fails", async () => {
+    const user = getMockSignupUser({
+      status: SignupUserStatus.enum.DeletionPending,
+    });
+    getSignupUserByIdMock.mockResolvedValue(user);
+    cognitoDeleteGroupMock.mockRejectedValue(new Error("group delete failed"));
+
+    await expect(
+      handleSignupMessage(
+        deletionEvent(user.signupUserId),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ err: expect.any(Error) }),
+      expect.stringContaining("Failed to delete Cognito org group"),
+    );
+    expect(completeSignupUserDeletionMock).toHaveBeenCalledExactlyOnceWith(
+      user.signupUserId,
+    );
   });
 });
 

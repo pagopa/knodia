@@ -324,9 +324,17 @@ async function deleteKnodeUser(
     });
   }
 
-  // Safe to drop the whole group: it's exclusive to this signup user (one per
-  // deterministic org id).
-  await cognitoClient.deleteOrganizationGroup({ organizationId });
+  // Dropping the group (exclusive to this signup user) is best-effort cleanup:
+  // it carries no data beyond the org id, so a Cognito failure here must not
+  // stall the partition. Log and let the deletion complete.
+  try {
+    await cognitoClient.deleteOrganizationGroup({ organizationId });
+  } catch (error) {
+    logger.error(
+      { err: error, knodeId },
+      `Failed to delete Cognito org group for signup user ${user.signupUserId} on ${knodeId}; leaving it behind`,
+    );
+  }
 }
 
 async function forEachKnode(
