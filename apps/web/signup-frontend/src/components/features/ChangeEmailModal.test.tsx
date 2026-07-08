@@ -30,22 +30,19 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+// eslint-disable-next-line max-lines-per-function
 describe("ChangeEmailModal", () => {
-  it("enables Change only once a valid email is entered", async () => {
+  it("flags an invalid email on submit and does not request the change", async () => {
+    const onOpenChange = vi.fn();
     const { user } = renderWithProviders(
-      <ChangeEmailModal isOpen onOpenChange={vi.fn()} />,
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
     );
 
-    const field = screen.getByLabelText("New email address");
-    const changeButton = screen.getByRole("button", { name: "Change" });
-    expect(changeButton).toBeDisabled();
+    await user.type(screen.getByLabelText("New email address"), "not-an-email");
+    await user.click(screen.getByRole("button", { name: "Change" }));
 
-    await user.type(field, "not-an-email");
-    expect(changeButton).toBeDisabled();
-
-    await user.clear(field);
-    await user.type(field, NEW_EMAIL);
-    expect(changeButton).toBeEnabled();
+    expect(await screen.findByText("Invalid email address")).toBeVisible();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
   it("closes via the cancel button", async () => {
@@ -201,6 +198,42 @@ describe("ChangeEmailModal", () => {
     ).toBeVisible();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("lets the user retry with a different email after an in-use error", async () => {
+    const IN_USE_MESSAGE =
+      "This email address is already in use. Please choose a different one.";
+    let attempts = 0;
+    server.use(
+      http.post(CHANGE_EMAIL_URL, () => {
+        attempts += 1;
+        return attempts === 1
+          ? HttpResponse.json(
+              { errors: [{ code: "011-0001", detail: "" }] },
+              { status: 409 },
+            )
+          : new HttpResponse(null, { status: 204 });
+      }),
+      currentUserReturns(NEW_EMAIL),
+    );
+    const onOpenChange = vi.fn();
+    const { user } = renderWithProviders(
+      <ChangeEmailModal isOpen onOpenChange={onOpenChange} />,
+    );
+
+    const field = screen.getByLabelText("New email address");
+    await user.type(field, "taken@example.com");
+    await user.click(screen.getByRole("button", { name: "Change" }));
+    expect(await screen.findByText(IN_USE_MESSAGE)).toBeVisible();
+
+    await user.clear(field);
+    await user.type(field, NEW_EMAIL);
+    expect(screen.queryByText(IN_USE_MESSAGE)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Change" }));
+    await waitFor(() => {
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
   });
 
   it("shows a generic error in the modal banner and stays open", async () => {
