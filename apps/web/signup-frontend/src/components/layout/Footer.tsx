@@ -24,7 +24,8 @@ const PARTNER_LOGOS = [
   {
     alt: "Logo Dipartimento per la trasformazione digitale",
     href: "https://innovazione.gov.it/",
-    imgClassName: "h-[30px] w-auto",
+    // Match the public website's footer: DTD is sized by width (219px).
+    imgClassName: "h-auto w-[219px]",
     src: logoDtdExtended,
     title: "Go to Dipartimento per la trasformazione digitale website",
   },
