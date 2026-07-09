@@ -2,7 +2,7 @@
   "blocks": [
     {
       "type": "heading",
-      "level": 1,
+      "level": 2,
       "content": [{ "text": "Accessibility Statement" }]
     },
     {
@@ -19,7 +19,7 @@
         }
       ]
     },
-    { "type": "heading", "level": 2, "content": [{ "text": "Website" }] },
+    { "type": "heading", "level": 3, "content": [{ "text": "Website" }] },
     {
       "type": "paragraph",
       "marker": "●",
@@ -42,7 +42,7 @@
     },
     {
       "type": "heading",
-      "level": 2,
+      "level": 3,
       "content": [
         {
           "text": "Section 1 - Content in Compliance with EU Implementing Decision 2018/1523"
@@ -61,7 +61,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Non-compliant Sections, Content, and Functions" }]
     },
     {
@@ -124,7 +124,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Additional Information" }]
     },
     {
@@ -146,7 +146,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Method Used to Draft the Accessibility Statement" }]
     },
     {
@@ -165,7 +165,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Feedback and Contact Information" }]
     },
     {
@@ -186,7 +186,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Contact Email" }]
     },
     {
@@ -201,7 +201,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Feedback Mechanism" }]
     },
     {
@@ -215,7 +215,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Accessibility Officer (RTD)" }]
     },
     {
@@ -224,7 +224,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Enforcement Procedure" }]
     },
     {
@@ -246,7 +246,7 @@
     },
     {
       "type": "heading",
-      "level": 3,
+      "level": 4,
       "content": [{ "text": "Complaint to the Italian Digital Ombudsman" }]
     },
     {
@@ -260,7 +260,7 @@
     },
     {
       "type": "heading",
-      "level": 2,
+      "level": 3,
       "content": [{ "text": "Section 2 - Information Required by AgID" }]
     },
     {

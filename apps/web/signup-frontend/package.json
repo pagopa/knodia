@@ -14,6 +14,7 @@
     "@fontsource-variable/inter": "catalog:",
     "@fontsource-variable/manrope": "catalog:",
     "@fontsource/titillium-web": "catalog:",
+    "@knodia/accessibility-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/signup-manager-client": "workspace:*",
     "@knodia/terms-and-conditions-models": "workspace:*",

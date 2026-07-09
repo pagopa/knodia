@@ -10,10 +10,10 @@ describe("getAccessibilityDocument", () => {
     expect(getAccessibilityDocument("it").blocks.length).toBeGreaterThan(0);
   });
 
-  it("opens each language with a level-1 heading", () => {
+  it("opens each language with a level-2 heading (nested under the page h1)", () => {
     for (const lang of ["en", "it"] as const) {
       const first = getAccessibilityDocument(lang).blocks.at(0);
-      expect(first).toMatchObject({ level: 1, type: "heading" });
+      expect(first).toMatchObject({ level: 2, type: "heading" });
     }
   });
 });

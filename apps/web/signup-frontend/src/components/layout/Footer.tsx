@@ -7,6 +7,7 @@ import logoPagopa from "@/assets/logo-pagopa.svg";
 import { Link } from "@/components/ui";
 import { config } from "@/config/config";
 import {
+  ACCESSIBILITY_PATH,
   PRIVACY_POLICY_PATH,
   TERMS_AND_CONDITIONS_PATH,
 } from "@/config/legalLinks";
@@ -15,6 +16,7 @@ const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
   { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
+  { href: ACCESSIBILITY_PATH, label: "Accessibility" },
 ];
 
 export function Footer() {

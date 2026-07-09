@@ -2407,6 +2407,9 @@ importers:
       '@fontsource/titillium-web':
         specifier: 'catalog:'
         version: 5.2.8
+      '@knodia/accessibility-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/accessibility-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
