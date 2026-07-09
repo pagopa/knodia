@@ -327,12 +327,13 @@ describe("OrgConsumptionStatusSection — Archived state", () => {
     ).toBeInTheDocument();
   });
 
-  it("drops the request-a-new-one invitation when the e-service is also archived", () => {
+  it("drops the whole description when the e-service is also archived", () => {
     renderSection({ agreement: archivedAgreement, eserviceState: "Archived" });
 
+    expect(screen.getByText("Archived")).toBeInTheDocument();
     expect(
-      screen.getByText("You can't restore an archived Agreement."),
-    ).toBeInTheDocument();
+      screen.queryByText(/You can't restore an archived Agreement/),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByText(/you can request a new one/),
     ).not.toBeInTheDocument();

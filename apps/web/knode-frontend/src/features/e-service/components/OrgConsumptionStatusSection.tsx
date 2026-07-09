@@ -133,11 +133,13 @@ function AgreementStatusBanner({
     ))
     .with("Archived", () => (
       <Banner icon={<ArchiveIcon />} kind="neutral" size="md" title="Archived">
-        <span className="block max-w-160">
-          You can&apos;t restore an archived Agreement.
-          {eserviceState !== "Archived" &&
-            " If your organization has the required attributes, you can request a new one."}
-        </span>
+        {/* Archived E-service: no new Agreement is possible, so drop the description entirely. */}
+        {eserviceState !== "Archived" && (
+          <span className="block max-w-160">
+            You can&apos;t restore an archived Agreement. If your organization
+            has the required attributes, you can request a new one.
+          </span>
+        )}
       </Banner>
     ))
     .with("PendingConsumerOperatorIdentification", () => (

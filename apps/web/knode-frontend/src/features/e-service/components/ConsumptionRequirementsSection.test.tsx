@@ -55,13 +55,18 @@ describe("ConsumptionRequirementsSection", () => {
     ).toBeInTheDocument();
   });
 
-  it("hides the status banner and Request Agreement button for an archived e-service", () => {
+  it("replaces the status banner with an informative message for an archived e-service", () => {
     renderSection({ eserviceState: "Archived" });
 
     expect(screen.queryByText(HAS_ATTRS_TEXT)).not.toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: REQUEST_AGREEMENT }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You can't request an Agreement for an archived E-Service.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("keeps the Attributes and Identification columns for an archived e-service", () => {

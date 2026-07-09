@@ -46,8 +46,12 @@ export function ConsumptionRequirementsSection({
             </ul>
           )}
 
-          {/* Archived E-service can't be consumed: hide the status banner and its button. */}
-          {eserviceState !== "Archived" && (
+          {/* An archived E-service can't be consumed: no Agreement can be requested. */}
+          {eserviceState === "Archived" ? (
+            <Banner kind="informative">
+              You can&apos;t request an Agreement for an archived E-Service.
+            </Banner>
+          ) : (
             <Banner
               className="[&>div:last-child]:flex-1"
               icon={hasRequiredAttributes ? <SealCheckIcon /> : <WarningIcon />}
