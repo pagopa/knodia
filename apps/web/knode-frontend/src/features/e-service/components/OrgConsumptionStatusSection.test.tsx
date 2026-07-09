@@ -94,6 +94,21 @@ describe("OrgConsumptionStatusSection", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows the Archived banner instead of 'Action needed' when the e-service is archived", () => {
+    renderSection({
+      agreement: {
+        id: crypto.randomUUID(),
+        state: "PendingConsumerOperatorIdentification",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+      },
+      eserviceState: "Archived",
+    });
+
+    expect(screen.getByText("Archived")).toBeInTheDocument();
+    expect(screen.queryByText("Action needed")).not.toBeInTheDocument();
+  });
+
   it("hides Purposes and Keychains sections for PendingConsumerOperatorIdentification state", () => {
     renderSection({
       agreement: {

@@ -111,6 +111,11 @@ function AgreementStatusBanner({
       knodeId,
     });
 
+  // An archived E-service overrides the agreement lifecycle: nothing can be acted on.
+  const archivedBanner = (
+    <Banner icon={<ArchiveIcon />} kind="neutral" size="md" title="Archived" />
+  );
+
   const banner = match(agreement.state)
     .with("Active", () =>
       canManageAgreement ? (
@@ -131,36 +136,46 @@ function AgreementStatusBanner({
         knodeId={knodeId}
       />
     ))
-    .with("Archived", () => (
-      <Banner icon={<ArchiveIcon />} kind="neutral" size="md" title="Archived">
-        {/* Archived E-service: no new Agreement is possible, so drop the description entirely. */}
-        {eserviceState !== "Archived" && (
+    .with("Archived", () =>
+      eserviceState === "Archived" ? (
+        archivedBanner
+      ) : (
+        <Banner
+          icon={<ArchiveIcon />}
+          kind="neutral"
+          size="md"
+          title="Archived"
+        >
           <span className="block max-w-160">
             You can&apos;t restore an archived Agreement. If your organization
             has the required attributes, you can request a new one.
           </span>
-        )}
-      </Banner>
-    ))
-    .with("PendingConsumerOperatorIdentification", () => (
-      <Banner
-        action={
-          canManageAgreement
-            ? {
-                isDisabled: isRequestMagicLinkPending,
-                label: "Go to Producer Knode",
-                onPress: requestMagicLink,
-              }
-            : undefined
-        }
-        icon={<WarningCircleIcon />}
-        kind="informative"
-        size="md"
-        title="Action needed"
-      >
-        To activate the Agreement, you must log in to the Producer Knode.
-      </Banner>
-    ))
+        </Banner>
+      ),
+    )
+    .with("PendingConsumerOperatorIdentification", () =>
+      eserviceState === "Archived" ? (
+        archivedBanner
+      ) : (
+        <Banner
+          action={
+            canManageAgreement
+              ? {
+                  isDisabled: isRequestMagicLinkPending,
+                  label: "Go to Producer Knode",
+                  onPress: requestMagicLink,
+                }
+              : undefined
+          }
+          icon={<WarningCircleIcon />}
+          kind="informative"
+          size="md"
+          title="Action needed"
+        >
+          To activate the Agreement, you must log in to the Producer Knode.
+        </Banner>
+      ),
+    )
     .exhaustive();
 
   return (
