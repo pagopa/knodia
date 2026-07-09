@@ -1937,7 +1937,7 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-ses-mock
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     entrypoint:
       - /bin/sh
       - -c
@@ -2306,7 +2306,7 @@ services:
   local-kms-setup:
     security_opt:
       - no-new-privileges:true
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-kms-setup
     depends_on:
       local-kms:
@@ -2354,7 +2354,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-cognito
     ports:
       - 4567:3000
@@ -2371,7 +2371,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-one-identity
     ports:
       - 4568:3000
