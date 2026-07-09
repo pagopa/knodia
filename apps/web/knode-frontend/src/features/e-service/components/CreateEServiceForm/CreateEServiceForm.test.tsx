@@ -598,6 +598,7 @@ describe("CreateEServiceForm — attribute multi-select (KN-814)", () => {
     await fillDocsStep(user);
 
     await user.click(screen.getByRole("combobox", { name: /attributes/i }));
+    await user.keyboard("{ArrowDown}");
     const listbox = await screen.findByRole("listbox");
 
     // An other-knode org (label = org name) and a standard attribute both appear.
@@ -657,6 +658,7 @@ describe("CreateEServiceForm — attribute multi-select (KN-814)", () => {
 
     // Standard attributes remain selectable; no remote orgs are offered.
     await user.click(screen.getByRole("combobox", { name: /attributes/i }));
+    await user.keyboard("{ArrowDown}");
     const listbox = await screen.findByRole("listbox");
     expect(
       within(listbox).getByRole("option", { name: "Testing Organization" }),
