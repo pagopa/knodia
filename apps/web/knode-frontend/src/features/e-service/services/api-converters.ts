@@ -76,19 +76,19 @@ export async function toEserviceFromScratchSeed(
     accessTokenDuration: data.accessTokenDuration * 60,
     accessTokenType: data.accessTokenType,
     categories: data.categories,
-    description: { en: data.description },
+    description: { en: data.description.trim() },
     interfaceDocument: {
       checksum,
       content,
       contentType: getContentType(interfaceDocument),
       name: interfaceDocument.name,
-      prettyName: { en: interfaceDocument.name },
+      prettyName: { en: interfaceDocument.name.trim() },
     },
     isSignalHubEnabled: data.isSignalHubEnabled,
     maxDailyCallsPerConsumer: data.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: data.maxDailyCallsPerKnode,
     mode: data.mode,
-    name: { en: data.name },
+    name: { en: data.name.trim() },
     requiredAttributes: data.requiredAttributes,
   };
 }
@@ -101,11 +101,11 @@ export function toEserviceFromTemplateSeed(
     accessTokenAudience: [data.accessTokenAudience],
     accessTokenDuration: data.accessTokenDuration * 60,
     accessTokenType: data.accessTokenType,
-    description: { en: data.description },
+    description: { en: data.description.trim() },
     interfaceDocumentOverrides: {
       contact: {
         email: data.contactEmail,
-        name: data.contactName,
+        name: data.contactName.trim(),
         ...(data.contactUrl && { url: data.contactUrl }),
       },
       serverUrls: data.serverUrls,
@@ -116,7 +116,7 @@ export function toEserviceFromTemplateSeed(
     isSignalHubEnabled: data.isSignalHubEnabled,
     maxDailyCallsPerConsumer: data.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: data.maxDailyCallsPerKnode,
-    name: { en: data.name },
+    name: { en: data.name.trim() },
     template: {
       id: template.id,
       knodeId: template.knodeId,

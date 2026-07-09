@@ -1,9 +1,9 @@
 import {
   maxDescriptionLength,
   maxNameLength,
-  minDailyCalls,
   minDescriptionLength,
   minNameLength,
+  minWriteDailyCalls,
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
@@ -12,10 +12,11 @@ const purposeFieldSchemas = {
     z
       .number()
       .int("Must be a whole number.")
-      .min(minDailyCalls, `Must be at least ${minDailyCalls}.`)
+      .min(minWriteDailyCalls, `Must be at least ${minWriteDailyCalls}.`)
       .max(max, `Must be at most ${max}.`),
   description: z
     .string()
+    .trim()
     .min(
       minDescriptionLength,
       `Description must be at least ${minDescriptionLength} characters.`,
@@ -26,6 +27,7 @@ const purposeFieldSchemas = {
     ),
   name: z
     .string()
+    .trim()
     .min(minNameLength, `Name must be at least ${minNameLength} characters.`)
     .max(maxNameLength, `Name must be at most ${maxNameLength} characters.`),
 };
