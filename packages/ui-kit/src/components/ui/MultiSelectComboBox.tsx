@@ -135,7 +135,6 @@ export function MultiSelectComboBox<T extends object>({
         isInvalid={isInvalid}
         isReadOnly={isReadOnly}
         items={items}
-        menuTrigger="focus"
         onChange={onChange}
         selectionMode="multiple"
         value={value}
