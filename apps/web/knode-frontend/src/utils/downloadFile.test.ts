@@ -53,7 +53,11 @@ describe("downloadResponseAsFile", () => {
     mockDownloadInfra();
 
     const data = { info: { title: "Test" }, openapi: "3.0.0" };
-    downloadResponseAsFile(data, "spec.json", "application/json");
+    downloadResponseAsFile({
+      contentType: "application/json",
+      data,
+      fileName: "spec.json",
+    });
 
     const createdFile = vi.mocked(URL.createObjectURL).mock.calls[0]![0];
     expect(createdFile).toBeInstanceOf(File);
@@ -64,11 +68,44 @@ describe("downloadResponseAsFile", () => {
   it("passes string data through without serialization", () => {
     mockDownloadInfra();
 
-    downloadResponseAsFile("openapi: 3.0.0", "spec.yaml", "application/yaml");
+    downloadResponseAsFile({
+      contentType: "application/yaml",
+      data: "openapi: 3.0.0",
+      fileName: "spec.yaml",
+    });
 
     const createdFile = vi.mocked(URL.createObjectURL).mock.calls[0]![0];
     expect(createdFile).toBeInstanceOf(File);
     expect((createdFile as File).name).toBe("spec.yaml");
+    expect((createdFile as File).type).toBe("application/yaml");
+  });
+
+  it("downloads file with Content-Disposition file name", () => {
+    mockDownloadInfra();
+
+    downloadResponseAsFile({
+      contentDisposition: 'attachment; filename="spec.yaml"',
+      contentType: "application/yaml",
+      data: "openapi: 3.0.0",
+    });
+
+    const createdFile = vi.mocked(URL.createObjectURL).mock.calls[0]![0];
+    expect(createdFile).toBeInstanceOf(File);
+    expect((createdFile as File).name).toBe("spec.yaml");
+    expect((createdFile as File).type).toBe("application/yaml");
+  });
+
+  it("downloads file with fallback file name", () => {
+    mockDownloadInfra();
+
+    downloadResponseAsFile({
+      contentType: "application/yaml",
+      data: "openapi: 3.0.0",
+    });
+
+    const createdFile = vi.mocked(URL.createObjectURL).mock.calls[0]![0];
+    expect(createdFile).toBeInstanceOf(File);
+    expect((createdFile as File).name).toBe("document");
     expect((createdFile as File).type).toBe("application/yaml");
   });
 });

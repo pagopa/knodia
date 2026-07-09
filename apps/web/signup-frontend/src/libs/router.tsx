@@ -27,6 +27,7 @@ export const router = createRouter({
   // This will ensure that the loader is always called when the route is preloaded or visited
   // @see https://tanstack.com/router/latest/docs/framework/react/guide/preloading#preloading-with-external-libraries
   defaultPreloadStaleTime: 0,
+  notFoundMode: "root",
   routeTree,
   scrollRestoration: true,
 });

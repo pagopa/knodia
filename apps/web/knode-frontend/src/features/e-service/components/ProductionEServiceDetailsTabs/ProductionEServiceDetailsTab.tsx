@@ -92,11 +92,11 @@ function DocumentsSectionAdapter() {
       path: { eserviceId: id },
     });
 
-    downloadResponseAsFile(
-      response.data,
-      interfaceDocument.prettyName.en,
-      response.headers["content-type"],
-    );
+    downloadResponseAsFile({
+      contentDisposition: response.headers["content-disposition"],
+      contentType: response.headers["content-type"],
+      data: response.data,
+    });
   }
 
   return (

@@ -5,8 +5,8 @@ import {
   EserviceVersionState,
 } from "@knodia/eservice-models";
 import {
+  getMockCategoryId,
   getMockEservice,
-  getMockEserviceCategory,
   getMockEserviceVersion,
 } from "@knodia/test-commons/utils";
 
@@ -80,7 +80,7 @@ export const mockEservices: Eservice[] = [
     ...getMockEservice({ seed: 3 }),
     categories: [
       {
-        ...getMockEserviceCategory(0),
+        ...getMockCategoryId(0),
         code: "3 %_\\ knodia 3",
       },
     ],
