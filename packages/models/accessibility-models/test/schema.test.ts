@@ -3,27 +3,30 @@ import { describe, expect, it } from "vitest";
 import { AccessibilityDocument, Fragment } from "../src/schema.ts";
 
 describe("AccessibilityDocument schema", () => {
-  it("parses a well-formed document with heading, marker, email and link fragments", () => {
+  it("parses a well-formed document with heading, paragraph and list blocks", () => {
     const parsed = AccessibilityDocument.parse({
       blocks: [
         { content: [{ text: "Section 1" }], level: 2, type: "heading" },
+        { content: [{ text: "intro" }], type: "paragraph" },
         {
-          content: [
-            { text: "URL: " },
-            { text: "https://knodia.com", url: "https://knodia.com" },
-            { email: "info@knodia.org" },
+          items: [
+            [{ text: "Name: Knodia" }],
+            [
+              { text: "URL: " },
+              { text: "https://knodia.org", url: "https://knodia.org" },
+            ],
+            [{ email: "info@knodia.org" }],
           ],
-          marker: "●",
-          type: "paragraph",
+          type: "list",
         },
       ],
     });
-    expect(parsed.blocks).toHaveLength(2);
+    expect(parsed.blocks).toHaveLength(3);
   });
 
   it("rejects an unknown block type", () => {
     expect(() =>
-      AccessibilityDocument.parse({ blocks: [{ content: [], type: "list" }] }),
+      AccessibilityDocument.parse({ blocks: [{ content: [], type: "quote" }] }),
     ).toThrow();
   });
 
@@ -41,10 +44,10 @@ describe("AccessibilityDocument schema", () => {
     ).toThrow();
   });
 
-  it("rejects an empty paragraph marker", () => {
+  it("rejects a list item that is not an array of fragments", () => {
     expect(() =>
       AccessibilityDocument.parse({
-        blocks: [{ content: [{ text: "x" }], marker: "", type: "paragraph" }],
+        blocks: [{ items: [{ text: "x" }], type: "list" }],
       }),
     ).toThrow();
   });

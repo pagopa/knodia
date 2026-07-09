@@ -29,13 +29,19 @@ const HeadingBlock = z.strictObject({
 
 const ParagraphBlock = z.strictObject({
   content: z.array(Fragment),
-  marker: z.string().min(1).optional(),
   type: z.literal("paragraph"),
+});
+
+// Each item is its own run of fragments; rendered as a semantic <ul>/<li>.
+const ListBlock = z.strictObject({
+  items: z.array(z.array(Fragment)),
+  type: z.literal("list"),
 });
 
 export const Block = z.discriminatedUnion("type", [
   HeadingBlock,
   ParagraphBlock,
+  ListBlock,
 ]);
 export type Block = z.infer<typeof Block>;
 

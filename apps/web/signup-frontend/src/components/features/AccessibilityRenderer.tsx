@@ -17,7 +17,7 @@ export function AccessibilityRenderer({
   document,
 }: AccessibilityRendererProps) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col [&>*:first-child]:mt-0">
       {document.blocks.map((block, index) => (
         <BlockNode block={block} key={index} />
       ))}
@@ -26,25 +26,30 @@ export function AccessibilityRenderer({
 }
 
 function BlockNode({ block }: { block: Block }) {
-  const children = block.content.map((fragment, index) => (
-    <FragmentNode fragment={fragment} key={index} />
-  ));
-
   return match(block)
     .with({ type: "heading" }, (heading) => {
-      // Map level to h2..h6 so the outline nests under the page's single h1.
       const Heading = `h${heading.level}` as keyof JSX.IntrinsicElements;
-      const className =
-        heading.level <= 2
-          ? "text-style-section-title text-primary-violet"
-          : "text-style-subheading text-primary-violet";
-      return <Heading className={className}>{children}</Heading>;
+      return (
+        <Heading
+          className={`${headingClassName(heading.level)} text-primary-violet`}
+        >
+          <Fragments fragments={heading.content} />
+        </Heading>
+      );
     })
     .with({ type: "paragraph" }, (paragraph) => (
-      <p className="text-style-body text-neutral-graphite">
-        {paragraph.marker ? `${paragraph.marker} ` : ""}
-        {children}
+      <p className="text-style-body mt-4 text-neutral-graphite">
+        <Fragments fragments={paragraph.content} />
       </p>
+    ))
+    .with({ type: "list" }, (list) => (
+      <ul className="text-style-body mt-3 list-disc space-y-1.5 pl-6 text-neutral-graphite">
+        {list.items.map((item, index) => (
+          <li key={index}>
+            <Fragments fragments={item} />
+          </li>
+        ))}
+      </ul>
     ))
     .exhaustive();
 }
@@ -70,4 +75,19 @@ function FragmentNode({ fragment }: { fragment: Fragment }) {
     .with({ italic: true }, (f) => <em>{f.text}</em>)
     .with({ text: P.string }, (f) => <>{f.text}</>)
     .exhaustive();
+}
+
+function Fragments({ fragments }: { fragments: Fragment[] }) {
+  return fragments.map((fragment, index) => (
+    <FragmentNode fragment={fragment} key={index} />
+  ));
+}
+
+// Level → visual tier + top margin. Levels start at 2 (the page owns the h1);
+// sections (h3) get a wide gap, sub-sections (h4) a smaller one.
+function headingClassName(level: number): string {
+  return match(level)
+    .with(2, () => "text-style-section-title mt-12")
+    .with(3, () => "text-style-subheading mt-12")
+    .otherwise(() => "font-heading text-[20px] leading-7 font-semibold mt-8");
 }
