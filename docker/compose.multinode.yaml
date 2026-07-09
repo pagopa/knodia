@@ -971,13 +971,13 @@ services:
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
-      KNODE_API_TOKEN_DURATION_SECONDS: "3600"
+      KNODE_API_TOKEN_DURATION_SECONDS: "600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_orion_authorization_server_user
@@ -1033,7 +1033,7 @@ services:
       EXPECTED_ISSUER: "auth.orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
@@ -1059,7 +1059,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -1753,13 +1753,13 @@ services:
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
-      KNODE_API_TOKEN_DURATION_SECONDS: "3600"
+      KNODE_API_TOKEN_DURATION_SECONDS: "600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_lynx_authorization_server_user
@@ -1815,7 +1815,7 @@ services:
       EXPECTED_ISSUER: "auth.lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
@@ -1841,7 +1841,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -2063,7 +2063,7 @@ services:
       UI_SIGNUP_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-signup-session"
       UI_SIGNUP_SESSION_JWT_ISSUER: "local-knodia"
       UI_SIGNUP_SESSION_JWT_KID: "alias/local-knodia-key"
-      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "300"
+      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "3600"
       SIGNUP_ALLOWED_EMAIL_DOMAINS: any
       SIGNUP_DB_USER: local_signup_manager_user
       SIGNUP_DB_PASSWORD: local_signup_manager_user

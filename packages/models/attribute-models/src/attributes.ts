@@ -106,6 +106,27 @@ const allAttributes: Attribute[] = Object.entries(attributes).flatMap(
       .filter((attribute): attribute is Attribute => attribute !== undefined),
 );
 
+export function getAttributesFromGroups(
+  groups: readonly (readonly AttributeId[])[],
+): readonly Attribute[] {
+  const seen = new Set<string>();
+  const result: Attribute[] = [];
+  for (const group of groups) {
+    for (const id of group) {
+      const key = `${id.scheme}:${id.code}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      const attribute = getAttribute(id);
+      if (attribute) {
+        seen.add(key);
+        result.push(attribute);
+      }
+    }
+  }
+  return result;
+}
+
 export function listAttributes(): readonly Attribute[] {
   return allAttributes;
 }
