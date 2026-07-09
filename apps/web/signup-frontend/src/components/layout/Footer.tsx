@@ -2,10 +2,9 @@ import { Fragment } from "react";
 
 import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
-import logoD from "@/assets/logo-d.svg";
+import logoDtdExtended from "@/assets/logo-dtd-extended.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
 import { Link } from "@/components/ui";
-import { config } from "@/config/config";
 import {
   PRIVACY_POLICY_PATH,
   TERMS_AND_CONDITIONS_PATH,
@@ -14,7 +13,26 @@ import {
 const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
-  { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
+];
+
+const LOGO_LINK_CLASS =
+  "inline-block rounded-sm outline-primary-violet outline-offset-2 hover:opacity-80 focus-visible:outline-2 forced-colors:focus-visible:outline-[Highlight]";
+
+const PARTNER_LOGOS = [
+  {
+    alt: "Logo Dipartimento per la trasformazione digitale",
+    className: "h-[30px] w-auto",
+    href: "https://innovazione.gov.it/",
+    src: logoDtdExtended,
+    title: "Go to Dipartimento per la trasformazione digitale website",
+  },
+  {
+    alt: "Logo PagoPA S.p.A.",
+    className: "h-[30px] w-auto",
+    href: "https://www.pagopa.it/en/homepage/",
+    src: logoPagopa,
+    title: "Go to PagoPA S.p.A. website",
+  },
 ];
 
 export function Footer() {
@@ -48,23 +66,41 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="flex w-[219px] flex-col gap-[66px]">
-          <img
-            alt="Funded by the European Union – NextGenerationEU"
-            className="w-[219px]"
-            src={euFlag}
-          />
+        <div className="flex flex-col gap-[66px]">
+          <a
+            className={LOGO_LINK_CLASS}
+            href="https://commission.europa.eu/index_en"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Go to EU Commission website"
+          >
+            <img
+              alt="Logo NextGenerationEU"
+              className="w-[219px]"
+              src={euFlag}
+            />
+          </a>
           <div className="flex flex-col gap-4">
             <span className="text-style-caption text-neutral-gray-40">
               PARTNERS
             </span>
-            <div className="flex items-center justify-between">
-              <img
-                alt="PagoPA"
-                className="h-[30px] w-[107px]"
-                src={logoPagopa}
-              />
-              <img alt="Dipartimento" className="size-[50px]" src={logoD} />
+            <div className="flex flex-col items-start gap-4">
+              {PARTNER_LOGOS.map((logo) => (
+                <a
+                  className={LOGO_LINK_CLASS}
+                  href={logo.href}
+                  key={logo.href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title={logo.title}
+                >
+                  <img
+                    alt={logo.alt}
+                    className={logo.className}
+                    src={logo.src}
+                  />
+                </a>
+              ))}
             </div>
           </div>
         </div>
