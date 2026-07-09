@@ -52,8 +52,8 @@ function EditKeychainModal(props: EditKeychainModalProps) {
   function handleEditKeychain(seed: EditKeychainFormValues) {
     mutate(
       {
-        description: seed.description ? { en: seed.description } : null,
-        name: { en: seed.name },
+        description: seed.description ? { en: seed.description.trim() } : null,
+        name: { en: seed.name.trim() },
       },
       { onSuccess: onClose },
     );
