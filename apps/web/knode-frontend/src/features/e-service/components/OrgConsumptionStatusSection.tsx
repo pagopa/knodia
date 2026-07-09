@@ -111,7 +111,7 @@ function AgreementStatusBanner({
       knodeId,
     });
 
-  // An archived E-service overrides the agreement lifecycle: nothing can be acted on.
+  // For a pending-identification or archived Agreement, an archived E-service leaves nothing to act on.
   const archivedBanner = (
     <Banner icon={<ArchiveIcon />} kind="neutral" size="md" title="Archived" />
   );
