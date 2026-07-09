@@ -623,6 +623,7 @@ services:
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
       DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
       DYNAMODB_MAGIC_LINK_TOKENS_TABLE: knodia-bff-magic-link-tokens
       COOKIE_PATH_PREFIX: /bff
@@ -646,6 +647,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      local-cognito:
+        condition: service_started
 
   eservice-readmodel-writer-orion:
     security_opt:
@@ -968,13 +971,13 @@ services:
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.orion.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
-      KNODE_API_TOKEN_DURATION_SECONDS: "3600"
+      KNODE_API_TOKEN_DURATION_SECONDS: "600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_orion_authorization_server_user
@@ -1030,7 +1033,7 @@ services:
       EXPECTED_ISSUER: "auth.orion.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
@@ -1056,7 +1059,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -1402,6 +1405,7 @@ services:
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
       DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
       DYNAMODB_MAGIC_LINK_TOKENS_TABLE: knodia-bff-magic-link-tokens
       COOKIE_PATH_PREFIX: /bff
@@ -1425,6 +1429,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      local-cognito:
+        condition: service_started
 
   eservice-readmodel-writer-lynx:
     security_opt:
@@ -1747,13 +1753,13 @@ services:
       KNODE_API_TOKEN_JWT_KID: "alias/local-knodia-auth-server-key"
       GENERATED_KNODE_API_TOKEN_ISSUER: "auth.lynx.local.knodia.com"
       GENERATED_KNODE_API_TOKEN_AUDIENCES: "signalhub.test.knodia.org,k2o-gateway.test.knodia.org"
-      KNODE_API_TOKEN_DURATION_SECONDS: "3600"
+      KNODE_API_TOKEN_DURATION_SECONDS: "600"
       ESERVICE_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       KNODE_API_CLIENT_ASSERTION_ACCEPTED_AUDIENCES: "test.knodia.org"
       CLIENT_ASSERTION_CLOCK_TOLERANCE_SECONDS: "30"
       CLIENT_ASSERTION_MAX_TOKEN_AGE_SECONDS: "300"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org/token"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-auth-server-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       READMODEL_DB_USER: local_lynx_authorization_server_user
@@ -1809,7 +1815,7 @@ services:
       EXPECTED_ISSUER: "auth.lynx.local.knodia.com"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       DPOP_PROOF_HTU_BASE_URL: "https://test.knodia.org"
-      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "300"
+      DPOP_PROOF_MAX_TOKEN_AGE_SECONDS: "60"
       DYNAMODB_DPOP_PROOFS_TABLE: knodia-mock-eservice-dpop-proofs
       JWT_CLOCK_TOLERANCE_SECONDS: "30"
       SIGNAL_HUB_SEED_START_DATE_MS: "1767225600000"
@@ -1835,7 +1841,7 @@ services:
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       INTEGRITY_REST_02_SIGNATURE_ISSUER: "local-knodia"
       INTEGRITY_REST_02_SIGNATURE_KID: alias/local-knodia-integrity-rest-02-key
-      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 60
+      INTEGRITY_REST_02_SIGNATURE_SECONDS_DURATION: 100
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully
@@ -1931,7 +1937,7 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-ses-mock
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     entrypoint:
       - /bin/sh
       - -c
@@ -2057,7 +2063,7 @@ services:
       UI_SIGNUP_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-signup-session"
       UI_SIGNUP_SESSION_JWT_ISSUER: "local-knodia"
       UI_SIGNUP_SESSION_JWT_KID: "alias/local-knodia-key"
-      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "300"
+      UI_SIGNUP_SESSION_JWT_SECONDS_DURATION: "3600"
       SIGNUP_ALLOWED_EMAIL_DOMAINS: any
       SIGNUP_DB_USER: local_signup_manager_user
       SIGNUP_DB_PASSWORD: local_signup_manager_user
@@ -2300,7 +2306,7 @@ services:
   local-kms-setup:
     security_opt:
       - no-new-privileges:true
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-kms-setup
     depends_on:
       local-kms:
@@ -2348,7 +2354,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-cognito
     ports:
       - 4567:3000
@@ -2365,7 +2371,7 @@ services:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    image: node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
     container_name: knodia-multinode-local-one-identity
     ports:
       - 4568:3000
