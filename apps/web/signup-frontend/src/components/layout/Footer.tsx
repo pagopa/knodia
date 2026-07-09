@@ -13,7 +13,7 @@ import {
 const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
-  // TODO: restore Company Details (config.knodiaOrgCompanyDetailsUrl) after the demo.
+  // TODO: restore Company Details (config.knodiaOrgCompanyDetailsUrl) when the page is available.
 ];
 
 // Amber focus ring (the footer accent): primary-violet on the deep-violet footer is below the WCAG 3:1 threshold.
