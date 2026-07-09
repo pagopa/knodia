@@ -13,24 +13,26 @@ import {
 const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
+  // TODO: restore Company Details (config.knodiaOrgCompanyDetailsUrl) after the demo.
 ];
 
+// Amber focus ring (the footer accent): primary-violet on the deep-violet footer is below the WCAG 3:1 threshold.
 const LOGO_LINK_CLASS =
-  "inline-block rounded-sm outline-primary-violet outline-offset-2 hover:opacity-80 focus-visible:outline-2 forced-colors:focus-visible:outline-[Highlight]";
+  "inline-block rounded-sm outline-secondary-muted-amber outline-offset-2 hover:opacity-80 focus-visible:outline-2 forced-colors:focus-visible:outline-[Highlight]";
 
 const PARTNER_LOGOS = [
   {
     alt: "Logo Dipartimento per la trasformazione digitale",
-    className: "h-[30px] w-auto",
     href: "https://innovazione.gov.it/",
+    imgClassName: "h-[30px] w-auto",
     src: logoDtdExtended,
     title: "Go to Dipartimento per la trasformazione digitale website",
   },
   {
     alt: "Logo PagoPA S.p.A.",
-    // logo-pagopa.svg has preserveAspectRatio="none" + width/height 100%, so it needs an explicit width.
-    className: "h-[30px] w-[107px]",
     href: "https://www.pagopa.it/en/homepage/",
+    // logo-pagopa.svg has preserveAspectRatio="none" + width/height 100%, so it needs an explicit width.
+    imgClassName: "h-[30px] w-[107px]",
     src: logoPagopa,
     title: "Go to PagoPA S.p.A. website",
   },
@@ -55,7 +57,7 @@ export function Footer() {
                 <Fragment key={link.href}>
                   {index > 0 && <span aria-hidden>·</span>}
                   <Link
-                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber"
+                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline outline-secondary-muted-amber hover:text-secondary-muted-amber"
                     href={link.href}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -68,44 +70,51 @@ export function Footer() {
           </div>
         </div>
         <div className="flex flex-col gap-[66px]">
-          <a
-            className={LOGO_LINK_CLASS}
+          <LogoLink
+            alt="Logo NextGenerationEU"
             href="https://commission.europa.eu/index_en"
-            rel="noopener noreferrer"
-            target="_blank"
+            imgClassName="w-[219px]"
+            src={euFlag}
             title="Go to EU Commission website"
-          >
-            <img
-              alt="Logo NextGenerationEU"
-              className="w-[219px]"
-              src={euFlag}
-            />
-          </a>
+          />
           <div className="flex flex-col gap-4">
             <span className="text-style-caption text-neutral-gray-40">
               PARTNERS
             </span>
             <div className="flex flex-col items-start gap-4">
               {PARTNER_LOGOS.map((logo) => (
-                <a
-                  className={LOGO_LINK_CLASS}
-                  href={logo.href}
-                  key={logo.href}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title={logo.title}
-                >
-                  <img
-                    alt={logo.alt}
-                    className={logo.className}
-                    src={logo.src}
-                  />
-                </a>
+                <LogoLink key={logo.href} {...logo} />
               ))}
             </div>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function LogoLink({
+  alt,
+  href,
+  imgClassName,
+  src,
+  title,
+}: {
+  alt: string;
+  href: string;
+  imgClassName: string;
+  src: string;
+  title: string;
+}) {
+  return (
+    <a
+      className={LOGO_LINK_CLASS}
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={title}
+    >
+      <img alt={alt} className={imgClassName} src={src} />
+    </a>
   );
 }
