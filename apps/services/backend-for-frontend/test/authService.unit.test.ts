@@ -63,6 +63,7 @@ const baseConfig = {
 
 function buildService(
   overrides: {
+    cognitoGetUser?: () => Promise<unknown>;
     magicLinkConsume?: (jti: string, exp: number) => Promise<boolean>;
     rateLimiterConsume?: () => Promise<RateLimiterStatus>;
     refreshConsume?: (jti: string, exp: number) => Promise<boolean>;
@@ -100,13 +101,16 @@ function buildService(
   } as unknown as TokenGenerator;
 
   const cognitoIdmClient = {
-    getUserByUsername: vi.fn(async () => ({
-      email: "test-user@example.com",
-      enabled: true,
-      id: TEST_USER_ID,
-      roles: ["administrative", "technical"],
-      username: "test-user",
-    })),
+    getUserByUsername: vi.fn(
+      overrides.cognitoGetUser ??
+        (async () => ({
+          email: "test-user@example.com",
+          enabled: true,
+          id: TEST_USER_ID,
+          roles: ["administrative", "technical"],
+          username: "test-user",
+        })),
+    ),
   } as unknown as CognitoIdmClient;
 
   const service = authServiceBuilder({
@@ -117,7 +121,13 @@ function buildService(
     refreshTokenStore,
     tokenGenerator,
   });
-  return { magicLinkTokenStore, rateLimiter, refreshTokenStore, service };
+  return {
+    cognitoIdmClient,
+    magicLinkTokenStore,
+    rateLimiter,
+    refreshTokenStore,
+    service,
+  };
 }
 
 function makeMagicLinkPayload(jti: string): Record<string, unknown> {
@@ -185,6 +195,23 @@ afterEach(() => {
 });
 
 describe("replay protection: consume runs before rate-limit", () => {
+  it("refreshUISessionTokenPair: a disabled/removed user is rejected before the JTI is consumed", async () => {
+    mockVerifyAgainstJwksSets.mockResolvedValue(
+      makeRefreshPayload("deleted-user-jti"),
+    );
+    const { rateLimiter, refreshTokenStore, service } = buildService({
+      cognitoGetUser: async () => undefined,
+    });
+
+    await expect(
+      service.refreshUISessionTokenPair("deleted-user-jwt"),
+    ).rejects.toMatchObject({ errors: [{ code: "UNAUTHORIZED" }] });
+
+    // Cognito check runs first: the JTI must not be burned on a failed check.
+    expect(refreshTokenStore.consume).not.toHaveBeenCalled();
+    expect(rateLimiter.consume).not.toHaveBeenCalled();
+  });
+
   it("refreshUISessionTokenPair: a replay never touches the rate-limiter", async () => {
     mockVerifyAgainstJwksSets.mockResolvedValue(
       makeRefreshPayload("replay-jti"),
