@@ -324,7 +324,7 @@ services:
   local-jwks:
     security_opt:
       - no-new-privileges:true
-    image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
+    image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
     container_name: knodia-local-jwks
     ports:
       - 4500:80
