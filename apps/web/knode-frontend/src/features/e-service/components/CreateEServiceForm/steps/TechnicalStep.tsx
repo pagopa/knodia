@@ -175,6 +175,7 @@ function DataModeSection({
                 <TooltipTrigger delay={0}>
                   <Focusable>
                     <span
+                      aria-label="Receive data is unavailable"
                       className="absolute top-0 left-0 size-4 cursor-not-allowed"
                       tabIndex={0}
                     />
