@@ -175,13 +175,15 @@ function DataModeSection({
                 <TooltipTrigger delay={0}>
                   <Focusable>
                     <span
-                      className="absolute inset-0 cursor-not-allowed"
+                      className="absolute top-0 left-0 size-4 cursor-not-allowed"
                       tabIndex={0}
                     />
                   </Focusable>
-                  <Tooltip placement="top">
-                    Receive-data E-Services cannot be created in this prototype.
-                    They can be tested using the existing mockups.
+                  <Tooltip className="text-center" placement="top">
+                    Receive-data E-Services can&apos;t be created in this
+                    prototype.
+                    <br />
+                    You can test them using the existing ones.
                   </Tooltip>
                 </TooltipTrigger>
               </div>
