@@ -98,7 +98,7 @@ function RouteComponent() {
         </p>
       </PageHeader>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <EserviceModeChip mode={eservice.mode} />
         {eservice.categories.map((category) => (
           <CategoryChip
