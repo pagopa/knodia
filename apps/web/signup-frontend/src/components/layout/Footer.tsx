@@ -28,7 +28,8 @@ const PARTNER_LOGOS = [
   },
   {
     alt: "Logo PagoPA S.p.A.",
-    className: "h-[30px] w-auto",
+    // logo-pagopa.svg has preserveAspectRatio="none" + width/height 100%, so it needs an explicit width.
+    className: "h-[30px] w-[107px]",
     href: "https://www.pagopa.it/en/homepage/",
     src: logoPagopa,
     title: "Go to PagoPA S.p.A. website",
