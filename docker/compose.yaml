@@ -266,7 +266,7 @@ services:
     security_opt:
       - no-new-privileges:true
     container_name: knodia-pgadmin
-    image: dpage/pgadmin4:9@sha256:10137f33be7ed61e47f56004493710cb5b80ba7fb0ca01758855e242f1f284a7
+    image: dpage/pgadmin4:9@sha256:40fa840c5bb7c8463957f1255b01283732c2d8c9396a956d180f8e6c296753b3
     ports:
       - 5050:80
     environment:
