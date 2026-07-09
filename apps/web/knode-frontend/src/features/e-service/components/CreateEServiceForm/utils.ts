@@ -10,7 +10,6 @@ import { downloadResponseAsFile } from "@/utils/downloadFile";
 export async function downloadTemplateInterface(
   templateId: string,
   knodeId: KnodeId,
-  filename: string,
 ) {
   try {
     const response = await bffApi.downloadEserviceTemplateInterface({
@@ -19,11 +18,11 @@ export async function downloadTemplateInterface(
       query: { knodeId },
     });
 
-    downloadResponseAsFile(
-      response.data,
-      filename,
-      response.headers["content-type"],
-    );
+    downloadResponseAsFile({
+      contentDisposition: response.headers["content-disposition"],
+      contentType: response.headers["content-type"],
+      data: response.data,
+    });
   } catch {
     toastQueue.add({
       description: "Retry later",
