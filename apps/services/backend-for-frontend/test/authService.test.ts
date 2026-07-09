@@ -271,6 +271,26 @@ describe("auth integration", () => {
       expect(mockKmsSend).not.toHaveBeenCalled();
     });
 
+    it("returns 401 when the username now maps to a different Cognito user", async () => {
+      setupValidCognitoToken();
+      mockGetUserById.mockResolvedValue({
+        email: "test-user@example.com",
+        enabled: true,
+        id: "00000000-0000-4000-8000-000000000999",
+        roles: ["administrative", "technical"],
+        username: "test-user",
+      });
+
+      const response = await injectWithAllowedOrigin({
+        method: "POST",
+        payload: { oidcToken: "valid-cognito-token" },
+        url: "/auth/uiSession",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(mockKmsSend).not.toHaveBeenCalled();
+    });
+
     it("sets HttpOnly refresh cookie on successful login", async () => {
       setupValidCognitoToken();
       setupKmsSignature();

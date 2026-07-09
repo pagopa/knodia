@@ -193,11 +193,14 @@ export function authServiceBuilder({
      */
     const user = await cognitoIdmClient.getUserByUsername(claims.username);
 
-    if (!user || user.enabled !== true) {
+    // We look the user up by username, so also confirm it's still the same
+    // account: if the original user was deleted and the username later reused by
+    // a different one, the enabled check alone would pass for the wrong user.
+    if (!user || user.enabled !== true || user.id !== claims.sub) {
       const { logger } = getContextValues(requestContext);
       logger.warn(
         { sub: claims.sub },
-        "UI session rejected: user does not exist or is disabled",
+        "UI session rejected: user does not exist, is disabled, or no longer matches the token subject",
       );
       throw unauthorizedError("User is disabled or does not exist");
     }
