@@ -15,6 +15,9 @@ export const minDescriptionLength = 10;
 export const maxDescriptionLength = 250;
 
 export const minDailyCalls = 0;
+// Minimum dailyCalls enforced by the create form. Separate from the read-tolerant
+// minDailyCalls (0) so stored Purposes with dailyCalls: 0 still parse.
+export const minWriteDailyCalls = 1;
 export const maxDailyCalls = 1_000_000_000;
 
 export const LocalizedPurposeName = LocalizedText(minNameLength, maxNameLength);

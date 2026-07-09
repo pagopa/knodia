@@ -2,11 +2,15 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { describe, expect, it } from "vitest";
 
-import type { EServiceFromScratchFormData } from "@/features/e-service/types/eserviceCreateForm";
+import type {
+  EServiceFromScratchFormData,
+  EServiceFromTemplateFormData,
+} from "@/features/e-service/types/eserviceCreateForm";
 
 import {
   toConsumptionEserviceDetail,
   toEserviceFromScratchSeed,
+  toEserviceFromTemplateSeed,
 } from "./api-converters";
 
 const TEST_CHECKSUM =
@@ -259,5 +263,70 @@ describe("toEserviceFromScratchSeed", () => {
     expect(body.requiredAttributes).toEqual([
       [{ code: "nuts1", scheme: "vc_territorial_units" }],
     ]);
+  });
+});
+
+function createTemplateFormData(
+  overrides?: Partial<EServiceFromTemplateFormData>,
+): EServiceFromTemplateFormData {
+  return {
+    accessTokenAudience: "https://api.example.com",
+    accessTokenDuration: 60,
+    accessTokenType: "Bearer",
+    contactEmail: "contact@example.com",
+    contactName: "John Doe",
+    contactUrl: "",
+    description: "Test description",
+    isSignalHubEnabled: false,
+    maxDailyCallsPerConsumer: 100,
+    maxDailyCallsPerKnode: 1000,
+    name: "Test E-Service",
+    serverUrls: ["https://api.example.com"],
+    termsOfServiceUrl: "",
+    ...overrides,
+  };
+}
+
+const TEST_TEMPLATE = {
+  id: "b1e7c0de-0000-4000-8000-000000000001",
+  knodeId: "Lynx",
+} as bffApi.EserviceTemplateDetails;
+
+describe("toEserviceFromTemplateSeed", () => {
+  it("wraps name and description in localized objects", () => {
+    const body = toEserviceFromTemplateSeed(
+      createTemplateFormData(),
+      TEST_TEMPLATE,
+    );
+
+    expect(body.name).toEqual({ en: "Test E-Service" });
+    expect(body.description).toEqual({ en: "Test description" });
+  });
+
+  it("trims name, description and contactName", () => {
+    const body = toEserviceFromTemplateSeed(
+      createTemplateFormData({
+        contactName: "  John Doe  ",
+        description: "   Test description   ",
+        name: "  Test E-Service  ",
+      }),
+      TEST_TEMPLATE,
+    );
+
+    expect(body.name).toEqual({ en: "Test E-Service" });
+    expect(body.description).toEqual({ en: "Test description" });
+    expect(body.interfaceDocumentOverrides.contact.name).toBe("John Doe");
+  });
+
+  it("passes through template reference", () => {
+    const body = toEserviceFromTemplateSeed(
+      createTemplateFormData(),
+      TEST_TEMPLATE,
+    );
+
+    expect(body.template).toEqual({
+      id: TEST_TEMPLATE.id,
+      knodeId: TEST_TEMPLATE.knodeId,
+    });
   });
 });

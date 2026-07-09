@@ -39,11 +39,11 @@ export function useCreatePurposeReceiveData(
     mutate({
       body: {
         dailyCalls: data.dailyCalls,
-        description: { en: data.description },
+        description: { en: data.description.trim() },
         eserviceId,
         eserviceMode: "ReceiveData",
         knodeId,
-        name: { en: data.name },
+        name: { en: data.name.trim() },
         purposeFormOptionId: selectedPurposeFormOptionId,
       },
     });
