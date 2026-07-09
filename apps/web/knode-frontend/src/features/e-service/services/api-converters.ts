@@ -105,7 +105,7 @@ export function toEserviceFromTemplateSeed(
     interfaceDocumentOverrides: {
       contact: {
         email: data.contactEmail,
-        name: data.contactName,
+        name: data.contactName.trim(),
         ...(data.contactUrl && { url: data.contactUrl }),
       },
       serverUrls: data.serverUrls,
