@@ -21,6 +21,7 @@ import { twMerge } from "tailwind-merge";
 import { type VariantProps } from "tailwind-variants";
 
 import { useTriggerWidth } from "../../libs/react-aria";
+import { ComboBoxEmptyState } from "./ComboBox";
 import { Description, FieldError, Label } from "./Field";
 import {
   chipStyles,
@@ -75,6 +76,8 @@ interface MultiSelectComboBoxProps<T extends object> extends Omit<
   /** Called when the list is scrolled near the end (infinite scroll). */
   onLoadMore?: () => void;
   placeholder?: string;
+  /** Content shown when the filtered list is empty. Defaults to "No results found". */
+  renderEmptyState?: () => React.ReactNode;
   /** Selected entries rendered as removable chips below the field. */
   selectedTags: MultiSelectComboBoxTag[];
   size?: MultiSelectComboBoxVariants["size"];
@@ -94,6 +97,7 @@ export function MultiSelectComboBox<T extends object>({
   isDisabled,
   isReadOnly,
   placeholder,
+  renderEmptyState = ComboBoxEmptyState,
   items,
   loadingState,
   onLoadMore,
@@ -131,7 +135,6 @@ export function MultiSelectComboBox<T extends object>({
         isInvalid={isInvalid}
         isReadOnly={isReadOnly}
         items={items}
-        menuTrigger="focus"
         onChange={onChange}
         selectionMode="multiple"
         value={value}
@@ -175,7 +178,10 @@ export function MultiSelectComboBox<T extends object>({
           style={{ width: popoverWidth }}
           triggerRef={groupRef}
         >
-          <ListBox className={dropdownStyles}>
+          <ListBox
+            className={dropdownStyles}
+            renderEmptyState={renderEmptyState}
+          >
             <Collection items={items}>{children}</Collection>
             {onLoadMore && (
               <ListBoxLoadMoreItem
