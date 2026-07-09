@@ -1,14 +1,18 @@
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminDeleteUserAttributesCommand,
   AdminDeleteUserCommand,
   AdminDisableUserCommand,
   AdminEnableUserCommand,
   AdminGetUserCommand,
+  AdminRemoveUserFromGroupCommand,
   AdminSetUserPasswordCommand,
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
   CreateGroupCommand,
+  DeleteGroupCommand,
+  InternalErrorException,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { UserRole } from "@knodia/common-models/auth";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
@@ -31,8 +35,6 @@ describe("createOrganizationUser", () => {
 
     await buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
       email: "mario.rossi@example.org",
-      familyName: "Rossi",
-      givenName: "Mario",
       organizationId,
       roles: [UserRole.enum.administrative, UserRole.enum.technical],
       username: "mario.rossi",
@@ -61,11 +63,11 @@ describe("createOrganizationUser", () => {
       Username: "mario.rossi",
       UserPoolId: cognitoUserPoolId,
     });
-    expect(createUser.input.UserAttributes).toEqual(
-      expect.arrayContaining([
-        { Name: "custom:roles", Value: "administrative,technical" },
-      ]),
-    );
+    expect(createUser.input.UserAttributes).toEqual([
+      { Name: "email", Value: "mario.rossi@example.org" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "custom:roles", Value: "administrative,technical" },
+    ]);
 
     const addToGroup = membershipCall.at(0) as AdminAddUserToGroupCommand;
     expect(addToGroup).toBeInstanceOf(AdminAddUserToGroupCommand);
@@ -93,8 +95,6 @@ describe("createOrganizationUser", () => {
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
         email: "a@b.co",
-        familyName: "F",
-        givenName: "G",
         organizationId: generateId<OrganizationId>(),
         roles: [UserRole.enum.technical],
         username: "u",
@@ -112,8 +112,6 @@ describe("createOrganizationUser", () => {
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).createOrganizationUser({
         email: "a@b.co",
-        familyName: "F",
-        givenName: "G",
         organizationId: generateId<OrganizationId>(),
         roles: [UserRole.enum.technical],
         username: "u",
@@ -314,6 +312,135 @@ describe("deleteOrganizationUser", () => {
   });
 });
 
+describe("deleteOrganizationGroup", () => {
+  it("deletes the org group via DeleteGroup", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+    const organizationId = generateId<OrganizationId>();
+
+    await buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+      organizationId,
+    });
+
+    expect(send).toHaveBeenCalledTimes(1);
+    const deleteGroup = send.mock.calls.at(0)?.at(0) as DeleteGroupCommand;
+    expect(deleteGroup).toBeInstanceOf(DeleteGroupCommand);
+    expect(deleteGroup.input).toMatchObject({
+      GroupName: `org:${organizationId}`,
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("is idempotent: swallows ResourceNotFoundException", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("group gone"), {
+        name: "ResourceNotFoundException",
+      }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+        organizationId: generateId<OrganizationId>(),
+      }),
+    ).resolves.toBeUndefined();
+  });
+
+  it("rethrows non-ignored errors", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationGroup({
+        organizationId: generateId<OrganizationId>(),
+      }),
+    ).rejects.toThrow("boom");
+  });
+});
+
+describe("disableAndRedactOrganizationUser", () => {
+  it("disables the user, deletes the provisioned attributes, and removes the org membership", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockResolvedValue(undefined as never);
+    const organizationId = generateId<OrganizationId>();
+
+    await buildCognitoIdmClient({
+      cognitoUserPoolId,
+    }).disableAndRedactOrganizationUser({
+      organizationId,
+      username: "mario.rossi",
+    });
+
+    expect(send).toHaveBeenCalledTimes(3);
+
+    const disable = send.mock.calls.at(0)?.at(0) as AdminDisableUserCommand;
+    expect(disable).toBeInstanceOf(AdminDisableUserCommand);
+    expect(disable.input).toMatchObject({
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+
+    const deleteAttributes = send.mock.calls
+      .at(1)
+      ?.at(0) as AdminDeleteUserAttributesCommand;
+    expect(deleteAttributes).toBeInstanceOf(AdminDeleteUserAttributesCommand);
+    expect(deleteAttributes.input).toMatchObject({
+      // email_verified is non-mutable in Cognito, so redaction must not try to delete it.
+      UserAttributeNames: ["email", "custom:roles"],
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+
+    const removeFromGroup = send.mock.calls
+      .at(2)
+      ?.at(0) as AdminRemoveUserFromGroupCommand;
+    expect(removeFromGroup).toBeInstanceOf(AdminRemoveUserFromGroupCommand);
+    expect(removeFromGroup.input).toMatchObject({
+      GroupName: `org:${organizationId}`,
+      Username: "mario.rossi",
+      UserPoolId: cognitoUserPoolId,
+    });
+  });
+
+  it("attempts every sub-step even when one fails, and rethrows the failure", async () => {
+    const send = vi
+      .spyOn(CognitoIdentityProviderClient.prototype, "send")
+      .mockImplementation((command) =>
+        command instanceof AdminDeleteUserAttributesCommand
+          ? Promise.reject(new Error("boom"))
+          : Promise.resolve(undefined as never),
+      );
+
+    await expect(
+      buildCognitoIdmClient({
+        cognitoUserPoolId,
+      }).disableAndRedactOrganizationUser({
+        organizationId: generateId<OrganizationId>(),
+        username: "u",
+      }),
+    ).rejects.toThrow("boom");
+
+    expect(send).toHaveBeenCalledTimes(3);
+  });
+
+  it("aggregates multiple sub-step failures", async () => {
+    vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
+      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+    );
+
+    await expect(
+      buildCognitoIdmClient({
+        cognitoUserPoolId,
+      }).disableAndRedactOrganizationUser({
+        organizationId: generateId<OrganizationId>(),
+        username: "u",
+      }),
+    ).rejects.toBeInstanceOf(AggregateError);
+  });
+});
+
 describe("disableUser", () => {
   it("disables the Cognito user", async () => {
     const send = vi
@@ -358,15 +485,19 @@ describe("disableUser", () => {
   });
 
   it("rethrows non-ignored errors", async () => {
+    const failure = new InternalErrorException({
+      $metadata: { httpStatusCode: 500 },
+      message: "Internal server error.",
+    });
     vi.spyOn(CognitoIdentityProviderClient.prototype, "send").mockRejectedValue(
-      Object.assign(new Error("boom"), { name: "InternalErrorException" }),
+      failure,
     );
 
     await expect(
       buildCognitoIdmClient({ cognitoUserPoolId }).deleteOrganizationUser({
         username: "u",
       }),
-    ).rejects.toThrow("boom");
+    ).rejects.toBe(failure);
   });
 });
 

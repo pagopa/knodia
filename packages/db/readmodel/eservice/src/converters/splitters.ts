@@ -1,4 +1,5 @@
 import type { AttributeId } from "@knodia/attribute-models";
+import type { CategoryId } from "@knodia/category-models";
 import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 import type {
   EserviceCategorySQL,
@@ -11,7 +12,6 @@ import type {
 } from "@knodia/db-readmodel-eservice";
 import type {
   Eservice,
-  EserviceCategory,
   EserviceVersion,
   PurposeFormOption,
 } from "@knodia/eservice-models";
@@ -89,7 +89,7 @@ export const splitEserviceIntoObjectsSQL = (
 };
 
 const toEserviceCategorySQL = (
-  eserviceCategory: EserviceCategory,
+  eserviceCategory: CategoryId,
   eserviceId: EserviceId,
   metadataVersion: number,
 ): EserviceCategorySQL => ({

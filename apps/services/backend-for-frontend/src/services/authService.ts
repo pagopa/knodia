@@ -55,6 +55,12 @@ interface AuthServiceBuilderOptions {
 
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
+// Claims proven to belong to an existing, enabled Cognito user. Only
+// assertCognitoUserIsEnabled produces this brand, and generateTokenPairFromClaims
+// only accepts it — so a session pair can never be minted without the check.
+const EnabledUserClaims = ClaimsFromCognito.brand<"EnabledUserClaims">();
+type EnabledUserClaims = z.infer<typeof EnabledUserClaims>;
+
 export function authServiceBuilder({
   cognitoIdmClient,
   config,
@@ -100,7 +106,7 @@ export function authServiceBuilder({
   };
 
   async function generateTokenPairFromClaims(
-    claims: ClaimsFromCognito,
+    claims: EnabledUserClaims,
   ): Promise<{ refreshToken: string; uiSessionToken: string }> {
     const [uiSession, refresh] = await Promise.all([
       tokenGenerator.generateUISessionToken({
@@ -178,27 +184,28 @@ export function authServiceBuilder({
     }
   }
 
-  async function assertCognitoUserIsEnabled({
-    sub,
-    username,
-  }: {
-    sub: UserId;
-    username: string;
-  }): Promise<void> {
+  async function assertCognitoUserIsEnabled(
+    claims: ClaimsFromCognito,
+  ): Promise<EnabledUserClaims> {
     /*
      * We retrieve the user by username (not sub) because we want to use
      * AdminGetUser cognito command, which has higher RPM limits than ListUsers.
      */
-    const user = await cognitoIdmClient.getUserByUsername(username);
+    const user = await cognitoIdmClient.getUserByUsername(claims.username);
 
-    if (!user || user.enabled !== true) {
+    // We look the user up by username, so also confirm it's still the same
+    // account: if the original user was deleted and the username later reused by
+    // a different one, the enabled check alone would pass for the wrong user.
+    if (!user || user.enabled !== true || user.id !== claims.sub) {
       const { logger } = getContextValues(requestContext);
       logger.warn(
-        { sub },
-        "UI session refresh rejected: user does not exist or is disabled",
+        { sub: claims.sub },
+        "UI session rejected: user does not exist, is disabled, or no longer matches the token subject",
       );
       throw unauthorizedError("User is disabled or does not exist");
     }
+
+    return EnabledUserClaims.parse(claims);
   }
 
   async function verifyRefreshTokenClaims(
@@ -306,7 +313,11 @@ export function authServiceBuilder({
     }> {
       const claims = await validateCognitoToken(cognitoToken);
       await rateLimit(claims.organizationId);
-      return generateTokenPairFromClaims(claims);
+      // The Cognito token stays valid for its own TTL (~1h) after the user is
+      // deleted/disabled, so re-check here too — otherwise a removed user keeps
+      // exchanging it for fresh sessions until the Cognito token expires.
+      const enabledClaims = await assertCognitoUserIsEnabled(claims);
+      return generateTokenPairFromClaims(enabledClaims);
     },
 
     async refreshUISessionTokenPair(refreshToken: string): Promise<{
@@ -321,11 +332,11 @@ export function authServiceBuilder({
        * favors availability: if we consumed JTI first, a transient Cognito error
        * would burn the token, forcing legitimate users to re-login.
        */
-      await assertCognitoUserIsEnabled(claims);
+      const enabledClaims = await assertCognitoUserIsEnabled(claims);
       // See exchangeMagicLinkToken for why the store runs before rate-limit.
       await consumeSingleUseJti(refreshTokenStore, jti, exp, "Refresh token");
-      await rateLimit(claims.organizationId);
-      return generateTokenPairFromClaims(claims);
+      await rateLimit(enabledClaims.organizationId);
+      return generateTokenPairFromClaims(enabledClaims);
     },
 
     async revokeRefreshToken(refreshToken: string): Promise<void> {
@@ -340,9 +351,7 @@ export function authServiceBuilder({
         // at warn so a JWKS-fetch / DynamoDB outage doesn't drop revocations
         // unobserved — verifyRefreshTokenClaims now hits the network.
         const { logger } = getContextValues(requestContext);
-        logger.warn(
-          `revokeRefreshToken skipped: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        logger.warn({ err }, "revokeRefreshToken skipped");
       }
     },
   };

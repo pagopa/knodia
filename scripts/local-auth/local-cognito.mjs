@@ -21,8 +21,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: USER_ID },
       { Name: "email", Value: "mario.rossi@example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Mario" },
-      { Name: "family_name", Value: "Rossi" },
       { Name: "custom:roles", Value: ROLES.join(",") },
     ],
     Enabled: true,
@@ -37,8 +35,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000002" },
       { Name: "email", Value: "tecnico.roma@example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Tecnico" },
-      { Name: "family_name", Value: "Roma" },
       { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
@@ -53,8 +49,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000003" },
       { Name: "email", Value: "giulia.bianchi@example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Giulia" },
-      { Name: "family_name", Value: "Bianchi" },
       { Name: "custom:roles", Value: "administrative" },
     ],
     Enabled: true,
@@ -69,8 +63,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000004" },
       { Name: "email", Value: "luca.neri@example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Luca" },
-      { Name: "family_name", Value: "Neri" },
       { Name: "custom:roles", Value: "technical" },
     ],
     Enabled: true,
@@ -87,8 +79,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000101" },
       { Name: "email", Value: "admin@businessbookletlynx.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Business Booklet" },
-      { Name: "family_name", Value: "Lynx" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000101",
@@ -107,8 +97,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000102" },
       { Name: "email", Value: "admin@constructioncompaniesregistryorion.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Construction Companies Registry" },
-      { Name: "family_name", Value: "Orion" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000102",
@@ -129,8 +117,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000105" },
       { Name: "email", Value: "admin@systemserclynx.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "System SERC" },
-      { Name: "family_name", Value: "Lynx" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000105",
@@ -149,8 +135,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000106" },
       { Name: "email", Value: "admin@systemsercorion.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "System SERC" },
-      { Name: "family_name", Value: "Orion" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000106",
@@ -169,8 +153,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000107" },
       { Name: "email", Value: "admin@supervisorybodyorion.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Supervisory Body" },
-      { Name: "family_name", Value: "Orion" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000107",
@@ -191,8 +173,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000103" },
       { Name: "email", Value: "admin@studentregistrylynx.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Student Registry" },
-      { Name: "family_name", Value: "Lynx" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000103",
@@ -211,8 +191,6 @@ const MOCK_USERS = [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000104" },
       { Name: "email", Value: "admin@academyorion.example.com" },
       { Name: "email_verified", Value: "true" },
-      { Name: "given_name", Value: "Academy" },
-      { Name: "family_name", Value: "Orion" },
       {
         Name: "custom:organizationId",
         Value: "00000000-0000-4000-8000-000000000104",
@@ -513,6 +491,22 @@ function handleCreateGroup(req, res, payload) {
   );
 }
 
+function handleDeleteGroup(req, res, payload) {
+  // Groups only exist as membership strings on users; deleting the group
+  // drops it from every member, like real Cognito does.
+  for (const user of MOCK_USERS) {
+    user.Groups = (user.Groups ?? []).filter((g) => g !== payload.GroupName);
+  }
+
+  console.log(
+    `[delete-group] ${sanitizeForLog(payload.GroupName)} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminCreateUser(req, res, payload) {
   const existing = findUserByUsername(payload.Username);
   if (existing) {
@@ -600,6 +594,21 @@ function handleAdminAddUserToGroup(req, res, payload) {
   });
 }
 
+function handleAdminRemoveUserFromGroup(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    user.Groups = (user.Groups ?? []).filter((g) => g !== payload.GroupName);
+  }
+
+  console.log(
+    `[admin-remove-user-from-group] ${sanitizeForLog(payload.Username)} -x- ${sanitizeForLog(payload.GroupName)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
 function handleAdminUpdateUserAttributes(req, res, payload) {
   const user = findUserByUsername(payload.Username);
   if (user) {
@@ -617,6 +626,25 @@ function handleAdminUpdateUserAttributes(req, res, payload) {
 
   console.log(
     `[admin-update-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
+  );
+
+  writeJson(res, 200, {}, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminDeleteUserAttributes(req, res, payload) {
+  const user = findUserByUsername(payload.Username);
+  if (user) {
+    const names = payload.UserAttributeNames ?? [];
+    user.Attributes = (user.Attributes ?? []).filter(
+      (attribute) => !names.includes(attribute.Name),
+    );
+    user.UserLastModifiedDate = NOW_IN_SECONDS;
+  }
+
+  console.log(
+    `[admin-delete-user-attributes] ${sanitizeForLog(payload.Username)} in pool ${sanitizeForLog(payload.UserPoolId ?? DEFAULT_USER_POOL_ID)}`,
   );
 
   writeJson(res, 200, {}, {
@@ -741,6 +769,11 @@ createServer(async (req, res) => {
         return;
       }
 
+      if (target === "AWSCognitoIdentityProviderService.DeleteGroup") {
+        handleDeleteGroup(req, res, payload);
+        return;
+      }
+
       if (target === "AWSCognitoIdentityProviderService.AdminCreateUser") {
         handleAdminCreateUser(req, res, payload);
         return;
@@ -752,10 +785,25 @@ createServer(async (req, res) => {
       }
 
       if (
+        target === "AWSCognitoIdentityProviderService.AdminRemoveUserFromGroup"
+      ) {
+        handleAdminRemoveUserFromGroup(req, res, payload);
+        return;
+      }
+
+      if (
         target ===
         "AWSCognitoIdentityProviderService.AdminUpdateUserAttributes"
       ) {
         handleAdminUpdateUserAttributes(req, res, payload);
+        return;
+      }
+
+      if (
+        target ===
+        "AWSCognitoIdentityProviderService.AdminDeleteUserAttributes"
+      ) {
+        handleAdminDeleteUserAttributes(req, res, payload);
         return;
       }
 

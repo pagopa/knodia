@@ -184,14 +184,16 @@ function GeneralInfoSection({
           </p>
         </div>
         {categories && categories.length > 0 && (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {categories.map((category) => (
               <Chip
                 key={`${category.scheme}$${category.code}`}
                 kind="neutral"
                 label={
-                  getCategory(category.scheme, category.code)?.name ??
-                  category.code
+                  getCategory({
+                    code: category.code,
+                    scheme: category.scheme,
+                  })?.name ?? category.code
                 }
                 type="light"
               />
@@ -276,11 +278,7 @@ function TemplateDocumentsSection({
       <DocumentRecap
         name={interfaceDocument.prettyName.en}
         onDownload={() =>
-          downloadTemplateInterface(
-            template.id,
-            template.knodeId,
-            interfaceDocument.name,
-          )
+          downloadTemplateInterface(template.id, template.knodeId)
         }
         showDownloadButton
       />

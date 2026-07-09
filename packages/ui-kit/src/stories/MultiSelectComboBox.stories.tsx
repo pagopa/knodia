@@ -40,16 +40,18 @@ type Story = StoryObj<typeof MultiSelectComboBox<Option>>;
 
 function MultiSelectComboBoxExample({
   action,
+  initialInputValue = "",
   initialValue = [],
   isDisabled,
   isReadOnly,
 }: {
   action?: React.ReactNode;
+  initialInputValue?: string;
   initialValue?: Key[];
   isDisabled?: boolean;
   isReadOnly?: boolean;
 }) {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(initialInputValue);
   const [value, setValue] = useState<Key[]>(initialValue);
   // Label cache populated at selection time, so chips survive filtering.
   const [labels, setLabels] = useState<Record<string, string>>(() =>
@@ -144,6 +146,10 @@ export const WithAction: Story = {
       ]}
     />
   ),
+};
+
+export const NoResults: Story = {
+  render: () => <MultiSelectComboBoxExample initialInputValue="no match" />,
 };
 
 export const Disabled: Story = {

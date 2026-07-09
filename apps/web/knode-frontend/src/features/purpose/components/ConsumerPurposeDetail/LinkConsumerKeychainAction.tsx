@@ -50,23 +50,24 @@ export function LinkConsumerKeychainAction({
       >
         Link Keychain
       </Button>
-      <LinkConsumerKeychainModal
-        isOpen={isModalOpen}
-        knodeId={knodeId}
-        onClose={() => setIsModalOpen(false)}
-        purposeId={purposeId}
-      />
+      {/* Mount only while open so search and form state reset on close via
+          unmount — no manual reset needed. */}
+      {isModalOpen && (
+        <LinkConsumerKeychainModal
+          knodeId={knodeId}
+          onClose={() => setIsModalOpen(false)}
+          purposeId={purposeId}
+        />
+      )}
     </>
   );
 }
 
 function LinkConsumerKeychainModal({
-  isOpen,
   knodeId,
   onClose,
   purposeId,
 }: {
-  isOpen: boolean;
   knodeId: KnodeId;
   onClose: () => void;
   purposeId: string;
@@ -78,6 +79,20 @@ function LinkConsumerKeychainModal({
   } = useMutation(linkPurposeToConsumerKeychainMutation({ client }));
 
   const queryClient = useQueryClient();
+
+  const [q, setQ] = useState("");
+  const [debouncedQ] = useDebounceValue(q, 500);
+  const [alreadyLinked, setAlreadyLinked] = useState(false);
+
+  const { data } = useQuery({
+    ...getConsumerKeychainOptionsOptions({
+      client,
+      query: { limit: 20, offset: 0, q: debouncedQ },
+    }),
+    placeholderData: keepPreviousData,
+  });
+
+  const options = data?.results ?? [];
 
   function handleLinkKeychain(keychainId: string) {
     linkKeychain(
@@ -93,26 +108,11 @@ function LinkConsumerKeychainModal({
           queryClient.invalidateQueries({
             queryKey: consumerPurposesQueryKey(),
           });
-          form.reset();
           onClose();
         },
       },
     );
   }
-
-  const [q, setQ] = useState("");
-  const [debouncedQ] = useDebounceValue(q, 500);
-  const [alreadyLinked, setAlreadyLinked] = useState(false);
-
-  const { data } = useQuery({
-    ...getConsumerKeychainOptionsOptions({
-      client,
-      query: { limit: 20, offset: 0, q: debouncedQ },
-    }),
-    placeholderData: keepPreviousData,
-  });
-
-  const options = data?.results ?? [];
 
   const form = useForm({
     defaultValues: {
@@ -153,20 +153,19 @@ function LinkConsumerKeychainModal({
       cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
       description="Keys in linked Keychains can be used to request an access token for the E-Service."
-      isOpen={isOpen}
+      isOpen
       kind="default"
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
-        if (!open) {
-          form.reset();
-          setAlreadyLinked(false);
-          onClose();
-        }
+        if (!open) onClose();
       }}
       showErrorBanner={isError}
       title="Link Keychain"
     >
-      {data?.pagination.total === 0 ? (
+      {/* Guard on `debouncedQ` (the term `data` was fetched with) so a search
+          that matches nothing shows the ComboBox's "No results found", not this
+          "you own none" banner. */}
+      {debouncedQ === "" && data?.pagination.total === 0 ? (
         <Banner
           kind="informative"
           size="md"

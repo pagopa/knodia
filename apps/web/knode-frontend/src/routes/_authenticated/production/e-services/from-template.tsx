@@ -13,6 +13,7 @@ import { ArrowRightIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
+import { ServiceCard, ServiceCardHeader } from "@/components/ServiceCard";
 import { config } from "@/config/config";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { CreateEServiceForm } from "@/features/e-service/components/CreateEServiceForm";
@@ -77,26 +78,18 @@ function EserviceTemplateCard({
   title: string;
 }) {
   return (
-    <article className="p-4 flex flex-col gap-4 rounded-eservice-card elevation-1 border border-eservice-card-border">
-      <header className="flex gap-10 items-start">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <h3 className="min-w-0 title-md-em truncate">{title}</h3>
-          <p className="body-md text-primary-light-low-contrast line-clamp-2">
-            {description}
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button
-            aria-label="Use template"
-            hierarchy="neutral"
-            kind="outlined"
-            onPress={() => onSelect(id)}
-            size="icon-md"
-          >
-            <ArrowRightIcon />
-          </Button>
-        </div>
-      </header>
+    <ServiceCard>
+      <ServiceCardHeader description={description} title={title}>
+        <Button
+          aria-label="Use template"
+          hierarchy="neutral"
+          kind="outlined"
+          onPress={() => onSelect(id)}
+          size="icon-md"
+        >
+          <ArrowRightIcon />
+        </Button>
+      </ServiceCardHeader>
       <footer className="flex items-center justify-between">
         <div className="flex gap-2 flex-wrap">
           <EserviceModeChip mode={mode} />
@@ -105,7 +98,7 @@ function EserviceTemplateCard({
           ))}
         </div>
       </footer>
-    </article>
+    </ServiceCard>
   );
 }
 

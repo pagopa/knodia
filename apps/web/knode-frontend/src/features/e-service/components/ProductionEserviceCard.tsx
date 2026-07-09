@@ -1,13 +1,10 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { ServiceCard } from "@/components/ServiceCard";
 
 import { CategoryChip } from "./CategoryChip";
-import {
-  EserviceCard,
-  EserviceCardFooter,
-  EserviceCardHeader,
-} from "./EserviceCard";
+import { EserviceCardFooter, EserviceCardHeader } from "./EserviceCard";
 
 export function ProductionEserviceCard({
   eservice,
@@ -15,7 +12,7 @@ export function ProductionEserviceCard({
   eservice: bffApi.ProducerEservice;
 }) {
   return (
-    <EserviceCard>
+    <ServiceCard>
       <EserviceCardHeader
         headingLevel={2}
         id={eservice.id}
@@ -39,7 +36,7 @@ export function ProductionEserviceCard({
           />
         ))}
       </EserviceCardFooter>
-    </EserviceCard>
+    </ServiceCard>
   );
 }
 

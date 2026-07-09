@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getAttribute,
+  getAttributesFromGroups,
   hasAllRequiredAttributes,
   isAttributePossessed,
   listAttributes,
@@ -168,5 +169,29 @@ describe("listAttributes", () => {
       all.every((a) => a.name.length > 0 && a.description.length > 0),
     ).toBe(true);
     expect(all.map((a) => a.id.code)).toContain("testing_organization");
+  });
+});
+
+describe("getAttributesFromGroups", () => {
+  it("resolves the unique attributes across groups, in first-seen order", () => {
+    const result = getAttributesFromGroups([
+      [nuts1, nuts2],
+      [nuts2, nuts3],
+    ]);
+
+    expect(result.map((a) => a.id.code)).toEqual(["nuts1", "nuts2", "nuts3"]);
+    expect(
+      result.every((a) => a.name.length > 0 && a.description.length > 0),
+    ).toBe(true);
+  });
+
+  it("skips ids that are not in the catalogue", () => {
+    const result = getAttributesFromGroups([[nuts1, other]]);
+
+    expect(result.map((a) => a.id.code)).toEqual(["nuts1"]);
+  });
+
+  it("returns an empty list for no groups", () => {
+    expect(getAttributesFromGroups([])).toEqual([]);
   });
 });

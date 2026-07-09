@@ -9,10 +9,12 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { RouterProvider } from "react-aria-components";
 
+import { NotFoundPage } from "@/components/layout/NotFoundPage";
 import { type RouterContext } from "@/libs/router";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
+  notFoundComponent: NotFoundPage,
 });
 
 function RootLayout() {
