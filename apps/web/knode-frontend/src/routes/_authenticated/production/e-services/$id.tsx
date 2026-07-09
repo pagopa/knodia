@@ -114,7 +114,7 @@ function RouteComponent() {
         title={eservice.name.en}
       />
 
-      <div className="mt-10 flex gap-2">
+      <div className="mt-10 flex flex-wrap gap-2">
         <EserviceModeChip mode={eservice.mode} />
         {eservice.categories.map((category) => (
           <CategoryChip
