@@ -22,13 +22,13 @@ export type Fragment = z.infer<typeof Fragment>;
 
 const HeadingBlock = z.strictObject({
   content: z.array(Fragment),
-  level: z.number().int().min(1).max(6),
+  // Starts at 2: the page renders its own single h1, so content nests under it.
+  level: z.number().int().min(2).max(6),
   type: z.literal("heading"),
 });
 
 const ParagraphBlock = z.strictObject({
   content: z.array(Fragment),
-  indent: z.number().int().positive().optional(),
   marker: z.string().min(1).optional(),
   type: z.literal("paragraph"),
 });

@@ -33,6 +33,14 @@ describe("AccessibilityDocument schema", () => {
     expect(() => Fragment.parse({ text: "x", url: "not-a-url" })).toThrow();
   });
 
+  it("rejects a level-1 heading (content nests under the page's single h1)", () => {
+    expect(() =>
+      AccessibilityDocument.parse({
+        blocks: [{ content: [{ text: "x" }], level: 1, type: "heading" }],
+      }),
+    ).toThrow();
+  });
+
   it("rejects an empty paragraph marker", () => {
     expect(() =>
       AccessibilityDocument.parse({

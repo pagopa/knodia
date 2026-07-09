@@ -41,14 +41,7 @@ function BlockNode({ block }: { block: Block }) {
       return <Heading className={className}>{children}</Heading>;
     })
     .with({ type: "paragraph" }, (paragraph) => (
-      <p
-        className="text-style-body text-neutral-graphite"
-        style={
-          paragraph.indent
-            ? { marginLeft: `${paragraph.indent * 1.5}rem` }
-            : undefined
-        }
-      >
+      <p className="text-style-body text-neutral-graphite">
         {paragraph.marker ? `${paragraph.marker} ` : ""}
         {children}
       </p>
