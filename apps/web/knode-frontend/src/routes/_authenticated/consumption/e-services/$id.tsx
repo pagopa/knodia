@@ -123,7 +123,6 @@ function RouteComponent() {
       )}
       <Divider className="my-10" />
       <ConsumptionRequirementsSection
-        agreementState={agreement?.state}
         canRequestAgreement={canManageAgreements}
         eserviceId={eservice.id}
         eserviceState={eservice.state}

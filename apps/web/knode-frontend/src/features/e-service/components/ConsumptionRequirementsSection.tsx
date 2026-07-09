@@ -11,7 +11,6 @@ import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { Section } from "@/components/Section";
 
 export function ConsumptionRequirementsSection({
-  agreementState,
   canRequestAgreement,
   eserviceId,
   eserviceState,
@@ -24,7 +23,6 @@ export function ConsumptionRequirementsSection({
   ConsumptionEserviceDetail,
   "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
 > & {
-  agreementState: bffApi.AgreementState | undefined;
   canRequestAgreement: boolean;
   eserviceId: EserviceId;
   eserviceState: bffApi.EserviceVersionState;
@@ -48,9 +46,8 @@ export function ConsumptionRequirementsSection({
             </ul>
           )}
 
-          {/* Archived E-service blocks new Agreements, but a pending-identification one keeps the classic banner so it can still be resolved. */}
-          {eserviceState === "Archived" &&
-          agreementState !== "PendingConsumerOperatorIdentification" ? (
+          {/* Only surface the "can't request" notice when there's no Agreement to fall back on; an existing one keeps the classic banner. */}
+          {eserviceState === "Archived" && !hasAgreement ? (
             <Banner kind="informative">
               You can&apos;t request an Agreement for an archived E-Service.
             </Banner>
