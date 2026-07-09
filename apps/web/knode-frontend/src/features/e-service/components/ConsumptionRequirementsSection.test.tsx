@@ -18,12 +18,14 @@ const HAS_ATTRS_TEXT = "Your organization has the required attributes.";
 const routes = [{ path: "/consumption/e-services/request-agreement" }];
 
 function renderSection({
+  agreementState,
   canRequestAgreement = true,
   eserviceState = "Active",
   hasAgreement = false,
   hasRequiredAttributes = true,
   identificationRequired = false,
 }: {
+  agreementState?: bffApi.AgreementState;
   canRequestAgreement?: boolean;
   eserviceState?: bffApi.EserviceVersionState;
   hasAgreement?: boolean;
@@ -32,6 +34,7 @@ function renderSection({
 } = {}) {
   return renderWithProviders(
     <ConsumptionRequirementsSection
+      agreementState={agreementState}
       canRequestAgreement={canRequestAgreement}
       eserviceId={unsafeBrandId<EserviceId>(crypto.randomUUID())}
       eserviceState={eserviceState}
@@ -67,6 +70,24 @@ describe("ConsumptionRequirementsSection", () => {
         "You can't request an Agreement for an archived E-Service.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("keeps the classic banner on an archived e-service when an Agreement is pending identification", () => {
+    renderSection({
+      agreementState: "PendingConsumerOperatorIdentification",
+      eserviceState: "Archived",
+      hasAgreement: true,
+    });
+
+    expect(screen.getByText(HAS_ATTRS_TEXT)).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "You can't request an Agreement for an archived E-Service.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: REQUEST_AGREEMENT }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the Attributes and Identification columns for an archived e-service", () => {
