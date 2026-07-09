@@ -68,7 +68,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .number()
           .int()
           .positive()
-          .default(3600),
+          .default(300),
       })
       .transform((c) => ({
         agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
