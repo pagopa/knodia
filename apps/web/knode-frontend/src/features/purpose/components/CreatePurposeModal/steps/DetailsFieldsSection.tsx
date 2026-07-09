@@ -1,3 +1,4 @@
+import { minWriteDailyCalls } from "@knodia/purpose-models";
 import { NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import type { DetailsStepFormApi } from "@/features/purpose/contexts/usePurposeFormContext";
@@ -75,7 +76,7 @@ export function DetailsFieldsSection({
               }
               isRequired
               label="How many API calls do you plan to make per day?"
-              minValue={0}
+              minValue={minWriteDailyCalls}
               onBlur={field.handleBlur}
               onChange={(value) => field.handleChange(value)}
               value={field.state.value}

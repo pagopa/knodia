@@ -39,13 +39,13 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
     mutate({
       body: {
         dailyCalls: data.dailyCalls,
-        description: { en: data.description },
+        description: { en: data.description.trim() },
         eserviceId,
         eserviceMode: "ProvideData",
         formAnswersJson,
         formSchemaVersion,
         knodeId,
-        name: { en: data.name },
+        name: { en: data.name.trim() },
         ...(selectedTemplate && { template: selectedTemplate }),
       },
     });

@@ -43,8 +43,10 @@ function CreateKeychainForm({ defaultType, onClose }: CreateKeychainFormProps) {
 
   function handleCreateKeychain(seed: CreateKeychainFormValues) {
     const body = {
-      description: seed.description ? { en: seed.description } : undefined,
-      name: { en: seed.name },
+      description: seed.description
+        ? { en: seed.description.trim() }
+        : undefined,
+      name: { en: seed.name.trim() },
     } satisfies bffApi.KeychainSeed;
 
     createKeychain({ body, type: seed.type });

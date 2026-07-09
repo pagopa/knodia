@@ -17,6 +17,7 @@ import {
   generateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { sanitizeFileName } from "@knodia/common-models/utils";
 import { getEserviceInterfaceFileType } from "@knodia/eservice-models";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
@@ -24,10 +25,7 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  sanitizeFileName,
-  sendFileDownload,
-} from "@knodia/fastify-zod-api-commons/http";
+import { sendFileDownload } from "@knodia/fastify-zod-api-commons/http";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
@@ -582,7 +580,13 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         key: data.path,
       });
 
-      sendFileDownload(res, content, data.name, data.contentType);
+      sendFileDownload({
+        content,
+        contentType: data.contentType,
+        fileName: data.name,
+        filePrettyName: data.prettyName.en,
+        res,
+      });
     },
     method: "GET",
     schema: {

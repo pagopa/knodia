@@ -31,7 +31,7 @@ export function AttributeGroupContainer({
 
   return (
     <div
-      className={`flex items-center gap-4 py-3 px-4 rounded-attribute-group body-md text-secondary-light-mid-contrast ${getGroupStyle(isGroupSatisfied, hasPossessionInfo)}`}
+      className={`flex flex-wrap items-center gap-4 py-3 px-4 rounded-attribute-group body-md text-secondary-light-mid-contrast ${getGroupStyle(isGroupSatisfied, hasPossessionInfo)}`}
     >
       {attributes.map((attribute, index) => {
         const resolved = getAttribute(attribute);
