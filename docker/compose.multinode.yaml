@@ -647,6 +647,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      local-cognito:
+        condition: service_started
 
   eservice-readmodel-writer-orion:
     security_opt:
@@ -1427,6 +1429,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      local-cognito:
+        condition: service_started
 
   eservice-readmodel-writer-lynx:
     security_opt:
