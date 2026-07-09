@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_layout/accessibility")({
   component: RouteComponent,
   // Language lives in the query param so the page stays shareable; the tabs navigate it.
   validateSearch: z.object({
-    lang: z.enum(["it", "en"]).default("en").catch("en"),
+    lang: z.enum(LANGUAGES).default("en").catch("en"),
   }),
 });
 
