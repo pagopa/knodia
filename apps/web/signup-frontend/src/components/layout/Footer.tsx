@@ -6,6 +6,7 @@ import logoDtdExtended from "@/assets/logo-dtd-extended.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
 import { Link } from "@/components/ui";
 import {
+  ACCESSIBILITY_PATH,
   PRIVACY_POLICY_PATH,
   TERMS_AND_CONDITIONS_PATH,
 } from "@/config/legalLinks";
@@ -14,6 +15,7 @@ const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
   // TODO(KN-916): restore Company Details (config.knodiaOrgCompanyDetailsUrl) when the page is available.
+  { href: ACCESSIBILITY_PATH, label: "Accessibility" },
 ];
 
 // Amber focus ring (the footer accent): primary-violet on the deep-violet footer is below the WCAG 3:1 threshold.

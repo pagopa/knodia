@@ -1,0 +1,26 @@
+{
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "content": [{ "text": "Dichiarazione di accessibilità" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "PagoPA S.p.A. si impegna a rendere il proprio sito web accessibile, conformemente al D.lgs 10 agosto 2018, n. 106 che ha recepito la direttiva UE 2016/2102 del Parlamento europeo e del Consiglio."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "Leggi la dichiarazione di accessibilità",
+          "url": "https://form.agid.gov.it/5N2TR557/Knodia_(service_prototype)/dichiarazione"
+        }
+      ]
+    }
+  ]
+}
