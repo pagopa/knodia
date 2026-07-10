@@ -130,7 +130,6 @@ export function MultiSelectComboBox({
         isInvalid={isInvalid}
         isReadOnly={isReadOnly}
         items={items}
-        menuTrigger="focus"
         onChange={(keys) => onChange(keys.map(String))}
         selectionMode="multiple"
         value={value}
