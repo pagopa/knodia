@@ -6,8 +6,8 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 
 ## Prerequisites
 
-- `scripts/seed/seed.sh` must have been run against the environment where the demo will run (e.g. dev/test).
-- A user for each organization (`studentRegistryLynx`, `academyOrion`) must have been created in the env's Cognito user pools, with all roles (technical + administrative — this demo does not cover role-based behaviour), and their username/password handed to the demo runner to log in to the Lynx and Orion UIs.
+- The environment must already be seeded (POC organizations, e-services, and Cognito users). On **dev** and **test** this is already applied — it is not a step you run for the demo; if you're unsure it's in place (or need it on another environment), verify with the infra team.
+- Log in to the Lynx and Orion UIs as each organization's seeded Cognito user (both roles — this demo does not cover role-based behaviour): `studentRegistryLynx` → `student_registry_lynx_admin` (Lynx), `academyOrion` → `academy_orion_admin` (Orion). The usernames are fixed (seeded by `scripts/seed/seed-poc-users.sh`); the password is set at seeding time, so get it from the infra team.
 - The scripts target the local infra by default. To run them against another environment (e.g. dev/test), set the `POC_*` base-URL env vars before running — see `scripts/paths.ts` in this folder for the full list and local defaults, and use that environment's per-knode hosts from `collections/environments/Dev-*.bru` / `Test-*.bru`.
 
 ## Phase 1
