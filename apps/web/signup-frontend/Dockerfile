@@ -2,7 +2,7 @@ ARG NODE_REGISTRY="docker.io"
 ARG SERVICE_NAME="signup-frontend"
 ARG SERVICE_PATH="apps/web/signup-frontend"
 
-FROM ${NODE_REGISTRY}/node:24-slim@sha256:a81a03dd965b4052269a57fac857004022b522a4bf06e7a739e25e18bce45af2 AS pruner
+FROM ${NODE_REGISTRY}/node:24-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS pruner
 ARG SERVICE_NAME
 ENV TURBO_TELEMETRY_DISABLED=1
 WORKDIR /repo
@@ -10,7 +10,7 @@ RUN corepack enable
 COPY . .
 RUN pnpm dlx turbo@2.9.14 prune --scope=@knodia/${SERVICE_NAME} --docker --out-dir=/repo/out
 
-FROM ${NODE_REGISTRY}/node:24-slim@sha256:a81a03dd965b4052269a57fac857004022b522a4bf06e7a739e25e18bce45af2 AS installer
+FROM ${NODE_REGISTRY}/node:24-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS installer
 WORKDIR /repo
 RUN corepack enable
 COPY --from=pruner /repo/out/json/ ./
