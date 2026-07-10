@@ -91,7 +91,7 @@ export function Radio({ description, ...props }: RadioProps) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "flex relative gap-2 items-start group label-md text-primary-light-high-contrast",
+        "flex relative gap-2 items-start group label-md text-primary-light-high-contrast disabled:cursor-not-allowed disabled:text-primary-light-low-contrast",
       )}
     >
       {composeRenderProps(props.children, (children, renderProps) => (
