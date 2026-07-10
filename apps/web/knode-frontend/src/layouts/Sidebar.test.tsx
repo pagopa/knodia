@@ -27,7 +27,7 @@ describe("Sidebar", () => {
   it("renders the legal links pointing at the configured URLs", () => {
     renderWithProviders(<Sidebar />);
 
-    const privacyLink = screen.getByRole("link", { name: "Privacy Policy" });
+    const privacyLink = screen.getByRole("link", { name: "Privacy" });
     expect(privacyLink).toHaveAttribute(
       "href",
       "http://localhost:5176/ui/privacy-policy",
@@ -35,12 +35,18 @@ describe("Sidebar", () => {
     expect(privacyLink).toHaveAttribute("target", "_blank");
     expect(privacyLink).toHaveAttribute("rel", "noopener noreferrer");
 
-    expect(
-      screen.getByRole("link", { name: "Terms and Conditions" }),
-    ).toHaveAttribute("href", "http://localhost:5176/ui/terms-and-conditions");
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute(
+      "href",
+      "http://localhost:5176/ui/terms-and-conditions",
+    );
+
+    expect(screen.getByRole("link", { name: "Accessibility" })).toHaveAttribute(
+      "href",
+      "http://localhost:5176/ui/accessibility",
+    );
 
     expect(screen.getByRole("navigation", { name: "Legal" })).toHaveTextContent(
-      "Privacy Policy·Terms and Conditions",
+      "Privacy·Terms·Accessibility",
     );
   });
 });

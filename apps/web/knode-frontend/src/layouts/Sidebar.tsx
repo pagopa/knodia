@@ -81,8 +81,9 @@ const SIDEBAR_SECTIONS: SidebarSection[] = [
 const SidebarNavItemLink = createLink(SidebarNavItem);
 
 const LEGAL_LINKS = [
-  { href: config.privacyPolicyUrl, label: "Privacy Policy" },
-  { href: config.termsAndConditionsUrl, label: "Terms and Conditions" },
+  { href: config.privacyPolicyUrl, label: "Privacy" },
+  { href: config.termsAndConditionsUrl, label: "Terms" },
+  { href: config.accessibilityUrl, label: "Accessibility" },
 ];
 
 export function Sidebar() {

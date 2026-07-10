@@ -2,11 +2,11 @@ import { Fragment } from "react";
 
 import euFlag from "@/assets/eu-flag.svg";
 import knodiaLogoWhite from "@/assets/knodia-logo-white.svg";
-import logoD from "@/assets/logo-d.svg";
+import logoDtdExtended from "@/assets/logo-dtd-extended.svg";
 import logoPagopa from "@/assets/logo-pagopa.svg";
 import { Link } from "@/components/ui";
-import { config } from "@/config/config";
 import {
+  ACCESSIBILITY_PATH,
   PRIVACY_POLICY_PATH,
   TERMS_AND_CONDITIONS_PATH,
 } from "@/config/legalLinks";
@@ -14,7 +14,31 @@ import {
 const LEGAL_LINKS = [
   { href: PRIVACY_POLICY_PATH, label: "Privacy Policy" },
   { href: TERMS_AND_CONDITIONS_PATH, label: "Terms and Conditions" },
-  { href: config.knodiaOrgCompanyDetailsUrl, label: "Company Details" },
+  // TODO(KN-916): restore Company Details (config.knodiaOrgCompanyDetailsUrl) when the page is available.
+  { href: ACCESSIBILITY_PATH, label: "Accessibility" },
+];
+
+// Amber focus ring (the footer accent): primary-violet on the deep-violet footer is below the WCAG 3:1 threshold.
+const LOGO_LINK_CLASS =
+  "inline-block rounded-sm outline-secondary-muted-amber outline-offset-2 hover:opacity-80 focus-visible:outline-2 forced-colors:focus-visible:outline-[Highlight]";
+
+const PARTNER_LOGOS = [
+  {
+    alt: "Logo Dipartimento per la trasformazione digitale",
+    href: "https://innovazione.gov.it/",
+    // Match the public website's footer: DTD is sized by width (219px).
+    imgClassName: "h-auto w-[219px]",
+    src: logoDtdExtended,
+    title: "Go to Dipartimento per la trasformazione digitale website",
+  },
+  {
+    alt: "Logo PagoPA S.p.A.",
+    href: "https://www.pagopa.it/en/homepage/",
+    // logo-pagopa.svg has preserveAspectRatio="none" + width/height 100%, so it needs an explicit width.
+    imgClassName: "h-[30px] w-[107px]",
+    src: logoPagopa,
+    title: "Go to PagoPA S.p.A. website",
+  },
 ];
 
 export function Footer() {
@@ -36,7 +60,7 @@ export function Footer() {
                 <Fragment key={link.href}>
                   {index > 0 && <span aria-hidden>·</span>}
                   <Link
-                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline hover:text-secondary-muted-amber"
+                    className="font-medium tracking-normal text-[14px] leading-[20px] text-neutral-white no-underline outline-secondary-muted-amber hover:text-secondary-muted-amber"
                     href={link.href}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -48,27 +72,52 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="flex w-[219px] flex-col gap-[66px]">
-          <img
-            alt="Funded by the European Union – NextGenerationEU"
-            className="w-[219px]"
+        <div className="flex flex-col gap-[66px]">
+          <LogoLink
+            alt="Logo NextGenerationEU"
+            href="https://commission.europa.eu/index_en"
+            imgClassName="w-[219px]"
             src={euFlag}
+            title="Go to EU Commission website"
           />
           <div className="flex flex-col gap-4">
             <span className="text-style-caption text-neutral-gray-40">
               PARTNERS
             </span>
-            <div className="flex items-center justify-between">
-              <img
-                alt="PagoPA"
-                className="h-[30px] w-[107px]"
-                src={logoPagopa}
-              />
-              <img alt="Dipartimento" className="size-[50px]" src={logoD} />
+            <div className="flex flex-col items-start gap-4">
+              {PARTNER_LOGOS.map((logo) => (
+                <LogoLink key={logo.href} {...logo} />
+              ))}
             </div>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function LogoLink({
+  alt,
+  href,
+  imgClassName,
+  src,
+  title,
+}: {
+  alt: string;
+  href: string;
+  imgClassName: string;
+  src: string;
+  title: string;
+}) {
+  return (
+    <a
+      className={LOGO_LINK_CLASS}
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={title}
+    >
+      <img alt={alt} className={imgClassName} src={src} />
+    </a>
   );
 }
