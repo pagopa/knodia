@@ -20,7 +20,7 @@ Description: the national Student Registry of Lynx publishes two cross-border e-
 
 Steps:
 
-1. **[UI]** Log in to the Lynx Knode as a User of the `studentRegistryLynx` Organization.
+1. **[UI]** Log in to the Lynx Knode as a User of the `studentRegistryLynx` Organization (user `student_registry_lynx_admin`).
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create e-service" to show the e-service creation flow.
 4. **[UI]** That was only to show the creation flow — the two e-services used by the demo (`Student Qualifications - Lynx`, provide-data; `Student Qualification Registration - Lynx`, receive-data) were already created in advance. Open each and show its detail page.
@@ -35,7 +35,7 @@ Description: to use the Lynx e-services, the Academy of Orion (holder of the `tr
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `academyOrion` Organization.
+1. **[UI]** Log in to the Orion Knode as a User of the `academyOrion` Organization (user `academy_orion_admin`).
 2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the **provide-data** e-service (`Student Qualifications - Lynx`).
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.

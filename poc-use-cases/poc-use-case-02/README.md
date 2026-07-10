@@ -20,7 +20,7 @@ Description: the Business Booklet of Lynx publishes a cross-border e-service tha
 
 Steps:
 
-1. **[UI]** Log in to the Lynx Knode as a User of the `businessBookletLynx` Organization.
+1. **[UI]** Log in to the Lynx Knode as a User of the `businessBookletLynx` Organization (user `business_booklet_lynx_admin`).
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create e-service" to show the e-service creation flow.
 4. **[UI]** That was only to show the creation flow — the e-service used by the demo (`Company Information & Evidence - Lynx`) was already created in advance. Open it and show its detail page.
@@ -35,7 +35,7 @@ Description: to use the Lynx e-service in its registration process, the Construc
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `constructionCompaniesRegistryOrion` Organization.
+1. **[UI]** Log in to the Orion Knode as a User of the `constructionCompaniesRegistryOrion` Organization (user `construction_companies_registry_orion_admin`).
 2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the Lynx cross-border e-service (`Company Information & Evidence - Lynx`).
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.
