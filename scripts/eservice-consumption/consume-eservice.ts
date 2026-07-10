@@ -5,13 +5,15 @@
 //
 //   pnpm consume-eservice --env dev-lynx \
 //     --keychain-id <uuid> --purpose-id <uuid> --key <private-key.pem> \
-//     --endpoint /natural-persons/RMNLNR03H12H501Z \
+//     [--endpoint /natural-persons/RMNLNR03H12H501Z] \
 //     [--method POST] [--body '<json>'] \
 //     [--auth dpop --dpop-key <es256-key.pem> [--dpop-alg ES256]] \
 //     [--knode-id <Orion|Lynx> --knode-api-keychain-id <uuid> --knode-api-key <pem> [--knode-api-auth <url>]]
 //
 // With the Knode API flags, the response's Integrity REST 02 signature is
 // verified (the producer key is fetched from the producer knode's k2o-gateway).
+//
+// Without --endpoint, the script stops after minting and printing the token.
 //
 // stdout: the e-service JSON response. stderr: progress logs.
 
@@ -39,27 +41,30 @@ const { values: args } = parseArgs({
   strict: true,
 });
 
-requireArgs(args, ["keychain-id", "purpose-id", "key", "endpoint"]);
+requireArgs(args, ["keychain-id", "purpose-id", "key"]);
 if (args.auth === "dpop") requireArgs(args, ["dpop-key"]);
 
 const env = urls(args.env);
 const dpop: Dpop | undefined = args.auth === "dpop" ? { alg: (args["dpop-alg"] as "ES256" | "RS256") ?? "ES256", keyPath: args["dpop-key"]! } : undefined;
 
 const { access_token, token_type } = await mintAccessToken(env.auth, args["keychain-id"]!, args["purpose-id"]!, args.key!, dpop);
-log(`Access token minted (${token_type})`);
+log(`Access token minted (${token_type}):`);
+log(access_token);
 
-const response = await callEservice(env.eservice, args.endpoint!, access_token, {
-  body: args.body ? JSON.parse(args.body) : undefined,
-  dpop,
-  method: args.method ?? "GET",
-});
-log(`${args.method ?? "GET"} ${args.endpoint} → ${response.status}`);
+if (args.endpoint) {
+  const response = await callEservice(env.eservice, args.endpoint, access_token, {
+    body: args.body ? JSON.parse(args.body) : undefined,
+    dpop,
+    method: args.method ?? "GET",
+  });
+  log(`${args.method ?? "GET"} ${args.endpoint} → ${response.status}`);
 
-if (args["knode-id"]) {
-  requireArgs(args, ["knode-api-keychain-id", "knode-api-key"]);
-  const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"]!, args["knode-id"]!, args["knode-api-key"]!);
-  await verifyIntegrityRest02(response, env.k2o, knodeApiToken);
-  log("Integrity REST 02 verification passed");
+  if (args["knode-id"]) {
+    requireArgs(args, ["knode-api-keychain-id", "knode-api-key"]);
+    const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"]!, args["knode-id"]!, args["knode-api-key"]!);
+    await verifyIntegrityRest02(response, env.k2o, knodeApiToken);
+    log("Integrity REST 02 verification passed");
+  }
+
+  print(response.body);
 }
-
-print(response.body);
