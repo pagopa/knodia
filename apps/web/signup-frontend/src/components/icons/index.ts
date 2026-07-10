@@ -2,6 +2,7 @@ export { ArrowForwardIcon } from "./ArrowForwardIcon";
 export { DeployedCodeIcon } from "./DeployedCodeIcon";
 export { DownloadIcon } from "./DownloadIcon";
 export { MailAsteriskIcon } from "./MailAsteriskIcon";
+export { OpenInNewIcon } from "./OpenInNewIcon";
 export { ReportFilledIcon } from "./ReportFilledIcon";
 export { ReportIcon } from "./ReportIcon";
 export { SecurityIcon } from "./SecurityIcon";

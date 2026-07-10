@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as LayoutTermsAndConditionsRouteImport } from './routes/_layout/terms-and-conditions'
 import { Route as LayoutPrivacyPolicyRouteImport } from './routes/_layout/privacy-policy'
+import { Route as LayoutAccessibilityRouteImport } from './routes/_layout/accessibility'
 import { Route as LayoutAuthenticatedRouteRouteImport } from './routes/_layout/_authenticated/route'
 import { Route as LayoutLoginCallbackRouteImport } from './routes/_layout/login/callback'
 import { Route as LayoutAuthenticatedSuspendedRouteImport } from './routes/_layout/_authenticated/suspended'
@@ -43,6 +44,11 @@ const LayoutTermsAndConditionsRoute =
 const LayoutPrivacyPolicyRoute = LayoutPrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutAccessibilityRoute = LayoutAccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutAuthenticatedRouteRoute =
@@ -75,6 +81,7 @@ const LayoutAuthenticatedHomeRoute = LayoutAuthenticatedHomeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accessibility': typeof LayoutAccessibilityRoute
   '/privacy-policy': typeof LayoutPrivacyPolicyRoute
   '/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login': typeof LoginIndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accessibility': typeof LayoutAccessibilityRoute
   '/privacy-policy': typeof LayoutPrivacyPolicyRoute
   '/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login': typeof LoginIndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/_authenticated': typeof LayoutAuthenticatedRouteRouteWithChildren
+  '/_layout/accessibility': typeof LayoutAccessibilityRoute
   '/_layout/privacy-policy': typeof LayoutPrivacyPolicyRoute
   '/_layout/terms-and-conditions': typeof LayoutTermsAndConditionsRoute
   '/login/': typeof LoginIndexRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accessibility'
     | '/privacy-policy'
     | '/terms-and-conditions'
     | '/login'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accessibility'
     | '/privacy-policy'
     | '/terms-and-conditions'
     | '/login'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_layout'
     | '/_layout/_authenticated'
+    | '/_layout/accessibility'
     | '/_layout/privacy-policy'
     | '/_layout/terms-and-conditions'
     | '/login/'
@@ -182,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof LayoutPrivacyPolicyRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/accessibility': {
+      id: '/_layout/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof LayoutAccessibilityRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/_authenticated': {
@@ -242,6 +261,7 @@ const LayoutAuthenticatedRouteRouteWithChildren =
 
 interface LayoutRouteChildren {
   LayoutAuthenticatedRouteRoute: typeof LayoutAuthenticatedRouteRouteWithChildren
+  LayoutAccessibilityRoute: typeof LayoutAccessibilityRoute
   LayoutPrivacyPolicyRoute: typeof LayoutPrivacyPolicyRoute
   LayoutTermsAndConditionsRoute: typeof LayoutTermsAndConditionsRoute
   LayoutLoginCallbackRoute: typeof LayoutLoginCallbackRoute
@@ -249,6 +269,7 @@ interface LayoutRouteChildren {
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAuthenticatedRouteRoute: LayoutAuthenticatedRouteRouteWithChildren,
+  LayoutAccessibilityRoute: LayoutAccessibilityRoute,
   LayoutPrivacyPolicyRoute: LayoutPrivacyPolicyRoute,
   LayoutTermsAndConditionsRoute: LayoutTermsAndConditionsRoute,
   LayoutLoginCallbackRoute: LayoutLoginCallbackRoute,

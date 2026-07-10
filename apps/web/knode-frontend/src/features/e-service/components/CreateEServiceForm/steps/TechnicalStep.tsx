@@ -6,7 +6,9 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
 } from "@knodia/ui-kit/ui";
+import { Focusable, TooltipTrigger } from "react-aria-components";
 
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
@@ -164,9 +166,28 @@ function DataModeSection({
               <Radio value="ProvideData">
                 {getEserviceModeLabel("ProvideData")}
               </Radio>
-              <Radio isDisabled value="ReceiveData">
-                {getEserviceModeLabel("ReceiveData")}
-              </Radio>
+              {/* Disabled radios don't fire hover/focus, so a transparent
+                  overlay carries the tooltip explaining the prototype limit. */}
+              <div className="relative">
+                <Radio isDisabled value="ReceiveData">
+                  {getEserviceModeLabel("ReceiveData")}
+                </Radio>
+                <TooltipTrigger delay={0}>
+                  <Focusable>
+                    <span
+                      aria-label="Receive data is unavailable"
+                      className="absolute top-0 left-0 size-4 cursor-not-allowed"
+                      tabIndex={0}
+                    />
+                  </Focusable>
+                  <Tooltip className="text-center" placement="top">
+                    Receive-data E-Services can&apos;t be created in this
+                    prototype.
+                    <br />
+                    You can test them using the existing ones.
+                  </Tooltip>
+                </TooltipTrigger>
+              </div>
             </RadioGroup>
           );
         }}

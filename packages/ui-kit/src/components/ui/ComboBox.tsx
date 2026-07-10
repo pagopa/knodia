@@ -38,6 +38,8 @@ interface ComboBoxProps<T extends object> extends Omit<
   items?: Iterable<T>;
   label?: string;
   placeholder?: string;
+  /** Content shown when the filtered list is empty. Defaults to "No results found". */
+  renderEmptyState?: () => React.ReactNode;
   size?: ComboBoxVariants["size"];
 }
 
@@ -51,7 +53,10 @@ export function ComboBox<T extends object>({
   size,
   isInvalid = false,
   isClearable = false,
+  // Open the dropdown on focus (matching the multi-select), not only on typing.
+  menuTrigger = "focus",
   placeholder,
+  renderEmptyState = ComboBoxEmptyState,
   ...props
 }: ComboBoxProps<T>) {
   const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
@@ -70,11 +75,13 @@ export function ComboBox<T extends object>({
   return (
     <AriaComboBox<T>
       {...props}
+      allowsEmptyCollection
       className={composeTailwindRenderProps(
         props.className,
         "group flex flex-col gap-1 w-full min-w-0 relative font-sans",
       )}
       isInvalid={isInvalid}
+      menuTrigger={menuTrigger}
     >
       {label && <Label>{label}</Label>}
       <Group
@@ -120,9 +127,21 @@ export function ComboBox<T extends object>({
         style={{ width: popoverWidth }}
         triggerRef={groupRef}
       >
-        <ListBox className={dropdownStyles}>{children}</ListBox>
+        <ListBox className={dropdownStyles} renderEmptyState={renderEmptyState}>
+          {children}
+        </ListBox>
       </Popover>
     </AriaComboBox>
+  );
+}
+
+// Shared "No results found" fallback so the single- and multi-select dropdowns
+// can't drift; react-aria renders nothing on an empty list without it.
+export function ComboBoxEmptyState() {
+  return (
+    <div className="body-md px-4 py-3 text-primary-light-low-contrast">
+      No results found
+    </div>
   );
 }
 
