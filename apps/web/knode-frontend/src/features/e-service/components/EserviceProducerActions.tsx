@@ -10,7 +10,6 @@ import {
 import { Button, Modal, toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
@@ -44,18 +43,109 @@ export function EserviceProducerActions({
       }),
     ]);
 
+  return (
+    <>
+      {match(state)
+        .with("Active", () => (
+          <>
+            <Button
+              hierarchy="danger"
+              kind="tonal"
+              onPress={() => setIsSuspendDialogOpen(true)}
+              size="md"
+            >
+              Suspend
+            </Button>
+            {editAction}
+          </>
+        ))
+        .with("Suspended", () => (
+          <>
+            <Button
+              hierarchy="danger"
+              kind="tonal"
+              onPress={() => setIsArchiveDialogOpen(true)}
+              size="md"
+            >
+              Archive
+            </Button>
+            {editAction}
+            <ReactivationButton
+              eserviceId={eserviceId}
+              onReactivationSuccess={invalidateEserviceQueries}
+            />
+          </>
+        ))
+        .with("Archived", () => null)
+        .exhaustive()}
+
+      <ArchiveModal
+        eserviceId={eserviceId}
+        isOpen={isArchiveDialogOpen}
+        onArchiveSuccess={() => {
+          setIsArchiveDialogOpen(false);
+          void invalidateEserviceQueries();
+        }}
+        onOpenChange={setIsArchiveDialogOpen}
+      />
+
+      <SuspensionModal
+        eserviceId={eserviceId}
+        isOpen={isSuspendDialogOpen}
+        onOpenChange={setIsSuspendDialogOpen}
+        onSuspensionSuccess={() => {
+          setIsSuspendDialogOpen(false);
+          void invalidateEserviceQueries();
+        }}
+      />
+    </>
+  );
+}
+
+function ArchiveModal({
+  eserviceId,
+  isOpen,
+  onArchiveSuccess,
+  onOpenChange,
+}: {
+  eserviceId: string;
+  isOpen: boolean;
+  onArchiveSuccess: () => void;
+  onOpenChange: (isOpen: boolean) => void;
+}) {
   const {
-    isError: isSuspendError,
-    isPending: isSuspending,
-    mutate: suspend,
+    isError: isArchiveError,
+    isPending: isArchiving,
+    mutate: archive,
   } = useMutation({
-    ...suspendEserviceMutation({ client }),
-    onSuccess: () => {
-      setIsSuspendDialogOpen(false);
-      invalidateEserviceQueries();
-    },
+    ...archiveProducerEserviceMutation({ client }),
+    onSuccess: onArchiveSuccess,
   });
 
+  return (
+    <Modal
+      actionLabel="Archive anyway"
+      cancelLabel="Cancel"
+      confirmButtonProps={{ isPending: isArchiving }}
+      description="Are you sure you want to archive this E-Service? Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens. This action cannot be undone."
+      isDismissable
+      isOpen={isOpen}
+      kind="destructive"
+      onConfirm={() => archive({ path: { eserviceId } })}
+      onOpenChange={onOpenChange}
+      showErrorBanner={isArchiveError}
+      title="Archive E-Service"
+    />
+  );
+}
+
+function ReactivationButton({
+  eserviceId,
+  onReactivationSuccess,
+}: {
+  eserviceId: string;
+  onReactivationSuccess: () => void;
+}) {
   const { isPending: isReactivating, mutate: reactivate } = useMutation({
     ...reactivateEserviceMutation({ client }),
     onError: () =>
@@ -64,79 +154,54 @@ export function EserviceProducerActions({
         kind: "error",
         title: "Unable to reactivate E-Service",
       }),
-    onSuccess: () => invalidateEserviceQueries(),
+    onSuccess: onReactivationSuccess,
   });
+  return (
+    <Button
+      hierarchy="brand"
+      isPending={isReactivating}
+      kind="filled"
+      onPress={() => reactivate({ path: { eserviceId } })}
+      size="md"
+    >
+      Reactivate
+    </Button>
+  );
+}
 
+function SuspensionModal({
+  eserviceId,
+  isOpen,
+  onOpenChange,
+  onSuspensionSuccess,
+}: {
+  eserviceId: string;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onSuspensionSuccess: () => void;
+}) {
   const {
-    isError: isArchiveError,
-    isPending: isArchiving,
-    mutate: archive,
+    isError: isSuspendError,
+    isPending: isSuspending,
+    mutate: suspend,
   } = useMutation({
-    ...archiveProducerEserviceMutation({ client }),
-    onSuccess: () => {
-      setIsArchiveDialogOpen(false);
-      invalidateEserviceQueries();
-    },
+    ...suspendEserviceMutation({ client }),
+    onSuccess: onSuspensionSuccess,
   });
 
-  return match(state)
-    .with("Active", () => (
-      <>
-        <DialogTrigger
-          isOpen={isSuspendDialogOpen}
-          onOpenChange={setIsSuspendDialogOpen}
-        >
-          <Button hierarchy="danger" kind="tonal" size="md">
-            Suspend
-          </Button>
-          <Modal
-            actionLabel="Suspend anyway"
-            cancelLabel="Cancel"
-            confirmButtonProps={{ isPending: isSuspending }}
-            description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
-            isDismissable
-            kind="destructive"
-            onConfirm={() => suspend({ path: { eserviceId } })}
-            showErrorBanner={isSuspendError}
-            title="Suspend E-Service"
-          />
-        </DialogTrigger>
-        {editAction}
-      </>
-    ))
-    .with("Suspended", () => (
-      <>
-        <DialogTrigger
-          isOpen={isArchiveDialogOpen}
-          onOpenChange={setIsArchiveDialogOpen}
-        >
-          <Button hierarchy="danger" kind="tonal" size="md">
-            Archive
-          </Button>
-          <Modal
-            actionLabel="Archive anyway"
-            cancelLabel="Cancel"
-            confirmButtonProps={{ isPending: isArchiving }}
-            description="Are you sure you want to archive this E-Service? Linked Agreements and Purposes will remain in their current state but will no longer be usable to obtain access tokens. This action cannot be undone."
-            isDismissable
-            kind="destructive"
-            onConfirm={() => archive({ path: { eserviceId } })}
-            showErrorBanner={isArchiveError}
-            title="Archive E-Service"
-          />
-        </DialogTrigger>
-        {editAction}
-        <Button
-          hierarchy="brand"
-          isPending={isReactivating}
-          kind="filled"
-          onPress={() => reactivate({ path: { eserviceId } })}
-          size="md"
-        >
-          Reactivate
-        </Button>
-      </>
-    ))
-    .with("Archived", () => null)
-    .exhaustive();
+  return (
+    <Modal
+      actionLabel="Suspend anyway"
+      cancelLabel="Cancel"
+      confirmButtonProps={{ isPending: isSuspending }}
+      description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
+      isDismissable
+      isOpen={isOpen}
+      kind="destructive"
+      onConfirm={() => suspend({ path: { eserviceId } })}
+      onOpenChange={onOpenChange}
+      showErrorBanner={isSuspendError}
+      title="Suspend E-Service"
+    />
+  );
 }
