@@ -10,7 +10,6 @@ import {
   composeRenderProps,
   Group,
   Input,
-  type Key,
   ListBox,
   ListBoxLoadMoreItem,
   Popover,
@@ -68,12 +67,13 @@ interface MultiSelectComboBoxProps extends Omit<
   label?: string;
   /** Loading state for the async list; drives the infinite-scroll sentinel. */
   loadingState?: LoadingState;
-  // Controlled-only: chips are rendered from `selectedTags` and removal calls
-  // `onChange`, so all three are required. `selectedTags` is the only visual
-  // feedback that a selection happened, so leaving it out would let the user
-  // select an option and see nothing; an uncontrolled `defaultValue` would
-  // likewise leave chip removal unable to reflect the real selection.
-  onChange: (keys: Key[]) => void;
+  // Controlled-only: chips are rendered from `selectedOptions` and removal
+  // calls `onChange`, so all three are required. `selectedOptions` is the
+  // only visual feedback that a selection happened, so leaving it out would
+  // let the user select an option and see nothing; an uncontrolled
+  // `defaultValue` would likewise leave chip removal unable to reflect the
+  // real selection.
+  onChange: (keys: string[]) => void;
   /** Called when the list is scrolled near the end (infinite scroll). */
   onLoadMore?: () => void;
   placeholder?: string;
@@ -82,7 +82,7 @@ interface MultiSelectComboBoxProps extends Omit<
    * filtered or server-paginated and no longer contains every selected key. */
   selectedOptions: MultiSelectComboBoxOption[];
   size?: MultiSelectComboBoxVariants["size"];
-  value: Key[];
+  value: string[];
 }
 
 type MultiSelectComboBoxVariants = VariantProps<typeof fieldSizeStyles>;
@@ -109,6 +109,9 @@ export function MultiSelectComboBox({
   ...props
 }: MultiSelectComboBoxProps) {
   const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
+  const selectedItems = value
+    .map((key) => selectedOptions.find((item) => item.id === key))
+    .filter((item) => item != null);
 
   return (
     // External layout classes apply to the whole component (field + chip row),
@@ -127,7 +130,8 @@ export function MultiSelectComboBox({
         isInvalid={isInvalid}
         isReadOnly={isReadOnly}
         items={items}
-        onChange={onChange}
+        menuTrigger="focus"
+        onChange={(keys) => onChange(keys.map(String))}
         selectionMode="multiple"
         value={value}
       >
@@ -166,29 +170,28 @@ export function MultiSelectComboBox({
         <FieldError>{errorMessage}</FieldError>
 
         <ComboBoxValue<MultiSelectComboBoxOption>>
-          {({ state }) => (
-            <TagGroup
-              aria-label={label ? `${label} (selected)` : "Selected"}
-              onRemove={(keys) => {
-                if (Array.isArray(state.value)) {
-                  state.setValue(state.value.filter((k) => !keys.has(k)));
-                }
-              }}
-            >
-              <TagList
-                className="flex flex-wrap gap-1"
-                items={value
-                  .map((key) =>
-                    selectedOptions.find((item) => item.id === String(key)),
-                  )
-                  .filter((item) => item != null)}
+          {({ state }) =>
+            selectedItems.length > 0 ? (
+              <TagGroup
+                aria-label={label ? `${label} (selected)` : "Selected"}
+                onRemove={(keys) => {
+                  if (Array.isArray(state.value)) {
+                    state.setValue(
+                      state.value
+                        .map(String)
+                        .filter((selectedKey) => !keys.has(selectedKey)),
+                    );
+                  }
+                }}
               >
-                {(tag) => (
-                  <Tag isDisabled={isDisabled || isReadOnly}>{tag.label}</Tag>
-                )}
-              </TagList>
-            </TagGroup>
-          )}
+                <TagList className="flex flex-wrap gap-1" items={selectedItems}>
+                  {(tag) => (
+                    <Tag isDisabled={isDisabled || isReadOnly}>{tag.label}</Tag>
+                  )}
+                </TagList>
+              </TagGroup>
+            ) : null
+          }
         </ComboBoxValue>
 
         <Popover

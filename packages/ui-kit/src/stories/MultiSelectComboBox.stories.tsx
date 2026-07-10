@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
-import { DialogTrigger, type Key } from "react-aria-components";
+import { DialogTrigger } from "react-aria-components";
 
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
@@ -46,12 +46,12 @@ function MultiSelectComboBoxExample({
 }: {
   action?: React.ReactNode;
   initialInputValue?: string;
-  initialValue?: Key[];
+  initialValue?: string[];
   isDisabled?: boolean;
   isReadOnly?: boolean;
 }) {
   const [inputValue, setInputValue] = useState(initialInputValue);
-  const [value, setValue] = useState<Key[]>(initialValue);
+  const [value, setValue] = useState<string[]>(initialValue);
 
   const items = useMemo(
     () =>
@@ -64,34 +64,32 @@ function MultiSelectComboBoxExample({
     .map((key) => OPTIONS.find((item) => item.id === key))
     .filter((item) => item != null);
 
-  const handleChange = (keys: Key[]) => {
+  const handleChange = (keys: string[]) => {
     setValue(keys);
   };
 
   return (
-    <>
-      <MultiSelectComboBox
-        action={action}
-        aria-label="Attributes"
-        className="w-80"
-        inputValue={inputValue}
-        isDisabled={isDisabled}
-        isReadOnly={isReadOnly}
-        items={items}
-        label="Attributes"
-        onChange={handleChange}
-        onInputChange={setInputValue}
-        placeholder="Type to search..."
-        selectedOptions={selectedOptions}
-        value={value}
-      >
-        {(item) => (
-          <MultiSelectComboBoxItem id={item.id}>
-            {item.label}
-          </MultiSelectComboBoxItem>
-        )}
-      </MultiSelectComboBox>
-    </>
+    <MultiSelectComboBox
+      action={action}
+      aria-label="Attributes"
+      className="w-80"
+      inputValue={inputValue}
+      isDisabled={isDisabled}
+      isReadOnly={isReadOnly}
+      items={items}
+      label="Attributes"
+      onChange={handleChange}
+      onInputChange={setInputValue}
+      placeholder="Type to search..."
+      selectedOptions={selectedOptions}
+      value={value}
+    >
+      {(item) => (
+        <MultiSelectComboBoxItem id={item.id}>
+          {item.label}
+        </MultiSelectComboBoxItem>
+      )}
+    </MultiSelectComboBox>
   );
 }
 
