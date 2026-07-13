@@ -255,8 +255,8 @@ function SearchableAttributesField({
     <form.Field name={`requiredAttributes[${groupIndex}]`}>
       {(groupField) => {
         const keys = (groupField.state.value ?? []).map(toSchemeRefKey);
-        const selectedTags = keys.map((key) => ({
-          key,
+        const selectedOptions = keys.map((key) => ({
+          id: key,
           label: getSchemeRefLabel(key),
         }));
 
@@ -279,7 +279,7 @@ function SearchableAttributesField({
             }
             onInputChange={setInputValue}
             placeholder="Select one or more attributes"
-            selectedTags={selectedTags}
+            selectedOptions={selectedOptions}
             value={keys}
           >
             {(item) => (

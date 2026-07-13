@@ -2,41 +2,40 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
-import { DialogTrigger, type Key } from "react-aria-components";
+import { DialogTrigger } from "react-aria-components";
 
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import {
   MultiSelectComboBox,
   MultiSelectComboBoxItem,
-  type MultiSelectComboBoxTag,
 } from "../components/ui/MultiSelectComboBox";
 
 interface Option {
   id: string;
-  name: string;
+  label: string;
 }
 
 const OPTIONS: Option[] = [
-  { id: "knodia:testing_organization", name: "Testing Organization" },
-  { id: "vc_territorial_units:nuts1", name: "NUTS 1" },
-  { id: "vc_territorial_units:nuts2", name: "NUTS 2" },
-  { id: "vc_territorial_units:nuts3", name: "NUTS 3" },
+  { id: "knodia:testing_organization", label: "Testing Organization" },
+  { id: "vc_territorial_units:nuts1", label: "NUTS 1" },
+  { id: "vc_territorial_units:nuts2", label: "NUTS 2" },
+  { id: "vc_territorial_units:nuts3", label: "NUTS 3" },
   {
     id: "vc_poc_attributes:companies_registries",
-    name: "Companies Registries",
+    label: "Companies Registries",
   },
-  { id: "vc_poc_attributes:training_institutes", name: "Training Institutes" },
+  { id: "vc_poc_attributes:training_institutes", label: "Training Institutes" },
 ];
 
-const meta: Meta<typeof MultiSelectComboBox<Option>> = {
+const meta: Meta<typeof MultiSelectComboBox> = {
   title: "Components/ui/MultiSelectComboBox",
   component: MultiSelectComboBox,
   parameters: { layout: "centered" },
 };
 
 export default meta;
-type Story = StoryObj<typeof MultiSelectComboBox<Option>>;
+type Story = StoryObj<typeof MultiSelectComboBox>;
 
 function MultiSelectComboBoxExample({
   action,
@@ -47,51 +46,30 @@ function MultiSelectComboBoxExample({
 }: {
   action?: React.ReactNode;
   initialInputValue?: string;
-  initialValue?: Key[];
+  initialValue?: string[];
   isDisabled?: boolean;
   isReadOnly?: boolean;
 }) {
   const [inputValue, setInputValue] = useState(initialInputValue);
-  const [value, setValue] = useState<Key[]>(initialValue);
-  // Label cache populated at selection time, so chips survive filtering.
-  const [labels, setLabels] = useState<Record<string, string>>(() =>
-    Object.fromEntries(
-      initialValue.flatMap((key) => {
-        const found = OPTIONS.find((o) => o.id === key);
-        return found ? [[String(key), found.name]] : [];
-      }),
-    ),
-  );
+  const [value, setValue] = useState<string[]>(initialValue);
 
   const items = useMemo(
     () =>
       OPTIONS.filter((o) =>
-        o.name.toLowerCase().includes(inputValue.toLowerCase()),
+        o.label.toLowerCase().includes(inputValue.toLowerCase()),
       ),
     [inputValue],
   );
+  const selectedOptions = value
+    .map((key) => OPTIONS.find((item) => item.id === key))
+    .filter((item) => item != null);
 
-  const handleChange = (keys: Key[]) => {
+  const handleChange = (keys: string[]) => {
     setValue(keys);
-    setLabels((prev) => {
-      const next = { ...prev };
-      for (const key of keys) {
-        if (next[String(key)] === undefined) {
-          const found = OPTIONS.find((o) => o.id === key);
-          if (found) next[String(key)] = found.name;
-        }
-      }
-      return next;
-    });
   };
 
-  const selectedTags: MultiSelectComboBoxTag[] = value.map((key) => ({
-    key,
-    label: labels[String(key)] ?? String(key),
-  }));
-
   return (
-    <MultiSelectComboBox<Option>
+    <MultiSelectComboBox
       action={action}
       aria-label="Attributes"
       className="w-80"
@@ -103,12 +81,12 @@ function MultiSelectComboBoxExample({
       onChange={handleChange}
       onInputChange={setInputValue}
       placeholder="Type to search..."
-      selectedTags={selectedTags}
+      selectedOptions={selectedOptions}
       value={value}
     >
       {(item) => (
         <MultiSelectComboBoxItem id={item.id}>
-          {item.name}
+          {item.label}
         </MultiSelectComboBoxItem>
       )}
     </MultiSelectComboBox>

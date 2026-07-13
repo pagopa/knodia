@@ -6,8 +6,8 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 
 ## Prerequisites
 
-- `scripts/seed/seed.sh` must have been run against the environment where the demo will run (e.g. dev/test).
-- A user for each organization (`studentRegistryLynx`, `academyOrion`) must have been created in the env's Cognito user pools, with all roles (technical + administrative — this demo does not cover role-based behaviour), and their username/password handed to the demo runner to log in to the Lynx and Orion UIs.
+- The environment must already be seeded (POC organizations, e-services, and Cognito users). On **dev** and **test** this is already applied — it is not a step you run for the demo; if you're unsure it's in place (or need it on another environment), verify with the infra team.
+- Log in to the Lynx and Orion UIs as each organization's seeded Cognito user (both roles — this demo does not cover role-based behaviour): `studentRegistryLynx` → `student_registry_lynx_admin` (Lynx), `academyOrion` → `academy_orion_admin` (Orion). The usernames are fixed (seeded by `scripts/seed/seed-poc-users.sh`); the password is set at seeding time, so get it from the infra team.
 - The scripts target the local infra by default. To run them against another environment (e.g. dev/test), set the `POC_*` base-URL env vars before running — see `scripts/paths.ts` in this folder for the full list and local defaults, and use that environment's per-knode hosts from `collections/environments/Dev-*.bru` / `Test-*.bru`.
 
 ## Phase 1
@@ -20,7 +20,7 @@ Description: the national Student Registry of Lynx publishes two cross-border e-
 
 Steps:
 
-1. **[UI]** Log in to the Lynx Knode as a User of the `studentRegistryLynx` Organization.
+1. **[UI]** Log in to the Lynx Knode as a User of the `studentRegistryLynx` Organization (user `student_registry_lynx_admin`).
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create e-service" to show the e-service creation flow.
 4. **[UI]** That was only to show the creation flow — the two e-services used by the demo (`Student Qualifications - Lynx`, provide-data; `Student Qualification Registration - Lynx`, receive-data) were already created in advance. Open each and show its detail page.
@@ -35,7 +35,7 @@ Description: to use the Lynx e-services, the Academy of Orion (holder of the `tr
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `academyOrion` Organization.
+1. **[UI]** Log in to the Orion Knode as a User of the `academyOrion` Organization (user `academy_orion_admin`).
 2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the **provide-data** e-service (`Student Qualifications - Lynx`).
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Follow the agreement-activation link shown after creation — it opens on the producer (Lynx) Knode — and confirm the activation, so the Agreement becomes Active.
