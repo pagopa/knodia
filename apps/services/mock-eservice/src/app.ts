@@ -421,8 +421,8 @@ function buildBearerIntegrityRest02App({
     bearerAuthSecurity,
     {
       description:
-        "Mock e-service for Integrity Rest 02 (legal-entity address lookup)",
-      title: "Knodia Mock E-service API (Integrity Rest 02)",
+        "Mock e-service for Non-Repudiable Response (legal-entity address lookup)",
+      title: "Knodia Mock E-service API (Non-Repudiable Response)",
       version: "1.0.0",
     },
     [companyAddressAppTag],
