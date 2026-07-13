@@ -10,6 +10,7 @@
   "internalChecksFilter": "strict",
   "internalChecksAsSuccess": true,
   "prCreation": "immediate",
+  "minimumReleaseAge": null,
   "prConcurrentLimit": 4,
   "prHourlyLimit": 0,
   "packageRules": [
@@ -27,7 +28,9 @@
     },
     {
       "matchPackageNames": ["*"],
-      "prCreation": "immediate"
+      "prCreation": "immediate",
+      "internalChecksFilter": "strict",
+      "internalChecksAsSuccess": true
     }
   ],
   "lockFileMaintenance": {
