@@ -8,7 +8,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice" (
 ) VALUES (
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   '00000000-0000-4000-8000-000000000004',
-  '{"en": "Mockup 06 Company Address (Integrity REST 02) - Lynx"}'::jsonb,
+  '{"en": "Mockup 06 Company Address (Non-Repudiable Response) - Lynx"}'::jsonb,
   '{"en": "Cross-Border E-Service that returns a legal entity address."}'::jsonb,
   'ProvideData',
   true, false,
@@ -53,7 +53,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   '62708c81-8862-48bf-8140-49804d18c7e6',
   'cf9dde0a-336a-43e0-a5f7-14b698a0586e',
   'a72aa082-69f0-4ae2-ae61-051138118ab3',
-  'f8fb082f938fa17855a329462b71849213ca3c5a12f22aad7ac05edee1d4ec41',
+  '5f23dbd5f91faff730333e679d4921ad3817544296139d731f36f7eee98f9eb9',
   'application/yaml',
   'mock-bearer-integrity-rest-02-eservice.yaml',
   '62708c81-8862-48bf-8140-49804d18c7e6/mock-bearer-integrity-rest-02-eservice.yaml',
