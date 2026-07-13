@@ -29,7 +29,7 @@
         [{ "text": "Name: Knodia (service prototype)" }],
         [
           { "text": "URL: " },
-          { "text": "https://knodia.org", "url": "https://knodia.org" }
+          { "text": "https://knodia.com", "url": "https://knodia.com" }
         ],
         [{ "text": "Reference technical specifications used: WCAG 2.1" }]
       ]

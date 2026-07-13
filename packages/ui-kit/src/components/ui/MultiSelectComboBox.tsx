@@ -2,19 +2,20 @@ import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
 import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
+  Tag as AriaTag,
   Button,
   ButtonContext,
   Collection,
+  ComboBoxValue,
   composeRenderProps,
   Group,
   Input,
-  type Key,
   ListBox,
   ListBoxLoadMoreItem,
   Popover,
-  Tag,
   TagGroup,
   TagList,
+  type TagProps,
   type ValidationResult,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
@@ -35,12 +36,6 @@ import {
 // the two dropdowns can't drift.
 export { ComboBoxItem as MultiSelectComboBoxItem } from "./ComboBox";
 
-/** A selected entry rendered as a removable chip below the field. */
-export interface MultiSelectComboBoxTag {
-  key: Key;
-  label: string;
-}
-
 // react-aria-components does not re-export LoadingState; mirror the
 // react-stately union used by the async-list driving the infinite scroll.
 type LoadingState =
@@ -51,42 +46,48 @@ type LoadingState =
   | "loadingMore"
   | "sorting";
 
-interface MultiSelectComboBoxProps<T extends object> extends Omit<
-  AriaComboBoxProps<T, "multiple">,
+interface MultiSelectComboBoxOption {
+  id: string;
+  label: string;
+}
+
+interface MultiSelectComboBoxProps extends Omit<
+  AriaComboBoxProps<MultiSelectComboBoxOption, "multiple">,
   "children" | "className" | "onChange" | "value"
 > {
   /** Trailing control rendered next to the input row (e.g. a CTA button),
    * so it aligns with the field rather than the label above or chips below. */
   action?: React.ReactNode;
-  children: (item: T) => React.ReactNode;
+  children: (item: MultiSelectComboBoxOption) => React.ReactNode;
   /** Layout classes applied to the whole component (field + chip row). */
   className?: string;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
-  items?: Iterable<T>;
+  items?: Iterable<MultiSelectComboBoxOption>;
   label?: string;
   /** Loading state for the async list; drives the infinite-scroll sentinel. */
   loadingState?: LoadingState;
-  // Controlled-only: chips are rendered from `selectedTags` and removal calls
-  // `onChange`, so all three are required. `selectedTags` is the only visual
-  // feedback that a selection happened, so leaving it out would let the user
-  // select an option and see nothing; an uncontrolled `defaultValue` would
-  // likewise leave chip removal unable to reflect the real selection.
-  onChange: (keys: Key[]) => void;
+  // Controlled-only: chips are rendered from `selectedOptions` and removal
+  // calls `onChange`, so all three are required. `selectedOptions` is the
+  // only visual feedback that a selection happened, so leaving it out would
+  // let the user select an option and see nothing; an uncontrolled
+  // `defaultValue` would likewise leave chip removal unable to reflect the
+  // real selection.
+  onChange: (keys: string[]) => void;
   /** Called when the list is scrolled near the end (infinite scroll). */
   onLoadMore?: () => void;
   placeholder?: string;
-  /** Content shown when the filtered list is empty. Defaults to "No results found". */
   renderEmptyState?: () => React.ReactNode;
-  /** Selected entries rendered as removable chips below the field. */
-  selectedTags: MultiSelectComboBoxTag[];
+  /** Stable selected option objects used to render chips when `items` is
+   * filtered or server-paginated and no longer contains every selected key. */
+  selectedOptions: MultiSelectComboBoxOption[];
   size?: MultiSelectComboBoxVariants["size"];
-  value: Key[];
+  value: string[];
 }
 
 type MultiSelectComboBoxVariants = VariantProps<typeof fieldSizeStyles>;
 
-export function MultiSelectComboBox<T extends object>({
+export function MultiSelectComboBox({
   action,
   label,
   description,
@@ -101,22 +102,16 @@ export function MultiSelectComboBox<T extends object>({
   items,
   loadingState,
   onLoadMore,
-  selectedTags,
   className,
   value,
   onChange,
+  selectedOptions,
   ...props
-}: MultiSelectComboBoxProps<T>) {
+}: MultiSelectComboBoxProps) {
   const { triggerRef: groupRef, width: popoverWidth } = useTriggerWidth();
-
-  // The chips live outside <AriaComboBox> (see below), so they don't inherit
-  // its disabled/read-only state — gate removal here, or the buttons stay live
-  // while the field looks inert.
-  const chipsRemovable = !isDisabled && !isReadOnly;
-
-  const handleRemove = (keys: Set<Key>) => {
-    onChange(value.filter((key) => !keys.has(key)));
-  };
+  const selectedItems = value
+    .map((key) => selectedOptions.find((item) => item.id === key))
+    .filter((item) => item != null);
 
   return (
     // External layout classes apply to the whole component (field + chip row),
@@ -127,7 +122,7 @@ export function MultiSelectComboBox<T extends object>({
         className,
       )}
     >
-      <AriaComboBox<T, "multiple">
+      <AriaComboBox<MultiSelectComboBoxOption, "multiple">
         {...props}
         allowsEmptyCollection
         className="group flex flex-col gap-1 w-full min-w-0 relative font-sans"
@@ -135,7 +130,7 @@ export function MultiSelectComboBox<T extends object>({
         isInvalid={isInvalid}
         isReadOnly={isReadOnly}
         items={items}
-        onChange={onChange}
+        onChange={(keys) => onChange(keys.map(String))}
         selectionMode="multiple"
         value={value}
       >
@@ -172,6 +167,32 @@ export function MultiSelectComboBox<T extends object>({
         </div>
         {description && <Description>{description}</Description>}
         <FieldError>{errorMessage}</FieldError>
+
+        <ComboBoxValue<MultiSelectComboBoxOption>>
+          {({ state }) =>
+            selectedItems.length > 0 ? (
+              <TagGroup
+                aria-label={label ? `${label} (selected)` : "Selected"}
+                onRemove={(keys) => {
+                  if (Array.isArray(state.value)) {
+                    state.setValue(
+                      state.value
+                        .map(String)
+                        .filter((selectedKey) => !keys.has(selectedKey)),
+                    );
+                  }
+                }}
+              >
+                <TagList className="flex flex-wrap gap-1" items={selectedItems}>
+                  {(tag) => (
+                    <Tag isDisabled={isDisabled || isReadOnly}>{tag.label}</Tag>
+                  )}
+                </TagList>
+              </TagGroup>
+            ) : null
+          }
+        </ComboBoxValue>
+
         <Popover
           className="mt-2"
           offset={0}
@@ -194,36 +215,36 @@ export function MultiSelectComboBox<T extends object>({
           </ListBox>
         </Popover>
       </AriaComboBox>
-      {/* The chips live OUTSIDE <AriaComboBox>: inside, TagGroup picks up the
-          ComboBox context and its onRemove breaks. */}
-      {selectedTags.length > 0 && (
-        <TagGroup
-          aria-label={label ? `${label} (selected)` : "Selected"}
-          onRemove={chipsRemovable ? handleRemove : undefined}
-        >
-          <TagList className="flex flex-wrap gap-1" items={selectedTags}>
-            {(tag) => (
-              <Tag
-                className={chipStyles({
-                  type: "light",
-                  className: "outline-none",
-                })}
-                textValue={tag.label}
-              >
-                <span className="min-w-0 px-1 truncate">{tag.label}</span>
-                {chipsRemovable && (
-                  <Button
-                    className="flex items-center justify-center rounded-full p-0.5 outline-none cursor-pointer transition hover:bg-chip-dismiss-bg-hover pressed:bg-chip-dismiss-bg-hover"
-                    slot="remove"
-                  >
-                    <XIcon aria-hidden className="size-4" />
-                  </Button>
-                )}
-              </Tag>
-            )}
-          </TagList>
-        </TagGroup>
-      )}
     </div>
+  );
+}
+
+function Tag({ children, ...props }: TagProps) {
+  const textValue = typeof children === "string" ? children : undefined;
+  return (
+    <AriaTag
+      textValue={textValue}
+      {...props}
+      className={chipStyles({
+        type: "light",
+      })}
+    >
+      {composeRenderProps(
+        children,
+        (children, { allowsRemoving, isDisabled }) => (
+          <>
+            <span className="min-w-0 px-1 truncate">{children}</span>
+            {allowsRemoving && !isDisabled && (
+              <Button
+                className="flex items-center justify-center rounded-full p-0.5 outline-none cursor-pointer transition hover:bg-chip-dismiss-bg-hover pressed:bg-chip-dismiss-bg-hover focus-visible:bg-chip-dismiss-bg-hover"
+                slot="remove"
+              >
+                <XIcon aria-hidden className="size-4" />
+              </Button>
+            )}
+          </>
+        ),
+      )}
+    </AriaTag>
   );
 }

@@ -8,8 +8,8 @@ Legend: **[UI]** — do it in the node frontend · **[script]** — run from the
 
 ## Prerequisites
 
-- `scripts/seed/seed.sh` must have been run against the environment where the demo will run (e.g. dev/test).
-- A user for each organization (`systemSERCLynx`, `systemSERCOrion`, `supervisoryBodyOrion`) must have been created in the env's Cognito user pools, with all roles (technical + administrative — this demo does not cover role-based behaviour), and their username/password handed to the demo runner to log in to the Lynx and Orion UIs.
+- The environment must already be seeded (POC organizations, e-services, and Cognito users). On **dev** and **test** this is already applied — it is not a step you run for the demo; if you're unsure it's in place (or need it on another environment), verify with the infra team.
+- Log in to the Lynx and Orion UIs as each organization's seeded Cognito user (both roles — this demo does not cover role-based behaviour): `systemSERCLynx` → `system_serc_lynx_admin` (Lynx), `systemSERCOrion` → `system_serc_orion_admin` (Orion), `supervisoryBodyOrion` → `supervisory_body_orion_admin` (Orion). The usernames are fixed (seeded by `scripts/seed/seed-poc-users.sh`); the password is set at seeding time, so get it from the infra team.
 - The scripts target the local infra by default. To run them against another environment (e.g. dev/test), set the `POC_*` base-URL env vars before running — see `scripts/paths.ts` in this folder for the full list and local defaults, and use that environment's per-knode hosts from `collections/environments/Dev-*.bru` / `Test-*.bru`.
 
 ## Phase 1
@@ -22,12 +22,12 @@ Description: the three POC producers publish the cross-border e-services that ma
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as a User of the `supervisoryBodyOrion` Organization.
+1. **[UI]** Log in to the Orion Knode as a User of the `supervisoryBodyOrion` Organization (user `supervisory_body_orion_admin`).
 2. **[UI]** Go to the Production > E-services section.
 3. **[UI]** Click "Create e-service" to show the e-service creation flow.
 4. **[UI]** That was only to show the creation flow — the e-services used by the demo were already created in advance. Open `ERDS Lookup & Metadata - Orion` (provide-data) and show its detail page.
-5. **[UI]** _(as `systemSERCOrion`, on Orion)_ Log in as the `systemSERCOrion` Organization and open its `ERDS Relay - Orion` e-service (receive-data); show its detail page.
-6. **[UI]** _(as `systemSERCLynx`, on Lynx)_ Log in to the Lynx Knode as the `systemSERCLynx` Organization and open its `ERDS Relay - Lynx` e-service (receive-data); show its detail page.
+5. **[UI]** _(as `systemSERCOrion`, on Orion)_ Log in as the `systemSERCOrion` Organization (user `system_serc_orion_admin`) and open its `ERDS Relay - Orion` e-service (receive-data); show its detail page.
+6. **[UI]** _(as `systemSERCLynx`, on Lynx)_ Log in to the Lynx Knode as the `systemSERCLynx` Organization (user `system_serc_lynx_admin`) and open its `ERDS Relay - Lynx` e-service (receive-data); show its detail page.
 
 ## Phase 2
 
@@ -39,7 +39,7 @@ Description: to look up the recipient's SERC, `systemSERCLynx` must first satisf
 
 Steps:
 
-1. **[UI]** Log in to the Lynx Knode as a User of the `systemSERCLynx` Organization.
+1. **[UI]** Log in to the Lynx Knode as a User of the `systemSERCLynx` Organization (user `system_serc_lynx_admin`).
 2. **[UI]** Go to the Consumption > E-services section, search the catalog, and open the **provide-data** e-service (`ERDS Lookup & Metadata - Orion`).
 3. **[UI]** Request an Agreement for the e-service.
 4. **[UI]** Create a Purpose for the E-service.
@@ -71,7 +71,7 @@ Description: to relay the delivery evidences back to the sender's SERC, `systemS
 
 Steps:
 
-1. **[UI]** Log in to the Orion Knode as `systemSERCOrion` and repeat steps 2–6 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`), with the same Purpose Form option. Two differences: unlike the Orion-side agreements this one isn't auto-activated — follow the activation link (it opens on the producer, Lynx) and confirm it; and run `node generate-orion-key.ts` instead of `generate-lynx-key.ts`.
+1. **[UI]** Log in to the Orion Knode as `systemSERCOrion` (user `system_serc_orion_admin`) and repeat steps 2–6 of Phase 2 for the **relay** e-service (`ERDS Relay - Lynx`), with the same Purpose Form option. Two differences: unlike the Orion-side agreements this one isn't auto-activated — follow the activation link (it opens on the producer, Lynx) and confirm it; and run `node generate-orion-key.ts` instead of `generate-lynx-key.ts`.
 2. Note the Consumer Keychain id and the Purpose id.
 
 ## Phase 5
