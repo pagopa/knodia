@@ -667,7 +667,11 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(2);
     expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    // Message-only log (no error object: the pg detail would leak the email).
     expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Cognito already holds the new email"),
+    );
   });
 
   it("throws before touching Cognito when the requested email was taken while the event was in flight", async () => {
@@ -697,7 +701,11 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
     expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    // Message-only log (no error object: the pg detail would leak the email).
     expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Cognito untouched"),
+    );
   });
 
   it("replays past the DB commit without consulting the taken-email re-check", async () => {

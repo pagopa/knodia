@@ -116,10 +116,12 @@ export async function handleSignupMessage(
         return;
       }
 
-      const emailTakenByAnotherUser = (err?: unknown) => {
+      // Deliberately no { err } in this log: the pg unique-violation detail
+      // embeds the conflicting email, which is PII and must not be logged.
+      // cognitoOutcome tells ops whether recovery must reconcile Cognito.
+      const emailTakenByAnotherUser = (cognitoOutcome: string) => {
         logger.error(
-          { err },
-          `Cannot update email for signup user ${signupUserId}: requested email is already associated with another signup user. Keeping email change request ${emailChangeRequestId} pending for recovery.`,
+          `Cannot update email for signup user ${signupUserId}: requested email is already associated with another signup user (${cognitoOutcome}). Keeping email change request ${emailChangeRequestId} pending for recovery.`,
         );
         return genericInternalError(
           `Cannot process EmailChangeRequestedV1 ${emailChangeRequestId}: requested email is already associated with another signup user`,
@@ -134,7 +136,7 @@ export async function handleSignupMessage(
         user.email !== request.email &&
         (await deps.signupDbService.checkSignupUserEmailExists(request.email))
       ) {
-        throw emailTakenByAnotherUser();
+        throw emailTakenByAnotherUser("Cognito untouched");
       }
 
       // Cognito before DB: signup_user.email drives the UI, so it must only
@@ -158,7 +160,7 @@ export async function handleSignupMessage(
         // Lost the residual race between the pre-check and this update; Cognito
         // is ahead. Keep the request pending so the event retries.
         if (isPgUniqueViolation(error)) {
-          throw emailTakenByAnotherUser(error);
+          throw emailTakenByAnotherUser("Cognito already holds the new email");
         }
         throw error;
       }
