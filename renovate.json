@@ -7,6 +7,14 @@
     ":dependencyDashboard"
   ],
   "labels": ["dependencies"],
+  "internalChecksFilter": "strict",
+  "internalChecksAsSuccess": true,
+  "prCreation": "immediate",
+  "minimumReleaseAge": null,
+  "minimumReleaseAgeBehaviour": "timestamp-required",
+  "prConcurrentLimit": 4,
+  "branchConcurrentLimit": 4,
+  "prHourlyLimit": 0,
   "packageRules": [
     {
       "enabled": true,
@@ -15,14 +23,22 @@
     {
       "enabled": true,
       "matchDepTypes": ["pnpm.catalog"]
+    },
+    {
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "matchPackageNames": ["*"],
+      "prCreation": "immediate",
+      "internalChecksFilter": "strict",
+      "internalChecksAsSuccess": true
     }
   ],
-  "prConcurrentLimit": 4,
-  "minimumReleaseAge": null,
-  "internalChecksFilter": "none",
-  "prCreation": "immediate",
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "prCreation": "immediate",
+    "minimumReleaseAge": null
   },
   "major": {
     "enabled": true
