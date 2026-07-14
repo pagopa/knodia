@@ -1,23 +1,25 @@
 import { type ErrorComponentProps } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 
+import { PageLayout } from "./PageLayout";
+
 export function ErrorPage({ error }: ErrorComponentProps) {
   const status = isAxiosError(error) ? error.response?.status : undefined;
   return (
-    <section className="flex min-h-[756px] flex-1 flex-col items-center justify-center bg-[linear-gradient(to_bottom,var(--color-primary-violet-surface)_70%,var(--color-neutral-white))] px-(--header-inline-padding) pt-(--header-height) text-center">
-      <div className="flex max-w-full flex-col items-center gap-12">
-        <div className="flex flex-col items-center gap-6">
+    <PageLayout>
+      <section className="bg-primary-violet-surface flex-1 flex items-center justify-center pt-63.5 pb-41.5">
+        <div className="mx-auto max-w-172 px-12 text-center">
           <h1 className="text-style-section-title text-neutral-graphite">
             Something went wrong
           </h1>
-          <p className="text-style-intro text-neutral-graphite">
+          <p className="text-style-intro text-neutral-graphite mt-6">
             Please try again later.
           </p>
+          <p className="text-style-small text-neutral-graphite mt-6">
+            Error code: {status ?? "Unknown"}
+          </p>
         </div>
-        <p className="text-style-small text-neutral-graphite">
-          Error code: {status ?? "Unknown"}
-        </p>
-      </div>
-    </section>
+      </section>
+    </PageLayout>
   );
 }
