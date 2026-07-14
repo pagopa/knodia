@@ -55,9 +55,12 @@ describe("ErrorPage", () => {
     expect(await screen.findByText("Error code: 503")).toBeVisible();
   });
 
-  it("falls back to Unknown when the error carries no HTTP status", async () => {
+  it("hides the error code when the error carries no HTTP status", async () => {
     renderErrorPage(new Error("network down"));
 
-    expect(await screen.findByText("Error code: Unknown")).toBeVisible();
+    expect(
+      await screen.findByRole("heading", { name: "Something went wrong" }),
+    ).toBeVisible();
+    expect(screen.queryByText(/Error code:/)).not.toBeInTheDocument();
   });
 });

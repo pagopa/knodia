@@ -15,9 +15,11 @@ export function ErrorPage({ error }: ErrorComponentProps) {
           <p className="text-style-intro text-neutral-graphite mt-6">
             Please try again later.
           </p>
-          <p className="text-style-small text-neutral-graphite mt-6">
-            Error code: {status ?? "Unknown"}
-          </p>
+          {status !== undefined && (
+            <p className="text-style-small text-neutral-graphite mt-6">
+              Error code: {status}
+            </p>
+          )}
         </div>
       </section>
     </PageLayout>
