@@ -58,4 +58,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, organizationWriterService };
+export { app, eventStoreDb, organizationWriterService, readmodelDb };

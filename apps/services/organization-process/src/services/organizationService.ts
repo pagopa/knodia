@@ -22,13 +22,13 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { invalidAttribute } from "../models/errors.ts";
+import {
+  duplicateOrganizationName,
+  invalidAttribute,
+} from "../models/errors.ts";
 import { createOrganizationCreatedV1Event } from "../models/organizationEventFactory.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
-import {
-  assertOrganizationNameIsUnique,
-  assertTokenOrganizationClaimsMatchPathParam,
-} from "../utils/validators.ts";
+import { assertTokenOrganizationClaimsMatchPathParam } from "../utils/validators.ts";
 
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
@@ -42,17 +42,18 @@ export function organizationServiceBuilder(
       seed: API_OrganizationSeed,
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Organization> {
+      // Lowercase to match the id lookup (pg uuid, case-insensitive) and the
+      // readmodel's canonical lowercase ids.
       const organizationId =
         seed.externalOrganizationId !== undefined
-          ? unsafeBrandId<OrganizationId>(seed.externalOrganizationId)
+          ? unsafeBrandId<OrganizationId>(
+              seed.externalOrganizationId.toLowerCase(),
+            )
           : generateId<OrganizationId>();
 
-      // Idempotency: when the caller supplies a deterministic id (e.g. signup
-      // provisioning), a redelivery resolves to the existing organization
-      // instead of creating a duplicate. The readmodel is eventually
-      // consistent, so a too-fast redelivery can slip past this lookup; the
-      // event store is the hard guard, rejecting a second creation on the same
-      // stream (the id is the stream id).
+      // Idempotent on a deterministic id: a redelivery returns the org. Reads
+      // are eventually consistent, so this and the name check below can both
+      // miss and hit the event store's hard guard — a 500 by design.
       if (seed.externalOrganizationId !== undefined) {
         const existing =
           await readmodelService.getOrganizationById(organizationId);
@@ -80,7 +81,21 @@ export function organizationServiceBuilder(
         }
       }
 
-      await assertOrganizationNameIsUnique(seed.name, readmodelService);
+      // Best-effort (no DB constraint): on a redelivery the first attempt's
+      // projection can land between the id lookup and this check, so it finds
+      // the org being recreated. Same id -> idempotent, else 409.
+      const sameNameOrganization = await readmodelService.getOrganizationByName(
+        seed.name,
+      );
+      if (sameNameOrganization !== undefined) {
+        if (sameNameOrganization.data.id === organizationId) {
+          logger.info(
+            `Organization ${organizationId} already exists (its projection landed after the id lookup); returning it`,
+          );
+          return sameNameOrganization.data;
+        }
+        throw duplicateOrganizationName(seed.name);
+      }
 
       const now = new Date();
 
