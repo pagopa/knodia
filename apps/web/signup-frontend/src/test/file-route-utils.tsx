@@ -3,7 +3,7 @@ import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 
 import { APP_BASE_PATH } from "@/config/basepath";
 import { type AuthContext } from "@/contexts/auth";
-import { type RouterContext } from "@/libs/router";
+import { type RouterContext, sharedRouterOptions } from "@/libs/router";
 import { routeTree } from "@/routeTree.gen";
 
 interface CreateTestRouterOptions {
@@ -46,6 +46,7 @@ export function createTestRouterFromFiles({
   };
 
   return createRouter({
+    ...sharedRouterOptions,
     basepath: APP_BASE_PATH,
     context,
     history: createMemoryHistory({
