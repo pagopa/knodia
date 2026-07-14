@@ -131,4 +131,29 @@ describe("createOrganization — redelivery racing the readmodel projection", ()
       status: 409,
     });
   });
+
+  it("returns 409 for a case-variant name collision with a different organization", async () => {
+    const taken: Organization = {
+      ...getMockOrganization(0),
+      id: generateId<OrganizationId>(),
+      name: "Taken Name",
+    };
+    await organizationWriterService.upsertOrganization(taken, 0);
+
+    // Different id, name differing only in case: getOrganizationByName is ILIKE,
+    // so this must still collide (409), not slip through as a new organization.
+    await expect(
+      buildService(readmodelServiceBuilder(readmodelDb)).createOrganization(
+        {
+          attributes: [],
+          externalOrganizationId: generateId<OrganizationId>(),
+          name: "TAKEN NAME",
+        },
+        ctx,
+      ),
+    ).rejects.toMatchObject({
+      errors: [{ code: "DUPLICATE_ORGANIZATION_NAME" }],
+      status: 409,
+    });
+  });
 });
