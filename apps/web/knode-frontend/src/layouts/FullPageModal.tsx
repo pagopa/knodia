@@ -11,7 +11,7 @@ import {
 interface Props {
   children: ReactNode;
   onClose: () => void;
-  title?: string;
+  title: string;
 }
 
 export function FullPageModal({ children, onClose, title }: Props) {
