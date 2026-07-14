@@ -704,7 +704,7 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     // Message-only log (no error object: the pg detail would leak the email).
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("Cognito untouched"),
+      expect.stringContaining("Cognito not touched by this delivery"),
     );
   });
 
