@@ -20,7 +20,7 @@ import {
 } from "@knodia/signup-models";
 import { DrizzleQueryError } from "drizzle-orm";
 import { DatabaseError } from "pg";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { zocker } from "zocker";
 
 const createOrganizationMock = vi.hoisted(() => vi.fn());
@@ -51,6 +51,7 @@ const cognitoDisableAndRedactUserMock = vi.fn();
 const cognitoDisableUserMock = vi.fn();
 const cognitoUpdateUserEmailMock = vi.fn();
 const cognitoResetUserCredentialsMock = vi.fn();
+const checkSignupUserEmailExistsMock = vi.fn();
 const deleteEmailChangeRequestMock = vi.fn();
 const getEmailChangeRequestByIdMock = vi.fn();
 const updateSignupUserEmailMock = vi.fn();
@@ -87,6 +88,7 @@ function buildDeps(): SignupUpdaterDeps {
   return {
     knodeClients: { Lynx: node, Orion: node },
     signupDbService: {
+      checkSignupUserEmailExists: checkSignupUserEmailExistsMock,
       completeSignupUserDeletion: completeSignupUserDeletionMock,
       deleteEmailChangeRequest: deleteEmailChangeRequestMock,
       getEmailChangeRequestById: getEmailChangeRequestByIdMock,
@@ -129,6 +131,16 @@ function emailChangeRequestedEvent({
     data: { emailChangeRequestId, signupUserId },
     type: "EmailChangeRequestedV1",
   };
+}
+
+// Guards against vacuous passes: Math.max/min over an empty
+// invocationCallOrder would compare -Infinity < Infinity and succeed.
+function expectAllCallsBefore(first: Mock, second: Mock): void {
+  expect(first.mock.invocationCallOrder).not.toHaveLength(0);
+  expect(second.mock.invocationCallOrder).not.toHaveLength(0);
+  expect(Math.max(...first.mock.invocationCallOrder)).toBeLessThan(
+    Math.min(...second.mock.invocationCallOrder),
+  );
 }
 
 function getMockEmailChangeRequest(
@@ -240,6 +252,7 @@ const conflict = { isAxiosError: true, response: { status: 409 } };
 
 function resetOnboardingMocks(): void {
   createOrganizationMock.mockReset();
+  checkSignupUserEmailExistsMock.mockReset();
   cognitoCreateUserMock.mockReset();
   cognitoDisableUserMock.mockReset();
   cognitoUpdateUserEmailMock.mockReset();
@@ -496,6 +509,7 @@ describe("handleSignupMessage — OnboardingCompletedV1 skip & replay semantics"
 describe("handleSignupMessage — EmailChangeRequestedV1", () => {
   beforeEach(() => {
     createOrganizationMock.mockReset();
+    checkSignupUserEmailExistsMock.mockReset();
     cognitoCreateUserMock.mockReset();
     cognitoDisableUserMock.mockReset();
     cognitoUpdateUserEmailMock.mockReset();
@@ -558,6 +572,14 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
       emailChangeRequestId,
+    );
+
+    // Cognito → DB → resend: the DB email commits only after every knode
+    // succeeded, and credentials are resent only after the DB committed.
+    expectAllCallsBefore(cognitoUpdateUserEmailMock, updateSignupUserEmailMock);
+    expectAllCallsBefore(
+      updateSignupUserEmailMock,
+      cognitoResetUserCredentialsMock,
     );
   });
 
@@ -626,6 +648,8 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     getEmailChangeRequestByIdMock.mockResolvedValue(request);
     getSignupUserByIdMock.mockResolvedValue(user);
+    checkSignupUserEmailExistsMock.mockResolvedValue(false);
+    cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
     updateSignupUserEmailMock.mockRejectedValue(pgUniqueViolation());
 
     await expect(
@@ -640,12 +664,17 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
       ),
     ).rejects.toMatchObject({ code: "GENERIC_INTERNAL_ERROR" });
 
-    expect(cognitoUpdateUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(2);
+    expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    // Message-only log (no error object: the pg detail would leak the email).
     expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Cognito already holds the new email"),
+    );
   });
 
-  it("throws and keeps the request pending when a Cognito email update fails", async () => {
+  it("throws before touching Cognito when the requested email was taken while the event was in flight", async () => {
     const user = getMockSignupUser();
     const emailChangeRequestId = generateId<EmailChangeRequestId>();
     const request = getMockEmailChangeRequest({
@@ -654,7 +683,72 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
     });
     getEmailChangeRequestByIdMock.mockResolvedValue(request);
     getSignupUserByIdMock.mockResolvedValue(user);
+    checkSignupUserEmailExistsMock.mockResolvedValue(true);
+
+    await expect(
+      handleSignupMessage(
+        emailChangeRequestedEvent({
+          emailChangeRequestId,
+          signupUserId: user.signupUserId,
+        }),
+        buildDeps(),
+        correlationId,
+        logger,
+      ),
+    ).rejects.toMatchObject({ code: "GENERIC_INTERNAL_ERROR" });
+
+    expect(cognitoUpdateUserEmailMock).not.toHaveBeenCalled();
+    expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+    // Message-only log (no error object: the pg detail would leak the email).
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Cognito not touched by this delivery"),
+    );
+  });
+
+  it("replays past the DB commit without consulting the taken-email re-check", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue({ ...user, email: request.email });
+    checkSignupUserEmailExistsMock.mockResolvedValue(true);
     updateSignupUserEmailMock.mockResolvedValue(undefined);
+    cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
+    cognitoResetUserCredentialsMock.mockResolvedValue(undefined);
+    deleteEmailChangeRequestMock.mockResolvedValue(undefined);
+
+    await handleSignupMessage(
+      emailChangeRequestedEvent({
+        emailChangeRequestId,
+        signupUserId: user.signupUserId,
+      }),
+      buildDeps(),
+      correlationId,
+      logger,
+    );
+
+    expect(checkSignupUserEmailExistsMock).not.toHaveBeenCalled();
+    expect(cognitoUpdateUserEmailMock).toHaveBeenCalledTimes(2);
+    expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
+      emailChangeRequestId,
+    );
+  });
+
+  it("throws, keeps the request pending, and leaves the DB email untouched when a Cognito email update fails", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
     cognitoUpdateUserEmailMock.mockRejectedValueOnce(new Error("boom"));
 
     await expect(
@@ -669,10 +763,8 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
       ),
     ).rejects.toThrow("boom");
 
-    expect(updateSignupUserEmailMock).toHaveBeenCalledWith({
-      email: request.email,
-      signupUserId: user.signupUserId,
-    });
+    expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
   });
 
@@ -701,7 +793,52 @@ describe("handleSignupMessage — EmailChangeRequestedV1", () => {
       ),
     ).rejects.toThrow("boom");
 
+    // The DB already committed: a resend-only failure leaves DB and Cognito
+    // agreeing on the new email while the message is retried.
+    expect(updateSignupUserEmailMock).toHaveBeenCalledTimes(1);
     expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+  });
+
+  it("converges on redelivery: a partial Cognito failure leaves everything pending, the retry completes the change", async () => {
+    const user = getMockSignupUser();
+    const emailChangeRequestId = generateId<EmailChangeRequestId>();
+    const request = getMockEmailChangeRequest({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+    getEmailChangeRequestByIdMock.mockResolvedValue(request);
+    getSignupUserByIdMock.mockResolvedValue(user);
+    updateSignupUserEmailMock.mockResolvedValue(undefined);
+    cognitoResetUserCredentialsMock.mockResolvedValue(undefined);
+    deleteEmailChangeRequestMock.mockResolvedValue(undefined);
+    cognitoUpdateUserEmailMock.mockImplementation(
+      ({ username }: { username: string }) =>
+        username === user.generatedEntities.Lynx.userName
+          ? Promise.reject(new Error("InternalErrorException"))
+          : Promise.resolve(),
+    );
+
+    const event = emailChangeRequestedEvent({
+      emailChangeRequestId,
+      signupUserId: user.signupUserId,
+    });
+
+    await expect(
+      handleSignupMessage(event, buildDeps(), correlationId, logger),
+    ).rejects.toThrow("InternalErrorException");
+
+    expect(updateSignupUserEmailMock).not.toHaveBeenCalled();
+    expect(cognitoResetUserCredentialsMock).not.toHaveBeenCalled();
+    expect(deleteEmailChangeRequestMock).not.toHaveBeenCalled();
+
+    cognitoUpdateUserEmailMock.mockResolvedValue(undefined);
+    await handleSignupMessage(event, buildDeps(), correlationId, logger);
+
+    expect(updateSignupUserEmailMock).toHaveBeenCalledTimes(1);
+    expect(cognitoResetUserCredentialsMock).toHaveBeenCalledTimes(2);
+    expect(deleteEmailChangeRequestMock).toHaveBeenCalledWith(
+      emailChangeRequestId,
+    );
   });
 });
 

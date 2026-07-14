@@ -116,34 +116,35 @@ export async function handleSignupMessage(
         return;
       }
 
-      try {
-        await deps.signupDbService.updateSignupUserEmail({
-          email: request.email,
-          signupUserId: request.signupUserId,
-        });
-      } catch (error) {
-        /**
-         * This should not happen during the normal flow: the email is checked before
-         * creating the change request.
-         *
-         * If it does happen, it means the target email was associated with another
-         * signup user before this event was processed. Keep the request pending and
-         * fail the message so the issue can be investigated and retried after the
-         * underlying data conflict is resolved.
-         */
-        if (isPgUniqueViolation(error)) {
-          logger.error(
-            { err: error },
-            `Failed to update email for signup user ${signupUserId}: requested email is already associated with another signup user. Keeping email change request ${emailChangeRequestId} pending for recovery.`,
-          );
-          throw genericInternalError(
-            `Cannot process EmailChangeRequestedV1 ${emailChangeRequestId}: requested email is already associated with another signup user`,
-          );
-        }
-        throw error;
+      // Deliberately no { err } in this log: the pg unique-violation detail
+      // embeds the conflicting email, which is PII and must not be logged.
+      // cognitoOutcome describes this delivery only — nothing persists Cognito
+      // progress across deliveries, so recovery must verify every knode.
+      const emailTakenByAnotherUser = (cognitoOutcome: string) => {
+        logger.error(
+          `Cannot update email for signup user ${signupUserId}: requested email is already associated with another signup user (${cognitoOutcome}). Keeping email change request ${emailChangeRequestId} pending for recovery.`,
+        );
+        return genericInternalError(
+          `Cannot process EmailChangeRequestedV1 ${emailChangeRequestId}: requested email is already associated with another signup user`,
+        );
+      };
+
+      // Re-check uniqueness before Cognito: a signup can race the request-time
+      // check, and losing it must leave every system on the old email. Equal
+      // emails are our own committed write on replay, not a conflict; only
+      // signup_user needs checking (our pending request holds the other slot).
+      if (
+        user.email !== request.email &&
+        (await deps.signupDbService.checkSignupUserEmailExists(request.email))
+      ) {
+        throw emailTakenByAnotherUser(
+          "Cognito not touched by this delivery; an earlier delivery may have updated it, verify every knode before recovery",
+        );
       }
 
-      // Update the email on every knode before resending, so the credential message reaches the new address.
+      // Cognito before DB: signup_user.email drives the UI, so it must only
+      // reflect a state Cognito reached. Update every knode before resend so
+      // credentials reach the new address.
       await forEachKnode(
         (knodeId) =>
           deps.knodeClients[knodeId].cognitoClient.updateUserEmail({
@@ -152,6 +153,23 @@ export async function handleSignupMessage(
           }),
         logger,
       );
+
+      try {
+        await deps.signupDbService.updateSignupUserEmail({
+          email: request.email,
+          signupUserId: request.signupUserId,
+        });
+      } catch (error) {
+        // Lost the residual race between the pre-check and this update; Cognito
+        // is ahead. Keep the request pending so the event retries.
+        if (isPgUniqueViolation(error)) {
+          throw emailTakenByAnotherUser("Cognito already holds the new email");
+        }
+        throw error;
+      }
+
+      // Resend last: a resend-only failure leaves DB and Cognito already
+      // agreeing, so the user can self-recover via reset-passwords on retry.
       await resendCredentials(user, deps, logger);
 
       await deps.signupDbService.deleteEmailChangeRequest(emailChangeRequestId);
