@@ -43,18 +43,36 @@ export function useTriggerWidth() {
 // in a later commit, so an effect would run before the node exists.
 export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const observerRef = useRef<null | ResizeObserver>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   const ref = useCallback((node: null | T) => {
-    observerRef.current?.disconnect();
+    cleanupRef.current?.();
+    cleanupRef.current = null;
     if (!node) return;
 
     const measure = () =>
       setIsOverflowing(node.scrollHeight > node.clientHeight);
 
-    measure();
-    observerRef.current = new ResizeObserver(measure);
-    observerRef.current.observe(node);
+    // Observe the container (its clientHeight tracks viewport changes) and its
+    // children (their size tracks content that grows/reflows without resizing
+    // the height-capped container, e.g. async-loaded rows).
+    const resizeObserver = new ResizeObserver(measure);
+    const observeContent = () => {
+      resizeObserver.disconnect();
+      resizeObserver.observe(node);
+      for (const child of node.children) resizeObserver.observe(child);
+      measure();
+    };
+    observeContent();
+
+    // Re-sync observed children when the child list changes.
+    const mutationObserver = new MutationObserver(observeContent);
+    mutationObserver.observe(node, { childList: true });
+
+    cleanupRef.current = () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
   }, []);
 
   return { ref, isOverflowing };
