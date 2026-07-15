@@ -4,13 +4,22 @@ import {
 } from "@knodia/attribute-models";
 import { Button } from "@knodia/ui-kit/ui";
 import { DialogTrigger } from "react-aria-components";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { renderWithProviders, screen, waitFor } from "@/test/utils";
+import {
+  mockContentSize,
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "@/test/utils";
 
 import { AttributesListModal } from "./AttributesListModal";
 
 describe("AttributesListModal", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders the title, section labels, every catalog attribute and the info banner when open", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
@@ -91,5 +100,34 @@ describe("AttributesListModal", () => {
     await waitFor(() =>
       expect(screen.queryByText("Attributes list")).not.toBeInTheDocument(),
     );
+  });
+
+  it("makes the scrollable list keyboard-focusable when its content overflows", () => {
+    mockContentSize(500, 200);
+
+    renderWithProviders(
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributesListModal attributes={listAttributes()} variant="scratch" />
+      </DialogTrigger>,
+    );
+
+    const region = screen.getByRole("group", { name: "Attributes list" });
+    expect(region).toHaveAttribute("tabindex", "0");
+  });
+
+  it("does not add a focus stop when the content fits", () => {
+    mockContentSize(200, 200);
+
+    renderWithProviders(
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <AttributesListModal attributes={listAttributes()} variant="scratch" />
+      </DialogTrigger>,
+    );
+
+    expect(
+      screen.queryByRole("group", { name: "Attributes list" }),
+    ).not.toBeInTheDocument();
   });
 });

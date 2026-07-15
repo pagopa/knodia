@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { composeRenderProps } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 
@@ -34,4 +34,54 @@ export function useTriggerWidth() {
   }, []);
 
   return { triggerRef, width };
+}
+
+// A scroll container with only static children is unreachable by keyboard
+// (browsers scroll with arrow/Page keys only when the container is focused);
+// detect overflow so it can be made focusable only when it actually scrolls.
+// A callback ref (not an effect) sets up measurement exactly when the node
+// attaches: react-aria mounts the modal content conditionally, so a callback
+// ref can't latch a stale null the way a ref read in an effect could.
+export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  const ref = useCallback((node: null | T) => {
+    if (!node) return;
+
+    // Keep the region focusable while it holds focus: dropping tabIndex from
+    // the focused element would blur it and abort keyboard scrolling.
+    const measure = () =>
+      setIsOverflowing(
+        node.scrollHeight > node.clientHeight ||
+          node === document.activeElement,
+      );
+
+    // Observe the container (its clientHeight tracks viewport changes) and its
+    // children (their size tracks content that grows/reflows without resizing
+    // the height-capped container, e.g. async-loaded rows).
+    const resizeObserver = new ResizeObserver(measure);
+    const observeContent = () => {
+      resizeObserver.disconnect();
+      resizeObserver.observe(node);
+      for (const child of node.children) resizeObserver.observe(child);
+      measure();
+    };
+    observeContent();
+
+    // Re-sync observed children when the child list changes.
+    const mutationObserver = new MutationObserver(observeContent);
+    mutationObserver.observe(node, { childList: true });
+
+    // Drop the tab stop once focus leaves a region kept focusable only because
+    // it was focused (see measure above).
+    node.addEventListener("blur", measure);
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      node.removeEventListener("blur", measure);
+    };
+  }, []);
+
+  return { ref, isOverflowing };
 }

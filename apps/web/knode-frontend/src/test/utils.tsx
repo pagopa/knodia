@@ -13,6 +13,7 @@ import { render, type RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReactElement, type ReactNode, Suspense } from "react";
 import { I18nProvider } from "react-aria-components";
+import { vi } from "vitest";
 
 import { AuthContext } from "@/contexts/auth";
 
@@ -26,6 +27,17 @@ interface WrapperOptions {
   queryClient?: QueryClient | undefined;
   roles?: readonly UserRole[] | undefined;
   routes?: RouteConfig[] | undefined;
+}
+
+// jsdom reports 0 for both, so overflow must be simulated to exercise the
+// keyboard-focusable scroll region. Callers must vi.restoreAllMocks() in afterEach.
+export function mockContentSize(scrollHeight: number, clientHeight: number) {
+  vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
+    scrollHeight,
+  );
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+    clientHeight,
+  );
 }
 
 export function renderWithProviders(
