@@ -39,15 +39,13 @@ export function useTriggerWidth() {
 // A scroll container with only static children is unreachable by keyboard
 // (browsers scroll with arrow/Page keys only when the container is focused);
 // detect overflow so it can be made focusable only when it actually scrolls.
-// A callback ref (not useEffect) is required: react-aria portals the content
-// in a later commit, so an effect would run before the node exists.
+// A callback ref (not an effect) sets up measurement exactly when the node
+// attaches: react-aria mounts the modal content conditionally, so a callback
+// ref can't latch a stale null the way a ref read in an effect could.
 export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const cleanupRef = useRef<(() => void) | null>(null);
 
   const ref = useCallback((node: null | T) => {
-    cleanupRef.current?.();
-    cleanupRef.current = null;
     if (!node) return;
 
     const measure = () =>
@@ -69,7 +67,7 @@ export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
     const mutationObserver = new MutationObserver(observeContent);
     mutationObserver.observe(node, { childList: true });
 
-    cleanupRef.current = () => {
+    return () => {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
