@@ -11,6 +11,7 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
@@ -25,13 +26,22 @@ export function LinkedPurposesTable({
   isLoading,
   purposes,
 }: LinkedPurposesTableProps) {
+  const navigate = useNavigate();
+
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
 
   if (purposes.length === 0) {
     return (
-      <Banner icon={<SelectionIcon />} kind="neutral">
+      <Banner
+        action={{
+          label: "Go to Purposes list",
+          onPress: () => navigate({ to: "/consumption/purposes" }),
+        }}
+        icon={<SelectionIcon />}
+        kind="neutral"
+      >
         There are no Purposes linked to this Keychain yet.
       </Banner>
     );
