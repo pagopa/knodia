@@ -10,6 +10,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
+import { useVerticalOverflow } from "../../libs/react-aria";
 import { Banner } from "./Banner";
 import { Button, type ButtonProps } from "./Button";
 import { Checkbox } from "./Checkbox";
@@ -74,6 +75,8 @@ export function Modal({
   const titleId = useId();
   const descriptionId = useId();
   const hasFooter = Boolean(actionLabel || cancelLabel || showDontShowAgain);
+  const { ref: scrollRef, isOverflowing } =
+    useVerticalOverflow<HTMLDivElement>();
 
   return (
     <AriaModalOverlay
@@ -113,7 +116,15 @@ export function Modal({
           </div>
 
           {children && (
-            <div className="flex flex-col gap-6 min-h-0 overflow-y-auto">
+            <div
+              className="flex flex-col gap-6 min-h-0 overflow-y-auto"
+              ref={scrollRef}
+              {...(isOverflowing && {
+                "aria-label": title,
+                role: "group",
+                tabIndex: 0,
+              })}
+            >
               {children}
             </div>
           )}

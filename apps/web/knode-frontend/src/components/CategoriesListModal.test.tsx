@@ -1,12 +1,27 @@
 import { Button } from "@knodia/ui-kit/ui";
 import { DialogTrigger } from "react-aria-components";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { CategoriesListModal } from "./CategoriesListModal";
 
+// jsdom reports 0 for both, so overflow must be simulated to exercise the
+// keyboard-focusable scroll region.
+function mockContentSize(scrollHeight: number, clientHeight: number) {
+  vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
+    scrollHeight,
+  );
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+    clientHeight,
+  );
+}
+
 describe("CategoriesListModal", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders the title and one card per catalog category when open", () => {
     renderWithProviders(
       <DialogTrigger defaultOpen>
@@ -48,5 +63,34 @@ describe("CategoriesListModal", () => {
     await waitFor(() =>
       expect(screen.queryByText("Categories list")).not.toBeInTheDocument(),
     );
+  });
+
+  it("makes the scrollable list keyboard-focusable when its content overflows", () => {
+    mockContentSize(500, 200);
+
+    renderWithProviders(
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <CategoriesListModal />
+      </DialogTrigger>,
+    );
+
+    const region = screen.getByRole("group", { name: "Categories list" });
+    expect(region).toHaveAttribute("tabindex", "0");
+  });
+
+  it("does not add a focus stop when the content fits", () => {
+    mockContentSize(200, 200);
+
+    renderWithProviders(
+      <DialogTrigger defaultOpen>
+        <Button>Open</Button>
+        <CategoriesListModal />
+      </DialogTrigger>,
+    );
+
+    expect(
+      screen.queryByRole("group", { name: "Categories list" }),
+    ).not.toBeInTheDocument();
   });
 });
