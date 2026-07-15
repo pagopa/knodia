@@ -2,20 +2,14 @@ import { Button } from "@knodia/ui-kit/ui";
 import { DialogTrigger } from "react-aria-components";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { renderWithProviders, screen, waitFor } from "@/test/utils";
+import {
+  mockContentSize,
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "@/test/utils";
 
 import { CategoriesListModal } from "./CategoriesListModal";
-
-// jsdom reports 0 for both, so overflow must be simulated to exercise the
-// keyboard-focusable scroll region.
-function mockContentSize(scrollHeight: number, clientHeight: number) {
-  vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
-    scrollHeight,
-  );
-  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
-    clientHeight,
-  );
-}
 
 describe("CategoriesListModal", () => {
   afterEach(() => {
