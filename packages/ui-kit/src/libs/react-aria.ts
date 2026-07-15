@@ -48,8 +48,13 @@ export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
   const ref = useCallback((node: null | T) => {
     if (!node) return;
 
+    // Keep the region focusable while it holds focus: dropping tabIndex from
+    // the focused element would blur it and abort keyboard scrolling.
     const measure = () =>
-      setIsOverflowing(node.scrollHeight > node.clientHeight);
+      setIsOverflowing(
+        node.scrollHeight > node.clientHeight ||
+          node === document.activeElement,
+      );
 
     // Observe the container (its clientHeight tracks viewport changes) and its
     // children (their size tracks content that grows/reflows without resizing
@@ -67,9 +72,14 @@ export function useVerticalOverflow<T extends HTMLElement = HTMLElement>() {
     const mutationObserver = new MutationObserver(observeContent);
     mutationObserver.observe(node, { childList: true });
 
+    // Drop the tab stop once focus leaves a region kept focusable only because
+    // it was focused (see measure above).
+    node.addEventListener("blur", measure);
+
     return () => {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
+      node.removeEventListener("blur", measure);
     };
   }, []);
 
