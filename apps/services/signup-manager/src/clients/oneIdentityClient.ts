@@ -1,3 +1,5 @@
+import type { FastifyBaseLogger } from "fastify";
+
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import axios from "axios";
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -77,7 +79,7 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
       return `${config.oneIdentityDomain}/login?${parameters.toString()}`;
     },
 
-    async exchangeAuthorizationCode(code: string) {
+    async exchangeAuthorizationCode(code: string, logger: FastifyBaseLogger) {
       // Server-to-server call: in containers the token endpoint isn't reachable
       // at the browser-facing oneIdentityDomain. Keep its path, swap the host
       // for the JWKS URI's (already the server-reachable base).
@@ -86,24 +88,41 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
       tokenUrl.protocol = serverBase.protocol;
       tokenUrl.host = serverBase.host;
 
-      const response = await axios.post<OneIdentityTokenResponse>(
-        tokenUrl.toString(),
-        new URLSearchParams({
-          code,
-          grant_type: "authorization_code",
-          redirect_uri: config.oneIdentityRedirectUrl,
-        }).toString(),
-        {
-          headers: {
-            Authorization: `Basic ${Buffer.from(
-              `${config.oneIdentityClientId}:${config.oneIdentityClientSecret}`,
-            ).toString("base64")}`,
-            "Content-Type": "application/x-www-form-urlencoded",
+      try {
+        const response = await axios.post<OneIdentityTokenResponse>(
+          tokenUrl.toString(),
+          new URLSearchParams({
+            code,
+            grant_type: "authorization_code",
+            redirect_uri: config.oneIdentityRedirectUrl,
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Basic ${Buffer.from(
+                `${config.oneIdentityClientId}:${config.oneIdentityClientSecret}`,
+              ).toString("base64")}`,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
           },
-        },
-      );
+        );
 
-      return OneIdentityTokenResponse.parse(response.data);
+        return OneIdentityTokenResponse.parse(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          logger.error(
+            {
+              data: error.response?.data,
+              oneIdentityClientId: config.oneIdentityClientId,
+              status: error.response?.status,
+              url: error.config
+                ? axios.getUri(error.config)
+                : tokenUrl.toString(),
+            },
+            "Error exchanging authorization code with OneIdentity",
+          );
+        }
+        throw error;
+      }
     },
 
     async validateIdToken(idToken: string, nonce: string) {

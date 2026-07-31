@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 const mockAxiosPost = vi.hoisted(() => vi.fn());
+const mockLoggerError = vi.hoisted(() => vi.fn());
 
 vi.mock("axios", async (importOriginal) => {
   const original = await importOriginal<typeof import("axios")>();
@@ -31,6 +32,7 @@ const config: OneIdentityConfig = {
     secondsDuration: 300,
   },
 };
+const logger = { error: mockLoggerError } as never;
 
 describe("oneIdentityClient", () => {
   it("builds the browser login URL on oneIdentityDomain", () => {
@@ -54,7 +56,10 @@ describe("oneIdentityClient", () => {
       },
     });
 
-    await oneIdentityClientBuilder(config).exchangeAuthorizationCode("code");
+    await oneIdentityClientBuilder(config).exchangeAuthorizationCode(
+      "code",
+      logger,
+    );
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       "http://server-host:3000/oidc/token",
@@ -84,12 +89,47 @@ describe("oneIdentityClient", () => {
       ...config,
       oneIdentityDomain: "https://oneid.example/realm",
       oneIdentityJWKSUri: "https://oneid.internal:8443/realm/jwks",
-    }).exchangeAuthorizationCode("code");
+    }).exchangeAuthorizationCode("code", logger);
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       "https://oneid.internal:8443/realm/oidc/token",
       expect.any(String),
       expect.anything(),
+    );
+  });
+
+  it("logs the failed request URL with its query parameters", async () => {
+    mockAxiosPost.mockReset();
+    mockLoggerError.mockReset();
+    mockAxiosPost.mockRejectedValueOnce({
+      config: {
+        params: {
+          foo: "bar",
+        },
+        url: "https://oneid.internal/oidc/token",
+      },
+      isAxiosError: true,
+      response: {
+        data: { error: "invalid_client" },
+        status: 401,
+      },
+    });
+
+    await expect(
+      oneIdentityClientBuilder(config).exchangeAuthorizationCode(
+        "code",
+        logger,
+      ),
+    ).rejects.toMatchObject({ isAxiosError: true });
+
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      {
+        clientId: config.oneIdentityClientId,
+        data: { error: "invalid_client" },
+        status: 401,
+        url: "https://oneid.internal/oidc/token?foo=bar",
+      },
+      "Error exchanging authorization code with OneIdentity",
     );
   });
 });
