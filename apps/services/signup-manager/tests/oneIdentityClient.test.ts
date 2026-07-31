@@ -1,7 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockAxiosPost = vi.hoisted(() => vi.fn());
 const mockLoggerError = vi.hoisted(() => vi.fn());
+
+beforeEach(() => {
+  mockAxiosPost.mockReset();
+  mockLoggerError.mockReset();
+});
 
 vi.mock("axios", async (importOriginal) => {
   const original = await importOriginal<typeof import("axios")>();
@@ -45,7 +50,6 @@ describe("oneIdentityClient", () => {
   });
 
   it("exchanges the code against the server-reachable host, not the browser-facing one", async () => {
-    mockAxiosPost.mockReset();
     mockAxiosPost.mockResolvedValueOnce({
       data: {
         access_token: "a",
@@ -74,7 +78,6 @@ describe("oneIdentityClient", () => {
   });
 
   it("preserves the oneIdentityDomain path prefix when swapping the host", async () => {
-    mockAxiosPost.mockReset();
     mockAxiosPost.mockResolvedValueOnce({
       data: {
         access_token: "a",
@@ -99,8 +102,6 @@ describe("oneIdentityClient", () => {
   });
 
   it("logs the failed request URL with its query parameters", async () => {
-    mockAxiosPost.mockReset();
-    mockLoggerError.mockReset();
     mockAxiosPost.mockRejectedValueOnce({
       config: {
         params: {
