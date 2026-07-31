@@ -125,8 +125,8 @@ describe("oneIdentityClient", () => {
 
     expect(mockLoggerError).toHaveBeenCalledWith(
       {
-        clientId: config.oneIdentityClientId,
         data: { error: "invalid_client" },
+        oneIdentityClientId: config.oneIdentityClientId,
         status: 401,
         url: "https://oneid.internal/oidc/token?foo=bar",
       },
