@@ -1,6 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockAxiosPost = vi.hoisted(() => vi.fn());
+const mockLoggerError = vi.hoisted(() => vi.fn());
+
+beforeEach(() => {
+  mockAxiosPost.mockReset();
+  mockLoggerError.mockReset();
+});
 
 vi.mock("axios", async (importOriginal) => {
   const original = await importOriginal<typeof import("axios")>();
@@ -31,6 +37,7 @@ const config: OneIdentityConfig = {
     secondsDuration: 300,
   },
 };
+const logger = { error: mockLoggerError } as never;
 
 describe("oneIdentityClient", () => {
   it("builds the browser login URL on oneIdentityDomain", () => {
@@ -43,7 +50,6 @@ describe("oneIdentityClient", () => {
   });
 
   it("exchanges the code against the server-reachable host, not the browser-facing one", async () => {
-    mockAxiosPost.mockReset();
     mockAxiosPost.mockResolvedValueOnce({
       data: {
         access_token: "a",
@@ -54,7 +60,10 @@ describe("oneIdentityClient", () => {
       },
     });
 
-    await oneIdentityClientBuilder(config).exchangeAuthorizationCode("code");
+    await oneIdentityClientBuilder(config).exchangeAuthorizationCode(
+      "code",
+      logger,
+    );
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       "http://server-host:3000/oidc/token",
@@ -69,7 +78,6 @@ describe("oneIdentityClient", () => {
   });
 
   it("preserves the oneIdentityDomain path prefix when swapping the host", async () => {
-    mockAxiosPost.mockReset();
     mockAxiosPost.mockResolvedValueOnce({
       data: {
         access_token: "a",
@@ -84,12 +92,50 @@ describe("oneIdentityClient", () => {
       ...config,
       oneIdentityDomain: "https://oneid.example/realm",
       oneIdentityJWKSUri: "https://oneid.internal:8443/realm/jwks",
-    }).exchangeAuthorizationCode("code");
+    }).exchangeAuthorizationCode("code", logger);
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       "https://oneid.internal:8443/realm/oidc/token",
       expect.any(String),
       expect.anything(),
+    );
+  });
+
+  it("logs the failed token exchange request details", async () => {
+    const body = new URLSearchParams({
+      code: "code",
+      grant_type: "authorization_code",
+      redirect_uri: config.oneIdentityRedirectUrl,
+    }).toString();
+
+    mockAxiosPost.mockRejectedValueOnce({
+      config: {
+        url: "http://server-host:3000/oidc/token",
+      },
+      isAxiosError: true,
+      request: { body },
+      response: {
+        data: { error: "invalid_client" },
+        status: 401,
+      },
+    });
+
+    await expect(
+      oneIdentityClientBuilder(config).exchangeAuthorizationCode(
+        "code",
+        logger,
+      ),
+    ).rejects.toMatchObject({ isAxiosError: true });
+
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      {
+        body,
+        data: { error: "invalid_client" },
+        oneIdentityClientId: config.oneIdentityClientId,
+        status: 401,
+        url: "http://server-host:3000/oidc/token",
+      },
+      "Error exchanging authorization code with OneIdentity",
     );
   });
 });

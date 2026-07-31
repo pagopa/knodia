@@ -40,8 +40,10 @@ export function authServiceBuilder(
         throw forbiddenError("Invalid OIDC session state");
       }
 
-      const tokenResponse =
-        await oneIdentityClient.exchangeAuthorizationCode(code);
+      const tokenResponse = await oneIdentityClient.exchangeAuthorizationCode(
+        code,
+        logger,
+      );
 
       const { claims } = await oneIdentityClient.validateIdToken(
         tokenResponse.id_token,
