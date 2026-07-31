@@ -101,15 +101,19 @@ describe("oneIdentityClient", () => {
     );
   });
 
-  it("logs the failed request URL with its query parameters", async () => {
+  it("logs the failed token exchange request details", async () => {
+    const body = new URLSearchParams({
+      code: "code",
+      grant_type: "authorization_code",
+      redirect_uri: config.oneIdentityRedirectUrl,
+    }).toString();
+
     mockAxiosPost.mockRejectedValueOnce({
       config: {
-        params: {
-          foo: "bar",
-        },
-        url: "https://oneid.internal/oidc/token",
+        url: "http://server-host:3000/oidc/token",
       },
       isAxiosError: true,
+      request: { body },
       response: {
         data: { error: "invalid_client" },
         status: 401,
@@ -125,10 +129,11 @@ describe("oneIdentityClient", () => {
 
     expect(mockLoggerError).toHaveBeenCalledWith(
       {
+        body,
         data: { error: "invalid_client" },
         oneIdentityClientId: config.oneIdentityClientId,
         status: 401,
-        url: "https://oneid.internal/oidc/token?foo=bar",
+        url: "http://server-host:3000/oidc/token",
       },
       "Error exchanging authorization code with OneIdentity",
     );

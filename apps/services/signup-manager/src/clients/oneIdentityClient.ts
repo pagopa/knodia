@@ -111,12 +111,11 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
         if (axios.isAxiosError(error)) {
           logger.error(
             {
+              body: error.request?.body,
               data: error.response?.data,
               oneIdentityClientId: config.oneIdentityClientId,
               status: error.response?.status,
-              url: error.config
-                ? axios.getUri(error.config)
-                : tokenUrl.toString(),
+              url: tokenUrl.toString(),
             },
             "Error exchanging authorization code with OneIdentity",
           );
