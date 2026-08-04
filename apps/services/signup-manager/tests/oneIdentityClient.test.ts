@@ -77,6 +77,38 @@ describe("oneIdentityClient", () => {
     );
   });
 
+  it("form-url-encodes client credentials before Basic authentication", async () => {
+    mockAxiosPost.mockResolvedValueOnce({
+      data: {
+        access_token: "a",
+        expires_in: 3600,
+        id_token: "i",
+        scope: "openid",
+        token_type: "Bearer",
+      },
+    });
+
+    await oneIdentityClientBuilder({
+      ...config,
+      oneIdentityClientId: "client id",
+      oneIdentityClientSecret: "secret+value",
+    }).exchangeAuthorizationCode("code", logger);
+
+    expect(mockAxiosPost).toHaveBeenCalledWith(
+      "http://server-host:3000/oidc/token",
+      expect.any(String),
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            "client+id:secret%2Bvalue",
+            "utf8",
+          ).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+  });
+
   it("preserves the oneIdentityDomain path prefix when swapping the host", async () => {
     mockAxiosPost.mockResolvedValueOnce({
       data: {
