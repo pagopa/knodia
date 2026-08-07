@@ -26,11 +26,6 @@ export default defineConfig({
       "apps/services/*",
       "apps/web/*",
       "packages/*",
-      // Nested workspace dirs are not matched by packages/* — without these
-      // globs the db packages' tests are silently never run.
-      "packages/db/*",
-      "packages/db/event-store/*",
-      "packages/db/readmodel/*",
     ],
     env: loadEnvFile(".env.test"),
   },
