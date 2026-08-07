@@ -62,12 +62,18 @@ if (args["knode-api-keychain-id"]) {
     if (signalResponse.status !== 206 || lastSignalId === undefined) break;
     cursor = lastSignalId;
   }
-  log(`Signals: ${allSignals.length} total, printing the last 4:`);
-  print(allSignals.slice(-4));
+  // Same scheme as the producer: object_id = sha256(fiscalCode + seed). The
+  // seed rotates per period, so only the current batch can be de-pseudonymized.
+  const objectId = createHash("sha256").update(person + pseudonymization.seed).digest("hex");
+
+  log(`Signals: ${allSignals.length} total, printing the last 4 (de-pseudonymized with the current seed where possible):`);
+  print(allSignals.slice(-4).map((s) =>
+    (s as { objectId?: string }).objectId === objectId
+      ? { ...(s as object), decodedPersonId: person }
+      : s,
+  ));
 
   if (residenceError) {
-    // Same scheme as the producer: object_id = sha256(fiscalCode + seed).
-    const objectId = createHash("sha256").update(person + pseudonymization.seed).digest("hex");
     const latest = allSignals.findLast(
       (s) => (s as { objectId?: string }).objectId === objectId,
     ) as { signalType?: string } | undefined;
