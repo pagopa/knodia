@@ -81,3 +81,12 @@ if (args["knode-api-keychain-id"]) {
 }
 
 if (residenceError) throw new Error(residenceError);
+
+// Seed rotation cadence — keep in sync with SIGNAL_HUB_SEED_* in
+// apps/services/mock-eservice/.env (local) and in knodia-deployment
+// commons/knodes/<env>/values-commons.yaml (dev & test).
+const ROTATION_START_DATE_MS = 1767225600000;
+const rotationSeconds = (args.env ?? "local").startsWith("local") ? 30 : 900;
+const periodId = Math.floor((Date.now() - ROTATION_START_DATE_MS) / (rotationSeconds * 1000));
+const nextRotationMs = ROTATION_START_DATE_MS + (periodId + 1) * rotationSeconds * 1000;
+log(`Next mock rotation (new signal batch, next phase) in ~${Math.ceil((nextRotationMs - Date.now()) / 1000)}s (${new Date(nextRotationMs).toISOString()}).`);
