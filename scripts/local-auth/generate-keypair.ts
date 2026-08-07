@@ -69,3 +69,4 @@ console.log(`kid: ${kid}`);
 console.log(`Public key  written to ${pubKeyPath}`);
 console.log(`Private key written to ${privKeyPath}`);
 console.log(`Bruno env written to ${COLLECTIONS_ENV_PATH}`);
+console.log(`\n${publicKey}`);
