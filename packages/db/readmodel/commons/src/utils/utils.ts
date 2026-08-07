@@ -1,7 +1,10 @@
 import type { IDS } from "@knodia/common-models/ids";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { assertDbConnection } from "@knodia/db-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeDrizzleConnection,
+} from "@knodia/db-commons/utils";
 import { type ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
   and,
@@ -17,7 +20,7 @@ import {
   type SQL,
 } from "drizzle-orm";
 import { toCamelCase } from "drizzle-orm/casing";
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -28,30 +31,28 @@ import {
   type PgTable,
   PgText,
 } from "drizzle-orm/pg-core";
-import { Pool } from "pg";
 import { match } from "ts-pattern";
 
 import { SortDirection } from "../models/models.ts";
 
-export const makeReadmodelDrizzleConnection = async (
+export type { DbConnectionOptions } from "@knodia/db-commons/utils";
+
+export const makeReadmodelDrizzleConnection = (
   config: ReadmodelConfig,
-  options: { checkConnection?: boolean } = {},
-): Promise<{ db: NodePgDatabase; pool: Pool }> => {
-  const pool = new Pool({
-    database: config.readmodelDbName,
-    host: config.readmodelDbHost,
-    password: config.readmodelDbPassword,
-    port: config.readmodelDbPort,
-    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
-    user: config.readmodelDbUser,
-  });
-
-  if (options.checkConnection ?? true) {
-    await assertDbConnection(pool, "readmodel");
-  }
-
-  return { db: drizzle(pool), pool };
-};
+  options?: DbConnectionOptions,
+) =>
+  makeDrizzleConnection(
+    {
+      database: config.readmodelDbName,
+      host: config.readmodelDbHost,
+      password: config.readmodelDbPassword,
+      port: config.readmodelDbPort,
+      ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+      user: config.readmodelDbUser,
+    },
+    "readmodel",
+    options,
+  );
 
 export const checkMetadataVersion = async (
   tx: NodePgDatabase,

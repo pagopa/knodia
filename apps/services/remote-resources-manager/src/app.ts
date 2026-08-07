@@ -5,7 +5,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { remoteResourceDbServiceBuilder } from "@knodia/db-remote-resource/services";
-import { makeRemoteResourceDrizzleConnection } from "@knodia/db-remote-resource/utils";
+import {
+  type DbConnectionOptions,
+  makeRemoteResourceDrizzleConnection,
+} from "@knodia/db-remote-resource/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -132,16 +135,12 @@ export function buildApp({
 
 export async function buildAppFromConfig(
   config: RemoteResourcesManagerConfig,
-  options: { checkDbConnection?: boolean } = {},
+  options?: DbConnectionOptions,
 ) {
   const { db: remoteResourceDb, pool: remoteResourcePool } =
-    await makeRemoteResourceDrizzleConnection(config, {
-      checkConnection: options.checkDbConnection,
-    });
+    await makeRemoteResourceDrizzleConnection(config, options);
   const { db: readmodelDb, pool: readmodelPool } =
-    await makeReadmodelDrizzleConnection(config, {
-      checkConnection: options.checkDbConnection,
-    });
+    await makeReadmodelDrizzleConnection(config, options);
 
   const app = buildApp({
     config,

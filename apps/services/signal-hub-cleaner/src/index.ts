@@ -7,7 +7,10 @@ import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 const logger = createLogger({ config });
 
 const { db: signalHubDb, pool: signalHubPool } =
-  await makeSignalHubDrizzleConnection(config);
+  await makeSignalHubDrizzleConnection(config).catch((error: unknown) => {
+    logger.error({ err: error }, "Failed to start service");
+    return process.exit(1);
+  });
 const signalHubService = signalHubServiceBuilder(signalHubDb, logger);
 
 const shutdown = async (reason: string, exitCode = 0) => {

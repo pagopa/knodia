@@ -12,7 +12,10 @@ import { createProcessMessage, type SignupUpdaterDeps } from "./utils/utils.ts";
 
 const logger = createLogger({ config });
 
-const { db, pool } = await makeSignupDrizzleConnection(config);
+const { db, pool } = await makeSignupDrizzleConnection(config).catch((error: unknown) => {
+    logger.error({ err: error }, "Failed to start service");
+    return process.exit(1);
+  });
 
 const buildKnodeClient = (knodeId: KnodeId) => ({
   cognitoClient: buildCognitoIdmClient({

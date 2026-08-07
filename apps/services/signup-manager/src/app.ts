@@ -6,7 +6,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import cookie from "@fastify/cookie";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
-import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
+import {
+  type DbConnectionOptions,
+  makeSignupDrizzleConnection,
+} from "@knodia/db-signup/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -127,14 +130,9 @@ export function buildApp({
 export async function buildAppFromConfig(
   config: SignupManagerConfig,
   rateLimiter: RateLimiter,
-  options: { checkDbConnection?: boolean } = {},
+  options?: DbConnectionOptions,
 ) {
-  const { db: signupDb, pool: signupPool } = await makeSignupDrizzleConnection(
-    config,
-    {
-      checkConnection: options.checkDbConnection,
-    },
-  );
+  const { db: signupDb, pool: signupPool } = await makeSignupDrizzleConnection(config, options);
 
   const kafkaProducer = await createProducer(
     [config.signupTopic],

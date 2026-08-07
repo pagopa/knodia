@@ -13,7 +13,7 @@ const rateLimiter = initRedisRateLimiter({
   serviceName: "signup-manager",
 });
 
-void startServer(await buildAppFromConfig(config, rateLimiter), {
+void startServer(buildAppFromConfig(config, rateLimiter), {
   host: config.host,
   port: config.port,
 });

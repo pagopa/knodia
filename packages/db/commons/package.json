@@ -8,6 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
+    "drizzle-orm": "catalog:",
     "pg": "catalog:"
   },
   "devDependencies": {
@@ -15,7 +16,8 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/pg": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     "./utils": "./src/utils/utils.ts"

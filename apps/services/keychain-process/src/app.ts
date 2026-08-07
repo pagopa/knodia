@@ -3,7 +3,10 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { buildCognitoIdmClient } from "@knodia/cognito-idm-client";
-import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeEventStoreDrizzleConnection,
+} from "@knodia/db-event-store-commons/utils";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -129,16 +132,12 @@ export function buildApp({
 
 export async function buildAppFromConfig(
   config: KeychainProcessConfig,
-  options: { checkDbConnection?: boolean } = {},
+  options?: DbConnectionOptions,
 ) {
   const { db: eventStoreDb, pool: eventStorePool } =
-    await makeEventStoreDrizzleConnection(config, {
-      checkConnection: options.checkDbConnection,
-    });
+    await makeEventStoreDrizzleConnection(config, options);
   const { db: readmodelDb, pool: readmodelPool } =
-    await makeReadmodelDrizzleConnection(config, {
-      checkConnection: options.checkDbConnection,
-    });
+    await makeReadmodelDrizzleConnection(config, options);
 
   const app = buildApp({
     config,

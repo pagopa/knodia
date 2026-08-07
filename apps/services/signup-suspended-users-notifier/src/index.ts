@@ -8,7 +8,10 @@ import { notifierServiceBuilder } from "./services/notifierService.ts";
 
 const logger = createLogger({ config });
 
-const { db, pool } = await makeSignupDrizzleConnection(config);
+const { db, pool } = await makeSignupDrizzleConnection(config).catch((error: unknown) => {
+    logger.error({ err: error }, "Failed to start service");
+    return process.exit(1);
+  });
 const signupDbService = signupDbServiceBuilder(db);
 // No client passed: the endpoint resolves from aws.config.local in dev and from
 // real SES in deployed environments.
