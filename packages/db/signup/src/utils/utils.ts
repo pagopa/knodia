@@ -1,11 +1,13 @@
+import { assertDbConnection } from "@knodia/db-commons/utils";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import type { SignupDbConfig } from "../config.ts";
 
-export const makeSignupDrizzleConnection = (
+export const makeSignupDrizzleConnection = async (
   config: SignupDbConfig,
-): { db: NodePgDatabase; pool: Pool } => {
+  options: { checkConnection?: boolean } = {},
+): Promise<{ db: NodePgDatabase; pool: Pool }> => {
   const pool = new Pool({
     database: config.signupDbName,
     host: config.signupDbHost,
@@ -14,6 +16,10 @@ export const makeSignupDrizzleConnection = (
     ssl: config.signupDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.signupDbUser,
   });
+
+  if (options.checkConnection ?? true) {
+    await assertDbConnection(pool, "signup");
+  }
 
   return { db: drizzle(pool), pool };
 };

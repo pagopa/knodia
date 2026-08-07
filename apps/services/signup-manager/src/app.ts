@@ -127,9 +127,14 @@ export function buildApp({
 export async function buildAppFromConfig(
   config: SignupManagerConfig,
   rateLimiter: RateLimiter,
+  options: { checkDbConnection?: boolean } = {},
 ) {
-  const { db: signupDb, pool: signupPool } =
-    makeSignupDrizzleConnection(config);
+  const { db: signupDb, pool: signupPool } = await makeSignupDrizzleConnection(
+    config,
+    {
+      checkConnection: options.checkDbConnection,
+    },
+  );
 
   const kafkaProducer = await createProducer(
     [config.signupTopic],

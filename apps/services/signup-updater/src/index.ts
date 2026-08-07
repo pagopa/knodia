@@ -12,7 +12,7 @@ import { createProcessMessage, type SignupUpdaterDeps } from "./utils/utils.ts";
 
 const logger = createLogger({ config });
 
-const { db, pool } = makeSignupDrizzleConnection(config);
+const { db, pool } = await makeSignupDrizzleConnection(config);
 
 const buildKnodeClient = (knodeId: KnodeId) => ({
   cognitoClient: buildCognitoIdmClient({

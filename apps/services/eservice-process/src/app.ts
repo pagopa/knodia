@@ -91,11 +91,18 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: EserviceProcessConfig) {
+export async function buildAppFromConfig(
+  config: EserviceProcessConfig,
+  options: { checkDbConnection?: boolean } = {},
+) {
   const { db: eventStoreDb, pool: eventStorePool } =
-    makeEventStoreDrizzleConnection(config);
+    await makeEventStoreDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
   const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+    await makeReadmodelDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
 
   const app = buildApp({
     config,

@@ -127,11 +127,18 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: KeychainProcessConfig) {
+export async function buildAppFromConfig(
+  config: KeychainProcessConfig,
+  options: { checkDbConnection?: boolean } = {},
+) {
   const { db: eventStoreDb, pool: eventStorePool } =
-    makeEventStoreDrizzleConnection(config);
+    await makeEventStoreDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
   const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+    await makeReadmodelDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
 
   const app = buildApp({
     config,

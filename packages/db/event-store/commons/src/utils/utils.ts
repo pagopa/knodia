@@ -1,10 +1,12 @@
+import { assertDbConnection } from "@knodia/db-commons/utils";
 import { type EventStoreConfig } from "@knodia/db-event-store-config/config";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-export const makeEventStoreDrizzleConnection = (
+export const makeEventStoreDrizzleConnection = async (
   config: EventStoreConfig,
-): { db: NodePgDatabase; pool: Pool } => {
+  options: { checkConnection?: boolean } = {},
+): Promise<{ db: NodePgDatabase; pool: Pool }> => {
   const pool = new Pool({
     database: config.eventStoreDbName,
     host: config.eventStoreDbHost,
@@ -13,6 +15,10 @@ export const makeEventStoreDrizzleConnection = (
     ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.eventStoreDbUser,
   });
+
+  if (options.checkConnection ?? true) {
+    await assertDbConnection(pool, "event-store");
+  }
 
   return { db: drizzle(pool), pool };
 };

@@ -3,9 +3,10 @@ import type { FastifyInstance } from "fastify";
 import { writeFile } from "node:fs/promises";
 
 export default async function generateOpenapi(
-  app: FastifyInstance,
+  appOrPromise: FastifyInstance | Promise<FastifyInstance>,
   outputPath = "openapi/openapi.yaml",
 ): Promise<void> {
+  const app = await appOrPromise;
   await app.ready();
 
   if (!app.swagger) {

@@ -8,6 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
+    "@knodia/db-commons": "workspace:*",
     "@knodia/db-event-store-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:"

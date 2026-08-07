@@ -7,7 +7,7 @@ import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 const logger = createLogger({ config });
 
 const { db: signalHubDb, pool: signalHubPool } =
-  makeSignalHubDrizzleConnection(config);
+  await makeSignalHubDrizzleConnection(config);
 const signalHubService = signalHubServiceBuilder(signalHubDb, logger);
 
 const shutdown = async (reason: string, exitCode = 0) => {

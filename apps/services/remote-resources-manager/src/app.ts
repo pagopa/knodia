@@ -130,11 +130,18 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
+export async function buildAppFromConfig(
+  config: RemoteResourcesManagerConfig,
+  options: { checkDbConnection?: boolean } = {},
+) {
   const { db: remoteResourceDb, pool: remoteResourcePool } =
-    makeRemoteResourceDrizzleConnection(config);
+    await makeRemoteResourceDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
   const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+    await makeReadmodelDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
 
   const app = buildApp({
     config,

@@ -6,7 +6,7 @@ import { config } from "./config/config.ts";
 import { createProcessMessage } from "./utils/utils.ts";
 
 const { db: readmodelDb, pool: readmodelPool } =
-  makeReadmodelDrizzleConnection(config);
+  await makeReadmodelDrizzleConnection(config);
 
 const logger = createLogger({
   config,

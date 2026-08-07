@@ -6,4 +6,6 @@ import { config } from "../src/config/config.ts";
 
 // OpenAPI generation boots the app only to read its schema, so it must not
 // open a Redis connection — pass the no-op limiter.
-await generateOpenapi(buildAppFromConfig(config, noopRateLimiter));
+await generateOpenapi(
+  buildAppFromConfig(config, noopRateLimiter, { checkDbConnection: false }),
+);

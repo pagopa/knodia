@@ -1,6 +1,7 @@
 import type { IDS } from "@knodia/common-models/ids";
 
 import { genericInternalError } from "@knodia/common-models/errors";
+import { assertDbConnection } from "@knodia/db-commons/utils";
 import { type ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
   and,
@@ -32,9 +33,10 @@ import { match } from "ts-pattern";
 
 import { SortDirection } from "../models/models.ts";
 
-export const makeReadmodelDrizzleConnection = (
+export const makeReadmodelDrizzleConnection = async (
   config: ReadmodelConfig,
-): { db: NodePgDatabase; pool: Pool } => {
+  options: { checkConnection?: boolean } = {},
+): Promise<{ db: NodePgDatabase; pool: Pool }> => {
   const pool = new Pool({
     database: config.readmodelDbName,
     host: config.readmodelDbHost,
@@ -43,6 +45,10 @@ export const makeReadmodelDrizzleConnection = (
     ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.readmodelDbUser,
   });
+
+  if (options.checkConnection ?? true) {
+    await assertDbConnection(pool, "readmodel");
+  }
 
   return { db: drizzle(pool), pool };
 };

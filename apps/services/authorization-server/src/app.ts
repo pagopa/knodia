@@ -99,12 +99,15 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(
+export async function buildAppFromConfig(
   config: AuthorizationServerConfig,
   rateLimiter: RateLimiter,
+  options: { checkDbConnection?: boolean } = {},
 ) {
   const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+    await makeReadmodelDrizzleConnection(config, {
+      checkConnection: options.checkDbConnection,
+    });
 
   const app = buildApp({
     config,
