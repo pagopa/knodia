@@ -36,8 +36,19 @@ if (args["knode-api-keychain-id"]) {
   const knodeApiToken = await mintKnodeApiToken(args["knode-api-auth"] ?? env.auth, args["knode-api-keychain-id"], args["knode-id"]!, args["knode-api-key"]!);
   // Seeded signal-hub mock e-service (scripts/seed/sql/orion/mock-signal-hub-eservice.sql).
   const eserviceId = args["eservice-id"] ?? "634ac97e-47cb-4aed-bb0a-b3936ee6f6c7";
-  const signalResponse = await fetch(`${env.signalHub}/signals/${eserviceId}?lastSignalId=0`, { headers: { authorization: `Bearer ${knodeApiToken}` } });
-  if (!signalResponse.ok) throw new Error(`Signal pull failed (${signalResponse.status}): ${await signalResponse.text()}`);
-  log("Signals:");
-  print(((await signalResponse.json()) as { signals?: unknown[] }).signals ?? []);
+  // The pull endpoint is paginated (default page size 10): follow the
+  // lastSignalId cursor while the service returns 206 (more pages left).
+  const PAGE_SIZE = 100;
+  const allSignals: unknown[] = [];
+  let cursor = 0;
+  for (;;) {
+    const signalResponse = await fetch(`${env.signalHub}/signals/${eserviceId}?lastSignalId=${cursor}&size=${PAGE_SIZE}`, { headers: { authorization: `Bearer ${knodeApiToken}` } });
+    if (!signalResponse.ok) throw new Error(`Signal pull failed (${signalResponse.status}): ${await signalResponse.text()}`);
+    const { lastSignalId, signals = [] } = (await signalResponse.json()) as { lastSignalId?: number; signals?: unknown[] };
+    allSignals.push(...signals);
+    if (signalResponse.status !== 206 || lastSignalId === undefined) break;
+    cursor = lastSignalId;
+  }
+  log(`Signals (${allSignals.length}):`);
+  print(allSignals);
 }
