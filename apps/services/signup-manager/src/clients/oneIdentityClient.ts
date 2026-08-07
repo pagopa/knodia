@@ -89,6 +89,21 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
       tokenUrl.host = serverBase.host;
 
       try {
+        /**
+         * OAuth requires application/x-www-form-urlencoded encoding for client credentials.
+         * URLSearchParams follows that serialization, unlike encodeURIComponent, which uses
+         * generic URI-component encoding (for example, spaces become "+" here instead of "%20").
+         */
+        const formUrlEncode = (value: string): string =>
+          new URLSearchParams({ value }).toString().slice("value=".length);
+
+        const authorization = Buffer.from(
+          `${formUrlEncode(config.oneIdentityClientId)}:${formUrlEncode(
+            config.oneIdentityClientSecret,
+          )}`,
+          "utf8",
+        ).toString("base64");
+
         const response = await axios.post<OneIdentityTokenResponse>(
           tokenUrl.toString(),
           new URLSearchParams({
@@ -98,9 +113,7 @@ export function oneIdentityClientBuilder(config: OneIdentityConfig) {
           }).toString(),
           {
             headers: {
-              Authorization: `Basic ${Buffer.from(
-                `${config.oneIdentityClientId}:${config.oneIdentityClientSecret}`,
-              ).toString("base64")}`,
+              Authorization: `Basic ${authorization}`,
               "Content-Type": "application/x-www-form-urlencoded",
             },
           },
