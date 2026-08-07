@@ -64,14 +64,22 @@ if (args["knode-api-keychain-id"]) {
   }
   // Same scheme as the producer: object_id = sha256(fiscalCode + seed). The
   // seed rotates per period, so only the current batch can be de-pseudonymized.
+  // Fiscal codes of the mock's rotating dataset — kept in sync with
+  // apps/services/mock-eservice/src/data/rotatingAddresses.json.
+  const KNOWN_FISCAL_CODES = ["RMNLNR03H12H501Z", "CNTLCC89E26L378K", "RSSGRG65D48G702L"];
+  const objectIdToFiscalCode = new Map(
+    [...new Set([...KNOWN_FISCAL_CODES, person])].map((fiscalCode) => [
+      createHash("sha256").update(fiscalCode + pseudonymization.seed).digest("hex"),
+      fiscalCode,
+    ]),
+  );
   const objectId = createHash("sha256").update(person + pseudonymization.seed).digest("hex");
 
   log(`Signals: ${allSignals.length} total, printing the last 4 (de-pseudonymized with the current seed where possible):`);
-  print(allSignals.slice(-4).map((s) =>
-    (s as { objectId?: string }).objectId === objectId
-      ? { ...(s as object), decodedPersonId: person }
-      : s,
-  ));
+  print(allSignals.slice(-4).map((s) => {
+    const decoded = objectIdToFiscalCode.get((s as { objectId?: string }).objectId ?? "");
+    return decoded === undefined ? s : { ...(s as object), decodedObjectId: decoded };
+  }));
 
   if (residenceError) {
     const latest = allSignals.findLast(
