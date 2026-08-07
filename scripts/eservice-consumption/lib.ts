@@ -20,6 +20,8 @@ export const ENVIRONMENTS = {
   "local-lynx": { auth: "http://localhost:3702", eservice: "http://localhost:9992", k2o: "http://localhost:3902", signalHub: "http://localhost:3802" },
   "dev-orion": { auth: "https://auth.orion.dev.knodia.com", eservice: "https://mock.orion.dev.knodia.com", k2o: "https://k2o.orion.dev.knodia.com", signalHub: "https://signalhub.orion.dev.knodia.com" },
   "dev-lynx": { auth: "https://auth.lynx.dev.knodia.com", eservice: "https://mock.lynx.dev.knodia.com", k2o: "https://k2o.lynx.dev.knodia.com", signalHub: "https://signalhub.lynx.dev.knodia.com" },
+  "test-orion": { auth: "https://auth.orion.test.knodia.com", eservice: "https://mock.orion.test.knodia.com", k2o: "https://k2o.orion.test.knodia.com", signalHub: "https://signalhub.orion.test.knodia.com" },
+  "test-lynx": { auth: "https://auth.lynx.test.knodia.com", eservice: "https://mock.lynx.test.knodia.com", k2o: "https://k2o.lynx.test.knodia.com", signalHub: "https://signalhub.lynx.test.knodia.com" },
 };
 
 export function urls(env = "local") {
