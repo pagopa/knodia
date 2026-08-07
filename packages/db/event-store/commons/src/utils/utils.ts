@@ -16,9 +16,8 @@ export const makeEventStoreDrizzleConnection = (
       host: config.eventStoreDbHost,
       password: config.eventStoreDbPassword,
       port: config.eventStoreDbPort,
-      ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
       user: config.eventStoreDbUser,
+      useSsl: config.eventStoreDbUseSsl,
     },
-    "event-store",
     options,
   );

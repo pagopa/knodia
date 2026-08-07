@@ -104,10 +104,13 @@ export async function buildAppFromConfig(
   config: OrganizationProcessConfig,
   options?: DbConnectionOptions,
 ) {
-  const { db: eventStoreDb, pool: eventStorePool } =
-    await makeEventStoreDrizzleConnection(config, options);
-  const { db: readmodelDb, pool: readmodelPool } =
-    await makeReadmodelDrizzleConnection(config, options);
+  const [
+    { db: eventStoreDb, pool: eventStorePool },
+    { db: readmodelDb, pool: readmodelPool },
+  ] = await Promise.all([
+    makeEventStoreDrizzleConnection(config, options),
+    makeReadmodelDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

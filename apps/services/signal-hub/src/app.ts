@@ -97,10 +97,13 @@ export async function buildAppFromConfig(
   rateLimiter: RateLimiter,
   options?: DbConnectionOptions,
 ) {
-  const { db: readmodelDb, pool: readmodelPool } =
-    await makeReadmodelDrizzleConnection(config, options);
-  const { db: signalHubDb, pool: signalHubPool } =
-    await makeSignalHubDrizzleConnection(config, options);
+  const [
+    { db: readmodelDb, pool: readmodelPool },
+    { db: signalHubDb, pool: signalHubPool },
+  ] = await Promise.all([
+    makeReadmodelDrizzleConnection(config, options),
+    makeSignalHubDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

@@ -1,6 +1,6 @@
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { runConsumer } from "@knodia/kafka-commons";
-import { createLogger } from "@knodia/logger";
+import { createLogger, exitOnStartupFailure } from "@knodia/logger";
 
 import { config } from "./config/config.ts";
 import { createProcessMessage } from "./utils/utils.ts";
@@ -9,11 +9,10 @@ const logger = createLogger({
   config,
 });
 
-const { db: readmodelDb, pool: readmodelPool } =
-  await makeReadmodelDrizzleConnection(config).catch((error: unknown) => {
-    logger.error({ err: error }, "Failed to start service");
-    return process.exit(1);
-  });
+const { db: readmodelDb, pool: readmodelPool } = await exitOnStartupFailure(
+  makeReadmodelDrizzleConnection(config),
+  logger,
+);
 
 await runConsumer(
   [config.keychainTopic],

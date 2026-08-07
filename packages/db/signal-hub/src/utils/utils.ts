@@ -2,9 +2,8 @@ import {
   type DbConnectionOptions,
   makeDrizzleConnection,
 } from "@knodia/db-commons/utils";
-import type { SignalHubDbConfig } from "../config/config.ts";
 
-export type { DbConnectionOptions } from "@knodia/db-commons/utils";
+import type { SignalHubDbConfig } from "../config/config.ts";
 
 export const makeSignalHubDrizzleConnection = (
   config: SignalHubDbConfig,
@@ -16,9 +15,8 @@ export const makeSignalHubDrizzleConnection = (
       host: config.signalHubDbHost,
       password: config.signalHubDbPassword,
       port: config.signalHubDbPort,
-      ssl: config.signalHubDbUseSsl ? { rejectUnauthorized: false } : undefined,
       user: config.signalHubDbUser,
+      useSsl: config.signalHubDbUseSsl,
     },
-    "signal-hub",
     options,
   );

@@ -9,14 +9,11 @@
   },
   "dependencies": {
     "@knodia/db-commons": "workspace:*",
-    "@knodia/db-event-store-config": "workspace:*",
-    "drizzle-orm": "catalog:",
-    "pg": "catalog:"
+    "@knodia/db-event-store-config": "workspace:*"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@types/pg": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },

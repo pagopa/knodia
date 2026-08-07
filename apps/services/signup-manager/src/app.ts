@@ -132,12 +132,11 @@ export async function buildAppFromConfig(
   rateLimiter: RateLimiter,
   options?: DbConnectionOptions,
 ) {
-  const { db: signupDb, pool: signupPool } = await makeSignupDrizzleConnection(config, options);
-
-  const kafkaProducer = await createProducer(
-    [config.signupTopic],
-    config,
-    createLogger({ config }),
+  const [{ db: signupDb, pool: signupPool }, kafkaProducer] = await Promise.all(
+    [
+      makeSignupDrizzleConnection(config, options),
+      createProducer([config.signupTopic], config, createLogger({ config })),
+    ],
   );
 
   const app = buildApp({ config, kafkaProducer, rateLimiter, signupDb });

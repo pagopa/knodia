@@ -47,10 +47,9 @@ export const makeReadmodelDrizzleConnection = (
       host: config.readmodelDbHost,
       password: config.readmodelDbPassword,
       port: config.readmodelDbPort,
-      ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
       user: config.readmodelDbUser,
+      useSsl: config.readmodelDbUseSsl,
     },
-    "readmodel",
     options,
   );
 

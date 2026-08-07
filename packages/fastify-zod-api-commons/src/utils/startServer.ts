@@ -16,18 +16,16 @@ export const startServer = async (
   app: FastifyInstance | Promise<FastifyInstance>,
   options: FastifyListenOptions,
 ): Promise<void> => {
-  let resolvedApp: FastifyInstance | undefined;
+  // The app builder itself may fail (e.g. DB connection check): no logger yet.
+  const resolvedApp = await Promise.resolve(app).catch((error: unknown) => {
+    console.error("Failed to start service", error);
+    return process.exit(1);
+  });
   try {
-    resolvedApp = await app;
     await resolvedApp.listen({ host: options.host, port: options.port });
     resolvedApp.log.info("Service started successfully");
   } catch (error) {
-    if (resolvedApp) {
-      resolvedApp.log.error({ err: error }, "Failed to start service");
-    } else {
-      // The app builder itself failed (e.g. DB connection check): no logger yet.
-      console.error("Failed to start service", error);
-    }
+    resolvedApp.log.error({ err: error }, "Failed to start service");
     process.exit(1);
   }
 };

@@ -2868,12 +2868,6 @@ importers:
       '@knodia/db-event-store-config':
         specifier: workspace:*
         version: link:../config
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -2881,9 +2875,6 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.16.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)

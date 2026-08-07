@@ -137,10 +137,13 @@ export async function buildAppFromConfig(
   config: RemoteResourcesManagerConfig,
   options?: DbConnectionOptions,
 ) {
-  const { db: remoteResourceDb, pool: remoteResourcePool } =
-    await makeRemoteResourceDrizzleConnection(config, options);
-  const { db: readmodelDb, pool: readmodelPool } =
-    await makeReadmodelDrizzleConnection(config, options);
+  const [
+    { db: remoteResourceDb, pool: remoteResourcePool },
+    { db: readmodelDb, pool: readmodelPool },
+  ] = await Promise.all([
+    makeRemoteResourceDrizzleConnection(config, options),
+    makeReadmodelDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

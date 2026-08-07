@@ -1,8 +1,17 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool, type PoolConfig } from "pg";
+import { Pool } from "pg";
 
 export interface DbConnectionOptions {
   checkDbConnection?: boolean;
+}
+
+interface DbConnectionConfig {
+  database: string;
+  host: string;
+  password: string;
+  port: number;
+  user: string;
+  useSsl: boolean;
 }
 
 // Bounds both the startup check and later lazy reconnects; pg's default is
@@ -10,13 +19,13 @@ export interface DbConnectionOptions {
 const CONNECTION_TIMEOUT_MS = 10_000;
 
 export async function makeDrizzleConnection(
-  poolConfig: PoolConfig,
-  dbName: string,
+  { useSsl, ...poolConfig }: DbConnectionConfig,
   { checkDbConnection = true }: DbConnectionOptions = {},
 ): Promise<{ db: NodePgDatabase; pool: Pool }> {
   const pool = new Pool({
     connectionTimeoutMillis: CONNECTION_TIMEOUT_MS,
     ...poolConfig,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
   });
 
   // The pg pool connects lazily, so bad credentials or an unreachable database
@@ -26,9 +35,10 @@ export async function makeDrizzleConnection(
     try {
       await pool.query("SELECT 1");
     } catch (error) {
-      throw new Error(`Startup connection check to the ${dbName} DB failed`, {
-        cause: error,
-      });
+      throw new Error(
+        `Startup connection check to database "${poolConfig.database}" at ${poolConfig.host}:${poolConfig.port} failed`,
+        { cause: error },
+      );
     }
   }
 
