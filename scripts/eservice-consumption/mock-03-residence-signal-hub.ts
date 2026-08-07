@@ -12,9 +12,10 @@
 // minted at the consumer knode's authorization-server (--knode-api-auth), which
 // may differ from the producer's used for the access token.
 
+import { createHash } from "node:crypto";
 import { parseArgs } from "node:util";
 
-import { callEservice, log, mintAccessToken, mintKnodeApiToken, print, requireArgs, urls } from "./lib.ts";
+import { callEservice, EserviceCallError, log, mintAccessToken, mintKnodeApiToken, print, requireArgs, urls } from "./lib.ts";
 
 const { values: args } = parseArgs({
   options: { env: { type: "string" }, "eservice-id": { type: "string" }, key: { type: "string" }, "keychain-id": { type: "string" }, "knode-api-auth": { type: "string" }, "knode-api-key": { type: "string" }, "knode-api-keychain-id": { type: "string" }, "knode-id": { type: "string" }, "person-id": { type: "string" }, "purpose-id": { type: "string" } },
@@ -27,9 +28,21 @@ const { access_token } = await mintAccessToken(env.auth, args["keychain-id"]!, a
 const person = args["person-id"] ?? "RMNLNR03H12H501Z";
 
 log("Residence:");
-print((await callEservice(env.eservice, `/natural-persons/${person}/residence`, access_token)).body);
+// The mock rotates Create → Update → Delete phases: in the Delete window the
+// residence 404s by design. Defer the failure until the signals confirm (or
+// deny) that the person's latest signal is a DELETE.
+let residenceError: string | undefined;
+try {
+  print((await callEservice(env.eservice, `/natural-persons/${person}/residence`, access_token)).body);
+} catch (error) {
+  // Only a 404 can be the deleted window; any other status is a real error.
+  if (!(error instanceof EserviceCallError && error.status === 404)) throw error;
+  residenceError = error.message;
+  log(error.message);
+}
 log("Pseudonymization:");
-print((await callEservice(env.eservice, "/natural-persons/pseudonymization", access_token)).body);
+const pseudonymization = (await callEservice(env.eservice, "/natural-persons/pseudonymization", access_token)).body as { seed: string };
+print(pseudonymization);
 
 if (args["knode-api-keychain-id"]) {
   requireArgs(args, ["knode-api-key", "knode-id"]);
@@ -49,6 +62,22 @@ if (args["knode-api-keychain-id"]) {
     if (signalResponse.status !== 206 || lastSignalId === undefined) break;
     cursor = lastSignalId;
   }
-  log(`Signals (${allSignals.length}):`);
-  print(allSignals);
+  log(`Signals: ${allSignals.length} total, printing the last 4:`);
+  print(allSignals.slice(-4));
+
+  if (residenceError) {
+    // Same scheme as the producer: object_id = sha256(fiscalCode + seed).
+    const objectId = createHash("sha256").update(person + pseudonymization.seed).digest("hex");
+    const latest = allSignals.findLast(
+      (s) => (s as { objectId?: string }).objectId === objectId,
+    ) as { signalType?: string } | undefined;
+    if (latest?.signalType === "DELETE") {
+      log(`Residence 404 is expected: the latest signal for ${person} (object_id ${objectId}) is a DELETE — the mock is in its deleted window.`);
+      residenceError = undefined;
+    } else {
+      log(`Latest signal for ${person} (object_id ${objectId}) is ${latest?.signalType ?? "absent"}, not DELETE: the residence failure is NOT explained by a deletion.`);
+    }
+  }
 }
+
+if (residenceError) throw new Error(residenceError);

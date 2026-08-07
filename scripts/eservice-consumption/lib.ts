@@ -68,6 +68,14 @@ export const mintAccessToken = (authUrl: string, keychainId: string, purposeId: 
 export const mintKnodeApiToken = (authUrl: string, keychainId: string, knodeId: string, keyPath: string) =>
   requestToken(authUrl, "/knodeApiToken", keychainId, keyPath, ["--knodeId", knodeId]).then((t) => t.access_token);
 
+export class EserviceCallError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export interface EserviceResponse {
   body: any;
   headers: Headers;
@@ -89,7 +97,7 @@ export async function callEservice(eserviceUrl: string, endpoint: string, access
   if (opts.body !== undefined) headers["content-type"] = "application/json";
   const response = await fetch(`${eserviceUrl}${endpoint}`, { body: opts.body === undefined ? undefined : JSON.stringify(opts.body), headers, method });
   const rawBody = await response.text();
-  if (!response.ok) throw new Error(`${method} ${endpoint} failed (${response.status}): ${rawBody}`);
+  if (!response.ok) throw new EserviceCallError(`${method} ${endpoint} failed (${response.status}): ${rawBody}`, response.status);
   return { body: rawBody ? JSON.parse(rawBody) : undefined, headers: response.headers, rawBody, status: response.status };
 }
 
