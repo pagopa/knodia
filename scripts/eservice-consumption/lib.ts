@@ -20,6 +20,8 @@ export const ENVIRONMENTS = {
   "local-lynx": { auth: "http://localhost:3702", eservice: "http://localhost:9992", k2o: "http://localhost:3902", signalHub: "http://localhost:3802" },
   "dev-orion": { auth: "https://auth.orion.dev.knodia.com", eservice: "https://mock.orion.dev.knodia.com", k2o: "https://k2o.orion.dev.knodia.com", signalHub: "https://signalhub.orion.dev.knodia.com" },
   "dev-lynx": { auth: "https://auth.lynx.dev.knodia.com", eservice: "https://mock.lynx.dev.knodia.com", k2o: "https://k2o.lynx.dev.knodia.com", signalHub: "https://signalhub.lynx.dev.knodia.com" },
+  "test-orion": { auth: "https://auth.orion.test.knodia.com", eservice: "https://mock.orion.test.knodia.com", k2o: "https://k2o.orion.test.knodia.com", signalHub: "https://signalhub.orion.test.knodia.com" },
+  "test-lynx": { auth: "https://auth.lynx.test.knodia.com", eservice: "https://mock.lynx.test.knodia.com", k2o: "https://k2o.lynx.test.knodia.com", signalHub: "https://signalhub.lynx.test.knodia.com" },
 };
 
 export function urls(env = "local") {
@@ -66,6 +68,14 @@ export const mintAccessToken = (authUrl: string, keychainId: string, purposeId: 
 export const mintKnodeApiToken = (authUrl: string, keychainId: string, knodeId: string, keyPath: string) =>
   requestToken(authUrl, "/knodeApiToken", keychainId, keyPath, ["--knodeId", knodeId]).then((t) => t.access_token);
 
+export class EserviceCallError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export interface EserviceResponse {
   body: any;
   headers: Headers;
@@ -87,7 +97,7 @@ export async function callEservice(eserviceUrl: string, endpoint: string, access
   if (opts.body !== undefined) headers["content-type"] = "application/json";
   const response = await fetch(`${eserviceUrl}${endpoint}`, { body: opts.body === undefined ? undefined : JSON.stringify(opts.body), headers, method });
   const rawBody = await response.text();
-  if (!response.ok) throw new Error(`${method} ${endpoint} failed (${response.status}): ${rawBody}`);
+  if (!response.ok) throw new EserviceCallError(`${method} ${endpoint} failed (${response.status}): ${rawBody}`, response.status);
   return { body: rawBody ? JSON.parse(rawBody) : undefined, headers: response.headers, rawBody, status: response.status };
 }
 

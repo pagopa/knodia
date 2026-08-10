@@ -30,7 +30,7 @@ export async function makeDrizzleConnection(
 
   // The pg pool connects lazily, so bad credentials or an unreachable database
   // would only surface on the first query: ping at startup to fail fast
-  // instead. OpenAPI codegen opts out — it runs without a database.
+  // instead. Configurable through checkDbConnection so OpenAPI codegen can opt out.
   if (checkDbConnection) {
     try {
       await pool.query("SELECT 1");
