@@ -1,7 +1,13 @@
 import type { FastifyInstance } from "fastify";
 
-interface FastifyListenOptions {
+import { createLogger, exitOnStartupFailure } from "@knodia/logger";
+import { type LoggerConfig } from "@knodia/logger/config";
+
+interface StartServerOptions {
   host: string;
+  // The app builder may fail before the Fastify logger exists (e.g. DB
+  // connection check): its failure is logged with a logger built from this.
+  loggerConfig: LoggerConfig;
   port: number;
 }
 
@@ -10,17 +16,16 @@ interface FastifyListenOptions {
  *
  * @param app - The Fastify application instance, or a promise of one (app
  *   builders are async when they check DB connectivity at startup)
- * @param options - Server configuration (host and port)
+ * @param options - Server configuration (host, port and logger config)
  */
 export const startServer = async (
   app: FastifyInstance | Promise<FastifyInstance>,
-  options: FastifyListenOptions,
+  options: StartServerOptions,
 ): Promise<void> => {
-  // The app builder itself may fail (e.g. DB connection check): no logger yet.
-  const resolvedApp = await Promise.resolve(app).catch((error: unknown) => {
-    console.error("Failed to start service", error);
-    return process.exit(1);
-  });
+  const resolvedApp = await exitOnStartupFailure(
+    Promise.resolve(app),
+    createLogger({ config: options.loggerConfig }),
+  );
   try {
     await resolvedApp.listen({ host: options.host, port: options.port });
     resolvedApp.log.info("Service started successfully");

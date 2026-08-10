@@ -18,6 +18,7 @@ const rateLimiter = initRedisRateLimiter({
 
 void startServer(buildAppFromConfig(config, rateLimiter), {
   host: config.host,
+  loggerConfig: config,
   port: config.port,
 });
 
