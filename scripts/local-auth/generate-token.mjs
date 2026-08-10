@@ -56,7 +56,7 @@ const SIGNUP_ONE_ID_NONCE = "local-signup-nonce";
 
 import { SIGNUP_DOMAIN_KEY_NAMES, TOKEN_TYPES } from "./token-types.mjs";
 
-const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion", "dev-signup"];
+const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion", "dev-signup", "test-lynx", "test-orion", "test-signup"];
 
 const { values: args } = parseArgs({
   options: {
@@ -72,9 +72,11 @@ const { values: args } = parseArgs({
 const type = args.type;
 const isSignupDomainType = type in SIGNUP_DOMAIN_KEY_NAMES;
 // Signup-domain tokens are knode-neutral (single shared key, signup host):
-// any dev knode env folds into dev-signup.
+// any knode env folds into its environment's signup env (e.g. dev-signup).
 const targetEnv =
-  isSignupDomainType && args.env !== "local" ? "dev-signup" : args.env;
+  isSignupDomainType && args.env !== "local"
+    ? `${baseEnv(args.env)}-signup`
+    : args.env;
 const orgId = args.org ?? ORG_ID;
 // A dedicated org (e.g. a POC org) is seeded with an operator whose id equals the
 // org id, so a ui-session for that org must carry that sub or keychain operations
@@ -88,8 +90,8 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(args.env)) {
   process.exit(1);
 }
 
-if (targetEnv === "dev-signup" && !isSignupDomainType) {
-  console.error(`--type ${type} is knode-bound: use --env dev-lynx or dev-orion`);
+if (targetEnv.endsWith("-signup") && !isSignupDomainType) {
+  console.error(`--type ${type} is knode-bound: use a knode env (e.g. dev-lynx, test-orion)`);
   process.exit(1);
 }
 
@@ -97,19 +99,25 @@ function getAudience(targetEnv, type) {
   if (type === "knode-api") {
     return targetEnv === "local"
       ? ["signalhub.test.knodia.org", "k2o-gateway.test.knodia.org"]
-      : [`signalhub.${targetEnv.replace("dev-", "")}.dev.knodia.com`, `k2o-gateway.${targetEnv.replace("dev-", "")}.dev.knodia.com`];
+      : [`signalhub.${knodeHost(targetEnv)}.knodia.com`, `k2o.${knodeHost(targetEnv)}.knodia.com`];
   }
   if (targetEnv === "local") return `local.knodia.test/${type}`;
   // Signup-domain tokens are accepted on the signup host, not the knode apps.
   return isSignupDomainType
     ? `signup.${baseEnv(targetEnv)}.knodia.com/${type}`
-    : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
+    : `app.${knodeHost(targetEnv)}.knodia.com/${type}`;
 }
 
 // Strips the knode suffix from a target env ("dev-lynx" -> "dev"), for tokens
 // that aren't bound to a single knode.
 function baseEnv(targetEnv) {
   return targetEnv.split("-")[0];
+}
+
+// Public host segment of a knode env ("dev-lynx" -> "lynx.dev").
+function knodeHost(targetEnv) {
+  const [env, knode] = targetEnv.split("-");
+  return `${knode}.${env}`;
 }
 
 function getClaims(targetEnv, type, orgId, subjectId) {
