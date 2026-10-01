@@ -313,7 +313,7 @@ services:
     volumes:
       - multinode-rustfs-data:/data
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health/ready"]
       interval: 5s
       timeout: 5s
       retries: 5

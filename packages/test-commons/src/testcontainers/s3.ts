@@ -51,7 +51,7 @@ export async function setupS3TestContainer() {
       RUSTFS_SECRET_KEY: TEST_S3_SECRET_KEY,
       RUSTFS_SERVER_DOMAINS: "localhost",
     })
-    .withWaitStrategy(Wait.forHttp("/health", TEST_S3_PORT))
+    .withWaitStrategy(Wait.forHttp("/health/ready", TEST_S3_PORT))
     .withReuse()
     .start();
 
