@@ -223,6 +223,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
   # RustFS is a local S3-compatible storage, to replace AWS S3 in local development
+  # Console: http://localhost:9001/rustfs/console/ (testawskey / testawssecret)
   rustfs:
     security_opt:
       - no-new-privileges:true
