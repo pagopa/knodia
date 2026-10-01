@@ -336,9 +336,9 @@ services:
       - -e
       - -c
       - |
-        aws s3api create-bucket --bucket knodia-orion-eservice-interfaces --create-bucket-configuration LocationConstraint=eu-south-1
-        aws s3api create-bucket --bucket knodia-lynx-eservice-interfaces --create-bucket-configuration LocationConstraint=eu-south-1
-        aws s3api create-bucket --bucket knodia-signup-archives --create-bucket-configuration LocationConstraint=eu-south-1 --object-lock-enabled-for-bucket
+        aws s3api create-bucket --bucket knodia-orion-eservice-interfaces
+        aws s3api create-bucket --bucket knodia-lynx-eservice-interfaces
+        aws s3api create-bucket --bucket knodia-signup-archives --object-lock-enabled-for-bucket
         aws s3api put-object-lock-configuration --bucket knodia-signup-archives --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"GOVERNANCE","Days":1}}}'
 
   # ============================================================
