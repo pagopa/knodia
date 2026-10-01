@@ -43,7 +43,7 @@
     "./fastify": "./src/fastify/index.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
-    "./rustfs": "./src/testcontainers/rustfs.ts",
+    "./s3": "./src/testcontainers/s3.ts",
     "./ses": "./src/testcontainers/ses.ts",
     "./dynamodb": "./src/testcontainers/dynamodb.ts",
     "./network": "./src/testcontainers/network.ts",
