@@ -239,7 +239,7 @@ services:
       RUSTFS_SERVER_DOMAINS: localhost
       RUSTFS_CONSOLE_ENABLE: "true"
     volumes:
-      - ./rustfs-data:/data
+      - rustfs-data:/data
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:9000/health/ready"]
       interval: 5s
@@ -438,6 +438,7 @@ services:
 volumes:
   postgres-data:
   kafka-data:
+  rustfs-data:
   pgadmin-data:
   local-kms-data:
   jwks-data:

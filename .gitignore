@@ -10,8 +10,8 @@ node_modules/
 .DS_Store
 .tanstack
 
-# RustFS container data
-docker/rustfs-data
+# Data of the former local MinIO container
+docker/minio-data
 
 # Local KMS tokens
 docker/tokens/
