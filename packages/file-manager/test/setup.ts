@@ -1,4 +1,4 @@
-import { setupMinioTestBucket } from "@knodia/test-commons/minio";
+import { setupRustfsTestBucket } from "@knodia/test-commons/rustfs";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { type FileManager, initFileManager } from "../src/fileManager.ts";
@@ -9,7 +9,7 @@ let cleanAfterEach: () => Promise<void>;
 let cleanupAfterAll: () => Promise<void>;
 
 beforeAll(async () => {
-  const setup = await setupMinioTestBucket(inject("MINIO_CONNECTION_STRING"));
+  const setup = await setupRustfsTestBucket(inject("RUSTFS_CONNECTION_STRING"));
   testBucket = setup.bucket;
   cleanAfterEach = setup.cleanAfterEach;
   cleanupAfterAll = setup.cleanupAfterAll;

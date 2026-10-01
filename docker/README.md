@@ -2,7 +2,7 @@
 
 ## `compose.yaml`: single-node infrastructure
 
-Runs only the shared infrastructure services needed for local development: PostgreSQL, Kafka, Debezium, MinIO, pgAdmin, Kafka UI, and supporting init containers (Flyway migrations, readmodel + S3 seed, etc.).
+Runs only the shared infrastructure services needed for local development: PostgreSQL, Kafka, Debezium, RustFS, pgAdmin, Kafka UI, and supporting init containers (Flyway migrations, readmodel + S3 seed, etc.).
 
 Application services (process, readmodel-writer, BFF, frontend) are started separately via `pnpm dev` in their respective packages.
 

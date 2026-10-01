@@ -12,7 +12,7 @@
 # Required env: PGHOST, PGDATABASE, PGUSER, PGPASSWORD, NAMESPACE (e.g. local,
 # dev_orion), ENVIRONMENT (e.g. local, dev), SQL_DIR, S3_BUCKET, AWS_REGION,
 # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
-# Optional:     PGPORT, PGSSLMODE (require on remote envs), S3_ENDPOINT_URL (MinIO only).
+# Optional:     PGPORT, PGSSLMODE (require on remote envs), S3_ENDPOINT_URL (local RustFS only).
 #
 # Integrity REST 02 producer key (Lynx only). INTEGRITY_KEY_ENV_FILE is written by
 # the local KMS setup for the seed init container, which has no Node/KMS to derive it;

@@ -5,7 +5,7 @@ import { remoteResourceDbTemplate } from "./packages/test-commons/src/remoteReso
 import { signalHubDbTemplate } from "./packages/test-commons/src/signalHubDb"
 import { signupDbTemplate } from "./packages/test-commons/src/signupDb"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
-import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
+import { setupRustfsTestContainer } from "./packages/test-commons/src/testcontainers/rustfs"
 import { setupSesTestContainer } from "./packages/test-commons/src/testcontainers/ses"
 import { createTestInfraNetwork } from "./packages/test-commons/src/testcontainers/network"
 import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
@@ -19,14 +19,14 @@ export default async function setup(project: TestProject) {
   const [
     { container: postgresContainer, connectionString: postgresConnectionString },
     { container: kafkaContainer, broker },
-    { container: minioContainer, connectionString: minioConnectionString },
+    { container: rustfsContainer, connectionString: rustfsConnectionString },
     { container: dynamoDBContainer, endpoint: dynamoDBEndpoint },
     { container: redisContainer },
     { container: sesContainer, connectionString: sesConnectionString },
   ] = await Promise.all([
     setupPostgresTestContainer(network),
     setupKafkaTestContainer(),
-    setupMinioTestContainer(),
+    setupRustfsTestContainer(),
     setupDynamoDBTestContainer(network),
     setupRedisTestContainer(),
     setupSesTestContainer(),
@@ -41,7 +41,7 @@ export default async function setup(project: TestProject) {
 
   project.provide("POSTGRES_CONNECTION_STRING", postgresConnectionString);
   project.provide("KAFKA_BROKER", broker);
-  project.provide("MINIO_CONNECTION_STRING", minioConnectionString);
+  project.provide("RUSTFS_CONNECTION_STRING", rustfsConnectionString);
   project.provide("DYNAMODB_CONNECTION_STRING", dynamoDBEndpoint);
   project.provide("SES_CONNECTION_STRING", sesConnectionString);
 
@@ -49,7 +49,7 @@ export default async function setup(project: TestProject) {
     await Promise.all([
       postgresContainer.stop({ removeVolumes: true }),
       kafkaContainer.stop({ removeVolumes: true }),
-      minioContainer.stop({ removeVolumes: true }),
+      rustfsContainer.stop({ removeVolumes: true }),
       dynamoDBContainer.stop({ removeVolumes: true }),
       redisContainer.stop({ removeVolumes: true }),
       sesContainer.stop({ removeVolumes: true }),
