@@ -10,7 +10,8 @@ node_modules/
 .DS_Store
 .tanstack
 
-# Data of the former local MinIO container
+# Local S3 container data (RustFS, and the former MinIO)
+docker/rustfs-data
 docker/minio-data
 
 # Local KMS tokens
