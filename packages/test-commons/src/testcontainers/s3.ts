@@ -14,6 +14,7 @@ const TEST_S3_IMAGE =
 
 const TEST_S3_ACCESS_KEY = "s3_testuser";
 const TEST_S3_SECRET_KEY = "s3_testpassword";
+const TEST_S3_REGION = "eu-south-1";
 
 /**
  * Creates a dedicated S3 bucket for a single test file by using the test container connection string.
@@ -48,6 +49,7 @@ export async function setupS3TestContainer() {
     .withExposedPorts(TEST_S3_PORT)
     .withEnvironment({
       RUSTFS_ACCESS_KEY: TEST_S3_ACCESS_KEY,
+      RUSTFS_REGION: TEST_S3_REGION,
       RUSTFS_SECRET_KEY: TEST_S3_SECRET_KEY,
       RUSTFS_SERVER_DOMAINS: "localhost",
     })
@@ -76,7 +78,7 @@ function createTestS3Client(connectionString: string): S3Client {
       secretAccessKey: TEST_S3_SECRET_KEY,
     },
     endpoint: connectionString,
-    region: "eu-south-1",
+    region: TEST_S3_REGION,
   });
 }
 
