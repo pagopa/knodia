@@ -5,13 +5,16 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { MinioContainer } from "@testcontainers/minio";
+import { GenericContainer, Wait } from "testcontainers";
 
-const TEST_MINIO_PORT = 9000;
-const TEST_MINIO_IMAGE = "minio/minio:RELEASE.2025-09-07T16-13-09Z";
+const TEST_S3_PORT = 9000;
+// Digest pinned to docker/compose.yaml so dev and CI share the image.
+const TEST_S3_IMAGE =
+  "rustfs/rustfs:1.0.0@sha256:8cc9801755448b71a786705ce76692c77e14936cccd87cf2fc31842e58f4d1ff";
 
-const TEST_MINIO_USERNAME = "minio_testuser";
-const TEST_MINIO_PASSWORD = "minio_testpassword";
+const TEST_S3_ACCESS_KEY = "s3_testuser";
+const TEST_S3_SECRET_KEY = "s3_testpassword";
+const TEST_S3_REGION = "eu-south-1";
 
 /**
  * Creates a dedicated S3 bucket for a single test file by using the test container connection string.
@@ -20,7 +23,7 @@ const TEST_MINIO_PASSWORD = "minio_testpassword";
  *
  * Intended to be called in beforeAll of each package test setup.
  */
-export async function setupMinioTestBucket(connectionString: string) {
+export async function setupS3TestBucket(connectionString: string) {
   const bucket = `test-bucket-${crypto.randomUUID()}`;
   const s3Client = createTestS3Client(connectionString);
 
@@ -35,24 +38,26 @@ export async function setupMinioTestBucket(connectionString: string) {
 /**
  * !!! Intended to be called once in global test setup !!!
  *
- *  Starts the shared Minio test container.
+ *  Starts the shared S3 test container (RustFS, S3-compatible).
  *  It returns the connection string to be used by test s3 clients and
  *  the container instance to be stopped in the global test teardown.
  */
-export async function setupMinioTestContainer() {
-  const container = await new MinioContainer(TEST_MINIO_IMAGE)
-    .withName("knodia-minio-test-container")
+export async function setupS3TestContainer() {
+  const container = await new GenericContainer(TEST_S3_IMAGE)
+    .withName("knodia-s3-test-container")
     .withLabels({ "com.docker.compose.project": "knodia-test" })
-    .withUsername(TEST_MINIO_USERNAME)
-    .withPassword(TEST_MINIO_PASSWORD)
-    .withExposedPorts(TEST_MINIO_PORT)
+    .withExposedPorts(TEST_S3_PORT)
     .withEnvironment({
-      MINIO_DOMAIN: "localhost",
+      RUSTFS_ACCESS_KEY: TEST_S3_ACCESS_KEY,
+      RUSTFS_REGION: TEST_S3_REGION,
+      RUSTFS_SECRET_KEY: TEST_S3_SECRET_KEY,
+      RUSTFS_SERVER_DOMAINS: "localhost",
     })
+    .withWaitStrategy(Wait.forHttp("/health/ready", TEST_S3_PORT))
     .withReuse()
     .start();
 
-  const mappedPort = container.getMappedPort(TEST_MINIO_PORT);
+  const mappedPort = container.getMappedPort(TEST_S3_PORT);
   const host = container.getHost();
   const connectionString = `http://${host}:${mappedPort}`;
 
@@ -69,11 +74,11 @@ async function createTestBucket(
 function createTestS3Client(connectionString: string): S3Client {
   return new S3Client({
     credentials: {
-      accessKeyId: TEST_MINIO_USERNAME,
-      secretAccessKey: TEST_MINIO_PASSWORD,
+      accessKeyId: TEST_S3_ACCESS_KEY,
+      secretAccessKey: TEST_S3_SECRET_KEY,
     },
     endpoint: connectionString,
-    region: "eu-south-1",
+    region: TEST_S3_REGION,
   });
 }
 
@@ -106,6 +111,6 @@ async function deleteTestBucket(
 
 declare module "vitest" {
   export interface ProvidedContext {
-    MINIO_CONNECTION_STRING: string;
+    S3_CONNECTION_STRING: string;
   }
 }

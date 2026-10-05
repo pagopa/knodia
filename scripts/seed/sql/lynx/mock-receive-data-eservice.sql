@@ -47,7 +47,7 @@ INSERT INTO ${NAMESPACE}_eservice."eservice_version" (
 
 -- The interface YAML referenced by `path` / `name` is generated from the
 -- Receive-data router in apps/services/mock-eservice/src/routers/ and uploaded
--- to S3 / MinIO by scripts/seed/seed.sh.
+-- to S3 / RustFS by scripts/seed/seed.sh.
 INSERT INTO ${NAMESPACE}_eservice."eservice_interface" (
   id, eservice_id, eservice_version_id,
   checksum, content_type, name, path, pretty_name,

@@ -53,7 +53,7 @@ services:
     depends_on:
       flyway:
         condition: service_completed_successfully
-      minio-setup:
+      rustfs-setup:
         condition: service_completed_successfully
     volumes:
       - ../scripts/seed:/seed:ro
@@ -77,7 +77,7 @@ services:
       ENVIRONMENT: local
       SQL_DIR: /seed/sql/orion
       S3_BUCKET: knodia-eservice-interfaces
-      S3_ENDPOINT_URL: http://minio:9000
+      S3_ENDPOINT_URL: http://rustfs:9000
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
@@ -222,45 +222,51 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
-  # MinIO is a local S3-compatible storage, to replace AWS S3 in local development
-  minio:
+  # RustFS is a local S3-compatible storage, to replace AWS S3 in local development
+  # Console: http://localhost:9001/rustfs/console/ (testawskey / testawssecret)
+  rustfs:
     security_opt:
       - no-new-privileges:true
-    container_name: knodia-minio
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
-    entrypoint: >
-      /usr/bin/minio server /data --console-address ':9001'
+    container_name: knodia-rustfs
+    image: rustfs/rustfs:1.0.0@sha256:8cc9801755448b71a786705ce76692c77e14936cccd87cf2fc31842e58f4d1ff
     ports:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_ROOT_USER: testawskey # AWS S3 access key ID used for local development
-      MINIO_ROOT_PASSWORD: testawssecret # AWS S3 secret access key used for local development
-      MINIO_SITE_REGION: eu-south-1
-      MINIO_DOMAIN: localhost
+      RUSTFS_ACCESS_KEY: testawskey # AWS S3 access key ID used for local development
+      RUSTFS_SECRET_KEY: testawssecret # AWS S3 secret access key used for local development
+      RUSTFS_REGION: eu-south-1
+      RUSTFS_SERVER_DOMAINS: localhost
+      RUSTFS_CONSOLE_ENABLE: "true"
     volumes:
-      - ./minio-data:/data
+      - rustfs-data:/data
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health/ready"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  minio-setup:
+  rustfs-setup:
     security_opt:
       - no-new-privileges:true
-    container_name: knodia-minio-setup
-    image: minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+    container_name: knodia-rustfs-setup
+    image: amazon/aws-cli:2.34.25@sha256:3810b288da2dfde82de6d46b136c7f5d4a16fef01fc2135e0c8ec9e52c9d7ebb
     depends_on:
-      minio:
+      rustfs:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set local http://minio:9000 testawskey testawssecret;
-      mc mb --ignore-existing local/knodia-eservice-interfaces;
-      mc mb --with-lock --ignore-existing local/knodia-signup-archives;
-      mc retention set --default GOVERNANCE 1d local/knodia-signup-archives;
-      "
+    environment:
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_REGION: eu-south-1
+      AWS_ENDPOINT_URL_S3: http://rustfs:9000
+    entrypoint:
+      - /bin/sh
+      - -e
+      - -c
+      - |
+        aws s3api create-bucket --bucket knodia-eservice-interfaces
+        aws s3api create-bucket --bucket knodia-signup-archives --object-lock-enabled-for-bucket
+        aws s3api put-object-lock-configuration --bucket knodia-signup-archives --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"GOVERNANCE","Days":1}}}'
   # Web GUI for PostgreSQL
   pgadmin:
     security_opt:
@@ -432,7 +438,7 @@ services:
 volumes:
   postgres-data:
   kafka-data:
-  minio-data:
+  rustfs-data:
   pgadmin-data:
   local-kms-data:
   jwks-data:
