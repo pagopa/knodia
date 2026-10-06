@@ -138,9 +138,6 @@ catalogs:
     '@testcontainers/kafka':
       specifier: 11.11.0
       version: 11.11.0
-    '@testcontainers/minio':
-      specifier: 11.11.0
-      version: 11.11.0
     '@testcontainers/postgresql':
       specifier: 11.11.0
       version: 11.11.0
@@ -3861,12 +3858,18 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.0(@types/node@25.0.0)(jsdom@28.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(vite@7.3.0(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/models/accessibility-models:
     dependencies:
@@ -4494,9 +4497,6 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@testcontainers/kafka':
-        specifier: 'catalog:'
-        version: 11.11.0
-      '@testcontainers/minio':
         specifier: 'catalog:'
         version: 11.11.0
       '@testcontainers/postgresql':
@@ -7136,9 +7136,6 @@ packages:
 
   '@testcontainers/kafka@11.11.0':
     resolution: {integrity: sha512-DGGoQL0wELifn1GHrfe4tW7ejYDIXNFHisx6wlgFzQ1xqaN8ppYlO658Fgg8B9+rcl0wY2rZF0oF0QFADKgqEg==}
-
-  '@testcontainers/minio@11.11.0':
-    resolution: {integrity: sha512-Ty9vR69W2tNPIlveAkNlvYXH0SmV4lVfEBj5l7+CsFNYlXmke+ove5e2HZb+4FOXT3pgnd/vGb45WWYw1+ixnQ==}
 
   '@testcontainers/postgresql@11.11.0':
     resolution: {integrity: sha512-Og64I/h5LKLVvUTkAcLeTXfFcMhh3dCHCypN3Uzd+tQMd70SpCfQ0LCP9v/U+MS7JBRzU9EmqhUFkTOm4hyZWw==}
@@ -13894,15 +13891,6 @@ snapshots:
   '@testcontainers/kafka@11.11.0':
     dependencies:
       compare-versions: 6.1.1
-      testcontainers: 11.11.0
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
-
-  '@testcontainers/minio@11.11.0':
-    dependencies:
       testcontainers: 11.11.0
     transitivePeerDependencies:
       - bare-abort-controller

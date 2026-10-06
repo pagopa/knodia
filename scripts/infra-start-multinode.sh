@@ -18,7 +18,7 @@ fi
 docker compose -f docker/compose.multinode.yaml up -d --wait || true
 
 # Verify that all long-running services (labeled knodia.check.on.startup=true)
-# are in a running state. Init containers (flyway, debezium-setup, minio-setup,
+# are in a running state. Init containers (flyway, debezium-setup, rustfs-setup,
 # seed, local-kms-setup) are expected to exit and are not checked.
 failed=0
 while IFS= read -r line; do
@@ -95,7 +95,7 @@ echo ""
 echo "  Shared:"
 echo "    Kafka UI:          http://localhost:8084"
 echo "    pgAdmin:           http://localhost:5050"
-echo "    MinIO Console:     http://localhost:9001"
+echo "    RustFS Console:    http://localhost:9001/rustfs/console/"
 echo "    Debezium:          http://localhost:8083"
 echo "    DynamoDB Local:    http://localhost:8085"
 echo "    local-kms:         http://localhost:4566"

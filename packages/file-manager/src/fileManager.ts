@@ -91,7 +91,7 @@ function buildPutObjectCommand(
 }
 
 // S3 does not model a dedicated PreconditionFailed exception for PutObject, and
-// MinIO surfaces it generically, so we match on name/status rather than a
+// S3-compatible servers surface it generically, so we match on name/status rather than a
 // typed error class.
 function isPreconditionFailed(error: unknown): boolean {
   if (typeof error !== "object" || error === null) {

@@ -67,7 +67,6 @@ catalog:
   "@tanstack/react-router-devtools": 1.144.0
   "@tanstack/router-plugin": 1.145.2
   "@testcontainers/kafka": 11.11.0
-  "@testcontainers/minio": 11.11.0
   "@testcontainers/postgresql": 11.11.0
   "@testing-library/dom": 10.4.1
   "@testing-library/jest-dom": 6.9.1
