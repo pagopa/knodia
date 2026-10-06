@@ -64,3 +64,15 @@ export const createLogger = ({
   config: LoggerConfig;
   loggerMetadata?: LoggerMetadata;
 }): Logger => pino(createLoggerOptions(config)).child(loggerMetadata ?? {});
+
+// Awaits a startup step (DB connection, client setup) and turns its failure
+// into a logged fatal exit, so non-HTTP entrypoints (consumers, jobs) fail as
+// loudly and uniformly as HTTP services do via startServer.
+export const exitOnStartupFailure = <T>(
+  startup: Promise<T>,
+  logger: Logger,
+): Promise<T> =>
+  startup.catch((error: unknown) => {
+    logger.error({ err: error }, "Failed to start service");
+    return process.exit(1);
+  });

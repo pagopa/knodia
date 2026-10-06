@@ -20,7 +20,7 @@ export async function startSignalHubMockEmitter({
   logger,
   seedConfig,
 }: StartParams): Promise<SignalHubEmitterHandle> {
-  const { db, pool } = makeSignalHubDrizzleConnection(dbConfig);
+  const { db, pool } = await makeSignalHubDrizzleConnection(dbConfig);
 
   const schedulerHandle = await startSignalHubMockScheduler({
     db,

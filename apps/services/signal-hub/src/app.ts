@@ -2,7 +2,10 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeReadmodelDrizzleConnection,
+} from "@knodia/db-readmodel-commons/utils";
 import { signalHubDbServiceBuilder } from "@knodia/db-signal-hub/services";
 import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -89,14 +92,18 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(
+export async function buildAppFromConfig(
   config: SignalHubConfig,
   rateLimiter: RateLimiter,
+  options?: DbConnectionOptions,
 ) {
-  const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
-  const { db: signalHubDb, pool: signalHubPool } =
-    makeSignalHubDrizzleConnection(config);
+  const [
+    { db: readmodelDb, pool: readmodelPool },
+    { db: signalHubDb, pool: signalHubPool },
+  ] = await Promise.all([
+    makeReadmodelDrizzleConnection(config, options),
+    makeSignalHubDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

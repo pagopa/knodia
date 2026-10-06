@@ -3,6 +3,7 @@ packages:
   - apps/web/*
   - packages/*
   - packages/models/*
+  - packages/db/commons
   - packages/db/event-store/*
   - packages/db/jti-replay-store
   - packages/db/readmodel/*

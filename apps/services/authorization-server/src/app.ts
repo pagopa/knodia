@@ -3,7 +3,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import formBody from "@fastify/formbody";
 import { createJtiReplayStore } from "@knodia/db-jti-replay-store";
-import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeReadmodelDrizzleConnection,
+} from "@knodia/db-readmodel-commons/utils";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -99,12 +102,13 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(
+export async function buildAppFromConfig(
   config: AuthorizationServerConfig,
   rateLimiter: RateLimiter,
+  options?: DbConnectionOptions,
 ) {
   const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+    await makeReadmodelDrizzleConnection(config, options);
 
   const app = buildApp({
     config,

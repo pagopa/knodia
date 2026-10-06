@@ -7,7 +7,10 @@ import {
   buildCognitoIdmClient,
   type CognitoIdmClientConfig,
 } from "@knodia/cognito-idm-client";
-import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeEventStoreDrizzleConnection,
+} from "@knodia/db-event-store-commons/utils";
 import { organizationEventStoreWriterBuilder } from "@knodia/db-event-store-writer/organization";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -97,11 +100,17 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: OrganizationProcessConfig) {
-  const { db: eventStoreDb, pool: eventStorePool } =
-    makeEventStoreDrizzleConnection(config);
-  const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+export async function buildAppFromConfig(
+  config: OrganizationProcessConfig,
+  options?: DbConnectionOptions,
+) {
+  const [
+    { db: eventStoreDb, pool: eventStorePool },
+    { db: readmodelDb, pool: readmodelPool },
+  ] = await Promise.all([
+    makeEventStoreDrizzleConnection(config, options),
+    makeReadmodelDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

@@ -3,7 +3,7 @@ import { KnodeId } from "@knodia/common-models/ids";
 import { signupDbServiceBuilder } from "@knodia/db-signup/services";
 import { makeSignupDrizzleConnection } from "@knodia/db-signup/utils";
 import { runConsumer } from "@knodia/kafka-commons";
-import { createLogger } from "@knodia/logger";
+import { createLogger, exitOnStartupFailure } from "@knodia/logger";
 import { createOrganizationProcessApiClient } from "@knodia/organization-process-client";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
@@ -12,7 +12,10 @@ import { createProcessMessage, type SignupUpdaterDeps } from "./utils/utils.ts";
 
 const logger = createLogger({ config });
 
-const { db, pool } = makeSignupDrizzleConnection(config);
+const { db, pool } = await exitOnStartupFailure(
+  makeSignupDrizzleConnection(config),
+  logger,
+);
 
 const buildKnodeClient = (knodeId: KnodeId) => ({
   cognitoClient: buildCognitoIdmClient({

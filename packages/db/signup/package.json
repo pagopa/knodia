@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-commons": "workspace:*",
     "@knodia/signup-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",

@@ -3,7 +3,10 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { makeEventStoreDrizzleConnection } from "@knodia/db-event-store-commons/utils";
+import {
+  type DbConnectionOptions,
+  makeEventStoreDrizzleConnection,
+} from "@knodia/db-event-store-commons/utils";
 import { agreementEventStoreWriterBuilder } from "@knodia/db-event-store-writer/agreement";
 import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
@@ -82,11 +85,17 @@ export function buildApp({
   return app;
 }
 
-export function buildAppFromConfig(config: AgreementProcessConfig) {
-  const { db: eventStoreDb, pool: eventStorePool } =
-    makeEventStoreDrizzleConnection(config);
-  const { db: readmodelDb, pool: readmodelPool } =
-    makeReadmodelDrizzleConnection(config);
+export async function buildAppFromConfig(
+  config: AgreementProcessConfig,
+  options?: DbConnectionOptions,
+) {
+  const [
+    { db: eventStoreDb, pool: eventStorePool },
+    { db: readmodelDb, pool: readmodelPool },
+  ] = await Promise.all([
+    makeEventStoreDrizzleConnection(config, options),
+    makeReadmodelDrizzleConnection(config, options),
+  ]);
 
   const app = buildApp({
     config,

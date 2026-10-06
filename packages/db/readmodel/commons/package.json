@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",

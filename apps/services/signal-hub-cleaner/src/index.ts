@@ -1,13 +1,15 @@
 import { makeSignalHubDrizzleConnection } from "@knodia/db-signal-hub/utils";
-import { createLogger } from "@knodia/logger";
+import { createLogger, exitOnStartupFailure } from "@knodia/logger";
 
 import { config } from "./config/config.ts";
 import { signalHubServiceBuilder } from "./services/signalHubService.ts";
 
 const logger = createLogger({ config });
 
-const { db: signalHubDb, pool: signalHubPool } =
-  makeSignalHubDrizzleConnection(config);
+const { db: signalHubDb, pool: signalHubPool } = await exitOnStartupFailure(
+  makeSignalHubDrizzleConnection(config),
+  logger,
+);
 const signalHubService = signalHubServiceBuilder(signalHubDb, logger);
 
 const shutdown = async (reason: string, exitCode = 0) => {

@@ -1,6 +1,6 @@
 import { initRedisRateLimiter } from "@knodia/fastify-zod-api-commons/rate-limit";
 import { startServer } from "@knodia/fastify-zod-api-commons/startServer";
-import { createLogger } from "@knodia/logger";
+import { createLogger, exitOnStartupFailure } from "@knodia/logger";
 
 import { buildAppFromConfig } from "./app.ts";
 import { config } from "./config/config.ts";
@@ -16,17 +16,22 @@ const rateLimiter = initRedisRateLimiter({
   serviceName: "mock-eservice",
 });
 
+// The emitter, not buildAppFromConfig, is what touches the DB, so start it
+// (and its startup connection check) before the server: a bad DB connection
+// then fails the boot before the HTTP server comes up.
+const emitter = await exitOnStartupFailure(
+  startSignalHubMockEmitter({
+    dbConfig: config,
+    logger,
+    seedConfig: toSignalHubSeedConfig(config),
+  }),
+  logger,
+);
+
 void startServer(buildAppFromConfig(config, rateLimiter), {
   host: config.host,
+  loggerConfig: config,
   port: config.port,
-});
-
-// Top-level await — a boot-time failure exits the process so the
-// orchestrator restarts the service.
-const emitter = await startSignalHubMockEmitter({
-  dbConfig: config,
-  logger,
-  seedConfig: toSignalHubSeedConfig(config),
 });
 
 let shuttingDown = false;
