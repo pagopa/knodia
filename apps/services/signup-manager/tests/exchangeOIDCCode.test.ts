@@ -229,19 +229,19 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     );
   });
 
-  it("returns 403 for native eIDAS claim names", async () => {
+  it("returns 500 when the only identifier is PersonIdentifier", async () => {
     const { cookie, nonce, state } = await startOIDCSession();
 
     setupEidasTokenExchange(nonce, {
-      DateOfBirth: "2000-01-01",
-      FamilyName: "User",
-      FirstName: "Test User",
+      dateOfBirth: "2000-01-01",
+      familyName: "User",
+      name: "Test User",
       PersonIdentifier: "FR/IT/12345",
     });
 
     const response = await injectTokenExchange({ cookie, state });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(500);
     expect(mockGenerateUISignupSessionToken).not.toHaveBeenCalled();
   });
 
