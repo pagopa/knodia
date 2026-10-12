@@ -26,7 +26,7 @@ describe("suspended-users notifier", () => {
     });
     const middle = await seedSuspendedUser(new Date("2026-03-01T10:00:00Z"), {
       fiscalNumber: undefined,
-      personIdentifier: `PID-${generateId()}`,
+      spidCode: `FR/IT/${generateId()}`,
     });
     const newest = await seedSuspendedUser(new Date("2026-04-01T10:00:00Z"));
     const active = await seedUser({ status: SignupUserStatus.enum.Active });

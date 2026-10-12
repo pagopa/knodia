@@ -142,7 +142,7 @@ describe("rate limiting on GET /auth/oidc/token", () => {
     const response = await exchangeCode(cookie, state);
 
     expect(response.statusCode).toBe(200);
-    // PersonIdentifier absent in the mock → falls back to spidCode.
+    // The mock carries both spidCode and fiscalNumber; spidCode wins.
     expect(consumedKeys).toEqual([hashRateLimitKey("test-spid-code")]);
   });
 

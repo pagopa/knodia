@@ -14,11 +14,10 @@ interface PersonalDataSource {
   familyName: string;
   fiscalNumber?: string;
   name: string;
-  personIdentifier?: string;
   spidCode?: string;
 }
 
-// The unique identifier is the IdP-specific id: spidCode (SPID), fiscalNumber (CIEid) or personIdentifier (eIDAS).
+// The unique identifier is the IdP-specific id: spidCode (SPID and eIDAS) or fiscalNumber (CIEid).
 export function buildPersonalData(user: PersonalDataSource): PersonalData {
   return {
     dateOfBirth: user.dateOfBirth,

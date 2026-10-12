@@ -144,18 +144,17 @@ describe("GET /user/me (getCurrentSignupUser)", () => {
     });
   });
 
-  it("should match the signup user by person identifier", async () => {
-    const personIdentifier = "test-person-identifier";
+  it("should match the signup user by fiscal number", async () => {
+    const fiscalNumber = "RSSMRA80A01H501U";
     const signupUser = makeSignupUser(
-      { email: "person.identifier.user@example.com" },
-      { personIdentifier },
+      { email: "fiscal.number.user@example.com" },
+      { fiscalNumber },
     );
     await seedSignupUser(signupUser);
 
     const response = await injectSignupAppRequest({
-      fiscalNumber: null,
+      fiscalNumber,
       oneIdNonce: "test-nonce",
-      personIdentifier,
       spidCode: null,
       type: "ui-signup-session",
     }).get("/user/me");

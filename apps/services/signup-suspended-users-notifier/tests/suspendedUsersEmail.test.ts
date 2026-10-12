@@ -16,7 +16,7 @@ import {
 type SuspendedSignupUser = Extract<SignupUser, { status: "Suspended" }>;
 
 const HEADER =
-  "ID utente;Nome;Cognome;Email;Data di nascita;Codice fiscale;Identificativo persona;Codice SPID;Sospeso il;Motivo;Motivo (codice);Creato il;Aggiornato il;Organizzazione Lynx;Utente Lynx;Organizzazione Orion;Utente Orion";
+  "ID utente;Nome;Cognome;Email;Data di nascita;Codice fiscale;Codice SPID/eIDAS;Sospeso il;Motivo;Motivo (codice);Creato il;Aggiornato il;Organizzazione Lynx;Utente Lynx;Organizzazione Orion;Utente Orion";
 
 function csvLines(csv: string): string[] {
   return csv
@@ -97,28 +97,20 @@ describe("buildSuspendedUsersCsv", () => {
 
   it.each([
     {
-      idColumns: ["RSSMRA80A15H501U", "", ""],
+      idColumns: ["RSSMRA80A15H501U", ""],
       label: "fiscalNumber",
       user: { fiscalNumber: "RSSMRA80A15H501U" },
     },
     {
-      idColumns: ["", "EU-PID-123", ""],
-      label: "personIdentifier",
-      user: {
-        fiscalNumber: undefined,
-        personIdentifier: "EU-PID-123",
-      },
-    },
-    {
-      idColumns: ["", "", "SPID-XYZ-1"],
+      idColumns: ["", "SPID-XYZ-1"],
       label: "spidCode",
       user: { fiscalNumber: undefined, spidCode: "SPID-XYZ-1" },
     },
   ])("renders only the $label identifier column", ({ idColumns, user }) => {
     const csv = buildSuspendedUsersCsv([makeSuspended(user)]);
     const cells = csvLines(csv)[1]?.split(";") ?? [];
-    // columns 5,6,7 = Codice fiscale, Identificativo persona, Codice SPID
-    expect([cells[5], cells[6], cells[7]]).toEqual(idColumns);
+    // columns 5,6 = Codice fiscale, Codice SPID/eIDAS
+    expect([cells[5], cells[6]]).toEqual(idColumns);
   });
 
   it("renders the suspension reason as Italian label + raw enum code", () => {
@@ -128,8 +120,8 @@ describe("buildSuspendedUsersCsv", () => {
       }),
     ]);
     const cells = csvLines(csv)[1]?.split(";") ?? [];
-    expect(cells[9]).toBe("Trattamento illecito (Art. 18.1.(b) GDPR)");
-    expect(cells[10]).toBe("UnlawfulProcessing");
+    expect(cells[8]).toBe("Trattamento illecito (Art. 18.1.(b) GDPR)");
+    expect(cells[9]).toBe("UnlawfulProcessing");
   });
 
   it("keeps the row intact when a field contains the separator or quotes", () => {

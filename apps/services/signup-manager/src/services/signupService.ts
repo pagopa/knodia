@@ -57,7 +57,6 @@ export function signupServiceBuilder(
   ) => {
     const user = await signupDbService.getUniqueSignupUserByIdentifiers({
       fiscalNumber: authData.fiscalNumber,
-      personIdentifier: authData.personIdentifier,
       spidCode: authData.spidCode,
     });
     assertSignupUserIsOnboarded(user);
@@ -77,7 +76,6 @@ export function signupServiceBuilder(
       const currentSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
           fiscalNumber: authData.fiscalNumber,
-          personIdentifier: authData.personIdentifier,
           spidCode: authData.spidCode,
         });
 
@@ -124,7 +122,6 @@ export function signupServiceBuilder(
       const existingSignupUser =
         await signupDbService.getUniqueSignupUserByIdentifiers({
           fiscalNumber: authData.fiscalNumber,
-          personIdentifier: authData.personIdentifier,
           spidCode: authData.spidCode,
         });
 
@@ -154,7 +151,6 @@ export function signupServiceBuilder(
 
       const user = await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
-        personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,
       });
 
@@ -187,7 +183,6 @@ export function signupServiceBuilder(
 
       return await signupDbService.getUniqueSignupUserByIdentifiers({
         fiscalNumber: authData.fiscalNumber,
-        personIdentifier: authData.personIdentifier,
         spidCode: authData.spidCode,
       });
     },
@@ -317,7 +312,6 @@ async function createOnboardingPendingUser(
       },
     },
     name: authData.name,
-    personIdentifier: authData.personIdentifier,
     signupUserId,
     spidCode: authData.spidCode,
     status: SignupUserStatus.enum.OnboardingPending,

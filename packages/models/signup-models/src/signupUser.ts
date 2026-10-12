@@ -40,7 +40,6 @@ const SignupUserBase = z.strictObject({
   fiscalNumber: z.string().min(1).optional(),
   generatedEntities: SignupGeneratedEntities,
   name: z.string(),
-  personIdentifier: z.string().min(1).optional(),
   signupUserId: SignupUserId,
   spidCode: z.string().min(1).optional(),
   // Legal acceptance instant; separate from createdAt because it diverges once
@@ -68,12 +67,8 @@ const SuspendedSignupUser = SignupUserBase.extend({
 
 export const SignupUser = z
   .discriminatedUnion("status", [NonSuspendedSignupUser, SuspendedSignupUser])
-  .refine(
-    (u) => exactlyOneDefined(u.spidCode, u.fiscalNumber, u.personIdentifier),
-    {
-      message:
-        "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
-      path: ["spidCode"],
-    },
-  );
+  .refine((u) => exactlyOneDefined(u.spidCode, u.fiscalNumber), {
+    message: "exactly one of spidCode / fiscalNumber must be set",
+    path: ["spidCode"],
+  });
 export type SignupUser = z.infer<typeof SignupUser>;

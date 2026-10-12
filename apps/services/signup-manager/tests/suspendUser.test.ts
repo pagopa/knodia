@@ -46,7 +46,6 @@ describe("POST /user/suspend (suspendUser)", () => {
       orionOrganizationName:
         signupUser.generatedEntities.Orion.organizationName,
       orionUserName: signupUser.generatedEntities.Orion.userName,
-      personIdentifier: signupUser.personIdentifier ?? null,
       signupUserId: signupUser.signupUserId,
       spidCode: signupUser.spidCode ?? null,
       status: "Suspended",

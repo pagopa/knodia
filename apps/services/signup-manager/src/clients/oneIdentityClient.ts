@@ -19,42 +19,23 @@ const OneIdentityTokenResponse = z.object({
 
 type OneIdentityTokenResponse = z.infer<typeof OneIdentityTokenResponse>;
 
-const OneIdentityCommonIdTokenClaims = z.object({
+// eIDAS logins come through the Italian eIDAS node, which maps eIDAS attributes
+// onto SPID names: PersonIdentifier arrives as spidCode, and no fiscalNumber.
+const OneIdentityIdTokenClaims = z.object({
   aud: z.string(),
+  dateOfBirth: z.string(),
   exp: z.number().int(),
+  familyName: z.string(),
   // Reject empty strings: present here, but absent to the truthiness-based DB
   // lookup, so they persist a value that never matches on a later login.
   fiscalNumber: z.string().min(1).optional(),
   iat: z.number().int(),
   iss: z.url(),
+  name: z.string(),
   nonce: z.string(),
-  PersonIdentifier: z.string().min(1).optional(),
   spidCode: z.string().min(1).optional(),
   sub: z.string(),
 });
-
-const OneIdentitySpidOrCieProfileClaims = z.object({
-  dateOfBirth: z.string(),
-  familyName: z.string(),
-  name: z.string(),
-});
-
-const OneIdentityEidasProfileClaims = z
-  .object({
-    DateOfBirth: z.string(),
-    FamilyName: z.string(),
-    FirstName: z.string(),
-  })
-  .transform(({ DateOfBirth, FamilyName, FirstName }) => ({
-    dateOfBirth: DateOfBirth,
-    familyName: FamilyName,
-    name: FirstName,
-  }));
-
-const OneIdentityIdTokenClaims = z.intersection(
-  OneIdentityCommonIdTokenClaims,
-  z.union([OneIdentitySpidOrCieProfileClaims, OneIdentityEidasProfileClaims]),
-);
 
 type OneIdentityIdTokenClaims = z.infer<typeof OneIdentityIdTokenClaims>;
 

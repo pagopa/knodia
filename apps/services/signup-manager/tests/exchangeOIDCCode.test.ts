@@ -78,7 +78,10 @@ function injectTokenExchange({
   });
 }
 
-function setupSuccessfulEidasTokenExchange(nonce: string) {
+function setupEidasTokenExchange(
+  nonce: string,
+  claims: Record<string, unknown>,
+) {
   mockAxiosPost.mockResolvedValueOnce({
     data: oneIdentityResponseMock,
   });
@@ -86,15 +89,12 @@ function setupSuccessfulEidasTokenExchange(nonce: string) {
   mockJwtVerify.mockResolvedValueOnce({
     payload: {
       aud: "test-one-identity-client-id",
-      DateOfBirth: "2000-01-01",
       exp: Math.floor(Date.now() / 1000) + 3600,
-      FamilyName: "User",
-      FirstName: "Test User",
       iat: Math.floor(Date.now() / 1000),
       iss: "https://test.one-identity.com",
       nonce,
-      PersonIdentifier: "test-person-identifier",
       sub: "user-123",
+      ...claims,
     },
     protectedHeader: { alg: "RS256" },
   });
@@ -203,28 +203,46 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     expect(mockJwtVerify).toHaveBeenCalledOnce();
   });
 
-  it("returns 200 with eIDAS profile claims", async () => {
+  it("returns 200 for an eIDAS login, identified by spidCode", async () => {
     const { cookie, nonce, state } = await startOIDCSession();
 
-    setupSuccessfulEidasTokenExchange(nonce);
+    // The Italian eIDAS node maps eIDAS attributes onto SPID names, with no
+    // fiscalNumber.
+    setupEidasTokenExchange(nonce, {
+      dateOfBirth: "2000-01-01",
+      familyName: "User",
+      name: "Test User",
+      spidCode: "FR/IT/12345",
+    });
 
     const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
-    expect(mockAxiosPost).toHaveBeenCalledOnce();
-    expect(mockJwtVerify).toHaveBeenCalledOnce();
     expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
       expect.objectContaining({
         dateOfBirth: "2000-01-01",
         familyName: "User",
-        identifier: {
-          field: "personIdentifier",
-          value: "test-person-identifier",
-        },
+        identifier: { field: "spidCode", value: "FR/IT/12345" },
         name: "Test User",
       }),
     );
+  });
+
+  it("returns 403 for native eIDAS claim names", async () => {
+    const { cookie, nonce, state } = await startOIDCSession();
+
+    setupEidasTokenExchange(nonce, {
+      DateOfBirth: "2000-01-01",
+      FamilyName: "User",
+      FirstName: "Test User",
+      PersonIdentifier: "FR/IT/12345",
+    });
+
+    const response = await injectTokenExchange({ cookie, state });
+
+    expect(response.statusCode).toBe(403);
+    expect(mockGenerateUISignupSessionToken).not.toHaveBeenCalled();
   });
 
   it("selects the single precedence winner (SPID drops fiscalNumber) for the token generator", async () => {

@@ -169,18 +169,13 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
 
     async getUniqueSignupUserByIdentifiers({
       fiscalNumber,
-      personIdentifier,
       spidCode,
     }: {
       fiscalNumber?: string;
-      personIdentifier?: string;
       spidCode?: string;
     }): Promise<SignupUser | undefined> {
       const identifierFilters = [
         fiscalNumber ? eq(signupUser.fiscalNumber, fiscalNumber) : undefined,
-        personIdentifier
-          ? eq(signupUser.personIdentifier, personIdentifier)
-          : undefined,
         spidCode ? eq(signupUser.spidCode, spidCode) : undefined,
       ].filter((filter): filter is SQL => filter !== undefined);
 
@@ -192,7 +187,7 @@ export function signupDbServiceBuilder(db: NodePgDatabase) {
        */
       if (identifierFilters.length === 0) {
         throw genericInternalError(
-          "Missing all user identifiers claims (fiscalNumber, personIdentifier, spidCode)",
+          "Missing all user identifiers claims (fiscalNumber, spidCode)",
         );
       }
 

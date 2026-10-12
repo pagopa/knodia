@@ -37,7 +37,6 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       name: validUISignupSessionTokenClaims.name,
       orionOrganizationName: expect.any(String),
       orionUserName: expect.any(String),
-      personIdentifier: null,
       signupUserId: expect.any(String),
       spidCode: validUISignupSessionTokenClaims.spidCode,
       status: "OnboardingPending",
@@ -140,7 +139,6 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     const response = await injectSignupAppRequest({
       fiscalNumber,
       oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
-      personIdentifier: null,
       spidCode: null,
       type: "ui-signup-session",
     })
@@ -168,26 +166,6 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
 
-  it("should return 409 when the person identifier is already associated", async () => {
-    const personIdentifier = "test-person-identifier";
-    const existingUser = makeSignupUser({}, { personIdentifier });
-    await seedSignupUser(existingUser);
-
-    const response = await injectSignupAppRequest({
-      fiscalNumber: null,
-      oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
-      personIdentifier,
-      spidCode: null,
-      type: "ui-signup-session",
-    })
-      .post("/user/confirmOnboarding")
-      .body(validConfirmOnboardingBody);
-
-    expect(response.statusCode).toBe(409);
-    await expect(getAllSignupUsers()).resolves.toHaveLength(1);
-    expect(kafkaProducerMock.send).not.toHaveBeenCalled();
-  });
-
   it("rejects a ui-signup-session token that carries no identifier", async () => {
     // The single-identifier invariant lives in the token codec, so a token with
     // no identifier fails auth validation before reaching the handler (no user
@@ -196,7 +174,6 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
     const response = await injectSignupAppRequest({
       fiscalNumber: null,
       oneIdNonce: validUISignupSessionTokenClaims.oneIdNonce,
-      personIdentifier: null,
       spidCode: null,
       type: "ui-signup-session",
     })

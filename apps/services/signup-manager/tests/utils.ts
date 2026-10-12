@@ -36,24 +36,11 @@ export const validUISignupSessionTokenClaims =
   getTestUISignupSessionTokenClaims();
 
 // A signup user carries exactly one identifier. Each member forbids the other
-// two keys via `never`, so passing more than one is a compile error; identifiers
-// go through this param, not through `overrides`.
+// key via `never`, so passing both is a compile error; identifiers go through
+// this param, not through `overrides`.
 type SignupUserIdentifier =
-  | {
-      fiscalNumber: string | undefined;
-      personIdentifier?: never;
-      spidCode?: never;
-    }
-  | {
-      fiscalNumber?: never;
-      personIdentifier: string | undefined;
-      spidCode?: never;
-    }
-  | {
-      fiscalNumber?: never;
-      personIdentifier?: never;
-      spidCode: string | undefined;
-    };
+  | { fiscalNumber: string | undefined; spidCode?: never }
+  | { fiscalNumber?: never; spidCode: string | undefined };
 
 export async function getAllEmailChangeRequests() {
   return await signupDb.select().from(emailChangeRequest);

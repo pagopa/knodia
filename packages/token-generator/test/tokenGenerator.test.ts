@@ -403,18 +403,17 @@ describe("generateUISignupSessionToken — identifier claim mapping", () => {
     secondsDuration: SECONDS_DURATION,
   };
 
-  it("sets personIdentifier as the only identifier and mirrors it in sub", async () => {
+  it("sets spidCode as the only identifier and mirrors it in sub", async () => {
     const { payload } = await generator.generateUISignupSessionToken({
       ...baseInput,
-      identifier: { field: "personIdentifier", value: "person-identifier-123" },
+      identifier: { field: "spidCode", value: "spid-code-123" },
     });
 
     expect(payload).toMatchObject({
-      personIdentifier: "person-identifier-123",
-      sub: "person-identifier-123",
+      spidCode: "spid-code-123",
+      sub: "spid-code-123",
     });
     expect(payload.fiscalNumber).toBeUndefined();
-    expect(payload.spidCode).toBeUndefined();
   });
 
   it("sets fiscalNumber as the only identifier and mirrors it in sub", async () => {
@@ -427,7 +426,6 @@ describe("generateUISignupSessionToken — identifier claim mapping", () => {
       fiscalNumber: "RSSMRA80A01H501U",
       sub: "RSSMRA80A01H501U",
     });
-    expect(payload.personIdentifier).toBeUndefined();
     expect(payload.spidCode).toBeUndefined();
   });
 });
