@@ -32,17 +32,17 @@ describe("redactQueryParams", () => {
     );
 
     expect(error.params).toEqual([
-      "<redacted string(23)>",
+      "<redacted>",
       userId,
       42,
       true,
       null,
       "<redacted>",
-      "<redacted string(24)>",
-      "<redacted string(19)>",
-      "<redacted string(10)>",
-      "<redacted string(6)>",
-      [userId, "<redacted string(5)>"],
+      "<redacted>",
+      "<redacted>",
+      "<redacted>",
+      "<redacted>",
+      [userId, "<redacted>"],
     ]);
   });
 
@@ -50,7 +50,7 @@ describe("redactQueryParams", () => {
     const error = redactQueryParams(makeQueryError([email, userId]));
 
     expect(error.message).toBe(
-      `Failed query: ${query}\nparams: <redacted string(23)>,${userId}`,
+      `Failed query: ${query}\nparams: <redacted>,${userId}`,
     );
     expect(error.stack).not.toContain(email);
     expect(error.stack).toMatch(/\n\s+at /);
@@ -82,10 +82,12 @@ describe("redactQueryParams", () => {
     const error = makeQueryError([email]);
 
     redactQueryParams(error);
-    const { message } = error;
+    const { message, params, stack } = error;
     redactQueryParams(error);
 
     expect(error.message).toBe(message);
+    expect(error.params).toEqual(params);
+    expect(error.stack).toBe(stack);
   });
 
   it("should leave other errors untouched", () => {

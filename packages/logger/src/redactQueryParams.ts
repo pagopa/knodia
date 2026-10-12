@@ -4,11 +4,11 @@
 type QueryError = Error & { params: unknown[]; query: string };
 
 const QUERY_ERROR_MESSAGE_PREFIX = "Failed query: ";
+// Constant, so redacting an already redacted error is a no-op.
+const REDACTED = "<redacted>";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-const redactedErrors = new WeakSet<Error>();
 
 /** Mutates `error` (and its causes) in place and returns it. */
 export function redactQueryParams<T>(error: T): T {
@@ -32,7 +32,7 @@ function redactErrorTree(error: unknown, visited: Set<Error>): void {
   }
   visited.add(error);
 
-  if (isQueryError(error) && !redactedErrors.has(error)) {
+  if (isQueryError(error)) {
     redactQueryError(error);
   }
   // Wrapped query errors still leak: loggers print the whole cause chain.
@@ -55,27 +55,19 @@ function redactQueryError(error: QueryError): void {
   error.params = params;
   error.message = message;
   error.stack = `${error.name}: ${message}${frames}`;
-  redactedErrors.add(error);
 }
 
 function redactQueryParam(param: unknown): unknown {
-  if (
+  if (Array.isArray(param)) {
+    return param.map(redactQueryParam);
+  }
+  const isKept =
     param === null ||
     param === undefined ||
     typeof param === "number" ||
     typeof param === "boolean" ||
-    typeof param === "bigint"
-  ) {
-    return param;
-  }
-  if (Array.isArray(param)) {
-    return param.map(redactQueryParam);
-  }
-  if (typeof param === "string") {
-    // Dates and timestamps too: they include birth dates.
-    return UUID_REGEX.test(param)
-      ? param
-      : `<redacted string(${param.length})>`;
-  }
-  return "<redacted>";
+    typeof param === "bigint" ||
+    // Dates and timestamps are redacted too: they include birth dates.
+    (typeof param === "string" && UUID_REGEX.test(param));
+  return isKept ? param : REDACTED;
 }

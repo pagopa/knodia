@@ -649,7 +649,7 @@ describe("makeApiProblemBuilder", () => {
 
       expect(loggerMock.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          "Failed query: select 1 where email = $1\nparams: <redacted string(23)>",
+          "Failed query: select 1 where email = $1\nparams: <redacted>",
         ),
       );
       expect(loggerMock.error).toHaveBeenCalledWith(
