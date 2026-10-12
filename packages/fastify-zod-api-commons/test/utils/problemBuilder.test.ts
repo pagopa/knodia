@@ -3,6 +3,7 @@ import type { ZodIssue } from "zod-validation-error";
 
 import createError from "@fastify/error";
 import { type CorrelationId, generateId } from "@knodia/common-models/ids";
+import { DrizzleQueryError } from "drizzle-orm/errors";
 import * as zodFastify from "fastify-type-provider-zod";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
@@ -635,6 +636,20 @@ describe("makeApiProblemBuilder", () => {
       expectToMatchProblem(problem, genericProblemExpectation);
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
       expect(loggerMock.warn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("handling failed SQL queries", () => {
+    it("should not log the query's free-text params", () => {
+      const email = "mario.rossi@example.com";
+
+      makeApiProblem(
+        new DrizzleQueryError("select 1 where email = $1", [email]),
+      );
+
+      expect(loggerMock.error).toHaveBeenCalledWith(
+        expect.not.stringContaining(email),
+      );
     });
   });
 

@@ -1,5 +1,6 @@
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
+import { redactQueryParams } from "@knodia/logger";
 import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -83,6 +84,8 @@ export function makeApiProblemBuilder<T extends string>(
 
   return (error) => {
     const { correlationId, logger } = getContextValues(requestContext);
+    // The problem log string embeds the error message, bypassing the logger's serializers.
+    redactQueryParams(error);
 
     const makeProblem = ({
       errors,
