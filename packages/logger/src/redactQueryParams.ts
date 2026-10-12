@@ -13,11 +13,7 @@ const TIMESTAMP_REGEX =
 
 const redactedErrors = new WeakSet<Error>();
 
-/**
- * Redacts in place the non-identifier values bound to failed SQL queries
- * found in `error` or its causes, keeping UUIDs, numbers, booleans, dates
- * and timestamps for debuggability. Returns the same `error`.
- */
+/** Mutates `error` (and its causes) in place and returns it. */
 export function redactQueryParams<T>(error: T): T {
   redactErrorTree(error, new Set());
   return error;
