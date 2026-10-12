@@ -1,6 +1,6 @@
 import { DrizzleQueryError } from "drizzle-orm/errors";
 import { Writable } from "node:stream";
-import { pino } from "pino";
+import { type Logger, pino } from "pino";
 import { describe, expect, it } from "vitest";
 
 import { createLoggerOptions, redactQueryParams } from "../src/logger.ts";
@@ -100,7 +100,7 @@ describe("redactQueryParams", () => {
 });
 
 describe("createLoggerOptions", () => {
-  it("should redact query params of logged errors", () => {
+  const makeLogger = () => {
     const lines: string[] = [];
     const destination = new Writable({
       write(chunk: Buffer, _encoding, callback) {
@@ -119,9 +119,30 @@ describe("createLoggerOptions", () => {
       },
       destination,
     );
+    return { lines, logger };
+  };
 
-    logger.error({ err: makeQueryError([email, userId]) }, "query failed");
+  it.each([
+    [
+      "with a message",
+      (logger: Logger) =>
+        logger.error({ err: makeQueryError([email, userId]) }, "query failed"),
+    ],
+    [
+      "as the only argument",
+      (logger: Logger) => logger.error(makeQueryError([email, userId])),
+    ],
+    [
+      "in an object without a message",
+      (logger: Logger) =>
+        logger.error({ err: makeQueryError([email, userId]) }),
+    ],
+  ])("should redact query params of errors logged %s", (_label, log) => {
+    const { lines, logger } = makeLogger();
 
+    log(logger);
+
+    expect(lines.join("")).toContain("Failed query");
     expect(lines.join("")).not.toContain(email);
     expect(lines.join("")).toContain(userId);
   });
