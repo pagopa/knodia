@@ -13,7 +13,7 @@ const makeQueryError = (params: unknown[]) =>
   new DrizzleQueryError(query, params, new Error("connection terminated"));
 
 describe("redactQueryParams", () => {
-  it("should redact free-text params and keep identifiers, numbers, booleans, dates and timestamps", () => {
+  it("should keep only identifiers, numbers, booleans and nulls", () => {
     const date = new Date("2026-01-01T00:00:00.000Z");
     const error = redactQueryParams(
       makeQueryError([
@@ -25,6 +25,7 @@ describe("redactQueryParams", () => {
         date,
         "2026-01-01T00:00:00.000Z",
         "2026-01-01 10:00:00",
+        "1980-01-01",
         "Active",
         [userId, "Mario"],
       ]),
@@ -36,9 +37,10 @@ describe("redactQueryParams", () => {
       42,
       true,
       null,
-      date,
-      "2026-01-01T00:00:00.000Z",
-      "2026-01-01 10:00:00",
+      "<redacted>",
+      "<redacted string(24)>",
+      "<redacted string(19)>",
+      "<redacted string(10)>",
       "<redacted string(6)>",
       [userId, "<redacted string(5)>"],
     ]);

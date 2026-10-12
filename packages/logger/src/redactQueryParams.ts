@@ -7,9 +7,6 @@ const QUERY_ERROR_MESSAGE_PREFIX = "Failed query: ";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-// Matches both drizzle timestamp modes: ISO strings ("date") and "YYYY-MM-DD hh:mm:ss" ("string").
-const TIMESTAMP_REGEX =
-  /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}(?::?\d{2})?)?)?$/;
 
 const redactedErrors = new WeakSet<Error>();
 
@@ -67,8 +64,7 @@ function redactQueryParam(param: unknown): unknown {
     param === undefined ||
     typeof param === "number" ||
     typeof param === "boolean" ||
-    typeof param === "bigint" ||
-    param instanceof Date
+    typeof param === "bigint"
   ) {
     return param;
   }
@@ -76,7 +72,8 @@ function redactQueryParam(param: unknown): unknown {
     return param.map(redactQueryParam);
   }
   if (typeof param === "string") {
-    return UUID_REGEX.test(param) || TIMESTAMP_REGEX.test(param)
+    // Dates and timestamps too: they include birth dates.
+    return UUID_REGEX.test(param)
       ? param
       : `<redacted string(${param.length})>`;
   }
