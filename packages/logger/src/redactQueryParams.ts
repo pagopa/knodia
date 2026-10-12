@@ -52,14 +52,16 @@ function redactErrorTree(error: unknown, visited: Set<Error>): void {
 function redactQueryError(error: QueryError): void {
   const params = error.params.map(redactQueryParam);
   const message = `${QUERY_ERROR_MESSAGE_PREFIX}${error.query}\nparams: ${String(params)}`;
-  // The stack header repeats the original message, so rebuild it from the frames.
-  const frames = (error.stack ?? "")
-    .split("\n")
-    .filter((line) => line.trimStart().startsWith("at "));
+  // The stack header repeats the original message. Strip it exactly rather than
+  // keeping "at " lines, which a multiline param could fake.
+  const originalHeader = `${error.name}: ${error.message}`;
+  const frames = error.stack?.startsWith(originalHeader)
+    ? error.stack.slice(originalHeader.length)
+    : "";
 
   error.params = params;
   error.message = message;
-  error.stack = [`${error.name}: ${message}`, ...frames].join("\n");
+  error.stack = `${error.name}: ${message}${frames}`;
   redactedErrors.add(error);
 }
 

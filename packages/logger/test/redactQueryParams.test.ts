@@ -54,6 +54,15 @@ describe("redactQueryParams", () => {
     expect(error.stack).toMatch(/\n\s+at /);
   });
 
+  it("should not keep multiline params that look like stack frames", () => {
+    const error = redactQueryParams(
+      makeQueryError([`first line\n    at ${email}`]),
+    );
+
+    expect(error.stack).not.toContain(email);
+    expect(error.stack).toMatch(/\n\s+at /);
+  });
+
   it("should redact query errors wrapped as cause or in an AggregateError", () => {
     const caused = new Error("wrapper", { cause: makeQueryError([email]) });
     const aggregated = new AggregateError([makeQueryError([email])]);
