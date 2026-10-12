@@ -5,6 +5,7 @@ import type {
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
+import { redactQueryParams } from "@knodia/logger";
 
 import type { KafkaConsumerConfig } from "./config/config.ts";
 
@@ -70,6 +71,8 @@ export async function runConsumer(
           await consumerHandler(payload);
           await kafkaCommitMessageOffsets(consumer, payload, logger);
         } catch (e) {
+          // Before building the error: its detail embeds the cause message.
+          redactQueryParams(e);
           const kafkaMessageProcessErr = kafkaMessageProcessError(
             payload.topic,
             payload.partition,
