@@ -39,7 +39,7 @@ export async function assertSignupUserEmailDoesNotExist(
     ]);
 
   if (emailAlreadyAssociated || emailChangeRequestEmailAlreadyExists) {
-    throw signupUserEmailAlreadyInUse(email);
+    throw signupUserEmailAlreadyInUse();
   }
 }
 
