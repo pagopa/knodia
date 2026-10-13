@@ -98,24 +98,18 @@ export const UISignupSessionTokenClaims = KnodiaJwtClaims.extend({
   fiscalNumber: z.string().min(1).optional(),
   name: z.string(),
   oneIdNonce: z.string(),
-  personIdentifier: z.string().min(1).optional(),
   spidCode: z.string().min(1).optional(),
   type: z.literal("ui-signup-session"),
 })
-  .refine(
-    (c) => exactlyOneDefined(c.spidCode, c.fiscalNumber, c.personIdentifier),
-    {
-      message:
-        "exactly one of spidCode / fiscalNumber / personIdentifier must be set",
-      path: ["spidCode"],
-    },
-  )
+  .refine((c) => exactlyOneDefined(c.spidCode, c.fiscalNumber), {
+    message: "exactly one of spidCode / fiscalNumber must be set",
+    path: ["spidCode"],
+  })
   .refine(
     (c) =>
       c.sub ===
       selectSignupIdentifier({
         fiscalNumber: c.fiscalNumber,
-        personIdentifier: c.personIdentifier,
         spidCode: c.spidCode,
       })?.value,
     {
@@ -128,7 +122,7 @@ export const UISignupSessionTokenClaims = KnodiaJwtClaims.extend({
   );
 
 export interface SignupIdentifier {
-  field: "fiscalNumber" | "personIdentifier" | "spidCode";
+  field: "fiscalNumber" | "spidCode";
   value: string;
 }
 
@@ -136,17 +130,12 @@ export type UISignupSessionTokenClaims = z.infer<
   typeof UISignupSessionTokenClaims
 >;
 
-// Precedence: personIdentifier > spidCode > fiscalNumber.
+// Precedence: spidCode > fiscalNumber.
 export function selectSignupIdentifier(ids: {
   fiscalNumber?: string;
-  personIdentifier?: string;
   spidCode?: string;
 }): SignupIdentifier | undefined {
   return match(ids)
-    .with({ personIdentifier: P.string }, ({ personIdentifier }) => ({
-      field: "personIdentifier" as const,
-      value: personIdentifier,
-    }))
     .with({ spidCode: P.string }, ({ spidCode }) => ({
       field: "spidCode" as const,
       value: spidCode,

@@ -55,12 +55,11 @@ export function authServiceBuilder(
       // user. Keep exactly one, by precedence.
       const identifier = selectSignupIdentifier({
         fiscalNumber: claims.fiscalNumber,
-        personIdentifier: claims.PersonIdentifier,
         spidCode: claims.spidCode,
       });
       if (identifier === undefined) {
         throw genericInternalError(
-          "Missing required claim in ID token (spidCode, fiscalNumber or PersonIdentifier)",
+          "Missing required claim in ID token (spidCode or fiscalNumber)",
         );
       }
 

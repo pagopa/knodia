@@ -23,7 +23,6 @@ function baseRow(overrides: Partial<SignupUserSQL> = {}): SignupUserSQL {
     name: "Mario",
     orionOrganizationName: "Orion Org",
     orionUserName: "orion_user",
-    personIdentifier: null,
     signupUserId: generateId<SignupUserId>(),
     spidCode: "SPID-XYZ-1",
     status: SignupUserStatus.enum.Active,
@@ -69,14 +68,12 @@ describe("toSignupUser", () => {
     const user = toSignupUser(
       baseRow({
         fiscalNumber: null,
-        personIdentifier: null,
         spidCode: "SPID-ONLY",
       }),
     );
 
     expect(user).toMatchObject({
       fiscalNumber: undefined,
-      personIdentifier: undefined,
       spidCode: "SPID-ONLY",
     });
   });
@@ -101,9 +98,7 @@ describe("toSignupUser", () => {
 
   it("throws when a row carries no IdP identifier", () => {
     expect(() =>
-      toSignupUser(
-        baseRow({ fiscalNumber: null, personIdentifier: null, spidCode: null }),
-      ),
+      toSignupUser(baseRow({ fiscalNumber: null, spidCode: null })),
     ).toThrow();
   });
 });

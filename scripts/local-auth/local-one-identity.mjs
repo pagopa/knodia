@@ -23,7 +23,6 @@ const FAMILY_NAME = "Rossi";
 const DATE_OF_BIRTH = "1980-01-01";
 const FISCAL_NUMBER = "RSSMRA80A01H501U";
 const SPID_CODE = "SPID-001";
-const PERSON_IDENTIFIER = "IT/RSSMRA80A01H501U";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -194,7 +193,6 @@ async function handleToken(req, res) {
     iss: ISSUER,
     name: NAME,
     nonce: codeData.nonce,
-    PersonIdentifier: PERSON_IDENTIFIER,
     spidCode: SPID_CODE,
     sub: USER_ID,
   });

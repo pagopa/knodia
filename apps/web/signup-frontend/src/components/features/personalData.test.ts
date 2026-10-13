@@ -24,9 +24,6 @@ describe("buildPersonalData", () => {
     expect(
       buildPersonalData({ ...base, fiscalNumber: "FN-1" }).uniqueIdentifier,
     ).toBe("FN-1");
-    expect(
-      buildPersonalData({ ...base, personIdentifier: "PI-1" }).uniqueIdentifier,
-    ).toBe("PI-1");
   });
 
   it("omits the email when it is missing", () => {

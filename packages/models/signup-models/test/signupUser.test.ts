@@ -36,16 +36,6 @@ describe("SignupUser — happy paths", () => {
     expect(parsed).toMatchObject({ fiscalNumber: "RSSMRA80A01H501U" });
   });
 
-  it("accepts an eIDAS-only record (only personIdentifier set)", () => {
-    const parsed = SignupUser.parse({
-      ...baseRecord,
-      fiscalNumber: undefined,
-      personIdentifier: "FR/IT/12345",
-      spidCode: undefined,
-    });
-    expect(parsed).toMatchObject({ personIdentifier: "FR/IT/12345" });
-  });
-
   it("accepts a DeletionPending record with the same shape as Active", () => {
     const parsed = SignupUser.parse({
       ...baseRecord,
@@ -125,7 +115,6 @@ describe("SignupUser — single-identifier invariant", () => {
       SignupUser.parse({
         ...baseRecord,
         fiscalNumber: undefined,
-        personIdentifier: undefined,
         spidCode: undefined,
       }),
     ).toThrow();

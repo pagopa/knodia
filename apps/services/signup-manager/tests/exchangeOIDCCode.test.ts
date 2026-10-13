@@ -78,28 +78,6 @@ function injectTokenExchange({
   });
 }
 
-function setupSuccessfulEidasTokenExchange(nonce: string) {
-  mockAxiosPost.mockResolvedValueOnce({
-    data: oneIdentityResponseMock,
-  });
-
-  mockJwtVerify.mockResolvedValueOnce({
-    payload: {
-      aud: "test-one-identity-client-id",
-      DateOfBirth: "2000-01-01",
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      FamilyName: "User",
-      FirstName: "Test User",
-      iat: Math.floor(Date.now() / 1000),
-      iss: "https://test.one-identity.com",
-      nonce,
-      PersonIdentifier: "test-person-identifier",
-      sub: "user-123",
-    },
-    protectedHeader: { alg: "RS256" },
-  });
-}
-
 function setupSuccessfulTokenExchange(nonce: string) {
   mockAxiosPost.mockResolvedValueOnce({
     data: oneIdentityResponseMock,
@@ -114,7 +92,10 @@ function setupSuccessfulTokenExchange(nonce: string) {
   });
 }
 
-function setupTokenExchangeWithoutIdentifier(nonce: string) {
+function setupTokenExchangeWithClaims(
+  nonce: string,
+  claims: Record<string, unknown>,
+) {
   mockAxiosPost.mockResolvedValueOnce({
     data: oneIdentityResponseMock,
   });
@@ -122,14 +103,12 @@ function setupTokenExchangeWithoutIdentifier(nonce: string) {
   mockJwtVerify.mockResolvedValueOnce({
     payload: {
       aud: "test-one-identity-client-id",
-      dateOfBirth: "2000-01-01",
       exp: Math.floor(Date.now() / 1000) + 3600,
-      familyName: "User",
       iat: Math.floor(Date.now() / 1000),
       iss: "https://test.one-identity.com",
-      name: "Test User",
       nonce,
       sub: "user-123",
+      ...claims,
     },
     protectedHeader: { alg: "RS256" },
   });
@@ -203,25 +182,27 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
     expect(mockJwtVerify).toHaveBeenCalledOnce();
   });
 
-  it("returns 200 with eIDAS profile claims", async () => {
+  it("returns 200 for an eIDAS login, identified by spidCode", async () => {
     const { cookie, nonce, state } = await startOIDCSession();
 
-    setupSuccessfulEidasTokenExchange(nonce);
+    // The Italian eIDAS node maps eIDAS attributes onto SPID names, with no
+    // fiscalNumber.
+    setupTokenExchangeWithClaims(nonce, {
+      dateOfBirth: "2000-01-01",
+      familyName: "User",
+      name: "Test User",
+      spidCode: "FR/IT/12345",
+    });
 
     const response = await injectTokenExchange({ cookie, state });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toHaveProperty("uiSignupSessionToken");
-    expect(mockAxiosPost).toHaveBeenCalledOnce();
-    expect(mockJwtVerify).toHaveBeenCalledOnce();
     expect(mockGenerateUISignupSessionToken).toHaveBeenCalledWith(
       expect.objectContaining({
         dateOfBirth: "2000-01-01",
         familyName: "User",
-        identifier: {
-          field: "personIdentifier",
-          value: "test-person-identifier",
-        },
+        identifier: { field: "spidCode", value: "FR/IT/12345" },
         name: "Test User",
       }),
     );
@@ -247,7 +228,11 @@ describe("GET /auth/oidc/token (exchangeOIDCCode)", () => {
   it("returns 500 when the ID token has no usable identifier", async () => {
     const { cookie, nonce, state } = await startOIDCSession();
 
-    setupTokenExchangeWithoutIdentifier(nonce);
+    setupTokenExchangeWithClaims(nonce, {
+      dateOfBirth: "2000-01-01",
+      familyName: "User",
+      name: "Test User",
+    });
 
     const response = await injectTokenExchange({ cookie, state });
 

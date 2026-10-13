@@ -74,7 +74,6 @@ export type TestToken =
       fiscalNumber?: null | string;
       name?: string;
       oneIdNonce: string;
-      personIdentifier?: null | string;
       spidCode?: null | string;
       type: "ui-signup-session";
       uniqueIdentifier?: string;
@@ -251,29 +250,25 @@ export function getTestUISignupSessionTokenClaims(
     fiscalNumber?: null | string;
     name?: string;
     oneIdNonce?: string;
-    personIdentifier?: null | string;
     spidCode?: null | string;
     uniqueIdentifier?: string;
   } = {},
 ): UISignupSessionTokenClaims {
   // Default spidCode only when the caller sets no identifier at all, so a fixture
-  // built from personIdentifier alone doesn't also carry the default. Explicit
+  // built from fiscalNumber alone doesn't also carry the default. Explicit
   // `null` means "absent", letting a test build a zero-identifier fixture.
   const fiscalNumber = props.fiscalNumber ?? undefined;
-  const personIdentifier = props.personIdentifier ?? undefined;
 
-  const callerSetIdentifier =
-    (props.spidCode ?? props.fiscalNumber ?? props.personIdentifier) != null;
   const spidCode = match(props.spidCode)
     .with(P.string, (value) => value)
     .with(null, () => undefined)
-    // Not passed: default to a SPID login unless another identifier was set,
+    // Not passed: default to a SPID login unless fiscalNumber was set,
     // using `uniqueIdentifier` so callers that only care about the bucket key
     // get sub === spidCode, falling back to a fixed code.
     .with(undefined, () =>
-      callerSetIdentifier
-        ? undefined
-        : (props.uniqueIdentifier ?? "test-spid-code"),
+      fiscalNumber === undefined
+        ? (props.uniqueIdentifier ?? "test-spid-code")
+        : undefined,
     )
     .exhaustive();
 
@@ -288,12 +283,11 @@ export function getTestUISignupSessionTokenClaims(
     jti: "test-jti",
     name: props.name ?? "Test",
     oneIdNonce: props.oneIdNonce ?? "test-nonce",
-    personIdentifier,
     spidCode,
     // sub mirrors the chosen identifier, as in production.
     sub:
-      selectSignupIdentifier({ fiscalNumber, personIdentifier, spidCode })
-        ?.value ?? "test-unique-identifier",
+      selectSignupIdentifier({ fiscalNumber, spidCode })?.value ??
+      "test-unique-identifier",
     type: "ui-signup-session",
   };
 }

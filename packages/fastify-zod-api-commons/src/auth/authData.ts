@@ -84,7 +84,6 @@ export interface UISignupSessionAuthData {
   fiscalNumber: string | undefined;
   name: string;
   oneIdNonce: string;
-  personIdentifier: string | undefined;
   spidCode: string | undefined;
   tokenType: "ui-signup-session";
   uniqueIdentifier: string;
@@ -161,7 +160,6 @@ export function extractAuthDataFromToken(
         fiscalNumber: c.fiscalNumber,
         name: c.name,
         oneIdNonce: c.oneIdNonce,
-        personIdentifier: c.personIdentifier,
         spidCode: c.spidCode,
         tokenType: "ui-signup-session",
         uniqueIdentifier: c.sub,

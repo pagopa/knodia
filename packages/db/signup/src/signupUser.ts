@@ -29,7 +29,6 @@ export const signupUser = schema.table(
     name: text("name").notNull(),
     orionOrganizationName: text("orion_organization_name").notNull().unique(),
     orionUserName: text("orion_user_name").notNull().unique(),
-    personIdentifier: text("person_identifier").unique(),
     signupUserId: uuid("signup_user_id").primaryKey(),
     spidCode: text("spid_code").unique(),
     status: text("status").notNull(),
@@ -44,7 +43,7 @@ export const signupUser = schema.table(
   (table) => [
     check(
       "signup_user_single_identifier",
-      sql`(${table.spidCode} IS NOT NULL)::int + (${table.fiscalNumber} IS NOT NULL)::int + (${table.personIdentifier} IS NOT NULL)::int = 1`,
+      sql`(${table.spidCode} IS NOT NULL)::int + (${table.fiscalNumber} IS NOT NULL)::int = 1`,
     ),
     check(
       "signup_user_status_valid",
