@@ -29,6 +29,7 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
+    "drizzle-orm": "catalog:",
     "eslint": "catalog:",
     "openapi-types": "catalog:",
     "typescript": "catalog:",

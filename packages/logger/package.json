@@ -16,6 +16,7 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
+    "drizzle-orm": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
