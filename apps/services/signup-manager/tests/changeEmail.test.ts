@@ -159,6 +159,7 @@ describe("POST /user/changeEmail (changeEmail)", () => {
       .body(validChangeEmailBody);
 
     expect(response.statusCode).toBe(409);
+    expect(response.body).not.toContain(validChangeEmailBody.email);
     await expect(getAllEmailChangeRequests()).resolves.toHaveLength(0);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });
@@ -183,6 +184,7 @@ describe("POST /user/changeEmail (changeEmail)", () => {
       .body(validChangeEmailBody);
 
     expect(response.statusCode).toBe(409);
+    expect(response.body).not.toContain(validChangeEmailBody.email);
     await expect(getAllEmailChangeRequests()).resolves.toHaveLength(1);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });

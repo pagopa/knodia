@@ -35,10 +35,10 @@ export function signupUserAlreadyHasPendingEmailChangeRequest() {
   });
 }
 
-export function signupUserEmailAlreadyInUse(email: string) {
+export function signupUserEmailAlreadyInUse() {
   return createApiError<ErrorCodes>({
     code: "SIGNUP_USER_EMAIL_ALREADY_IN_USE",
-    detail: `Email ${email} is already in use with an onboarded user`,
+    detail: "Email is already in use with an onboarded user",
     status: HTTP_STATUS_CONFLICT,
     title: "Signup User Email Already In Use",
   });
