@@ -127,6 +127,7 @@ describe("POST /user/confirmOnboarding (confirmOnboarding)", () => {
       .body(validConfirmOnboardingBody);
 
     expect(response.statusCode).toBe(409);
+    expect(response.body).not.toContain(validConfirmOnboardingBody.email);
     await expect(getAllSignupUsers()).resolves.toHaveLength(1);
     expect(kafkaProducerMock.send).not.toHaveBeenCalled();
   });

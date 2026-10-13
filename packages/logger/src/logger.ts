@@ -3,6 +3,10 @@ import { type Logger, type LoggerOptions, pino } from "pino";
 import type { LoggerConfig } from "./config.ts";
 import type { LoggerMetadata } from "./models/models.ts";
 
+import { redactQueryParams } from "./redactQueryParams.ts";
+
+export { redactQueryParams } from "./redactQueryParams.ts";
+
 const DEFAULT_REDACT_PATHS: string[] = [
   "req.headers.authorization",
   "req.host",
@@ -51,6 +55,17 @@ const buildLoggerEnvOptions = (
 export const createLoggerOptions = (config: LoggerConfig): LoggerOptions => ({
   formatters: {
     bindings: () => ({}), // Removes pid, hostname and name from logs
+  },
+  // Not a serializer: pino copies `err.message` into `msg` before serializers run.
+  hooks: {
+    logMethod(args, method) {
+      const [first] = args;
+      redactQueryParams(first);
+      if (typeof first === "object" && first !== null && "err" in first) {
+        redactQueryParams(first.err);
+      }
+      method.apply(this, args);
+    },
   },
   level: config.logLevel,
   redact: { paths: DEFAULT_REDACT_PATHS, remove: true },
