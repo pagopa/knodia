@@ -259,17 +259,16 @@ export function getTestUISignupSessionTokenClaims(
   // `null` means "absent", letting a test build a zero-identifier fixture.
   const fiscalNumber = props.fiscalNumber ?? undefined;
 
-  const callerSetIdentifier = (props.spidCode ?? props.fiscalNumber) != null;
   const spidCode = match(props.spidCode)
     .with(P.string, (value) => value)
     .with(null, () => undefined)
-    // Not passed: default to a SPID login unless another identifier was set,
+    // Not passed: default to a SPID login unless fiscalNumber was set,
     // using `uniqueIdentifier` so callers that only care about the bucket key
     // get sub === spidCode, falling back to a fixed code.
     .with(undefined, () =>
-      callerSetIdentifier
-        ? undefined
-        : (props.uniqueIdentifier ?? "test-spid-code"),
+      fiscalNumber === undefined
+        ? (props.uniqueIdentifier ?? "test-spid-code")
+        : undefined,
     )
     .exhaustive();
 
