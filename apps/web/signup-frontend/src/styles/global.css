@@ -148,6 +148,13 @@
   font-weight: 500;
 }
 
+@utility text-style-overline {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
 @utility text-style-card-title {
   font-family: var(--font-manrope);
   font-size: 24px;
