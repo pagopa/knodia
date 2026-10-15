@@ -28,24 +28,19 @@ describe("Footer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders the partner logos as external links with the DTD logo first", () => {
+  it("renders the logos as external links", () => {
     render(<Footer />);
 
     const logoLinks = [
       {
-        href: "https://innovazione.gov.it/",
-        name: "Logo Dipartimento per la trasformazione digitale",
-        title: "Go to Dipartimento per la trasformazione digitale website",
-      },
-      {
-        href: "https://www.pagopa.it/en/homepage/",
-        name: "Logo PagoPA S.p.A.",
-        title: "Go to PagoPA S.p.A. website",
-      },
-      {
         href: "https://commission.europa.eu/index_en",
         name: "Logo NextGenerationEU",
         title: "Go to EU Commission website",
+      },
+      {
+        href: "https://innovazione.gov.it/",
+        name: "Logo Dipartimento per la trasformazione digitale",
+        title: "Go to Dipartimento per la trasformazione digitale website",
       },
     ];
 
@@ -56,13 +51,27 @@ describe("Footer", () => {
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
       expect(link).toHaveAttribute("title", title);
     }
+  });
 
-    // DTD must come before PagoPA in the partners row.
+  it("credits PagoPA S.p.A. as a text link before the DTD logo", () => {
+    render(<Footer />);
+
+    const pagopa = screen.getByRole("link", { name: "PagoPA S.p.A." });
+    expect(pagopa).toHaveAttribute(
+      "href",
+      "https://www.pagopa.it/en/homepage/",
+    );
+    expect(pagopa).toHaveAttribute("target", "_blank");
+    expect(pagopa).toHaveAttribute("rel", "noopener noreferrer");
+    expect(pagopa).toHaveAttribute("title", "Go to PagoPA S.p.A. website");
+    expect(pagopa.closest("p")).toHaveTextContent(
+      "Project implemented and managed by PagoPA S.p.A. on behalf of",
+    );
+
     const dtd = screen.getByRole("link", {
       name: "Logo Dipartimento per la trasformazione digitale",
     });
-    const pagopa = screen.getByRole("link", { name: "Logo PagoPA S.p.A." });
-    expect(dtd.compareDocumentPosition(pagopa)).toBe(
+    expect(pagopa.compareDocumentPosition(dtd)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });
