@@ -68,7 +68,6 @@ export function Footer() {
                 href="https://www.pagopa.it/en/homepage/"
                 rel="noopener noreferrer"
                 target="_blank"
-                title="Go to PagoPA S.p.A. website"
               >
                 PagoPA S.p.A.
               </a>{" "}

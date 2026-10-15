@@ -63,7 +63,6 @@ describe("Footer", () => {
     );
     expect(pagopa).toHaveAttribute("target", "_blank");
     expect(pagopa).toHaveAttribute("rel", "noopener noreferrer");
-    expect(pagopa).toHaveAttribute("title", "Go to PagoPA S.p.A. website");
     expect(pagopa.closest("p")).toHaveTextContent(
       "Project implemented and managed by PagoPA S.p.A. on behalf of",
     );
